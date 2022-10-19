@@ -1,7 +1,7 @@
 (instrumenting-executor)=
 # Instrumentation
 
-Instrumentation consists of [OpenTelemetry](https://opentelemetry.io) Tracing and Metrics. Both features can be enabled independently and allows you to collect various request level and application level metrics for anaylizing the real time behavior of your Executor. 
+Instrumentation consists of [OpenTelemetry](https://opentelemetry.io) Tracing and Metrics. Each features can be enabled independently and allow you to collect request-level and application level metrics for analyzing an Executor's real-time behavior. 
 
 This section documents creating custom traces and metrics.
 
@@ -176,7 +176,7 @@ class MyExecutor(Executor):
 This creates a [Counter](https://opentelemetry.io/docs/reference/specification/metrics/api/#counter) that you can use to incrementally track the number of Documents received in each request. 
 
 ````{hint}
-If metrics is not enabled by default or enabled on a per environment basis, you should check `self.meter` and `self.counter` exist before usage. If metrics is disabled then `self.meter` will be `None`.
+If metrics are not enabled by default or enabled on a per environment basis, you should check `self.meter` and `self.counter` exist before usage. If metrics are disabled then `self.meter` will be `None`.
 ````
 
 

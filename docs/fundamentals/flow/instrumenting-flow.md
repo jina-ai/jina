@@ -86,7 +86,7 @@ Because not all Pods have the same role, they expose different kinds of traces:
 Beyond the above-mentioned default traces, you can define {ref}`custom traces <instrumenting-executor>` for your Executor. 
 ```
 
-## Metrics example
+## Metrics
 
 ````{tab} via Python API
 ```python
@@ -120,7 +120,7 @@ jina flow --uses flow.yaml
 ```
 ````
 
-As in the above tracing example, the Flow propagates the Metrics configuration to each Pod. The `metrics_exporter_host` and `metrics_exporter_port` arguments configure the metrics [exporter](https://opentelemetry.io/docs/instrumentation/python/exporters/#metrics-1) responsible for pushing collected data to the [collector](https://opentelemetry.io/docs/collector/) backend.
+The Flow propagates the Metrics configuration to each Pod. The `metrics_exporter_host` and `metrics_exporter_port` arguments configure the metrics [exporter](https://opentelemetry.io/docs/instrumentation/python/exporters/#metrics-1) responsible for pushing collected data to the [collector](https://opentelemetry.io/docs/collector/) backend.
 
 
 ```{hint}
