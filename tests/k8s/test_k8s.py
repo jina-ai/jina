@@ -668,13 +668,8 @@ async def test_flow_with_external_k8s_deployment(logger, docker_images, tmpdir):
 
 @pytest.mark.asyncio
 @pytest.mark.timeout(3600)
-@pytest.mark.parametrize(
-    'grpc_metadata',
-    [{}, {"key1": "value1"}],
-)
-async def test_flow_with_metadata_external_k8s_deployment(
-    logger, grpc_metadata, tmpdir
-):
+@pytest.mark.parametrize('grpc_metadata', [{}, {"key1": "value1"}])
+async def test_flow_with_metadata_k8s_deployment(logger, grpc_metadata, tmpdir):
     docker_images = ['test-executor', 'jinaai/jina']
 
     namespace = 'test-flow-with-metadata-k8s-deployment'
