@@ -128,7 +128,7 @@ Using `tls` to connect to the External Executor is especially needed to use an e
 for further details
 ```
 
-You can also pass the `grpc_metadata` parameter, which is a dictionary of key-value pairs to be passed along with the gRPC request to the external Executor. 
+You can also pass the `grpc_metadata` parameter to the Executor. `grpc_metadata` is a dictionary of key-value pairs to be passed along with the gRPC request. 
 An example is the `authorization` metadata, which is used to authenticate the request to the external Executor:
 
 ```python
