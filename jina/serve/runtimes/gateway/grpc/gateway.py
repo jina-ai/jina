@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, List, Optional
+from typing import Optional
 
 import grpc
 from grpc_health.v1 import health, health_pb2, health_pb2_grpc
