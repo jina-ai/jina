@@ -151,5 +151,16 @@ jina hub pull jinahub+docker://DummyExecutor/v1.0.0
 jina hub pull jinahub://<UUID>[:<SECRET>][/<TAG>]
 ```
 
+### List locations of local Executors
 
-The source code of the Executor will be stored at `~/.jina/hub-packages`.
+```bash
+jina hub list
+```
+
+<script id="asciicast-z81wi9gwVm7gYjfl5ocBD1RH3" src="https://asciinema.org/a/z81wi9gwVm7gYjfl5ocBD1RH3.js" async></script>
+
+```{tip}
+To list all the Executors that are in source-code format (i.e. pulled via `jinahub://`), use the command `jina hub list`.
+
+To list all the Executors that are in Docker format, use the command `docker images`.
+```
