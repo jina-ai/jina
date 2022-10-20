@@ -3,7 +3,7 @@
 
 ```{admonition} Deprecated
 :class: seealso
-The Prometheus only based feature has been deprecated in favor of the OpenTelemetry API. Refer to {ref}`Flow Instrumentation <instrumenting-flow>` for the current methods on observing and instrumenting Jina.
+The Prometheus only based feature will be deprecated soon in favor of the OpenTelemetry API. Refer to {ref}`Flow Instrumentation <instrumenting-flow>` for the current methods on observing and instrumenting Jina.
 ```
  
 A Jina {class}`~jina.Flow` exposes several core metrics that let you have a deeper look
