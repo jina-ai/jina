@@ -102,7 +102,8 @@ jobs:
       - id: set-matrix
         run: |
           sudo apt-get install jq
-          echo "::set-output name=matrix::$(bash scripts/get-all-test-paths.sh)"
+          export value=$(bash scripts/get-all-test-paths.sh)
+          echo "matrix=$value" >> $GITHUB_OUTPUT
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
 
@@ -137,7 +138,7 @@ jobs:
         run: |
           pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml --timeout=600 -v -s --ignore-glob='tests/integration/hub_usage/dummyhub*' ${{ matrix.test-path }}
           echo "flag it as jina for codeoverage"
-          echo "::set-output name=codecov_flag::jina"
+          echo "codecov_flag=jina" >> $GITHUB_OUTPUT
         timeout-minutes: 30
         env:
           JINAHUB_USERNAME: ${{ secrets.JINAHUB_USERNAME }}
