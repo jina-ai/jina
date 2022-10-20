@@ -424,8 +424,8 @@ class Deployment(BaseDeployment):
     @property
     def grpc_metadata(self):
         """
-        Get the grpc metadata for this deployment.
-        :return: The grpc metadata for this deployment. If the deployment is gateway, will return None.
+        Get the gRPC metadata for this deployment.
+        :return: The gRPC metadata for this deployment. If the deployment is a gateway, return None.
         """
         return getattr(self.args, 'grpc_metadata', None)
 
