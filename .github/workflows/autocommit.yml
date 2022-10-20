@@ -14,7 +14,7 @@ jobs:
       !endsWith(github.event.head_commit.message, 'reformatted by jina-dev-bot')
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2.5.0
         with:
           token: ${{ secrets.JINA_DEV_BOT }}
           ref: ${{ github.event.pull_request.head.sha }}

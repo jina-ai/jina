@@ -14,8 +14,8 @@ jobs:
   update-schema:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2.5.0
+      - uses: actions/checkout@v2.5.0
         with:
           repository: jina-ai/api
           path: schema
@@ -87,7 +87,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v2.5.0
         with:
           ref: 'master'
       - uses: actions/setup-python@v4

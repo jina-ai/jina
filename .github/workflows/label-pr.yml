@@ -32,7 +32,7 @@ jobs:
     steps:
       - run: |
           echo "BRANCH_NAME=${{ github.head_ref }}" >> $GITHUB_ENV
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2.5.0
         with:
           repository: jina-ai/jina
           ref: ${{ env.BRANCH_NAME }}
