@@ -30,7 +30,7 @@ jobs:
         with:
           token: ${{ secrets.JINA_DEV_BOT }}
           fetch-depth: 0
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v4
         with:
           python-version: 3.7
       - run: |
