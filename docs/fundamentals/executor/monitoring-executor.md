@@ -3,7 +3,7 @@
 
 ```{admonition} Deprecated
 :class: caution
-The Prometheus only based feature will be deprecated soon in favor of the OpenTelemetry API. Refer to {ref}`Executor Instrumentation <instrumenting-executor>` and {ref}`Flow Instrumentation <instrumenting-flow>` for the current methods on observing and instrumenting Jina.
+The Prometheus-only feature will soon be deprecated in favor of the OpenTelemetry API. Refer to {ref}`Executor Instrumentation <instrumenting-executor>` and {ref}`Flow Instrumentation <instrumenting-flow>` for the current methods for observing and instrumenting Jina.
 ```
 
 By default, every method decorated by the {class}`~jina.requests` decorator is monitored and creates a

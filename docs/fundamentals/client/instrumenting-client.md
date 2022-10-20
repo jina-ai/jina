@@ -44,14 +44,14 @@ c.post('/')
 
 ````
 
-Each protocol client creates the first trace id which will be propagated to the `Gateway`. The `Gateway` in turn creates child spans using the available trace id which is further propagated to each Executor request. Using the trace id, all associated span can be collected to build a trace view of the whole request lifecycle.
+Each protocol client creates the first trace ID which will be propagated to the `Gateway`. The `Gateway` in turn creates child spans using the available trace ID which is further propagated to each Executor request. Using the trace ID, all associated spans can be collected to build a trace view of the whole request lifecycle.
 
 ```{admonition} Using custom/external tracing context
 :class: caution
-The {class}`~jina.Client` currently doesn't support external tracing context which can potentially be extracted from an upstream request.
+The {class}`~jina.Client` doesn't currently support external tracing context which can potentially be extracted from an upstream request.
 ```
 
-## See further
+## See also
 
 - [Tracing in OpenTelemetry](https://opentelemetry.io/docs/concepts/signals/traces/)
 - {ref}`Instrumenting a Flow <instrumenting-flow>`

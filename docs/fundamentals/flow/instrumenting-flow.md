@@ -1,7 +1,7 @@
 (instrumenting-flow)=
 # Instrumentation
 
-A {class}`~jina.Flow` exposes configuration parameters for leveraging [OpenTelemetry](https://opentelemetry.io) Tracing and Metrics observability features. These tools let you instrument and collect various signals which help analyze your application's real-time behavior.
+A {class}`~jina.Flow` exposes configuration parameters for leveraging [OpenTelemetry](https://opentelemetry.io) Tracing and Metrics observability features. These tools let you instrument and collect various signals which help to analyze your application's real-time behavior.
 
 A {class}`~jina.Flow` is composed of several Pods, namely the {class}`~jina.serve.runtimes.gateway.GatewayRuntime`, {class}`~jina.Executor`s, and potentially a {class}`~jina.serve.runtimes.head.HeadRuntime` (see the {ref}`architecture overview <architecture-overview>`). Each Pod is its own microservice. These services expose their own metrics using the Python [OpenTelemetry API and SDK](https://opentelemetry-python.readthedocs.io/en/stable/api/trace.html). 
 
@@ -12,13 +12,13 @@ Tracing and Metrics can be enabled and configured independently to allow more fl
 Refer to {ref}`OpenTelemetry Setup <opentelemetry>` for a full detail on the OpenTelemetry data collection and visualization setup.
 ```
 
-```{hint}
-Prometheus only based metrics collection will be deprecated soon. Refer to {ref}`Monitoring Flow <monitoring-flow>` section for the deprecated setup.
+```{caution}
+Prometheus-only based metrics collection will soon be deprecated. Refer to {ref}`Monitoring Flow <monitoring-flow>` section for the deprecated setup.
 ```
 
 ## Tracing
 
-````{tab} via Python API
+````{tab} Python
 ```python
 from jina import Flow
 
@@ -33,7 +33,7 @@ with f:
 ```
 ````
 
-````{tab} via YAML
+````{tab} YAML
 In `flow.yaml`:
 ```yaml
 jtype: Flow
@@ -62,7 +62,7 @@ Refer to {ref}`OpenTelemetry Setup <opentelemetry>` for more details on exporter
 
 ### Available Traces
 
-Each Pod supports different default traces out of the box, also letting you define your own custom traces in the Executor. The `Runtime` name will be used to create the OpenTelemetry [Service](https://opentelemetry.io/docs/reference/specification/resource/semantic_conventions/#service) [Resource](https://opentelemetry.io/docs/reference/specification/resource/) attribute. The default value for the `name` argument will be the `Runtime` or `Executor` class name.
+Each Pod supports different default traces out of the box, and also lets you define your own custom traces in the Executor. The `Runtime` name is used to create the OpenTelemetry [Service](https://opentelemetry.io/docs/reference/specification/resource/semantic_conventions/#service) [Resource](https://opentelemetry.io/docs/reference/specification/resource/) attribute. The default value for the `name` argument is the `Runtime` or `Executor` class name.
 
 Because not all Pods have the same role, they expose different kinds of traces:
 
@@ -172,7 +172,7 @@ You can find more information on the different type of metrics in Prometheus [he
 
 #### Executor Pods
 
-The Executor additionally adds the Executor class name and the request endpoint for the `@requests` or `@monitor` decorated method level metrics.
+The Executor also adds the Executor class name and the request endpoint for the `@requests` or `@monitor` decorated method level metrics:
 
 | Metric name                     | Metric type                                                         | Description                                                                                                 |
 |----------------------------------|----------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------|

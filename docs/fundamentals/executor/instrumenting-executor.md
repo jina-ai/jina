@@ -1,7 +1,7 @@
 (instrumenting-executor)=
 # Instrumentation
 
-Instrumentation consists of [OpenTelemetry](https://opentelemetry.io) Tracing and Metrics. Each features can be enabled independently and allow you to collect request-level and application level metrics for analyzing an Executor's real-time behavior. 
+Instrumentation consists of [OpenTelemetry](https://opentelemetry.io) Tracing and Metrics. Each feature can be enabled independently, and they allow you to collect request-level and application level metrics for analyzing an Executor's real-time behavior. 
 
 This section documents creating custom traces and metrics.
 
@@ -20,7 +20,7 @@ Prometheus only based metrics collection will be deprecated soon. Refer to {ref}
 
 ## Tracing
 
-Every method that is decorated using the {class}`~jina.requests` decorator adds a 
+Any method that uses the {class}`~jina.requests` decorator adds a 
 default tracing span for the defined operation. In addition, the operation span context 
 is propagated to the method for creating further user-defined child spans within the 
 method.
