@@ -36,7 +36,7 @@ jobs:
         with:
           repository: jina-ai/jina
           ref: ${{ env.BRANCH_NAME }}
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v4
         with:
           python-version: 3.7
       - uses: actions/setup-node@v2
