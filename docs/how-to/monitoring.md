@@ -1,6 +1,11 @@
 (monitoring)=
 # Monitor with Prometheus and Grafana
 
+```{admonition} Deprecated
+:class: caution
+The Prometheus only based feature has been deprecated in favor of the OpenTelemetry Setup. Refer to {ref}`OpenTelemetry Setup <opentelemetry>` for the details on OpenTelemetry setup for Jina.
+```
+
 We recommend the Prometheus/Grafana stack to leverage the {ref}`metrics <monitoring-flow>` exposed by Jina. In this setup, Jina exposes different {ref}`metrics endpoints <monitoring-flow>`, and Prometheus scrapes these endpoints, as well as
 collecting, aggregating, and storing the metrics. 
 

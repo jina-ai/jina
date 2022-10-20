@@ -12,6 +12,10 @@ Tracing and Metrics can be enabled and configured independently to allow more fl
 Refer to {ref}`OpenTelemetry Setup <opentelemetry>` for a full detail on the OpenTelemetry data collection and visualization setup.
 ```
 
+```{hint}
+Prometheus only based metrics collection has been deprecated. Refer to {ref}`Monitoring Flow <monitoring-flow>` section for the deprecated setup.
+```
+
 ## Tracing
 
 ````{tab} via Python API
@@ -87,6 +91,10 @@ Beyond the above-mentioned default traces, you can define {ref}`custom traces <i
 ```
 
 ## Metrics
+
+```{hint}
+Prometheus only based metrics collection has been deprecated. Refer to {ref}`Monitoring Flow <monitoring-flow>` section for the deprecated setup.
+```
 
 ````{tab} via Python API
 ```python

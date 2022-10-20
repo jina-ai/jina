@@ -14,6 +14,10 @@ This section describes **custom** tracing spans. To use the Executor's default t
 The OpenTelemetry collector backend setup is described in the {ref}`OpenTelemetry Setup <opentelemetry>` section.
 ```
 
+```{hint}
+Prometheus only based metrics collection has been deprecated. Refer to {ref}`Monitoring Executor <monitoring-executor>` section for the deprecated setup.
+```
+
 ## Tracing
 
 Every method that is decorated using the {class}`~jina.requests` decorator adds a 
@@ -77,6 +81,10 @@ If tracing is not enabled by default or enabled per environment basis, you shoul
 ````
 
 ## Metrics
+
+```{hint}
+Prometheus only based metrics collection has been deprecated. Refer to {ref}`Monitoring Executor <monitoring-executor>` section for the deprecated setup.
+```
 
 By default, every method decorated with the {class}`~jina.requests` decorator is monitored and creates a
 [histogram](https://opentelemetry.io/docs/reference/specification/metrics/data-model/#histogram) which tracks the method's execution time.
