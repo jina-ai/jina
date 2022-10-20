@@ -19,7 +19,7 @@ jobs:
       !endsWith(github.event.head_commit.message, 'reformatted by jina-dev-bot')
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2.5
+      - uses: actions/checkout@v2.5.0
         with:
 #          submodules: true
           fetch-depth: 100
@@ -31,7 +31,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_DEVBOT_PWD }}
           repository: jinaai/jina
           readme-filepath: ./README-trunc.md
-      - uses: actions/checkout@v2.5
+      - uses: actions/checkout@v2.5.0
         with:
           repository: jina-ai/api
           path: schema
@@ -98,7 +98,7 @@ jobs:
     env:
       release_token: ${{ secrets.JINA_CORE_RELEASE_TOKEN }}
     steps:
-      - uses: actions/checkout@v2.5
+      - uses: actions/checkout@v2.5.0
       - id: set-matrix
         run: |
           sudo apt-get install jq
@@ -116,7 +116,7 @@ jobs:
         python-version: [3.7]
         test-path: ${{fromJson(needs.prep-testbed.outputs.matrix)}}
     steps:
-      - uses: actions/checkout@v2.5
+      - uses: actions/checkout@v2.5.0
 #        with:
 #          submodules: true
       - name: Set up Python ${{ matrix.python-version }}
@@ -171,7 +171,7 @@ jobs:
           - core: 'true'
             perf: 'true'
     steps:
-      - uses: actions/checkout@v2.5
+      - uses: actions/checkout@v2.5.0
       - name: Set up Python 3.7
         uses: actions/setup-python@v4
         with:
@@ -203,10 +203,10 @@ jobs:
       #        uses: styfle/cancel-workflow-action@0.9.0
       #        with:
       #          access_token: ${{ github.token }}
-      - uses: actions/checkout@v2.5
+      - uses: actions/checkout@v2.5.0
       - name: Set up Docker Buildx
         id: buildx
-        uses: docker/setup-buildx-action@v2.1
+        uses: docker/setup-buildx-action@v2.1.0
         with:
           install: true
           driver-opts: network=host
@@ -214,7 +214,7 @@ jobs:
           docker run --privileged --rm tonistiigi/binfmt --uninstall qemu-aarch64
           docker run --rm --privileged tonistiigi/binfmt --install all
       - name: Build and test
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v3.2.0
         with:
           context: .
           file: Dockerfiles/debianx.Dockerfile
@@ -234,7 +234,7 @@ jobs:
       #        uses: styfle/cancel-workflow-action@0.9.0
       #        with:
       #          access_token: ${{ github.token }}
-      - uses: actions/checkout@v2.5
+      - uses: actions/checkout@v2.5.0
       - name: Set up Python 3.7
         uses: actions/setup-python@v4
         with:
@@ -251,7 +251,7 @@ jobs:
     needs: update-schema
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2.5
+      - uses: actions/checkout@v2.5.0
       - name: Set up Python 3.7
         uses: actions/setup-python@v4
         with:
@@ -292,7 +292,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: update-schema
     steps:
-      - uses: actions/checkout@v2.5
+      - uses: actions/checkout@v2.5.0
       - name: Set up Python 3.7
         uses: actions/setup-python@v4
         with:
@@ -334,7 +334,7 @@ jobs:
     needs: update-schema
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2.5
+      - uses: actions/checkout@v2.5.0
       - name: Set up Python 3.7
         uses: actions/setup-python@v4
         with:
@@ -371,7 +371,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: update-schema
     steps:
-      - uses: actions/checkout@v2.5
+      - uses: actions/checkout@v2.5.0
         with:
           fetch-depth: 0
       - run: |

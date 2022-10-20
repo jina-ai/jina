@@ -32,7 +32,7 @@ jobs:
     needs: [token-check]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2.5
+      - uses: actions/checkout@v2.5.0
         with:
           token: ${{ secrets.JINA_DEV_BOT }}
           fetch-depth: 100  # means max contribute history is limited to 100 lines
