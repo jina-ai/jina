@@ -17,7 +17,8 @@ jobs:
       - id: set-matrix
         run: |
           sudo apt-get install jq
-          echo "::set-output name=windows::$(bash scripts/get-all-test-paths.sh windows)"
+          export value=$(bash scripts/get-all-test-paths.sh windows)
+          echo "windows=$value" >> $GITHUB_OUTPUT
     outputs:
       windows: ${{ steps.set-matrix.outputs.windows }}
 
