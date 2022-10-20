@@ -37,7 +37,8 @@
 | `exit_on_exceptions` | List of exceptions that will cause the Executor to shut down. | `array` | `[]` |
 | `graph_description` | Routing graph for the gateway | `string` | `{}` |
 | `graph_conditions` | Dictionary stating which filtering conditions each Executor in the graph requires to receive Documents. | `string` | `{}` |
-| `deployments_addresses` | dictionary JSON with the input addresses of each Deployment | `string` | `{}` |
+| `deployments_addresses` | JSON dictionary with the input addresses of each Deployment | `string` | `{}` |
+| `deployments_metadata` | JSON dictionary with the request metadata for each Deployment | `string` | `{}` |
 | `deployments_disable_reduce` | list JSON disabling the built-in merging mechanism for each Deployment listed | `string` | `[]` |
 | `compression` | The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression. | `string` | `None` |
 | `timeout_send` | The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default | `number` | `None` |

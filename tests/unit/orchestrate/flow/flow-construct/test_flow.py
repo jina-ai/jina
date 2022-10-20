@@ -617,3 +617,24 @@ def test_set_port_deployment(port_generator):
     with Flow().add(uses=Executor, port=port) as f:
         assert int(f._deployment_nodes['executor0'].pod_args['pods'][0][0].port) == port
         f.index(inputs=[])
+
+
+def test_set_deployment_grpc_metadata():
+    f = Flow().add(name='my_exec', uses=Executor, grpc_metadata={'key': 'value'})
+
+    with f:
+        metadata = f._get_deployments_metadata()
+        assert metadata['my_exec'] == {'key': 'value'}
+
+        k8s_metadata = f._get_k8s_deployments_metadata()
+        assert metadata == k8s_metadata
+
+        assert f._deployment_nodes['gateway'].args.deployments_metadata == json.dumps(
+            metadata
+        )
+
+        assert f._deployment_nodes['my_exec'].pod_args['pods'][0][0].grpc_metadata == {
+            'key': 'value'
+        }
+
+        f.post('/', inputs=Document())
