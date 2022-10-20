@@ -1,0 +1,3 @@
+jtype: StatefulExecutor
+py_modules:
+  - stateful_executor.py

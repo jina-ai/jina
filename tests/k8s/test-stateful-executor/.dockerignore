@@ -1,0 +1,10 @@
+.git
+.venv
+.github
+.pytest_cache
+tests
+__pycache__
+scripts
+env
+stateful-deployment.yml
+gateway-deployment.yml

@@ -102,6 +102,11 @@ __jina_env__ = (
     'JINA_OPTOUT_TELEMETRY',
     'JINA_RANDOM_PORT_MAX',
     'JINA_RANDOM_PORT_MIN',
+    'JINA_LOCKS_ROOT',
+    'JINA_OPTOUT_TELEMETRY',
+    'JINA_K8S_ACCESS_MODES',
+    'JINA_K8S_STORAGE_CLASS_NAME',
+    'JINA_K8S_STORAGE_CAPACITY'
 )
 
 __default_host__ = _os.environ.get(

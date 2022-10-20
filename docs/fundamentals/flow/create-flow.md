@@ -266,6 +266,11 @@ Based on your local Jina version, Jina Hub may rebuild the Docker image during t
 If you do not wish to rebuild the image, set the environment variable `JINA_HUB_NO_IMAGE_REBUILD`.
 ```
 
+```{tip}
+If an Executor requires volumes to be mapped for them to persist data, Jina will create a StatefulSet for that Executor instead of a Deployment.
+You can control the access mode, storage class name and capacity of the attached Persistent Volume Claim by using {ref}`Jina environment variables <jina-env-vars>`  
+`JINA_K8S_ACCESS_MODES`, `JINA_K8S_STORAGE_CLASS_NAME` and `JINA_K8S_STORAGE_CAPACITY`. Only the first volume will be considered to be mounted.
+```
 
 ```{admonition} See also
 :class: seealso
