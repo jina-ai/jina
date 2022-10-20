@@ -11,9 +11,6 @@ from jina.serve.gateway import BaseGateway
 from jina.serve.runtimes.helper import _get_grpc_server_options
 from jina.types.request.status import StatusMessage
 
-if TYPE_CHECKING:
-    from grpc.aio._interceptor import ServerInterceptor
-
 
 class GRPCGateway(BaseGateway):
     """GRPC Gateway implementation"""
