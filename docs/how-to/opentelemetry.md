@@ -122,7 +122,7 @@ scrape_configs:
       - targets: ['otel-collector:8888']
 ```
 
-The Prometheus configuration now only needs to  scrape from the OpenTelemetry Collector to get all the data from OpenTelemetry Metrics instrumented applications.
+The Prometheus configuration now only needs to scrape from the OpenTelemetry Collector to get all the data from OpenTelemetry Metrics instrumented applications.
 
 
 ### Running a Flow locally

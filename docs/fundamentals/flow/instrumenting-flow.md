@@ -96,7 +96,7 @@ Beyond the above-mentioned default traces, you can define {ref}`custom traces <i
 Prometheus only based metrics collection will be deprecated soon. Refer to {ref}`Monitoring Flow <monitoring-flow>` section for the deprecated setup.
 ```
 
-````{tab} via Python API
+````{tab} Python
 ```python
 from jina import Flow
 
@@ -111,7 +111,7 @@ with f:
 ```
 ````
 
-````{tab} via YAML
+````{tab} YAML
 In `flow.yaml`:
 ```yaml
 jtype: Flow
