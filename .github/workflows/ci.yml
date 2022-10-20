@@ -14,7 +14,7 @@ jobs:
   commit-lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2.5
         with:
           fetch-depth: 0
       - uses: wagoid/commitlint-github-action@v4
@@ -22,7 +22,7 @@ jobs:
   lint-flake-8:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2.5
       - name: Set up Python 3.7
         uses: actions/setup-python@v4
         with:
@@ -38,7 +38,7 @@ jobs:
   check-docstring:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2.5
         with:
           fetch-depth: 0
       - name: Set up Python 3.7
@@ -55,7 +55,7 @@ jobs:
   check-black:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2.5
         with:
           fetch-depth: 0
       - name: Set up Python 3.7
@@ -72,7 +72,7 @@ jobs:
   code-injection:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2.5
         if: ${{ !github.event.pull_request.head.repo.fork }}
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -125,7 +125,7 @@ jobs:
 #        uses: styfle/cancel-workflow-action@0.9.0
 #        with:
 #          access_token: ${{ github.token }}
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2.5
       - name: Set up Docker Buildx
         id: buildx
         uses: docker/setup-buildx-action@v2.1
@@ -156,7 +156,7 @@ jobs:
 #        uses: styfle/cancel-workflow-action@0.9.0
 #        with:
 #          access_token: ${{ github.token }}
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2.5
       - name: Set up Python 3.7
         uses: actions/setup-python@v4
         with:
@@ -173,7 +173,7 @@ jobs:
     needs: [commit-lint, lint-flake-8, code-injection]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2.5
       - name: Set up Python 3.7
         uses: actions/setup-python@v4
         with:
@@ -214,7 +214,7 @@ jobs:
     needs: [ commit-lint, lint-flake-8, code-injection ]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2.5
       - name: Set up Python 3.7
         uses: actions/setup-python@v4
         with:
@@ -256,7 +256,7 @@ jobs:
     needs: [commit-lint, lint-flake-8, code-injection]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2.5
       - name: Set up Python 3.7
         uses: actions/setup-python@v4
         with:
@@ -293,7 +293,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [commit-lint, lint-flake-8, code-injection]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2.5
       - id: set-matrix
         run: |
           sudo apt-get install jq
@@ -313,7 +313,7 @@ jobs:
         python-version: [3.7]
         test-path: ${{fromJson(needs.prep-testbed.outputs.matrix)}}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2.5
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
         with:
@@ -362,7 +362,7 @@ jobs:
           - core: 'true'
             perf: 'true'
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2.5
       - name: Set up Python 3.7
         uses: actions/setup-python@v4
         with:
