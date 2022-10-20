@@ -387,7 +387,7 @@ jina export docker-compose flow.yml docker-compose.yml
 docker-compose up
 ```
 
-Using Prometheus becomes easy:
+Tracing and monitoring with OpenTelemetry becomes easy:
 
 ```python
 from jina import Executor, requests, DocumentArray
@@ -396,12 +396,17 @@ from jina import Executor, requests, DocumentArray
 class MyExec(Executor):
     @requests
     def encode(self, docs: DocumentArray, **kwargs):
-        with self.monitor('preprocessing_seconds', 'Time preprocessing the requests'):
-            docs.tensors = preprocessing(docs)
-        with self.monitor(
-            'model_inference_seconds', 'Time doing inference the requests'
-        ):
-            docs.embedding = model_inference(docs.tensors)
+        with self.tracer.start_as_current_span(
+            'encode', context=tracing_context
+        ) as span:
+            with self.monitor(
+                'preprocessing_seconds', 'Time preprocessing the requests'
+            ):
+                docs.tensors = preprocessing(docs)
+            with self.monitor(
+                'model_inference_seconds', 'Time doing inference the requests'
+            ):
+                docs.embedding = model_inference(docs.tensors)
 ```
 
 Using Grafana becomes easy, just [download this JSON](https://github.com/jina-ai/example-grafana-prometheus/blob/main/grafana-dashboards/flow.json) and import it into Grafana:
