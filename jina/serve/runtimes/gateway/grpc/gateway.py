@@ -40,25 +40,13 @@ class GRPCGateway(BaseGateway):
         self.ssl_certfile = ssl_certfile
         self.health_servicer = health.HealthServicer(experimental_non_blocking=True)
 
-    def grpc_extra_server_interceptors(self) -> Optional[List['ServerInterceptor']]:
-        """Return a list of extra server interceptors to be added to the GRPC server.
-
-        :return: a list of extra server interceptors
-        """
-        return None
-
     async def setup_server(self):
         """
         setup GRPC server
         """
-        server_interceptors = self.grpc_tracing_server_interceptors or []
-        extra_interceptors = self.grpc_extra_server_interceptors()
-        if extra_interceptors:
-            server_interceptors.extend(extra_interceptors)
-
         self.server = grpc.aio.server(
             options=_get_grpc_server_options(self.grpc_server_options),
-            interceptors=server_interceptors,
+            interceptors=self.grpc_tracing_server_interceptors,
         )
 
         jina_pb2_grpc.add_JinaRPCServicer_to_server(

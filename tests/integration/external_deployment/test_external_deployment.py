@@ -352,8 +352,13 @@ def test_external_flow_with_target_executor():
 
 def test_external_flow_with_grpc_metadata():
     import grpc
+    from grpc_health.v1 import health, health_pb2, health_pb2_grpc
+    from grpc_reflection.v1alpha import reflection
 
+    from jina import __default_host__
+    from jina.proto import jina_pb2, jina_pb2_grpc
     from jina.serve.runtimes.gateway import GRPCGateway
+    from jina.serve.runtimes.helper import _get_grpc_server_options
 
     class DummyInterceptor(grpc.aio.ServerInterceptor):
         def __init__(self):
@@ -380,6 +385,72 @@ def test_external_flow_with_grpc_metadata():
 
         def grpc_extra_server_interceptors(self):
             return [DummyInterceptor()]
+
+        async def setup_server(self):
+            """
+            setup GRPC server
+            """
+            server_interceptors = self.grpc_tracing_server_interceptors or []
+            extra_interceptors = self.grpc_extra_server_interceptors()
+            if extra_interceptors:
+                server_interceptors.extend(extra_interceptors)
+
+            self.server = grpc.aio.server(
+                options=_get_grpc_server_options(self.grpc_server_options),
+                interceptors=server_interceptors,
+            )
+
+            jina_pb2_grpc.add_JinaRPCServicer_to_server(
+                self.streamer._streamer, self.server
+            )
+
+            jina_pb2_grpc.add_JinaGatewayDryRunRPCServicer_to_server(self, self.server)
+            jina_pb2_grpc.add_JinaInfoRPCServicer_to_server(self, self.server)
+
+            service_names = (
+                jina_pb2.DESCRIPTOR.services_by_name['JinaRPC'].full_name,
+                jina_pb2.DESCRIPTOR.services_by_name['JinaGatewayDryRunRPC'].full_name,
+                jina_pb2.DESCRIPTOR.services_by_name['JinaInfoRPC'].full_name,
+                reflection.SERVICE_NAME,
+            )
+            # Mark all services as healthy.
+            health_pb2_grpc.add_HealthServicer_to_server(
+                self.health_servicer, self.server
+            )
+
+            for service in service_names:
+                self.health_servicer.set(
+                    service, health_pb2.HealthCheckResponse.SERVING
+                )
+            reflection.enable_server_reflection(service_names, self.server)
+
+            bind_addr = f'{__default_host__}:{self.port}'
+
+            if self.ssl_keyfile and self.ssl_certfile:
+                with open(self.ssl_keyfile, 'rb') as f:
+                    private_key = f.read()
+                with open(self.ssl_certfile, 'rb') as f:
+                    certificate_chain = f.read()
+
+                server_credentials = grpc.ssl_server_credentials(
+                    (
+                        (
+                            private_key,
+                            certificate_chain,
+                        ),
+                    )
+                )
+                self.server.add_secure_port(bind_addr, server_credentials)
+            elif (
+                self.ssl_keyfile != self.ssl_certfile
+            ):  # if we have only ssl_keyfile and not ssl_certfile or vice versa
+                raise ValueError(
+                    f"you can't pass a ssl_keyfile without a ssl_certfile and vice versa"
+                )
+            else:
+                self.server.add_insecure_port(bind_addr)
+            self.logger.debug(f'start server bound to {bind_addr}')
+            await self.server.start()
 
     class ExtExecutor(Executor):
         @requests

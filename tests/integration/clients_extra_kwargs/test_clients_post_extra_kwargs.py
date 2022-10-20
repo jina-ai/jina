@@ -39,8 +39,12 @@ def flow_with_grpc(monkeypatch):
             return self._deny
 
     class AlternativeGRPCGateway(GRPCGateway):
-        def grpc_extra_server_interceptors(self):
-            return [AuthInterceptor('access_key')]
+        def __init__(self, *args, **kwargs):
+            super(AlternativeGRPCGateway, self).__init__(*args, **kwargs)
+            self.server = grpc.aio.server(
+                interceptors=(AuthInterceptor('access_key'),),
+                options=_get_grpc_server_options(self.grpc_server_options),
+            )
 
     return Flow(protocol='grpc', uses=AlternativeGRPCGateway).add()
 
