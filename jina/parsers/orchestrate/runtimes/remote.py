@@ -114,7 +114,14 @@ which should be structured as a python package.
     parser.add_argument(
         '--deployments-addresses',
         type=str,
-        help='dictionary JSON with the input addresses of each Deployment',
+        help='JSON dictionary with the input addresses of each Deployment',
+        default='{}',
+    )
+
+    parser.add_argument(
+        '--deployments-metadata',
+        type=str,
+        help='JSON dictionary with the request metadata for each Deployment',
         default='{}',
     )
 

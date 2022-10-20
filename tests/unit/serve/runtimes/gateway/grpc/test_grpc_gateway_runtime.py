@@ -122,6 +122,7 @@ class DummyMockConnectionPool:
         requests,
         deployment: str,
         head: bool,
+        metadata: dict = None,
         shard_id=None,
         endpoint: str = None,
         timeout: float = 1.0,

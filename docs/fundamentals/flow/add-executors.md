@@ -128,6 +128,24 @@ Using `tls` to connect to the External Executor is especially needed to use an e
 for further details
 ```
 
+You can also pass the `grpc_metadata` parameter to the Executor. `grpc_metadata` is a dictionary of key-value pairs to be passed along with the gRPC request. 
+An example is the `authorization` metadata, which is used to authenticate the request to the external Executor:
+
+```python
+from jina import Flow
+
+Flow().add(
+    host='123.45.67.89',
+    port=443,
+    external=True,
+    grpc_metadata={'authorization': '<TOKEN>'},
+)
+```
+
+```{hint}
+The `grpc_metadata` parameter here is the same as the `metadata` concept in gRPC. See the gRPC [documentation](https://grpc.io/docs/what-is-grpc/core-concepts/#metadata) for further details.
+```
+
 
 (floating-executors)=
 ## Floating Executors
