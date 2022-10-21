@@ -61,9 +61,9 @@ An {class}`~jina.Executor`'s type is defined by the `uses` keyword. Note that so
 | ✅         | ❌      | `ExecutorClass`                               | Use `ExecutorClass` from the inline context.                                                              |
 | ✅         | ❌      | `'my.py_modules.ExecutorClass'`               | Use `ExecutorClass` from `my.py_modules`.                                                                 |
 | ✅         | ✅      | `'executor-config.yml'`                       | Use an Executor from a YAML file defined by {ref}`Executor YAML interface <executor-yaml-spec>`.          |
-| ✅         | ❌      | `'jinahub://TransformerTorchEncoder/'`        | Use an Executor as Python source from Jina Hub.                                                           |
-| ✅         | ✅      | `'jinahub+docker://TransformerTorchEncoder'`  | Use an Executor as a Docker container from Jina Hub.                                                      |
-| ✅         | ✅      | `'jinahub+sandbox://TransformerTorchEncoder'` | Use a {ref}`Sandbox Executor <sandbox>` hosted on Jina Hub. The Executor runs remotely on Jina Hub.       |
+| ✅         | ❌      | `'jinahub://TransformerTorchEncoder/'`        | Use an Executor as Python source from Executor Hub.                                                           |
+| ✅         | ✅      | `'jinahub+docker://TransformerTorchEncoder'`  | Use an Executor as a Docker container from Executor Hub.                                                      |
+| ✅         | ✅      | `'jinahub+sandbox://TransformerTorchEncoder'` | Use a {ref}`Sandbox Executor <sandbox>` hosted on Executor Hub. The Executor runs remotely on Executor Hub.       |
 | ✅         | ❌      | `'docker://sentence-encoder'`                 | Use a pre-built Executor as a Docker container.                                                           |
 
 
@@ -424,7 +424,7 @@ different_name
 
 Different {class}`~jina.Executor`s in a {class}`~jina.Flow` may depend on different `types` for array-like data such as `doc.tensor` and `doc.embedding`,
 often because they were written with different machine learning frameworks.
-As the builder of a Flow you don't always have control over this, for example when using Executors from Jina Hub.
+As the builder of a Flow you don't always have control over this, for example when using Executors from Executor Hub.
 
 To ease the integration of different Executors, a Flow allows you to convert `tensor` and `embedding`
 by using the `f.add(..., output_array_type=..)`:

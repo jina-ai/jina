@@ -1,4 +1,4 @@
-# {octicon}`beaker` Jina AI Cloud
+# {octicon}`flame` Jina AI Cloud
 
 ```{admonition} Under Development
 :class: danger
@@ -14,17 +14,17 @@ We are actively working on the graphic user interface for Jina AI Cloud. You may
 
 
 ::::{grid-item-card} {octicon}`package-dependents;1.5em` Explore Executor Hub
-:link: fundamentals/executor/hub/index
+:link: ../fundamentals/executor/hub/index
 :link-type: doc
 
 
-Jina Hub is an Executor marketplace that allows you to share, explore and test Executors.
+Executor Hub is an Executor marketplace that allows you to share, explore and test Executors.
 
 ::::
 
 
 ::::{grid-item-card} {octicon}`cpu;1.5em` Deploy a Flow to JCloud
-:link: fundamentals/jcloud/index
+:link: ../fundamentals/jcloud/index
 :link-type: doc
 
 JCloud is a free CPU/GPU hosting platform for Jina projects.
