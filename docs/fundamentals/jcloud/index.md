@@ -1,5 +1,5 @@
 (jcloud)=
-# JCloud
+# JCloud Hosting
 
 
 ```{toctree}

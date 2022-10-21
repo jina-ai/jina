@@ -142,8 +142,7 @@ fundamentals/executor/index
 fundamentals/flow/index
 fundamentals/gateway/index
 fundamentals/client/client
-fundamentals/executor/hub/index
-fundamentals/jcloud/index
+jina-ai-cloud/index
 how-to/index
 ```
 

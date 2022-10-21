@@ -1,5 +1,5 @@
 (jina-hub)=
-# Hub
+# Executor Hub
 
 Now that you understand that {class}`~jina.Executor` is a building block in Jina, you may also wonder:
 
