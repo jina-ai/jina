@@ -65,7 +65,7 @@ Pillow:                     test
 pytest:                     test
 pytest-timeout:             test
 pytest-mock:                test
-pytest-cov:                 test
+pytest-cov==3.0.0:          test
 coverage==6.2:              test
 pytest-repeat:              test
 pytest-asyncio:             test
