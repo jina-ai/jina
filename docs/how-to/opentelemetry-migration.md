@@ -10,7 +10,7 @@ Refer to {ref}`Prometheus/Grafana-only <monitoring>` section for the soon to be 
 
 ## Update Prometheus configuration
 
-With a Prometheus-only setup, a `scrape_configs` configuration or a service discovery plugin is needed to be configured to specify the targets to pull metrics data. In the OpenTelemetry setup, each Pod pushes the metrics to the OpenTelemetry Collector. The Prometheus configuration now only needs to scrape from the OpenTelemetry Collector to get all the data from OpenTelemetry instrumented applications.
+With a Prometheus-only setup, you need to set up a `scrape_configs` configuration or service discovery plugin to specify the targets for pulling metrics data. In the OpenTelemetry setup, each Pod pushes metrics to the OpenTelemetry Collector. The Prometheus configuration now only needs to scrape from the OpenTelemetry Collector to get all the data from OpenTelemetry-instrumented applications.
 
 The new Prometheus configuration for the `otel-collector` Collector hostname is:
 
@@ -25,12 +25,12 @@ scrape_configs:
 
 ## Update Grafana dashboard
 
-The OpenTelemetry [Histogram](https://opentelemetry.io/docs/reference/specification/metrics/api/#histogram) provides quantile window buckets automatically unlike the Prometheus [Summary](https://prometheus.io/docs/concepts/metric_types/#summary) instrument. The required quantile window needed to be manually configured. This would then be available as a separate time series metric.
+The OpenTelemetry [Histogram](https://opentelemetry.io/docs/reference/specification/metrics/api/#histogram) provides quantile window buckets automatically (unlike the Prometheus [Summary](https://prometheus.io/docs/concepts/metric_types/#summary) instrument.) You need to manually configure the required quantile window. This will then be available as a separate time series metric.
 
 In addition, the OpenTelemetry Counter/UpDownCounter instruments do not add the `_total` suffix to the base metric name.
 
-The Prometheus queries in Grafana need to be adapted as follows:
-- The average or the desired quantile window time series data can be queried from Prometheus using the [histogram_quantile](https://prometheus.io/docs/prometheus/latest/querying/functions/#histogram_quantile) function. For example, to view the 0.99 quantile of the `jina_receiving_request_seconds` metric over the last 10 minutes, use query `histogram_quantile(0.99, rate(http_request_duration_seconds_bucket[10m]))`.
+To adapt Prometheus queries in Grafana:
+- Use the [histogram_quantile](https://prometheus.io/docs/prometheus/latest/querying/functions/#histogram_quantile) function to query the average or desired quantile window time series data from Prometheus. For example, to view the 0.99 quantile of the `jina_receiving_request_seconds` metric over the last 10 minutes, use query `histogram_quantile(0.99, rate(http_request_duration_seconds_bucket[10m]))`.
 - Remove the `_total` prefix from the Counter/UpDownCounter metric names.
 
 You can download a [sample Grafana dashboard JSON file](https://github.com/jina-ai/example-grafana-prometheus/blob/main/grafana-dashboards/flow-histogram-metrics.json) and import it into Grafana to get started with some pre-built graphs.

@@ -166,7 +166,7 @@ The sample dashboard looks like:
 ```{hint}
 :class: seealso
 A list of available metrics is in the {ref}`Flow Instrumentation <instrumenting-flow>` section.
-Refer to the {ref}`OpenTelemetry migration guide <opentelemetry-migration>` for updating your existing Prometheus and Grafana configurations.
+To update your existing Prometheus and Grafana configurations, refer to the {ref}`OpenTelemetry migration guide <opentelemetry-migration>`.
 ```
 
 ## JCloud Support
