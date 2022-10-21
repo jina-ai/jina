@@ -158,7 +158,9 @@ External entities (like Grafana) can access these aggregated metrics via the que
 A sample Grafana dashboard JSON file can downloaded from [here](https://github.com/jina-ai/example-grafana-prometheus/blob/main/grafana-dashboards/flow-histogram-metrics.json). The JSON file can be imported into Grafana to get started with some pre-built graphs.
 
 ```{hint}
+:class: seealso
 A list of available metrics is in the {ref}`Flow Instrumentation <instrumenting-flow>` section.
+Refer to the {ref}`OpenTelemetry migration guide <opentelemetry-migration>` for updating your existing Prometheus and Grafana configurations.
 ```
 
 ## JCloud Support
