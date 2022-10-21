@@ -409,12 +409,12 @@ class MyExec(Executor):
                 docs.embedding = model_inference(docs.tensors)
 ```
 
-Jaeger or any other distributed tracing tool can be integrated to collect and visualize request-level and application level service operation attributes to analyze the request-response lifecycle, application behavior and performance.
+You can integrate Jaeger or any other distributed tracing tools to collect and visualize request-level and application level service operation attributes. This helps you analyze request-response lifecycle, application behavior and performance.
 
-Using Grafana becomes easy, just [download this JSON](https://github.com/jina-ai/example-grafana-prometheus/blob/main/grafana-dashboards/flow.json) and import it into Grafana:
+Using Grafana becomes easy, just [download this JSON](https://github.com/jina-ai/example-grafana-prometheus/blob/main/grafana-dashboards/flow-histogram-metrics.json) and import it into Grafana:
 
 <p align="center">
-<a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/.github/readme/grafana.png?raw=true" alt="Jina: Seamless Container Integration" width="70%"></a>
+<a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/.github/readme/grafana-histogram-metrics.png?raw=true" alt="Jina: Seamless Container Integration" width="70%"></a>
 </p>
 
 
