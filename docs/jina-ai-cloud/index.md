@@ -1,12 +1,5 @@
 # {octicon}`flame` Jina AI Cloud
 
-```{admonition} Under Development
-:class: danger
-
-Jina AI Cloud is under a heavy developement. Features and user experience may change over time. 
-
-We are actively working on the graphic user interface for Jina AI Cloud. You may not see the full features right now. 
-```
 
 
 :::::{grid} 2
@@ -45,6 +38,13 @@ Jina AI Cloud is **the portal** and **the single entrypoint** to manage **all** 
 _Manage_ in this context means: CRUD, access control, personal access tokens, and subscription.
 
 
+```{admonition} Under Development
+:class: danger
+
+Jina AI Cloud is under a heavy developement. Features and user experiences may change over time. 
+
+We are actively working on the graphic user interface for Jina AI Cloud. You may not see the full features right now. 
+```
 
 ```{toctree}
 :hidden:
