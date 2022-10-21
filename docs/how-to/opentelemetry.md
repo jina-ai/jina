@@ -155,7 +155,7 @@ The list of available traces are documented in the {ref}`Flow Instrumentation <i
 
 External entities (like Grafana) can access these aggregated metrics via the query language [PromQL](https://prometheus.io/docs/prometheus/latest/querying/basics/), and let users visualize the metrics with dashboards. Check out a [comprehensive tutorial](https://prometheus.io/docs/visualization/grafana/) for more information.
 
-A sample Grafana dashboard JSON file can downloaded from [here](https://github.com/jina-ai/example-grafana-prometheus/blob/main/grafana-dashboards/flow-histogram-metrics.json). The JSON file can be imported into Grafana to get started with some pre-built graphs.
+You can download a [sample Grafana dashboard JSON file](https://github.com/jina-ai/example-grafana-prometheus/blob/main/grafana-dashboards/flow-histogram-metrics.json) and import it into Grafana to get started with some pre-built graphs.
 
 ```{hint}
 :class: seealso

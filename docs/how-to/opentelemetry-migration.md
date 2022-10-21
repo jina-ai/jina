@@ -33,7 +33,7 @@ The Prometheus queries in Grafana need to be adapted as follows:
 - The average or the desired quantile window time series data can be queried from Prometheus using the [histogram_quantile](https://prometheus.io/docs/prometheus/latest/querying/functions/#histogram_quantile) function. For example, to view the 0.99 quantile of the `jina_receiving_request_seconds` metric over the last 10 minutes, use query `histogram_quantile(0.99, rate(http_request_duration_seconds_bucket[10m]))`.
 - Remove the `_total` prefix from the Counter/UpDownCounter metric names.
 
-A sample Grafana dashboard JSON file can downloaded from [here](https://github.com/jina-ai/example-grafana-prometheus/blob/main/grafana-dashboards/flow-histogram-metrics.json). The JSON file can be imported into Grafana to get started with some pre-built graphs.
+You can download a [sample Grafana dashboard JSON file](https://github.com/jina-ai/example-grafana-prometheus/blob/main/grafana-dashboards/flow-histogram-metrics.json) and import it into Grafana to get started with some pre-built graphs.
 
 ```{hint}
 A list of available metrics which will soon be deprecated is in the {ref}`Flow Monitoring <monitoring-flow>` section.
