@@ -24,6 +24,8 @@ You can follow the GUI to create/delete personal access tokens for your Jina app
 ```{figure} pat.png
 ```
 
+To use a token, set it as the environment variable `JINA_AUTH_TOKEN`.
+
 ## via CLI
 
 ### Login
@@ -49,6 +51,8 @@ jina auth logout
 ```shell
 jina auth token create <name of PAT> -e <expiration days>
 ```
+
+To use a token, set it as the environment variable `JINA_AUTH_TOKEN`.
 
 #### List PATs
 
