@@ -25,9 +25,9 @@ scrape_configs:
 
 ## Update Grafana dashboard
 
-The OpenTelemetry [Histogram](https://opentelemetry.io/docs/reference/specification/metrics/api/#histogram) provides quantile window buckets automatically (unlike the Prometheus [Summary](https://prometheus.io/docs/concepts/metric_types/#summary) instrument.) You need to manually configure the required quantile window. This will then be available as a separate time series metric.
+The OpenTelemetry [Histogram](https://opentelemetry.io/docs/reference/specification/metrics/api/#histogram) provides quantile window buckets automatically (unlike the Prometheus [Summary](https://prometheus.io/docs/concepts/metric_types/#summary) instrument.) You need to manually configure the required quantile window. The quatile window metric will then be available as a separate time series metric.
 
-In addition, the OpenTelemetry Counter/UpDownCounter instruments do not add the `_total` suffix to the base metric name.
+In addition, the OpenTelemetry `Counter/UpDownCounter` instruments do not add the `_total` suffix to the base metric name.
 
 To adapt Prometheus queries in Grafana:
 - Use the [histogram_quantile](https://prometheus.io/docs/prometheus/latest/querying/functions/#histogram_quantile) function to query the average or desired quantile window time series data from Prometheus. For example, to view the 0.99 quantile of the `jina_receiving_request_seconds` metric over the last 10 minutes, use query `histogram_quantile(0.99, rate(http_request_duration_seconds_bucket[10m]))`.
