@@ -157,6 +157,12 @@ External entities (like Grafana) can access these aggregated metrics via the que
 
 You can download a [sample Grafana dashboard JSON file](https://github.com/jina-ai/example-grafana-prometheus/blob/main/grafana-dashboards/flow-histogram-metrics.json) and import it into Grafana to get started with some pre-built graphs.
 
+The sample dashboard looks like:
+
+```{figure} ../../.github/2.0/grafana-histogram-metrics.png
+:align: center
+```
+
 ```{hint}
 :class: seealso
 A list of available metrics is in the {ref}`Flow Instrumentation <instrumenting-flow>` section.
