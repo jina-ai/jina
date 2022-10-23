@@ -142,7 +142,7 @@ import hubble
 hubble.logout()
 ```
 
-### Token Management
+### Token management
 
 After calling `hubble.login()`, you can use the client:
 
