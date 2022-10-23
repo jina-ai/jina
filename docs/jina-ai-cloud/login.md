@@ -189,7 +189,7 @@ response = client.list_artifacts(filter={'metaData.foo': 'bar'}, sort={'type': -
 response = client.delete_artifact(id='my-artifact-id')
 ```
 
-### Error Handling
+### Error handling
 
 ```python
 import hubble
