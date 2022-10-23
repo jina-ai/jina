@@ -152,7 +152,7 @@ import hubble
 client = hubble.Client(max_retries=None, jsonify=True)
 # Get current user information.
 response = client.get_user_info()
-# Create a new personally access token for longer expiration period.
+# Create a new personal access token for longer expiration period.
 response = client.create_personal_access_token(name='my-pat', expiration_days=30)
 # Query all personal access tokens.
 response = client.list_personal_access_tokens()
