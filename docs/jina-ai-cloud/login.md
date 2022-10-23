@@ -144,7 +144,7 @@ hubble.logout()
 
 ### Token Management
 
-After calling `hubble.login()`, you can use the client with:
+After calling `hubble.login()`, you can use the client:
 
 ```python
 import hubble
