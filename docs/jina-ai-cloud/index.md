@@ -27,7 +27,7 @@ JCloud is a free CPU/GPU hosting platform for Jina projects.
 :::::
 
 
-Jina AI Cloud is **the portal** and **the single entrypoint** to manage **all** your Jina AI resources. These resources include: 
+Jina AI Cloud is the **portal** and **single entrypoint** to manage **all** your Jina AI resources, including: 
 - Data
   - [DocumentArray](https://docarray.jina.ai/fundamentals/documentarray/serialization/#from-to-cloud)
   - [Finetuner artifacts](https://finetuner.jina.ai/walkthrough/save-model/#save-artifact)
