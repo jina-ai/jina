@@ -43,7 +43,7 @@ _Manage_ in this context means: CRUD, access control, personal access tokens, an
 
 Jina AI Cloud is under a heavy developement. Features and user experiences may change over time. 
 
-We are actively working on the graphic user interface for Jina AI Cloud. You may not see the full features right now. 
+We are actively working on the GUI for Jina AI Cloud. You may not see the full features right now. 
 ```
 
 ```{toctree}
