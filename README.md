@@ -35,7 +35,7 @@ Applications built with Jina enjoy the following features out of the box:
   - Async and non-blocking data processing over dynamic flows.
 
 ☁️ **Cloud-native**
-  - Seamless Docker container integration: sharing, exploring, sandboxing, versioning and dependency control via [Jina Hub](https://hub.jina.ai).
+  - Seamless Docker container integration: sharing, exploring, sandboxing, versioning and dependency control via [Executor Hub](https://hub.jina.ai).
   - Full observability via Prometheus and Grafana.
   - Fast deployment to Kubernetes, Docker Compose.
 
@@ -338,7 +338,7 @@ executors:
 
 ### Seamless Container integration
 
-Without having to worry about dependencies, you can easily share your Executors with others; or use public/private Executors in your project thanks to [Jina Hub](https://hub.jina.ai).
+Without having to worry about dependencies, you can easily share your Executors with others; or use public/private Executors in your project thanks to [Executor Hub](https://hub.jina.ai).
 
 To create an Executor:
 
@@ -346,7 +346,7 @@ To create an Executor:
 jina hub new 
 ```
 
-To push it to Jina Hub:
+To push it to Executor Hub:
 
 ```bash
 jina hub push .

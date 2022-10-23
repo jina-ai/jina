@@ -103,7 +103,7 @@ You can disable automatic volume setting by passing `f.add(..., disable_auto_vol
 
 ## Use in Flow via source code
 
-Use the source code from Jina Hub in your Python code:
+Use the source code from Executor Hub in your Python code:
 
 ```python
 from jina import Flow

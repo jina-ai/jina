@@ -37,7 +37,7 @@ The term "final release" is relative to "developmental release" as described bel
 The recommended way of installing Jina is `pip install -U jina`
 
 `"standard"` include extra dependencies that enables:
-- Jina Hub + Docker support
+- Executor Hub + Docker support
 - FastAPI + Websocket support (required when using `Flow(protocol='http')` or `Flow(protocol='websocket')`)
 - the best compression via LZ4 algorithm
 - the best async eventloop management via `uvloop`

@@ -50,7 +50,7 @@ Sandbox is serverless. It will not be removed immediately after the Flow is clos
 
 **Sandboxes are shared with other users**. Sometimes you can access the sandbox quickly because other users have already started it.
 
-Jina Hub finds existing sandbox based on three factors: 
+Executor Hub finds existing sandboxes based on three factors: 
 - Executor name
 - Executor tag
 - Jina version of the driver program
