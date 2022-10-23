@@ -158,7 +158,7 @@ response = client.create_personal_access_token(name='my-pat', expiration_days=30
 response = client.list_personal_access_tokens()
 ```
 
-### Artifact Management
+### Artifact management
 
 ```python
 import hubble
