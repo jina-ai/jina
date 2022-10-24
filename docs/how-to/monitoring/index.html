@@ -4,19 +4,19 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-<meta property="og:title" content="Monitor via Prometheus and Grafana" />
+<meta property="og:title" content="Monitor with Prometheus and Grafana" />
   
 <meta property="og:type" content="website" />
   
 <meta property="og:url" content="https://docs.jina.ai/how-to/monitoring/" />
   
-<meta property="og:site_name" content="Jina 3.10.2 Documentation" />
+<meta property="og:site_name" content="Jina 3.11.0 Documentation" />
   
-<meta property="og:description" content="First, let’s have some context on the monitoring stack that we will be using during this guide. To leverage the metrics that Jina exposes, we recommend using the Prometheus/Grafana stack. In this setup, Jina will expose different metrics endpoint, and Prometheus will then be in charge of scraping..." />
+<meta property="og:description" content="We recommend the Prometheus/Grafana stack to leverage the metrics exposed by Jina. In this setup, Jina exposes different metrics endpoints, and Prometheus scrapes these endpoints, as well as collecting, aggregating, and storing the metrics. External entities (like Grafana) can access these aggreg..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_images/kubectl_pods.png" />
   
-<meta property="og:image:alt" content="Jina 3.10.2 Documentation" />
+<meta property="og:image:alt" content="Jina 3.11.0 Documentation" />
   
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -35,11 +35,11 @@
 </script>
 
 <script async defer src="https://buttons.github.io/buttons.js"></script>
-    <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="Python API" href="../../api-rst/" /><link rel="prev" title="Deploy with Kubernetes" href="../kubernetes/" />
+    <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" />
         <link rel="canonical" href="https://docs.jina.ai/how-to/monitoring.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.2.3, furo 2022.09.29"/>
-        <title>Monitor via Prometheus and Grafana - Jina 3.10.2 documentation</title>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
+        <title>Monitor with Prometheus and Grafana - Jina 3.11.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -173,7 +173,7 @@
         </div>
         <div class="header-center">
             <a href="../../">
-                <div class="brand">Jina 3.10.2 documentation</div>
+                <div class="brand">Jina 3.11.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -240,12 +240,12 @@
 <li class="toctree-l1"><a class="reference internal" href="../../get-started/create-app/"><svg aria-hidden="true" class="sd-octicon sd-octicon-milestone" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M7.75 0a.75.75 0 01.75.75V3h3.634c.414 0 .814.147 1.13.414l2.07 1.75a1.75 1.75 0 010 2.672l-2.07 1.75a1.75 1.75 0 01-1.13.414H8.5v5.25a.75.75 0 11-1.5 0V10H2.75A1.75 1.75 0 011 8.25v-3.5C1 3.784 1.784 3 2.75 3H7V.75A.75.75 0 017.75 0zm0 8.5h4.384a.25.25 0 00.161-.06l2.07-1.75a.25.25 0 000-.38l-2.07-1.75a.25.25 0 00-.161-.06H2.75a.25.25 0 00-.25.25v3.5c0 .138.112.25.25.25h5z" fill-rule="evenodd"></path></svg> Create First Project</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
-<ul class="current">
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../../fundamentals/architecture-overview/">Basic Concepts</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/executor/">Executor</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-api/">Basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-methods/"><code class="docutils literal notranslate"><span class="pre">@requests</span></code> methods</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/monitoring-executor/">Monitor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/instrumenting-executor/">Instrumentation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-run/">Run</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-serve/">Serve</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-files/">File structure</a></li>
@@ -257,7 +257,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/create-flow/">Basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/add-executors/">Add Executors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/topologies/">Topology</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/monitoring-flow/">Monitor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/instrumenting-flow/">Instrumentation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/health-check/">Readiness &amp; health check</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/when-things-go-wrong/">Handle exceptions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
@@ -269,20 +269,25 @@
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/client/client/">Client</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/client/third-party-client/">Third-party clients</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/client/instrumenting-client/">Instrumentation</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/executor/hub/">Hub</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/hub/hub-portal/">Portal</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/hub/create-hub-executor/">Create</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/hub/push-executor/">Publish</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/hub/use-hub-executor/">Use</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../jina-ai-cloud/"><svg aria-hidden="true" class="sd-octicon sd-octicon-flame" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M7.998 14.5c2.832 0 5-1.98 5-4.5 0-1.463-.68-2.19-1.879-3.383l-.036-.037c-1.013-1.008-2.3-2.29-2.834-4.434-.322.256-.63.579-.864.953-.432.696-.621 1.58-.046 2.73.473.947.67 2.284-.278 3.232-.61.61-1.545.84-2.403.633a2.788 2.788 0 01-1.436-.874A3.21 3.21 0 003 10c0 2.53 2.164 4.5 4.998 4.5zM9.533.753C9.496.34 9.16.009 8.77.146 7.035.75 4.34 3.187 5.997 6.5c.344.689.285 1.218.003 1.5-.419.419-1.54.487-2.04-.832-.173-.454-.659-.762-1.035-.454C2.036 7.44 1.5 8.702 1.5 10c0 3.512 2.998 6 6.498 6s6.5-2.5 6.5-6c0-2.137-1.128-3.26-2.312-4.438-1.19-1.184-2.436-2.425-2.653-4.81z" fill-rule="evenodd"></path></svg> Jina AI Cloud</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../jina-ai-cloud/login/">Login &amp; Token Management</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../fundamentals/executor/hub/">Executor Hub</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../fundamentals/executor/hub/hub-portal/">Portal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../fundamentals/executor/hub/create-hub-executor/">Create</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../fundamentals/executor/hub/push-executor/">Publish</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../fundamentals/executor/hub/use-hub-executor/">Use</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/jcloud/">JCloud</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/jcloud/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../fundamentals/jcloud/">JCloud Hosting</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../fundamentals/jcloud/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current has-children"><a class="reference internal" href="../"><svg aria-hidden="true" class="sd-octicon sd-octicon-book" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M0 1.75A.75.75 0 01.75 1h4.253c1.227 0 2.317.59 3 1.501A3.744 3.744 0 0111.006 1h4.245a.75.75 0 01.75.75v10.5a.75.75 0 01-.75.75h-4.507a2.25 2.25 0 00-1.591.659l-.622.621a.75.75 0 01-1.06 0l-.622-.621A2.25 2.25 0 005.258 13H.75a.75.75 0 01-.75-.75V1.75zm8.755 3a2.25 2.25 0 012.25-2.25H14.5v9h-3.757c-.71 0-1.4.201-1.992.572l.004-7.322zm-1.504 7.324l.004-5.073-.002-2.253A2.25 2.25 0 005.003 2.5H1.5v9h3.757a3.75 3.75 0 011.994.574z" fill-rule="evenodd"></path></svg> How-To</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../"><svg aria-hidden="true" class="sd-octicon sd-octicon-book" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M0 1.75A.75.75 0 01.75 1h4.253c1.227 0 2.317.59 3 1.501A3.744 3.744 0 0111.006 1h4.245a.75.75 0 01.75.75v10.5a.75.75 0 01-.75.75h-4.507a2.25 2.25 0 00-1.591.659l-.622.621a.75.75 0 01-1.06 0l-.622-.621A2.25 2.25 0 005.258 13H.75a.75.75 0 01-.75-.75V1.75zm8.755 3a2.25 2.25 0 012.25-2.25H14.5v9h-3.757c-.71 0-1.4.201-1.992.572l.004-7.322zm-1.504 7.324l.004-5.073-.002-2.253A2.25 2.25 0 005.003 2.5H1.5v9h3.757a3.75 3.75 0 011.994.574z" fill-rule="evenodd"></path></svg> How-To</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../realtime-streaming/">Build real-time streaming service</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../flow-switch/">Conditional route request inside a Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../scale-out/">Scale out with replicas and shards</a></li>
@@ -292,7 +297,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../external-executor/">Include external Executors in a Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../docker-compose/">Deploy with Docker Compose</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../kubernetes/">Deploy with Kubernetes</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Monitor via Prometheus and Grafana</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../opentelemetry/">Observability and Instrumentation with OpenTelemetry and Jina</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../opentelemetry-migration/">Migrate from Prometheus/Grafana to OpenTelemetry/Prometheus/Grafana</a></li>
 </ul>
 </li>
 </ul>
@@ -385,40 +391,44 @@
                     </label>
                 </div>
                 <article role="main">
-                    <section id="monitor-via-prometheus-and-grafana">
-<span id="monitoring"></span><h1>Monitor via Prometheus and Grafana<a class="headerlink" href="#monitor-via-prometheus-and-grafana" title="Permalink to this heading">#</a></h1>
-<p>First, let’s have some context on the monitoring stack that we will be using during this guide.
-To leverage the <a class="reference internal" href="../../fundamentals/flow/monitoring-flow/#monitoring-flow"><span class="std std-ref">metrics</span></a> that Jina exposes, we recommend using the Prometheus/Grafana stack. In this setup, Jina will expose different <a class="reference internal" href="../../fundamentals/flow/monitoring-flow/#monitoring-flow"><span class="std std-ref">metrics endpoint</span></a>, and Prometheus will then be in charge of scraping these endpoints, as well as
-collecting, aggregating, and storing the different metrics. Prometheus will then allow external entities (like Grafana) to access these aggregated metrics via the query language <a class="reference external" href="https://prometheus.io/docs/prometheus/latest/querying/basics/">PromQL</a>.
-Then the role of Grafana here will be to allow users to visualize these metrics by creating dashboards.</p>
+                    <section id="monitor-with-prometheus-and-grafana">
+<span id="monitoring"></span><h1>Monitor with Prometheus and Grafana<a class="headerlink" href="#monitor-with-prometheus-and-grafana" title="Permalink to this heading">#</a></h1>
+<div class="caution admonition">
+<p class="admonition-title">Deprecated</p>
+<p>The Prometheus-only based feature will soon be deprecated in favor of the OpenTelemetry Setup. Refer to <a class="reference internal" href="../opentelemetry/#opentelemetry"><span class="std std-ref">OpenTelemetry Setup</span></a> for the details on OpenTelemetry setup for Jina.</p>
+<p>Refer to the <a class="reference internal" href="../opentelemetry-migration/#opentelemetry-migration"><span class="std std-ref">OpenTelemetry migration guide</span></a> for updating your existing Prometheus and Grafana configurations.</p>
+</div>
+<p>We recommend the Prometheus/Grafana stack to leverage the <a class="reference internal" href="../../fundamentals/flow/monitoring-flow/#monitoring-flow"><span class="std std-ref">metrics</span></a> exposed by Jina. In this setup, Jina exposes different <a class="reference internal" href="../../fundamentals/flow/monitoring-flow/#monitoring-flow"><span class="std std-ref">metrics endpoints</span></a>, and Prometheus scrapes these endpoints, as well as
+collecting, aggregating, and storing the metrics.</p>
+<p>External entities (like Grafana) can access these aggregated metrics via the query language <a class="reference external" href="https://prometheus.io/docs/prometheus/latest/querying/basics/">PromQL</a> and let users visualize the metrics with dashboards.</p>
 <div class="admonition hint">
 <p class="admonition-title">Hint</p>
-<p>Jina supports exposing the metrics, you are in charge of installing and managing your Prometheus/Grafana instances.</p>
+<p>Jina supports exposing metrics, but you are in charge of installing and managing your Prometheus/Grafana instances.</p>
 </div>
-<p>We will show you in this guide how to easily deploy the Prometheus/Grafana stack and used them to monitor a Flow.</p>
+<p>In this guide, we deploy the Prometheus/Grafana stack and use it to monitor a Flow.</p>
 <section id="deploying-the-flow-and-the-monitoring-stack">
 <span id="deploy-flow-monitoring"></span><h2>Deploying the Flow and the monitoring stack<a class="headerlink" href="#deploying-the-flow-and-the-monitoring-stack" title="Permalink to this heading">#</a></h2>
 <section id="deploying-on-kubernetes">
 <h3>Deploying on Kubernetes<a class="headerlink" href="#deploying-on-kubernetes" title="Permalink to this heading">#</a></h3>
-<p>One of the challenges of monitoring a <a class="reference internal" href="../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> is communicating its different metrics endpoints to Prometheus.
-Fortunately, the <a class="reference external" href="https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/user-guides/getting-started.md">Prometheus operator for Kubernetes</a> makes the process fairly easy, because it can automatically discover new metrics endpoints to scrape.</p>
-<p>Deploying your Jina Flow on Kubernetes is the recommended way to leverage the full potential of the monitoring feature because:</p>
+<p>One challenge of monitoring a <a class="reference internal" href="../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> is communicating its different metrics endpoints to Prometheus.
+Fortunately, the <a class="reference external" href="https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/user-guides/getting-started.md">Prometheus operator for Kubernetes</a> makes this fairly easy because it can automatically discover new metrics endpoints to scrape.</p>
+<p>We recommend deploying your Jina Flow on Kubernetes to leverage the full potential of the monitoring feature because:</p>
 <ul class="simple">
-<li><p>The Prometheus operator can automatically discover new endpoints to scrape</p></li>
-<li><p>You can extend your monitoring with the rich built-in Kubernetes metrics</p></li>
+<li><p>The Prometheus operator can automatically discover new endpoints to scrape.</p></li>
+<li><p>You can extend monitoring with the rich built-in Kubernetes metrics.</p></li>
 </ul>
-<p>Deploying Prometheus and Grafana on your k8s cluster is as easy as executing the following line:</p>
+<p>You can deploy Prometheus and Grafana on your Kubernetes cluster by running:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>helm install prometheus prometheus-community/kube-prometheus-stack --set prometheus.prometheusSpec.serviceMonitorSelectorNilUsesHelmValues<span class="o">=</span><span class="nb">false</span>
 </pre></div>
 </div>
 <div class="admonition hint">
 <p class="admonition-title">Hint</p>
-<p>setting the <code class="docutils literal notranslate"><span class="pre">serviceMonitorSelectorNilUsesHelmValues</span></code> to false allows the Prometheus Operator to discover metrics endpoint outside of the helm scope which will be needed to discover the Flow metrics endpoints.</p>
+<p>setting the <code class="docutils literal notranslate"><span class="pre">serviceMonitorSelectorNilUsesHelmValues</span></code> to false allows the Prometheus Operator to discover metrics endpoint outside of the helm scope which is needed to discover the Flow metrics endpoints.</p>
 </div>
-<p>Let’s now deploy the Flow that we want to monitor:</p>
+<p>Deploy the Flow that we want to monitor:</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">via YAML</label><div class="tab-content docutils">
-<p>This example shows how to start a Flow with monitoring enabled via yaml:</p>
+<p>This example shows how to start a Flow with monitoring enabled via YAML:</p>
 <p>In a <code class="docutils literal notranslate"><span class="pre">flow.yaml</span></code> file</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
 <span class="nt">with</span><span class="p">:</span><span class="w"></span>
@@ -440,10 +450,10 @@ Fortunately, the <a class="reference external" href="https://github.com/promethe
 </div>
 </div>
 </div>
-<p>This will create a <code class="docutils literal notranslate"><span class="pre">config</span></code> folder containing the Kubernetes YAML definition of the Flow.</p>
+<p>This creates a <code class="docutils literal notranslate"><span class="pre">config</span></code> folder containing the Kubernetes YAML definition of the Flow.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p>You can see in-depth how to deploy a Flow on kubernetes <a class="reference internal" href="../kubernetes/#kubernetes"><span class="std std-ref">here</span></a></p>
+<p>You can see in-depth how to deploy a Flow on Kubernetes <a class="reference internal" href="../kubernetes/#kubernetes"><span class="std std-ref">here</span></a></p>
 </div>
 <p>Then deploy the Flow:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>kubectl apply -R -f config
@@ -467,17 +477,16 @@ Fortunately, the <a class="reference external" href="https://github.com/promethe
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>kubectl port-forward svc/gateway <span class="m">8080</span>:8080
 </pre></div>
 </div>
-<p>Now to access Grafana just do</p>
+<p>To access Grafana, run:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>kb port-forward svc/prometheus-grafana <span class="m">3000</span>:80
 </pre></div>
 </div>
-<p>and open <code class="docutils literal notranslate"><span class="pre">http://localhost:3000</span></code> in your browser</p>
-<p>User is <code class="docutils literal notranslate"><span class="pre">admin</span></code>, password is <code class="docutils literal notranslate"><span class="pre">prom-operator</span></code></p>
+<p>Then open <code class="docutils literal notranslate"><span class="pre">http://localhost:3000</span></code> in your browser. The username is <code class="docutils literal notranslate"><span class="pre">admin</span></code> and password is <code class="docutils literal notranslate"><span class="pre">prom-operator</span></code>.</p>
 <p>You should see the Grafana home page.</p>
 </section>
 <section id="deploying-locally">
 <h3>Deploying locally<a class="headerlink" href="#deploying-locally" title="Permalink to this heading">#</a></h3>
-<p>Let’s first deploy the Flow that we want to monitor:</p>
+<p>Deploy the Flow that we want to monitor:</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--1-input--1" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--1">via Python code</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
@@ -502,8 +511,8 @@ Fortunately, the <a class="reference external" href="https://github.com/promethe
 </div>
 </div>
 </div>
-<p>To monitor a flow locally you will need to install Prometheus and Grafana locally. The easiest way to do it is by using
-Docker Compose</p>
+<p>To monitor a Flow locally you need to install Prometheus and Grafana locally. The easiest way to do this is with
+Docker Compose.</p>
 <p>First clone the repo which contains the config file:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git clone https://github.com/jina-ai/example-grafana-prometheus
 <span class="nb">cd</span> example-grafana-prometheus/prometheus-grafana-local
@@ -513,32 +522,32 @@ Docker Compose</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker-compose up
 </pre></div>
 </div>
-<p>You can access the Grafana dashboard at <code class="docutils literal notranslate"><span class="pre">http://localhost:3000</span></code>. the username is <code class="docutils literal notranslate"><span class="pre">admin</span></code> and the password <code class="docutils literal notranslate"><span class="pre">foobar</span></code>.</p>
+<p>Access the Grafana dashboard at <code class="docutils literal notranslate"><span class="pre">http://localhost:3000</span></code>. The username is <code class="docutils literal notranslate"><span class="pre">admin</span></code> and the password is <code class="docutils literal notranslate"><span class="pre">foobar</span></code>.</p>
 <div class="admonition caution">
 <p class="admonition-title">Caution</p>
-<p>This example is working locally because Prometheus is configured so that it listens to ports 8000 and 9000. However,
-in contrast with deploying on Kubernetes, you need to tell Prometheus which port to look at. You can change these
-ports by modifying this <a class="reference external" href="https://github.com/jina-ai/example-grafana-prometheus/blob/8baf519f7258da68cfe224775fc90537a749c305/prometheus-grafana-local/prometheus/prometheus.yml#L64">file</a></p>
+<p>This example works locally because Prometheus is configured to listen to ports 8000 and 9000. However,
+in contrast to deploying on Kubernetes, you need to tell Prometheus which port to look at. You can change these
+ports by modifying <a class="reference external" href="https://github.com/jina-ai/example-grafana-prometheus/blob/8baf519f7258da68cfe224775fc90537a749c305/prometheus-grafana-local/prometheus/prometheus.yml#L64">prometheus.yml</a>.</p>
 </div>
 </section>
 <section id="deploying-on-jcloud">
 <h3>Deploying on Jcloud<a class="headerlink" href="#deploying-on-jcloud" title="Permalink to this heading">#</a></h3>
-<p>In case your Flow is deployed on JCloud, there is no need to provision a monitoring stack yourself. Prometheus and Grafana are
-handled by JCloud and you can find a dashboard URL using the command <code class="docutils literal notranslate"><span class="pre">jc</span> <span class="pre">status</span> <span class="pre">&lt;flow_id&gt;</span></code></p>
+<p>If your Flow is deployed on JCloud, you don’t need to provision a monitoring stack yourself. Prometheus and Grafana are
+handled by JCloud and you can find a dashboard URL with <code class="docutils literal notranslate"><span class="pre">jc</span> <span class="pre">status</span> <span class="pre">&lt;flow_id&gt;</span></code></p>
 </section>
 </section>
 <section id="using-grafana-to-visualize-metrics">
 <h2>Using Grafana to visualize metrics<a class="headerlink" href="#using-grafana-to-visualize-metrics" title="Permalink to this heading">#</a></h2>
-<p>Once you can access the Grafana homepage then go to <code class="docutils literal notranslate"><span class="pre">Browse</span></code> then <code class="docutils literal notranslate"><span class="pre">import</span></code> and copy and paste the <a class="reference external" href="https://github.com/jina-ai/example-grafana-prometheus/blob/main/grafana-dashboards/flow.json">JSON file</a></p>
+<p>Access the Grafana homepage, then go to <code class="docutils literal notranslate"><span class="pre">Browse</span></code> then <code class="docutils literal notranslate"><span class="pre">import</span></code> and copy and paste the <a class="reference external" href="https://github.com/jina-ai/example-grafana-prometheus/blob/main/grafana-dashboards/flow.json">JSON file</a></p>
 <p>You should see the following dashboard:</p>
 <figure class="align-center">
 <img alt="../../_images/grafana.png" src="../../_images/grafana.png" />
 </figure>
 <div class="hint admonition">
 <p class="admonition-title">Hint</p>
-<p>You should query your Flow generate the first metrics. Othewise the dashboard will look empty.</p>
+<p>You should query your Flow to generate the first metrics. Otherwise the dashboard looks empty.</p>
 </div>
-<p>You can query the flow by doing :</p>
+<p>You can query the Flow by running:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span><span class="p">,</span> <span class="n">DocumentArray</span>
 
 <span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">51000</span><span class="p">)</span>
@@ -547,8 +556,8 @@ handled by JCloud and you can find a dashboard URL using the command <code class
 </pre></div>
 </div>
 </section>
-<section id="see-further">
-<h2>See further<a class="headerlink" href="#see-further" title="Permalink to this heading">#</a></h2>
+<section id="see-also">
+<h2>See also<a class="headerlink" href="#see-also" title="Permalink to this heading">#</a></h2>
 <ul class="simple">
 <li><p><a class="reference internal" href="../../fundamentals/flow/monitoring-flow/#monitoring-flow"><span class="std std-ref">List of available metrics</span></a></p></li>
 <li><p><a class="reference external" href="https://grafana.com/docs/grafana/latest/getting-started/getting-started-prometheus/">Using Grafana to visualize Prometheus metrics</a></p></li>
@@ -562,33 +571,15 @@ handled by JCloud and you can find a dashboard URL using the command <code class
             <footer>
                 
                 <div class="related-pages">
-                    <a class="next-page" href="../../api-rst/">
-                        <div class="page-info">
-                            <div class="context">
-                                <span>Next</span>
-                            </div>
-                            <div class="title"><span class="fab fa-python"></span> Python API</div>
-                        </div>
-                        <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
-                    </a>
-                    <a class="prev-page" href="../kubernetes/">
-                        <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
-                        <div class="page-info">
-                            <div class="context">
-                                <span>Previous</span>
-                            </div>
-                            
-                            <div class="title">Deploy with Kubernetes</div>
-                            
-                        </div>
-                    </a>
+                    
+                    
                 </div>
                 <div class="bottom-of-page">
                     <div class="left-details">
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Oct 10, 2022</div>
+                            Last updated on Oct 24, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -620,7 +611,7 @@ handled by JCloud and you can find a dashboard URL using the command <code class
                 <div class="toc-tree-container">
                     <div class="toc-tree">
                         <ul>
-<li><a class="reference internal" href="#">Monitor via Prometheus and Grafana</a><ul>
+<li><a class="reference internal" href="#">Monitor with Prometheus and Grafana</a><ul>
 <li><a class="reference internal" href="#deploying-the-flow-and-the-monitoring-stack">Deploying the Flow and the monitoring stack</a><ul>
 <li><a class="reference internal" href="#deploying-on-kubernetes">Deploying on Kubernetes</a></li>
 <li><a class="reference internal" href="#deploying-locally">Deploying locally</a></li>
@@ -628,7 +619,7 @@ handled by JCloud and you can find a dashboard URL using the command <code class
 </ul>
 </li>
 <li><a class="reference internal" href="#using-grafana-to-visualize-metrics">Using Grafana to visualize metrics</a></li>
-<li><a class="reference internal" href="#see-further">See further</a></li>
+<li><a class="reference internal" href="#see-also">See also</a></li>
 </ul>
 </li>
 </ul>

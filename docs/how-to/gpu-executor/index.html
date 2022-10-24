@@ -10,13 +10,13 @@
   
 <meta property="og:url" content="https://docs.jina.ai/how-to/gpu-executor/" />
   
-<meta property="og:site_name" content="Jina 3.10.2 Documentation" />
+<meta property="og:site_name" content="Jina 3.11.0 Documentation" />
   
-<meta property="og:description" content="This document will show you how to use an Executor on a GPU, both locally and in a Docker container. You will also learn how to use GPU with pre-built Hub executors. Using a GPU allows you to significantly speed up encoding for most deep learning models, reducing response latency by anything from..." />
+<meta property="og:description" content="This document will show you how to use an Executor on a GPU, both locally and in a Docker container. You will also learn how to use GPU with pre-built Hub executors. Using a GPU significantly speeds up encoding for most deep learning models, reducing response latency by anything from 5 to 100 tim..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
-<meta property="og:image:alt" content="Jina 3.10.2 Documentation" />
+<meta property="og:image:alt" content="Jina 3.11.0 Documentation" />
   
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -38,8 +38,8 @@
     <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="Include external Executors in a Flow" href="../external-executor/" /><link rel="prev" title="Run on Google Colab with GPU/TPU" href="../google-colab/" />
         <link rel="canonical" href="https://docs.jina.ai/how-to/gpu-executor.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.2.3, furo 2022.09.29"/>
-        <title>Build a GPU Executor - Jina 3.10.2 documentation</title>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
+        <title>Build a GPU Executor - Jina 3.11.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -173,7 +173,7 @@
         </div>
         <div class="header-center">
             <a href="../../">
-                <div class="brand">Jina 3.10.2 documentation</div>
+                <div class="brand">Jina 3.11.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -245,7 +245,7 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/executor/">Executor</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-api/">Basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-methods/"><code class="docutils literal notranslate"><span class="pre">@requests</span></code> methods</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/monitoring-executor/">Monitor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/instrumenting-executor/">Instrumentation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-run/">Run</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-serve/">Serve</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-files/">File structure</a></li>
@@ -257,7 +257,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/create-flow/">Basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/add-executors/">Add Executors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/topologies/">Topology</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/monitoring-flow/">Monitor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/instrumenting-flow/">Instrumentation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/health-check/">Readiness &amp; health check</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/when-things-go-wrong/">Handle exceptions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
@@ -269,20 +269,25 @@
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/client/client/">Client</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/client/third-party-client/">Third-party clients</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/client/instrumenting-client/">Instrumentation</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/executor/hub/">Hub</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/hub/hub-portal/">Portal</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/hub/create-hub-executor/">Create</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/hub/push-executor/">Publish</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/hub/use-hub-executor/">Use</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../jina-ai-cloud/"><svg aria-hidden="true" class="sd-octicon sd-octicon-flame" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M7.998 14.5c2.832 0 5-1.98 5-4.5 0-1.463-.68-2.19-1.879-3.383l-.036-.037c-1.013-1.008-2.3-2.29-2.834-4.434-.322.256-.63.579-.864.953-.432.696-.621 1.58-.046 2.73.473.947.67 2.284-.278 3.232-.61.61-1.545.84-2.403.633a2.788 2.788 0 01-1.436-.874A3.21 3.21 0 003 10c0 2.53 2.164 4.5 4.998 4.5zM9.533.753C9.496.34 9.16.009 8.77.146 7.035.75 4.34 3.187 5.997 6.5c.344.689.285 1.218.003 1.5-.419.419-1.54.487-2.04-.832-.173-.454-.659-.762-1.035-.454C2.036 7.44 1.5 8.702 1.5 10c0 3.512 2.998 6 6.498 6s6.5-2.5 6.5-6c0-2.137-1.128-3.26-2.312-4.438-1.19-1.184-2.436-2.425-2.653-4.81z" fill-rule="evenodd"></path></svg> Jina AI Cloud</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../jina-ai-cloud/login/">Login &amp; Token Management</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../fundamentals/executor/hub/">Executor Hub</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../fundamentals/executor/hub/hub-portal/">Portal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../fundamentals/executor/hub/create-hub-executor/">Create</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../fundamentals/executor/hub/push-executor/">Publish</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../fundamentals/executor/hub/use-hub-executor/">Use</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/jcloud/">JCloud</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/jcloud/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../fundamentals/jcloud/">JCloud Hosting</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../fundamentals/jcloud/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current has-children"><a class="reference internal" href="../"><svg aria-hidden="true" class="sd-octicon sd-octicon-book" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M0 1.75A.75.75 0 01.75 1h4.253c1.227 0 2.317.59 3 1.501A3.744 3.744 0 0111.006 1h4.245a.75.75 0 01.75.75v10.5a.75.75 0 01-.75.75h-4.507a2.25 2.25 0 00-1.591.659l-.622.621a.75.75 0 01-1.06 0l-.622-.621A2.25 2.25 0 005.258 13H.75a.75.75 0 01-.75-.75V1.75zm8.755 3a2.25 2.25 0 012.25-2.25H14.5v9h-3.757c-.71 0-1.4.201-1.992.572l.004-7.322zm-1.504 7.324l.004-5.073-.002-2.253A2.25 2.25 0 005.003 2.5H1.5v9h3.757a3.75 3.75 0 011.994.574z" fill-rule="evenodd"></path></svg> How-To</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+</ul>
+</li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../"><svg aria-hidden="true" class="sd-octicon sd-octicon-book" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M0 1.75A.75.75 0 01.75 1h4.253c1.227 0 2.317.59 3 1.501A3.744 3.744 0 0111.006 1h4.245a.75.75 0 01.75.75v10.5a.75.75 0 01-.75.75h-4.507a2.25 2.25 0 00-1.591.659l-.622.621a.75.75 0 01-1.06 0l-.622-.621A2.25 2.25 0 005.258 13H.75a.75.75 0 01-.75-.75V1.75zm8.755 3a2.25 2.25 0 012.25-2.25H14.5v9h-3.757c-.71 0-1.4.201-1.992.572l.004-7.322zm-1.504 7.324l.004-5.073-.002-2.253A2.25 2.25 0 005.003 2.5H1.5v9h3.757a3.75 3.75 0 011.994.574z" fill-rule="evenodd"></path></svg> How-To</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../realtime-streaming/">Build real-time streaming service</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../flow-switch/">Conditional route request inside a Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../scale-out/">Scale out with replicas and shards</a></li>
@@ -292,7 +297,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../external-executor/">Include external Executors in a Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../docker-compose/">Deploy with Docker Compose</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../kubernetes/">Deploy with Kubernetes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../monitoring/">Monitor via Prometheus and Grafana</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../opentelemetry/">Observability and Instrumentation with OpenTelemetry and Jina</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../opentelemetry-migration/">Migrate from Prometheus/Grafana to OpenTelemetry/Prometheus/Grafana</a></li>
 </ul>
 </li>
 </ul>
@@ -389,23 +395,20 @@
 <span id="gpu-executor"></span><h1>Build a GPU Executor<a class="headerlink" href="#build-a-gpu-executor" title="Permalink to this heading">#</a></h1>
 <p>This document will show you how to use an <a class="reference internal" href="../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a> on a GPU, both locally and in a
 Docker container. You will also learn how to use GPU with pre-built Hub executors.</p>
-<p>Using a GPU allows you to significantly speed up encoding for most deep learning models,
+<p>Using a GPU significantly speeds up encoding for most deep learning models,
 reducing response latency by anything from 5 to 100 times, depending on the model and inputs used.</p>
 <div class="caution admonition">
 <p class="admonition-title">Important</p>
-<p>This tutorial assumes you are already familiar with basic Jina concepts, such as Document, Executor, and Flow. Some knowledge of the <a class="reference internal" href="../../fundamentals/executor/hub/"><span class="doc std std-doc">Hub</span></a> is also needed for the last part of the tutorial.</p>
-<p>If you’re not yet familiar with these concepts, first read the <a class="reference internal" href="../../fundamentals/executor/"><span class="doc std std-doc">Executor</span></a> and <a class="reference internal" href="../../fundamentals/executor/"><span class="doc std std-doc">Flow</span></a> documentation, and return to this tutorial once you feel comfortable performing basic operations in Jina.</p>
+<p>This tutorial assumes familiarity with basic Jina concepts, such as Document, <a class="reference internal" href="../../fundamentals/executor/"><span class="doc std std-doc">Executor</span></a>, and <a class="reference internal" href="../../fundamentals/executor/"><span class="doc std std-doc">Flow</span></a>. Some knowledge of <a class="reference internal" href="../../fundamentals/executor/hub/"><span class="doc std std-doc">Executor Hub</span></a> is also needed for the last part of the tutorial.</p>
 </div>
-<section id="jina-gpus-in-a-nutshell">
-<h2>Jina &amp; GPUs in a nutshell<a class="headerlink" href="#jina-gpus-in-a-nutshell" title="Permalink to this heading">#</a></h2>
-<p>If you want a thorough walk-through of how to use GPU resources in your code, the full tutorial in the
-<span class="xref myst">next section</span> is exactly what you are looking for.</p>
-<p>But if you already know how to use your GPU and have come here just to find out how to make it play nice with Jina,
-then we have good news for you:</p>
-<p>You just use your GPU like you usually would in your machine learning framework of choice, and you are off to the races.
-Jina enables you to use GPUs like you normally would in a Python script, or in a Docker
-container - it does not impose any additional requirements or configuration.</p>
-<p>Let’s take a look at a minimal working example, written in PyTorch.</p>
+<section id="jina-and-gpus-in-a-nutshell">
+<h2>Jina and GPUs in a nutshell<a class="headerlink" href="#jina-and-gpus-in-a-nutshell" title="Permalink to this heading">#</a></h2>
+<p>For a thorough walkthrough of using GPU resources in your code, check the full tutorial in the
+<span class="xref myst">next section</span>.</p>
+<p>If you already know how to use your GPU, just proceed like you usually would in your machine learning framework of choice.
+Jina lets you use GPUs like you would in a Python script or Docker
+container, without imposing additional requirements or configuration.</p>
+<p>Here’s a minimal working example, written in PyTorch.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">torch</span>
 
 <span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
@@ -473,21 +476,20 @@ Document embedding: tensor<span class="o">([[</span><span class="m">0</span>.688
 </div>
 </div>
 </div>
-<p>Just like that, your code runs on GPU, inside a Jina <code class="docutils literal notranslate"><span class="pre">Flow</span></code>.</p>
+<p>Just like that, your code runs on GPU, inside a Jina Flow.</p>
 <p>Next, we will go through a more fleshed out example in detail, where we use a language model to embed text in our
-documents - all on GPU, and thus blazingly fast.</p>
+Documents - all on GPU, and thus blazingly fast.</p>
 </section>
 <section id="prerequisites">
 <h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this heading">#</a></h2>
-<p>For this tutorial, you will need to work on a machine with an NVIDIA graphics card. You
-can use various free cloud platforms (like Google Colab or Kaggle kernels), if you do
-not have such a machine at home.</p>
-<p>You will also need to make sure to have a recent version of <a class="reference external" href="https://www.nvidia.com/Download/index.aspx">NVIDIA drivers</a>
+<p>For this tutorial, you will need to work on a machine with an NVIDIA graphics card. If you
+don’t have such a machine at home, you can use various free cloud platforms (like Google Colab or Kaggle kernels).</p>
+<p>Also ensure you have a recent version of <a class="reference external" href="https://www.nvidia.com/Download/index.aspx">NVIDIA drivers</a>
 installed. You don’t need to install CUDA for this tutorial, but note that depending on
 the deep learning framework that you use, that might be required (for local execution).</p>
 <p>For the Docker part of the tutorial you will also need to have <a class="reference external" href="https://docs.docker.com/get-docker/">Docker</a> and
 <a class="reference external" href="https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html">nvidia-docker</a> installed.</p>
-<p>To run Python scripts you will need a virtual environment (for example <a class="reference external" href="https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/#creating-a-virtual-environment">venv</a> or <a class="reference external" href="https://conda.io/projects/conda/en/latest/user-guide/getting-started.html#managing-environments">conda</a>), and to install Jina inside it using</p>
+<p>To run Python scripts you will need a virtual environment (for example <a class="reference external" href="https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/#creating-a-virtual-environment">venv</a> or <a class="reference external" href="https://conda.io/projects/conda/en/latest/user-guide/getting-started.html#managing-environments">conda</a>), and to install Jina inside it using:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install jina
 </pre></div>
 </div>
@@ -495,22 +497,25 @@ the deep learning framework that you use, that might be required (for local exec
 <section id="setting-up-the-executor">
 <h2>Setting up the Executor<a class="headerlink" href="#setting-up-the-executor" title="Permalink to this heading">#</a></h2>
 <div class="hint admonition">
-<p class="admonition-title">Jina Hub</p>
-<p>In this section we create an executor using <a class="reference external" href="https://hub.jina.ai/">Jina Hub</a>. This still creates your executor locally
+<p class="admonition-title">Executor Hub</p>
+<p>Let’s create an Executor using <a class="reference external" href="https://hub.jina.ai/">Executor Hub</a>. This still creates your Executor locally
 and privately, but makes it quick and easy to run your
-executor inside a Docker container, or to publish it to the Hub later, should you so choose.</p>
+Executor inside a Docker container, or (if you so choose) to publish it to Executor Hub later.</p>
 </div>
-<p>We will create a simple sentence encoder, and we’ll start by creating the Executor
-“skeleton” using Jina’s command line utility:</p>
+<p>We’ll create a simple sentence encoder, and start by creating the Executor
+“skeleton” using Jina’s CLI:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina hub new
 </pre></div>
 </div>
-<p>When prompted for inputs, name your encoder <code class="docutils literal notranslate"><span class="pre">SentenceEncoder</span></code>, and accept the default
-folder for it - this will create a <code class="docutils literal notranslate"><span class="pre">SentenceEncoder/</span></code> folder inside your current
-directory, this will be our working directory for this tutorial.</p>
-<p>Next, select <code class="docutils literal notranslate"><span class="pre">y</span></code> when prompted for advanced configuration, and leave all other questions
-empty, except when you are asked if you want to create a <code class="docutils literal notranslate"><span class="pre">Dockerfile</span></code> - answer <code class="docutils literal notranslate"><span class="pre">y</span></code> to
-this one (we will need it in the next section). In the end, you should be greeted with suggested next steps.</p>
+<p>When prompted, name your Executor <code class="docutils literal notranslate"><span class="pre">SentenceEncoder</span></code>, and accept the default
+folder - this creates a <code class="docutils literal notranslate"><span class="pre">SentenceEncoder/</span></code> folder inside your current
+directory, which will be our working directory for this tutorial.</p>
+<p>For many questions you can accept the default options. However:</p>
+<ul class="simple">
+<li><p>Select <code class="docutils literal notranslate"><span class="pre">y</span></code> when prompted for advanced configuration.</p></li>
+<li><p>Select <code class="docutils literal notranslate"><span class="pre">y</span></code> when prompted to create a <code class="docutils literal notranslate"><span class="pre">Dockerfile</span></code>.</p></li>
+</ul>
+<p>In the end, you should be greeted with suggested next steps.</p>
 <details>
   <summary> Next steps </summary>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>╭────────────────────────────────────── 🎉 Next steps ───────────────────────────────────────╮
@@ -538,7 +543,7 @@ this one (we will need it in the next section). In the end, you should be greete
 │  │             ╰────────────────────────────────────────────────╯                       │  │
 │  │   Docker…   The Dockerfile describes how this executor will be built.                │  │
 │  │   execut…   The main logic file of the Executor.                                     │  │
-│  │   manife…   Metadata <span class="k">for</span> the Executor, <span class="k">for</span> better appeal on Jina Hub.                │  │
+│  │   manife…   Metadata <span class="k">for</span> the Executor, <span class="k">for</span> better appeal on Executor Hub.                │  │
 │  │                                                                                      │  │
 │  │               Field   Description                                                    │  │
 │  │              ────────────────────────────────────────────────────────────────────    │  │
@@ -551,49 +556,49 @@ this one (we will need it in the next section). In the end, you should be greete
 │  │   requir…   The Python dependencies of the Executor.                                 │  │
 │  │                                                                                      │  │
 │  ╰──────────────────────────────────────────────────────────────────────────────────────╯  │
-│  ╭────────────────────────────── <span class="m">3</span>. Share it to Jina Hub ───────────────────────────────╮  │
+│  ╭────────────────────────────── <span class="m">3</span>. Share it to Executor Hub ───────────────────────────────╮  │
 │  │   <span class="m">1</span> jina hub push /home/ubuntu/SentenceEncoder                                       │  │
 │  ╰──────────────────────────────────────────────────────────────────────────────────────╯  │
 ╰────────────────────────────────────────────────────────────────────────────────────────────╯
 </pre></div>
 </div>
 </details>
-<p>Once this is done, let’s move to the newly created Executor directory:</p>
+<p>Now let’s move to the newly created Executor directory:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> SentenceEncoder
 </pre></div>
 </div>
-<p>Let’s continue by specifying our requirements in <code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code> file</p>
+<p>Continue by specifying our requirements in <code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code>:</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>sentence-transformers==2.0.0
 </pre></div>
 </div>
-<p>and installing them using</p>
+<p>And installing them using:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install -r requirements.txt
 </pre></div>
 </div>
 <div class="hint admonition">
 <p class="admonition-title">Do I need to install CUDA?</p>
-<p>All machine learning frameworks rely on CUDA for running on GPU. However, whether you
-need CUDA installed on your system or not depends on the framework that you are using.</p>
-<p>In this tutorial, we are using PyTorch framework, which already includes the necessary
-CUDA binaries in its distribution. However, other frameworks, such as Tensorflow, require
+<p>All machine learning frameworks rely on CUDA for running on a GPU. However, whether you
+need CUDA installed on your system or not depends on the framework that you use.</p>
+<p>In this tutorial, we use PyTorch, which already includes the necessary
+CUDA binaries in its distribution. However, other frameworks, such as TensorFlow, require
 you to install CUDA yourself.</p>
 </div>
 <div class="hint admonition">
 <p class="admonition-title">Install only what you need</p>
-<p>In this example we are installing the GPU-enabled version of PyTorch, which is the default
+<p>In this example we install the GPU-enabled version of PyTorch, which is the default
 version when installing from PyPI. However, if you know that you only need to use your
-executor on CPU, you can save a lot of space (100s of MBs, or even GBs) by installing
-CPU-only versions of your requirements. This translates into faster start-up times
+Executor on CPU, you can save a lot of space (hundreds of MBs, or even GBs) by installing
+CPU-only versions of your requirements. This translates into faster startup times
 when using Docker containers.</p>
 <p>In our case, we could change the <code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code> file to install a CPU-only version
-of PyTorch like this</p>
+of PyTorch:</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>-f https://download.pytorch.org/whl/torch_stable.html
 sentence-transformers
 torch==1.9.0+cpu
 </pre></div>
 </div>
 </div>
-<p>Now let’s fill the <code class="docutils literal notranslate"><span class="pre">executor.py</span></code> file with the actual code of our Executor</p>
+<p>Now let’s fill the <code class="docutils literal notranslate"><span class="pre">executor.py</span></code> file with the actual Executor code:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span>
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
 <span class="kn">from</span> <span class="nn">sentence_transformers</span> <span class="kn">import</span> <span class="n">SentenceTransformer</span>
@@ -621,11 +626,10 @@ torch==1.9.0+cpu
 </div>
 <p>Here all the device-specific magic happens on the two highlighted lines - when we create the
 <code class="docutils literal notranslate"><span class="pre">SentenceEncoder</span></code> class instance we pass it the device, and then we move the PyTorch
-model to our device. These are the exact same steps that you would use in a standalone Python
-script as well.</p>
+model to our device. These are also the exact same steps to use in a standalone Python script.</p>
 <p>To see how we would pass the device we want the Executor to use,
-let’s create another file - <code class="docutils literal notranslate"><span class="pre">main.py</span></code>, which will demonstrate the usage of this
-encoder by encoding 10 thousand text documents.</p>
+let’s create another file - <code class="docutils literal notranslate"><span class="pre">main.py</span></code>, to demonstrate the usage of this
+encoder by encoding 10,000 text documents.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">Document</span>
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
 
@@ -647,8 +651,8 @@ encoder by encoding 10 thousand text documents.</p>
 </section>
 <section id="running-on-gpu-and-cpu-locally">
 <h2>Running on GPU and CPU locally<a class="headerlink" href="#running-on-gpu-and-cpu-locally" title="Permalink to this heading">#</a></h2>
-<p>Let’s try it out by running the same code on CPU and GPU, so we can observe the speedup we can achieve.</p>
-<p>To toggle between the two, simply set your device type to <code class="docutils literal notranslate"><span class="pre">'cuda'</span></code>, and your GPU will take over the work:</p>
+<p>We can observe the speed up by running the same code on both the CPU and GPU.</p>
+<p>To toggle between the two, set your device type to <code class="docutils literal notranslate"><span class="pre">'cuda'</span></code>, and your GPU will take over the work:</p>
 <div class="highlight-diff notranslate"><div class="highlight"><pre><span></span><span class="gi">+ f = Flow().add(uses=SentenceEncoder, uses_with={&#39;device&#39;: &#39;cuda&#39;})</span><span class="w"></span>
 <span class="gd">- f = Flow().add(uses=SentenceEncoder, uses_with={&#39;device&#39;: &#39;cpu&#39;})</span><span class="w"></span>
 </pre></div>
@@ -657,7 +661,7 @@ encoder by encoding 10 thousand text documents.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python main.py
 </pre></div>
 </div>
-<p>And compare the results</p>
+<p>And compare the results:</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--1-input--1" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--1">CPU</label><div class="tab-content docutils">
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>      executor0@26554<span class="o">[</span>L<span class="o">]</span>:ready and listening
@@ -684,41 +688,40 @@ Working... ━━━━━━━━━━━━━━━━━━━━━━━
 </div>
 </div>
 </div>
-<p>Running this code on a <code class="docutils literal notranslate"><span class="pre">g4dn.xlarge</span></code> AWS instance with a single NVIDIA T4 GPU attached, we can see that the embedding
-time can be decreased from 20s to 3s by running on GPU.
-That is more than a <strong>6x speedup!</strong> And that’s not even the best we can do - if we increase the batch size to max out the GPU’s memory we would get even larger speedups. But such optimizations are beyond the scope of this tutorial.</p>
+<p>Running this code on a <code class="docutils literal notranslate"><span class="pre">g4dn.xlarge</span></code> AWS instance with a single NVIDIA T4 GPU attached, we can see that embedding
+time decreases from 20s to 3s by running on GPU.
+That’s more than a <strong>6x speedup!</strong> And that’s not even the best we can do - if we increase the batch size to max out the GPU’s memory we would get even larger speedups. But such optimizations are beyond the scope of this tutorial.</p>
 <div class="hint admonition">
 <p class="admonition-title">Note</p>
-<p>You have probably noticed that there was a delay (about 3 seconds) when creating the Flow.
-This occured because the weights of our model needed to be transfered from CPU to GPU when we
+<p>You’ve probably noticed that there was a delay (about 3 seconds) when creating the Flow.
+This is because the weights of our model had to be transfered from CPU to GPU when we
 initialized the Executor. However, this action only occurs once in the lifetime of the Executor,
-so for most use cases this is not something we would worry about.</p>
+so for most use cases we don’t need to worry about it.</p>
 </div>
 </section>
 <section id="using-gpu-in-a-container">
 <h2>Using GPU in a container<a class="headerlink" href="#using-gpu-in-a-container" title="Permalink to this heading">#</a></h2>
 <div class="caution admonition">
 <p class="admonition-title">Using your GPU inside a container</p>
-<p>For this part of the tutorial, you need <code class="docutils literal notranslate"><span class="pre">nvidia-container-toolkit</span></code> installed on your machine.
-If you haven’t installed that already, you can find an installation guide <a class="reference external" href="https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html">here</a>.</p>
+<p>For this part of the tutorial, you need to <a class="reference external" href="https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html">install <code class="docutils literal notranslate"><span class="pre">nvidia-container-toolkit</span></code></a>.</p>
 </div>
-<p>When you’ll be using your Executor in production you will most likely want to put it in a Docker container, to provide proper environment isolation and to be able to use it easily on any device.</p>
-<p>Using GPU-enabled Executors in this case is no harder than using them locally. In this case we don’t even need to modify the default <code class="docutils literal notranslate"><span class="pre">Dockerfile</span></code>.</p>
+<p>When you use your Executor in production you most likely want it in a Docker container, to provide proper environment isolation and easily use it on any device.</p>
+<p>Using GPU-enabled Executors in this case is no harder than using them locally. We don’t even need to modify the default <code class="docutils literal notranslate"><span class="pre">Dockerfile</span></code>.</p>
 <div class="hint admonition">
 <p class="admonition-title">Choosing the right base image</p>
-<p>In our case we are using the default <code class="docutils literal notranslate"><span class="pre">jinaai/jina:latest</span></code> base image. However, parallel to the comments about having to install CUDA locally, you might need to use a different base image, depending on the framework you are using.</p>
-<p>If you need to have CUDA installed in the image, you usually have two options: either you take the <code class="docutils literal notranslate"><span class="pre">nvidia/cuda</span></code> for the base image, or you take the official GPU-enabled image of the framework you are using, for example, <code class="docutils literal notranslate"><span class="pre">tensorflow/tensorflow:2.6.0-gpu</span></code>.</p>
+<p>In our case we use the default <code class="docutils literal notranslate"><span class="pre">jinaai/jina:latest</span></code> base image. However, parallel to the comments about installing CUDA locally, you may need a different base image depending on your framework.</p>
+<p>If you need CUDA installed in the image, you usually have two options: either take <code class="docutils literal notranslate"><span class="pre">nvidia/cuda</span></code> for the base image, or take the official GPU-enabled image of your framework, for example, <code class="docutils literal notranslate"><span class="pre">tensorflow/tensorflow:2.6.0-gpu</span></code>.</p>
 </div>
-<p>The other file we care about in this case is <code class="docutils literal notranslate"><span class="pre">config.yml</span></code>, and here the default version works as well. So let’s build the Docker image</p>
+<p>The other file we care about in this case is <code class="docutils literal notranslate"><span class="pre">config.yml</span></code>, and here the default version works as well. Let’s build the Docker image:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker build -t sentence-encoder .
 </pre></div>
 </div>
-<p>You can run the container to quickly check that everything is working well</p>
+<p>You can run the container to check that everything is working well:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker run sentence-encoder
 </pre></div>
 </div>
-<p>Now, let’s use the Docker version of our encoder with the GPU. If you’ve dealt with GPUs in containers before, you probably remember that to use a GPU inside the container you need to pass <code class="docutils literal notranslate"><span class="pre">--gpus</span> <span class="pre">all</span></code> option to the <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">run</span></code> command. And Jina enables you to do just that.</p>
-<p>Here’s how we need to modify our <code class="docutils literal notranslate"><span class="pre">main.py</span></code> script to use a GPU-base containerized Executor</p>
+<p>Let’s use the Docker version of our encoder with the GPU. If you’ve dealt with GPUs in containers before, you may remember that to use a GPU inside the container you need to pass <code class="docutils literal notranslate"><span class="pre">--gpus</span> <span class="pre">all</span></code> option to the <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">run</span></code> command. Jina lets you do just that.</p>
+<p>We need to modify our <code class="docutils literal notranslate"><span class="pre">main.py</span></code> script to use a GPU-base containerized Executor:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span>
 
 <span class="kn">from</span> <span class="nn">executor</span> <span class="kn">import</span> <span class="n">SentenceEncoder</span>
@@ -737,8 +740,8 @@ If you haven’t installed that already, you can find an installation guide <a c
 </pre></div>
 </div>
 <p>If we run this with <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">main.py</span></code>, we’ll get the same output as before, except that now we’ll also get the output from the Docker container.</p>
-<p>You may notice that every time we start the Executor, the transformer model gets downloaded again. To speed this up, we would want the encoder to load the model from a file which we have pre-downloaded to our disk.</p>
-<p>We can do this with Docker volumes - Jina will simply pass the argument to the Docker container. Here’s how we modify the <code class="docutils literal notranslate"><span class="pre">main.py</span></code> to allow that</p>
+<p>Every time we start the Executor, the Transformer model gets downloaded again. To speed this up, we want the encoder to load the model from a file which we have pre-downloaded to our disk.</p>
+<p>We can do this with Docker volumes - Jina simply passes the argument to the Docker container. Here’s how we modify <code class="docutils literal notranslate"><span class="pre">main.py</span></code>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
     <span class="n">uses</span><span class="o">=</span><span class="s1">&#39;docker://sentence-encoder&#39;</span><span class="p">,</span>
     <span class="n">uses_with</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;device&#39;</span><span class="p">:</span> <span class="s1">&#39;cuda&#39;</span><span class="p">},</span>
@@ -748,13 +751,13 @@ If you haven’t installed that already, you can find an installation guide <a c
 <span class="p">)</span>
 </pre></div>
 </div>
-<p>Here we mounted the <code class="docutils literal notranslate"><span class="pre">~/.cache</span></code> directory, because this is where pre-built transformer models are saved in our case. But this could also be any custom directory - depends on the Python package you are using, and how you specify the model loading path.</p>
-<p>Now, if we run <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">main.py</span></code> again you can see that no downloading happens inside the container, and that the encoding starts faster.</p>
+<p>We mounted the <code class="docutils literal notranslate"><span class="pre">~/.cache</span></code> directory, because that’s where pre-built transformer models are saved. But this could be any custom directory - depending on the Python package you are using, and how you specify the model loading path.</p>
+<p>Run <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">main.py</span></code> again and you can see that no downloading happens inside the container, and that encoding starts faster.</p>
 </section>
 <section id="using-gpu-with-hub-executors">
 <h2>Using GPU with Hub Executors<a class="headerlink" href="#using-gpu-with-hub-executors" title="Permalink to this heading">#</a></h2>
-<p>We now saw how to use GPU with our Executor locally, and when using it in a Docker container. What about when we use Executors from Jina Hub, is there any difference?</p>
-<p>Nope! Not only that, many of the Executors on Jina Hub already come with a GPU-enabled version pre-built, usually under the <code class="docutils literal notranslate"><span class="pre">gpu</span></code> tag (see <a class="reference internal" href="../../fundamentals/executor/hub/push-executor/#hub-tags"><span class="std std-ref">Jina Hub tags</span></a>). Let’s modify our example to use the pre-built <code class="docutils literal notranslate"><span class="pre">TransformerTorchEncoder</span></code> from Jina Hub</p>
+<p>We now saw how to use GPU with our Executor locally, and when using it in a Docker container. What about when we use Executors from Executor Hub - is there any difference?</p>
+<p>Nope! Not only that, many Executors on Executor Hub already come with a GPU-enabled version pre-built, usually under the <code class="docutils literal notranslate"><span class="pre">gpu</span></code> tag (see <a class="reference internal" href="../../fundamentals/executor/hub/push-executor/#hub-tags"><span class="std std-ref">Executor Hub tags</span></a>). Let’s modify our example to use the pre-built <code class="docutils literal notranslate"><span class="pre">TransformerTorchEncoder</span></code> from Executor Hub:</p>
 <div class="highlight-diff notranslate"><div class="highlight"><pre><span></span><span class="w">f = Flow().add(</span>
 <span class="gd">-   uses=&#39;docker://sentence-encoder&#39;,</span><span class="w"></span>
 <span class="gi">+   uses=&#39;jinahub+docker://TransformerTorchEncoder/latest-gpu&#39;,</span><span class="w"></span>
@@ -765,22 +768,22 @@ If you haven’t installed that already, you can find an installation guide <a c
 <span class="w">)</span>
 </pre></div>
 </div>
-<p>You’ll see that the first time you run the script, downloading the Docker image will take some time - GPU images are large! But after that, everything will work just as it did with your local Docker image, out of the box.</p>
+<p>The first time you run the script, downloading the Docker image takes some time - GPU images are large! But after that, everything works just as it did with the local Docker image, out of the box.</p>
 <div class="caution admonition">
 <p class="admonition-title">Important</p>
-<p>When using GPU encoders from Jina Hub, always use <code class="docutils literal notranslate"><span class="pre">jinahub+docker://</span></code>, and not <code class="docutils literal notranslate"><span class="pre">jinahub://</span></code>. As discussed above, these encoders might need CUDA installed (or other system dependencies), and installing that properly can be tricky. For that reason, you should prefer using Docker images, which already come with all these dependencies pre-installed.</p>
+<p>When using GPU encoders from Executor Hub, always use <code class="docutils literal notranslate"><span class="pre">jinahub+docker://</span></code>, and not <code class="docutils literal notranslate"><span class="pre">jinahub://</span></code>. As discussed above, these encoders may need CUDA installed (or other system dependencies), and installing that properly can be tricky. For that reason, use Docker images, which already come with all these dependencies pre-installed.</p>
 </div>
 </section>
 <section id="conclusion">
 <h2>Conclusion<a class="headerlink" href="#conclusion" title="Permalink to this heading">#</a></h2>
-<p>Let’s recap what we saw in this tutorial:</p>
+<p>Let’s recap this tutorial:</p>
 <ol class="arabic simple">
-<li><p>Using Executors on a GPU locally is no different than using GPU in a standalone script. You can pass the device you want your Executor to use in the initialization.</p></li>
-<li><p>To use an Executor on a GPU inside a Docker container, make sure to pass <code class="docutils literal notranslate"><span class="pre">gpus='all'</span></code></p></li>
-<li><p>Use volumes (bind mounts), so you don’t have to download large files each time you start the Executor</p></li>
-<li><p>You can use GPU with Executors from Jina Hub, just make sure to use the Executor with the <code class="docutils literal notranslate"><span class="pre">gpu</span></code> tag</p></li>
+<li><p>Using Executors on a GPU locally is no different to using a GPU in a standalone script. You pass the device you want your Executor to use in the initialization.</p></li>
+<li><p>To use an Executor on a GPU inside a Docker container, pass <code class="docutils literal notranslate"><span class="pre">gpus='all'</span></code>.</p></li>
+<li><p>Use volumes (bind mounts), so you don’t have to download large files each time you start the Executor.</p></li>
+<li><p>Use GPU with Executors from Executor Hub - just use the Executor with the <code class="docutils literal notranslate"><span class="pre">gpu</span></code> tag.</p></li>
 </ol>
-<p>And when you start building your own Executor, always remember to check what system requirements (CUDA and similar) are needed, and install them locally (and in the <code class="docutils literal notranslate"><span class="pre">Dockerfile</span></code>) accordingly</p>
+<p>When you start building your own Executor, check what system requirements (CUDA and similar) are needed, and install them locally (and in the <code class="docutils literal notranslate"><span class="pre">Dockerfile</span></code>) accordingly.</p>
 </section>
 </section>
 
@@ -815,7 +818,7 @@ If you haven’t installed that already, you can find an installation guide <a c
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Oct 10, 2022</div>
+                            Last updated on Oct 24, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -848,7 +851,7 @@ If you haven’t installed that already, you can find an installation guide <a c
                     <div class="toc-tree">
                         <ul>
 <li><a class="reference internal" href="#">Build a GPU Executor</a><ul>
-<li><a class="reference internal" href="#jina-gpus-in-a-nutshell">Jina &amp; GPUs in a nutshell</a></li>
+<li><a class="reference internal" href="#jina-and-gpus-in-a-nutshell">Jina and GPUs in a nutshell</a></li>
 <li><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
 <li><a class="reference internal" href="#setting-up-the-executor">Setting up the Executor</a></li>
 <li><a class="reference internal" href="#running-on-gpu-and-cpu-locally">Running on GPU and CPU locally</a></li>

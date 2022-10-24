@@ -8,6 +8,7 @@ Subpackages
    :maxdepth: 4
 
    jina.serve.executors
+   jina.serve.instrumentation
    jina.serve.runtimes
    jina.serve.stream
 

@@ -10,13 +10,13 @@
   
 <meta property="og:url" content="https://docs.jina.ai/how-to/scale-out/" />
   
-<meta property="og:site_name" content="Jina 3.10.2 Documentation" />
+<meta property="og:site_name" content="Jina 3.11.0 Documentation" />
   
-<meta property="og:description" content="A Jina Flow orchestrates multiple Executor s. By default, a Jina Executor runs with a single replica and shard. Some Executor in the Flow might be less performant than others, this could turn into a performance bottleneck in your Jina application. To solve this, Jina Flow allows you to config the..." />
+<meta property="og:description" content="A Jina Flow orchestrates multiple Executor s. By default, an Executor runs with a single replica and shard. Some Executors in the Flow may be less performant than others, which could cause performance bottlenecks in an application. To solve this, you can configure the number of replicas and shard..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
-<meta property="og:image:alt" content="Jina 3.10.2 Documentation" />
+<meta property="og:image:alt" content="Jina 3.11.0 Documentation" />
   
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -38,8 +38,8 @@
     <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="Write clean &amp; efficient code" href="../../fundamentals/clean-code/" /><link rel="prev" title="Conditional route request inside a Flow" href="../flow-switch/" />
         <link rel="canonical" href="https://docs.jina.ai/how-to/scale-out.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.2.3, furo 2022.09.29"/>
-        <title>Scale out with replicas and shards - Jina 3.10.2 documentation</title>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
+        <title>Scale out with replicas and shards - Jina 3.11.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -173,7 +173,7 @@
         </div>
         <div class="header-center">
             <a href="../../">
-                <div class="brand">Jina 3.10.2 documentation</div>
+                <div class="brand">Jina 3.11.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -245,7 +245,7 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/executor/">Executor</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-api/">Basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-methods/"><code class="docutils literal notranslate"><span class="pre">@requests</span></code> methods</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/monitoring-executor/">Monitor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/instrumenting-executor/">Instrumentation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-run/">Run</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-serve/">Serve</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-files/">File structure</a></li>
@@ -257,7 +257,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/create-flow/">Basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/add-executors/">Add Executors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/topologies/">Topology</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/monitoring-flow/">Monitor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/instrumenting-flow/">Instrumentation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/health-check/">Readiness &amp; health check</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/when-things-go-wrong/">Handle exceptions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
@@ -269,20 +269,25 @@
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/client/client/">Client</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/client/third-party-client/">Third-party clients</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/client/instrumenting-client/">Instrumentation</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/executor/hub/">Hub</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/hub/hub-portal/">Portal</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/hub/create-hub-executor/">Create</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/hub/push-executor/">Publish</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/hub/use-hub-executor/">Use</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../jina-ai-cloud/"><svg aria-hidden="true" class="sd-octicon sd-octicon-flame" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M7.998 14.5c2.832 0 5-1.98 5-4.5 0-1.463-.68-2.19-1.879-3.383l-.036-.037c-1.013-1.008-2.3-2.29-2.834-4.434-.322.256-.63.579-.864.953-.432.696-.621 1.58-.046 2.73.473.947.67 2.284-.278 3.232-.61.61-1.545.84-2.403.633a2.788 2.788 0 01-1.436-.874A3.21 3.21 0 003 10c0 2.53 2.164 4.5 4.998 4.5zM9.533.753C9.496.34 9.16.009 8.77.146 7.035.75 4.34 3.187 5.997 6.5c.344.689.285 1.218.003 1.5-.419.419-1.54.487-2.04-.832-.173-.454-.659-.762-1.035-.454C2.036 7.44 1.5 8.702 1.5 10c0 3.512 2.998 6 6.498 6s6.5-2.5 6.5-6c0-2.137-1.128-3.26-2.312-4.438-1.19-1.184-2.436-2.425-2.653-4.81z" fill-rule="evenodd"></path></svg> Jina AI Cloud</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../jina-ai-cloud/login/">Login &amp; Token Management</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../fundamentals/executor/hub/">Executor Hub</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../fundamentals/executor/hub/hub-portal/">Portal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../fundamentals/executor/hub/create-hub-executor/">Create</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../fundamentals/executor/hub/push-executor/">Publish</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../fundamentals/executor/hub/use-hub-executor/">Use</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/jcloud/">JCloud</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/jcloud/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../fundamentals/jcloud/">JCloud Hosting</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../fundamentals/jcloud/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current has-children"><a class="reference internal" href="../"><svg aria-hidden="true" class="sd-octicon sd-octicon-book" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M0 1.75A.75.75 0 01.75 1h4.253c1.227 0 2.317.59 3 1.501A3.744 3.744 0 0111.006 1h4.245a.75.75 0 01.75.75v10.5a.75.75 0 01-.75.75h-4.507a2.25 2.25 0 00-1.591.659l-.622.621a.75.75 0 01-1.06 0l-.622-.621A2.25 2.25 0 005.258 13H.75a.75.75 0 01-.75-.75V1.75zm8.755 3a2.25 2.25 0 012.25-2.25H14.5v9h-3.757c-.71 0-1.4.201-1.992.572l.004-7.322zm-1.504 7.324l.004-5.073-.002-2.253A2.25 2.25 0 005.003 2.5H1.5v9h3.757a3.75 3.75 0 011.994.574z" fill-rule="evenodd"></path></svg> How-To</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+</ul>
+</li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../"><svg aria-hidden="true" class="sd-octicon sd-octicon-book" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M0 1.75A.75.75 0 01.75 1h4.253c1.227 0 2.317.59 3 1.501A3.744 3.744 0 0111.006 1h4.245a.75.75 0 01.75.75v10.5a.75.75 0 01-.75.75h-4.507a2.25 2.25 0 00-1.591.659l-.622.621a.75.75 0 01-1.06 0l-.622-.621A2.25 2.25 0 005.258 13H.75a.75.75 0 01-.75-.75V1.75zm8.755 3a2.25 2.25 0 012.25-2.25H14.5v9h-3.757c-.71 0-1.4.201-1.992.572l.004-7.322zm-1.504 7.324l.004-5.073-.002-2.253A2.25 2.25 0 005.003 2.5H1.5v9h3.757a3.75 3.75 0 011.994.574z" fill-rule="evenodd"></path></svg> How-To</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../realtime-streaming/">Build real-time streaming service</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../flow-switch/">Conditional route request inside a Flow</a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Scale out with replicas and shards</a></li>
@@ -292,7 +297,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../external-executor/">Include external Executors in a Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../docker-compose/">Deploy with Docker Compose</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../kubernetes/">Deploy with Kubernetes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../monitoring/">Monitor via Prometheus and Grafana</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../opentelemetry/">Observability and Instrumentation with OpenTelemetry and Jina</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../opentelemetry-migration/">Migrate from Prometheus/Grafana to OpenTelemetry/Prometheus/Grafana</a></li>
 </ul>
 </li>
 </ul>
@@ -388,30 +394,21 @@
                     <section id="scale-out-with-replicas-and-shards">
 <span id="scale-out"></span><h1>Scale out with replicas and shards<a class="headerlink" href="#scale-out-with-replicas-and-shards" title="Permalink to this heading">#</a></h1>
 <p>A Jina <a class="reference internal" href="../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> orchestrates multiple <a class="reference internal" href="../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>s.
-By default, a Jina Executor runs with a single <code class="docutils literal notranslate"><span class="pre">replica</span></code> and <code class="docutils literal notranslate"><span class="pre">shard</span></code>.
-Some Executor in the Flow might be less performant than others,
-this could turn into a performance bottleneck in your Jina application.</p>
-<p>To solve this, Jina Flow allows you to config the number of <code class="docutils literal notranslate"><span class="pre">replicas</span></code> and <code class="docutils literal notranslate"><span class="pre">shards</span></code>.
-<code class="docutils literal notranslate"><span class="pre">replica</span></code> is used to increase Executor throughput and availability.
-<code class="docutils literal notranslate"><span class="pre">shard</span></code> is used for data partitioning.</p>
-<p>In this chapter, we’ll dive into these two concepts and see how you can make use of <code class="docutils literal notranslate"><span class="pre">replicas</span></code> and <code class="docutils literal notranslate"><span class="pre">shards</span></code> to scale out your Executor.</p>
-<section id="before-you-start">
-<h2>Before you start<a class="headerlink" href="#before-you-start" title="Permalink to this heading">#</a></h2>
-<!-- Delete this section if your readers can go to the steps without requiring any prerequisite knowledge. -->
-<p>Before you begin, make sure you meet these prerequisites:</p>
+By default, an Executor runs with a single <code class="docutils literal notranslate"><span class="pre">replica</span></code> and <code class="docutils literal notranslate"><span class="pre">shard</span></code>.
+Some Executors in the Flow may be less performant than others,
+which could cause performance bottlenecks in an application.</p>
+<p>To solve this, you can configure the number of <code class="docutils literal notranslate"><span class="pre">replicas</span></code> and <code class="docutils literal notranslate"><span class="pre">shards</span></code>.</p>
 <ul class="simple">
-<li><p>You have a good understanding of Jina <a class="reference internal" href="../../fundamentals/flow/"><span class="doc std std-doc">Flow</span></a>.</p></li>
-<li><p>You have a good understanding of Jina <a class="reference internal" href="../../fundamentals/executor/"><span class="doc std std-doc">Executor</span></a></p></li>
-<li><p>Please install the following dependencies if you haven’t:</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">replica</span></code>s increase Executor throughput and availability.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">shard</span></code>s partition data in different storage locations.</p></li>
 </ul>
-</section>
+<p>Before you start, ensure you understand <a class="reference internal" href="../../fundamentals/flow/"><span class="doc std std-doc">Flows</span></a> and <a class="reference internal" href="../../fundamentals/executor/"><span class="doc std std-doc">Executors</span></a></p>
 <section id="speed-up-a-slow-executor-replicas">
 <h2>Speed up a slow Executor: Replicas<a class="headerlink" href="#speed-up-a-slow-executor-replicas" title="Permalink to this heading">#</a></h2>
 <section id="context">
 <h3>Context<a class="headerlink" href="#context" title="Permalink to this heading">#</a></h3>
-<p>Imagine you are building a text-based search system and you have an <a class="reference internal" href="../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a> to transform text to its <a class="reference external" href="https://en.wikipedia.org/wiki/Tf-idf">tf-idf</a> vector representation.
-This could become a performance bottleneck to your search system.
-The Executor looks like this:</p>
+<p>Imagine you’re building a text-based search system and you have an <a class="reference internal" href="../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a> to transform text to a <a class="reference external" href="https://en.wikipedia.org/wiki/Tf-idf">tf-idf</a> vector representation. This could become a performance bottleneck in the search system.</p>
+<p>The Executor looks like this:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">Document</span>
 
 <span class="kn">from</span> <span class="nn">sklearn.feature_extraction.text</span> <span class="kn">import</span> <span class="n">TfidfVectorizer</span>
@@ -442,7 +439,7 @@ The Executor looks like this:</p>
         <span class="n">docs</span><span class="o">.</span><span class="n">embeddings</span> <span class="o">=</span> <span class="n">X</span>
 </pre></div>
 </div>
-<p>And we create a Flow and make use this Executor:</p>
+<p>Let’s create a Flow and use this Executor:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
 
 <span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;fast_executor&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;slow_executor&#39;</span><span class="p">,</span> <span class="n">uses</span><span class="o">=</span><span class="n">MyVectorizer</span><span class="p">)</span>
@@ -451,14 +448,14 @@ The Executor looks like this:</p>
 </section>
 <section id="scale-up-an-executor">
 <h3>Scale up an Executor<a class="headerlink" href="#scale-up-an-executor" title="Permalink to this heading">#</a></h3>
-<p>When you start your <a class="reference internal" href="../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a>, you might discover to process all the text corpus, this process takes a while:</p>
+<p>When you start the <a class="reference internal" href="../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a>, you may find it takes a while to process the whole text corpus:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">f</span><span class="p">:</span>
     <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/foo&#39;</span><span class="p">,</span> <span class="n">news_generator</span><span class="p">,</span> <span class="n">show_progress</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>As Jina reported, it takes around 6 seconds to accomplish the task.
-6 seconds sounds reasonable (at index time), but bear in mind that this is just a test corpus.
-What if you need to index millions of documents?</p>
+<p>As Jina reports, it takes around six seconds to complete the task.
+This sounds reasonable (at index time), but bear in mind that this is just a test corpus.
+What if you need to index millions of Documents?</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>           Flow@2011375<span class="o">[</span>I<span class="o">]</span>:🎉 Flow is ready to use!                                        
 	🔗 Protocol: 		GRPC
 	🏠 Local access:	<span class="m">0</span>.0.0.0:52775
@@ -467,12 +464,12 @@ What if you need to index millions of documents?</p>
 ⠇       DONE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╸━━━━━ <span class="m">0</span>:00:06 <span class="m">18</span>.1 step/s . <span class="m">115</span> steps <span class="k">done</span> <span class="k">in</span> <span class="m">6</span> seconds
 </pre></div>
 </div>
-<p>Jina allows you to scale your <a class="reference internal" href="../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a> very easily, with only one parameter change:</p>
+<p>To do this, you can scale a <a class="reference internal" href="../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a> with just one parameter change:</p>
 <div class="highlight-diff notranslate"><div class="highlight"><pre><span></span><span class="gi">+ f = Flow().add(name=&#39;fast_executor&#39;).add(name=&#39;slow_executor&#39;, uses=MyVectorizer, replicas=2)</span><span class="w"></span>
 <span class="gd">- f = Flow().add(name=&#39;fast_executor&#39;).add(name=&#39;slow_executor&#39;, uses=MyVectorizer)</span><span class="w"></span>
 </pre></div>
 </div>
-<p>Let’s see how it performs given 2 <code class="docutils literal notranslate"><span class="pre">Replicas</span></code>:</p>
+<p>Let’s see how it performs given two <code class="docutils literal notranslate"><span class="pre">replicas</span></code>:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>           Flow@2011375<span class="o">[</span>I<span class="o">]</span>:🎉 Flow is ready to use!                                        
 	🔗 Protocol: 		GRPC
 	🏠 Local access:	<span class="m">0</span>.0.0.0:57040
@@ -481,19 +478,16 @@ What if you need to index millions of documents?</p>
 ⠇       DONE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╸━━━━━ <span class="m">0</span>:00:03 <span class="m">37</span>.0 step/s . <span class="m">115</span> steps <span class="k">done</span> <span class="k">in</span> <span class="m">3</span> seconds
 </pre></div>
 </div>
-<p>As you can see, now it only takes 3 seconds to finish the task.
-Quite intuitive, right?
-If you are deploying Jina with K8s, you can consider this <code class="docutils literal notranslate"><span class="pre">Executor</span></code> as a K8s <code class="docutils literal notranslate"><span class="pre">Deployment</span></code> and each <code class="docutils literal notranslate"><span class="pre">replica</span></code> as a K8s <code class="docutils literal notranslate"><span class="pre">Pod</span></code>.</p>
+<p>As you can see, it now only takes three seconds to finish the task. If you deploy Jina with Kubernetes, you can consider this <code class="docutils literal notranslate"><span class="pre">Executor</span></code> as a Kubernetes <code class="docutils literal notranslate"><span class="pre">Deployment</span></code> and each <code class="docutils literal notranslate"><span class="pre">replica</span></code> as a <code class="docutils literal notranslate"><span class="pre">Pod</span></code>.</p>
 </section>
 </section>
 <section id="split-data-into-partitions-shards">
 <h2>Split data into partitions: Shards<a class="headerlink" href="#split-data-into-partitions-shards" title="Permalink to this heading">#</a></h2>
 <section id="id1">
 <h3>Context<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h3>
-<p>Now with your text corpus encoded as TF-IDF embeddings,
-it’s time to save the results.
-We’ll use Jina’s <a class="reference external" href="https://hub.jina.ai/executor/7yypg8qk">ANNLiteIndexer</a> to persist our embeddings for fast Approximate Nearest Neighbor Search.</p>
-<p>And you add this <code class="docutils literal notranslate"><span class="pre">ANNLiteIndexer</span></code> to your Flow:</p>
+<p>Now with the text corpus encoded as TF-IDF embeddings, it’s time to save the results.
+We’ll use Jina’s <a class="reference external" href="https://hub.jina.ai/executor/7yypg8qk">ANNLiteIndexer</a> to persist the embeddings for fast Approximate Nearest Neighbor Search.</p>
+<p>Let’s add <code class="docutils literal notranslate"><span class="pre">ANNLiteIndexer</span></code> to the Flow:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
 
 <span class="n">f</span> <span class="o">=</span> <span class="p">(</span>
@@ -516,15 +510,14 @@ We’ll use Jina’s <a class="reference external" href="https://hub.jina.ai/exe
 </section>
 <section id="partitioning-the-data">
 <h3>Partitioning the data<a class="headerlink" href="#partitioning-the-data" title="Permalink to this heading">#</a></h3>
-<p>Now let’s run the <a class="reference internal" href="../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a>to index your data:</p>
+<p>Let’s run the <a class="reference internal" href="../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a>to index the data:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">f</span><span class="p">:</span>
     <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/index&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">news_generator</span><span class="p">,</span> <span class="n">show_progress</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>The <code class="docutils literal notranslate"><span class="pre">ANNLiteIndexer</span></code> will save your indexed Documents to your specified <code class="docutils literal notranslate"><span class="pre">workspace</span></code> (directory).
-Since the default number of shards is one.
-All the data will be saved to <code class="docutils literal notranslate"><span class="pre">YOUR-WORKSPACE-DIR/ANNLiteIndexer/0/</span></code> where <code class="docutils literal notranslate"><span class="pre">0</span></code> is the shard id.</p>
-<p>If you want to distribute your data to different places, Jina allows you to use <code class="docutils literal notranslate"><span class="pre">shards</span></code> to specify the number of shards.</p>
+<p><code class="docutils literal notranslate"><span class="pre">ANNLiteIndexer</span></code> saves the indexed Documents to the specified <code class="docutils literal notranslate"><span class="pre">workspace</span></code> (directory).
+Since the default number of shards is one, all data is saved to <code class="docutils literal notranslate"><span class="pre">YOUR-WORKSPACE-DIR/ANNLiteIndexer/0/</span></code> where <code class="docutils literal notranslate"><span class="pre">0</span></code> is the shard id.</p>
+<p>To distribute data to different places, use <code class="docutils literal notranslate"><span class="pre">shards</span></code> to specify the number of shards.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">f</span> <span class="o">=</span> <span class="p">(</span>
     <span class="n">Flow</span><span class="p">()</span>
     <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;fast_executor&#39;</span><span class="p">)</span>
@@ -540,24 +533,23 @@ All the data will be saved to <code class="docutils literal notranslate"><span c
 <span class="p">)</span>
 </pre></div>
 </div>
-<p>Now open your workspace directory, you’ll find we created 2 shards to store your indexed Documents:
+<p>Now open the workspace directory. You’ll see we created two shards to store the indexed Documents:
 <code class="docutils literal notranslate"><span class="pre">YOUR-WORKSPACE-DIR/ANNLiteIndexer/0/</span></code> and <code class="docutils literal notranslate"><span class="pre">YOUR-WORKSPACE-DIR/ANNLiteIndexer/1/</span></code>.</p>
 </section>
-<section id="different-polling-strategies">
-<h3>Different polling strategies<a class="headerlink" href="#different-polling-strategies" title="Permalink to this heading">#</a></h3>
-<p>When you have multiple shards, the default <code class="docutils literal notranslate"><span class="pre">polling</span></code> strategy is <code class="docutils literal notranslate"><span class="pre">any</span></code>.
-Jina supports two <code class="docutils literal notranslate"><span class="pre">polling</span></code> strategies:</p>
+<section id="polling-strategies">
+<h3>Polling strategies<a class="headerlink" href="#polling-strategies" title="Permalink to this heading">#</a></h3>
+<p>Jina supports two <code class="docutils literal notranslate"><span class="pre">polling</span></code> strategies:</p>
 <ol class="arabic simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">any</span></code>: requests will be randomly assigned to one shard.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">all</span></code>: requests will be handled by all shards.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">any</span></code>: requests are randomly assigned to one shard. (Default for multiple shards)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">all</span></code>: requests are handled by all shards.</p></li>
 </ol>
-<p>In practice, when you are indexing your Documents,
-it’s better to set <code class="docutils literal notranslate"><span class="pre">polling='any'</span></code> to only store the Documents into one shard to avoid duplicates.
-On the other hand, at search time, the search requests should be across all shards.
-Thus we should set <code class="docutils literal notranslate"><span class="pre">polling='all''</span></code>.</p>
-<p>As a result, we need to config our <code class="docutils literal notranslate"><span class="pre">Flow</span></code> definition with a different <code class="docutils literal notranslate"><span class="pre">polling</span></code> strategy:
-The new <code class="docutils literal notranslate"><span class="pre">Flow</span></code>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Config your polling strategy based on endpoints</span>
+<p>In practice, when you are indexing Documents,
+it’s better to set <code class="docutils literal notranslate"><span class="pre">polling='any'</span></code> to store them in only one shard to avoid duplicates.
+On the other hand, at search time, search requests should be made across all shards,
+so we should set <code class="docutils literal notranslate"><span class="pre">polling='all'</span></code>.</p>
+<p>As a result, we need to configure the <code class="docutils literal notranslate"><span class="pre">Flow</span></code> with a different <code class="docutils literal notranslate"><span class="pre">polling</span></code> strategy:</p>
+<p>The new <code class="docutils literal notranslate"><span class="pre">Flow</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Config polling strategy based on endpoints</span>
 <span class="c1"># At index time, use ALL, at search time use ANY, the rest use ALL.</span>
 <span class="n">polling_config</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;/index&#39;</span><span class="p">:</span> <span class="s1">&#39;ANY&#39;</span><span class="p">,</span> <span class="s1">&#39;/search&#39;</span><span class="p">:</span> <span class="s1">&#39;ALL&#39;</span><span class="p">,</span> <span class="s1">&#39;*&#39;</span><span class="p">:</span> <span class="s1">&#39;ALL&#39;</span><span class="p">}</span>
 
@@ -577,17 +569,16 @@ The new <code class="docutils literal notranslate"><span class="pre">Flow</span>
 <span class="p">)</span>
 </pre></div>
 </div>
-<p>It should be noted that Jina will automatically <em>reduce</em> your results given multiple shards.
+<p>Note that Jina automatically <em>reduces</em> the results given multiple shards.
 For instance, when you are searching across multiple shards,
-Jina will collect <code class="docutils literal notranslate"><span class="pre">matches</span></code> from all <code class="docutils literal notranslate"><span class="pre">shards</span></code> and return the reduced results.</p>
+Jina collects <code class="docutils literal notranslate"><span class="pre">matches</span></code> from all <code class="docutils literal notranslate"><span class="pre">shards</span></code> and returns the reduced results.</p>
 </section>
 </section>
 <section id="conclusion">
 <h2>Conclusion<a class="headerlink" href="#conclusion" title="Permalink to this heading">#</a></h2>
-<p>Jina can help you scale out your applications easily and effectively.
-Depending on your needs, if you want to increase the <code class="docutils literal notranslate"><span class="pre">Executor</span></code> throughput, use the <code class="docutils literal notranslate"><span class="pre">replicas</span></code> argument.
-If you want to partition your data across multiple places,
-use the <code class="docutils literal notranslate"><span class="pre">shards</span></code> with the <code class="docutils literal notranslate"><span class="pre">polling</span></code> strategy you want.</p>
+<p>Jina can help you scale out applications easily and effectively.
+Depending on your needs, you can increase <code class="docutils literal notranslate"><span class="pre">Executor</span></code> throughput using the <code class="docutils literal notranslate"><span class="pre">replicas</span></code> argument.
+If you want to partition data across multiple places, use the <code class="docutils literal notranslate"><span class="pre">shards</span></code> with the <code class="docutils literal notranslate"><span class="pre">polling</span></code> strategy you want.</p>
 </section>
 </section>
 
@@ -622,7 +613,7 @@ use the <code class="docutils literal notranslate"><span class="pre">shards</spa
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Oct 10, 2022</div>
+                            Last updated on Oct 24, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -655,7 +646,6 @@ use the <code class="docutils literal notranslate"><span class="pre">shards</spa
                     <div class="toc-tree">
                         <ul>
 <li><a class="reference internal" href="#">Scale out with replicas and shards</a><ul>
-<li><a class="reference internal" href="#before-you-start">Before you start</a></li>
 <li><a class="reference internal" href="#speed-up-a-slow-executor-replicas">Speed up a slow Executor: Replicas</a><ul>
 <li><a class="reference internal" href="#context">Context</a></li>
 <li><a class="reference internal" href="#scale-up-an-executor">Scale up an Executor</a></li>
@@ -664,7 +654,7 @@ use the <code class="docutils literal notranslate"><span class="pre">shards</spa
 <li><a class="reference internal" href="#split-data-into-partitions-shards">Split data into partitions: Shards</a><ul>
 <li><a class="reference internal" href="#id1">Context</a></li>
 <li><a class="reference internal" href="#partitioning-the-data">Partitioning the data</a></li>
-<li><a class="reference internal" href="#different-polling-strategies">Different polling strategies</a></li>
+<li><a class="reference internal" href="#polling-strategies">Polling strategies</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#conclusion">Conclusion</a></li>

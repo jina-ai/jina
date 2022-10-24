@@ -26,7 +26,7 @@ MyExecutor/
 ```
 
 - `executor.py` contains your Executor's main logic.
-- `config.yml` is the Executor's {ref}`configuration <executor-yaml-spec>` file, where you can define `__init__` arguments using the `with` keyword. You can also define meta annotations relevant to the Executor, for getting better exposure on Jina Hub.
+- `config.yml` is the Executor's {ref}`configuration <executor-yaml-spec>` file, where you can define `__init__` arguments using the `with` keyword. You can also define meta annotations relevant to the Executor, for getting better exposure on Executor Hub.
 - `requirements.txt` describes the Executor's Python dependencies.
 - `README.md` describes how to use your Executor.
 - `Dockerfile` is only generated if you choose advanced configuration.
@@ -49,11 +49,11 @@ In the `jina hub new` wizard you can choose from four Dockerfile templates: `cpu
 ```
 
 
-* You don't need need to bump the Jina version
+* You don't need to bump the Jina version
 
-  Hub Executors are version-agnostic. When you pull an Executor from Jina Hub, it will select the right Jina version for you. You don't need to upgrade your version of Jina.
+  Hub Executors are version-agnostic. When you pull an Executor from Executor Hub, it will select the right Jina version for you. You don't need to upgrade your version of Jina.
 
 
 * Fill in metadata of your Executor correctly
 
-  Information you include under the `metas` key in `config.yml` is displayed on Jina Hub. `The specification can be found here<config.yml>`.
+  Information you include under the `metas` key in `config.yml` is displayed on Executor Hub. `The specification can be found here<config.yml>`.

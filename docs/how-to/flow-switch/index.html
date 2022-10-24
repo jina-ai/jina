@@ -10,13 +10,13 @@
   
 <meta property="og:url" content="https://docs.jina.ai/how-to/flow-switch/" />
   
-<meta property="og:site_name" content="Jina 3.10.2 Documentation" />
+<meta property="og:site_name" content="Jina 3.11.0 Documentation" />
   
-<meta property="og:description" content="In this tutorial you will gain a deeper insight into the Flow ‘s filter condition feature. In a nutshell, this feature allows every Executor in a Flow do define a filter that can only be passed by Documents that fulfill a specified condition. Here you will learn where and how to use this feature,..." />
+<meta property="og:description" content="This tutorial gives a deeper insight into the Flow ’s filter condition feature. In a nutshell, this lets any Executor filter Documents that fulfill a specified condition, letting you build selection control into your Flow. Why use selection control?: Jina Flows can define complex topologies that ..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
-<meta property="og:image:alt" content="Jina 3.10.2 Documentation" />
+<meta property="og:image:alt" content="Jina 3.11.0 Documentation" />
   
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -38,8 +38,8 @@
     <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="Scale out with replicas and shards" href="../scale-out/" /><link rel="prev" title="Build real-time streaming service" href="../realtime-streaming/" />
         <link rel="canonical" href="https://docs.jina.ai/how-to/flow-switch.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.2.3, furo 2022.09.29"/>
-        <title>Conditional route request inside a Flow - Jina 3.10.2 documentation</title>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
+        <title>Conditional route request inside a Flow - Jina 3.11.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -173,7 +173,7 @@
         </div>
         <div class="header-center">
             <a href="../../">
-                <div class="brand">Jina 3.10.2 documentation</div>
+                <div class="brand">Jina 3.11.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -245,7 +245,7 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/executor/">Executor</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-api/">Basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-methods/"><code class="docutils literal notranslate"><span class="pre">@requests</span></code> methods</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/monitoring-executor/">Monitor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/instrumenting-executor/">Instrumentation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-run/">Run</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-serve/">Serve</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-files/">File structure</a></li>
@@ -257,7 +257,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/create-flow/">Basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/add-executors/">Add Executors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/topologies/">Topology</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/monitoring-flow/">Monitor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/instrumenting-flow/">Instrumentation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/health-check/">Readiness &amp; health check</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/when-things-go-wrong/">Handle exceptions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
@@ -269,20 +269,25 @@
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/client/client/">Client</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/client/third-party-client/">Third-party clients</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/client/instrumenting-client/">Instrumentation</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/executor/hub/">Hub</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/hub/hub-portal/">Portal</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/hub/create-hub-executor/">Create</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/hub/push-executor/">Publish</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/hub/use-hub-executor/">Use</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../jina-ai-cloud/"><svg aria-hidden="true" class="sd-octicon sd-octicon-flame" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M7.998 14.5c2.832 0 5-1.98 5-4.5 0-1.463-.68-2.19-1.879-3.383l-.036-.037c-1.013-1.008-2.3-2.29-2.834-4.434-.322.256-.63.579-.864.953-.432.696-.621 1.58-.046 2.73.473.947.67 2.284-.278 3.232-.61.61-1.545.84-2.403.633a2.788 2.788 0 01-1.436-.874A3.21 3.21 0 003 10c0 2.53 2.164 4.5 4.998 4.5zM9.533.753C9.496.34 9.16.009 8.77.146 7.035.75 4.34 3.187 5.997 6.5c.344.689.285 1.218.003 1.5-.419.419-1.54.487-2.04-.832-.173-.454-.659-.762-1.035-.454C2.036 7.44 1.5 8.702 1.5 10c0 3.512 2.998 6 6.498 6s6.5-2.5 6.5-6c0-2.137-1.128-3.26-2.312-4.438-1.19-1.184-2.436-2.425-2.653-4.81z" fill-rule="evenodd"></path></svg> Jina AI Cloud</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../jina-ai-cloud/login/">Login &amp; Token Management</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../fundamentals/executor/hub/">Executor Hub</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../fundamentals/executor/hub/hub-portal/">Portal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../fundamentals/executor/hub/create-hub-executor/">Create</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../fundamentals/executor/hub/push-executor/">Publish</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../fundamentals/executor/hub/use-hub-executor/">Use</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/jcloud/">JCloud</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/jcloud/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../fundamentals/jcloud/">JCloud Hosting</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../fundamentals/jcloud/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current has-children"><a class="reference internal" href="../"><svg aria-hidden="true" class="sd-octicon sd-octicon-book" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M0 1.75A.75.75 0 01.75 1h4.253c1.227 0 2.317.59 3 1.501A3.744 3.744 0 0111.006 1h4.245a.75.75 0 01.75.75v10.5a.75.75 0 01-.75.75h-4.507a2.25 2.25 0 00-1.591.659l-.622.621a.75.75 0 01-1.06 0l-.622-.621A2.25 2.25 0 005.258 13H.75a.75.75 0 01-.75-.75V1.75zm8.755 3a2.25 2.25 0 012.25-2.25H14.5v9h-3.757c-.71 0-1.4.201-1.992.572l.004-7.322zm-1.504 7.324l.004-5.073-.002-2.253A2.25 2.25 0 005.003 2.5H1.5v9h3.757a3.75 3.75 0 011.994.574z" fill-rule="evenodd"></path></svg> How-To</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+</ul>
+</li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../"><svg aria-hidden="true" class="sd-octicon sd-octicon-book" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M0 1.75A.75.75 0 01.75 1h4.253c1.227 0 2.317.59 3 1.501A3.744 3.744 0 0111.006 1h4.245a.75.75 0 01.75.75v10.5a.75.75 0 01-.75.75h-4.507a2.25 2.25 0 00-1.591.659l-.622.621a.75.75 0 01-1.06 0l-.622-.621A2.25 2.25 0 005.258 13H.75a.75.75 0 01-.75-.75V1.75zm8.755 3a2.25 2.25 0 012.25-2.25H14.5v9h-3.757c-.71 0-1.4.201-1.992.572l.004-7.322zm-1.504 7.324l.004-5.073-.002-2.253A2.25 2.25 0 005.003 2.5H1.5v9h3.757a3.75 3.75 0 011.994.574z" fill-rule="evenodd"></path></svg> How-To</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../realtime-streaming/">Build real-time streaming service</a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Conditional route request inside a Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../scale-out/">Scale out with replicas and shards</a></li>
@@ -292,7 +297,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../external-executor/">Include external Executors in a Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../docker-compose/">Deploy with Docker Compose</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../kubernetes/">Deploy with Kubernetes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../monitoring/">Monitor via Prometheus and Grafana</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../opentelemetry/">Observability and Instrumentation with OpenTelemetry and Jina</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../opentelemetry-migration/">Migrate from Prometheus/Grafana to OpenTelemetry/Prometheus/Grafana</a></li>
 </ul>
 </li>
 </ul>
@@ -387,19 +393,17 @@
                 <article role="main">
                     <section id="conditional-route-request-inside-a-flow">
 <span id="flow-switch"></span><h1>Conditional route request inside a Flow<a class="headerlink" href="#conditional-route-request-inside-a-flow" title="Permalink to this heading">#</a></h1>
-<p>In this tutorial you will gain a deeper insight into the <a class="reference internal" href="../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> ‘s <a class="reference internal" href="../../fundamentals/flow/topologies/#flow-filter"><span class="std std-ref">filter condition feature</span></a>.</p>
-<p>In a nutshell, this feature allows every <a class="reference internal" href="../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a> in a Flow do define a filter that can only be passed by Documents that
-fulfill a specified <code class="docutils literal notranslate"><span class="pre">condition</span></code>.</p>
+<p>This tutorial gives a deeper insight into the <a class="reference internal" href="../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a>’s <a class="reference internal" href="../../fundamentals/flow/topologies/#flow-filter"><span class="std std-ref">filter condition feature</span></a>.</p>
+<p>In a nutshell, this lets any <a class="reference internal" href="../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a> filter Documents that fulfill a specified <code class="docutils literal notranslate"><span class="pre">condition</span></code>, letting you build <em>selection control</em> into your Flow.</p>
 <div class="seealso admonition">
 <p class="admonition-title">See Also</p>
-<p>If you are not yet familiar with the basics of the <a class="reference external" href="https://docarray.jina.ai/fundamentals/documentarray/find/#query-by-conditions">DocArray query language</a> and how it is used to create
-<a class="reference internal" href="../../fundamentals/flow/topologies/#flow-filter"><span class="std std-ref">filters</span></a>, we recommend that you read the linked documentation pages first.</p>
+<p>If you’re not familiar with the basics of the <a class="reference external" href="https://docarray.jina.ai/fundamentals/documentarray/find/#query-by-conditions">DocArray query language</a> and how it is used to create
+<a class="reference internal" href="../../fundamentals/flow/topologies/#flow-filter"><span class="std std-ref">filters</span></a>, read the linked documentation pages first.</p>
 </div>
-<p>Here you will learn where and how to use this feature, and how you can build <em>selection control</em> into your Flow.</p>
-<section id="why-do-you-need-a-selection-control">
-<h2>Why do you need a selection control?<a class="headerlink" href="#why-do-you-need-a-selection-control" title="Permalink to this heading">#</a></h2>
-<p><a class="reference internal" href="../../fundamentals/flow/topologies/#flow-complex-topologies"><span class="std std-ref">As you know</span></a>, Jina Flows can define complex topologies that include multiple Executors,
-both in sequence and on parallel branches.</p>
+<section id="why-use-selection-control">
+<h2>Why use selection control?<a class="headerlink" href="#why-use-selection-control" title="Permalink to this heading">#</a></h2>
+<p>Jina Flows can define complex <a class="reference internal" href="../../fundamentals/flow/topologies/#flow-complex-topologies"><span class="std std-ref">topologies</span></a> that include multiple Executors,
+both in sequence and/or on parallel branches.</p>
 <p>A simple Flow with parallel branches could be defined like so:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
 
@@ -419,11 +423,11 @@ both in sequence and on parallel branches.</p>
 <p><span class="caption-text">Flow with two parallel branches.</span><a class="headerlink" href="#id1" title="Permalink to this image">#</a></p>
 </figcaption>
 </figure>
-<p>A topology like this means that the Documents do not get processed by <code class="docutils literal notranslate"><span class="pre">exec1</span></code> before they go to <code class="docutils literal notranslate"><span class="pre">exec2</span></code>, and vice vers.
+<p>This kind of topology means that Documents don’t get processed by <code class="docutils literal notranslate"><span class="pre">exec1</span></code> before they go to <code class="docutils literal notranslate"><span class="pre">exec2</span></code>, and vice versa.
 However, all Documents still go through all branches and all Executors.</p>
-<p>In some scenarios, you might not want all Documents to be processed by all Executors, for example when you index Documents
+<p>Sometimes you may not want all Documents to be processed by all Executors, for example when you index Documents
 representing different kinds of data, like text and images.</p>
-<p>One way to achieve this differentiation is to use different Executor endpoints:</p>
+<p>One way to achieve this is to use different Executor endpoints:</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">Main app</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Document</span>
@@ -487,23 +491,22 @@ representing different kinds of data, like text and images.</p>
  <span class="o">[</span><span class="m">0</span>.18466062 <span class="m">0</span>.17823904 <span class="m">0</span>.20046065<span class="o">]]</span>
 </pre></div>
 </div>
-<p>As you can see, the image data was only processed by the <code class="docutils literal notranslate"><span class="pre">ImageIndexer</span></code>, and the text data was only processed by the <code class="docutils literal notranslate"><span class="pre">TextIndexer</span></code>.</p>
-<p>However, there is a problem with this approach:
-Sometimes you can’t easily control the endpoints of all Executors, for example when you are using the <a class="reference internal" href="../../fundamentals/executor/hub/#jina-hub"><span class="std std-ref">Jina Hub</span></a> or <a class="reference internal" href="../external-executor/#external-executor"><span class="std std-ref">external Executors</span></a>.</p>
-<p>To solve that problem, you can leverage filter condition to easily add selection control into your Flow.</p>
+<p>As you can see, image data was only processed by <code class="docutils literal notranslate"><span class="pre">ImageIndexer</span></code>, and text data was only processed by <code class="docutils literal notranslate"><span class="pre">TextIndexer</span></code>.</p>
+<p>However, there’s a problem with this approach:
+Sometimes you can’t easily control the endpoints of all Executors, for example when you are using <a class="reference internal" href="../../fundamentals/executor/hub/#jina-hub"><span class="std std-ref">Executor Hub</span></a> or <a class="reference internal" href="../external-executor/#external-executor"><span class="std std-ref">external Executors</span></a>.</p>
+<p>To solve this, filter conditions easily add selection control to your Flow.</p>
 </section>
 <section id="define-the-filter-conditions">
 <h2>Define the filter conditions<a class="headerlink" href="#define-the-filter-conditions" title="Permalink to this heading">#</a></h2>
-<p>In a Jina Flow, you can use the <a class="reference external" href="https://docarray.jina.ai/fundamentals/documentarray/find/#query-by-conditions">DocArray query language</a> to specify a filter condition for every
-Executor.</p>
-<p>To do this, you pass a condition to the <code class="docutils literal notranslate"><span class="pre">when</span></code> parameter in <code class="docutils literal notranslate"><span class="pre">flow.add()</span></code>:</p>
+<p>You can use the <a class="reference external" href="https://docarray.jina.ai/fundamentals/documentarray/find/#query-by-conditions">DocArray query language</a> to specify a filter condition for each Executor.</p>
+<p>To do this, pass a condition to the <code class="docutils literal notranslate"><span class="pre">when</span></code> parameter in <code class="docutils literal notranslate"><span class="pre">flow.add()</span></code>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
 
 <span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">when</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;tags__key&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;$eq&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">}})</span>
 </pre></div>
 </div>
-<p>Then, Documents that do not satisfy the <code class="docutils literal notranslate"><span class="pre">when</span></code> condition will not reach the associated Executor.</p>
-<p>In the use case where you are trying to separate Documents according to the data modality they hold, you need to choose
+<p>Then only Documents that satisfy the <code class="docutils literal notranslate"><span class="pre">when</span></code> condition will reach the associated Executor. Any Documents that don’t satisfy that condition won’t reach the Executor.</p>
+<p>If you are trying to separate Documents according to the data modality they hold, you need to choose
 a condition accordingly.</p>
 <div class="seealso admonition">
 <p class="admonition-title">See Also</p>
@@ -518,7 +521,7 @@ a condition accordingly.</p>
 <p>These conditions specify that only Documents that hold data of a specific modality can pass the filter.</p>
 <section id="try-the-filters-outside-the-flow">
 <h3>Try the filters outside the Flow<a class="headerlink" href="#try-the-filters-outside-the-flow" title="Permalink to this heading">#</a></h3>
-<p>You can try the conditions directly on your data, outside the Flow:</p>
+<p>You can use conditions directly on your data, outside the Flow:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">filtered_text_data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">text_condition</span><span class="p">)</span>
 <span class="n">filtered_image_data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">tensor_condition</span><span class="p">)</span>
 
@@ -536,14 +539,14 @@ a condition accordingly.</p>
   <span class="o">[</span><span class="m">0</span>.12079661 <span class="m">0</span>.65313938<span class="o">]]]</span>
 </pre></div>
 </div>
-<p>As you can see, each filter selects the Documents that contain the desired data fields.
+<p>Each filter selects Documents that contain the desired data fields.
 That’s exactly what you want for your filter!</p>
 </section>
 </section>
 <section id="build-the-flow">
 <h2>Build the Flow<a class="headerlink" href="#build-the-flow" title="Permalink to this heading">#</a></h2>
-<p>Finally, you can assemble your Flow using these conditions and the Indexers from above.
-This time there is no need to choose different Executor endpoints for the Indexers, since the filters take care of the
+<p>Finally, assemble your Flow using these conditions and the indexers from above.
+This time you don’t need to choose different Executor endpoints, since the filters take care of
 selection control logic.</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--1-input--1" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--1">Flow</label><div class="tab-content docutils">
@@ -593,12 +596,12 @@ selection control logic.</p>
 </div>
 </div>
 </div>
-<p>Here you simply tell each Executor to filter its inputs according to the conditions that you specified above:
+<p>Here you tell each Executor to filter its inputs according to the conditions specified above:
 Text and image data should be treated separately.</p>
 </section>
 <section id="index-the-data">
 <h2>Index the data<a class="headerlink" href="#index-the-data" title="Permalink to this heading">#</a></h2>
-<p>If you now send your data to the Flow, you expect that only your image data will be sent to <code class="docutils literal notranslate"><span class="pre">ImageIndexer</span></code>, and only your
+<p>When you send your data to the Flow, you expect that only your image data will be sent to <code class="docutils literal notranslate"><span class="pre">ImageIndexer</span></code>, and only your
 text data will be sent to <code class="docutils literal notranslate"><span class="pre">TextIndexer</span></code>.</p>
 <p>Let’s take a look:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">f</span><span class="p">:</span>
@@ -623,8 +626,8 @@ And remember, with this solution the Documents don’t even get <em>sent</em> to
 </section>
 <section id="what-s-next">
 <h2>What’s next<a class="headerlink" href="#what-s-next" title="Permalink to this heading">#</a></h2>
-<p>Now that you know how to use filter conditions to add selection control, you can leverage this feature to build all kinds of business logic.</p>
-<p>You could differentiate between more than just two different data modalities, you could direct requests based on the Client they come from,
+<p>Now that you know how to use filter conditions to add selection control, you can use this feature to build all kinds of business logic.</p>
+<p>You could differentiate between more than just two different data modalities, direct requests based on the Client they come from,
 ignore Documents that don’t meet certain quality criteria, or route data to specialized Executors based on what the data
 itself looks like. Your imagination is the limit!</p>
 </section>
@@ -669,7 +672,7 @@ itself looks like. Your imagination is the limit!</p>
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Oct 10, 2022</div>
+                            Last updated on Oct 24, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -702,7 +705,7 @@ itself looks like. Your imagination is the limit!</p>
                     <div class="toc-tree">
                         <ul>
 <li><a class="reference internal" href="#">Conditional route request inside a Flow</a><ul>
-<li><a class="reference internal" href="#why-do-you-need-a-selection-control">Why do you need a selection control?</a></li>
+<li><a class="reference internal" href="#why-use-selection-control">Why use selection control?</a></li>
 <li><a class="reference internal" href="#define-the-filter-conditions">Define the filter conditions</a><ul>
 <li><a class="reference internal" href="#try-the-filters-outside-the-flow">Try the filters outside the Flow</a></li>
 </ul>

@@ -10,13 +10,13 @@
   
 <meta property="og:url" content="https://docs.jina.ai/api/jina.clients.base/" />
   
-<meta property="og:site_name" content="Jina 3.10.2 Documentation" />
+<meta property="og:site_name" content="Jina 3.11.0 Documentation" />
   
-<meta property="og:description" content="Submodules: jina.clients.base.grpc module- GRPCBaseClient- GRPCBaseClient.check_input(), GRPCBaseClient.client, GRPCBaseClient.inputs.., jina.clients.base.helper module- AioHttpClientlet- AioHttpClientlet.send_message(), AioHttpClientlet.send_dry_run(), AioHttpClientlet.recv_message(), AioHttpCli..." />
+<meta property="og:description" content="Submodules: jina.clients.base.grpc module- GRPCBaseClient- GRPCBaseClient.aio_tracing_client_interceptors(), GRPCBaseClient.aio_tracing_server_interceptors(), GRPCBaseClient.check_input(), GRPCBaseClient.client, GRPCBaseClient.inputs, GRPCBaseClient.tracing_client_interceptor().., jina.clients.ba..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
-<meta property="og:image:alt" content="Jina 3.10.2 Documentation" />
+<meta property="og:image:alt" content="Jina 3.11.0 Documentation" />
   
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -38,8 +38,8 @@
     <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" />
         <link rel="canonical" href="https://docs.jina.ai/api/jina.clients.base.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.2.3, furo 2022.09.29"/>
-        <title>jina.clients.base package - Jina 3.10.2 documentation</title>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
+        <title>jina.clients.base package - Jina 3.11.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -173,7 +173,7 @@
         </div>
         <div class="header-center">
             <a href="../../">
-                <div class="brand">Jina 3.10.2 documentation</div>
+                <div class="brand">Jina 3.11.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -245,7 +245,7 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/executor/">Executor</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-api/">Basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-methods/"><code class="docutils literal notranslate"><span class="pre">@requests</span></code> methods</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/monitoring-executor/">Monitor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/instrumenting-executor/">Instrumentation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-run/">Run</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-serve/">Serve</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-files/">File structure</a></li>
@@ -257,7 +257,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/create-flow/">Basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/add-executors/">Add Executors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/topologies/">Topology</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/monitoring-flow/">Monitor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/instrumenting-flow/">Instrumentation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/health-check/">Readiness &amp; health check</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/when-things-go-wrong/">Handle exceptions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
@@ -269,20 +269,25 @@
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/client/client/">Client</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/client/third-party-client/">Third-party clients</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/client/instrumenting-client/">Instrumentation</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/executor/hub/">Hub</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/hub/hub-portal/">Portal</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/hub/create-hub-executor/">Create</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/hub/push-executor/">Publish</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/hub/use-hub-executor/">Use</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../jina-ai-cloud/"><svg aria-hidden="true" class="sd-octicon sd-octicon-flame" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M7.998 14.5c2.832 0 5-1.98 5-4.5 0-1.463-.68-2.19-1.879-3.383l-.036-.037c-1.013-1.008-2.3-2.29-2.834-4.434-.322.256-.63.579-.864.953-.432.696-.621 1.58-.046 2.73.473.947.67 2.284-.278 3.232-.61.61-1.545.84-2.403.633a2.788 2.788 0 01-1.436-.874A3.21 3.21 0 003 10c0 2.53 2.164 4.5 4.998 4.5zM9.533.753C9.496.34 9.16.009 8.77.146 7.035.75 4.34 3.187 5.997 6.5c.344.689.285 1.218.003 1.5-.419.419-1.54.487-2.04-.832-.173-.454-.659-.762-1.035-.454C2.036 7.44 1.5 8.702 1.5 10c0 3.512 2.998 6 6.498 6s6.5-2.5 6.5-6c0-2.137-1.128-3.26-2.312-4.438-1.19-1.184-2.436-2.425-2.653-4.81z" fill-rule="evenodd"></path></svg> Jina AI Cloud</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../jina-ai-cloud/login/">Login &amp; Token Management</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../fundamentals/executor/hub/">Executor Hub</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../fundamentals/executor/hub/hub-portal/">Portal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../fundamentals/executor/hub/create-hub-executor/">Create</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../fundamentals/executor/hub/push-executor/">Publish</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../fundamentals/executor/hub/use-hub-executor/">Use</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/jcloud/">JCloud</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/jcloud/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../fundamentals/jcloud/">JCloud Hosting</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../fundamentals/jcloud/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../how-to/"><svg aria-hidden="true" class="sd-octicon sd-octicon-book" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M0 1.75A.75.75 0 01.75 1h4.253c1.227 0 2.317.59 3 1.501A3.744 3.744 0 0111.006 1h4.245a.75.75 0 01.75.75v10.5a.75.75 0 01-.75.75h-4.507a2.25 2.25 0 00-1.591.659l-.622.621a.75.75 0 01-1.06 0l-.622-.621A2.25 2.25 0 005.258 13H.75a.75.75 0 01-.75-.75V1.75zm8.755 3a2.25 2.25 0 012.25-2.25H14.5v9h-3.757c-.71 0-1.4.201-1.992.572l.004-7.322zm-1.504 7.324l.004-5.073-.002-2.253A2.25 2.25 0 005.003 2.5H1.5v9h3.757a3.75 3.75 0 011.994.574z" fill-rule="evenodd"></path></svg> How-To</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../how-to/"><svg aria-hidden="true" class="sd-octicon sd-octicon-book" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M0 1.75A.75.75 0 01.75 1h4.253c1.227 0 2.317.59 3 1.501A3.744 3.744 0 0111.006 1h4.245a.75.75 0 01.75.75v10.5a.75.75 0 01-.75.75h-4.507a2.25 2.25 0 00-1.591.659l-.622.621a.75.75 0 01-1.06 0l-.622-.621A2.25 2.25 0 005.258 13H.75a.75.75 0 01-.75-.75V1.75zm8.755 3a2.25 2.25 0 012.25-2.25H14.5v9h-3.757c-.71 0-1.4.201-1.992.572l.004-7.322zm-1.504 7.324l.004-5.073-.002-2.253A2.25 2.25 0 005.003 2.5H1.5v9h3.757a3.75 3.75 0 011.994.574z" fill-rule="evenodd"></path></svg> How-To</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../how-to/realtime-streaming/">Build real-time streaming service</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../how-to/flow-switch/">Conditional route request inside a Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../how-to/scale-out/">Scale out with replicas and shards</a></li>
@@ -292,7 +297,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../../how-to/external-executor/">Include external Executors in a Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../how-to/docker-compose/">Deploy with Docker Compose</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../how-to/kubernetes/">Deploy with Kubernetes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../how-to/monitoring/">Monitor via Prometheus and Grafana</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/opentelemetry/">Observability and Instrumentation with OpenTelemetry and Jina</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/opentelemetry-migration/">Migrate from Prometheus/Grafana to OpenTelemetry/Prometheus/Grafana</a></li>
 </ul>
 </li>
 </ul>
@@ -393,9 +399,12 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../jina.clients.base.grpc/">jina.clients.base.grpc module</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../jina.clients.base.grpc/#jina.clients.base.grpc.GRPCBaseClient"><code class="docutils literal notranslate"><span class="pre">GRPCBaseClient</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.grpc/#jina.clients.base.grpc.GRPCBaseClient.aio_tracing_client_interceptors"><code class="docutils literal notranslate"><span class="pre">GRPCBaseClient.aio_tracing_client_interceptors()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.grpc/#jina.clients.base.grpc.GRPCBaseClient.aio_tracing_server_interceptors"><code class="docutils literal notranslate"><span class="pre">GRPCBaseClient.aio_tracing_server_interceptors()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.grpc/#jina.clients.base.grpc.GRPCBaseClient.check_input"><code class="docutils literal notranslate"><span class="pre">GRPCBaseClient.check_input()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.grpc/#jina.clients.base.grpc.GRPCBaseClient.client"><code class="docutils literal notranslate"><span class="pre">GRPCBaseClient.client</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.grpc/#jina.clients.base.grpc.GRPCBaseClient.inputs"><code class="docutils literal notranslate"><span class="pre">GRPCBaseClient.inputs</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.grpc/#jina.clients.base.grpc.GRPCBaseClient.tracing_client_interceptor"><code class="docutils literal notranslate"><span class="pre">GRPCBaseClient.tracing_client_interceptor()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -427,8 +436,8 @@
 <li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.helper/#jina.clients.base.helper.WebsocketClientlet.recv_message"><code class="docutils literal notranslate"><span class="pre">WebsocketClientlet.recv_message()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.helper/#jina.clients.base.helper.WebsocketClientlet.recv_dry_run"><code class="docutils literal notranslate"><span class="pre">WebsocketClientlet.recv_dry_run()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.helper/#jina.clients.base.helper.WebsocketClientlet.close_message"><code class="docutils literal notranslate"><span class="pre">WebsocketClientlet.close_message</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.helper/#jina.clients.base.helper.WebsocketClientlet.close_code"><code class="docutils literal notranslate"><span class="pre">WebsocketClientlet.close_code</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.helper/#jina.clients.base.helper.WebsocketClientlet.close"><code class="docutils literal notranslate"><span class="pre">WebsocketClientlet.close()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.helper/#jina.clients.base.helper.WebsocketClientlet.close_code"><code class="docutils literal notranslate"><span class="pre">WebsocketClientlet.close_code</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.helper/#jina.clients.base.helper.WebsocketClientlet.start"><code class="docutils literal notranslate"><span class="pre">WebsocketClientlet.start()</span></code></a></li>
 </ul>
 </li>
@@ -436,18 +445,24 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../jina.clients.base.http/">jina.clients.base.http module</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../jina.clients.base.http/#jina.clients.base.http.HTTPBaseClient"><code class="docutils literal notranslate"><span class="pre">HTTPBaseClient</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.http/#jina.clients.base.http.HTTPBaseClient.aio_tracing_client_interceptors"><code class="docutils literal notranslate"><span class="pre">HTTPBaseClient.aio_tracing_client_interceptors()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.http/#jina.clients.base.http.HTTPBaseClient.aio_tracing_server_interceptors"><code class="docutils literal notranslate"><span class="pre">HTTPBaseClient.aio_tracing_server_interceptors()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.http/#jina.clients.base.http.HTTPBaseClient.check_input"><code class="docutils literal notranslate"><span class="pre">HTTPBaseClient.check_input()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.http/#jina.clients.base.http.HTTPBaseClient.client"><code class="docutils literal notranslate"><span class="pre">HTTPBaseClient.client</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.http/#jina.clients.base.http.HTTPBaseClient.inputs"><code class="docutils literal notranslate"><span class="pre">HTTPBaseClient.inputs</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.http/#jina.clients.base.http.HTTPBaseClient.tracing_client_interceptor"><code class="docutils literal notranslate"><span class="pre">HTTPBaseClient.tracing_client_interceptor()</span></code></a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../jina.clients.base.websocket/">jina.clients.base.websocket module</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../jina.clients.base.websocket/#jina.clients.base.websocket.WebSocketBaseClient"><code class="docutils literal notranslate"><span class="pre">WebSocketBaseClient</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.websocket/#jina.clients.base.websocket.WebSocketBaseClient.aio_tracing_client_interceptors"><code class="docutils literal notranslate"><span class="pre">WebSocketBaseClient.aio_tracing_client_interceptors()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.websocket/#jina.clients.base.websocket.WebSocketBaseClient.aio_tracing_server_interceptors"><code class="docutils literal notranslate"><span class="pre">WebSocketBaseClient.aio_tracing_server_interceptors()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.websocket/#jina.clients.base.websocket.WebSocketBaseClient.check_input"><code class="docutils literal notranslate"><span class="pre">WebSocketBaseClient.check_input()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.websocket/#jina.clients.base.websocket.WebSocketBaseClient.client"><code class="docutils literal notranslate"><span class="pre">WebSocketBaseClient.client</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.websocket/#jina.clients.base.websocket.WebSocketBaseClient.inputs"><code class="docutils literal notranslate"><span class="pre">WebSocketBaseClient.inputs</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.websocket/#jina.clients.base.websocket.WebSocketBaseClient.tracing_client_interceptor"><code class="docutils literal notranslate"><span class="pre">WebSocketBaseClient.tracing_client_interceptor()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -461,7 +476,7 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="jina.clients.base.BaseClient">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.clients.base.</span></span><span class="sig-name descname"><span class="pre">BaseClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/base/#BaseClient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.base.BaseClient" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
+<dd><p>Bases: <a class="reference internal" href="../jina.serve.instrumentation/#jina.serve.instrumentation.InstrumentationMixin" title="jina.serve.instrumentation.InstrumentationMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">InstrumentationMixin</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
 <p>A base client for connecting to the Flow Gateway.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -503,6 +518,35 @@
 </dl>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.clients.base.BaseClient.aio_tracing_client_interceptors">
+<span class="sig-name descname"><span class="pre">aio_tracing_client_interceptors</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jina.clients.base.BaseClient.aio_tracing_client_interceptors" title="Permalink to this definition">#</a></dt>
+<dd><p>Create a gRPC client aio channel interceptor.
+:rtype: <code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ClientInterceptor</span></code>]]
+:returns: An invocation-side list of aio interceptor objects.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.clients.base.BaseClient.aio_tracing_server_interceptors">
+<span class="sig-name descname"><span class="pre">aio_tracing_server_interceptors</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jina.clients.base.BaseClient.aio_tracing_server_interceptors" title="Permalink to this definition">#</a></dt>
+<dd><p>Create a gRPC aio server interceptor.
+:rtype: <code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ServerInterceptor</span></code>]]
+:returns: A service-side aio interceptor object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.clients.base.BaseClient.tracing_client_interceptor">
+<span class="sig-name descname"><span class="pre">tracing_client_interceptor</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jina.clients.base.BaseClient.tracing_client_interceptor" title="Permalink to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">OpenTelemetryClientInterceptor</span></code>]</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>a gRPC client interceptor with the global tracing provider.</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="jina.clients.base.BaseClient.client">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">client</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">T</span></em><a class="headerlink" href="#jina.clients.base.BaseClient.client" title="Permalink to this definition">#</a></dt>
@@ -535,7 +579,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Oct 10, 2022</div>
+                            Last updated on Oct 24, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -573,6 +617,9 @@
 <li><a class="reference internal" href="#jina.clients.base.BaseClient"><code class="docutils literal notranslate"><span class="pre">BaseClient</span></code></a><ul>
 <li><a class="reference internal" href="#jina.clients.base.BaseClient.check_input"><code class="docutils literal notranslate"><span class="pre">BaseClient.check_input()</span></code></a></li>
 <li><a class="reference internal" href="#jina.clients.base.BaseClient.inputs"><code class="docutils literal notranslate"><span class="pre">BaseClient.inputs</span></code></a></li>
+<li><a class="reference internal" href="#jina.clients.base.BaseClient.aio_tracing_client_interceptors"><code class="docutils literal notranslate"><span class="pre">BaseClient.aio_tracing_client_interceptors()</span></code></a></li>
+<li><a class="reference internal" href="#jina.clients.base.BaseClient.aio_tracing_server_interceptors"><code class="docutils literal notranslate"><span class="pre">BaseClient.aio_tracing_server_interceptors()</span></code></a></li>
+<li><a class="reference internal" href="#jina.clients.base.BaseClient.tracing_client_interceptor"><code class="docutils literal notranslate"><span class="pre">BaseClient.tracing_client_interceptor()</span></code></a></li>
 <li><a class="reference internal" href="#jina.clients.base.BaseClient.client"><code class="docutils literal notranslate"><span class="pre">BaseClient.client</span></code></a></li>
 </ul>
 </li>

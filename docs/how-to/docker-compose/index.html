@@ -10,13 +10,13 @@
   
 <meta property="og:url" content="https://docs.jina.ai/how-to/docker-compose/" />
   
-<meta property="og:site_name" content="Jina 3.10.2 Documentation" />
+<meta property="og:site_name" content="Jina 3.11.0 Documentation" />
   
-<meta property="og:description" content="One of the simplest ways of either prototyping or serving in production is to run your Flow with docker-compose. A Flow is composed of Executor s which run Python code defined to operate on DocumentArray. These Executors will live in different runtimes depending on how you want to deploy your Flo..." />
+<meta property="og:description" content="One of the simplest ways to prototype or serve in production is to run your Flow with docker-compose. A Flow is composed of Executor s which run Python code that operates on DocumentArray. These Executors live in different runtimes depending on how you want to deploy your Flow. By default, if you..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
-<meta property="og:image:alt" content="Jina 3.10.2 Documentation" />
+<meta property="og:image:alt" content="Jina 3.11.0 Documentation" />
   
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -38,8 +38,8 @@
     <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="Deploy with Kubernetes" href="../kubernetes/" /><link rel="prev" title="Include external Executors in a Flow" href="../external-executor/" />
         <link rel="canonical" href="https://docs.jina.ai/how-to/docker-compose.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.2.3, furo 2022.09.29"/>
-        <title>Deploy with Docker Compose - Jina 3.10.2 documentation</title>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
+        <title>Deploy with Docker Compose - Jina 3.11.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -173,7 +173,7 @@
         </div>
         <div class="header-center">
             <a href="../../">
-                <div class="brand">Jina 3.10.2 documentation</div>
+                <div class="brand">Jina 3.11.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -245,7 +245,7 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/executor/">Executor</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-api/">Basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-methods/"><code class="docutils literal notranslate"><span class="pre">@requests</span></code> methods</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/monitoring-executor/">Monitor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/instrumenting-executor/">Instrumentation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-run/">Run</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-serve/">Serve</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-files/">File structure</a></li>
@@ -257,7 +257,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/create-flow/">Basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/add-executors/">Add Executors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/topologies/">Topology</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/monitoring-flow/">Monitor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/instrumenting-flow/">Instrumentation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/health-check/">Readiness &amp; health check</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/when-things-go-wrong/">Handle exceptions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
@@ -269,20 +269,25 @@
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/client/client/">Client</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/client/third-party-client/">Third-party clients</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/client/instrumenting-client/">Instrumentation</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/executor/hub/">Hub</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/hub/hub-portal/">Portal</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/hub/create-hub-executor/">Create</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/hub/push-executor/">Publish</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/hub/use-hub-executor/">Use</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../jina-ai-cloud/"><svg aria-hidden="true" class="sd-octicon sd-octicon-flame" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M7.998 14.5c2.832 0 5-1.98 5-4.5 0-1.463-.68-2.19-1.879-3.383l-.036-.037c-1.013-1.008-2.3-2.29-2.834-4.434-.322.256-.63.579-.864.953-.432.696-.621 1.58-.046 2.73.473.947.67 2.284-.278 3.232-.61.61-1.545.84-2.403.633a2.788 2.788 0 01-1.436-.874A3.21 3.21 0 003 10c0 2.53 2.164 4.5 4.998 4.5zM9.533.753C9.496.34 9.16.009 8.77.146 7.035.75 4.34 3.187 5.997 6.5c.344.689.285 1.218.003 1.5-.419.419-1.54.487-2.04-.832-.173-.454-.659-.762-1.035-.454C2.036 7.44 1.5 8.702 1.5 10c0 3.512 2.998 6 6.498 6s6.5-2.5 6.5-6c0-2.137-1.128-3.26-2.312-4.438-1.19-1.184-2.436-2.425-2.653-4.81z" fill-rule="evenodd"></path></svg> Jina AI Cloud</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../jina-ai-cloud/login/">Login &amp; Token Management</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../fundamentals/executor/hub/">Executor Hub</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../fundamentals/executor/hub/hub-portal/">Portal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../fundamentals/executor/hub/create-hub-executor/">Create</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../fundamentals/executor/hub/push-executor/">Publish</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../fundamentals/executor/hub/use-hub-executor/">Use</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/jcloud/">JCloud</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/jcloud/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../fundamentals/jcloud/">JCloud Hosting</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../fundamentals/jcloud/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current has-children"><a class="reference internal" href="../"><svg aria-hidden="true" class="sd-octicon sd-octicon-book" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M0 1.75A.75.75 0 01.75 1h4.253c1.227 0 2.317.59 3 1.501A3.744 3.744 0 0111.006 1h4.245a.75.75 0 01.75.75v10.5a.75.75 0 01-.75.75h-4.507a2.25 2.25 0 00-1.591.659l-.622.621a.75.75 0 01-1.06 0l-.622-.621A2.25 2.25 0 005.258 13H.75a.75.75 0 01-.75-.75V1.75zm8.755 3a2.25 2.25 0 012.25-2.25H14.5v9h-3.757c-.71 0-1.4.201-1.992.572l.004-7.322zm-1.504 7.324l.004-5.073-.002-2.253A2.25 2.25 0 005.003 2.5H1.5v9h3.757a3.75 3.75 0 011.994.574z" fill-rule="evenodd"></path></svg> How-To</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+</ul>
+</li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../"><svg aria-hidden="true" class="sd-octicon sd-octicon-book" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M0 1.75A.75.75 0 01.75 1h4.253c1.227 0 2.317.59 3 1.501A3.744 3.744 0 0111.006 1h4.245a.75.75 0 01.75.75v10.5a.75.75 0 01-.75.75h-4.507a2.25 2.25 0 00-1.591.659l-.622.621a.75.75 0 01-1.06 0l-.622-.621A2.25 2.25 0 005.258 13H.75a.75.75 0 01-.75-.75V1.75zm8.755 3a2.25 2.25 0 012.25-2.25H14.5v9h-3.757c-.71 0-1.4.201-1.992.572l.004-7.322zm-1.504 7.324l.004-5.073-.002-2.253A2.25 2.25 0 005.003 2.5H1.5v9h3.757a3.75 3.75 0 011.994.574z" fill-rule="evenodd"></path></svg> How-To</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../realtime-streaming/">Build real-time streaming service</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../flow-switch/">Conditional route request inside a Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../scale-out/">Scale out with replicas and shards</a></li>
@@ -292,7 +297,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../external-executor/">Include external Executors in a Flow</a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Deploy with Docker Compose</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../kubernetes/">Deploy with Kubernetes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../monitoring/">Monitor via Prometheus and Grafana</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../opentelemetry/">Observability and Instrumentation with OpenTelemetry and Jina</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../opentelemetry-migration/">Migrate from Prometheus/Grafana to OpenTelemetry/Prometheus/Grafana</a></li>
 </ul>
 </li>
 </ul>
@@ -387,24 +393,24 @@
                 <article role="main">
                     <section id="deploy-with-docker-compose">
 <span id="docker-compose"></span><h1>Deploy with Docker Compose<a class="headerlink" href="#deploy-with-docker-compose" title="Permalink to this heading">#</a></h1>
-<p>One of the simplest ways of either prototyping or serving in
+<p>One of the simplest ways to prototype or serve in
 production is to run your <a class="reference internal" href="../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> with <code class="docutils literal notranslate"><span class="pre">docker-compose</span></code>.</p>
 <p>A <a class="reference internal" href="../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> is composed of <a class="reference internal" href="../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>s which run Python code
-defined to operate on <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code>. These <code class="docutils literal notranslate"><span class="pre">Executors</span></code> will live in different runtimes depending on how you want to deploy
+that operates on <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code>. These <code class="docutils literal notranslate"><span class="pre">Executors</span></code> live in different runtimes depending on how you want to deploy
 your Flow.</p>
-<p>By default, if you are serving your Flow locally they will live within processes. Nevertheless,
+<p>By default, if you are serving your Flow locally they live within processes. Nevertheless,
 because Jina is cloud native your Flow can easily manage Executors that live in containers and that are
 orchestrated by your favorite tools. One of the simplest is Docker Compose which is supported out of the box.</p>
-<p>You can deploy a FLow with Docker Compose with one line:</p>
+<p>You can deploy a Flow with Docker Compose in one line:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
 <span class="n">flow</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">(</span><span class="o">...</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="o">...</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
 <span class="hll"><span class="n">flow</span><span class="o">.</span><span class="n">to_docker_compose_yaml</span><span class="p">(</span><span class="s1">&#39;docker-compose.yml&#39;</span><span class="p">)</span>
 </span></pre></div>
 </div>
-<p>Jina will generate a <code class="docutils literal notranslate"><span class="pre">docker-compose.yml</span></code> configuration file corresponding with your Flow. You can use this directly with
-Docker Compose, avoiding the overhead of manually defining all the services needed for the Flow.</p>
+<p>Jina generates a <code class="docutils literal notranslate"><span class="pre">docker-compose.yml</span></code> configuration file corresponding with your Flow. You can use this directly with
+Docker Compose, avoiding the overhead of manually defining all of your Flow’s services.</p>
 <div class="caution admonition">
-<p class="admonition-title">Use docker based Executors</p>
+<p class="admonition-title">Use Docker-based Executors</p>
 <p>All Executors in the Flow should be used with <code class="docutils literal notranslate"><span class="pre">jinahub+docker://...</span></code> or <code class="docutils literal notranslate"><span class="pre">docker://...</span></code>.</p>
 </div>
 <div class="caution admonition">
@@ -414,19 +420,19 @@ health check from the dumped YAML file, otherwise your Docker Compose services w
 always be “unhealthy.”</p>
 </div>
 <div class="caution admonition">
-<p class="admonition-title">Matching jina versions</p>
-<p>If you change the Docker images in your Docker Compose generated file, ensure that all the services included in
-the gateway are built with the same Jina version to guarantee compatibility.</p>
+<p class="admonition-title">Matching Jina versions</p>
+<p>If you change the Docker images in your Docker Compose generated file, ensure that all services included in
+the Gateway are built with the same Jina version to guarantee compatibility.</p>
 </div>
-<section id="example-indexing-and-searching-images-using-clipencoder-and-annliteindexer">
-<h2>Example: Indexing and searching images using CLIPEncoder and ANNLiteIndexer<a class="headerlink" href="#example-indexing-and-searching-images-using-clipencoder-and-annliteindexer" title="Permalink to this heading">#</a></h2>
+<section id="example-index-and-search-images-using-clipencoder-and-annliteindexer">
+<h2>Example: Index and search images using CLIPEncoder and ANNLiteIndexer<a class="headerlink" href="#example-index-and-search-images-using-clipencoder-and-annliteindexer" title="Permalink to this heading">#</a></h2>
 <p>Install <a class="reference external" href="https://docs.docker.com/compose/install/"><code class="docutils literal notranslate"><span class="pre">Docker</span> <span class="pre">Compose</span></code></a> locally to follow this how-to.</p>
 <p>This example shows how to build and deploy a Flow with Docker Compose, using <a class="reference external" href="https://hub.jina.ai/executor/0hnlmu3q"><code class="docutils literal notranslate"><span class="pre">CLIPImageEncoder</span></code></a>
 as an image encoder and <a class="reference external" href="https://hub.jina.ai/executor/7yypg8qk"><code class="docutils literal notranslate"><span class="pre">ANNLiteIndexer</span></code></a> as an indexer to perform fast nearest
 neighbor retrieval on image embeddings.</p>
-<section id="deploy-your-flow">
-<h3>Deploy your Flow<a class="headerlink" href="#deploy-your-flow" title="Permalink to this heading">#</a></h3>
-<p>First let’s define the Flow and generate the Docker Compose YAML configuration from it</p>
+<section id="deploy-the-flow">
+<h3>Deploy the Flow<a class="headerlink" href="#deploy-the-flow" title="Permalink to this heading">#</a></h3>
+<p>First define the Flow and generate the Docker Compose YAML configuration:</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">YAML</label><div class="tab-content docutils">
 <p>In a <code class="docutils literal notranslate"><span class="pre">flow.yml</span></code> file :</p>
@@ -445,7 +451,7 @@ neighbor retrieval on image embeddings.</p>
 <span class="w">  </span><span class="nt">shards</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span><span class="w"></span>
 </pre></div>
 </div>
-<p>then in a shell do:</p>
+<p>Then in a shell run:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>jina <span class="nb">export</span> docker-compose flow.yml docker-compose.yml 
 </pre></div>
 </div>
@@ -471,7 +477,7 @@ neighbor retrieval on image embeddings.</p>
 </div>
 <div class="hint admonition">
 <p class="admonition-title">Hint</p>
-<p>You can use a custom jina Docker image for the Gateway service. Just set the envrironment variable <code class="docutils literal notranslate"><span class="pre">JINA_GATEWAY_IMAGE</span></code> to the desired image before generating the configuration.</p>
+<p>You can use a custom jina Docker image for the Gateway service by setting the envrironment variable <code class="docutils literal notranslate"><span class="pre">JINA_GATEWAY_IMAGE</span></code> to the desired image before generating the configuration.</p>
 </div>
 <p>let’s take a look at the generated compose file:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;3.3&#39;</span><span class="w"></span>
@@ -498,7 +504,7 @@ neighbor retrieval on image embeddings.</p>
 <p>The default compose file generated by the Flow contains no special configuration or settings. You may want to
 adapt it to your own needs.</p>
 </div>
-<p>Here you can see that 5 services will be created:</p>
+<p>You can see that six services are created:</p>
 <ul class="simple">
 <li><p>1 for the <strong>Gateway</strong> which is the entrypoint of the <strong>Flow</strong>.</p></li>
 <li><p>2 associated with the encoder for the two Replicas.</p></li>
@@ -509,16 +515,16 @@ adapt it to your own needs.</p>
 </pre></div>
 </div>
 </section>
-<section id="query-your-flow">
-<h3>Query your Flow<a class="headerlink" href="#query-your-flow" title="Permalink to this heading">#</a></h3>
-<p>Once we see that all the services in the Flow are ready, we can start sending index and search requests.</p>
-<p>First let’s define a client:</p>
+<section id="query-the-flow">
+<h3>Query the Flow<a class="headerlink" href="#query-the-flow" title="Permalink to this heading">#</a></h3>
+<p>Once we see that all the services in the Flow are ready, we can send index and search requests.</p>
+<p>First define a client:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina.clients</span> <span class="kn">import</span> <span class="n">Client</span>
 
 <span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;http://localhost:8080&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Then let’s index the set of images we want to search:</p>
+<p>Then index the set of images we want to search:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
 
 <span class="n">da</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="o">.</span><span class="n">pull</span><span class="p">(</span><span class="s1">&#39;demo-da-images-jina&#39;</span><span class="p">,</span> <span class="n">show_progress</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -533,8 +539,8 @@ adapt it to your own needs.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>Indexed Documents: <span class="m">99</span>
 </pre></div>
 </div>
-<p>We indexer 99 Documents !</p>
-<p>Then let’s search for the closest image to our query image:</p>
+<p>We indexed 99 Documents!</p>
+<p>Now we can search for the closest image to the query image:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">queried_docs</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="n">da_query</span><span class="p">)</span>
 
 <span class="n">matches</span> <span class="o">=</span> <span class="n">queried_docs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">matches</span>
@@ -544,7 +550,7 @@ adapt it to your own needs.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>Matched Documents: <span class="m">10</span>
 </pre></div>
 </div>
-<p>Now have the list of the 10 closest image to the query !</p>
+<p>This gives us the list of the ten closest images to the query.</p>
 </section>
 </section>
 </section>
@@ -580,7 +586,7 @@ adapt it to your own needs.</p>
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Oct 10, 2022</div>
+                            Last updated on Oct 24, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -613,9 +619,9 @@ adapt it to your own needs.</p>
                     <div class="toc-tree">
                         <ul>
 <li><a class="reference internal" href="#">Deploy with Docker Compose</a><ul>
-<li><a class="reference internal" href="#example-indexing-and-searching-images-using-clipencoder-and-annliteindexer">Example: Indexing and searching images using CLIPEncoder and ANNLiteIndexer</a><ul>
-<li><a class="reference internal" href="#deploy-your-flow">Deploy your Flow</a></li>
-<li><a class="reference internal" href="#query-your-flow">Query your Flow</a></li>
+<li><a class="reference internal" href="#example-index-and-search-images-using-clipencoder-and-annliteindexer">Example: Index and search images using CLIPEncoder and ANNLiteIndexer</a><ul>
+<li><a class="reference internal" href="#deploy-the-flow">Deploy the Flow</a></li>
+<li><a class="reference internal" href="#query-the-flow">Query the Flow</a></li>
 </ul>
 </li>
 </ul>

@@ -10,13 +10,13 @@
   
 <meta property="og:url" content="https://docs.jina.ai/get-started/comparing-alternatives/" />
   
-<meta property="og:site_name" content="Jina 3.10.2 Documentation" />
+<meta property="og:site_name" content="Jina 3.11.0 Documentation" />
   
-<meta property="og:description" content="There is no alternative to Jina. Let me explain it with two example applications. Multi-user video streaming: Imagine your goal is to build a video streaming service, which allows multiple users to join and share their webcam. In the end, everybody can see each other’s video in real-time. How wou..." />
+<meta property="og:description" content="There is no alternative to Jina. Let’s explain with two example applications. Multi-user video streaming: Imagine you want to build a video streaming service, allowing multiple users to join and share their webcam. In the end, everybody can see each other’s video in real-time. How would you imple..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
-<meta property="og:image:alt" content="Jina 3.10.2 Documentation" />
+<meta property="og:image:alt" content="Jina 3.11.0 Documentation" />
   
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -38,8 +38,8 @@
     <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="Install" href="../install/" /><link rel="prev" title="What is Jina?" href="../what-is-jina/" />
         <link rel="canonical" href="https://docs.jina.ai/get-started/comparing-alternatives.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.2.3, furo 2022.09.29"/>
-        <title>Comparing to Alternatives - Jina 3.10.2 documentation</title>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
+        <title>Comparing to Alternatives - Jina 3.11.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -173,7 +173,7 @@
         </div>
         <div class="header-center">
             <a href="../../">
-                <div class="brand">Jina 3.10.2 documentation</div>
+                <div class="brand">Jina 3.11.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -245,7 +245,7 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/executor/">Executor</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-api/">Basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-methods/"><code class="docutils literal notranslate"><span class="pre">@requests</span></code> methods</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/monitoring-executor/">Monitor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/instrumenting-executor/">Instrumentation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-run/">Run</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-serve/">Serve</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-files/">File structure</a></li>
@@ -257,7 +257,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/create-flow/">Basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/add-executors/">Add Executors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/topologies/">Topology</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/monitoring-flow/">Monitor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/instrumenting-flow/">Instrumentation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/health-check/">Readiness &amp; health check</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/when-things-go-wrong/">Handle exceptions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
@@ -269,20 +269,25 @@
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/client/client/">Client</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/client/third-party-client/">Third-party clients</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/client/instrumenting-client/">Instrumentation</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/executor/hub/">Hub</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/hub/hub-portal/">Portal</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/hub/create-hub-executor/">Create</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/hub/push-executor/">Publish</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/hub/use-hub-executor/">Use</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../jina-ai-cloud/"><svg aria-hidden="true" class="sd-octicon sd-octicon-flame" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M7.998 14.5c2.832 0 5-1.98 5-4.5 0-1.463-.68-2.19-1.879-3.383l-.036-.037c-1.013-1.008-2.3-2.29-2.834-4.434-.322.256-.63.579-.864.953-.432.696-.621 1.58-.046 2.73.473.947.67 2.284-.278 3.232-.61.61-1.545.84-2.403.633a2.788 2.788 0 01-1.436-.874A3.21 3.21 0 003 10c0 2.53 2.164 4.5 4.998 4.5zM9.533.753C9.496.34 9.16.009 8.77.146 7.035.75 4.34 3.187 5.997 6.5c.344.689.285 1.218.003 1.5-.419.419-1.54.487-2.04-.832-.173-.454-.659-.762-1.035-.454C2.036 7.44 1.5 8.702 1.5 10c0 3.512 2.998 6 6.498 6s6.5-2.5 6.5-6c0-2.137-1.128-3.26-2.312-4.438-1.19-1.184-2.436-2.425-2.653-4.81z" fill-rule="evenodd"></path></svg> Jina AI Cloud</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../jina-ai-cloud/login/">Login &amp; Token Management</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../fundamentals/executor/hub/">Executor Hub</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../fundamentals/executor/hub/hub-portal/">Portal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../fundamentals/executor/hub/create-hub-executor/">Create</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../fundamentals/executor/hub/push-executor/">Publish</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../fundamentals/executor/hub/use-hub-executor/">Use</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/jcloud/">JCloud</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/jcloud/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../fundamentals/jcloud/">JCloud Hosting</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../fundamentals/jcloud/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../how-to/"><svg aria-hidden="true" class="sd-octicon sd-octicon-book" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M0 1.75A.75.75 0 01.75 1h4.253c1.227 0 2.317.59 3 1.501A3.744 3.744 0 0111.006 1h4.245a.75.75 0 01.75.75v10.5a.75.75 0 01-.75.75h-4.507a2.25 2.25 0 00-1.591.659l-.622.621a.75.75 0 01-1.06 0l-.622-.621A2.25 2.25 0 005.258 13H.75a.75.75 0 01-.75-.75V1.75zm8.755 3a2.25 2.25 0 012.25-2.25H14.5v9h-3.757c-.71 0-1.4.201-1.992.572l.004-7.322zm-1.504 7.324l.004-5.073-.002-2.253A2.25 2.25 0 005.003 2.5H1.5v9h3.757a3.75 3.75 0 011.994.574z" fill-rule="evenodd"></path></svg> How-To</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../how-to/"><svg aria-hidden="true" class="sd-octicon sd-octicon-book" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M0 1.75A.75.75 0 01.75 1h4.253c1.227 0 2.317.59 3 1.501A3.744 3.744 0 0111.006 1h4.245a.75.75 0 01.75.75v10.5a.75.75 0 01-.75.75h-4.507a2.25 2.25 0 00-1.591.659l-.622.621a.75.75 0 01-1.06 0l-.622-.621A2.25 2.25 0 005.258 13H.75a.75.75 0 01-.75-.75V1.75zm8.755 3a2.25 2.25 0 012.25-2.25H14.5v9h-3.757c-.71 0-1.4.201-1.992.572l.004-7.322zm-1.504 7.324l.004-5.073-.002-2.253A2.25 2.25 0 005.003 2.5H1.5v9h3.757a3.75 3.75 0 011.994.574z" fill-rule="evenodd"></path></svg> How-To</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../how-to/realtime-streaming/">Build real-time streaming service</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../how-to/flow-switch/">Conditional route request inside a Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../how-to/scale-out/">Scale out with replicas and shards</a></li>
@@ -292,7 +297,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../../how-to/external-executor/">Include external Executors in a Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../how-to/docker-compose/">Deploy with Docker Compose</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../how-to/kubernetes/">Deploy with Kubernetes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../how-to/monitoring/">Monitor via Prometheus and Grafana</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/opentelemetry/">Observability and Instrumentation with OpenTelemetry and Jina</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/opentelemetry-migration/">Migrate from Prometheus/Grafana to OpenTelemetry/Prometheus/Grafana</a></li>
 </ul>
 </li>
 </ul>
@@ -387,14 +393,14 @@
                 <article role="main">
                     <section id="comparing-to-alternatives">
 <h1>Comparing to Alternatives<a class="headerlink" href="#comparing-to-alternatives" title="Permalink to this heading">#</a></h1>
-<p>There is no alternative to Jina. Let me explain it with two example applications.</p>
+<p>There is no alternative to Jina. Let’s explain with two example applications.</p>
 <section id="multi-user-video-streaming">
 <h2>Multi-user video streaming<a class="headerlink" href="#multi-user-video-streaming" title="Permalink to this heading">#</a></h2>
-<p>Imagine your goal is to build a video streaming service, which allows multiple users to join and share their webcam. In the end, everybody can see each other’s video in real-time. How would you implement it?</p>
+<p>Imagine you want to build a video streaming service, allowing multiple users to join and share their webcam. In the end, everybody can see each other’s video in real-time. How would you implement it?</p>
 <figure class="align-default">
 <a class="reference internal image-reference" href="../../_images/webcam.svg"><img alt="../../_images/webcam.svg" src="../../_images/webcam.svg" width="50%" /></a>
 </figure>
-<p>Think about it for few minutes. Think about the tech stack, the library, and the architecture. How much time do you need for the first working POC?</p>
+<p>Think about it for few minutes. Think about the tech stack, the library, and the architecture. How much time would you need for the first working proof of concept?</p>
 <details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3 sd-fade-in-slide-down">
 <summary class="sd-summary-title sd-card-header sd-bg-primary sd-bg-text-primary">
 <span class="sd-summary-icon"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-light-bulb" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M8 1.5c-2.363 0-4 1.69-4 3.75 0 .984.424 1.625.984 2.304l.214.253c.223.264.47.556.673.848.284.411.537.896.621 1.49a.75.75 0 01-1.484.211c-.04-.282-.163-.547-.37-.847a8.695 8.695 0 00-.542-.68c-.084-.1-.173-.205-.268-.32C3.201 7.75 2.5 6.766 2.5 5.25 2.5 2.31 4.863 0 8 0s5.5 2.31 5.5 5.25c0 1.516-.701 2.5-1.328 3.259-.095.115-.184.22-.268.319-.207.245-.383.453-.541.681-.208.3-.33.565-.37.847a.75.75 0 01-1.485-.212c.084-.593.337-1.078.621-1.489.203-.292.45-.584.673-.848.075-.088.147-.173.213-.253.561-.679.985-1.32.985-2.304 0-2.06-1.637-3.75-4-3.75zM6 15.25a.75.75 0 01.75-.75h2.5a.75.75 0 010 1.5h-2.5a.75.75 0 01-.75-.75zM5.75 12a.75.75 0 000 1.5h4.5a.75.75 0 000-1.5h-4.5z"></path></svg></span>Expand to see Jina’s solution in 30 lines of code <div class="sd-summary-down docutils">
@@ -458,12 +464,12 @@
 </details></section>
 <section id="index-and-query-with-sharding">
 <h2>Index and query with sharding<a class="headerlink" href="#index-and-query-with-sharding" title="Permalink to this heading">#</a></h2>
-<p>Imagine your goal is to build a semantic search system for sentences. User inputs a sentence and the system searches over the index and returns the top 10 sentences that are semantically similar to the input. How would you implement it?</p>
-<p>Now let’s spice up a bit. Let’s add sharding to the index. Sharding is the process of splitting up a database or a table across multiple instances to improve the manageability, performance, and availability of a database. Introducing sharding means at the index time you have to split up the data into multiple shards and store them separately. At the query time, you can query from every shard and merge the results. How would you implement it?</p>
+<p>Imagine you want to build a semantic search system for sentences. A user inputs a sentence and the system searches over the index and returns the top ten sentences that are semantically similar to the input. How would you implement it?</p>
+<p>Now let’s spice things up by adding sharding to the index. Sharding is the process of splitting up a database or a table across multiple instances to improve manageability, performance, and availability. This means at index time you have to split the data into multiple shards and store them separately. At query time, you query from every shard and merge the results. How would you implement it?</p>
 <figure class="align-default">
 <a class="reference internal image-reference" href="../../_images/index-query.svg"><img alt="../../_images/index-query.svg" src="../../_images/index-query.svg" width="50%" /></a>
 </figure>
-<p>Think about it for few minutes. Think about the tech stack, the library and the architecture. Think about how to maintain the index/query time data consistency with sharding. How much time do you need for the first working POC?</p>
+<p>Think about it for few minutes. Think about the tech stack, the library and the architecture. Think about how to maintain the index/query time data consistency with sharding. How much time do you need for the first working PoC?</p>
 <details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3 sd-fade-in-slide-down">
 <summary class="sd-summary-title sd-card-header sd-bg-primary sd-bg-text-primary">
 <span class="sd-summary-icon"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-light-bulb" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M8 1.5c-2.363 0-4 1.69-4 3.75 0 .984.424 1.625.984 2.304l.214.253c.223.264.47.556.673.848.284.411.537.896.621 1.49a.75.75 0 01-1.484.211c-.04-.282-.163-.547-.37-.847a8.695 8.695 0 00-.542-.68c-.084-.1-.173-.205-.268-.32C3.201 7.75 2.5 6.766 2.5 5.25 2.5 2.31 4.863 0 8 0s5.5 2.31 5.5 5.25c0 1.516-.701 2.5-1.328 3.259-.095.115-.184.22-.268.319-.207.245-.383.453-.541.681-.208.3-.33.565-.37.847a.75.75 0 01-1.485-.212c.084-.593.337-1.078.621-1.489.203-.292.45-.584.673-.848.075-.088.147-.173.213-.253.561-.679.985-1.32.985-2.304 0-2.06-1.637-3.75-4-3.75zM6 15.25a.75.75 0 01.75-.75h2.5a.75.75 0 010 1.5h-2.5a.75.75 0 01-.75-.75zM5.75 12a.75.75 0 000 1.5h4.5a.75.75 0 000-1.5h-4.5z"></path></svg></span>Expand to see Jina’s solution in 45 lines of code <div class="sd-summary-down docutils">
@@ -526,36 +532,36 @@
 <a class="reference internal image-reference" href="../../_images/index-book.gif"><img alt="../../_images/index-book.gif" src="../../_images/index-book.gif" style="width: 80%;" /></a>
 </figure>
 </div>
-</details><p>You don’t have to dig into implementation at the moment, just get a taste of a Jina application, you will get to know the details later.</p>
-<p>What was your solution, is it easier than Jina’s? I bet not. From the two examples above, one can at least conclude that Jina</p>
+</details><p>You don’t have to dig into the implementation right now – just get a taste of a Jina application. You’ll get to know the details later.</p>
+<p>What was your solution? Is it easier than Jina’s? I bet not. From the two examples above, you can at least conclude that Jina:</p>
 <ul class="simple">
-<li><p>is easy to read and understand;</p></li>
-<li><p>is versatile on data modalities: it is capable of building both NLP and video service;</p></li>
-<li><p>has a straightforward design pattern for either a singleton service or a complex workflow;</p></li>
-<li><p>provides out of the box client-server architecture;</p></li>
-<li><p>is fast enough for realtime application;</p></li>
-<li><p>easily scales.</p></li>
-<li><p>self-contained, no context switching between different tech stacks.</p></li>
+<li><p>Is easy to read and understand.</p></li>
+<li><p>Is versatile on data modalities: it is capable of building both NLP and video services.</p></li>
+<li><p>Has a straightforward design pattern for singleton services or complex workflows.</p></li>
+<li><p>Provides out-of-the-box client/server architecture.</p></li>
+<li><p>Is fast enough for real-time applications.</p></li>
+<li><p>Scales easily</p></li>
+<li><p>Is self-contained, with no context switching between different tech stacks.</p></li>
 </ul>
 </section>
 <section id="comparisons">
 <h2>Comparisons<a class="headerlink" href="#comparisons" title="Permalink to this heading">#</a></h2>
-<p>Jina is unique, but it doesn’t mean you can’t achieve certain task without Jina; you just take a detour but still can make it. In this section, let’s compare Jina with other frameworks and tech stacks that you may want to use for building a solution.</p>
-<section id="on-local-machine">
-<h3>On local machine<a class="headerlink" href="#on-local-machine" title="Permalink to this heading">#</a></h3>
-<p>When using Jina on a local machine, most of the functionalities are realized by DocArray. The comparison hence becomes DocArray vs. alternatives. You can find the comparison <a class="reference external" href="https://docarray.jina.ai/get-started/what-is/#comparing-to-alternatives">here</a>. In conclusion, there is no alternative that offers such expressive data structure for cross-modal and multimodal applications.</p>
+<p>Jina is unique, but that doesn’t mean you can’t achieve certain tasks without Jina: It just means taking a detour, but you can still get where you need to go. In this section, let’s compare Jina with other frameworks and tech stacks that you may want to use for building a solution.</p>
+<section id="on-local-machines">
+<h3>On local machines<a class="headerlink" href="#on-local-machines" title="Permalink to this heading">#</a></h3>
+<p>When using Jina on a local machine, most of the functionalities are realized by DocArray. That means this comparison becomes DocArray vs. alternatives. You can find that comparison <a class="reference external" href="https://docarray.jina.ai/get-started/what-is/#comparing-to-alternatives">here</a>. In conclusion, there is no alternative that offers such an expressive data structure for cross-modal and multimodal applications.</p>
 </section>
 <section id="as-a-singleton-or-monolith-service">
 <h3>As a singleton or monolith service<a class="headerlink" href="#as-a-singleton-or-monolith-service" title="Permalink to this heading">#</a></h3>
-<p>When a Jina Flow contains only one Executor, serving this Flow is basically serving a monolith or a singleton service. One may compare it to other web framework such as FastAPI, Tensorflow Serving and NVIDIA Triton Inference Server.</p>
+<p>When a Jina <a class="reference internal" href="../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> contains only one <a class="reference internal" href="../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>, serving this Flow is basically serving a monolith or a singleton service. You could compare it to other web frameworks like FastAPI, TensorFlow Serving, or NVIDIA Triton Inference Server.</p>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>Feature</p></th>
 <th class="head"><p>Jina</p></th>
 <th class="head"><p>FastAPI</p></th>
-<th class="head"><p>Tensorflow Serving</p></th>
-<th class="head"><p>Nvidia Triton</p></th>
+<th class="head"><p>TensorFlow Serving</p></th>
+<th class="head"><p>NVIDIA Triton</p></th>
 </tr>
 </thead>
 <tbody>
@@ -565,7 +571,7 @@
 <td><p>Low</p></td>
 <td><p>Low</p></td>
 </tr>
-<tr class="row-odd"><td><p>Easy-to-use</p></td>
+<tr class="row-odd"><td><p>Ease of use</p></td>
 <td><p>Easy</p></td>
 <td><p>Easy</p></td>
 <td><p>Moderate</p></td>
@@ -583,9 +589,9 @@
 <td><p>CPU, GPU, TPU</p></td>
 <td><p>CPU, GPU</p></td>
 </tr>
-<tr class="row-even"><td><p>Web protocol</p></td>
-<td><p>gRPC, HTTP, Websocket, GraphQL</p></td>
-<td><p>HTTP, Websocket</p></td>
+<tr class="row-even"><td><p>Web protocols</p></td>
+<td><p>gRPC, HTTP, WebSocket, GraphQL</p></td>
+<td><p>HTTP, WebSocket</p></td>
 <td><p>gRPC</p></td>
 <td><p>gRPC</p></td>
 </tr>
@@ -601,10 +607,10 @@
 </section>
 <section id="as-a-workflow-on-the-cloud">
 <h3>As a workflow on the cloud<a class="headerlink" href="#as-a-workflow-on-the-cloud" title="Permalink to this heading">#</a></h3>
-<p>When using Jina on cloud, it makes sense to compare Jina with other MLOps platforms. Note that MLOps is an especially confusing landscape with hundreds of tools available. Platforms have their own specializations and there is no clear line between a tool (with a narrow focus) and a platform (which supports many ML lifecycle activities). Even platforms that have a similar scope have different concepts and strategies, making them hard to compare directly.</p>
+<p>When using Jina on the cloud, it makes sense to compare Jina with other MLOps platforms. Note that MLOps is an especially confusing landscape with hundreds of tools available. Platforms have their own specializations and there is no clear line between a tool (with a narrow focus) and a platform (which supports many ML lifecycle activities). Even platforms that have similar scopes have different concepts and strategies, making them hard to compare directly.</p>
 <section id="based-on-guide-to-evaluating-mlops-platforms">
 <h4>Based on “Guide to Evaluating MLOps Platforms”<a class="headerlink" href="#based-on-guide-to-evaluating-mlops-platforms" title="Permalink to this heading">#</a></h4>
-<p>The figures below illustrate how platforms specialize in particular areas (bottom) and others aim to cover the whole lifecycle with equal focus (top). The original figures are from <a class="reference external" href="https://www.thoughtworks.com/what-we-do/data-and-ai/cd4ml/guide-to-evaluating-mlops-platforms">the Thoughtworks Guide to MLOps Platforms</a>. We add Jina as a new entry to it.</p>
+<p>The figures below illustrate how platforms specialize in particular areas (bottom) and others aim to cover the whole lifecycle with equal focus (top). The original figures are from <a class="reference external" href="https://www.thoughtworks.com/what-we-do/data-and-ai/cd4ml/guide-to-evaluating-mlops-platforms">the Thoughtworks Guide to MLOps Platforms</a>. We have added Jina to it as a new entry.</p>
 <figure class="align-default">
 <img alt="../../_images/jina-landscape-1.svg" src="../../_images/jina-landscape-1.svg" /></figure>
 </section>
@@ -632,25 +638,25 @@
 <tbody>
 <tr class="row-even"><td><p>Jina</p></td>
 <td><p>Build cross-modal and multimodal services on the cloud, ease the building of neural search and creative AI cloud-native services in production.</p></td>
-<td><p>Opensouce, free cloud hosting via JCloud, free finetuning via Finetuner.</p></td>
-<td><p>Reusable building blocks for preprocessing, cleaning, feature engineering are “Executors” in Jina’s terminology. They are contributed by Jina AI and the community via Jina Hub</p></td>
+<td><p>Open-source, free cloud hosting via JCloud, free finetuning via Finetuner.</p></td>
+<td><p>Reusable building blocks for preprocessing, cleaning, feature engineering are “Executors” in Jina’s terminology. They are contributed by Jina AI and the community via Executor Hub</p></td>
 <td><p>Model finetuning is managed by Finetuner, and freely available to Jina users.</p></td>
-<td><p>Deployment as optimized REST/gRPC/Websockets/GraphQL services. Can be deployed via JCloud, Kubernetes, DockerSwarm. Support real-time and stream processing.</p></td>
-<td><p>Async data flow all the way. autoscaled, serveless executor on JCloud</p></td>
+<td><p>Deployment as optimized REST/gRPC/Websockets/GraphQL services. Can be deployed via JCloud, Kubernetes, Docker Swarm. Supports real-time and stream processing.</p></td>
+<td><p>Async data flow all the way. Autoscaled, serverless Executor on JCloud</p></td>
 <td><p>Monitoring for latency and resource built-in. Integrated Prometheus, and dashboard for Grafana which can be customized to monitor model performance.</p></td>
-<td><p>Jina Hub provides a marketplace for share, explore, and try models, executors. They can be directly used as a microservice in any Flow, without download or pulling.</p></td>
-<td><p>Connect to CI/CD tool (e.g. Github) to automate Executor and Flow release via jina-hubble-sdk and jcloud</p></td>
-<td><p>Basic private &amp; public permission on data, Executor and Flow. “public” means everybody can view/check/use/listing for all 3 concepts “private” means only user itself can view/check/use/listing for all 3 concepts. Will introduce more access levels in the near future</p></td>
-<td><p>Can be run locally, self-hosted, and via JCloud. Flow can be deployed on any K8s, Docker swarm cluster.</p></td>
+<td><p>Executor Hub provides a marketplace for share, explore, and try models, Executors. They can be directly used as a microservice in any Flow, without download or pulling.</p></td>
+<td><p>Connect to CI/CD tool (e.g. GitHub) to automate Executor and Flow release via jina-hubble-sdk and JCloud</p></td>
+<td><p>Basic private &amp; public permission on data, Executor and Flow. “public” means everybody can view/check/use/listing for all 3 concepts “private” means only user itself can view/check/use/listing for all 3 concepts. More access levels in near future</p></td>
+<td><p>Can be run locally, self-hosted, and via JCloud. Flow can be deployed on any K8s, Docker Swarm cluster.</p></td>
 <td><p>Managed via JCloud or self-managed on own infrastructure or any cloud provider.</p></td>
 </tr>
 <tr class="row-odd"><td><p>Dataiku DSS</p></td>
-<td><p>Data exploration, model building and excel-style interaction with big data. Visual or code-based pipelines for building and deploying models.</p></td>
+<td><p>Data exploration, model building and Excel-style interaction with big data. Visual or code-based pipelines for building and deploying models.</p></td>
 <td><p>Enterprise. Not stated.</p></td>
-<td><p>Lots of data sources, application of schemas, highlighting and fixing of outliers and missing values, interactive stats, built-in filtering and transformations and sampling. Assisted labelling plugin.</p></td>
+<td><p>Many data sources, application of schemas, highlighting and fixing of outliers and missing values, interactive stats, built-in filtering and transformations and sampling. Assisted labelling plugin.</p></td>
 <td><p>Flows/Pipelines for training/retraining. Lab for assisted building of models/AutoML. Models can also be custom or Spark.</p></td>
 <td><p>Real-time deploy to API Node. Batch Prediction via Flows. Support for Spark and Spark Streaming.</p></td>
-<td><p>Model versioning, rollbacks and traffic splitting. HA and loadbalancing. Export for prediction in other runtines or offline, inc onnx export.</p></td>
+<td><p>Model versioning, rollbacks and traffic splitting. HA and load balancing. Export for prediction in other runtines or offline, inc ONNX export.</p></td>
 <td><p>Real-time scoring. Metrics.</p></td>
 <td><p>Models built in flow saved as versions. Active and inactive versions and concept of rollbacks.</p></td>
 <td><p>CI/CD pipelines</p></td>
@@ -659,36 +665,36 @@
 <td><p>Dataiku Online is a new offering</p></td>
 </tr>
 <tr class="row-even"><td><p>H2O</p></td>
-<td><p>Platform with a core Java compute engine. Lots of integrations and add-ons, includuing AutoML.</p></td>
+<td><p>Platform with a core Java compute engine. Many integrations and add-ons, inc AutoML.</p></td>
 <td><p>Enterprise. Not stated. Open source core platform.</p></td>
-<td><p>h2o-3 supports range of input formats and manipulations. Driverless AI supports even more inputs, has visualization and also automatic and tailored feature engineering.</p></td>
+<td><p>h2o-3 supports range of input formats and manipulations. Driverless AI supports more inputs, visualization and automatic and tailored feature engineering.</p></td>
 <td><p>Training features in Driverless AI are AutoML. Training features in h2o-3 are for pre-defined algorithms.</p></td>
 <td><p>Predictions can be made in h2o-3 and it can integrate to Spark. Models can be deployed within Driverless. But centerpiece deployment tool in the suite is MLOps for its features and integrations.</p></td>
 <td><p>In MLOps there’s champion/challenger and A/B traffic splitting. Different run-time options for latency optimization. Export to other runtimes inc Java and C++.</p></td>
 <td><p>Latency, alerts, custom metrics.</p></td>
-<td><p>AppStore is like a catalog of apps built from models and has permissions. Integration at project level between model building and hybrid cloud appstore is like registry - called Shared Model Repository.</p></td>
+<td><p>App Store is like a catalog of apps built from models and has permissions. Integration at project level between model building and hybrid cloud App Store is like registry - called Shared Model Repository.</p></td>
 <td><p>Automatic retraining for driverless AI models. Dev-test-prod envs</p></td>
 <td><p>Projects and sharing in MLOps. Maps to other hybrid cloud products.</p></td>
-<td><p>k8s for MLOps. h2o-3 part of stack can be run locally</p></td>
-<td><p>only for trials</p></td>
+<td><p>K8s for MLOps. h2o-3 part of stack can be run locally</p></td>
+<td><p>Only for trials</p></td>
 </tr>
 <tr class="row-odd"><td><p>Databricks</p></td>
-<td><p>Spark and mlflow as open source offerings. SaaS platform with added features and DeltaLake as enterprise. ‘Customer-managed’ SaaS option on AWS, Azure or Google.</p></td>
+<td><p>Spark and MLflow as open source offerings. SaaS platform with added features and Delta Lake as enterprise. ‘Customer-managed’ SaaS option on AWS, Azure or Google.</p></td>
 <td><p>Open Core. Platform can be pay-per-use (DBUs)</p></td>
 <td><p>Notebooks. Spark. Cloud provider integrations. Feature store. Data Catalog.</p></td>
-<td><p>Mlflow, Spark MLLib and AutoML. Distributed training including using GPUs. AutoML.</p></td>
-<td><p>MLFlow serving for real-time. Spark for batch or streaming.</p></td>
-<td><p>Versions and stages for models with MLFlow. Relatively new feature and in preview. For traffic splitting and inference pipelines there are integrations</p></td>
+<td><p>MLflow, Spark MLlib and AutoML. Distributed training including using GPUs. AutoML.</p></td>
+<td><p>MLflow serving for real-time. Spark for batch or streaming.</p></td>
+<td><p>Versions and stages for models with MLflow. Relatively new feature and in preview. For traffic splitting and inference pipelines there are integrations</p></td>
 <td><p>Logs and resource monitoring built-in.</p></td>
-<td><p>mlflow model registry with permissions and deployment history</p></td>
-<td><p>CICD templates, stages</p></td>
-<td><p>for notebooks, models and spark</p></td>
-<td><p>Typical installation is on your cloud account via integration with cloud providers. Allows for levels of control over cloud infra. Open source parts of the platform (e.g. spark, mlflow) can be installed by the user but that’s a subset.</p></td>
+<td><p>MLflow model registry with permissions and deployment history</p></td>
+<td><p>CI/CD templates, stages</p></td>
+<td><p>For notebooks, models and spark</p></td>
+<td><p>Typical installation is on your cloud account via integration with cloud providers. Allows for levels of control over cloud infra. Open source parts of the platform (e.g. spark, MLflow) can be installed by the user but that’s a subset.</p></td>
 <td><p>Option for ‘customer-managed’ SaaS as well as SaaS options on AWS, Azure or Google.</p></td>
 </tr>
 <tr class="row-even"><td><p>AWS SageMaker</p></td>
 <td><p>MLOps platform on AWS</p></td>
-<td><p>metered</p></td>
+<td><p>Metered</p></td>
 <td><p>Ground truth for labelling, wrangler for feature engineering and feature store, studio IDE, notebooks</p></td>
 <td><p>Pipelines brings together different training options. Lots of support for different languages and distributed vs not distributed. Spot instance option interesting. Pipelines for SageMaker have less prominence in docs than Pipelines for Vertex - less emphasis on orchestration.</p></td>
 <td><p>Deployment with pre-built or custom containers. Inference pipelines supported. Unified batch and real-time.</p></td>
@@ -697,14 +703,14 @@
 <td><p>Model registry with versions, groups and associations to training metadata. Can enable cross-account deployment.</p></td>
 <td><p>Payload capture/logging. Templates for CI/CD.</p></td>
 <td><p>Has projects idea - has to be configured as is not used by default. Has templates for using with git and CI/CD.</p></td>
-<td><p>Can train models in k8s with kubeflow. Could do this with other tools too but AWS are trying to support it. Only training though.</p></td>
+<td><p>Can train models in K8s with Kubeflow. Could do this with other tools too but AWS are trying to support it. Only training though.</p></td>
 <td><p>SaaS</p></td>
 </tr>
 <tr class="row-odd"><td><p>Azure Machine Learning</p></td>
 <td><p>MLOps platform on Azure</p></td>
 <td><p>metered</p></td>
 <td><p>Data labelling service. Ingestion pipelines. Azure Synapse for prep/wrangling.</p></td>
-<td><p>Container-based training in an Environment or can use a training Pipeline for distributed. Visual editor for assisted pipeline creation or there’s also full AutoML.</p></td>
+<td><p>Container-based training in an Environment or can use a training Pipeline for distributed. Visual editor for assisted pipeline creation or full AutoML.</p></td>
 <td><p>Deployment with pre-built or custom containers as managed endpoints. Real-time or batch.</p></td>
 <td><p>GPUs and traffic splitting available.</p></td>
 <td><p>Monitoring for latency and hardware resource built-in.</p></td>
@@ -722,39 +728,39 @@
 <td><p>Deployment with pre-built or custom containers. AutoML similar but easier. Batch support.</p></td>
 <td><p>Traffic splits available. Private endpoints for low-latency.</p></td>
 <td><p>Built-in monitoring of latency etc.</p></td>
-<td><p>Not an explicit concept of registry in docs but there is a models page in a vertex project, which is like a registry.</p></td>
+<td><p>Not explicit concept of registry in docs but models page in Vertex project, like a registry.</p></td>
 <td><p>Prediction logging and continuous evaluation possible but not yet well integrated under Vertex. Pipeline is a bit like CI</p></td>
 <td><p>Uses concept of projects and assigning permissions</p></td>
 <td><p></p></td>
 <td><p>SaaS</p></td>
 </tr>
 <tr class="row-odd"><td><p>Kubeflow</p></td>
-<td><p>Open source MLOps for kubernetes</p></td>
+<td><p>Open source MLOps for Kubernetes</p></td>
 <td><p>Open source. There are also tailored distros and fully managed in google vertex and from Arrikto</p></td>
 <td><p>Jupyter notebooks</p></td>
 <td><p>Pipelines as orchestrator and training platform. Training operators for specific frameworks. Katib for hyperparameter tuning (AutoML).</p></td>
-<td><p>KFServing as core component with Seldon and other integrations. KFServing has batching integration and a streaming example. Preprocess and postprocess inference steps available.</p></td>
-<td><p>KFServing has autoscaling through knative, traffic splitting, multi-model serving and GPU integration.</p></td>
+<td><p>KFServing as core component with Seldon and other integrations. KFServing has batching integration and a streaming example. Pre-process and post-process inference steps available.</p></td>
+<td><p>KFServing has autoscaling through Knative, traffic splitting, multi-model serving and GPU integration.</p></td>
 <td><p>Resource and high-level request metrics integration. Can be added to UI.</p></td>
 <td><p>No native model registry. Can log model details (artifacts) with metadata. Listing of running models available.</p></td>
-<td><p>Kubeflow Pipelines for workflow orchestration - needs to be invoked from CI. Als flexible request logging via kfserving or seldon.</p></td>
+<td><p>Kubeflow Pipelines for workflow orchestration - needs to be invoked from CI. Als flexible request logging via KFServing or Seldon.</p></td>
 <td><p>Namespaces and sharing permissions between namespaces</p></td>
-<td><p>Self-install on kubernetes is the default route, with some per-provider distribution customization.</p></td>
-<td><p>Google Vertex has managed kubeflow pipelines but that is not the same as a managed kubeflow. There are distributions which hook into some managed platform features.</p></td>
+<td><p>Self-install on Kubernetes is default route, some per-provider distribution customization.</p></td>
+<td><p>Google Vertex has managed Kubeflow pipelines but that is not the same as a managed Kubeflow. Distributions hook into some managed platform features.</p></td>
 </tr>
-<tr class="row-even"><td><p>Mlflow</p></td>
-<td><p>Open source flexible approach to MLops</p></td>
-<td><p>Open source. Also available integrated into the databricks managed service.</p></td>
+<tr class="row-even"><td><p>MLflow</p></td>
+<td><p>Open source flexible approach to MLOps</p></td>
+<td><p>Open source. Also available integrated into Databricks managed service.</p></td>
 <td><p>Projects and entry points provide a way to package data operations.</p></td>
-<td><p>MLflow does tracking during the training process. Provides structure with projects and entry points and multi-step workflows. Can execute locally or on a hosted backend e.g. kubernetes. Provides tools that put structure around training rather than hosted platform like many others do.</p></td>
+<td><p>MLflow does tracking during training. Provides structure with projects and entry points and multi-step workflows. Can execute locally or on a hosted backend e.g. Kubernetes. Provides tools that put structure around training rather than hosted platform like many others do.</p></td>
 <td><p>MLflow Models provides structure for packaging and deploying models. Local basic serving is out of the box. Built-in and extensible integrations for specialist hosting with plugins available. Can do batch straight from projects without serving step. Batch or streaming also possible with spark integration.</p></td>
-<td><p>Depends on the chosen deployment option. The functionality of <code class="docutils literal notranslate"><span class="pre">mlflow</span> <span class="pre">serve</span></code> is basic but mlflow is designed for integrations with more features such as sagemaker</p></td>
-<td><p>Depends on the chosen deployment option as it is the deployment which is monitored. There are integrations but the deployment itself is outside of mlflow open source.</p></td>
-<td><p>Model registry which provides model lineage, versioning, stage transtions and annotations.</p></td>
-<td><p>mlflow projects can be git repos so can hook CI into git to call an entry point. Promotions can be recorded in registry</p></td>
-<td><p>Mlflow projects can be git repos so there’s separaton and collaboration there. At server level there’s not a concept of permissions in the open source</p></td>
+<td><p>Depends on chosen deployment option. The functionality of <code class="docutils literal notranslate"><span class="pre">mlflow</span> <span class="pre">serve</span></code> is basic but MLflow is designed for integrations with more features such as SageMaker</p></td>
+<td><p>Depends on chosen deployment option as it is the deployment which is monitored. There are integrations but deployment itself is outside of MLflow open source.</p></td>
+<td><p>Model registry which provides model lineage, versioning, stage transitions and annotations.</p></td>
+<td><p>MLflow projects can be git repos so can hook CI into git to call an entry point. Promotions can be recorded in registry</p></td>
+<td><p>MLflow projects can be Git repos so there’s separation and collaboration. At server level there’s not a concept of permissions in the open source</p></td>
 <td><p>Can run on local machine or install server to run hosted</p></td>
-<td><p>Managed version from databricks</p></td>
+<td><p>Managed version from Databricks</p></td>
 </tr>
 <tr class="row-odd"><td><p>KNIME</p></td>
 <td><p>Open core low-code visual Data Science and Data Analytics platform with MLOps capabilities.</p></td>
@@ -762,8 +768,8 @@
 <td><p>Inspection of tabular data and generation of plots within Analytics Platform workbench. Various data manipulation nodes available.</p></td>
 <td><p>Workflows can be used to manipulate data and train models. These can be scheduled to run on KNIME Server to leverage elastic infra.</p></td>
 <td><p>Captured subsets of workflows, which can contain models, can be deployed to KNIME Server. Can be for REST calls or as scheduled jobs. Some nodes support streaming. Workflows containing javascript-enabled interactive nodes can also be deployed with KNIME Server’s Web Portal.</p></td>
-<td><p>Challenger rollout modes like A/B testing using Model Process Factory templates. Validation can be performed on model during deployment to KNIME Server.</p></td>
-<td><p>Model monitoring component for classfication or can be done more generally using Model Process Factory. For scheduled jobs there’s notifications. Status of running workflows can be inspected in the admin UI.</p></td>
+<td><p>Challenger roll-out modes like A/B testing using Model Process Factory templates. Validation can be performed on model during deployment to KNIME Server.</p></td>
+<td><p>Model monitoring component for classification or can be done more generally using Model Process Factory. For scheduled jobs there’s notifications. Status of running workflows can be inspected in the admin UI.</p></td>
 <td><p>Versioning and comparison of workflows. Workflows are the key unit rather than models in KNIME, though models can be exported to PMML if you want to deal with them outside KNIME.</p></td>
 <td><p>Triggered retraining for classifiers with model monitoring component. KNIME server has a REST API so deployments can be invoked from CI.</p></td>
 <td><p>Workflows can be parts of workflow groups. Permissions on workflows and groups with owners and delegation.</p></td>
@@ -773,7 +779,7 @@
 <tr class="row-even"><td><p>DataRobot</p></td>
 <td><p>End-to-end Data Science and MLOps Platform. Model building for Data Scientists and Citizen Data Scientists (AutoML). MLOps for deploying and monitoring models.</p></td>
 <td><p>Enterprise. Three-year licence with metered pricing plans.</p></td>
-<td><p>Many data sources such as jdbc databases, databricks and salesforce. Spark SQL support. Visual wrangling operations. Automated transformation flows.</p></td>
+<td><p>Many data sources such as JDBC Databases, Databricks and Salesforce. Spark SQL support. Visual wrangling operations. Automated transformation flows.</p></td>
 <td><p>AutoML for building models with feature detection/exploration and customizable model search. Monitoring for model building jobs. Leaderboard for choosing a model from the AutoML search. Training dashboard for insights into the model training process.</p></td>
 <td><p>Real-time and batch prediction options, including high volume batch. Post-processing of prediction data.</p></td>
 <td><p>Challenger rollouts and monitoring to compare the challenger in detail. Can take stored predictions that went to the main model and replay against the challenger.</p></td>
@@ -795,29 +801,29 @@
 <td><p>Trained models and their artifacts can be versioned in Pachyderm and hosted with Pachyderm’s S3 gateway to be integrated with deployment systems</p></td>
 <td><p>CI integration, which can be setup to retrain. An end-to-end CD example is provided. Spout for streaming data.</p></td>
 <td><p>Access controls with identity provider integration. Console to facilitate collaboration on DAGs/pipelines and for debugging. Notebooks for collaboration on pipeline creation. Contexts for switching between clusters.</p></td>
-<td><p>Pachyderm Enterprise and Community editions both provide a self deployed option for local or kubernetes</p></td>
+<td><p>Pachyderm Enterprise and Community editions both provide a self deployed option for local or Kubernetes</p></td>
 <td><p>Pachyderm Hub provides a managed Cloud version</p></td>
 </tr>
 <tr class="row-even"><td><p>Seldon</p></td>
 <td><p>With an open source core and other popular open source libraries, Seldon focuses on model management, deployment, monitoring and explainability.</p></td>
 <td><p>Open source core + libraries. Enterprise platform priced per model.</p></td>
 <td><p>Works well in tandem with data preparation/versioning tools</p></td>
-<td><p>Agnostic about model training and frameworks used. Integrations with MLFlow, Kubeflow, Pachyderm etc.</p></td>
+<td><p>Agnostic about model training and frameworks used. Integrations with MLflow, Kubeflow, Pachyderm etc.</p></td>
 <td><p>Deployment as optimised REST/gRPC microservices. Can be deployed using pre-packaged inference servers or using custom python components. Support for real-time inference, batch predictions and stream processing.</p></td>
 <td><p>Autoscaling, multi-model inference graphs, A/B tests and progressive rollouts.</p></td>
 <td><p>Collects metrics by default on your deployed models. Custom metrics can also be defined and there is support for distributed tracing and payload logging</p></td>
-<td><p>Seldon supports a variety of model stores with integration in to cloud stoarge providers. The enterprise offering comes with a model catalog together with supporting metadata.</p></td>
-<td><p>Enterprise offering includes gitops capability, allowing model deployments to be automated, versioned and reproduced. Also examples for upgrades and rollbacks, intelligent rollouts with iter8 and alerts based on monitoring</p></td>
+<td><p>Seldon supports a variety of model stores with integration in to cloud storage providers. The enterprise offering comes with a model catalog together with supporting metadata.</p></td>
+<td><p>Enterprise offering includes GitOps capability, allowing model deployments to be automated, versioned and reproduced. Also examples for upgrades and rollbacks, intelligent rollouts with Iter8 and alerts based on monitoring</p></td>
 <td><p>Seldon Core uses Kubernetes namespaces for separation of workspaces. Seldon Deploy also comes with project based authorisation</p></td>
 <td><p>Self-install on Kubernetes with installers provided for enterprise offerings</p></td>
 <td><p>Self-managed on own infrastructure or any cloud provider.</p></td>
 </tr>
 <tr class="row-odd"><td><p>PrimeHub</p></td>
-<td><p>End-to-end ML orchestration platform for Kubernetes. Focuses on model management/deployment with cutomizable notebook environment, 3rd-party app integration and admistrative features.</p></td>
+<td><p>End-to-end ML orchestration platform for Kubernetes. Focuses on model management/deployment with customizable notebook environment, 3rd-party app integration and administrative features.</p></td>
 <td><p>Community Edition (OSS) and Enterprise Edition priced per nodes/deployments; License Comparison.</p></td>
-<td><p>Notebook, group shared-files, multi-dataset management, and Label Studio (Integrated by PHApps). End-to-end tutorial to show this.</p></td>
+<td><p>Notebook, group shared-files, multi-dataset management, and Label Studio (Integrated by PhApps). End-to-end tutorial to show this.</p></td>
 <td><p>PrimeHub SDK (guide), job scheduling, model management integrated with MLflow.</p></td>
-<td><p>Via Deployments, models can be deployed with pre-built/custom pre-packaged servers as services over Kubernetes with the specified resources and access-control. Streamlit(integrated by PHapps) to create interactive web apps.</p></td>
+<td><p>Via Deployments, models can be deployed with pre-built/custom pre-packaged servers as services over Kubernetes with the specified resources and access-control. Streamlit(integrated by PhApps) to create interactive web apps.</p></td>
 <td><p>Deploy different versions of a models in parallel for the purpose of A/B testing. Deploy models with multiple replicas for scaling predictions.</p></td>
 <td><p>Integrated Prometheus, and dashboard for Grafana to monitor model metrics. Integration with MLflow to track training metrics.</p></td>
 <td><p>Through MLflow integration, experiments/models can be tracked and versioned with access-scope per group. Deployments are also restricted by their own private/public access.</p></td>
@@ -841,12 +847,12 @@
 <td><p>SaaS</p></td>
 </tr>
 <tr class="row-odd"><td><p>Iguazio</p></td>
-<td><p>MLOps platfom with a built-in feature store running on AWS, Azure, GCP &amp; on-prem</p></td>
+<td><p>MLOps platform with a built-in feature store running on AWS, Azure, GCP &amp; on-prem</p></td>
 <td><p>OSS &amp; Enterprise</p></td>
-<td><p>Feature engineering with an online feature store, support for various data types (structured &amp; unstructured) and sources (including streaming), built-in Jupyter service &amp; support for 3rd party IDEs (eg. Pycharm)</p></td>
-<td><p>Pipelines for training. Option to leverage 3rd party training platfoms such as SageMaker &amp; Azure ML or run training in Iguazio using Kubeflow pipelines.</p></td>
+<td><p>Feature engineering with an online feature store, support for various data types (structured &amp; unstructured) and sources (including streaming), built-in Jupyter service &amp; support for 3rd party IDEs (e.g. Pycharm)</p></td>
+<td><p>Pipelines for training. Option to leverage 3rd party training platforms such as SageMaker &amp; Azure ML or run training in Iguazio using Kubeflow pipelines.</p></td>
 <td><p>Deployment/serving supporting batch &amp; real time using Nuclio serverless functions.</p></td>
-<td><p>Built-in API gateway for rolling upgrades, scale with serverless nuclio-based functions running on Kubernetes</p></td>
+<td><p>Built-in API gateway for rolling upgrades, scale with serverless Nuclio-based functions running on Kubernetes</p></td>
 <td><p>Real-time monitoring for performance and operational statistics</p></td>
 <td><p>Built-in experiment tracking with model and artifact versioning including model management &amp; cataloging</p></td>
 <td><p>Integration with common CI/CD tools including Gitlab, Jenkins, Github</p></td>
@@ -873,13 +879,13 @@
 <td><p>Enterprise pricing delivered as SaaS, on-prem, or VPC.</p></td>
 <td><p>Works with data preparation, exploration, cleaning, and featuring engineering tools</p></td>
 <td><p>Works with model training tools</p></td>
-<td><p>Verta Deployment - Serve inference in batch, real-time and streaming (kafka). Verta Model Registry - package and deploy to external ecosystem (e.g. Spark)</p></td>
+<td><p>Verta Deployment - Serve inference in batch, real-time and streaming (Kafka). Verta Model Registry - package and deploy to external ecosystem (e.g. Spark)</p></td>
 <td><p>Manage model release versions and stages. Supports autoscaling, HA, canary rollouts</p></td>
 <td><p>Operation metrics available in the system &amp; exported to other systems. Ingest GT and monitor model performance metrics. Supports creation of custom metrics</p></td>
-<td><p>Package &amp; publish release ready models in Verta Model Registry. Transition model stages with approval workflows &amp; activity logs. Capture model metadata, ensure model immutabilty and add CI/CD automation</p></td>
+<td><p>Package &amp; publish release ready models in Verta Model Registry. Transition model stages with approval workflows &amp; activity logs. Capture model metadata, ensure model immutability and add CI/CD automation</p></td>
 <td><p>Connect to CI/CD tool (e.g. Jenkins) to automate model release. Approval workflows and stage/environment promotion</p></td>
-<td><p>Support for workspaces, granual user permissions, admin controls and collaborators. RBAC, user management, SSO support with variety of identity providers.</p></td>
-<td><p>Self-install of ModelDB on kubernetes</p></td>
+<td><p>Support for workspaces, granular user permissions, admin controls and collaborators. RBAC, user management, SSO support with variety of identity providers.</p></td>
+<td><p>Self-install of ModelDB on Kubernetes</p></td>
 <td><p>SaaS, on-prem, and VPC</p></td>
 </tr>
 </tbody>
@@ -890,7 +896,7 @@
 </section>
 <section id="conclusion">
 <h2>Conclusion<a class="headerlink" href="#conclusion" title="Permalink to this heading">#</a></h2>
-<p>Deep learning applications are quite diverse, and one may consider Jina as MLOps framework for neural search and creative AI. Having one MLOps platform that can deal with all of these different settings and requirements is quite difficult.  Most MLOps products promise everything but actually pick a specific subset of these possibilities. It might not even be a good idea to build a platform that works for everything. Jina focuses on cross-modal and multimodal applications, optimizes for their system designs and requirements, and provides an end-to-end development experience that can be used to build in production applications.</p>
+<p>Deep learning applications are diverse, and you may consider Jina as an MLOps framework for neural search and creative AI. Having one MLOps platform that can deal with all of these different settings and requirements is quite difficult.  Most MLOps products promise everything but actually pick a specific subset of these possibilities. It might not even be a good idea to build a platform that works for everything. Jina focuses on cross-modal and multimodal applications, optimizes for their system designs and requirements, and provides an end-to-end development experience that can be used to build in-production applications.</p>
 </section>
 </section>
 
@@ -925,7 +931,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Oct 10, 2022</div>
+                            Last updated on Oct 24, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -961,7 +967,7 @@
 <li><a class="reference internal" href="#multi-user-video-streaming">Multi-user video streaming</a></li>
 <li><a class="reference internal" href="#index-and-query-with-sharding">Index and query with sharding</a></li>
 <li><a class="reference internal" href="#comparisons">Comparisons</a><ul>
-<li><a class="reference internal" href="#on-local-machine">On local machine</a></li>
+<li><a class="reference internal" href="#on-local-machines">On local machines</a></li>
 <li><a class="reference internal" href="#as-a-singleton-or-monolith-service">As a singleton or monolith service</a></li>
 <li><a class="reference internal" href="#as-a-workflow-on-the-cloud">As a workflow on the cloud</a><ul>
 <li><a class="reference internal" href="#based-on-guide-to-evaluating-mlops-platforms">Based on “Guide to Evaluating MLOps Platforms”</a></li>
