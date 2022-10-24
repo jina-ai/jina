@@ -25,7 +25,7 @@ If you haven't logged into Jina, it will return `NAME` and `SECRET`. You need th
 If you are logged into the Hub using our CLI tools (`jina auth login` or `jcloud login`), you can push and pull your Executors without `SECRET`.
 ````
 
-You can then visit [Executor Hub](https://hub.jina.ai), select the "Recent" tab and see your published Executor.
+You can then visit [Executor Hub](https://cloud.jina.ai), select the "Recent" tab and see your published Executor.
 
 ````{admonition} Note
 :class: note
