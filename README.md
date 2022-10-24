@@ -414,7 +414,12 @@ You can integrate Jaeger or any other distributed tracing tools to collect and v
 Using Grafana becomes easy, just [download this JSON](https://github.com/jina-ai/example-grafana-prometheus/blob/main/grafana-dashboards/flow-histogram-metrics.json) and import it into Grafana:
 
 <p align="center">
-<a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/.github/readme/grafana-histogram-metrics.png?raw=true" alt="Jina: Seamless Container Integration" width="70%"></a>
+<a href="https://docs.jina.ai"><img src=".github/readme/grafana-histogram-metrics.png?raw=true" alt="Jina: Seamless Container Integration" width="70%"></a>
+</p>
+
+Using Jaeger becomes easy.
+<p align="center">
+<a href="https://docs.jina.ai"><img src=".github/readme/jaeger-tracing-example.png?raw=true" alt="Jina: Seamless Container Integration" width="70%"></a>
 </p>
 
 
