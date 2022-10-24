@@ -417,7 +417,7 @@ Using Grafana becomes easy, just [download this JSON](https://github.com/jina-ai
 <a href="https://docs.jina.ai"><img src=".github/readme/grafana-histogram-metrics.png?raw=true" alt="Jina: Seamless Container Integration" width="70%"></a>
 </p>
 
-Using Jaeger becomes easy.
+Using Jaeger to trace requests becomes easy.
 <p align="center">
 <a href="https://docs.jina.ai"><img src=".github/readme/jaeger-tracing-example.png?raw=true" alt="Jina: Seamless Container Integration" width="70%"></a>
 </p>
