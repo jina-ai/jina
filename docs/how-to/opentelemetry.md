@@ -2,10 +2,10 @@
 # Observability and Instrumentation with OpenTelemetry and Jina
 
 ```{hint}
-Prometheus only based metrics collection will be deprecated soon. Refer to {ref}`Monitor with Prometheus and Grafana <monitoring>` for the old setup.
+Prometheus-only based metrics collection will soon be deprecated. Refer to {ref}`Monitor with Prometheus and Grafana <monitoring>` for the old setup.
 ```
 
-There are two major setups required to visualize/monitor your application's signals using [OpenTelemetry](https://opentelemetry.io). The first step is covered by Jina which integrates the [OpenTelemetry API and SDK](https://opentelemetry-python.readthedocs.io/en/stable/api/index.html) at the application level. The {ref}`Flow Instrumentation <instrumenting-flow>` page covers in detail the steps required to enable OpenTelemetry in a Flow. A {class}`~jina.Client` can also be instrumented which is documented in the {ref}`Client Instrumentation <instrumenting-client>` section.
+There are two major setups required to visualize/monitor your application's signals using [OpenTelemetry](https://opentelemetry.io). The first setup is covered by Jina which integrates the [OpenTelemetry API and SDK](https://opentelemetry-python.readthedocs.io/en/stable/api/index.html) at the application level. The {ref}`Flow Instrumentation <instrumenting-flow>` page covers in detail the steps required to enable OpenTelemetry in a Flow. A {class}`~jina.Client` can also be instrumented which is documented in the {ref}`Client Instrumentation <instrumenting-client>` section.
 
 This section covers the OpenTelemetry infrastructure setup required to collect, store and visualize the traces and metrics data exported by the Pods. This setup is the user's responsibility, and this section only serves as the initial/introductory guide to running OpenTelemetry infrastructure components.
 

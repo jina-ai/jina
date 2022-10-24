@@ -93,7 +93,7 @@ Beyond the above-mentioned default traces, you can define {ref}`custom traces <i
 ## Metrics
 
 ```{hint}
-Prometheus only based metrics collection will be deprecated soon. Refer to {ref}`Monitoring Flow <monitoring-flow>` section for the deprecated setup.
+Prometheus-only based metrics collection will soon be deprecated. Refer to {ref}`Monitoring Flow <monitoring-flow>` section for the deprecated setup.
 ```
 
 ````{tab} Python

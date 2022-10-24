@@ -3,7 +3,7 @@
 
 ```{admonition} Deprecated
 :class: caution
-The Prometheus only based feature will be deprecated soon in favor of the OpenTelemetry Setup. Refer to {ref}`OpenTelemetry Setup <opentelemetry>` for the details on OpenTelemetry setup for Jina.
+The Prometheus-only based feature will soon be deprecated in favor of the OpenTelemetry Setup. Refer to {ref}`OpenTelemetry Setup <opentelemetry>` for the details on OpenTelemetry setup for Jina.
 
 Refer to the {ref}`OpenTelemetry migration guide <opentelemetry-migration>` for updating your existing Prometheus and Grafana configurations.
 ```

@@ -3,8 +3,6 @@
 
 Instrumentation consists of [OpenTelemetry](https://opentelemetry.io) Tracing and Metrics. Each feature can be enabled independently, and they allow you to collect request-level and application-level metrics for analyzing an Executor's real-time behavior. 
 
-This section documents creating custom traces and metrics.
-
 ```{admonition} Full details on Instrumentation
 :class: seealso
 This section describes **custom** tracing spans. To use the Executor's default tracing, refer to {ref}`Flow Instrumentation <instrumenting-flow>`.
@@ -83,7 +81,7 @@ If tracing is not enabled by default or enabled in your environment, check `self
 ## Metrics
 
 ```{hint}
-Prometheus only based metrics collection will be deprecated soon. Refer to {ref}`Monitoring Executor <monitoring-executor>` section for the deprecated setup.
+Prometheus-only based metrics collection will be deprecated soon. Refer to {ref}`Monitoring Executor <monitoring-executor>` section for the deprecated setup.
 ```
 
 Any method that uses the {class}`~jina.requests` decorator is monitored and creates a
@@ -184,7 +182,7 @@ class MyExecutor(Executor):
 This creates a [Counter](https://opentelemetry.io/docs/reference/specification/metrics/api/#counter) that you can use to incrementally track the number of Documents received in each request. 
 
 ````{hint}
-If metrics are not enabled by default or enabled on a per environment basis, you should check `self.meter` and `self.counter` exist before usage. If metrics are disabled then `self.meter` will be `None`.
+If metrics are not enabled by default or enabled in your environment, you should check `self.meter` and `self.counter` exists before usage. If metrics are disabled then `self.meter` will be `None`.
 ````
 
 
