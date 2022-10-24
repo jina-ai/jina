@@ -8,7 +8,7 @@ from jina.importer import ImportExtensions
 from jina.logging.predefined import default_logger
 from jina.types.request import Request
 
-if TYPE_CHECKING:
+if TYPE_CHECKING: # pragma: no cover
     from jina.clients.request import GeneratorSourceType
 
 

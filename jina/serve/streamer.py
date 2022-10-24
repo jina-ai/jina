@@ -9,7 +9,7 @@ from jina.serve.stream import RequestStreamer
 
 __all__ = ['GatewayStreamer']
 
-if TYPE_CHECKING:
+if TYPE_CHECKING: # pragma: no cover
     from grpc.aio._interceptor import ClientInterceptor
     from opentelemetry.instrumentation.grpc._client import (
         OpenTelemetryClientInterceptor,

@@ -1,5 +1,5 @@
 (jina-hub)=
-# Hub
+# Executor Hub
 
 Now that you understand that {class}`~jina.Executor` is a building block in Jina, you may also wonder:
 
@@ -13,11 +13,11 @@ Basically, something like the following:
 :align: center
 ```
 
-**Yes!** This is exactly the purpose of Jina Hub - a marketplace for Executors. With Hub you can pull prebuilt
+**Yes!** This is exactly the purpose of Executor Hub - a marketplace for Executors. With Hub you can pull prebuilt
 Executors to dramatically reduce the effort and complexity needed in your search system, or push your own custom
 Executors to share privately or publicly.
 
-A Hub Executor is an Executor published on Jina Hub. You can use such an Executor in a Flow:
+A Hub Executor is an Executor published on Executor Hub. You can use such an Executor in a Flow:
 
 ```python
 from jina import Flow

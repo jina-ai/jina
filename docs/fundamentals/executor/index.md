@@ -38,7 +38,7 @@ class MyExecutor(Executor):
 
 executor-api
 executor-methods
-monitoring-executor
+instrumenting-executor
 executor-run
 executor-serve
 executor-files
