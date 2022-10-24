@@ -1,2 +1,0 @@
-# Add a new line of space-separated file paths (old_path new_path) like the following example:
-# hello-world/installation.md get-started/install.md
