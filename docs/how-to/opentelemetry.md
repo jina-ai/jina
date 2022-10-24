@@ -9,7 +9,7 @@ There are two major setups required to visualize/monitor your application's sign
 
 This section covers the OpenTelemetry infrastructure setup required to collect, store and visualize the traces and metrics data exported by the Pods. This setup is the user's responsibility, and this section only serves as the initial/introductory guide to running OpenTelemetry infrastructure components.
 
-Since OpenTelemetry is open source and is mostly responsible for the API standards and specification, there are various providers that implement the specification. This section follows the default recommendations from the OpenTelemetry documentation that also fits into the Jina implementations.
+Since OpenTelemetry is open source and is mostly responsible for the API standards and specification, various providers implement the specification. This section follows the default recommendations from the OpenTelemetry documentation that also fits into the Jina implementations.
 
 ## Exporting traces and metrics data
 
@@ -17,14 +17,14 @@ Pods created using a {class}`~jina.Flow` with tracing or metrics enabled use the
 
 The push/export-based mechanism also allows the application to start pushing data immediately on startup. This differs from the pull-based mechanism where you need a separate scraping registry to discovery service to identify data scraping targets.
 
-You can currently configure the exporter backend host and port using the `traces_exporter_host`, `traces_exporter_port`, `metrics_exporter_host` and `metrics_exporter_port`. Even though the Collector is metric data type agnostic (it can accept any type of OpenTelemetry API data model), we provide separate configuration for Tracing and Metrics to give users more flexibility in choosing their infrastructure components.
+You can configure the exporter backend host and port using the `traces_exporter_host`, `traces_exporter_port`, `metrics_exporter_host` and `metrics_exporter_port`. Even though the Collector is metric data-type agnostic (it accepts any type of OpenTelemetry API data model), we provide separate configuration for Tracing and Metrics to give you more flexibility in choosing infrastructure components.
 
-Jina's default exporter implementation is  `OTLPSpanExporter` and `OTLPMetricExporter`. The exporters also use the gRPC data transfer protocol. The following environment variables can be used to further configure the exporter client based on your requirements. The full list of exporter related environment variables are documented by the [PythonSDK library](https://opentelemetry-python.readthedocs.io/en/latest/exporter/otlp/otlp.html). Apart from the `OTEL_EXPORTER_OTLP_PROTOCOL` and the `OTEL_EXPORTER_OTLP_TRACES_ENDPOINT` environment variables, you can use all other library version specific environment variables to configure the exporter clients.
+Jina's default exporter implementation is  `OTLPSpanExporter` and `OTLPMetricExporter`. The exporters also use the gRPC data transfer protocol. The following environment variables can be used to further configure the exporter client based on your requirements. The full list of exporter related environment variables are documented by the [PythonSDK library](https://opentelemetry-python.readthedocs.io/en/latest/exporter/otlp/otlp.html). Apart from `OTEL_EXPORTER_OTLP_PROTOCOL` and `OTEL_EXPORTER_OTLP_TRACES_ENDPOINT`, you can use all other library version specific environment variables to configure the exporter clients.
 
 
 ## Collector
 
-The [Collector](https://opentelemetry.io/docs/collector/) is a huge ecosystem of components that support various features such as scraping, collecting, processing and further exporting data to storage backends. The collector itself can also expose endpoints to allow scraping data. We recommend you read the official documentation to understand the the full set of features and configuration required to run a Collector. Read the below section to understand the minimum number of components and the respective configuration required for operating with Jina.
+The [Collector](https://opentelemetry.io/docs/collector/) is a huge ecosystem of components that support features like scraping, collecting, processing and further exporting data to storage backends. The collector itself can also expose endpoints to allow scraping data. We recommend reading the official documentation to understand the the full set of features and configuration required to run a Collector. Read the below section to understand the minimum number of components and the respective configuration required for operating with Jina.
 
 We recommend using the [OpenTelemetry Collector](https://opentelemetry.io/docs/collector/) from the contrib repository. We also use:
 - [Jaeger](https://www.jaegertracing.io) for collecting traces, visualizing tracing data and alerting based on tracing data.
@@ -110,9 +110,9 @@ service:
       exporters: [prometheus]
 ```
 
-Briefly, this setup creates a gRPC Collector Receiver on port 4317 that can collect data pushed by the Flow Pods. Collector exporters for Jaeger and Prometheus backends are configured to export tracing and metrics data respectively. The final **service** section creates a collector pipeline combining the receiver (collect data) and exporter (to backend), process (batching) sub-components.
+This setup creates a gRPC Collector Receiver on port 4317 that collects data pushed by the Flow Pods. Collector exporters for Jaeger and Prometheus backends are configured to export tracing and metrics data respectively. The final **service** section creates a collector pipeline combining the receiver (collect data) and exporter (to backend), process (batching) sub-components.
 
-The Prometheus minimal configuration below needs to be stored in file `prometheus-config.yml`.
+The minimal Prometheus configuration needs to be stored in `prometheus-config.yml`.
 ```yaml
 scrape_configs:
   - job_name: 'otel-collector'
@@ -153,11 +153,9 @@ The list of available traces are documented in the {ref}`Flow Instrumentation <i
 
 ## Monitor with Prometheus and Grafana
 
-External entities (like Grafana) can access these aggregated metrics via the query language [PromQL](https://prometheus.io/docs/prometheus/latest/querying/basics/), and let users visualize the metrics with dashboards. Check out a [comprehensive tutorial](https://prometheus.io/docs/visualization/grafana/) for more information.
+External entities (like Grafana) can access these aggregated metrics via the [PromQL](https://prometheus.io/docs/prometheus/latest/querying/basics/) query language, and let users visualize metrics with dashboards. Check out a [comprehensive tutorial](https://prometheus.io/docs/visualization/grafana/) for more information.
 
-You can download a [sample Grafana dashboard JSON file](https://github.com/jina-ai/example-grafana-prometheus/blob/main/grafana-dashboards/flow-histogram-metrics.json) and import it into Grafana to get started with some pre-built graphs.
-
-The sample dashboard looks like:
+Download a [sample Grafana dashboard JSON file](https://github.com/jina-ai/example-grafana-prometheus/blob/main/grafana-dashboards/flow-histogram-metrics.json) and import it into Grafana to get started with some pre-built graphs:
 
 ```{figure} ../../.github/2.0/grafana-histogram-metrics.png
 :align: center
@@ -171,4 +169,4 @@ To update your existing Prometheus and Grafana configurations, refer to the {ref
 
 ## JCloud Support
 
-JCloud doesn't currently support OpenTelemetry. These features will be made available soon. Until then, you can use the deprecated Prometheus-based {ref}`monitoring setup <monitoring-flow>`.
+JCloud doesn't currently support OpenTelemetry. We'll make these features available soon. Until then, you can use the deprecated Prometheus-based {ref}`monitoring setup <monitoring-flow>`.

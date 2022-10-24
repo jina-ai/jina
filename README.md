@@ -387,7 +387,7 @@ jina export docker-compose flow.yml docker-compose.yml
 docker-compose up
 ```
 
-Tracing and monitoring with OpenTelemetry becomes easy:
+Tracing and monitoring with OpenTelemetry is straightforward:
 
 ```python
 from jina import Executor, requests, DocumentArray
@@ -411,13 +411,13 @@ class MyExec(Executor):
 
 You can integrate Jaeger or any other distributed tracing tools to collect and visualize request-level and application level service operation attributes. This helps you analyze request-response lifecycle, application behavior and performance.
 
-Using Grafana becomes easy, just [download this JSON](https://github.com/jina-ai/example-grafana-prometheus/blob/main/grafana-dashboards/flow-histogram-metrics.json) and import it into Grafana:
+To use Grafana, [download this JSON](https://github.com/jina-ai/example-grafana-prometheus/blob/main/grafana-dashboards/flow-histogram-metrics.json) and import it into Grafana:
 
 <p align="center">
 <a href="https://docs.jina.ai"><img src=".github/readme/grafana-histogram-metrics.png?raw=true" alt="Jina: Seamless Container Integration" width="70%"></a>
 </p>
 
-Using Jaeger to trace requests becomes easy.
+To trace requests with Jaeger:
 <p align="center">
 <a href="https://docs.jina.ai"><img src=".github/readme/jaeger-tracing-example.png?raw=true" alt="Jina: Seamless Container Integration" width="70%"></a>
 </p>

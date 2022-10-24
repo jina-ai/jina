@@ -1,7 +1,7 @@
 (opentelemetry-migration)=
 # Migrate from Prometheus/Grafana to OpenTelemetry/Prometheus/Grafana 
 
-The {ref}`Prometheus/Grafana <monitoring>`based monitoring setup will soon be deprecated in favor of the {ref}`OpenTelemetry setup <opentelemetry>`. This section provides the details required to update/migrate your Prometheus configuration and Grafana dashboard to continue monitoring with OpenTelemetry. Refer to {ref}`Opentelemetry setup <opentelemetry>` for the new setup before proceeding further.
+The {ref}`Prometheus/Grafana <monitoring>` based monitoring setup will soon be deprecated in favor of the {ref}`OpenTelemetry setup <opentelemetry>`. This section provides the details required to update/migrate your Prometheus configuration and Grafana dashboard to continue monitoring with OpenTelemetry. Refer to {ref}`Opentelemetry setup <opentelemetry>` for the new setup before proceeding further.
 
 ```{hint}
 :class: seealso
@@ -25,7 +25,7 @@ scrape_configs:
 
 ## Update Grafana dashboard
 
-The OpenTelemetry [Histogram](https://opentelemetry.io/docs/reference/specification/metrics/api/#histogram) provides quantile window buckets automatically (unlike the Prometheus [Summary](https://prometheus.io/docs/concepts/metric_types/#summary) instrument.) You need to manually configure the required quantile window. The quatile window metric will then be available as a separate time series metric.
+The OpenTelemetry [Histogram](https://opentelemetry.io/docs/reference/specification/metrics/api/#histogram) provides quantile window buckets automatically (unlike the Prometheus [Summary](https://prometheus.io/docs/concepts/metric_types/#summary) instrument). You need to manually configure the required quantile window. The quatile window metric will then be available as a separate time series metric.
 
 In addition, the OpenTelemetry `Counter/UpDownCounter` instruments do not add the `_total` suffix to the base metric name.
 

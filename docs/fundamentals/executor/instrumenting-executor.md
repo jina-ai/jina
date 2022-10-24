@@ -1,21 +1,21 @@
 (instrumenting-executor)=
 # Instrumentation
 
-Instrumentation consists of [OpenTelemetry](https://opentelemetry.io) Tracing and Metrics. Each feature can be enabled independently, and they allow you to collect request-level and application level metrics for analyzing an Executor's real-time behavior. 
+Instrumentation consists of [OpenTelemetry](https://opentelemetry.io) Tracing and Metrics. Each feature can be enabled independently, and they allow you to collect request-level and application-level metrics for analyzing an Executor's real-time behavior. 
 
 This section documents creating custom traces and metrics.
 
 ```{admonition} Full details on Instrumentation
 :class: seealso
-This section describes **custom** tracing spans. To use the Executor's default tracing, refer to {ref}`the Flow Instrumentation <instrumenting-flow>` section.
+This section describes **custom** tracing spans. To use the Executor's default tracing, refer to {ref}`Flow Instrumentation <instrumenting-flow>`.
 ```
 
 ```{hint}
-The OpenTelemetry collector backend setup is described in the {ref}`OpenTelemetry Setup <opentelemetry>` section.
+Read more on setting up an OpenTelemetry collector backend in the {ref}`OpenTelemetry Setup <opentelemetry>` section.
 ```
 
 ```{caution}
-Prometheus only based metrics collection will be deprecated soon. Refer to {ref}`Monitoring Executor <monitoring-executor>` section for the deprecated setup.
+Prometheus-only based metrics collection will soon be deprecated. Refer to {ref}`Monitoring Executor <monitoring-executor>` for this deprecated setup.
 ```
 
 ## Tracing
@@ -27,7 +27,7 @@ method.
 
 You can create custom spans to observe the operation's individual steps or record details and attributes with finer granularity. When tracing is enabled, Jina provides the OpenTelemetry Tracer implementation as an Executor class attribute that you can use to create new child spans. The `tracing_context` method argument contains the parent span context using which a new span can be created to trace the desired operation in the method.
 
-If tracing is enabled, each Executor exports its traces to the configured exporter host via the [Span Exporter](https://opentelemetry.io/docs/reference/specification/trace/sdk/#span-exporter). The backend combines these traces for visualization and alerting purposes.
+If tracing is enabled, each Executor exports its traces to the configured exporter host via the [Span Exporter](https://opentelemetry.io/docs/reference/specification/trace/sdk/#span-exporter). The backend combines these traces for visualization and alerting.
 
 
 ### Create custom traces
@@ -77,7 +77,7 @@ You should respect OpenTelemetry Tracing [semantic conventions](https://opentele
 ````
 
 ````{hint}
-If tracing is not enabled by default or enabled per environment basis, you should check `self.tracer` exists before usage. If metrics are disabled then `self.tracer` will be `None`.
+If tracing is not enabled by default or enabled in your environment, check `self.tracer` exists before usage. If metrics are disabled then `self.tracer` will be `None`.
 ````
 
 ## Metrics
@@ -93,7 +93,7 @@ This section documents adding custom monitoring to the {class}`~jina.Executor` w
 
 Custom metrics are useful to monitor each sub-part of your Executor(s). Jina lets you leverage
 the [Meter](https://opentelemetry.io/docs/reference/specification/metrics/api/#meter) to define useful metrics 
-for each of your Executors. We provide a convenient wrapper as well, i.e {func}`~jina.monitor`, which lets you monitor
+for each of your Executors. We also provide a convenient wrapper, ({func}`~jina.monitor`), which lets you monitor
 your Executor's sub-methods. 
 
 When metrics are enabled, each Executor exposes its 
@@ -104,7 +104,7 @@ own metrics via the [Metric Exporter](https://opentelemetry.io/docs/reference/sp
 
 Sometimes monitoring the `encoding` method is not enough - you need to break it up into multiple parts to monitor one by one.
 
-This is useful if your encoding phase is composed of two tasks: image processing and
+This is useful if your encoding phase is composed of two tasks, like image processing and
 image embedding. By using custom metrics on these two tasks you can identify potential bottlenecks.
 
 Overall, adding custom metrics gives you full flexibility when monitoring your Executor.
@@ -190,7 +190,6 @@ If metrics are not enabled by default or enabled on a per environment basis, you
 
 #### Example
 
-Let's use an example to show custom metrics:
 
 ```python
 from jina import requests, Executor, DocumentArray

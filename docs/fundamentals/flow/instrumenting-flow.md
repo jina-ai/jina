@@ -186,7 +186,7 @@ The Executor also adds the Executor class name and the request endpoint for the 
 
 
 ```{seealso} 
-Beyond the above mentioned default metrics, you can define {ref}`custom metrics <instrumenting-executor>` for your Executor. 
+Beyond the default metrics outlined above, you can also define {ref}`custom metrics <instrumenting-executor>` for your Executor. 
 ```
 
 ```{hint} 
