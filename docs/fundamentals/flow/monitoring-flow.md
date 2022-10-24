@@ -1,5 +1,10 @@
 (monitoring-flow)=
 # Monitor
+
+```{admonition} Deprecated
+:class: seealso
+The Prometheus-only based feature will soon be deprecated in favor of the OpenTelemetry API. Refer to {ref}`Flow Instrumentation <instrumenting-flow>` for the current methods on observing and instrumenting Jina.
+```
  
 A Jina {class}`~jina.Flow` exposes several core metrics that let you have a deeper look
 at what is happening inside. Metrics allow you to, for example, monitor the overall performance 

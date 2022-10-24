@@ -131,7 +131,7 @@ with f:
 create-flow
 add-executors
 topologies
-monitoring-flow
+instrumenting-flow
 health-check
 when-things-go-wrong
 yaml-spec

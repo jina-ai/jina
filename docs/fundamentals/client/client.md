@@ -826,4 +826,5 @@ For details on the allowed mutation arguments and response fields, see {ref}`her
 :hidden:
 
 third-party-client
+instrumenting-client
 ```
