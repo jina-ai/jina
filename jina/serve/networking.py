@@ -26,7 +26,7 @@ TLS_PROTOCOL_SCHEMES = ['grpcs', 'https', 'wss']
 
 from typing import TYPE_CHECKING
 
-if TYPE_CHECKING:
+if TYPE_CHECKING: # pragma: no cover
     from grpc.aio._interceptor import ClientInterceptor
     from opentelemetry.instrumentation.grpc._client import (
         OpenTelemetryClientInterceptor,
