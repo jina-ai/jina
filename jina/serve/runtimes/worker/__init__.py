@@ -16,7 +16,7 @@ from jina.serve.runtimes.helper import _get_grpc_server_options
 from jina.serve.runtimes.request_handlers.data_request_handler import DataRequestHandler
 from jina.types.request.data import DataRequest
 
-if TYPE_CHECKING:
+if TYPE_CHECKING: # pragma: no cover
     from opentelemetry.propagate import Context
 
 

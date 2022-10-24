@@ -17,7 +17,7 @@ from jina.serve.runtimes.base import BaseRuntime
 from jina.serve.runtimes.monitoring import MonitoringMixin
 from jina.types.request.data import DataRequest
 
-if TYPE_CHECKING:
+if TYPE_CHECKING: # pragma: no cover
     import multiprocessing
     import threading
 

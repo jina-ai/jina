@@ -11,7 +11,7 @@ from jina.logging.profile import ProgressBar
 from jina.proto import jina_pb2, jina_pb2_grpc
 from jina.serve.networking import GrpcConnectionPool
 
-if TYPE_CHECKING:
+if TYPE_CHECKING: # pragma: no cover
     from jina.clients.base import CallbackFnType, InputType
 
 

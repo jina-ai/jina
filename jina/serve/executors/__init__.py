@@ -18,7 +18,7 @@ from jina.serve.executors.metas import get_executor_taboo
 from jina.serve.helper import store_init_kwargs, wrap_func
 from jina.serve.instrumentation import MetricsTimer
 
-if TYPE_CHECKING:
+if TYPE_CHECKING: # pragma: no cover
     from opentelemetry.context.context import Context
 
 __dry_run_endpoint__ = '_jina_dry_run_'

@@ -14,7 +14,7 @@ from jina.logging.profile import ProgressBar
 from jina.proto import jina_pb2
 from jina.serve.stream import RequestStreamer
 
-if TYPE_CHECKING:
+if TYPE_CHECKING: # pragma: no cover
     from jina.clients.base import CallbackFnType, InputType
     from jina.types.request import Request
 

@@ -8,7 +8,7 @@ from jina.importer import ImportExtensions
 from jina.serve.executors import BaseExecutor
 from jina.types.request.data import DataRequest
 
-if TYPE_CHECKING:
+if TYPE_CHECKING: # pragma: no cover
     import argparse
 
     from opentelemetry import metrics, trace
