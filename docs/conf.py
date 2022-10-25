@@ -102,6 +102,7 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinx.ext.coverage',
     'sphinxcontrib.apidoc',
+    'sphinxcontrib.redirects',
     'sphinxarg.ext',
     'sphinx_copybutton',
     'sphinx_sitemap',
@@ -116,7 +117,7 @@ extensions = [
 intersphinx_mapping = {'docarray': ('https://docarray.jina.ai/', None)}
 myst_enable_extensions = ['colon_fence']
 autosummary_generate = True
-
+redirects_file = 'redirects.txt'
 # -- Custom 404 page
 
 # sphinx-notfound-page
