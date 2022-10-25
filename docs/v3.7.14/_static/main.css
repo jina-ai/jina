@@ -1,0 +1,184 @@
+html.loaded-in-iframe #announcement,
+html.loaded-in-iframe #sidebar-drawer,
+html.loaded-in-iframe footer,
+html.loaded-in-iframe #toc-drawer {
+  display: none!important;
+}
+
+html.loaded-in-iframe .page .main {
+    justify-content: center;
+}
+
+.sidebar-logo {
+    max-width: 50%;
+}
+
+
+table.docutils {
+    border: thin;
+}
+
+table.docutils td, table.docutils th {
+    padding: 1rem 1rem;
+}
+
+.highlight {
+    background: #f5f5f5;
+}
+
+h1, h2, h3 {
+    margin-top: 3rem;
+}
+
+.highlight-console .highlight {
+    background: #00232b !important;
+    color: whitesmoke;
+}
+
+.highlight-text .highlight {
+    background: #00232b !important;
+    color: whitesmoke;
+}
+
+.highlight-json .highlight {
+    background: #00232b !important;
+    color: whitesmoke;
+}
+
+.highlight-shell .highlight {
+    background: #00232b !important;
+    color: whitesmoke;
+}
+
+.highlight-bash .highlight {
+    background: #00232b !important;
+    color: whitesmoke;
+}
+
+.tab-set > input:checked + label {
+    border-color: var(--tabs--label-text--active);
+}
+
+.tab-set > input:checked + label:hover {
+    border-color: var(--tabs--label-text--active);
+}
+
+
+table code {
+    background: var(--color-inline-code-background);
+    border: 1px solid var(--color-background-border);
+    border-radius: .2em;
+    font-size: var(--font-size--small--2);
+    padding: .1em .2em;
+}
+
+.related-information {
+    justify-content: space-between;
+}
+
+.social-btn {
+    margin: 0 .3em;
+}
+
+.social-btn:hover {
+    opacity: .5;
+}
+
+.social-btns {
+    display: inline-block;
+}
+
+.announcement {
+    background-color: var(--color-brand-primary);
+    color: var(--color-background-primary) !important;
+}
+
+.announcement a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.announcement a:hover {
+    color: inherit;
+    text-decoration: underline;
+}
+
+.sidebar-ecosys-logo {
+    width: 1.2em;
+    margin-right: .5em;
+    vertical-align: middle
+}
+
+
+body[data-theme="dark"] .only-dark-line {
+    display: inline-block !important;
+}
+
+body[data-theme="dark"] .only-light-line {
+    display: none !important;
+}
+
+body[data-theme="light"] .only-light-line {
+    display: inline-block !important;
+}
+
+body[data-theme="light"] .only-dark-line {
+    display: none !important;
+}
+
+body[data-theme="auto"] .only-light-line {
+    display: inline-block !important;
+}
+
+body[data-theme="auto"] .only-dark-line {
+    display: none !important;
+}
+
+.color-gradient-card-1 {
+    background: linear-gradient(270deg, #22c1c3, #fdbb2d);
+    background-size: 200% 200%;
+
+    -webkit-animation: AnimationName 30s ease infinite;
+    -moz-animation: AnimationName 30s ease infinite;
+    animation: AnimationName 30s ease infinite;
+}
+
+.color-gradient-card-2 {
+    background: linear-gradient(270deg, #7060d9, #ff83b6);
+    background-size: 200% 200%;
+
+    -webkit-animation: AnimationName 30s ease infinite;
+    -moz-animation: AnimationName 30s ease infinite;
+    animation: AnimationName 30s ease infinite;
+}
+
+@-webkit-keyframes AnimationName {
+    0%{background-position:0% 50%}
+    50%{background-position:100% 50%}
+    100%{background-position:0% 50%}
+}
+@-moz-keyframes AnimationName {
+    0%{background-position:0% 50%}
+    50%{background-position:100% 50%}
+    100%{background-position:0% 50%}
+}
+@keyframes AnimationName {
+    0%{background-position:0% 50%}
+    50%{background-position:100% 50%}
+    100%{background-position:0% 50%}
+}
+
+.version-select {
+    font-size: .7em;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: #fff;
+    background-image: linear-gradient(to top, #f9f9f9, #fff 33%);
+    border-color: var(--color-background-border);
+    height: 1.8em;
+    line-height: 1.8em;
+    outline: none;
+    text-align: center;
+    max-width: 7em;
+    color: var(--color-foreground-muted);
+}
