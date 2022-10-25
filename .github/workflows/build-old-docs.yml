@@ -82,7 +82,7 @@ jobs:
       - name: Sphinx Build
         run: |
           cd docs
-          bash makedoc.sh
+          bash makedoc.sh local-only
       - name: Package build into artifact
         run: |
           mv ./docs/_build/dirhtml ./${{ matrix.version }}

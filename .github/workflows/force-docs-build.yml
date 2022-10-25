@@ -68,7 +68,7 @@ jobs:
       - name: Sphinx Build
         run: |
           cd docs
-          bash makedoc.sh
+          bash makedoc.sh local-only
           mv ./_build/dirhtml /tmp/gen-html
           cd ..
       - name: Checkout to GH pages branch (${{ inputs.pages_branch }})
