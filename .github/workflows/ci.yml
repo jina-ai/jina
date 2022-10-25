@@ -129,7 +129,7 @@ jobs:
       - uses: actions/checkout@v2.5.0
       - name: Set up Docker Buildx
         id: buildx
-        uses: docker/setup-buildx-action@v2.1.0
+        uses: docker/setup-buildx-action@v1
         with:
           install: true
           driver-opts: network=host
