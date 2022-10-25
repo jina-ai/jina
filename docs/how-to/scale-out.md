@@ -107,7 +107,7 @@ As you can see, it now only takes three seconds to finish the task. If you deplo
 ### Context
 
 Now with the text corpus encoded as TF-IDF embeddings, it's time to save the results.
-We'll use Jina's [ANNLiteIndexer](https://hub.jina.ai/executor/7yypg8qk) to persist the embeddings for fast Approximate Nearest Neighbor Search.
+We'll use Jina's [ANNLiteIndexer](https://cloud.jina.ai/executor/7yypg8qk) to persist the embeddings for fast Approximate Nearest Neighbor Search.
 
 Let's add `ANNLiteIndexer` to the Flow:
 
