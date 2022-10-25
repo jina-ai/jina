@@ -47,7 +47,7 @@ jobs:
         id: get_versions
         run: |
           printf "versions=" >> $GITHUB_OUTPUT
-          curl https://raw.githubusercontent.com/${{ inputs.repo_owner }}/${{ inputs.package }}/main/docs/_versions.json >> $GITHUB_OUTPUT
+          curl https://raw.githubusercontent.com/${{ inputs.repo_owner }}/${{ inputs.package }}/master/docs/_versions.json >> $GITHUB_OUTPUT
     outputs:
       versions: ${{ steps.get_versions.outputs.versions }}
 
@@ -70,7 +70,7 @@ jobs:
         run: |
           git show --summary
           echo "Get latest sidebar brand template"
-          wget https://raw.githubusercontent.com/${{ inputs.repo_owner }}/${{ inputs.package }}/main/docs/_templates/sidebar/brand.html
+          wget https://raw.githubusercontent.com/${{ inputs.repo_owner }}/${{ inputs.package }}/master/docs/_templates/sidebar/brand.html
           mv ./brand.html ./docs/_templates/sidebar/brand.html
       - name: Install dependencies
         run: |
@@ -114,7 +114,7 @@ jobs:
           cd docs
           for i in $(ls /tmp/artifacts); do unzip "/tmp/artifacts/$i/build.zip"; done
           rm _versions.json || true
-          wget https://raw.githubusercontent.com/${{ inputs.repo_owner }}/${{ inputs.package }}/main/docs/_versions.json
+          wget https://raw.githubusercontent.com/${{ inputs.repo_owner }}/${{ inputs.package }}/master/docs/_versions.json
       - name: Push it up!
         run: |
           git config --local user.email "${{ inputs.git_config_email }}"
