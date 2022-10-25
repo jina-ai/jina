@@ -130,7 +130,7 @@ pip install jina
 ```{admonition} Executor Hub
 :class: hint
 
-Let's create an Executor using [Executor Hub](https://hub.jina.ai/). This still creates your Executor locally
+Let's create an Executor using [Executor Hub](https://cloud.jina.ai/). This still creates your Executor locally
 and privately, but makes it quick and easy to run your
 Executor inside a Docker container, or (if you so choose) to publish it to Executor Hub later.
 ```

@@ -49,8 +49,8 @@ the Gateway are built with the same Jina version to guarantee compatibility.
 
 Install [`Docker Compose`](https://docs.docker.com/compose/install/) locally to follow this how-to.
 
-This example shows how to build and deploy a Flow with Docker Compose, using [`CLIPImageEncoder`](https://hub.jina.ai/executor/0hnlmu3q)
-as an image encoder and [`ANNLiteIndexer`](https://hub.jina.ai/executor/7yypg8qk) as an indexer to perform fast nearest
+This example shows how to build and deploy a Flow with Docker Compose, using [`CLIPImageEncoder`](https://cloud.jina.ai/executor/0hnlmu3q)
+as an image encoder and [`ANNLiteIndexer`](https://cloud.jina.ai/executor/7yypg8qk) as an indexer to perform fast nearest
 neighbor retrieval on image embeddings.
 
 ### Deploy the Flow

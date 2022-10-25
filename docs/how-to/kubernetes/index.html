@@ -10,13 +10,13 @@
   
 <meta property="og:url" content="https://docs.jina.ai/how-to/kubernetes/" />
   
-<meta property="og:site_name" content="Jina 3.11.0 Documentation" />
+<meta property="og:site_name" content="Jina 3.11.1 Documentation" />
   
 <meta property="og:description" content="Deploy a Flow to JCloud JCloud is a free CPU/GPU hosting platform for Jina projects. Deploying a Flow in Kubernetes is the recommended way to use Jina in production. Since a Flow is composed of Executor s which can run in different runtimes depending on how you deploy the Flow, Kubernetes can eas..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
-<meta property="og:image:alt" content="Jina 3.11.0 Documentation" />
+<meta property="og:image:alt" content="Jina 3.11.1 Documentation" />
   
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -39,7 +39,7 @@
         <link rel="canonical" href="https://docs.jina.ai/how-to/kubernetes.html" />
 
     <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
-        <title>Deploy with Kubernetes - Jina 3.11.0 documentation</title>
+        <title>Deploy with Kubernetes - Jina 3.11.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -173,7 +173,7 @@
         </div>
         <div class="header-center">
             <a href="../../">
-                <div class="brand">Jina 3.11.0 documentation</div>
+                <div class="brand">Jina 3.11.1 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -213,9 +213,35 @@
   
   
 </a>
+<script>
+  function setPrefix(prefix){
+    window.sessionStorage.setItem("version-select-index", document.getElementsByClassName("version-select")[0].selectedIndex);
+    window.location.href = prefix
+  }
+</script>
+<script defer>
+  fetch(`https://${window.location.host}/_versions.json`)
+  .then((resp) => resp.json())
+  .then((data) => {
+    var versionSelector = document.getElementsByClassName("version-select")[0]
+    for(var i = 0; i < data.length; i++){
+      var option = document.createElement("option");
+      option.innerHTML = data[i].version;
+      option.value = "/" + data[i].version;
+      versionSelector.appendChild(option);
+    }
+
+    if(window.sessionStorage.getItem('version-select-index')){
+      versionSelector.selectedIndex = window.sessionStorage.getItem('version-select-index');
+    }
+  })
+  .catch((err) => console.log(err));
+</script>
 <div class="sd-d-flex-row sd-align-major-spaced">
   <a class="github-button" href="https://github.com/jina-ai/jina" data-icon="octicon-star" data-show-count="true" aria-label="Star jina-ai/jina on GitHub" style="opacity: 0;">Star</a>
-  
+  <select onChange="setPrefix(this.value)" class="version-select">
+    <option value="/">latest</option>
+  </select>
 </div><form class="sidebar-search-container" method="get" action="../../search/" role="search">
   <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -324,7 +350,7 @@
                 <img class="sidebar-ecosys-logo only-light-line" src="../../_static/search-light.svg">
                 <img class="sidebar-ecosys-logo only-dark-line" src="../../_static/search-dark.svg">
                 Jina</a></li>
-        <li class="toctree-l1"><a class="reference external" href="https://hub.jina.ai">
+        <li class="toctree-l1"><a class="reference external" href="https://cloud.jina.ai">
             <img class="sidebar-ecosys-logo only-light-line" src="../../_static/hub-light.svg">
             <img class="sidebar-ecosys-logo only-dark-line" src="../../_static/hub-dark.svg">
             Jina Hub</a></li>
@@ -449,7 +475,7 @@ either in <a class="reference internal" href="../../fundamentals/flow/yaml-spec/
 </div>
 <p>You can essentially define any Flow of your liking.
 Just ensure that all Executors are containerized, either by using <em>‘jinahub+docker’</em>, or by <a class="reference internal" href="../../fundamentals/executor/containerize-executor/#dockerize-exec"><span class="std std-ref">containerizing your local Executors</span></a>.</p>
-<p>The example Flow here simply encodes and indexes text or image data using two Executors from <a class="reference external" href="https://hub.jina.ai/">Executor Hub</a>.</p>
+<p>The example Flow here simply encodes and indexes text or image data using two Executors from <a class="reference external" href="https://cloud.jina.ai/">Executor Hub</a>.</p>
 <p>Next, generate Kubernetes YAML configs from the Flow.
 It’s good practice to define a new Kubernetes namespace for that purpose:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">f</span><span class="o">.</span><span class="n">to_kubernetes_yaml</span><span class="p">(</span><span class="s1">&#39;./k8s_flow&#39;</span><span class="p">,</span> <span class="n">k8s_namespace</span><span class="o">=</span><span class="s1">&#39;custom-namespace&#39;</span><span class="p">)</span>
@@ -782,7 +808,7 @@ sleep <span class="m">60</span> <span class="c1"># wait until the external ip is
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Oct 24, 2022</div>
+                            Last updated on Oct 25, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

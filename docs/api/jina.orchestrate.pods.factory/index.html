@@ -10,11 +10,11 @@
   
 <meta property="og:url" content="https://docs.jina.ai/api/jina.orchestrate.pods.factory/" />
   
-<meta property="og:site_name" content="Jina 3.11.0 Documentation" />
+<meta property="og:site_name" content="Jina 3.11.1 Documentation" />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
-<meta property="og:image:alt" content="Jina 3.11.0 Documentation" />
+<meta property="og:image:alt" content="Jina 3.11.1 Documentation" />
   
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -37,7 +37,7 @@
         <link rel="canonical" href="https://docs.jina.ai/api/jina.orchestrate.pods.factory.html" />
 
     <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
-        <title>jina.orchestrate.pods.factory module - Jina 3.11.0 documentation</title>
+        <title>jina.orchestrate.pods.factory module - Jina 3.11.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -171,7 +171,7 @@
         </div>
         <div class="header-center">
             <a href="../../">
-                <div class="brand">Jina 3.11.0 documentation</div>
+                <div class="brand">Jina 3.11.1 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -211,9 +211,35 @@
   
   
 </a>
+<script>
+  function setPrefix(prefix){
+    window.sessionStorage.setItem("version-select-index", document.getElementsByClassName("version-select")[0].selectedIndex);
+    window.location.href = prefix
+  }
+</script>
+<script defer>
+  fetch(`https://${window.location.host}/_versions.json`)
+  .then((resp) => resp.json())
+  .then((data) => {
+    var versionSelector = document.getElementsByClassName("version-select")[0]
+    for(var i = 0; i < data.length; i++){
+      var option = document.createElement("option");
+      option.innerHTML = data[i].version;
+      option.value = "/" + data[i].version;
+      versionSelector.appendChild(option);
+    }
+
+    if(window.sessionStorage.getItem('version-select-index')){
+      versionSelector.selectedIndex = window.sessionStorage.getItem('version-select-index');
+    }
+  })
+  .catch((err) => console.log(err));
+</script>
 <div class="sd-d-flex-row sd-align-major-spaced">
   <a class="github-button" href="https://github.com/jina-ai/jina" data-icon="octicon-star" data-show-count="true" aria-label="Star jina-ai/jina on GitHub" style="opacity: 0;">Star</a>
-  
+  <select onChange="setPrefix(this.value)" class="version-select">
+    <option value="/">latest</option>
+  </select>
 </div><form class="sidebar-search-container" method="get" action="../../search/" role="search">
   <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -322,7 +348,7 @@
                 <img class="sidebar-ecosys-logo only-light-line" src="../../_static/search-light.svg">
                 <img class="sidebar-ecosys-logo only-dark-line" src="../../_static/search-dark.svg">
                 Jina</a></li>
-        <li class="toctree-l1"><a class="reference external" href="https://hub.jina.ai">
+        <li class="toctree-l1"><a class="reference external" href="https://cloud.jina.ai">
             <img class="sidebar-ecosys-logo only-light-line" src="../../_static/hub-light.svg">
             <img class="sidebar-ecosys-logo only-dark-line" src="../../_static/hub-dark.svg">
             Jina Hub</a></li>
@@ -430,7 +456,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Oct 24, 2022</div>
+                            Last updated on Oct 25, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
