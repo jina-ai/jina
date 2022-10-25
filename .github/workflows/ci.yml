@@ -137,7 +137,7 @@ jobs:
           docker run --privileged --rm tonistiigi/binfmt --uninstall qemu-aarch64
           docker run --rm --privileged tonistiigi/binfmt --install all
       - name: Build and test
-        uses: docker/build-push-action@v3.2.0
+        uses: docker/build-push-action@v2
         with:
           context: .
           file: Dockerfiles/debianx.Dockerfile
