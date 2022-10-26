@@ -12,7 +12,7 @@ from jina.proto import jina_pb2
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.gateway.graph.topology_graph import TopologyGraph
 from jina.serve.runtimes.helper import _is_param_for_specific_executor
-from jina.serve.runtimes.request_handlers.data_request_handler import ExecutorRequestHandler
+from jina.serve.runtimes.request_handlers.data_request_handler import WorkerRequestHandler
 
 if TYPE_CHECKING: # pragma: no cover
     from asyncio import Future
@@ -364,7 +364,7 @@ class GatewayRequestHandler(MonitoringRequestMixin):
                 collect_results = request_graph.collect_all_results()
                 resp_params = response.parameters
                 if len(collect_results) > 0:
-                    resp_params[ExecutorRequestHandler._KEY_RESULT] = collect_results
+                    resp_params[WorkerRequestHandler._KEY_RESULT] = collect_results
                     response.parameters = resp_params
                 return response
 

@@ -18,7 +18,7 @@ if TYPE_CHECKING: # pragma: no cover
     from jina.logging.logger import JinaLogger
 
 
-class ExecutorRequestHandler:
+class WorkerRequestHandler:
     """Object to encapsulate the code related to handle the data requests passing to executor and its returned values"""
 
     _KEY_RESULT = '__results__'
@@ -210,7 +210,7 @@ class ExecutorRequestHandler:
                     self.args.name,
                 ).observe(req.nbytes)
             if self._request_size_histogram:
-                attributes = ExecutorRequestHandler._metric_attributes(
+                attributes = WorkerRequestHandler._metric_attributes(
                     requests[0].header.exec_endpoint,
                     self._executor.__class__.__name__,
                     self.args.name,
@@ -219,7 +219,7 @@ class ExecutorRequestHandler:
 
         params = self._parse_params(requests[0].parameters, self._executor.metas.name)
 
-        docs = ExecutorRequestHandler.get_docs_from_request(
+        docs = WorkerRequestHandler.get_docs_from_request(
             requests,
             field='docs',
         )
@@ -229,7 +229,7 @@ class ExecutorRequestHandler:
             req_endpoint=requests[0].header.exec_endpoint,
             docs=docs,
             parameters=params,
-            docs_matrix=ExecutorRequestHandler.get_docs_matrix_from_request(
+            docs_matrix=WorkerRequestHandler.get_docs_matrix_from_request(
                 requests,
                 field='docs',
             ),
@@ -262,14 +262,14 @@ class ExecutorRequestHandler:
                 self.args.name,
             ).inc(len(docs))
         if self._document_processed_counter:
-            attributes = ExecutorRequestHandler._metric_attributes(
+            attributes = WorkerRequestHandler._metric_attributes(
                 requests[0].header.exec_endpoint,
                 self._executor.__class__.__name__,
                 self.args.name,
             )
             self._document_processed_counter.add(len(docs), attributes=attributes)
 
-        ExecutorRequestHandler.replace_docs(requests[0], docs, self.args.output_array_type)
+        WorkerRequestHandler.replace_docs(requests[0], docs, self.args.output_array_type)
 
         if self._sent_response_size_metrics:
             self._sent_response_size_metrics.labels(
@@ -278,7 +278,7 @@ class ExecutorRequestHandler:
                 self.args.name,
             ).observe(requests[0].nbytes)
         if self._sent_response_size_histogram:
-            attributes = ExecutorRequestHandler._metric_attributes(
+            attributes = WorkerRequestHandler._metric_attributes(
                 requests[0].header.exec_endpoint,
                 self._executor.__class__.__name__,
                 self.args.name,
@@ -362,7 +362,7 @@ class ExecutorRequestHandler:
         :param requests: List of DataRequest objects
         :return: parameters matrix: list of parameters (Dict) objects
         """
-        key_result = ExecutorRequestHandler._KEY_RESULT
+        key_result = WorkerRequestHandler._KEY_RESULT
         parameters = requests[0].parameters
         if key_result not in parameters.keys():
             parameters[key_result] = dict()
@@ -440,15 +440,15 @@ class ExecutorRequestHandler:
         :param requests: List of DataRequest objects
         :return: the resulting DataRequest
         """
-        docs_matrix = ExecutorRequestHandler.get_docs_matrix_from_request(
+        docs_matrix = WorkerRequestHandler.get_docs_matrix_from_request(
             requests, field='docs'
         )
 
         # Reduction is applied in-place to the first DocumentArray in the matrix
-        da = ExecutorRequestHandler.reduce(docs_matrix)
-        ExecutorRequestHandler.replace_docs(requests[0], da)
+        da = WorkerRequestHandler.reduce(docs_matrix)
+        WorkerRequestHandler.replace_docs(requests[0], da)
 
-        params = ExecutorRequestHandler.get_parameters_dict_from_request(requests)
-        ExecutorRequestHandler.replace_parameters(requests[0], params)
+        params = WorkerRequestHandler.get_parameters_dict_from_request(requests)
+        WorkerRequestHandler.replace_parameters(requests[0], params)
 
         return requests[0]
