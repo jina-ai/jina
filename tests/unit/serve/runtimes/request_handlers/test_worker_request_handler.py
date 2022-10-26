@@ -5,7 +5,7 @@ from jina import Executor, requests
 from jina.clients.request import request_generator
 from jina.logging.logger import JinaLogger
 from jina.parsers import set_pod_parser
-from jina.serve.runtimes.request_handlers.data_request_handler import WorkerRequestHandler
+from jina.serve.runtimes.request_handlers.worker_request_handler import WorkerRequestHandler
 
 
 class NewDocsExecutor(Executor):
@@ -47,7 +47,7 @@ def logger():
 
 
 @pytest.mark.asyncio
-async def test_data_request_handler_new_docs(logger):
+async def test_worker_request_handler_new_docs(logger):
     args = set_pod_parser().parse_args(['--uses', 'NewDocsExecutor'])
     handler = WorkerRequestHandler(args, logger)
     req = list(
@@ -63,7 +63,7 @@ async def test_data_request_handler_new_docs(logger):
 
 
 @pytest.mark.asyncio
-async def test_aync_data_request_handler_new_docs(logger):
+async def test_aync_worker_request_handler_new_docs(logger):
     args = set_pod_parser().parse_args(['--uses', 'AsyncNewDocsExecutor'])
     handler = WorkerRequestHandler(args, logger)
     req = list(
@@ -79,7 +79,7 @@ async def test_aync_data_request_handler_new_docs(logger):
 
 
 @pytest.mark.asyncio
-async def test_data_request_handler_change_docs(logger):
+async def test_worker_request_handler_change_docs(logger):
     args = set_pod_parser().parse_args(['--uses', 'ChangeDocsExecutor'])
     handler = WorkerRequestHandler(args, logger)
 
@@ -97,7 +97,7 @@ async def test_data_request_handler_change_docs(logger):
 
 
 @pytest.mark.asyncio
-async def test_data_request_handler_change_docs_from_partial_requests(logger):
+async def test_worker_request_handler_change_docs_from_partial_requests(logger):
     NUM_PARTIAL_REQUESTS = 5
     args = set_pod_parser().parse_args(['--uses', 'MergeChangeDocsExecutor'])
     handler = WorkerRequestHandler(args, logger)
@@ -119,7 +119,7 @@ async def test_data_request_handler_change_docs_from_partial_requests(logger):
 
 
 @pytest.mark.asyncio
-async def test_data_request_handler_clear_docs(logger):
+async def test_worker_request_handler_clear_docs(logger):
     args = set_pod_parser().parse_args(['--uses', 'ClearDocsExecutor'])
     handler = WorkerRequestHandler(args, logger)
 

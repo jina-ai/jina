@@ -12,7 +12,7 @@ from jina.proto import jina_pb2
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.gateway.graph.topology_graph import TopologyGraph
 from jina.serve.runtimes.helper import _is_param_for_specific_executor
-from jina.serve.runtimes.request_handlers.data_request_handler import WorkerRequestHandler
+from jina.serve.runtimes.request_handlers.worker_request_handler import WorkerRequestHandler
 
 if TYPE_CHECKING: # pragma: no cover
     from asyncio import Future
