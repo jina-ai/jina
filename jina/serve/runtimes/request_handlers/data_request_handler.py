@@ -18,7 +18,7 @@ if TYPE_CHECKING: # pragma: no cover
     from jina.logging.logger import JinaLogger
 
 
-class DataRequestHandler:
+class ExecutorRequestHandler:
     """Object to encapsulate the code related to handle the data requests passing to executor and its returned values"""
 
     _KEY_RESULT = '__results__'
@@ -210,7 +210,7 @@ class DataRequestHandler:
                     self.args.name,
                 ).observe(req.nbytes)
             if self._request_size_histogram:
-                attributes = DataRequestHandler._metric_attributes(
+                attributes = ExecutorRequestHandler._metric_attributes(
                     requests[0].header.exec_endpoint,
                     self._executor.__class__.__name__,
                     self.args.name,
@@ -219,7 +219,7 @@ class DataRequestHandler:
 
         params = self._parse_params(requests[0].parameters, self._executor.metas.name)
 
-        docs = DataRequestHandler.get_docs_from_request(
+        docs = ExecutorRequestHandler.get_docs_from_request(
             requests,
             field='docs',
         )
@@ -229,7 +229,7 @@ class DataRequestHandler:
             req_endpoint=requests[0].header.exec_endpoint,
             docs=docs,
             parameters=params,
-            docs_matrix=DataRequestHandler.get_docs_matrix_from_request(
+            docs_matrix=ExecutorRequestHandler.get_docs_matrix_from_request(
                 requests,
                 field='docs',
             ),
@@ -262,14 +262,14 @@ class DataRequestHandler:
                 self.args.name,
             ).inc(len(docs))
         if self._document_processed_counter:
-            attributes = DataRequestHandler._metric_attributes(
+            attributes = ExecutorRequestHandler._metric_attributes(
                 requests[0].header.exec_endpoint,
                 self._executor.__class__.__name__,
                 self.args.name,
             )
             self._document_processed_counter.add(len(docs), attributes=attributes)
 
-        DataRequestHandler.replace_docs(requests[0], docs, self.args.output_array_type)
+        ExecutorRequestHandler.replace_docs(requests[0], docs, self.args.output_array_type)
 
         if self._sent_response_size_metrics:
             self._sent_response_size_metrics.labels(
@@ -278,7 +278,7 @@ class DataRequestHandler:
                 self.args.name,
             ).observe(requests[0].nbytes)
         if self._sent_response_size_histogram:
-            attributes = DataRequestHandler._metric_attributes(
+            attributes = ExecutorRequestHandler._metric_attributes(
                 requests[0].header.exec_endpoint,
                 self._executor.__class__.__name__,
                 self.args.name,
@@ -362,7 +362,7 @@ class DataRequestHandler:
         :param requests: List of DataRequest objects
         :return: parameters matrix: list of parameters (Dict) objects
         """
-        key_result = DataRequestHandler._KEY_RESULT
+        key_result = ExecutorRequestHandler._KEY_RESULT
         parameters = requests[0].parameters
         if key_result not in parameters.keys():
             parameters[key_result] = dict()
@@ -440,15 +440,15 @@ class DataRequestHandler:
         :param requests: List of DataRequest objects
         :return: the resulting DataRequest
         """
-        docs_matrix = DataRequestHandler.get_docs_matrix_from_request(
+        docs_matrix = ExecutorRequestHandler.get_docs_matrix_from_request(
             requests, field='docs'
         )
 
         # Reduction is applied in-place to the first DocumentArray in the matrix
-        da = DataRequestHandler.reduce(docs_matrix)
-        DataRequestHandler.replace_docs(requests[0], da)
+        da = ExecutorRequestHandler.reduce(docs_matrix)
+        ExecutorRequestHandler.replace_docs(requests[0], da)
 
-        params = DataRequestHandler.get_parameters_dict_from_request(requests)
-        DataRequestHandler.replace_parameters(requests[0], params)
+        params = ExecutorRequestHandler.get_parameters_dict_from_request(requests)
+        ExecutorRequestHandler.replace_parameters(requests[0], params)
 
         return requests[0]

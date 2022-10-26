@@ -314,13 +314,13 @@ def test_flow_timeout_send():
 
 def test_flow_head_runtime_failure(monkeypatch):
     from jina.serve.runtimes.request_handlers.data_request_handler import (
-        DataRequestHandler,
+        ExecutorRequestHandler,
     )
 
     def fail(*args, **kwargs):
         raise NotImplementedError('Intentional error')
 
-    monkeypatch.setattr(DataRequestHandler, 'merge_routes', fail)
+    monkeypatch.setattr(ExecutorRequestHandler, 'merge_routes', fail)
 
     with Flow().add(shards=2) as f:
         with pytest.raises(BadServer) as err_info:

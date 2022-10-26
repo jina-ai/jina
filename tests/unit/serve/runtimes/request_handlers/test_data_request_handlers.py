@@ -5,7 +5,7 @@ from jina import Executor, requests
 from jina.clients.request import request_generator
 from jina.logging.logger import JinaLogger
 from jina.parsers import set_pod_parser
-from jina.serve.runtimes.request_handlers.data_request_handler import DataRequestHandler
+from jina.serve.runtimes.request_handlers.data_request_handler import ExecutorRequestHandler
 
 
 class NewDocsExecutor(Executor):
@@ -49,7 +49,7 @@ def logger():
 @pytest.mark.asyncio
 async def test_data_request_handler_new_docs(logger):
     args = set_pod_parser().parse_args(['--uses', 'NewDocsExecutor'])
-    handler = DataRequestHandler(args, logger)
+    handler = ExecutorRequestHandler(args, logger)
     req = list(
         request_generator(
             '/', DocumentArray([Document(text='input document') for _ in range(10)])
@@ -65,7 +65,7 @@ async def test_data_request_handler_new_docs(logger):
 @pytest.mark.asyncio
 async def test_aync_data_request_handler_new_docs(logger):
     args = set_pod_parser().parse_args(['--uses', 'AsyncNewDocsExecutor'])
-    handler = DataRequestHandler(args, logger)
+    handler = ExecutorRequestHandler(args, logger)
     req = list(
         request_generator(
             '/', DocumentArray([Document(text='input document') for _ in range(10)])
@@ -81,7 +81,7 @@ async def test_aync_data_request_handler_new_docs(logger):
 @pytest.mark.asyncio
 async def test_data_request_handler_change_docs(logger):
     args = set_pod_parser().parse_args(['--uses', 'ChangeDocsExecutor'])
-    handler = DataRequestHandler(args, logger)
+    handler = ExecutorRequestHandler(args, logger)
 
     req = list(
         request_generator(
@@ -100,7 +100,7 @@ async def test_data_request_handler_change_docs(logger):
 async def test_data_request_handler_change_docs_from_partial_requests(logger):
     NUM_PARTIAL_REQUESTS = 5
     args = set_pod_parser().parse_args(['--uses', 'MergeChangeDocsExecutor'])
-    handler = DataRequestHandler(args, logger)
+    handler = ExecutorRequestHandler(args, logger)
 
     partial_reqs = [
         list(
@@ -121,7 +121,7 @@ async def test_data_request_handler_change_docs_from_partial_requests(logger):
 @pytest.mark.asyncio
 async def test_data_request_handler_clear_docs(logger):
     args = set_pod_parser().parse_args(['--uses', 'ClearDocsExecutor'])
-    handler = DataRequestHandler(args, logger)
+    handler = ExecutorRequestHandler(args, logger)
 
     req = list(
         request_generator(

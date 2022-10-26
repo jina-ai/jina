@@ -13,7 +13,7 @@ from jina.proto import jina_pb2, jina_pb2_grpc
 from jina.serve.instrumentation import MetricsTimer
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.helper import _get_grpc_server_options
-from jina.serve.runtimes.request_handlers.data_request_handler import DataRequestHandler
+from jina.serve.runtimes.request_handlers.data_request_handler import ExecutorRequestHandler
 from jina.types.request.data import DataRequest
 
 if TYPE_CHECKING: # pragma: no cover
@@ -37,7 +37,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
 
     async def async_setup(self):
         """
-        Start the DataRequestHandler and wait for the GRPC and Monitoring servers to start
+        Start the ExecutorRequestHandler and wait for the GRPC and Monitoring servers to start
         """
         if self.metrics_registry:
             with ImportExtensions(
@@ -97,8 +97,8 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
 
         # Keep this initialization order
         # otherwise readiness check is not valid
-        # The DataRequestHandler needs to be started BEFORE the grpc server
-        self._data_request_handler = DataRequestHandler(
+        # The ExecutorRequestHandler needs to be started BEFORE the grpc server
+        self._data_request_handler = ExecutorRequestHandler(
             self.args,
             self.logger,
             self.metrics_registry,
@@ -109,7 +109,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
 
     async def _async_setup_grpc_server(self):
         """
-        Start the DataRequestHandler and wait for the GRPC server to start
+        Start the ExecutorRequestHandler and wait for the GRPC server to start
         """
 
         self._grpc_server = grpc.aio.server(
