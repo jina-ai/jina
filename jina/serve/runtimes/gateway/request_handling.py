@@ -224,7 +224,7 @@ class MonitoringRequestMixin:
             self._update_end_failed_requests_metrics()
 
 
-class RequestHandler(MonitoringRequestMixin):
+class GatewayRequestHandler(MonitoringRequestMixin):
     """
     Class that handles the requests arriving to the gateway and the result extracted from the requests future.
 
