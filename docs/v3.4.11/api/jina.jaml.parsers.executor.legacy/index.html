@@ -208,7 +208,6 @@
 </a>
 <script>
   function setPrefix(prefix){
-    window.sessionStorage.setItem("version-select-index", document.getElementsByClassName("version-select")[0].selectedIndex);
     window.location.href = prefix
   }
 </script>
@@ -216,16 +215,17 @@
   fetch(`https://${window.location.host}/_versions.json`)
   .then((resp) => resp.json())
   .then((data) => {
-    var versionSelector = document.getElementsByClassName("version-select")[0]
+    var versionSelector = document.getElementsByClassName("version-select")[0];
+    var currentPrefix = window.location.href.toString().split(window.location.host)[1].split('/')[1];
+
     for(var i = 0; i < data.length; i++){
       var option = document.createElement("option");
       option.innerHTML = data[i].version;
       option.value = "/" + data[i].version;
       versionSelector.appendChild(option);
-    }
-
-    if(window.sessionStorage.getItem('version-select-index')){
-      versionSelector.selectedIndex = window.sessionStorage.getItem('version-select-index');
+      if(currentPrefix === data[i].version){
+        versionSelector.selectedIndex = i + 1;
+      }
     }
   })
   .catch((err) => console.log(err));
@@ -711,7 +711,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Oct 25, 2022.
+                    Last updated on Oct 26, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

@@ -221,7 +221,6 @@
 </a>
 <script>
   function setPrefix(prefix){
-    window.sessionStorage.setItem("version-select-index", document.getElementsByClassName("version-select")[0].selectedIndex);
     window.location.href = prefix
   }
 </script>
@@ -229,16 +228,17 @@
   fetch(`https://${window.location.host}/_versions.json`)
   .then((resp) => resp.json())
   .then((data) => {
-    var versionSelector = document.getElementsByClassName("version-select")[0]
+    var versionSelector = document.getElementsByClassName("version-select")[0];
+    var currentPrefix = window.location.href.toString().split(window.location.host)[1].split('/')[1];
+
     for(var i = 0; i < data.length; i++){
       var option = document.createElement("option");
       option.innerHTML = data[i].version;
       option.value = "/" + data[i].version;
       versionSelector.appendChild(option);
-    }
-
-    if(window.sessionStorage.getItem('version-select-index')){
-      versionSelector.selectedIndex = window.sessionStorage.getItem('version-select-index');
+      if(currentPrefix === data[i].version){
+        versionSelector.selectedIndex = i + 1;
+      }
     }
   })
   .catch((err) => console.log(err));
@@ -1630,49 +1630,6 @@ you can set <cite>JINA_HUB_NO_IMAGE_REBUILD</cite> environment variable.</p>
 <dt class="sig sig-object py">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.</span></span><span class="sig-name descname"><span class="pre">Document</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">granularity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">adjacency</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blob</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tensor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">ArrayType</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mime_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">content</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">DocumentContentType</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uri</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tags</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">StructValueType</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">location</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">embedding</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">ArrayType</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">modality</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">evaluations</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">StructValueType</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scores</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">StructValueType</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunks</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#jina.Document" title="jina.Document"><span class="pre">Document</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">matches</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#jina.Document" title="jina.Document"><span class="pre">Document</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span></dt>
 <dd><p>Bases: <a class="reference external" href="https://docarray.jina.ai/api/docarray.document.mixins/#docarray.document.mixins.AllMixins" title="(in DocArray v0.18.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">docarray.document.mixins.AllMixins</span></code></a>, <a class="reference external" href="https://docarray.jina.ai/api/docarray.base/#docarray.base.BaseDCType" title="(in DocArray v0.18.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">docarray.base.BaseDCType</span></code></a></p>
-<p>Document is the basic data type in DocArray.
-A Document is a container for any kind of data, be it text, image, audio, video, or 3D meshes.</p>
-<p>You can initialize a Document object with given attributes:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">Document</span>
-<span class="kn">import</span> <span class="nn">numpy</span>
-
-<span class="n">d1</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;hello&#39;</span><span class="p">)</span>
-<span class="n">d3</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">tensor</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]))</span>
-<span class="n">d4</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span>
-    <span class="n">uri</span><span class="o">=</span><span class="s1">&#39;https://jina.ai&#39;</span><span class="p">,</span>
-    <span class="n">mime_type</span><span class="o">=</span><span class="s1">&#39;text/plain&#39;</span><span class="p">,</span>
-    <span class="n">granularity</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-    <span class="n">adjacency</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
-    <span class="n">tags</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;foo&#39;</span><span class="p">:</span> <span class="s1">&#39;bar&#39;</span><span class="p">},</span>
-<span class="p">)</span>
-</pre></div>
-</div>
-<p>Documents support a <a class="reference external" href="https://docarray.jina.ai/fundamentals/document/nested/#recursive-nested-document" title="(in DocArray v0.18.2)"><span class="xref std std-ref">nested structure</span></a>, which can also be specified during construction:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">d</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span>
-    <span class="nb">id</span><span class="o">=</span><span class="s1">&#39;d0&#39;</span><span class="p">,</span>
-    <span class="n">chunks</span><span class="o">=</span><span class="p">[</span><span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">&#39;d1&#39;</span><span class="p">,</span> <span class="n">chunks</span><span class="o">=</span><span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">&#39;d2&#39;</span><span class="p">))],</span>
-    <span class="n">matches</span><span class="o">=</span><span class="p">[</span><span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">&#39;d3&#39;</span><span class="p">)],</span>
-<span class="p">)</span>
-</pre></div>
-</div>
-<p>A Document can embed its contents using the <a class="reference internal" href="#jina.Document.embed" title="jina.Document.embed"><code class="xref py py-meth docutils literal notranslate"><span class="pre">embed()</span></code></a> method and a provided embedding model:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">torchvision</span>
-
-<span class="n">q</span> <span class="o">=</span> <span class="p">(</span>
-    <span class="n">Document</span><span class="p">(</span><span class="n">uri</span><span class="o">=</span><span class="s1">&#39;/Users/usr/path/to/image.jpg&#39;</span><span class="p">)</span>
-    <span class="o">.</span><span class="n">load_uri_to_image_tensor</span><span class="p">()</span>
-    <span class="o">.</span><span class="n">set_image_tensor_normalization</span><span class="p">()</span>
-    <span class="o">.</span><span class="n">set_image_tensor_channel_axis</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-<span class="p">)</span>
-<span class="n">model</span> <span class="o">=</span> <span class="n">torchvision</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">resnet50</span><span class="p">(</span><span class="n">pretrained</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">q</span><span class="o">.</span><span class="n">embed</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Multiple Documents can be organized into a <a class="reference internal" href="#jina.DocumentArray" title="docarray.array.document.DocumentArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code></a>.</p>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p>For further details, see our <a class="reference external" href="https://docarray.jina.ai/fundamentals/document/#document" title="(in DocArray v0.18.2)"><span class="xref std std-ref">user guide</span></a>.</p>
-</div>
 <dl class="py property">
 <dt class="sig sig-object py" id="jina.Document.adjacency">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">adjacency</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#jina.Document.adjacency" title="Permalink to this definition">#</a></dt>
@@ -2014,25 +1971,8 @@ Sequence shorter than this will be padded with <cite>0</cite> from right hand si
 
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.Document.display">
-<span class="sig-name descname"><span class="pre">display</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">from_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.Document.display" title="Permalink to this definition">#</a></dt>
-<dd><p>Plot image data from <a class="reference internal" href="#jina.Document.uri" title="jina.Document.uri"><code class="xref py py-attr docutils literal notranslate"><span class="pre">uri</span></code></a> or from <a class="reference internal" href="#jina.Document.tensor" title="jina.Document.tensor"><code class="xref py py-attr docutils literal notranslate"><span class="pre">tensor</span></code></a> if <a class="reference internal" href="#jina.Document.uri" title="jina.Document.uri"><code class="xref py py-attr docutils literal notranslate"><span class="pre">uri</span></code></a> is empty .</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>from</strong> – an optional string to decide if a document should display using either the uri or the tensor field.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.Document.display_tensor">
-<span class="sig-name descname"><span class="pre">display_tensor</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jina.Document.display_tensor" title="Permalink to this definition">#</a></dt>
-<dd><p>Plot image data from <a class="reference internal" href="#jina.Document.tensor" title="jina.Document.tensor"><code class="xref py py-attr docutils literal notranslate"><span class="pre">tensor</span></code></a></p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.Document.display_uri">
-<span class="sig-name descname"><span class="pre">display_uri</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jina.Document.display_uri" title="Permalink to this definition">#</a></dt>
-<dd><p>Plot image data from <a class="reference internal" href="#jina.Document.uri" title="jina.Document.uri"><code class="xref py py-attr docutils literal notranslate"><span class="pre">uri</span></code></a></p>
+<span class="sig-name descname"><span class="pre">display</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jina.Document.display" title="Permalink to this definition">#</a></dt>
+<dd><p>Plot image data from <a class="reference internal" href="#jina.Document.tensor" title="jina.Document.tensor"><code class="xref py py-attr docutils literal notranslate"><span class="pre">tensor</span></code></a> or <a class="reference internal" href="#jina.Document.uri" title="jina.Document.uri"><code class="xref py py-attr docutils literal notranslate"><span class="pre">uri</span></code></a>.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -2215,33 +2155,6 @@ Note that this feature requires <code class="docutils literal notranslate"><span
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="jina.Document.generator_from_webcam">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">generator_from_webcam</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">height_width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'webcam'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exit_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">27</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exit_event</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tags</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.Document.generator_from_webcam" title="Permalink to this definition">#</a></dt>
-<dd><p>Create a generator that yields a <a class="reference internal" href="#jina.Document" title="jina.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a> object from the webcam.</p>
-<p>This feature requires the <cite>opencv-python</cite> package.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>height_width</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]]) – the shape of the video frame, if not provided, the shape will be determined from the first frame.
-Note that this is restricted by the hardware of the camera.</p></li>
-<li><p><strong>show_window</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – if to show preview window of the webcam video</p></li>
-<li><p><strong>window_title</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the window title of the preview window</p></li>
-<li><p><strong>fps</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – expected frames per second, note that this is not guaranteed, as the actual fps depends on the hardware limit</p></li>
-<li><p><strong>exit_key</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – the key to press to exit the preview window</p></li>
-<li><p><strong>exit_event</strong> – the multiprocessing/threading/asyncio event that once set to exit the preview window</p></li>
-<li><p><strong>tags</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>]) – the tags to attach to the document</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Generator</span></code>[T, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]</p>
-</dd>
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>a generator that yields a <a class="reference internal" href="#jina.Document" title="jina.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a> object from a webcam</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="jina.Document.get_json_schema">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_json_schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">indent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.Document.get_json_schema" title="Permalink to this definition">#</a></dt>
 <dd><p>Return a JSON Schema of Document class.</p>
@@ -2312,20 +2225,6 @@ by <code class="xref py py-meth docutils literal notranslate"><span class="pre">
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="jina.Document.load_pil_image_to_datauri">
-<span class="sig-name descname"><span class="pre">load_pil_image_to_datauri</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.Document.load_pil_image_to_datauri" title="Permalink to this definition">#</a></dt>
-<dd><p>Convert a pillow image into a datauri with header <cite>data:image/png</cite>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>image</strong> (<em>PILImage</em>) – a pillow image</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>itself after processed</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="jina.Document.load_uri_to_audio_tensor">
 <span class="sig-name descname"><span class="pre">load_uri_to_audio_tensor</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jina.Document.load_uri_to_audio_tensor" title="Permalink to this definition">#</a></dt>
 <dd><p>Convert an audio <a class="reference internal" href="#jina.Document.uri" title="jina.Document.uri"><code class="xref py py-attr docutils literal notranslate"><span class="pre">uri</span></code></a> into <a class="reference internal" href="#jina.Document.tensor" title="jina.Document.tensor"><code class="xref py py-attr docutils literal notranslate"><span class="pre">tensor</span></code></a> inplace</p>
@@ -2341,25 +2240,22 @@ by <code class="xref py py-meth docutils literal notranslate"><span class="pre">
 
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.Document.load_uri_to_blob">
-<span class="sig-name descname"><span class="pre">load_uri_to_blob</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.Document.load_uri_to_blob" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">load_uri_to_blob</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jina.Document.load_uri_to_blob" title="Permalink to this definition">#</a></dt>
 <dd><p>Convert <a class="reference internal" href="#jina.Document.uri" title="jina.Document.uri"><code class="xref py py-attr docutils literal notranslate"><span class="pre">uri</span></code></a> to <a class="reference internal" href="#jina.Document.blob" title="jina.Document.blob"><code class="xref py py-attr docutils literal notranslate"><span class="pre">blob</span></code></a> inplace.
 Internally it downloads from the URI and set <a class="reference internal" href="#jina.Document.blob" title="jina.Document.blob"><code class="xref py py-attr docutils literal notranslate"><span class="pre">blob</span></code></a>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>kwargs</strong> – keyword arguments to pass to <cite>:meth:_uri_to_blob</cite> such as timeout</p>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>T</p>
 </dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>T</p>
-</dd>
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>itself after processed</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>itself after processed</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.Document.load_uri_to_image_tensor">
-<span class="sig-name descname"><span class="pre">load_uri_to_image_tensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.Document.load_uri_to_image_tensor" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">load_uri_to_image_tensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.Document.load_uri_to_image_tensor" title="Permalink to this definition">#</a></dt>
 <dd><p>Convert the image-like <a class="reference internal" href="#jina.Document.uri" title="jina.Document.uri"><code class="xref py py-attr docutils literal notranslate"><span class="pre">uri</span></code></a> into <a class="reference internal" href="#jina.Document.tensor" title="jina.Document.tensor"><code class="xref py py-attr docutils literal notranslate"><span class="pre">tensor</span></code></a></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -2367,7 +2263,6 @@ Internally it downloads from the URI and set <a class="reference internal" href=
 <li><p><strong>width</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – the width of the image tensor.</p></li>
 <li><p><strong>height</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – the height of the tensor.</p></li>
 <li><p><strong>channel_axis</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – the axis id of the color channel, <code class="docutils literal notranslate"><span class="pre">-1</span></code> indicates the color channel info at the last axis</p></li>
-<li><p><strong>kwargs</strong> – keyword arguments to pass to <cite>:meth:_uri_to_blob</cite> such as timeout</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
@@ -2402,14 +2297,11 @@ then store each geometry into different <a class="reference internal" href="#jin
 
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.Document.load_uri_to_text">
-<span class="sig-name descname"><span class="pre">load_uri_to_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">charset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'utf-8'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.Document.load_uri_to_text" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">load_uri_to_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">charset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'utf-8'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.Document.load_uri_to_text" title="Permalink to this definition">#</a></dt>
 <dd><p>Convert <a class="reference internal" href="#jina.Document.uri" title="jina.Document.uri"><code class="xref py py-attr docutils literal notranslate"><span class="pre">uri</span></code></a> to :attr`.text` inplace.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>charset</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – charset may be any character set registered with IANA</p></li>
-<li><p><strong>kwargs</strong> – keyword arguments to pass to <cite>:meth:_uri_to_blob</cite> such as timeout</p></li>
-</ul>
+<dd class="field-odd"><p><strong>charset</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – charset may be any character set registered with IANA</p>
 </dd>
 <dt class="field-even">Return type</dt>
 <dd class="field-even"><p>T</p>
@@ -2734,15 +2626,17 @@ image <a class="reference internal" href="#jina.Document.tensor" title="jina.Doc
 <dt class="sig sig-object py" id="jina.Document.set_image_tensor_normalization">
 <span class="sig-name descname"><span class="pre">set_image_tensor_normalization</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channel_axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">img_mean</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(0.485,</span> <span class="pre">0.456,</span> <span class="pre">0.406)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">img_std</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(0.229,</span> <span class="pre">0.224,</span> <span class="pre">0.225)</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.Document.set_image_tensor_normalization" title="Permalink to this definition">#</a></dt>
 <dd><p>Normalize a uint8 image <a class="reference internal" href="#jina.Document.tensor" title="jina.Document.tensor"><code class="xref py py-attr docutils literal notranslate"><span class="pre">tensor</span></code></a> into a float32 image <a class="reference internal" href="#jina.Document.tensor" title="jina.Document.tensor"><code class="xref py py-attr docutils literal notranslate"><span class="pre">tensor</span></code></a> inplace.</p>
-<p>Applies normalization to the color channels of the images.
-By default, the normalization uses mean = [0.485, 0.456, 0.406] and std = [0.229, 0.224, 0.225], which are standard values computed on millions of images. If you want to train from scratch on your own dataset, you can calculate the new
-mean and std. Otherwise, using the Imagenet pretrained model with its own mean and std is recommended.</p>
+<p>Following Pytorch standard, the image must be in the shape of shape (3 x H x W) and
+will be normalized in to a range of [0, 1] and then
+normalized using mean = [0.485, 0.456, 0.406] and std = [0.229, 0.224, 0.225]. These two arrays are computed
+based on millions of images. If you want to train from scratch on your own dataset, you can calculate the new
+mean and std. Otherwise, using the Imagenet pretrianed model with its own mean and std is recommended.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>channel_axis</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – the axis id of the color channel, <code class="docutils literal notranslate"><span class="pre">-1</span></code> indicates the color channel info at the last axis</p></li>
-<li><p><strong>img_mean</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) – the means of all images: [mean_r, mean_g, mean_b]</p></li>
-<li><p><strong>img_std</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) – the standard deviations of all images: [std_r, std_g, std_b]</p></li>
+<li><p><strong>img_mean</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) – the mean of all images</p></li>
+<li><p><strong>img_std</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) – the standard deviation of all images</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
@@ -2758,26 +2652,6 @@ mean and std. Otherwise, using the Imagenet pretrained model with its own mean a
 non RGB image. if you look at their MNIST examples, the mean and stddev are 1-dimensional
 (since the inputs are greyscale– no RGB channels).</p>
 </div>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.Document.set_image_tensor_resample">
-<span class="sig-name descname"><span class="pre">set_image_tensor_resample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ratio</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.Document.set_image_tensor_resample" title="Permalink to this definition">#</a></dt>
-<dd><p>Resample the image <a class="reference internal" href="#jina.Document.tensor" title="jina.Document.tensor"><code class="xref py py-attr docutils literal notranslate"><span class="pre">tensor</span></code></a> into different size inplace.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>ratio</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – scale ratio of the resampled image tensor.</p></li>
-<li><p><strong>channel_axis</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – the axis id of the color channel, <code class="docutils literal notranslate"><span class="pre">-1</span></code> indicates the color channel info at the last axis</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>T</p>
-</dd>
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>itself after processed</p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -2800,11 +2674,6 @@ non RGB image. if you look at their MNIST examples, the mean and stddev are 1-di
 </dd>
 </dl>
 </dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.Document.set_multi_modal_attribute">
-<span class="sig-name descname"><span class="pre">set_multi_modal_attribute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attribute</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.Document.set_multi_modal_attribute" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.Document.summary">
@@ -2980,67 +2849,16 @@ non RGB image. if you look at their MNIST examples, the mean and stddev are 1-di
 
 <dl class="py class">
 <dt class="sig sig-object py" id="jina.DocumentArray">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.</span></span><span class="sig-name descname"><span class="pre">DocumentArray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_docs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">DocumentArraySourceType</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subindex_configs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/docarray/array/document/#DocumentArray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.DocumentArray" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.</span></span><span class="sig-name descname"><span class="pre">DocumentArray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_docs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">DocumentArraySourceType</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/docarray/array/document/#DocumentArray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.DocumentArray" title="Permalink to this definition">#</a></dt>
 <dt class="sig sig-object py">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.</span></span><span class="sig-name descname"><span class="pre">DocumentArray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_docs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">DocumentArraySourceType</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">storage</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'sqlite'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">SqliteConfig</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subindex_configs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.</span></span><span class="sig-name descname"><span class="pre">DocumentArray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_docs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">DocumentArraySourceType</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">storage</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'sqlite'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">SqliteConfig</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span></dt>
 <dt class="sig sig-object py">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.</span></span><span class="sig-name descname"><span class="pre">DocumentArray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_docs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">DocumentArraySourceType</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">storage</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'weaviate'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">WeaviateConfig</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subindex_configs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.</span></span><span class="sig-name descname"><span class="pre">DocumentArray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_docs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">DocumentArraySourceType</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">storage</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'weaviate'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">WeaviateConfig</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span></dt>
 <dt class="sig sig-object py">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.</span></span><span class="sig-name descname"><span class="pre">DocumentArray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_docs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">DocumentArraySourceType</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">storage</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'annlite'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">AnnliteConfig</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subindex_configs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.</span></span><span class="sig-name descname"><span class="pre">DocumentArray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_docs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">DocumentArraySourceType</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">storage</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'annlite'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">AnnliteConfig</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span></dt>
 <dt class="sig sig-object py">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.</span></span><span class="sig-name descname"><span class="pre">DocumentArray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_docs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">DocumentArraySourceType</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">storage</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'elasticsearch'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">ElasticConfig</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subindex_configs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span></dt>
-<dt class="sig sig-object py">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.</span></span><span class="sig-name descname"><span class="pre">DocumentArray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_docs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">DocumentArraySourceType</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">storage</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'redis'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">RedisConfig</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.</span></span><span class="sig-name descname"><span class="pre">DocumentArray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_docs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">DocumentArraySourceType</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">storage</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'elasticsearch'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">ElasticConfig</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span></dt>
 <dd><p>Bases: <a class="reference external" href="https://docarray.jina.ai/api/docarray.array.mixins/#docarray.array.mixins.AllMixins" title="(in DocArray v0.18.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">docarray.array.mixins.AllMixins</span></code></a>, <a class="reference external" href="https://docarray.jina.ai/api/docarray.array.base/#docarray.array.base.BaseDocumentArray" title="(in DocArray v0.18.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">docarray.array.base.BaseDocumentArray</span></code></a></p>
-<p>DocumentArray is a list-like container of <code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code> objects.</p>
-<p>A DocumentArray can be used to store, embed, and retrieve <code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code> objects.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span>
-
-<span class="n">da</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">(</span>
-    <span class="p">[</span><span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;The cake is a lie&#39;</span><span class="p">),</span> <span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;Do a barrel roll!&#39;</span><span class="p">)]</span>
-<span class="p">)</span>
-<span class="n">da</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">Document</span><span class="o">.</span><span class="n">embed_feature_hashing</span><span class="p">)</span>
-
-<span class="n">query</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;Can i have some cake?&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">embed_feature_hashing</span><span class="p">()</span>
-<span class="n">query</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">da</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="s1">&#39;jaccard&#39;</span><span class="p">,</span> <span class="n">use_scipy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="n">query</span><span class="o">.</span><span class="n">matches</span><span class="p">[:,</span> <span class="p">(</span><span class="s1">&#39;text&#39;</span><span class="p">,</span> <span class="s1">&#39;scores__jaccard__value&#39;</span><span class="p">)])</span>
-</pre></div>
-</div>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="o">[[</span><span class="s1">&#39;The cake is a lie&#39;</span>, <span class="s1">&#39;Do a barrel roll!&#39;</span><span class="o">]</span>, <span class="o">[</span><span class="m">0</span>.9, <span class="m">1</span>.0<span class="o">]]</span>
-</pre></div>
-</div>
-<p>A DocumentArray can also <a class="reference external" href="https://docarray.jina.ai/fundamentals/documentarray/embedding/#embed-via-model" title="(in DocArray v0.18.2)"><span class="xref std std-ref">embed its contents using a neural network</span></a>,
-process them using an <a class="reference external" href="https://docarray.jina.ai/fundamentals/documentarray/post-external/#da-post" title="(in DocArray v0.18.2)"><span class="xref std std-ref">external Flow or Executor</span></a>, and persist Documents in a <a class="reference external" href="https://docarray.jina.ai/advanced/document-store/#doc-store" title="(in DocArray v0.18.2)"><span class="xref std std-ref">Document Store</span></a> for
-fast vector search:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-
-<span class="n">n_dim</span> <span class="o">=</span> <span class="mi">3</span>
-<span class="n">metric</span> <span class="o">=</span> <span class="s1">&#39;Euclidean&#39;</span>
-
-<span class="c1"># initialize a DocumentArray with ANNLiter Document Store</span>
-<span class="n">da</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">(</span>
-    <span class="n">storage</span><span class="o">=</span><span class="s1">&#39;annlite&#39;</span><span class="p">,</span>
-    <span class="n">config</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;n_dim&#39;</span><span class="p">:</span> <span class="n">n_dim</span><span class="p">,</span> <span class="s1">&#39;columns&#39;</span><span class="p">:</span> <span class="p">[(</span><span class="s1">&#39;price&#39;</span><span class="p">,</span> <span class="s1">&#39;float&#39;</span><span class="p">)],</span> <span class="s1">&#39;metric&#39;</span><span class="p">:</span> <span class="n">metric</span><span class="p">},</span>
-<span class="p">)</span>
-<span class="c1"># add Documents to the DocumentArray</span>
-<span class="k">with</span> <span class="n">da</span><span class="p">:</span>
-    <span class="n">da</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
-        <span class="p">[</span>
-            <span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;r</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">embedding</span><span class="o">=</span><span class="n">i</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">n_dim</span><span class="p">),</span> <span class="n">tags</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;price&#39;</span><span class="p">:</span> <span class="n">i</span><span class="p">})</span>
-            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
-        <span class="p">]</span>
-    <span class="p">)</span>
-<span class="c1"># perform vector search</span>
-<span class="n">np_query</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">n_dim</span><span class="p">)</span> <span class="o">*</span> <span class="mi">8</span>
-<span class="n">results</span> <span class="o">=</span> <span class="n">da</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">np_query</span><span class="p">)</span>
-</pre></div>
-</div>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p>For further details, see our <a class="reference external" href="https://docarray.jina.ai/fundamentals/documentarray/#documentarray" title="(in DocArray v0.18.2)"><span class="xref std std-ref">user guide</span></a>.</p>
-</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.DocumentArray.append">
 <span class="sig-name descname"><span class="pre">append</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.DocumentArray.append" title="Permalink to this definition">#</a></dt>
@@ -3069,7 +2887,7 @@ fast vector search:</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.DocumentArray.batch">
-<span class="sig-name descname"><span class="pre">batch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shuffle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_progress</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.DocumentArray.batch" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">batch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shuffle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.DocumentArray.batch" title="Permalink to this definition">#</a></dt>
 <dd><p>Creates a <cite>Generator</cite> that yields <cite>DocumentArray</cite> of size <cite>batch_size</cite> until <cite>docs</cite> is fully traversed along
 the <cite>traversal_path</cite>. The None <cite>docs</cite> are filtered out and optionally the <cite>docs</cite> can be filtered by checking for
 the existence of a <cite>Document</cite> attribute.
@@ -3079,7 +2897,6 @@ Note, that the last batch might be smaller than <cite>batch_size</cite>.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>batch_size</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Size of each generated batch (except the last one, which might be smaller, default: 32)</p></li>
 <li><p><strong>shuffle</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – If set, shuffle the Documents before dividing into minibatches.</p></li>
-<li><p><strong>show_progress</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – if set, show a progress bar when batching documents.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Yield</dt>
@@ -3130,87 +2947,6 @@ Note, that the last batch might be smaller than <cite>batch_size</cite>.</p>
 <dt class="sig sig-object py" id="jina.DocumentArray.clear">
 <span class="sig-name descname"><span class="pre">clear</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span> <span class="pre">--</span> <span class="pre">remove</span> <span class="pre">all</span> <span class="pre">items</span> <span class="pre">from</span> <span class="pre">S</span></span></span><a class="headerlink" href="#jina.DocumentArray.clear" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.DocumentArray.cloud_delete">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cloud_delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.DocumentArray.cloud_delete" title="Permalink to this definition">#</a></dt>
-<dd><p>Delete a DocumentArray from the cloud.
-:type name: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
-:param name: the name of the DocumentArray to delete.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.DocumentArray.cloud_list">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cloud_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">show_table</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.DocumentArray.cloud_list" title="Permalink to this definition">#</a></dt>
-<dd><p>List all available arrays in the cloud.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>show_table</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – if true, show the table of the arrays.</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</p>
-</dd>
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>List of available DocumentArray’s names.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.DocumentArray.cloud_pull">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cloud_pull</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_progress</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">local_cache</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.DocumentArray.cloud_pull" title="Permalink to this definition">#</a></dt>
-<dd><p>Pulling a <a class="reference internal" href="#jina.DocumentArray" title="jina.DocumentArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code></a> from Jina Cloud Service to local.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the upload name set during <a class="reference internal" href="#jina.DocumentArray.push" title="jina.DocumentArray.push"><code class="xref py py-meth docutils literal notranslate"><span class="pre">push()</span></code></a></p></li>
-<li><p><strong>show_progress</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – if to show a progress bar on pulling</p></li>
-<li><p><strong>local_cache</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – store the downloaded DocumentArray to local folder</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>T</p>
-</dd>
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>a <a class="reference internal" href="#jina.DocumentArray" title="jina.DocumentArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code></a> object</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.DocumentArray.cloud_push">
-<span class="sig-name descname"><span class="pre">cloud_push</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_progress</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">public</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">branding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.DocumentArray.cloud_push" title="Permalink to this definition">#</a></dt>
-<dd><p>Push this DocumentArray object to Jina Cloud which can be later retrieved via <a class="reference internal" href="#jina.DocumentArray.push" title="jina.DocumentArray.push"><code class="xref py py-meth docutils literal notranslate"><span class="pre">push()</span></code></a></p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<ul class="simple">
-<li><p>Push with the same <code class="docutils literal notranslate"><span class="pre">name</span></code> will override the existing content.</p></li>
-<li><p>Kinda like a public clipboard where everyone can override anyone’s content.
-So to make your content survive longer, you may want to use longer &amp; more complicated name.</p></li>
-<li><p>The lifetime of the content is not promised atm, could be a day, could be a week. Do not use it for
-persistence. Only use this full temporary transmission/storage/clipboard.</p></li>
-</ul>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – a name that later can be used for retrieve this <a class="reference internal" href="#jina.DocumentArray" title="jina.DocumentArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code></a>.</p></li>
-<li><p><strong>show_progress</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – if to show a progress bar on pulling</p></li>
-<li><p><strong>public</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – by default anyone can pull a DocumentArray if they know its name.
-Setting this to False will allow only the creator to pull it. This feature of course you to login first.</p></li>
-<li><p><strong>branding</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>]) – a dict of branding information to be sent to Jina Cloud. {“icon”: “emoji”, “background”: “#fff”}</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></p>
-</dd>
-</dl>
-</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="jina.DocumentArray.contents">
@@ -3328,43 +3064,28 @@ is to use the <cite>tensors</cite> of the documents.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.DocumentArray.evaluate">
-<span class="sig-name descname"><span class="pre">evaluate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">metrics</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ground_truth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hash_fn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'label'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.DocumentArray.evaluate" title="Permalink to this definition">#</a></dt>
-<dd><p>Compute ranking evaluation metrics for a given <cite>DocumentArray</cite> when compared
-with a groundtruth.</p>
-<p>If one provides a <cite>ground_truth</cite> DocumentArray that is structurally identical
-to <cite>self</cite>, this function compares the <cite>matches</cite> of <cite>documents</cite> inside the
-<cite>DocumentArray</cite> to this <cite>ground_truth</cite>.
-Alternatively, one can directly annotate the documents by adding labels in the
-form of tags with the key specified in the <cite>label_tag</cite> attribute.
-Those tags need to be added to <cite>self</cite> as well as to the documents in the
-matches properties.</p>
-<p>This method will fill the <cite>evaluations</cite> field of Documents inside this
-<cite>DocumentArray</cite> and will return the average of the computations</p>
+<span class="sig-name descname"><span class="pre">evaluate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hash_fn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.DocumentArray.evaluate" title="Permalink to this definition">#</a></dt>
+<dd><p>Compute ranking evaluation metrics for a given <cite>DocumentArray</cite> when compared with a groundtruth.</p>
+<p>This implementation expects to provide a <cite>groundtruth</cite> DocumentArray that is structurally identical to <cite>self</cite>. It is based
+on comparing the <cite>matches</cite> of <cite>documents</cite> inside the <a href="#id11"><span class="problematic" id="id12">`</span></a>DocumentArray.</p>
+<p>This method will fill the <cite>evaluations</cite> field of Documents inside this <cite>DocumentArray</cite> and will return the average of the computations</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>metrics</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]]]) – list of metric names or metric functions to be computed</p></li>
-<li><p><strong>ground_truth</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<a class="reference internal" href="#jina.DocumentArray" title="docarray.array.document.DocumentArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code></a>]) – The ground_truth <cite>DocumentArray</cite> that the <cite>DocumentArray</cite>
-compares to.</p></li>
-<li><p><strong>hash_fn</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>[[<a class="reference internal" href="#jina.Document" title="docarray.document.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a>], <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]]) – The function used for identifying the uniqueness of Documents.
-If not given, then <code class="docutils literal notranslate"><span class="pre">Document.id</span></code> is used.</p></li>
-<li><p><strong>metric_names</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]]) – If provided, the results of the metrics computation will be
-stored in the <cite>evaluations</cite> field of each Document with this names. If not
-provided, the names will be derived from the metric function names.</p></li>
-<li><p><strong>strict</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – If set, then left and right sides are required to be fully
-aligned: on the length, and on the semantic of length. These are preventing
+<li><p><strong>other</strong> (<a class="reference internal" href="#jina.DocumentArray" title="docarray.array.document.DocumentArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code></a>) – The groundtruth DocumentArray` that the <cite>DocumentArray</cite> compares to.</p></li>
+<li><p><strong>metric</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]]) – The name of the metric, or multiple metrics to be computed</p></li>
+<li><p><strong>hash_fn</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>[[<a class="reference internal" href="#jina.Document" title="docarray.document.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a>], <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]]) – The function used for identifying the uniqueness of Documents. If not given, then <code class="docutils literal notranslate"><span class="pre">Document.id</span></code> is used.</p></li>
+<li><p><strong>metric_name</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – If provided, the results of the metrics computation will be stored in the <cite>evaluations</cite> field of each Document. If not provided, the name will be computed based on the metrics name.</p></li>
+<li><p><strong>strict</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – If set, then left and right sides are required to be fully aligned: on the length, and on the semantic of length. These are preventing
 you to evaluate on irrelevant matches accidentally.</p></li>
-<li><p><strong>label_tag</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Specifies the tag which contains the labels.</p></li>
-<li><p><strong>kwargs</strong> – Additional keyword arguments to be passed to the metric
-functions.</p></li>
+<li><p><strong>kwargs</strong> – Additional keyword arguments to be passed to <cite>metric_fn</cite></p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]</p>
+<dd class="field-even"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]</p>
 </dd>
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>A dictionary which stores for each metric name the average evaluation
-score.</p>
+<dd class="field-odd"><p>The average evaluation computed or a list of them if multiple metrics are required</p>
 </dd>
 </dl>
 </dd></dl>
@@ -3377,34 +3098,28 @@ score.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.DocumentArray.find">
-<span class="sig-name descname"><span class="pre">find</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cosine'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_self</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'text'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.DocumentArray.find" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">find</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cosine'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_self</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'text'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.DocumentArray.find" title="Permalink to this definition">#</a></dt>
 <dd><p>Returns matching Documents given an input query.
 If the query is a <cite>DocumentArray</cite>, <cite>Document</cite> or <cite>ArrayType</cite>, exhaustive or approximate nearest neighbor search
-will be performed depending on whether the storage backend supports ANN. Furthermore, if filter is not None,
-pre-filtering will be applied along with vector search.
-If the query is a <cite>dict</cite> object or, query is None and filter is not None, Documents will be filtered and all
-matching Documents that match the filter will be returned. In this case, query (if it’s dict) or filter will be
-used for filtering. The object must follow the backend-specific filter format if the backend supports filtering
-or DocArray’s query language format. In the latter case, filtering will be applied in the client side not the
-backend side.
+will be performed depending on whether the storage backend supports ANN.
+If the query is a <cite>dict</cite> object, Documents will be filtered according to DocArray’s query language and all
+matching Documents that match the filter will be returned.
 If the query is a string or list of strings, a search by text will be performed if the backend supports
 indexing and searching text fields. If not, a <cite>NotImplementedError</cite> will be raised.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>query</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[DocumentArray, Document, ArrayType, <code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>], <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]) – the input query to search by</p></li>
+<li><p><strong>query</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[DocumentArray, Document, ArrayType, <code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]]) – the input query to search by</p></li>
 <li><p><strong>limit</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]) – the maximum number of matches, when not given defaults to 20.</p></li>
 <li><p><strong>metric_name</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – if provided, then match result will be marked with this string.</p></li>
 <li><p><strong>metric</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>[[ArrayType, ArrayType], <code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>]]) – the distance metric.</p></li>
 <li><p><strong>exclude_self</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – if set, Documents in results with same <code class="docutils literal notranslate"><span class="pre">id</span></code> as the query values will not be
 considered as matches. This is only applied when the input query is Document or DocumentArray.</p></li>
-<li><p><strong>filter</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>]) – filter query used for pre-filtering or filtering</p></li>
 <li><p><strong>only_id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – if set, then returning matches will only contain <code class="docutils literal notranslate"><span class="pre">id</span></code></p></li>
 <li><p><strong>index</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – if the query is a string, text search will be performed on the <cite>index</cite> field, otherwise, this
 parameter is ignored. By default, the Document <cite>text</cite> attribute will be used for search,
 otherwise the tag field specified by <cite>index</cite> will be used. You can only use this parameter if the
 storage backend supports searching by text.</p></li>
-<li><p><strong>on</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – specifies a subindex to search on. If set, the returned DocumentArray will be retrieved from the given subindex.</p></li>
 <li><p><strong>kwargs</strong> – other kwargs.</p></li>
 </ul>
 </dd>
@@ -3852,7 +3567,7 @@ and the original object do <strong>not</strong> share the same memory.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.DocumentArray.match">
-<span class="sig-name descname"><span class="pre">match</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">darray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cosine'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalization</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_self</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_scipy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cpu'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_worker</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.DocumentArray.match" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">match</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">darray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cosine'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalization</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_self</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_scipy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cpu'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_worker</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.DocumentArray.match" title="Permalink to this definition">#</a></dt>
 <dd><p>Compute embedding based nearest neighbour in <cite>another</cite> for each Document in <cite>self</cite>,
 and store results in <cite>matches</cite>.
 .. note:</p>
@@ -3887,7 +3602,6 @@ all values will be rescaled into range <cite>[a, b]</cite>.</p></li>
 elements. When <cite>darray</cite> is big, this can significantly speedup the computation.</p></li>
 <li><p><strong>exclude_self</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – if set, Documents in <code class="docutils literal notranslate"><span class="pre">darray</span></code> with same <code class="docutils literal notranslate"><span class="pre">id</span></code> as the left-hand values will not be
 considered as matches.</p></li>
-<li><p><strong>filter</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>]) – filter query used for pre-filtering</p></li>
 <li><p><strong>only_id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – if set, then returning matches will only contain <code class="docutils literal notranslate"><span class="pre">id</span></code></p></li>
 <li><p><strong>use_scipy</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – if set, use <code class="docutils literal notranslate"><span class="pre">scipy</span></code> as the computation backend. Note, <code class="docutils literal notranslate"><span class="pre">scipy</span></code> does not support distance
 on sparse matrix.</p></li>
@@ -3898,7 +3612,6 @@ on sparse matrix.</p></li>
 <p>This argument is only effective when <code class="docutils literal notranslate"><span class="pre">batch_size</span></code> is set.</p>
 </div>
 </p></li>
-<li><p><strong>on</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – specifies a subindex to search on. If set, the returned DocumentArray will be retrieved from the given subindex.</p></li>
 <li><p><strong>kwargs</strong> – other kwargs.</p></li>
 </ul>
 </dd>
@@ -3939,7 +3652,7 @@ embeddings at the same time. Make sure to use a different <code class="docutils 
 
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.DocumentArray.plot_image_sprites">
-<span class="sig-name descname"><span class="pre">plot_image_sprites</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">canvas_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">512</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">16</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'tensor'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip_empty</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_progress</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fig_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(10,</span> <span class="pre">10)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_aspect_ratio</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.DocumentArray.plot_image_sprites" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">plot_image_sprites</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">canvas_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">512</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">16</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'tensor'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip_empty</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_progress</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fig_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.DocumentArray.plot_image_sprites" title="Permalink to this definition">#</a></dt>
 <dd><p>Generate a sprite image for all image tensors in this DocumentArray-like object.</p>
 <p>An image sprite is a collection of images put into a single image. It is always square-sized.
 Each sub-image is also square-sized and equally-sized.</p>
@@ -3952,10 +3665,7 @@ Each sub-image is also square-sized and equally-sized.</p>
 <li><p><strong>channel_axis</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – the axis id of the color channel, <code class="docutils literal notranslate"><span class="pre">-1</span></code> indicates the color channel info at the last axis</p></li>
 <li><p><strong>image_source</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – specify where the image comes from, can be <code class="docutils literal notranslate"><span class="pre">uri</span></code> or <code class="docutils literal notranslate"><span class="pre">tensor</span></code>. empty tensor will fallback to uri</p></li>
 <li><p><strong>skip_empty</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – skip Document who has no .uri or .tensor.</p></li>
-<li><p><strong>show_index</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – show the index on the top-right corner of every image</p></li>
-<li><p><strong>fig_size</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]]) – the size of the figure</p></li>
-<li><p><strong>show_progress</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – show a progressbar while plotting.</p></li>
-<li><p><strong>keep_aspect_ratio</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – preserve the aspect ratio of the image by using the aspect ratio of the first image in self.</p></li>
+<li><p><strong>show_progress</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – show a progresbar.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
@@ -3983,8 +3693,6 @@ Each sub-image is also square-sized and equally-sized.</p>
 - <cite>http://192.168.0.123:8080/endpoint</cite>
 - <cite>jinahub://Hello/endpoint</cite>
 - <cite>jinahub+docker://Hello/endpoint</cite>
-- <cite>jinahub+docker://Hello/v0.0.1/endpoint</cite>
-- <cite>jinahub+docker://Hello/latest/endpoint</cite>
 - <cite>jinahub+sandbox://Hello/endpoint</cite></p></li>
 <li><p><strong>show_progress</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – if to show a progressbar</p></li>
 <li><p><strong>batch_size</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – number of Document on each request</p></li>
@@ -4002,7 +3710,7 @@ Each sub-image is also square-sized and equally-sized.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.DocumentArray.pull">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pull</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_progress</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">local_cache</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.DocumentArray.pull" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pull</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_progress</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">local_cache</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.DocumentArray.pull" title="Permalink to this definition">#</a></dt>
 <dd><p>Pulling a <a class="reference internal" href="#jina.DocumentArray" title="jina.DocumentArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code></a> from Jina Cloud Service to local.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -4023,7 +3731,7 @@ Each sub-image is also square-sized and equally-sized.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.DocumentArray.push">
-<span class="sig-name descname"><span class="pre">push</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_progress</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">public</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">branding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.DocumentArray.push" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">push</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_progress</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">public</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.DocumentArray.push" title="Permalink to this definition">#</a></dt>
 <dd><p>Push this DocumentArray object to Jina Cloud which can be later retrieved via <a class="reference internal" href="#jina.DocumentArray.push" title="jina.DocumentArray.push"><code class="xref py py-meth docutils literal notranslate"><span class="pre">push()</span></code></a></p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -4040,9 +3748,7 @@ persistence. Only use this full temporary transmission/storage/clipboard.</p></l
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – a name that later can be used for retrieve this <a class="reference internal" href="#jina.DocumentArray" title="jina.DocumentArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code></a>.</p></li>
 <li><p><strong>show_progress</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – if to show a progress bar on pulling</p></li>
-<li><p><strong>public</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – by default anyone can pull a DocumentArray if they know its name.
-Setting this to False will allow only the creator to pull it. This feature of course you to login first.</p></li>
-<li><p><strong>branding</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>]) – a dict of branding information to be sent to Jina Cloud. {“icon”: “emoji”, “background”: “#fff”}</p></li>
+<li><p><strong>public</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – If True, the DocumentArray will be shared publicly. Otherwise, it will be private.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
@@ -4230,33 +3936,6 @@ parameters together.</p></li>
 </dd>
 <dt class="field-even">Return type</dt>
 <dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.DocumentArray.save_gif">
-<span class="sig-name descname"><span class="pre">save_gif</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duration</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">200</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size_ratio</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inline_display</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'tensor'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip_empty</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_progress</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.DocumentArray.save_gif" title="Permalink to this definition">#</a></dt>
-<dd><p>Save a gif of the DocumentArray. Each frame corresponds to a Document.uri/.tensor in the DocumentArray.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>output</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the file path to save the gif to.</p></li>
-<li><p><strong>channel_axis</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – the color channel axis of the tensor.</p></li>
-<li><p><strong>duration</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – the duration of each frame in milliseconds.</p></li>
-<li><p><strong>size_ratio</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – the size ratio of each frame.</p></li>
-<li><p><strong>inline_display</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – if to show the gif in Jupyter notebook.</p></li>
-<li><p><strong>image_source</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the source of the image in Document atribute.</p></li>
-<li><p><strong>skip_empty</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – if to skip empty documents.</p></li>
-<li><p><strong>show_index</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – if to show the index of the document in the top-right corner.</p></li>
-<li><p><strong>show_progress</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – if to show a progress bar.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
-</dd>
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p></p>
 </dd>
 </dl>
 </dd></dl>
@@ -4710,7 +4389,7 @@ which should be structured as a python package. For more details, please see the
 * an Executor YAML file (.yml, .yaml, .jaml)
 * a Jina Hub Executor (must start with <cite>jinahub://</cite> or <cite>jinahub+docker://</cite>)
 * a docker image (must start with <cite>docker://</cite>)
-* the string literal of a YAML config (must start with <cite>!</cite> or <a href="#id11"><span class="problematic" id="id12">`</span></a>jtype: <a href="#id13"><span class="problematic" id="id14">`</span></a>)
+* the string literal of a YAML config (must start with <cite>!</cite> or <a href="#id13"><span class="problematic" id="id14">`</span></a>jtype: <a href="#id15"><span class="problematic" id="id16">`</span></a>)
 * the string literal of a JSON config</p>
 <p>When use it under Python, one can use the following values additionally:
 - a Python dict that represents the config
@@ -4815,7 +4494,7 @@ container.</p>
 - To access multiple gpus, e.g. make use of 2 gpus, use <cite>–gpus 2</cite>.
 - To access specified gpus based on device id, use <cite>–gpus device=[YOUR-GPU-DEVICE-ID]</cite>
 - To access specified gpus based on multiple device id, use <cite>–gpus device=[YOUR-GPU-DEVICE-ID1],device=[YOUR-GPU-DEVICE-ID2]</cite>
-- To specify more parameters, use <a href="#id15"><span class="problematic" id="id16">`</span></a>–gpus device=[YOUR-GPU-DEVICE-ID],runtime=nvidia,capabilities=display</p>
+- To specify more parameters, use <a href="#id17"><span class="problematic" id="id18">`</span></a>–gpus device=[YOUR-GPU-DEVICE-ID],runtime=nvidia,capabilities=display</p>
 </p></li>
 <li><p><strong>host</strong> – The host address of the runtime, by default it is 0.0.0.0.</p></li>
 <li><p><strong>host_in</strong> – The host address for binding to, by default it is 0.0.0.0</p></li>
@@ -4876,7 +4555,7 @@ Python files, data files.</p>
 * an Executor YAML file (.yml, .yaml, .jaml)
 * a Jina Hub Executor (must start with <cite>jinahub://</cite> or <cite>jinahub+docker://</cite>)
 * a docker image (must start with <cite>docker://</cite>)
-* the string literal of a YAML config (must start with <cite>!</cite> or <a href="#id17"><span class="problematic" id="id18">`</span></a>jtype: <a href="#id19"><span class="problematic" id="id20">`</span></a>)
+* the string literal of a YAML config (must start with <cite>!</cite> or <a href="#id19"><span class="problematic" id="id20">`</span></a>jtype: <a href="#id21"><span class="problematic" id="id22">`</span></a>)
 * the string literal of a JSON config</p>
 <p>When use it under Python, one can use the following values additionally:
 - a Python dict that represents the config
@@ -5652,7 +5331,7 @@ That means, it is the fallback handler for endpoints that are not found.</p>
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Oct 25, 2022</div>
+                            Last updated on Oct 26, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

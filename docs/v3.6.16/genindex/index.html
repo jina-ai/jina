@@ -187,7 +187,6 @@
 </a>
 <script>
   function setPrefix(prefix){
-    window.sessionStorage.setItem("version-select-index", document.getElementsByClassName("version-select")[0].selectedIndex);
     window.location.href = prefix
   }
 </script>
@@ -195,16 +194,17 @@
   fetch(`https://${window.location.host}/_versions.json`)
   .then((resp) => resp.json())
   .then((data) => {
-    var versionSelector = document.getElementsByClassName("version-select")[0]
+    var versionSelector = document.getElementsByClassName("version-select")[0];
+    var currentPrefix = window.location.href.toString().split(window.location.host)[1].split('/')[1];
+
     for(var i = 0; i < data.length; i++){
       var option = document.createElement("option");
       option.innerHTML = data[i].version;
       option.value = "/" + data[i].version;
       versionSelector.appendChild(option);
-    }
-
-    if(window.sessionStorage.getItem('version-select-index')){
-      versionSelector.selectedIndex = window.sessionStorage.getItem('version-select-index');
+      if(currentPrefix === data[i].version){
+        versionSelector.selectedIndex = i + 1;
+      }
     }
   })
   .catch((err) => console.log(err));
@@ -1035,14 +1035,6 @@
 </li>
         <li><a href="../api/jina.clients.base.helper/#jina.clients.base.helper.WebsocketClientlet.close_message">close_message (jina.clients.base.helper.WebsocketClientlet property)</a>
 </li>
-        <li><a href="../api/jina/#jina.DocumentArray.cloud_delete">cloud_delete() (jina.DocumentArray static method)</a>
-</li>
-        <li><a href="../api/jina/#jina.DocumentArray.cloud_list">cloud_list() (jina.DocumentArray static method)</a>
-</li>
-        <li><a href="../api/jina/#jina.DocumentArray.cloud_pull">cloud_pull() (jina.DocumentArray class method)</a>
-</li>
-        <li><a href="../api/jina/#jina.DocumentArray.cloud_push">cloud_push() (jina.DocumentArray method)</a>
-</li>
         <li><a href="../api/jina.jaml/#jina.jaml.JAML.cls_from_tag">cls_from_tag() (jina.jaml.JAML static method)</a>
 </li>
         <li><a href="../api/jina.excepts/#jina.excepts.InternalNetworkError.code">code() (jina.excepts.InternalNetworkError method)</a>
@@ -1071,8 +1063,6 @@
 </li>
         <li><a href="../api/jina.logging.profile/#jina.logging.profile.ProgressBar.console">console (jina.logging.profile.ProgressBar property)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaEndpointRequestModel.construct">construct() (jina.serve.runtimes.gateway.http.models.JinaEndpointRequestModel class method)</a>
 
         <ul>
@@ -1085,6 +1075,8 @@
           <li><a href="../api/jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaResponseModel.construct">(jina.serve.runtimes.gateway.http.models.JinaResponseModel class method)</a>
 </li>
         </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.jaml.helper/#jina.jaml.helper.JinaConstructor.construct_document">construct_document() (jina.jaml.helper.JinaConstructor method)</a>
 
         <ul>
@@ -1493,10 +1485,10 @@
           <li><a href="../api/jina.jaml.helper/#jina.jaml.helper.JinaResolver.descend_resolver">(jina.jaml.helper.JinaResolver method)</a>
 </li>
         </ul></li>
-        <li><a href="../api/jina.excepts/#jina.excepts.InternalNetworkError.details">details() (jina.excepts.InternalNetworkError method)</a>
-</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="../api/jina.excepts/#jina.excepts.InternalNetworkError.details">details() (jina.excepts.InternalNetworkError method)</a>
+</li>
         <li><a href="../api/jina.jaml.helper/#jina.jaml.helper.JinaLoader.determine_encoding">determine_encoding() (jina.jaml.helper.JinaLoader method)</a>
 </li>
         <li><a href="../api/jina.enums/#jina.enums.DataInputType.DICT">DICT (jina.enums.DataInputType attribute)</a>
@@ -1528,10 +1520,6 @@
         <li><a href="../api/jina.hubble.helper/#jina.hubble.helper.disk_cache_offline">disk_cache_offline() (in module jina.hubble.helper)</a>
 </li>
         <li><a href="../api/jina/#jina.Document.display">display() (jina.Document method)</a>
-</li>
-        <li><a href="../api/jina/#jina.Document.display_tensor">display_tensor() (jina.Document method)</a>
-</li>
-        <li><a href="../api/jina/#jina.Document.display_uri">display_uri() (jina.Document method)</a>
 </li>
         <li><a href="../api/jina.jaml.helper/#jina.jaml.helper.JinaLoader.dispose">dispose() (jina.jaml.helper.JinaLoader method)</a>
 </li>
@@ -2084,8 +2072,6 @@
         </ul></li>
         <li><a href="../api/jina.orchestrate.helper/#jina.orchestrate.helper.generate_default_volume_and_workspace">generate_default_volume_and_workspace() (in module jina.orchestrate.helper)</a>
 </li>
-        <li><a href="../api/jina/#jina.Document.generator_from_webcam">generator_from_webcam() (jina.Document class method)</a>
-</li>
         <li><a href="../api/jina.serve.networking/#jina.serve.networking.ReplicaList.get_all_connections">get_all_connections() (jina.serve.networking.ReplicaList method)</a>
 </li>
         <li><a href="../api/fastentrypoints/#fastentrypoints.get_args">get_args() (in module fastentrypoints)</a>
@@ -2156,10 +2142,10 @@
 </li>
         <li><a href="../api/jina.hubble.helper/#jina.hubble.helper.get_hubble_url_v1">get_hubble_url_v1() (in module jina.hubble.helper)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.hubble.helper/#jina.hubble.helper.get_hubble_url_v2">get_hubble_url_v2() (in module jina.hubble.helper)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.orchestrate.deployments.config.helper/#jina.orchestrate.deployments.config.helper.get_image_name">get_image_name() (in module jina.orchestrate.deployments.config.helper)</a>
 </li>
         <li><a href="../api/jina.helper/#jina.helper.get_internal_ip">get_internal_ip() (in module jina.helper)</a>
@@ -3674,8 +3660,6 @@
 </li>
         <li><a href="../api/jina.jaml/#jina.jaml.JAML.load_no_tags">load_no_tags() (jina.jaml.JAML static method)</a>
 </li>
-        <li><a href="../api/jina/#jina.Document.load_pil_image_to_datauri">load_pil_image_to_datauri() (jina.Document method)</a>
-</li>
         <li><a href="../api/jina.jaml.helper/#jina.jaml.helper.load_py_modules">load_py_modules() (in module jina.jaml.helper)</a>
 </li>
         <li><a href="../api/jina.hubble.hubapi/#jina.hubble.hubapi.load_secret">load_secret() (in module jina.hubble.hubapi)</a>
@@ -3698,10 +3682,10 @@
 </li>
         <li><a href="../api/jina.logging.logger/#jina.logging.logger.SysLogHandlerWrapper.LOG_AUTH">LOG_AUTH (jina.logging.logger.SysLogHandlerWrapper attribute)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.logging.logger/#jina.logging.logger.SysLogHandlerWrapper.LOG_AUTHPRIV">LOG_AUTHPRIV (jina.logging.logger.SysLogHandlerWrapper attribute)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.logging.logger/#jina.logging.logger.SysLogHandlerWrapper.LOG_CRIT">LOG_CRIT (jina.logging.logger.SysLogHandlerWrapper attribute)</a>
 </li>
         <li><a href="../api/jina.logging.logger/#jina.logging.logger.SysLogHandlerWrapper.LOG_CRON">LOG_CRON (jina.logging.logger.SysLogHandlerWrapper attribute)</a>
@@ -4893,8 +4877,6 @@
 </li>
         <li><a href="../api/jina/#jina.DocumentArray.save_embeddings_csv">save_embeddings_csv() (jina.DocumentArray method)</a>
 </li>
-        <li><a href="../api/jina/#jina.DocumentArray.save_gif">save_gif() (jina.DocumentArray method)</a>
-</li>
         <li><a href="../api/jina/#jina.Document.save_image_tensor_to_file">save_image_tensor_to_file() (jina.Document method)</a>
 </li>
         <li><a href="../api/jina/#jina.DocumentArray.save_json">save_json() (jina.DocumentArray method)</a>
@@ -5043,10 +5025,10 @@
 </li>
         <li><a href="../api/jina.serve.networking/#jina.serve.networking.GrpcConnectionPool.send_request_once">send_request_once() (jina.serve.networking.GrpcConnectionPool method)</a>
 </li>
-        <li><a href="../api/jina.serve.networking/#jina.serve.networking.GrpcConnectionPool.send_request_sync">send_request_sync() (jina.serve.networking.GrpcConnectionPool static method)</a>
-</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="../api/jina.serve.networking/#jina.serve.networking.GrpcConnectionPool.send_request_sync">send_request_sync() (jina.serve.networking.GrpcConnectionPool static method)</a>
+</li>
         <li><a href="../api/jina.serve.networking/#jina.serve.networking.GrpcConnectionPool.send_requests">send_requests() (jina.serve.networking.GrpcConnectionPool method)</a>
 
         <ul>
@@ -5115,11 +5097,7 @@
 </li>
         <li><a href="../api/jina/#jina.Document.set_image_tensor_normalization">set_image_tensor_normalization() (jina.Document method)</a>
 </li>
-        <li><a href="../api/jina/#jina.Document.set_image_tensor_resample">set_image_tensor_resample() (jina.Document method)</a>
-</li>
         <li><a href="../api/jina/#jina.Document.set_image_tensor_shape">set_image_tensor_shape() (jina.Document method)</a>
-</li>
-        <li><a href="../api/jina/#jina.Document.set_multi_modal_attribute">set_multi_modal_attribute() (jina.Document method)</a>
 </li>
         <li><a href="../api/jina.logging.logger/#jina.logging.logger.RichHandler.set_name">set_name() (jina.logging.logger.RichHandler method)</a>
 
@@ -5767,7 +5745,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Oct 25, 2022</div>
+                            Last updated on Oct 26, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

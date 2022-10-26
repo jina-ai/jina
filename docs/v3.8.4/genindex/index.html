@@ -187,7 +187,6 @@
 </a>
 <script>
   function setPrefix(prefix){
-    window.sessionStorage.setItem("version-select-index", document.getElementsByClassName("version-select")[0].selectedIndex);
     window.location.href = prefix
   }
 </script>
@@ -195,16 +194,17 @@
   fetch(`https://${window.location.host}/_versions.json`)
   .then((resp) => resp.json())
   .then((data) => {
-    var versionSelector = document.getElementsByClassName("version-select")[0]
+    var versionSelector = document.getElementsByClassName("version-select")[0];
+    var currentPrefix = window.location.href.toString().split(window.location.host)[1].split('/')[1];
+
     for(var i = 0; i < data.length; i++){
       var option = document.createElement("option");
       option.innerHTML = data[i].version;
       option.value = "/" + data[i].version;
       versionSelector.appendChild(option);
-    }
-
-    if(window.sessionStorage.getItem('version-select-index')){
-      versionSelector.selectedIndex = window.sessionStorage.getItem('version-select-index');
+      if(currentPrefix === data[i].version){
+        versionSelector.selectedIndex = i + 1;
+      }
     }
   })
   .catch((err) => console.log(err));
@@ -1088,14 +1088,6 @@
 </li>
         <li><a href="../api/jina_cli.api/#jina_cli.api.cloud">cloud() (in module jina_cli.api)</a>
 </li>
-        <li><a href="../api/jina/#jina.DocumentArray.cloud_delete">cloud_delete() (jina.DocumentArray static method)</a>
-</li>
-        <li><a href="../api/jina/#jina.DocumentArray.cloud_list">cloud_list() (jina.DocumentArray static method)</a>
-</li>
-        <li><a href="../api/jina/#jina.DocumentArray.cloud_pull">cloud_pull() (jina.DocumentArray class method)</a>
-</li>
-        <li><a href="../api/jina/#jina.DocumentArray.cloud_push">cloud_push() (jina.DocumentArray method)</a>
-</li>
         <li><a href="../api/jina.jaml/#jina.jaml.JAML.cls_from_tag">cls_from_tag() (jina.jaml.JAML static method)</a>
 </li>
         <li><a href="../api/jina.excepts/#jina.excepts.InternalNetworkError.code">code() (jina.excepts.InternalNetworkError method)</a>
@@ -1118,12 +1110,12 @@
 </li>
         <li><a href="../api/jina.jaml.helper/#jina.jaml.helper.JinaLoader.compose_scalar_node">compose_scalar_node() (jina.jaml.helper.JinaLoader method)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.jaml.helper/#jina.jaml.helper.JinaLoader.compose_sequence_node">compose_sequence_node() (jina.jaml.helper.JinaLoader method)</a>
 </li>
         <li><a href="../api/jina.orchestrate.pods.helper/#jina.orchestrate.pods.helper.ConditionalEvent">ConditionalEvent (class in jina.orchestrate.pods.helper)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaHealthModel.Config">Config (jina.serve.runtimes.gateway.http.models.JinaHealthModel attribute)</a>
 </li>
         <li><a href="../api/jina.logging.profile/#jina.logging.profile.ProgressBar.console">console (jina.logging.profile.ProgressBar property)</a>
@@ -3268,13 +3260,6 @@
 </li>
         </ul></li>
         <li>
-    jina.proto.pb.jina_pb2
-
-        <ul>
-          <li><a href="../api/jina.proto.pb.jina_pb2/#module-jina.proto.pb.jina_pb2">module</a>
-</li>
-        </ul></li>
-        <li>
     jina.proto.pb.jina_pb2_grpc
 
         <ul>
@@ -3286,6 +3271,13 @@
 
         <ul>
           <li><a href="../api/jina.proto.pb2/#module-jina.proto.pb2">module</a>
+</li>
+        </ul></li>
+        <li>
+    jina.proto.pb2.jina_pb2
+
+        <ul>
+          <li><a href="../api/jina.proto.pb2.jina_pb2/#module-jina.proto.pb2.jina_pb2">module</a>
 </li>
         </ul></li>
         <li>
@@ -4240,11 +4232,11 @@
 </li>
           <li><a href="../api/jina.proto.pb/#module-jina.proto.pb">jina.proto.pb</a>
 </li>
-          <li><a href="../api/jina.proto.pb.jina_pb2/#module-jina.proto.pb.jina_pb2">jina.proto.pb.jina_pb2</a>
-</li>
           <li><a href="../api/jina.proto.pb.jina_pb2_grpc/#module-jina.proto.pb.jina_pb2_grpc">jina.proto.pb.jina_pb2_grpc</a>
 </li>
           <li><a href="../api/jina.proto.pb2/#module-jina.proto.pb2">jina.proto.pb2</a>
+</li>
+          <li><a href="../api/jina.proto.pb2.jina_pb2/#module-jina.proto.pb2.jina_pb2">jina.proto.pb2.jina_pb2</a>
 </li>
           <li><a href="../api/jina.proto.pb2.jina_pb2_grpc/#module-jina.proto.pb2.jina_pb2_grpc">jina.proto.pb2.jina_pb2_grpc</a>
 </li>
@@ -6023,7 +6015,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Oct 25, 2022</div>
+                            Last updated on Oct 26, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

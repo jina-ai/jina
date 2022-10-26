@@ -1,0 +1,7 @@
+pin\_requirements module
+========================
+
+.. automodule:: pin_requirements
+   :members:
+   :undoc-members:
+   :show-inheritance:

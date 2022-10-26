@@ -12,8 +12,6 @@
   
 <meta property="og:site_name" content="Jina 3.8.4 Documentation" />
   
-<meta property="og:description" content="Generated protocol buffer code." />
-  
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
 <meta property="og:image:alt" content="Jina 3.8.4 Documentation" />
@@ -221,7 +219,6 @@
 </a>
 <script>
   function setPrefix(prefix){
-    window.sessionStorage.setItem("version-select-index", document.getElementsByClassName("version-select")[0].selectedIndex);
     window.location.href = prefix
   }
 </script>
@@ -229,16 +226,17 @@
   fetch(`https://${window.location.host}/_versions.json`)
   .then((resp) => resp.json())
   .then((data) => {
-    var versionSelector = document.getElementsByClassName("version-select")[0]
+    var versionSelector = document.getElementsByClassName("version-select")[0];
+    var currentPrefix = window.location.href.toString().split(window.location.host)[1].split('/')[1];
+
     for(var i = 0; i < data.length; i++){
       var option = document.createElement("option");
       option.innerHTML = data[i].version;
       option.value = "/" + data[i].version;
       versionSelector.appendChild(option);
-    }
-
-    if(window.sessionStorage.getItem('version-select-index')){
-      versionSelector.selectedIndex = window.sessionStorage.getItem('version-select-index');
+      if(currentPrefix === data[i].version){
+        versionSelector.selectedIndex = i + 1;
+      }
     }
   })
   .catch((err) => console.log(err));
@@ -419,9 +417,8 @@
                     </label>
                 </div>
                 <article role="main">
-                    <section id="module-jina.proto.pb.jina_pb2">
-<span id="jina-proto-pb-jina-pb2-module"></span><h1>jina.proto.pb.jina_pb2 module<a class="headerlink" href="#module-jina.proto.pb.jina_pb2" title="Permalink to this heading">#</a></h1>
-<p>Generated protocol buffer code.</p>
+                    <section id="jina-proto-pb-jina-pb2-module">
+<h1>jina.proto.pb.jina_pb2 module<a class="headerlink" href="#jina-proto-pb-jina-pb2-module" title="Permalink to this heading">#</a></h1>
 </section>
 
                 </article>
@@ -437,7 +434,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Oct 25, 2022</div>
+                            Last updated on Oct 26, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

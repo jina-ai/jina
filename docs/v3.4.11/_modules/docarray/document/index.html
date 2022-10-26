@@ -177,7 +177,6 @@
 </a>
 <script>
   function setPrefix(prefix){
-    window.sessionStorage.setItem("version-select-index", document.getElementsByClassName("version-select")[0].selectedIndex);
     window.location.href = prefix
   }
 </script>
@@ -185,16 +184,17 @@
   fetch(`https://${window.location.host}/_versions.json`)
   .then((resp) => resp.json())
   .then((data) => {
-    var versionSelector = document.getElementsByClassName("version-select")[0]
+    var versionSelector = document.getElementsByClassName("version-select")[0];
+    var currentPrefix = window.location.href.toString().split(window.location.host)[1].split('/')[1];
+
     for(var i = 0; i < data.length; i++){
       var option = document.createElement("option");
       option.innerHTML = data[i].version;
       option.value = "/" + data[i].version;
       versionSelector.appendChild(option);
-    }
-
-    if(window.sessionStorage.getItem('version-select-index')){
-      versionSelector.selectedIndex = window.sessionStorage.getItem('version-select-index');
+      if(currentPrefix === data[i].version){
+        versionSelector.selectedIndex = i + 1;
+      }
     }
   })
   .catch((err) => console.log(err));
@@ -581,67 +581,16 @@
                 <h1>Source code for docarray.document</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">overload</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Any</span>
 
-<span class="kn">from</span> <span class="nn">docarray.document.data</span> <span class="kn">import</span> <span class="n">DocumentData</span>
-<span class="kn">from</span> <span class="nn">docarray.document.mixins</span> <span class="kn">import</span> <span class="n">AllMixins</span>
-<span class="kn">from</span> <span class="nn">docarray.base</span> <span class="kn">import</span> <span class="n">BaseDCType</span>
-<span class="kn">from</span> <span class="nn">docarray.math.ndarray</span> <span class="kn">import</span> <span class="n">detach_tensor_if_present</span>
+<span class="kn">from</span> <span class="nn">.data</span> <span class="kn">import</span> <span class="n">DocumentData</span>
+<span class="kn">from</span> <span class="nn">.mixins</span> <span class="kn">import</span> <span class="n">AllMixins</span>
+<span class="kn">from</span> <span class="nn">..base</span> <span class="kn">import</span> <span class="n">BaseDCType</span>
+<span class="kn">from</span> <span class="nn">..math.ndarray</span> <span class="kn">import</span> <span class="n">detach_tensor_if_present</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">docarray.typing</span> <span class="kn">import</span> <span class="n">ArrayType</span><span class="p">,</span> <span class="n">StructValueType</span><span class="p">,</span> <span class="n">DocumentContentType</span>
+    <span class="kn">from</span> <span class="nn">..typing</span> <span class="kn">import</span> <span class="n">ArrayType</span><span class="p">,</span> <span class="n">StructValueType</span><span class="p">,</span> <span class="n">DocumentContentType</span>
 
 
 <div class="viewcode-block" id="Document"><a class="viewcode-back" href="../../../api/jina/#jina.Document">[docs]</a><span class="k">class</span> <span class="nc">Document</span><span class="p">(</span><span class="n">AllMixins</span><span class="p">,</span> <span class="n">BaseDCType</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Document is the basic data type in DocArray.</span>
-<span class="sd">    A Document is a container for any kind of data, be it text, image, audio, video, or 3D meshes.</span>
-
-<span class="sd">    You can initialize a Document object with given attributes:</span>
-
-<span class="sd">    .. code-block:: python</span>
-
-<span class="sd">        from docarray import Document</span>
-<span class="sd">        import numpy</span>
-
-<span class="sd">        d1 = Document(text=&#39;hello&#39;)</span>
-<span class="sd">        d3 = Document(tensor=numpy.array([1, 2, 3]))</span>
-<span class="sd">        d4 = Document(</span>
-<span class="sd">            uri=&#39;https://jina.ai&#39;,</span>
-<span class="sd">            mime_type=&#39;text/plain&#39;,</span>
-<span class="sd">            granularity=1,</span>
-<span class="sd">            adjacency=3,</span>
-<span class="sd">            tags={&#39;foo&#39;: &#39;bar&#39;},</span>
-<span class="sd">        )</span>
-
-<span class="sd">    Documents support a :ref:`nested structure &lt;recursive-nested-document&gt;`, which can also be specified during construction:</span>
-
-<span class="sd">    .. code-block:: python</span>
-
-<span class="sd">        d = Document(</span>
-<span class="sd">            id=&#39;d0&#39;,</span>
-<span class="sd">            chunks=[Document(id=&#39;d1&#39;, chunks=Document(id=&#39;d2&#39;))],</span>
-<span class="sd">            matches=[Document(id=&#39;d3&#39;)],</span>
-<span class="sd">        )</span>
-
-<span class="sd">    A Document can embed its contents using the :meth:`embed` method and a provided embedding model:</span>
-
-<span class="sd">    .. code-block:: python</span>
-
-<span class="sd">        import torchvision</span>
-
-<span class="sd">        q = (</span>
-<span class="sd">            Document(uri=&#39;/Users/usr/path/to/image.jpg&#39;)</span>
-<span class="sd">            .load_uri_to_image_tensor()</span>
-<span class="sd">            .set_image_tensor_normalization()</span>
-<span class="sd">            .set_image_tensor_channel_axis(-1, 0)</span>
-<span class="sd">        )</span>
-<span class="sd">        model = torchvision.models.resnet50(pretrained=True)</span>
-<span class="sd">        q.embed(model)</span>
-
-<span class="sd">    Multiple Documents can be organized into a :class:`~docarray.array.document.DocumentArray`.</span>
-
-<span class="sd">    .. seealso::</span>
-<span class="sd">        For further details, see our :ref:`user guide &lt;document&gt;`.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
     <span class="n">_data_class</span> <span class="o">=</span> <span class="n">DocumentData</span>
     <span class="n">_unresolved_fields_dest</span> <span class="o">=</span> <span class="s1">&#39;tags&#39;</span>
     <span class="n">_post_init_fields</span> <span class="o">=</span> <span class="p">(</span>
@@ -750,7 +699,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Oct 25, 2022.
+                    Last updated on Oct 26, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

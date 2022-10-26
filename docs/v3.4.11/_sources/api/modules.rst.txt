@@ -7,3 +7,4 @@ jina
    cli
    fastentrypoints
    jina
+   pin_requirements

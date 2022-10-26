@@ -177,7 +177,6 @@
 </a>
 <script>
   function setPrefix(prefix){
-    window.sessionStorage.setItem("version-select-index", document.getElementsByClassName("version-select")[0].selectedIndex);
     window.location.href = prefix
   }
 </script>
@@ -185,16 +184,17 @@
   fetch(`https://${window.location.host}/_versions.json`)
   .then((resp) => resp.json())
   .then((data) => {
-    var versionSelector = document.getElementsByClassName("version-select")[0]
+    var versionSelector = document.getElementsByClassName("version-select")[0];
+    var currentPrefix = window.location.href.toString().split(window.location.host)[1].split('/')[1];
+
     for(var i = 0; i < data.length; i++){
       var option = document.createElement("option");
       option.innerHTML = data[i].version;
       option.value = "/" + data[i].version;
       versionSelector.appendChild(option);
-    }
-
-    if(window.sessionStorage.getItem('version-select-index')){
-      versionSelector.selectedIndex = window.sessionStorage.getItem('version-select-index');
+      if(currentPrefix === data[i].version){
+        versionSelector.selectedIndex = i + 1;
+      }
     }
   })
   .catch((err) => console.log(err));
@@ -581,87 +581,26 @@
                 <h1>Source code for docarray.array.document</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">overload</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Union</span>
 
-<span class="kn">from</span> <span class="nn">docarray.array.base</span> <span class="kn">import</span> <span class="n">BaseDocumentArray</span>
-<span class="kn">from</span> <span class="nn">docarray.array.mixins</span> <span class="kn">import</span> <span class="n">AllMixins</span>
+<span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">BaseDocumentArray</span>
+<span class="kn">from</span> <span class="nn">.mixins</span> <span class="kn">import</span> <span class="n">AllMixins</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">docarray.typing</span> <span class="kn">import</span> <span class="n">DocumentArraySourceType</span>
-    <span class="kn">from</span> <span class="nn">docarray.array.memory</span> <span class="kn">import</span> <span class="n">DocumentArrayInMemory</span>
-    <span class="kn">from</span> <span class="nn">docarray.array.sqlite</span> <span class="kn">import</span> <span class="n">DocumentArraySqlite</span>
-    <span class="kn">from</span> <span class="nn">docarray.array.annlite</span> <span class="kn">import</span> <span class="n">DocumentArrayAnnlite</span>
-    <span class="kn">from</span> <span class="nn">docarray.array.weaviate</span> <span class="kn">import</span> <span class="n">DocumentArrayWeaviate</span>
-    <span class="kn">from</span> <span class="nn">docarray.array.elastic</span> <span class="kn">import</span> <span class="n">DocumentArrayElastic</span>
-    <span class="kn">from</span> <span class="nn">docarray.array.redis</span> <span class="kn">import</span> <span class="n">DocumentArrayRedis</span>
-    <span class="kn">from</span> <span class="nn">docarray.array.storage.sqlite</span> <span class="kn">import</span> <span class="n">SqliteConfig</span>
-    <span class="kn">from</span> <span class="nn">docarray.array.storage.annlite</span> <span class="kn">import</span> <span class="n">AnnliteConfig</span>
-    <span class="kn">from</span> <span class="nn">docarray.array.storage.weaviate</span> <span class="kn">import</span> <span class="n">WeaviateConfig</span>
-    <span class="kn">from</span> <span class="nn">docarray.array.storage.elastic</span> <span class="kn">import</span> <span class="n">ElasticConfig</span>
-    <span class="kn">from</span> <span class="nn">docarray.array.storage.redis</span> <span class="kn">import</span> <span class="n">RedisConfig</span>
+    <span class="kn">from</span> <span class="nn">..typing</span> <span class="kn">import</span> <span class="n">DocumentArraySourceType</span>
+    <span class="kn">from</span> <span class="nn">.memory</span> <span class="kn">import</span> <span class="n">DocumentArrayInMemory</span>
+    <span class="kn">from</span> <span class="nn">.sqlite</span> <span class="kn">import</span> <span class="n">DocumentArraySqlite</span>
+    <span class="kn">from</span> <span class="nn">.annlite</span> <span class="kn">import</span> <span class="n">DocumentArrayAnnlite</span>
+    <span class="kn">from</span> <span class="nn">.weaviate</span> <span class="kn">import</span> <span class="n">DocumentArrayWeaviate</span>
+    <span class="kn">from</span> <span class="nn">.elastic</span> <span class="kn">import</span> <span class="n">DocumentArrayElastic</span>
+    <span class="kn">from</span> <span class="nn">.storage.sqlite</span> <span class="kn">import</span> <span class="n">SqliteConfig</span>
+    <span class="kn">from</span> <span class="nn">.storage.annlite</span> <span class="kn">import</span> <span class="n">AnnliteConfig</span>
+    <span class="kn">from</span> <span class="nn">.storage.weaviate</span> <span class="kn">import</span> <span class="n">WeaviateConfig</span>
+    <span class="kn">from</span> <span class="nn">.storage.elastic</span> <span class="kn">import</span> <span class="n">ElasticConfig</span>
 
 
 <div class="viewcode-block" id="DocumentArray"><a class="viewcode-back" href="../../../../api/jina/#jina.DocumentArray">[docs]</a><span class="k">class</span> <span class="nc">DocumentArray</span><span class="p">(</span><span class="n">AllMixins</span><span class="p">,</span> <span class="n">BaseDocumentArray</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    DocumentArray is a list-like container of :class:`~docarray.Document` objects.</span>
-
-<span class="sd">    A DocumentArray can be used to store, embed, and retrieve :class:`~docarray.Document` objects.</span>
-
-<span class="sd">    .. code-block:: python</span>
-
-<span class="sd">        from docarray import Document, DocumentArray</span>
-
-<span class="sd">        da = DocumentArray(</span>
-<span class="sd">            [Document(text=&#39;The cake is a lie&#39;), Document(text=&#39;Do a barrel roll!&#39;)]</span>
-<span class="sd">        )</span>
-<span class="sd">        da.apply(Document.embed_feature_hashing)</span>
-
-<span class="sd">        query = Document(text=&#39;Can i have some cake?&#39;).embed_feature_hashing()</span>
-<span class="sd">        query.match(da, metric=&#39;jaccard&#39;, use_scipy=True)</span>
-
-<span class="sd">        print(query.matches[:, (&#39;text&#39;, &#39;scores__jaccard__value&#39;)])</span>
-
-<span class="sd">    .. code-block:: bash</span>
-
-<span class="sd">        [[&#39;The cake is a lie&#39;, &#39;Do a barrel roll!&#39;], [0.9, 1.0]]</span>
-
-<span class="sd">    A DocumentArray can also :ref:`embed its contents using a neural network &lt;embed-via-model&gt;`,</span>
-<span class="sd">    process them using an :ref:`external Flow or Executor &lt;da-post&gt;`, and persist Documents in a :ref:`Document Store &lt;doc-store&gt;` for</span>
-<span class="sd">    fast vector search:</span>
-
-<span class="sd">    .. code-block:: python</span>
-
-<span class="sd">        from docarray import Document, DocumentArray</span>
-<span class="sd">        import numpy as np</span>
-
-<span class="sd">        n_dim = 3</span>
-<span class="sd">        metric = &#39;Euclidean&#39;</span>
-
-<span class="sd">        # initialize a DocumentArray with ANNLiter Document Store</span>
-<span class="sd">        da = DocumentArray(</span>
-<span class="sd">            storage=&#39;annlite&#39;,</span>
-<span class="sd">            config={&#39;n_dim&#39;: n_dim, &#39;columns&#39;: [(&#39;price&#39;, &#39;float&#39;)], &#39;metric&#39;: metric},</span>
-<span class="sd">        )</span>
-<span class="sd">        # add Documents to the DocumentArray</span>
-<span class="sd">        with da:</span>
-<span class="sd">            da.extend(</span>
-<span class="sd">                [</span>
-<span class="sd">                    Document(id=f&#39;r{i}&#39;, embedding=i * np.ones(n_dim), tags={&#39;price&#39;: i})</span>
-<span class="sd">                    for i in range(10)</span>
-<span class="sd">                ]</span>
-<span class="sd">            )</span>
-<span class="sd">        # perform vector search</span>
-<span class="sd">        np_query = np.ones(n_dim) * 8</span>
-<span class="sd">        results = da.find(np_query)</span>
-
-<span class="sd">    .. seealso::</span>
-<span class="sd">        For further details, see our :ref:`user guide &lt;documentarray&gt;`.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
     <span class="nd">@overload</span>
     <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span>
-        <span class="bp">cls</span><span class="p">,</span>
-        <span class="n">_docs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;DocumentArraySourceType&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">copy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">subindex_configs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="s1">&#39;None&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="bp">cls</span><span class="p">,</span> <span class="n">_docs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;DocumentArraySourceType&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">copy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;DocumentArrayInMemory&#39;</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Create an in-memory DocumentArray object.&quot;&quot;&quot;</span>
         <span class="o">...</span>
@@ -672,7 +611,6 @@
         <span class="n">_docs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;DocumentArraySourceType&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">storage</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;sqlite&#39;</span><span class="p">,</span>
         <span class="n">config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="s1">&#39;SqliteConfig&#39;</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">subindex_configs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;DocumentArraySqlite&#39;</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Create a SQLite-powered DocumentArray object.&quot;&quot;&quot;</span>
         <span class="o">...</span>
@@ -683,7 +621,6 @@
         <span class="n">_docs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;DocumentArraySourceType&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">storage</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;weaviate&#39;</span><span class="p">,</span>
         <span class="n">config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="s1">&#39;WeaviateConfig&#39;</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">subindex_configs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;DocumentArrayWeaviate&#39;</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Create a Weaviate-powered DocumentArray object.&quot;&quot;&quot;</span>
         <span class="o">...</span>
@@ -694,7 +631,6 @@
         <span class="n">_docs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;DocumentArraySourceType&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">storage</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;annlite&#39;</span><span class="p">,</span>
         <span class="n">config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="s1">&#39;AnnliteConfig&#39;</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">subindex_configs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;DocumentArrayAnnlite&#39;</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Create a AnnLite-powered DocumentArray object.&quot;&quot;&quot;</span>
         <span class="o">...</span>
@@ -705,19 +641,8 @@
         <span class="n">_docs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;DocumentArraySourceType&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">storage</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;elasticsearch&#39;</span><span class="p">,</span>
         <span class="n">config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="s1">&#39;ElasticConfig&#39;</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">subindex_configs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;DocumentArrayElastic&#39;</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Create a Elastic-powered DocumentArray object.&quot;&quot;&quot;</span>
-        <span class="o">...</span>
-
-    <span class="nd">@overload</span>
-    <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span>
-        <span class="bp">cls</span><span class="p">,</span>
-        <span class="n">_docs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;DocumentArraySourceType&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">storage</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;redis&#39;</span><span class="p">,</span>
-        <span class="n">config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="s1">&#39;RedisConfig&#39;</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;DocumentArrayRedis&#39;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Create a Redis-powered DocumentArray object.&quot;&quot;&quot;</span>
         <span class="o">...</span>
 
     <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -725,40 +650,37 @@
 
     <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Ensures that we sync the data to the storage backend when exiting the context manager</span>
+<span class="sd">        Ensures that offset2ids are stored in the db after</span>
+<span class="sd">        operations in the DocumentArray are performed.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sync</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_save_offset2ids</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">storage</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;memory&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">cls</span> <span class="ow">is</span> <span class="n">DocumentArray</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">storage</span> <span class="o">==</span> <span class="s1">&#39;memory&#39;</span><span class="p">:</span>
-                <span class="kn">from</span> <span class="nn">docarray.array.memory</span> <span class="kn">import</span> <span class="n">DocumentArrayInMemory</span>
+                <span class="kn">from</span> <span class="nn">.memory</span> <span class="kn">import</span> <span class="n">DocumentArrayInMemory</span>
 
                 <span class="n">instance</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="n">DocumentArrayInMemory</span><span class="p">)</span>
             <span class="k">elif</span> <span class="n">storage</span> <span class="o">==</span> <span class="s1">&#39;sqlite&#39;</span><span class="p">:</span>
-                <span class="kn">from</span> <span class="nn">docarray.array.sqlite</span> <span class="kn">import</span> <span class="n">DocumentArraySqlite</span>
+                <span class="kn">from</span> <span class="nn">.sqlite</span> <span class="kn">import</span> <span class="n">DocumentArraySqlite</span>
 
                 <span class="n">instance</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="n">DocumentArraySqlite</span><span class="p">)</span>
             <span class="k">elif</span> <span class="n">storage</span> <span class="o">==</span> <span class="s1">&#39;annlite&#39;</span><span class="p">:</span>
-                <span class="kn">from</span> <span class="nn">docarray.array.annlite</span> <span class="kn">import</span> <span class="n">DocumentArrayAnnlite</span>
+                <span class="kn">from</span> <span class="nn">.annlite</span> <span class="kn">import</span> <span class="n">DocumentArrayAnnlite</span>
 
                 <span class="n">instance</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="n">DocumentArrayAnnlite</span><span class="p">)</span>
             <span class="k">elif</span> <span class="n">storage</span> <span class="o">==</span> <span class="s1">&#39;weaviate&#39;</span><span class="p">:</span>
-                <span class="kn">from</span> <span class="nn">docarray.array.weaviate</span> <span class="kn">import</span> <span class="n">DocumentArrayWeaviate</span>
+                <span class="kn">from</span> <span class="nn">.weaviate</span> <span class="kn">import</span> <span class="n">DocumentArrayWeaviate</span>
 
                 <span class="n">instance</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="n">DocumentArrayWeaviate</span><span class="p">)</span>
             <span class="k">elif</span> <span class="n">storage</span> <span class="o">==</span> <span class="s1">&#39;qdrant&#39;</span><span class="p">:</span>
-                <span class="kn">from</span> <span class="nn">docarray.array.qdrant</span> <span class="kn">import</span> <span class="n">DocumentArrayQdrant</span>
+                <span class="kn">from</span> <span class="nn">.qdrant</span> <span class="kn">import</span> <span class="n">DocumentArrayQdrant</span>
 
                 <span class="n">instance</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="n">DocumentArrayQdrant</span><span class="p">)</span>
             <span class="k">elif</span> <span class="n">storage</span> <span class="o">==</span> <span class="s1">&#39;elasticsearch&#39;</span><span class="p">:</span>
-                <span class="kn">from</span> <span class="nn">docarray.array.elastic</span> <span class="kn">import</span> <span class="n">DocumentArrayElastic</span>
+                <span class="kn">from</span> <span class="nn">.elastic</span> <span class="kn">import</span> <span class="n">DocumentArrayElastic</span>
 
                 <span class="n">instance</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="n">DocumentArrayElastic</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="n">storage</span> <span class="o">==</span> <span class="s1">&#39;redis&#39;</span><span class="p">:</span>
-                <span class="kn">from</span> <span class="nn">.redis</span> <span class="kn">import</span> <span class="n">DocumentArrayRedis</span>
-
-                <span class="n">instance</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="n">DocumentArrayRedis</span><span class="p">)</span>
 
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;storage=`</span><span class="si">{</span><span class="n">storage</span><span class="si">}</span><span class="s1">` is not supported.&#39;</span><span class="p">)</span>
@@ -776,7 +698,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Oct 25, 2022.
+                    Last updated on Oct 26, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
