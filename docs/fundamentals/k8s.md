@@ -151,6 +151,6 @@ JCloud is a free CPU/GPU hosting platform for Jina projects.
 ## See further
 - {ref}`Step by Step deployement of a Jina Flow on K8s <kubernetes>`
 - {ref}`Flow export documentation <kubernetes-export>`
--{meth}`~jina.Flow.to_kubernetes_yaml`
+- {meth}`~jina.Flow.to_kubernetes_yaml`
 - {ref}`Documentation on deploying a standalone Executor on K8s <kubernetes-executor>`
 - [Kubernetes Documentation](https://kubernetes.io/docs/home/)
