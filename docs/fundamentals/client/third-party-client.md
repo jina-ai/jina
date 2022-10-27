@@ -8,9 +8,9 @@ This page is about accessing the Flow with other clients, e.g. `curl`, or progra
 We have developed a [Jina Go Client](https://github.com/jina-ai/client-go) that supports `grpc`, `http` and `websocket` protocol that will allow you to connect to Jina from your Go applications.
 
 
-## Kotlin
+## PHP
 
-Our community has developed a [Jina Kotlin Client](https://github.com/jina-ai/client-go) # TODO Put proper link
+Our community has developed a [Jina PHP Client](https://github.com/Dco-ai/php-jina)
 
 
 ## HTTP
