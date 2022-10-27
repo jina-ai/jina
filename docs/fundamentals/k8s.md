@@ -64,7 +64,7 @@ Here are possible configuration options you may need to add or change
 ## Required Service Mesh 
 
 ```{caution}
-A Service Mesh is required to be installed and correctly configured in the K8s clusteri in which your deployed your Flow.
+A Service Mesh is required to be installed and correctly configured in the K8s cluster in which your deployed your Flow.
 ```
 
 Service meshes work by attaching a tiny proxy to each of your Kubernetes pods, allowing for smart rerouting, load balancing,
