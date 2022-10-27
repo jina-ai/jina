@@ -23,9 +23,8 @@ This helper function can be called from:
 * our CLI interface to export a YAML Flow to k8s yaml files
 
 ```{seealso}
-More detail in the {ref}` Flow export documentation <kubernetes-export>`
+More detail in the {ref}`Flow export documentation <kubernetes-export>`
 ```
-
 
 
 ## Extra Kubernetes options
