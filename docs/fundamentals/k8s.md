@@ -1,3 +1,4 @@
+(kubernetes-docs)=
 # Kubernetes Support
 
 Jina is a cloud native framework and therefore run natively and easily on Kubernetes.
@@ -60,7 +61,7 @@ Here are possible configuration options you may need to add or change
 - Edit the default rolling update configuration
 
 
-(service-mesh-k8s)
+(service-mesh-k8s)=
 ## Required Service Mesh 
 
 ```caution

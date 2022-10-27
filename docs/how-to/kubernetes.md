@@ -1,5 +1,17 @@
 (kubernetes)=
-# Deploy with Kubernetes
+# Deploy on Kubernetes
+
+This how-to will go through deploying a simple Flow using Kubernetes, customizing the Kubernetes configuration
+to your needs, and scaling Executors using replicas and shards.
+
+Deploying a {class}`~jina.Flow` in Kubernetes is the recommended way to use Jina in production.
+
+Since a {class}`~jina.Flow` is composed of {class}`~jina.Executor`s which can run in different runtimes depending on how you deploy
+the Flow, Kubernetes can easily take over the lifetime management of Executors.  
+
+```{seelaso}
+This page is a step by step guide, refer to the {ref}`Kubernetes support documentation <kubernetes-docs>` for more details
+```
 
 
 ```{hint}
@@ -20,15 +32,6 @@ Check out {ref}`jcloud` if you want a **one-click** solution to deploy and host 
 JCloud is a free CPU/GPU hosting platform for Jina projects.
 ::::
 :::::
-
-
-Deploying a {class}`~jina.Flow` in Kubernetes is the recommended way to use Jina in production.
-
-Since a {class}`~jina.Flow` is composed of {class}`~jina.Executor`s which can run in different runtimes depending on how you deploy
-the Flow, Kubernetes can easily take over the lifetime management of Executors.  
-
-This how-to will go through deploying a simple Flow using Kubernetes, customizing the Kubernetes configuration
-to your needs, and scaling Executors using replicas and shards.
 
 ## Preliminaries
 
@@ -321,7 +324,7 @@ To put it briefly, there are just three key steps about deploying a Jina Flow on
 3. Expose your Flow outside the K8s cluster
 
 ## See also
-
+- {ref}`Kubernetes support documentation <kubernetes-docs>`
 - {ref}`Monitor the Flow once it is deployed <monitoring>`
 - {ref}`See how failures and retries are handled <flow-error-handling>`
 - {ref}`Learn more about scaling Executors <scale-out>`
