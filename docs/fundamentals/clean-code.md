@@ -5,14 +5,16 @@ tips to help you write beautiful and efficient code.
 
 ## Clean import
 
+Often all you need is:
+
 ```python
 from jina import Executor, Flow, requests, Document, DocumentArray
 ```
-is often all you need. Copy-paste it as the first line of your code.
+Copy-paste it as your first line of code.
 
 ## Generator as Flow input
 
-Use a [Python generator](https://docs.python.org/3/glossary.html#term-generator) as the input to the Flow. A generator can lazily build `Document`s one at a time, instead of building them all at once. This can greatly speed up overall performance and reduce the memory footprint.
+Use a [Python generator](https://docs.python.org/3/glossary.html#term-generator) as the input to the Flow. A generator lazily builds `Document`s one at a time, instead of building them all at once. This greatly accelerates overall performance and reduces memory footprint.
 ````{tab} ✅ Do
 ```{code-block} python
 ---
@@ -87,7 +89,7 @@ with f:
 
 ## Skip unnecessary `__init__` 
 
-No need to implement `__init__` if your `Executor` does not contain initial states.
+There's no need to implement `__init__` if your `Executor` doesn't contain initial states.
    
 ````{tab} ✅ Do
 ```python
@@ -118,7 +120,7 @@ class MyExecutor(Executor):
 
 ## Skip unnecessary `@requests(on=...)`
    
-Use `@requests` without specifying `on=` if your function is meant to work on all requests. You can use it for catching all requests that are not for this Executor.
+Use `@requests` without specifying `on=` if your function should work on all requests. You can use it for catching all requests that are not for this Executor.
 ````{tab} ✅ Do
 ```python
 from jina import Executor, requests
@@ -233,7 +235,7 @@ with f:
 Heavy-lifting jobs should be put into an `Executor` if possible.
 For instance, sending high-resolution images to the Flow
 can be time-consuming. Putting it into an Executor can leverage the Flow to scale it.
-It also reduces the network overhead.
+It also reduces network overhead.
 
 ````{tab} ✅ Do
 ```python
@@ -288,11 +290,11 @@ with f:
 
 ## Keep only necessary fields
 
-Sometimes you do not want to pass the full Document to subsequent Executors for reasons of efficiency. 
-You can simply use the `.pop` method to remove those fields.
+Sometimes you don't want to pass the full Document to subsequent Executors for reasons of efficiency. 
+You can simply use the `.pop` method to remove unwanted fields.
 
-When using Jina with an HTTP frontend, the frontend often does not need `ndarray` or binary content. Hence, 
-fields such as `blob`, `embedding`, and `buffer` can often be removed at the last Executor before returning the final results to the frontend.
+When using Jina with an HTTP frontend, the frontend doesn't often need `ndarray` or binary content. Hence, 
+fields such as `blob`, `embedding`, and `buffer` can be removed at the last Executor before returning the final results to the frontend.
 
 ````{tab} ✅ Do
 

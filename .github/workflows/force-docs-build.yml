@@ -10,53 +10,104 @@ on:
         description: 'CD | TAG | MANUAL'
         required: false
         default: MANUAL
+      build_old_docs:
+        description: 'Whether to build old docs (TRUE | FALSE)'
+        type: string
+        default: 'FALSE'
+      package:
+        description: The name of the repo to build documentation for.
+        type: string
+        default: jina
+      repo_owner:
+        description: The owner of the repo to build documentation for. Defaults to 'jina-ai'.
+        type: string
+        default: jina-ai
+      pages_branch:
+        description: Branch that Github Pages observes
+        type: string
+        default: gh-pages
+      git_config_name:
+        type: string
+        default: Jina Dev Bot
+      git_config_email:
+        type: string
+        default: dev-bot@jina.ai
 
 jobs:
   token-check:
     runs-on: ubuntu-latest
     steps:
-      - run: echo "success!"
-        if: "${{ github.event.inputs.release_token }} == ${{ env.release_token }}"
+      - name: Check release token
+        id: token-check
+        run: | 
+          touch SUCCESS
+        if: inputs.release_token == env.release_token
         env:
           release_token: ${{ secrets.JINA_CORE_RELEASE_TOKEN }}
+      - name: Fail release token
+        run: |
+          [[ -f SUCCESS ]]
 
-  regular-release:
+  build-and-push-latest-docs:
     needs: token-check
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
-          fetch-depth: 0
-      - uses: actions/setup-python@v2
+          fetch-depth: 1
+      - uses: actions/setup-python@v4
         with:
-          python-version: 3.7
-      - name: Build doc and push to gh-pages
+          python-version: '3.7'
+      - name: Install Dependencies
         run: |
-          git config --local user.email "dev-bot@jina.ai"
-          git config --local user.name "Jina Dev Bot"
           pip install .[devel]
-          mkdir gen-html
           cd docs
           pip install -r requirements.txt
           pip install --pre -U furo
-          export NUM_RELEASES=2
+          pip install sphinx-markdown-tables==0.0.17
+      - name: Sphinx Build
+        run: |
+          cd docs
           bash makedoc.sh local-only
-          cd ./_build/dirhtml/
-          cp -r ./ ../../../gen-html
-          cd -  # back to ./docs
+          mv ./_build/dirhtml /tmp/gen-html
           cd ..
-          git checkout -f gh-pages
-          git rm -rf ./docs
-          mkdir -p docs
-          cd gen-html
-          cp -r ./ ../docs
-          cd ../docs
-          ls -la
-          touch .nojekyll
-          cp 404/index.html 404.html
-          sed -i 's/href="\.\./href="/' 404.html # fix asset urls that needs to be updated in 404.html
-          echo docs.jina.ai > CNAME
-          cd ..
-          git status
-          git add docs && git commit -m "chore(docs): update docs due to ${{github.event_name}} on ${{github.repository}}"
-          git push --force origin gh-pages
+      - name: Checkout to GH pages branch (${{ inputs.pages_branch }})
+        run: |
+          git fetch origin ${{ inputs.pages_branch }}:${{ inputs.pages_branch }} --depth 1
+          git checkout -f ${{ inputs.pages_branch }}
+          git reset --hard HEAD
+      - name: Small config stuff
+        run: |
+          touch /tmp/gen-html/.nojekyll
+          cp ./docs/_versions.json /tmp/gen-html/_versions.json
+          cp ./docs/CNAME /tmp/gen-html/CNAME
+          cp /tmp/gen-html/404/index.html /tmp/gen-html/404.html
+          sed -i 's/href="\.\./href="/' /tmp/gen-html/404.html # fix asset urls that needs to be updated in 404.html
+      - name: Moving old doc versions
+        run: |
+          cd docs
+          for i in $(cat _versions.json | jq '.[].version' | tr -d '"'); do if [ -d "$i" ]; then mv "$i" /tmp/gen-html; fi; done
+      - name: Swap in new docs
+        run: |
+          rm -rf ./docs
+          mv /tmp/gen-html ./docs
+      - name: Push it up!
+        run: |
+          git config --local user.email "${{ inputs.git_config_email }}"
+          git config --local user.name "${{ inputs.git_config_name }}"
+          git show --summary
+          git add ./docs && git commit -m "chore(docs): update docs due to ${{github.event_name}} on ${{github.repository}}"
+          git push origin ${{ inputs.pages_branch }}
+
+  build-old-docs:
+    needs: build-and-push-latest-docs
+    runs-on: ubuntu-latest
+    if: inputs.build_old_docs == 'TRUE'
+    steps:
+      - uses: benc-uk/workflow-dispatch@v1
+        with:
+          workflow: Build old docs
+          token: ${{ secrets.JINA_DEV_BOT }}
+          inputs: '{ "release_token": "${{ env.release_token }}", "triggered_by": "TAG"}'
+        env:
+          release_token: ${{ secrets.JINA_CORE_RELEASE_TOKEN }}

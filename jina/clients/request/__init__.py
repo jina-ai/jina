@@ -16,7 +16,7 @@ from jina.enums import DataInputType
 from jina.helper import batch_iterator
 from jina.logging.predefined import default_logger
 
-if TYPE_CHECKING:
+if TYPE_CHECKING: # pragma: no cover
     from jina import Document
     from docarray.document import DocumentSourceType
     from docarray.document.mixins.content import DocumentContentType
@@ -81,3 +81,4 @@ def request_generator(
     except Exception as ex:
         # must be handled here, as grpc channel wont handle Python exception
         default_logger.critical(f'inputs is not valid! {ex!r}', exc_info=True)
+        raise

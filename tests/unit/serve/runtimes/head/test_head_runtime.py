@@ -275,6 +275,7 @@ def _create_runtime(args):
             request: List[Request],
             connection,
             endpoint,
+            metadata: dict = None,
             timeout=1.0,
             retries=-1,
         ) -> asyncio.Task:

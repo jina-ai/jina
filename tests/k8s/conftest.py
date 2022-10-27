@@ -151,6 +151,7 @@ def image_name_tag_map():
         'failing-executor': '0.1.1',
         'jinaai/jina': 'test-pip',
         'custom-gateway': '0.1.1',
+        'test-stateful-executor': '0.13.1',
     }
 
 

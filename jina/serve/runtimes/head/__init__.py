@@ -16,10 +16,11 @@ from jina.excepts import InternalNetworkError
 from jina.helper import get_full_version
 from jina.importer import ImportExtensions
 from jina.proto import jina_pb2, jina_pb2_grpc
+from jina.serve.instrumentation import MetricsTimer
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.helper import _get_grpc_server_options
-from jina.serve.runtimes.request_handlers.data_request_handler import DataRequestHandler
+from jina.serve.runtimes.request_handlers.worker_request_handler import WorkerRequestHandler
 from jina.types.request.data import DataRequest, Response
 
 
@@ -51,6 +52,9 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
             logger=self.logger,
             compression=args.compression,
             metrics_registry=self.metrics_registry,
+            meter=self.meter,
+            aio_tracing_client_interceptors=self.aio_tracing_client_interceptors(),
+            tracing_client_interceptor=self.tracing_client_interceptor(),
         )
         self._retries = self.args.retries
 
@@ -61,19 +65,24 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
             ):
                 from prometheus_client import Summary
 
-            self._summary = (
-                Summary(
-                    'receiving_request_seconds',
-                    'Time spent processing request',
-                    registry=self.metrics_registry,
-                    namespace='jina',
-                    labelnames=('runtime_name',),
-                )
-                .labels(self.args.name)
-                .time()
+            self._summary = Summary(
+                'receiving_request_seconds',
+                'Time spent processing request',
+                registry=self.metrics_registry,
+                namespace='jina',
+                labelnames=('runtime_name',),
+            ).labels(self.args.name)
+        else:
+            self._summary = None
+
+        if self.meter:
+            self._receiving_reqeust_seconds_metric = self.meter.create_histogram(
+                name='jina_receiving_request_seconds',
+                description='Time spent processing request',
             )
         else:
-            self._summary = contextlib.nullcontext()
+            self._receiving_reqeust_seconds_metric = None
+        self._metric_lables = {'runtime_name': self.args.name}
 
         polling = getattr(args, 'polling', self.DEFAULT_POLLING.name)
         try:
@@ -144,7 +153,8 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
     async def async_setup(self):
         """Wait for the GRPC server to start"""
         self._grpc_server = grpc.aio.server(
-            options=_get_grpc_server_options(self.args.grpc_server_options)
+            options=_get_grpc_server_options(self.args.grpc_server_options),
+            interceptors=self.aio_tracing_server_interceptors(),
         )
 
         jina_pb2_grpc.add_JinaSingleDataRequestRPCServicer_to_server(
@@ -227,7 +237,11 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
         :returns: the response request
         """
         try:
-            with self._summary:
+            with MetricsTimer(
+                self._summary,
+                self._receiving_reqeust_seconds_metric,
+                self._metric_lables,
+            ):
                 endpoint = dict(context.invocation_metadata()).get('endpoint')
                 response, metadata = await self._handle_data_request(requests, endpoint)
                 context.set_trailing_metadata(metadata.items())
@@ -293,7 +307,7 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
     ) -> Tuple[DataRequest, Dict]:
         self.logger.debug(f'recv {len(requests)} DataRequest(s)')
 
-        DataRequestHandler.merge_routes(requests)
+        WorkerRequestHandler.merge_routes(requests)
 
         uses_before_metadata = None
         if self.uses_before_address:
@@ -338,11 +352,11 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
                 retries=self._retries,
             )
         elif len(worker_results) > 1 and self._reduce:
-            DataRequestHandler.reduce_requests(worker_results)
+            WorkerRequestHandler.reduce_requests(worker_results)
         elif len(worker_results) > 1 and not self._reduce:
             # worker returned multiple responsed, but the head is configured to skip reduction
             # just concatenate the docs in this case
-            response_request.data.docs = DataRequestHandler.get_docs_from_request(
+            response_request.data.docs = WorkerRequestHandler.get_docs_from_request(
                 requests, field='docs'
             )
 

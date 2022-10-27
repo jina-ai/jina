@@ -14,14 +14,14 @@ jobs:
       !endsWith(github.event.head_commit.message, 'reformatted by jina-dev-bot')
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2.5.0
         with:
           token: ${{ secrets.JINA_DEV_BOT }}
           ref: ${{ github.event.pull_request.head.sha }}
       - run: |
           git config --local user.email "dev-bot@jina.ai"
           git config --local user.name "Jina Dev Bot"
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v4
         with:
           python-version: 3.7
       - name: Generate TOC

@@ -13,12 +13,13 @@ from jina.helper import ArgNamespace, T, iscoroutinefunction, typename
 from jina.importer import ImportExtensions
 from jina.jaml import JAML, JAMLCompatible, env_var_regex, internal_var_regex
 from jina.logging.logger import JinaLogger
-from jina.serve.executors.decorators import avoid_concurrent_lock_cls, requests
-from jina.serve.executors.metas import get_default_metas, get_executor_taboo
+from jina.serve.executors.decorators import avoid_concurrent_lock_cls
+from jina.serve.executors.metas import get_executor_taboo
 from jina.serve.helper import store_init_kwargs, wrap_func
+from jina.serve.instrumentation import MetricsTimer
 
-if TYPE_CHECKING:
-    from prometheus_client import Summary
+if TYPE_CHECKING: # pragma: no cover
+    from opentelemetry.context.context import Context
 
 __dry_run_endpoint__ = '_jina_dry_run_'
 
@@ -132,6 +133,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         self._add_metas(metas)
         self._add_requests(requests)
         self._add_runtime_args(runtime_args)
+        self._init_instrumentation(runtime_args)
         self._init_monitoring()
         self._init_workspace = workspace
         self.logger = JinaLogger(self.__class__.__name__)
@@ -177,6 +179,40 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         else:
             self._summary_method = None
             self._metrics_buffer = None
+
+        if self.meter:
+            self._process_request_histogram = self.meter.create_histogram(
+                name='jina_process_request_seconds',
+                description='Time spent when calling the executor request method',
+            )
+            self._histogram_buffer = {
+                'jina_process_request_seconds': self._process_request_histogram
+            }
+        else:
+            self._process_request_histogram = None
+            self._histogram_buffer = None
+
+    def _init_instrumentation(self, _runtime_args: Optional[Dict] = None):
+        if not _runtime_args:
+            _runtime_args = {}
+
+        instrumenting_module_name = _runtime_args.get('name', self.__class__.__name__)
+
+        args_tracer_provider = _runtime_args.get('tracer_provider', None)
+        if args_tracer_provider:
+            self.tracer_provider = args_tracer_provider
+            self.tracer = self.tracer_provider.get_tracer(instrumenting_module_name)
+        else:
+            self.tracer_provider = None
+            self.tracer = None
+
+        args_meter_provider = _runtime_args.get('meter_provider', None)
+        if args_meter_provider:
+            self.meter_provider = args_meter_provider
+            self.meter = self.meter_provider.get_meter(instrumenting_module_name)
+        else:
+            self.meter_provider = None
+            self.meter = None
 
     def _add_requests(self, _requests: Optional[Dict]):
         if not hasattr(self, 'requests'):
@@ -292,7 +328,18 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         elif __default_endpoint__ in self.requests:
             return await self.__acall_endpoint__(__default_endpoint__, **kwargs)
 
-    async def __acall_endpoint__(self, req_endpoint, **kwargs):
+    async def __acall_endpoint__(
+        self, req_endpoint, tracing_context: Optional['Context'], **kwargs
+    ):
+        async def exec_func(
+            summary, histogram, histogram_metric_labels, tracing_context
+        ):
+            with MetricsTimer(summary, histogram, histogram_metric_labels):
+                if iscoroutinefunction(func):
+                    return await func(self, tracing_context=tracing_context, **kwargs)
+                else:
+                    return func(self, tracing_context=tracing_context, **kwargs)
+
         func = self.requests[req_endpoint]
 
         runtime_name = (
@@ -302,16 +349,38 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         _summary = (
             self._summary_method.labels(
                 self.__class__.__name__, req_endpoint, runtime_name
-            ).time()
+            )
             if self._summary_method
-            else contextlib.nullcontext()
+            else None
         )
+        _histogram_metric_labels = {
+            'executor': self.__class__.__name__,
+            'executor_endpoint': req_endpoint,
+            'runtime_name': runtime_name,
+        }
 
-        with _summary:
-            if iscoroutinefunction(func):
-                return await func(self, **kwargs)
-            else:
-                return func(self, **kwargs)
+        if self.tracer:
+            with self.tracer.start_span(req_endpoint, context=tracing_context) as _:
+                from opentelemetry.propagate import extract
+                from opentelemetry.trace.propagation.tracecontext import (
+                    TraceContextTextMapPropagator,
+                )
+
+                tracing_carrier_context = {}
+                TraceContextTextMapPropagator().inject(tracing_carrier_context)
+                return await exec_func(
+                    _summary,
+                    self._process_request_histogram,
+                    _histogram_metric_labels,
+                    extract(tracing_carrier_context),
+                )
+        else:
+            return await exec_func(
+                _summary,
+                self._process_request_histogram,
+                _histogram_metric_labels,
+                None,
+            )
 
     @property
     def workspace(self) -> Optional[str]:
@@ -526,7 +595,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
     def monitor(
         self, name: Optional[str] = None, documentation: Optional[str] = None
-    ) -> Optional['Summary']:
+    ) -> Optional[MetricsTimer]:
         """
         Get a given prometheus metric, if it does not exist yet, it will create it and store it in a buffer.
         :param name: the name of the metrics
@@ -534,18 +603,36 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
         :return: the given prometheus metrics or None if monitoring is not enable.
         """
+        _summary = (
+            self._metrics_buffer.get(name, None) if self._metrics_buffer else None
+        )
+        _histogram = (
+            self._histogram_buffer.get(name, None) if self._histogram_buffer else None
+        )
 
-        if self._metrics_buffer:
-            if name not in self._metrics_buffer:
-                from prometheus_client import Summary
+        if self._metrics_buffer and not _summary:
+            from prometheus_client import Summary
 
-                self._metrics_buffer[name] = Summary(
-                    name,
-                    documentation,
-                    registry=self.runtime_args.metrics_registry,
-                    namespace='jina',
-                    labelnames=('runtime_name',),
-                ).labels(self.runtime_args.name)
-            return self._metrics_buffer[name].time()
-        else:
-            return contextlib.nullcontext()
+            _summary = Summary(
+                name,
+                documentation,
+                registry=self.runtime_args.metrics_registry,
+                namespace='jina',
+                labelnames=('runtime_name',),
+            ).labels(self.runtime_args.name)
+            self._metrics_buffer[name] = _summary
+
+        if self._histogram_buffer and not _histogram:
+            _histogram = self.meter.create_histogram(
+                name=f'jina_{name}', description=documentation
+            )
+            self._histogram_buffer[name] = _histogram
+
+        if _summary or _histogram:
+            return MetricsTimer(
+                _summary,
+                _histogram,
+                histogram_metric_labels={'runtime_name': self.runtime_args.name},
+            )
+
+        return contextlib.nullcontext()

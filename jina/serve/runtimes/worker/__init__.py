@@ -1,7 +1,6 @@
 import argparse
-import contextlib
 from abc import ABC
-from typing import List
+from typing import TYPE_CHECKING, List
 
 import grpc
 from grpc_health.v1 import health, health_pb2, health_pb2_grpc
@@ -11,10 +10,14 @@ from jina.excepts import RuntimeTerminated
 from jina.helper import get_full_version
 from jina.importer import ImportExtensions
 from jina.proto import jina_pb2, jina_pb2_grpc
+from jina.serve.instrumentation import MetricsTimer
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.helper import _get_grpc_server_options
-from jina.serve.runtimes.request_handlers.data_request_handler import DataRequestHandler
+from jina.serve.runtimes.request_handlers.worker_request_handler import WorkerRequestHandler
 from jina.types.request.data import DataRequest
+
+if TYPE_CHECKING: # pragma: no cover
+    from opentelemetry.propagate import Context
 
 
 class WorkerRuntime(AsyncNewLoopRuntime, ABC):
@@ -34,7 +37,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
 
     async def async_setup(self):
         """
-        Start the DataRequestHandler and wait for the GRPC and Monitoring servers to start
+        Start the WorkerRequestHandler and wait for the GRPC and Monitoring servers to start
         """
         if self.metrics_registry:
             with ImportExtensions(
@@ -43,17 +46,13 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
             ):
                 from prometheus_client import Counter, Summary
 
-            self._summary_time = (
-                Summary(
-                    'receiving_request_seconds',
-                    'Time spent processing request',
-                    registry=self.metrics_registry,
-                    namespace='jina',
-                    labelnames=('runtime_name',),
-                )
-                .labels(self.args.name)
-                .time()
-            )
+            self._summary = Summary(
+                'receiving_request_seconds',
+                'Time spent processing request',
+                registry=self.metrics_registry,
+                namespace='jina',
+                labelnames=('runtime_name',),
+            ).labels(self.args.name)
 
             self._failed_requests_metrics = Counter(
                 'failed_requests',
@@ -72,24 +71,50 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
             ).labels(self.args.name)
 
         else:
-            self._summary_time = contextlib.nullcontext()
+            self._summary = None
             self._failed_requests_metrics = None
             self._successful_requests_metrics = None
+
+        if self.meter:
+            self._receiving_request_seconds = self.meter.create_histogram(
+                name='jina_receiving_request_seconds',
+                description='Time spent processing request',
+            )
+            self._failed_requests_counter = self.meter.create_counter(
+                name='jina_failed_requests',
+                description='Number of failed requests',
+            )
+
+            self._successful_requests_counter = self.meter.create_counter(
+                name='jina_successful_requests',
+                description='Number of successful requests',
+            )
+        else:
+            self._receiving_request_seconds = None
+            self._failed_requests_counter = None
+            self._successful_requests_counter = None
+        self._metric_attributes = {'runtime_name': self.args.name}
+
         # Keep this initialization order
         # otherwise readiness check is not valid
-        # The DataRequestHandler needs to be started BEFORE the grpc server
-        self._data_request_handler = DataRequestHandler(
-            self.args, self.logger, self.metrics_registry
+        # The WorkerRequestHandler needs to be started BEFORE the grpc server
+        self._worker_request_handler = WorkerRequestHandler(
+            self.args,
+            self.logger,
+            self.metrics_registry,
+            self.tracer_provider,
+            self.meter_provider,
         )
         await self._async_setup_grpc_server()
 
     async def _async_setup_grpc_server(self):
         """
-        Start the DataRequestHandler and wait for the GRPC server to start
+        Start the WorkerRequestHandler and wait for the GRPC server to start
         """
 
         self._grpc_server = grpc.aio.server(
-            options=_get_grpc_server_options(self.args.grpc_server_options)
+            options=_get_grpc_server_options(self.args.grpc_server_options),
+            interceptors=self.aio_tracing_server_interceptors(),
         )
 
         jina_pb2_grpc.add_JinaSingleDataRequestRPCServicer_to_server(
@@ -138,7 +163,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         """Close the data request handler"""
         self._health_servicer.enter_graceful_shutdown()
         await self.async_cancel()
-        self._data_request_handler.close()
+        self._worker_request_handler.close()
 
     async def process_single_data(self, request: DataRequest, context) -> DataRequest:
         """
@@ -161,9 +186,16 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         self.logger.debug('got an endpoint discovery request')
         endpointsProto = jina_pb2.EndpointsProto()
         endpointsProto.endpoints.extend(
-            list(self._data_request_handler._executor.requests.keys())
+            list(self._worker_request_handler._executor.requests.keys())
         )
         return endpointsProto
+
+    @staticmethod
+    def _extract_tracing_context(metadata: grpc.aio.Metadata) -> 'Context':
+        from opentelemetry.propagate import extract
+
+        context = extract(dict(metadata))
+        return context
 
     async def process_data(self, requests: List[DataRequest], context) -> DataRequest:
         """
@@ -174,14 +206,25 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         :returns: the response request
         """
 
-        with self._summary_time:
+        with MetricsTimer(
+            self._summary, self._receiving_request_seconds, self._metric_attributes
+        ):
             try:
                 if self.logger.debug_enabled:
                     self._log_data_request(requests[0])
 
-                result = await self._data_request_handler.handle(requests=requests)
+                tracing_context = WorkerRuntime._extract_tracing_context(
+                    context.invocation_metadata()
+                )
+                result = await self._worker_request_handler.handle(
+                    requests=requests, tracing_context=tracing_context
+                )
                 if self._successful_requests_metrics:
                     self._successful_requests_metrics.inc()
+                if self._successful_requests_counter:
+                    self._successful_requests_counter.add(
+                        1, attributes=self._metric_attributes
+                    )
                 return result
             except (RuntimeError, Exception) as ex:
                 self.logger.error(
@@ -192,10 +235,14 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
                     exc_info=not self.args.quiet_error,
                 )
 
-                requests[0].add_exception(ex, self._data_request_handler._executor)
+                requests[0].add_exception(ex, self._worker_request_handler._executor)
                 context.set_trailing_metadata((('is-error', 'true'),))
                 if self._failed_requests_metrics:
                     self._failed_requests_metrics.inc()
+                if self._failed_requests_counter:
+                    self._failed_requests_counter.add(
+                        1, attributes=self._metric_attributes
+                    )
 
                 if (
                     self.args.exit_on_exceptions

@@ -57,7 +57,7 @@ To use a private Executor, you must provide the `SECRET` which is generated afte
 If you are a Mac user, please use `host.docker.internal` as your URL when you want to connect a local port from an Executor
 Docker container.
 
-For example: [PostgreSQLStorage](https://hub.jina.ai/executor/d45rawx6)
+For example: [PostgreSQLStorage](https://cloud.jina.ai/executor/d45rawx6)
 will connect PostgreSQL server which was started locally. Then you must use it with:
 
 ```python
@@ -103,7 +103,7 @@ You can disable automatic volume setting by passing `f.add(..., disable_auto_vol
 
 ## Use in Flow via source code
 
-Use the source code from Jina Hub in your Python code:
+Use the source code from Executor Hub in your Python code:
 
 ```python
 from jina import Flow
@@ -151,5 +151,16 @@ jina hub pull jinahub+docker://DummyExecutor/v1.0.0
 jina hub pull jinahub://<UUID>[:<SECRET>][/<TAG>]
 ```
 
+### List locations of local Executors
 
-The source code of the Executor will be stored at `~/.jina/hub-packages`.
+```bash
+jina hub list
+```
+
+<script id="asciicast-z81wi9gwVm7gYjfl5ocBD1RH3" src="https://asciinema.org/a/z81wi9gwVm7gYjfl5ocBD1RH3.js" async></script>
+
+```{tip}
+To list all the Executors that are in source-code format (i.e. pulled via `jinahub://`), use the command `jina hub list`.
+
+To list all the Executors that are in Docker format, use the command `docker images`.
+```

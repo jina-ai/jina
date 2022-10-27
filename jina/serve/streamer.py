@@ -1,16 +1,20 @@
-from typing import TYPE_CHECKING, Dict, List, Optional, Union
+from typing import TYPE_CHECKING, Dict, List, Optional, Sequence, Union
 
 from docarray import DocumentArray
-
 from jina.logging.logger import JinaLogger
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.gateway.graph.topology_graph import TopologyGraph
-from jina.serve.runtimes.gateway.request_handling import RequestHandler
+from jina.serve.runtimes.gateway.request_handling import GatewayRequestHandler
 from jina.serve.stream import RequestStreamer
 
 __all__ = ['GatewayStreamer']
 
-if TYPE_CHECKING:
+if TYPE_CHECKING: # pragma: no cover
+    from grpc.aio._interceptor import ClientInterceptor
+    from opentelemetry.instrumentation.grpc._client import (
+        OpenTelemetryClientInterceptor,
+    )
+    from opentelemetry.metrics import Meter
     from prometheus_client import CollectorRegistry
 
 
@@ -24,6 +28,7 @@ class GatewayStreamer:
         graph_representation: Dict,
         executor_addresses: Dict[str, Union[str, List[str]]],
         graph_conditions: Dict = {},
+        deployments_metadata: Dict[str, Dict[str, str]] = {},
         deployments_disable_reduce: List[str] = [],
         timeout_send: Optional[float] = None,
         retries: int = 0,
@@ -32,6 +37,9 @@ class GatewayStreamer:
         prefetch: int = 0,
         logger: Optional['JinaLogger'] = None,
         metrics_registry: Optional['CollectorRegistry'] = None,
+        meter: Optional['Meter'] = None,
+        aio_tracing_client_interceptors: Optional[Sequence['ClientInterceptor']] = None,
+        tracing_client_interceptor: Optional['OpenTelemetryClientInterceptor'] = None,
     ):
         """
         :param graph_representation: A dictionary describing the topology of the Deployments. 2 special nodes are expected, the name `start-gateway` and `end-gateway` to
@@ -39,6 +47,8 @@ class GatewayStreamer:
             will be considered to be floating, and they will be "flagged" so that the user can ignore their tasks and not await them.
         :param executor_addresses: dictionary JSON with the input addresses of each Deployment. Each Executor can have one single address or a list of addrresses for each Executor
         :param graph_conditions: Dictionary stating which filtering conditions each Executor in the graph requires to receive Documents.
+        :param deployments_metadata: Dictionary with the metadata of each Deployment. Each executor deployment can have a list of key-value pairs to
+            provide information associated with the request to the deployment.
         :param deployments_disable_reduce: list of Executor disabling the built-in merging mechanism.
         :param timeout_send: Timeout to be considered when sending requests to Executors
         :param retries: Number of retries to try to make successfull sendings to Executors
@@ -47,20 +57,32 @@ class GatewayStreamer:
         :param prefetch: How many Requests are processed from the Client at the same time.
         :param logger: Optional logger that can be used for logging
         :param metrics_registry: optional metrics registry for prometheus used if we need to expose metrics
+        :param meter: optional OpenTelemetry meter that can provide instruments for collecting metrics
+        :param aio_tracing_client_interceptors: Optional list of aio grpc tracing server interceptors.
+        :param tracing_client_interceptor: Optional gprc tracing server interceptor.
         """
         topology_graph = self._create_topology_graph(
             graph_representation,
             graph_conditions,
+            deployments_metadata,
             deployments_disable_reduce,
             timeout_send,
             retries,
         )
         self.runtime_name = runtime_name
+        self.aio_tracing_client_interceptors = aio_tracing_client_interceptors
+        self.tracing_client_interceptor = tracing_client_interceptor
 
         self._connection_pool = self._create_connection_pool(
-            executor_addresses, compression, metrics_registry, logger
+            executor_addresses,
+            compression,
+            metrics_registry,
+            meter,
+            logger,
+            aio_tracing_client_interceptors,
+            tracing_client_interceptor,
         )
-        request_handler = RequestHandler(metrics_registry, runtime_name)
+        request_handler = GatewayRequestHandler(metrics_registry, meter, runtime_name)
 
         self._streamer = RequestStreamer(
             request_handler=request_handler.handle_request(
@@ -76,6 +98,7 @@ class GatewayStreamer:
         self,
         graph_description,
         graph_conditions,
+        deployments_metadata,
         deployments_disable_reduce,
         timeout_send,
         retries,
@@ -84,13 +107,21 @@ class GatewayStreamer:
         return TopologyGraph(
             graph_representation=graph_description,
             graph_conditions=graph_conditions,
+            deployments_metadata=deployments_metadata,
             deployments_disable_reduce=deployments_disable_reduce,
             timeout_send=timeout_send,
             retries=retries,
         )
 
     def _create_connection_pool(
-        self, deployments_addresses, compression, metrics_registry, logger
+        self,
+        deployments_addresses,
+        compression,
+        metrics_registry,
+        meter,
+        logger,
+        aio_tracing_client_interceptors,
+        tracing_client_interceptor,
     ):
         # add the connections needed
         connection_pool = GrpcConnectionPool(
@@ -98,6 +129,9 @@ class GatewayStreamer:
             logger=logger,
             compression=compression,
             metrics_registry=metrics_registry,
+            meter=meter,
+            aio_tracing_client_interceptors=aio_tracing_client_interceptors,
+            tracing_client_interceptor=tracing_client_interceptor,
         )
         for deployment_name, addresses in deployments_addresses.items():
             for address in addresses:

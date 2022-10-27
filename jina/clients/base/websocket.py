@@ -14,7 +14,7 @@ from jina.logging.profile import ProgressBar
 from jina.proto import jina_pb2
 from jina.serve.stream import RequestStreamer
 
-if TYPE_CHECKING:
+if TYPE_CHECKING: # pragma: no cover
     from jina.clients.base import CallbackFnType, InputType
     from jina.types.request import Request
 
@@ -33,7 +33,12 @@ class WebSocketBaseClient(BaseClient):
                 proto = 'wss' if self.args.tls else 'ws'
                 url = f'{proto}://{self.args.host}:{self.args.port}/dry_run'
                 iolet = await stack.enter_async_context(
-                    WebsocketClientlet(url=url, logger=self.logger, **kwargs)
+                    WebsocketClientlet(
+                        url=url,
+                        logger=self.logger,
+                        tracer_provider=self.tracer_provider,
+                        **kwargs,
+                    )
                 )
 
                 async def _receive():
@@ -110,8 +115,16 @@ class WebSocketBaseClient(BaseClient):
             proto = 'wss' if self.args.tls else 'ws'
             url = f'{proto}://{self.args.host}:{self.args.port}/'
             iolet = await stack.enter_async_context(
-                WebsocketClientlet(url=url, logger=self.logger, max_attempts=max_attempts, initial_backoff=initial_backoff,
-                                   max_backoff=max_backoff, backoff_multiplier=backoff_multiplier, **kwargs)
+                WebsocketClientlet(
+                    url=url,
+                    logger=self.logger,
+                    tracer_provider=self.tracer_provider,
+                    max_attempts=max_attempts,
+                    initial_backoff=initial_backoff,
+                    max_backoff=max_backoff,
+                    backoff_multiplier=backoff_multiplier,
+                    **kwargs,
+                )
             )
 
             request_buffer: Dict[
@@ -176,6 +189,8 @@ class WebSocketBaseClient(BaseClient):
 
             receive_task = asyncio.create_task(_receive())
 
+            exception_raised = None
+
             if receive_task.done():
                 raise RuntimeError('receive task not running, can not send messages')
             try:
@@ -191,7 +206,19 @@ class WebSocketBaseClient(BaseClient):
                     if self.show_progress:
                         p_bar.update()
                     yield response
+            except Exception as ex:
+                exception_raised = ex
+                try:
+                    receive_task.cancel()
+                except:
+                    raise ex
             finally:
                 if iolet.close_code == status.WS_1011_INTERNAL_ERROR:
                     raise ConnectionError(iolet.close_message)
-                await receive_task
+                try:
+                    await receive_task
+                except asyncio.CancelledError:
+                    if exception_raised is not None:
+                        raise exception_raised
+                    else:
+                        raise

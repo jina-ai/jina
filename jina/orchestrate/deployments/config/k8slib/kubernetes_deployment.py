@@ -1,4 +1,5 @@
 import json
+import os
 from argparse import Namespace
 from typing import Dict, List, Optional, Tuple, Union
 
@@ -6,7 +7,7 @@ from jina.orchestrate.deployments.config.k8slib import kubernetes_tools
 from jina.serve.networking import GrpcConnectionPool
 
 
-def get_deployment_yamls(
+def get_template_yamls(
         name: str,
         namespace: str,
         image_name: str,
@@ -28,7 +29,8 @@ def get_deployment_yamls(
         container_args_uses_after: Optional[str] = None,
         monitoring: bool = False,
         port_monitoring: Optional[int] = None,
-        protocol: Optional[str] = None
+        protocol: Optional[str] = None,
+        volumes: Optional[List[str]] = None,
 ) -> List[Dict]:
     """Get the yaml description of a service on Kubernetes
 
@@ -54,6 +56,7 @@ def get_deployment_yamls(
     :param monitoring: enable monitoring on the deployment
     :param port_monitoring: port which will be exposed, for the prometheus server, by the deployed containers
     :param protocol: In case of being a Gateway, the protocol used to expose its server
+    :param volumes: If volumes are passed to Executors, Jina will create a StatefulSet instead of Deployment and include the first volume in the volume mounts
     :return: Return a dictionary with all the yaml configuration needed for a deployment
     """
     # we can always assume the ports are the same for all executors since they run on different k8s pods
@@ -64,7 +67,7 @@ def get_deployment_yamls(
     if not port_monitoring:
         port_monitoring = GrpcConnectionPool.K8S_PORT_MONITORING
 
-    deployment_params = {
+    template_params = {
         'name': name,
         'namespace': namespace,
         'image': image_name,
@@ -85,14 +88,20 @@ def get_deployment_yamls(
         'shard_id': f'\"{shard_id}\"' if shard_id is not None else '\"\"',
         'pod_type': pod_type,
         'protocol': str(protocol).lower() if protocol is not None else '',
+        'volume_path': volumes[0] if volumes is not None else None
     }
 
     if gpus:
-        deployment_params['device_plugins'] = {'nvidia.com/gpu': gpus}
+        template_params['device_plugins'] = {'nvidia.com/gpu': gpus}
 
     template_name = 'deployment-executor' if name != 'gateway' else 'deployment-gateway'
 
-    if image_name_uses_before and image_name_uses_after:
+    if volumes:
+        template_name = 'statefulset-executor'
+        template_params['accessModes'] = json.loads(os.environ.get('JINA_K8S_ACCESS_MODES', '["ReadWriteOnce"]'))
+        template_params['storageClassName'] = os.environ.get('JINA_K8S_STORAGE_CLASS_NAME', 'standard')
+        template_params['storageCapacity'] = os.environ.get('JINA_K8S_STORAGE_CAPACITY', '10G')
+    elif image_name_uses_before and image_name_uses_after:
         template_name = 'deployment-uses-before-after'
     elif image_name_uses_before:
         template_name = 'deployment-uses-before'
@@ -133,6 +142,8 @@ def get_deployment_yamls(
         )
         service_monitor_yaml = None
 
+    template_yaml = kubernetes_tools.get_yaml(template_name, template_params)
+
     yamls = [
         kubernetes_tools.get_yaml(
             'configmap',
@@ -143,7 +154,7 @@ def get_deployment_yamls(
             },
         ),
         service_yaml,
-        kubernetes_tools.get_yaml(template_name, deployment_params),
+        template_yaml
     ]
 
     if service_monitor_yaml:

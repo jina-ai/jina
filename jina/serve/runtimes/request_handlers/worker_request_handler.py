@@ -1,5 +1,4 @@
-import copy
-from typing import TYPE_CHECKING, Dict, List, Optional, Tuple
+from typing import TYPE_CHECKING, Dict, List, Optional
 
 from docarray import DocumentArray
 
@@ -9,15 +8,17 @@ from jina.importer import ImportExtensions
 from jina.serve.executors import BaseExecutor
 from jina.types.request.data import DataRequest
 
-if TYPE_CHECKING:
+if TYPE_CHECKING: # pragma: no cover
     import argparse
 
+    from opentelemetry import metrics, trace
+    from opentelemetry.context.context import Context
     from prometheus_client import CollectorRegistry
 
     from jina.logging.logger import JinaLogger
 
 
-class DataRequestHandler:
+class WorkerRequestHandler:
     """Object to encapsulate the code related to handle the data requests passing to executor and its returned values"""
 
     _KEY_RESULT = '__results__'
@@ -27,6 +28,8 @@ class DataRequestHandler:
         args: 'argparse.Namespace',
         logger: 'JinaLogger',
         metrics_registry: Optional['CollectorRegistry'] = None,
+        tracer_provider: Optional['trace.TracerProvider'] = None,
+        meter_provider: Optional['metrics.MeterProvider'] = None,
         **kwargs,
     ):
         """Initialize private parameters and execute private loading functions.
@@ -34,6 +37,8 @@ class DataRequestHandler:
         :param args: args from CLI
         :param logger: the logger provided by the user
         :param metrics_registry: optional metrics registry for prometheus used if we need to expose metrics from the executor of from the data request handler
+        :param tracer_provider: Optional tracer_provider that will be provided to the executor for tracing
+        :param meter_provider: Optional meter_provider that will be provided to the executor for metrics
         :param kwargs: extra keyword arguments
         """
         super().__init__()
@@ -41,10 +46,23 @@ class DataRequestHandler:
         self.args.parallel = self.args.shards
         self.logger = logger
         self._is_closed = False
-        self._load_executor(metrics_registry)
-        self._init_monitoring(metrics_registry)
+        self._load_executor(
+            metrics_registry=metrics_registry,
+            tracer_provider=tracer_provider,
+            meter_provider=meter_provider,
+        )
+        meter = (
+            meter_provider.get_meter(self.__class__.__name__)
+            if meter_provider
+            else None
+        )
+        self._init_monitoring(metrics_registry, meter)
 
-    def _init_monitoring(self, metrics_registry: Optional['CollectorRegistry'] = None):
+    def _init_monitoring(
+        self,
+        metrics_registry: Optional['CollectorRegistry'] = None,
+        meter: Optional['metrics.Meter'] = None,
+    ):
 
         if metrics_registry:
 
@@ -85,10 +103,37 @@ class DataRequestHandler:
             self._request_size_metrics = None
             self._sent_response_size_metrics = None
 
-    def _load_executor(self, metrics_registry: Optional['CollectorRegistry'] = None):
+        if meter:
+            self._document_processed_counter = meter.create_counter(
+                name='jina_document_processed',
+                description='Number of Documents that have been processed by the executor',
+            )
+
+            self._request_size_histogram = meter.create_histogram(
+                name='jina_received_request_bytes',
+                description='The size in bytes of the request returned to the gateway',
+            )
+
+            self._sent_response_size_histogram = meter.create_histogram(
+                name='jina_sent_response_bytes',
+                description='The size in bytes of the response sent to the gateway',
+            )
+        else:
+            self._document_processed_counter = None
+            self._request_size_histogram = None
+            self._sent_response_size_histogram = None
+
+    def _load_executor(
+        self,
+        metrics_registry: Optional['CollectorRegistry'] = None,
+        tracer_provider: Optional['trace.TracerProvider'] = None,
+        meter_provider: Optional['metrics.MeterProvider'] = None,
+    ):
         """
         Load the executor to this runtime, specified by ``uses`` CLI argument.
         :param metrics_registry: Optional prometheus metrics registry that will be passed to the executor so that it can expose metrics
+        :param tracer_provider: Optional tracer_provider that will be provided to the executor for tracing
+        :param meter_provider: Optional meter_provider that will be provided to the executor for metrics
         """
         try:
             self._executor: BaseExecutor = BaseExecutor.load_config(
@@ -103,6 +148,8 @@ class DataRequestHandler:
                     'replicas': self.args.replicas,
                     'name': self.args.name,
                     'metrics_registry': metrics_registry,
+                    'tracer_provider': tracer_provider,
+                    'meter_provider': meter_provider,
                 },
                 py_modules=self.args.py_modules,
                 extra_search_paths=self.args.extra_search_paths,
@@ -128,10 +175,21 @@ class DataRequestHandler:
 
         return parsed_params
 
-    async def handle(self, requests: List['DataRequest']) -> DataRequest:
+    @staticmethod
+    def _metric_attributes(executor_endpoint, executor, runtime_name):
+        return {
+            'executor_endpoint': executor_endpoint,
+            'executor': executor,
+            'runtime_name': runtime_name,
+        }
+
+    async def handle(
+        self, requests: List['DataRequest'], tracing_context: 'Context' = None
+    ) -> DataRequest:
         """Initialize private parameters and execute private loading functions.
 
         :param requests: The messages to handle containing a DataRequest
+        :param tracing_context: OpenTelemetry tracing context from the originating request.
         :returns: the processed message
         """
         # skip executor if endpoints mismatch
@@ -144,18 +202,24 @@ class DataRequestHandler:
             )
             return requests[0]
 
-        if self._request_size_metrics:
-
-            for req in requests:
+        for req in requests:
+            if self._request_size_metrics:
                 self._request_size_metrics.labels(
                     requests[0].header.exec_endpoint,
                     self._executor.__class__.__name__,
                     self.args.name,
                 ).observe(req.nbytes)
+            if self._request_size_histogram:
+                attributes = WorkerRequestHandler._metric_attributes(
+                    requests[0].header.exec_endpoint,
+                    self._executor.__class__.__name__,
+                    self.args.name,
+                )
+                self._request_size_histogram.record(req.nbytes, attributes=attributes)
 
         params = self._parse_params(requests[0].parameters, self._executor.metas.name)
 
-        docs = DataRequestHandler.get_docs_from_request(
+        docs = WorkerRequestHandler.get_docs_from_request(
             requests,
             field='docs',
         )
@@ -165,10 +229,11 @@ class DataRequestHandler:
             req_endpoint=requests[0].header.exec_endpoint,
             docs=docs,
             parameters=params,
-            docs_matrix=DataRequestHandler.get_docs_matrix_from_request(
+            docs_matrix=WorkerRequestHandler.get_docs_matrix_from_request(
                 requests,
                 field='docs',
             ),
+            tracing_context=tracing_context,
         )
         # assigning result back to request
         if return_data is not None:
@@ -196,8 +261,15 @@ class DataRequestHandler:
                 self._executor.__class__.__name__,
                 self.args.name,
             ).inc(len(docs))
+        if self._document_processed_counter:
+            attributes = WorkerRequestHandler._metric_attributes(
+                requests[0].header.exec_endpoint,
+                self._executor.__class__.__name__,
+                self.args.name,
+            )
+            self._document_processed_counter.add(len(docs), attributes=attributes)
 
-        DataRequestHandler.replace_docs(requests[0], docs, self.args.output_array_type)
+        WorkerRequestHandler.replace_docs(requests[0], docs, self.args.output_array_type)
 
         if self._sent_response_size_metrics:
             self._sent_response_size_metrics.labels(
@@ -205,6 +277,15 @@ class DataRequestHandler:
                 self._executor.__class__.__name__,
                 self.args.name,
             ).observe(requests[0].nbytes)
+        if self._sent_response_size_histogram:
+            attributes = WorkerRequestHandler._metric_attributes(
+                requests[0].header.exec_endpoint,
+                self._executor.__class__.__name__,
+                self.args.name,
+            )
+            self._sent_response_size_histogram.record(
+                requests[0].nbytes, attributes=attributes
+            )
 
         return requests[0]
 
@@ -281,7 +362,7 @@ class DataRequestHandler:
         :param requests: List of DataRequest objects
         :return: parameters matrix: list of parameters (Dict) objects
         """
-        key_result = DataRequestHandler._KEY_RESULT
+        key_result = WorkerRequestHandler._KEY_RESULT
         parameters = requests[0].parameters
         if key_result not in parameters.keys():
             parameters[key_result] = dict()
@@ -359,15 +440,15 @@ class DataRequestHandler:
         :param requests: List of DataRequest objects
         :return: the resulting DataRequest
         """
-        docs_matrix = DataRequestHandler.get_docs_matrix_from_request(
+        docs_matrix = WorkerRequestHandler.get_docs_matrix_from_request(
             requests, field='docs'
         )
 
         # Reduction is applied in-place to the first DocumentArray in the matrix
-        da = DataRequestHandler.reduce(docs_matrix)
-        DataRequestHandler.replace_docs(requests[0], da)
+        da = WorkerRequestHandler.reduce(docs_matrix)
+        WorkerRequestHandler.replace_docs(requests[0], da)
 
-        params = DataRequestHandler.get_parameters_dict_from_request(requests)
-        DataRequestHandler.replace_parameters(requests[0], params)
+        params = WorkerRequestHandler.get_parameters_dict_from_request(requests)
+        WorkerRequestHandler.replace_parameters(requests[0], params)
 
         return requests[0]

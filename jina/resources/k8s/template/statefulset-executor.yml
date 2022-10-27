@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {name}
+  namespace: {namespace}
+spec:
+  replicas: {replicas}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: {name}
+  template:
+    metadata:
+      labels:
+        app: {name}
+        jina_deployment_name: {jina_deployment_name}
+        shard_id: {shard_id}
+        pod_type: {pod_type}
+        ns: {namespace}
+      annotations:
+        linkerd.io/inject: enabled
+    spec:
+      containers:
+        - name: executor
+          image: {image}
+          imagePullPolicy: {pull_policy}
+          command: {command}
+          args: {args}
+          ports:
+            - containerPort: {port}
+          envFrom:
+            - configMapRef:
+                name: {name}-configmap
+          env:
+            - name: POD_UID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.uid
+            - name: JINA_DEPLOYMENT_NAME
+              value: {jina_deployment_name}
+          readinessProbe:
+            exec:
+              command:
+                - jina
+                - ping
+                - executor
+                - 127.0.0.1:{port}
+            initialDelaySeconds: 5
+            periodSeconds: 20
+            timeoutSeconds: 10
+          volumeMounts:
+            - name: {name}-volume
+              mountPath: "{volume_path}"
+  volumeClaimTemplates:
+    - metadata:
+        name: {name}-volume
+      spec:
+        accessModes: {accessModes} # best default accessModes
+        storageClassName: {storageClassName} # best storage class
+        resources:
+          requests:
+            storage: {storageCapacity} # best storage class

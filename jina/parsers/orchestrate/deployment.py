@@ -43,6 +43,14 @@ def mixin_base_deployment_parser(parser):
         'This Deployment will not be context managed by the Flow.',
     )
 
+    gp.add_argument(
+        '--grpc-metadata',
+        action=KVAppendAction,
+        metavar='KEY: VALUE',
+        nargs='*',
+        help='The metadata to be passed to the gRPC request.',
+    )
+
     # hidden CLI used for internal only
 
     gp.add_argument(

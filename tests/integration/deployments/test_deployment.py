@@ -20,12 +20,14 @@ async def test_deployments_trivial_topology(port_generator):
     )
     deployments_addresses = f'{{"deployment0": ["0.0.0.0:{deployment_port}"]}}'
 
+    deployments_metadata = '{"deployment0": {"key": "value"}}'
+
     # create a single worker pod
     worker_deployment = _create_regular_deployment(deployment_port)
 
     # create a single gateway pod
     gateway_deployment = _create_gateway_deployment(
-        graph_description, deployments_addresses, port
+        graph_description, deployments_addresses, deployments_metadata, port
     )
 
     with gateway_deployment, worker_deployment:
@@ -93,10 +95,15 @@ async def test_deployments_flow_topology(
     deployments_addresses += '}'
     port = port_generator()
 
+    deployments_metadata = '{"deployment0": {"key": "value"}}'
+
     # create a single gateway pod
 
     gateway_deployment = _create_gateway_deployment(
-        json.dumps(complete_graph_dict), deployments_addresses, port
+        json.dumps(complete_graph_dict),
+        deployments_addresses,
+        deployments_metadata,
+        port,
     )
     gateway_deployment.start()
 
@@ -133,6 +140,7 @@ async def test_deployments_shards(polling, port_generator):
         '{"start-gateway": ["deployment0"], "deployment0": ["end-gateway"]}'
     )
     deployments_addresses = f'{{"deployment0": ["0.0.0.0:{head_port}"]}}'
+    deployments_metadata = '{"deployment0": {"key": "value"}}'
 
     deployment = _create_regular_deployment(
         port=head_port, name='deployment', polling=polling, shards=10
@@ -140,7 +148,7 @@ async def test_deployments_shards(polling, port_generator):
     deployment.start()
 
     gateway_deployment = _create_gateway_deployment(
-        graph_description, deployments_addresses, port
+        graph_description, deployments_addresses, deployments_metadata, port
     )
     gateway_deployment.start()
 
@@ -175,8 +183,9 @@ async def test_deployments_replicas(port_generator):
 
     connections = [f'0.0.0.0:{port}' for port in deployment.ports]
     deployments_addresses = f'{{"deployment0": {json.dumps(connections)}}}'
+    deployments_metadata = '{"deployment0": {"key": "value"}}'
     gateway_deployment = _create_gateway_deployment(
-        graph_description, deployments_addresses, port
+        graph_description, deployments_addresses, deployments_metadata, port
     )
     gateway_deployment.start()
 
@@ -203,6 +212,7 @@ async def test_deployments_with_executor(port_generator):
 
     head_port = port_generator()
     deployments_addresses = f'{{"deployment0": ["0.0.0.0:{head_port}"]}}'
+    deployments_metadata = '{"deployment0": {"key": "value"}}'
 
     regular_deployment = _create_regular_deployment(
         port=head_port,
@@ -217,7 +227,7 @@ async def test_deployments_with_executor(port_generator):
 
     port = port_generator()
     gateway_deployment = _create_gateway_deployment(
-        graph_description, deployments_addresses, port
+        graph_description, deployments_addresses, deployments_metadata, port
     )
     gateway_deployment.start()
 
@@ -256,9 +266,10 @@ async def test_deployments_with_replicas_advance_faster(port_generator):
 
     connections = [f'0.0.0.0:{port}' for port in deployment.ports]
     deployments_addresses = f'{{"deployment0": {json.dumps(connections)}}}'
+    deployments_metadata = '{"deployment0": {"key": "value"}}'
 
     gateway_deployment = _create_gateway_deployment(
-        graph_description, deployments_addresses, port
+        graph_description, deployments_addresses, deployments_metadata, port
     )
     gateway_deployment.start()
 
@@ -328,7 +339,9 @@ def _create_regular_deployment(
     return Deployment(args)
 
 
-def _create_gateway_deployment(graph_description, deployments_addresses, port):
+def _create_gateway_deployment(
+    graph_description, deployments_addresses, deployments_metadata, port
+):
     return Deployment(
         set_gateway_parser().parse_args(
             [
@@ -336,6 +349,8 @@ def _create_gateway_deployment(graph_description, deployments_addresses, port):
                 graph_description,
                 '--deployments-addresses',
                 deployments_addresses,
+                '--deployments-metadata',
+                deployments_metadata,
                 '--port',
                 str(port),
             ]

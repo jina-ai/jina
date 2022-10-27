@@ -1,0 +1,30 @@
+version: "3"
+services:
+  # prometheus
+  prometheus:
+    container_name: prometheus
+    image: prom/prometheus:latest
+    volumes:
+      - ./prometheus-config.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "${PROMETHEUS_BACKEND_PORT}:9090"
+
+  # Jaeger
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    ports:
+      - "${JAEGER_PORT}:16686"
+      - "14250"
+
+  otel-collector:
+    image: otel/opentelemetry-collector:0.61.0
+    command: [ "--config=/etc/otel-collector-config.yml" ]
+    volumes:
+      - ./otel-collector-config.yml:/etc/otel-collector-config.yml
+    ports:
+      - "8888" # Prometheus metrics exposed by the collector
+      - "8889" # Prometheus exporter metrics
+      - "${OTLP_RECEIVER_PORT}:4317" # OTLP gRPC receiver
+    depends_on:
+      - prometheus
+      - jaeger

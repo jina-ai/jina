@@ -87,7 +87,7 @@ class FlowType(type(ExitStack), type(JAMLCompatible)):
 
 _regex_port = r'(.*?):([0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$'
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from jina.clients.base import BaseClient
     from jina.orchestrate.flow.asyncio import AsyncFlow
     from jina.serve.executors import BaseExecutor
@@ -118,20 +118,32 @@ class Flow(
         *,
         asyncio: Optional[bool] = False,
         host: Optional[str] = '0.0.0.0',
+        metrics: Optional[bool] = False,
+        metrics_exporter_host: Optional[str] = None,
+        metrics_exporter_port: Optional[int] = None,
         port: Optional[int] = None,
         protocol: Optional[str] = 'GRPC',
         proxy: Optional[bool] = False,
         tls: Optional[bool] = False,
+        traces_exporter_host: Optional[str] = None,
+        traces_exporter_port: Optional[int] = None,
+        tracing: Optional[bool] = False,
         **kwargs,
     ):
         """Create a Flow. Flow is how Jina streamlines and scales Executors. This overloaded method provides arguments from `jina client` CLI.
 
         :param asyncio: If set, then the input and output of this Client work in an asynchronous manner.
         :param host: The host address of the runtime, by default it is 0.0.0.0. In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts, separated by commas. Then, every resulting address will be considered as one replica of the Executor.
+        :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.
+        :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.
+        :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.
         :param port: The port of the Gateway, which the client should connect to.
         :param protocol: Communication protocol between server and client.
         :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
         :param tls: If set, connect to gateway using tls encryption
+        :param traces_exporter_host: If tracing is enabled, this hostname will be used to configure the trace exporter agent.
+        :param traces_exporter_port: If tracing is enabled, this port will be used to configure the trace exporter agent.
+        :param tracing: If set, the sdk implementation of the OpenTelemetry tracer will be available and will be enabled for automatic tracing of requests and customer span creation. Otherwise a no-op implementation will be provided.
 
         .. # noqa: DAR202
         .. # noqa: DAR101
@@ -149,6 +161,7 @@ class Flow(
         cors: Optional[bool] = False,
         deployments_addresses: Optional[str] = '{}',
         deployments_disable_reduce: Optional[str] = '[]',
+        deployments_metadata: Optional[str] = '{}',
         description: Optional[str] = None,
         disable_auto_volume: Optional[bool] = False,
         docker_kwargs: Optional[dict] = None,
@@ -165,6 +178,9 @@ class Flow(
         host: Optional[str] = '0.0.0.0',
         host_in: Optional[str] = '0.0.0.0',
         log_config: Optional[str] = None,
+        metrics: Optional[bool] = False,
+        metrics_exporter_host: Optional[str] = None,
+        metrics_exporter_port: Optional[int] = None,
         monitoring: Optional[bool] = False,
         name: Optional[str] = 'gateway',
         native: Optional[bool] = False,
@@ -190,6 +206,9 @@ class Flow(
         timeout_ready: Optional[int] = 600000,
         timeout_send: Optional[int] = None,
         title: Optional[str] = None,
+        traces_exporter_host: Optional[str] = None,
+        traces_exporter_port: Optional[int] = None,
+        tracing: Optional[bool] = False,
         uses: Optional[Union[str, Type['BaseExecutor'], dict]] = None,
         uses_with: Optional[dict] = None,
         uvicorn_kwargs: Optional[dict] = None,
@@ -201,8 +220,9 @@ class Flow(
 
         :param compression: The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.
         :param cors: If set, a CORS middleware is added to FastAPI frontend to allow cross-origin access.
-        :param deployments_addresses: dictionary JSON with the input addresses of each Deployment
+        :param deployments_addresses: JSON dictionary with the input addresses of each Deployment
         :param deployments_disable_reduce: list JSON disabling the built-in merging mechanism for each Deployment listed
+        :param deployments_metadata: JSON dictionary with the request metadata for each Deployment
         :param description: The description of this HTTP server. It will be used in automatics docs such as Swagger UI.
         :param disable_auto_volume: Do not automatically mount a volume for dockerized Executors.
         :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker '
@@ -229,6 +249,9 @@ class Flow(
         :param host: The host address of the runtime, by default it is 0.0.0.0. In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts, separated by commas. Then, every resulting address will be considered as one replica of the Executor.
         :param host_in: The host address for binding to, by default it is 0.0.0.0
         :param log_config: The YAML config of the logger used in this object.
+        :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.
+        :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.
+        :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.
         :param monitoring: If set, spawn an http server with a prometheus endpoint to expose metrics
         :param name: The name of this object.
 
@@ -281,6 +304,9 @@ class Flow(
         :param timeout_ready: The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting forever
         :param timeout_send: The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default
         :param title: The title of this HTTP server. It will be used in automatics docs such as Swagger UI.
+        :param traces_exporter_host: If tracing is enabled, this hostname will be used to configure the trace exporter agent.
+        :param traces_exporter_port: If tracing is enabled, this port will be used to configure the trace exporter agent.
+        :param tracing: If set, the sdk implementation of the OpenTelemetry tracer will be available and will be enabled for automatic tracing of requests and customer span creation. Otherwise a no-op implementation will be provided.
         :param uses: The config of the gateway, it could be one of the followings:
                   * the string literal of an Gateway class name
                   * a Gateway YAML file (.yml, .yaml, .jaml)
@@ -386,14 +412,21 @@ class Flow(
 
         :param asyncio: If set, then the input and output of this Client work in an asynchronous manner.
         :param host: The host address of the runtime, by default it is 0.0.0.0. In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts, separated by commas. Then, every resulting address will be considered as one replica of the Executor.
+        :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.
+        :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.
+        :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.
         :param port: The port of the Gateway, which the client should connect to.
         :param protocol: Communication protocol between server and client.
         :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
         :param tls: If set, connect to gateway using tls encryption
+        :param traces_exporter_host: If tracing is enabled, this hostname will be used to configure the trace exporter agent.
+        :param traces_exporter_port: If tracing is enabled, this port will be used to configure the trace exporter agent.
+        :param tracing: If set, the sdk implementation of the OpenTelemetry tracer will be available and will be enabled for automatic tracing of requests and customer span creation. Otherwise a no-op implementation will be provided.
         :param compression: The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.
         :param cors: If set, a CORS middleware is added to FastAPI frontend to allow cross-origin access.
-        :param deployments_addresses: dictionary JSON with the input addresses of each Deployment
+        :param deployments_addresses: JSON dictionary with the input addresses of each Deployment
         :param deployments_disable_reduce: list JSON disabling the built-in merging mechanism for each Deployment listed
+        :param deployments_metadata: JSON dictionary with the request metadata for each Deployment
         :param description: The description of this HTTP server. It will be used in automatics docs such as Swagger UI.
         :param disable_auto_volume: Do not automatically mount a volume for dockerized Executors.
         :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker '
@@ -420,6 +453,9 @@ class Flow(
         :param host: The host address of the runtime, by default it is 0.0.0.0. In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts, separated by commas. Then, every resulting address will be considered as one replica of the Executor.
         :param host_in: The host address for binding to, by default it is 0.0.0.0
         :param log_config: The YAML config of the logger used in this object.
+        :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.
+        :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.
+        :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.
         :param monitoring: If set, spawn an http server with a prometheus endpoint to expose metrics
         :param name: The name of this object.
 
@@ -472,6 +508,9 @@ class Flow(
         :param timeout_ready: The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting forever
         :param timeout_send: The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default
         :param title: The title of this HTTP server. It will be used in automatics docs such as Swagger UI.
+        :param traces_exporter_host: If tracing is enabled, this hostname will be used to configure the trace exporter agent.
+        :param traces_exporter_port: If tracing is enabled, this port will be used to configure the trace exporter agent.
+        :param tracing: If set, the sdk implementation of the OpenTelemetry tracer will be available and will be enabled for automatic tracing of requests and customer span creation. Otherwise a no-op implementation will be provided.
         :param uses: The config of the gateway, it could be one of the followings:
                   * the string literal of an Gateway class name
                   * a Gateway YAML file (.yml, .yaml, .jaml)
@@ -626,6 +665,7 @@ class Flow(
         needs: str,
         graph_description: Dict[str, List[str]],
         deployments_addresses: Dict[str, List[str]],
+        deployments_metadata: Dict[str, Dict[str, str]],
         graph_conditions: Dict[str, Dict],
         deployments_disabled_reduce: List[str],
         **kwargs,
@@ -654,8 +694,20 @@ class Flow(
         args.graph_description = json.dumps(graph_description)
         args.graph_conditions = json.dumps(graph_conditions)
         args.deployments_addresses = json.dumps(deployments_addresses)
+        args.deployments_metadata = json.dumps(deployments_metadata)
         args.deployments_disable_reduce = json.dumps(deployments_disabled_reduce)
         self._deployment_nodes[GATEWAY_NAME] = Deployment(args, needs)
+
+    def _get_deployments_metadata(self) -> Dict[str, Dict[str, str]]:
+        """Get the metadata of all deployments in the Flow
+
+        :return: a dictionary of deployment name and its metadata
+        """
+        return {
+            name: deployment.grpc_metadata
+            for name, deployment in self._deployment_nodes.items()
+            if deployment.grpc_metadata
+        }
 
     def _get_deployments_addresses(self) -> Dict[str, List[str]]:
         graph_dict = {}
@@ -713,6 +765,15 @@ class Flow(
             ]
 
         return graph_dict if graph_dict else None
+
+    def _get_k8s_deployments_metadata(self) -> Dict[str, List[str]]:
+        graph_dict = {}
+
+        for node, v in self._deployment_nodes.items():
+            if v.grpc_metadata:
+                graph_dict[node] = v.grpc_metadata
+
+        return graph_dict or None
 
     def _get_docker_compose_deployments_addresses(self) -> Dict[str, List[str]]:
         graph_dict = {}
@@ -848,11 +909,15 @@ class Flow(
         floating: Optional[bool] = False,
         force_update: Optional[bool] = False,
         gpus: Optional[str] = None,
+        grpc_metadata: Optional[dict] = None,
         grpc_server_options: Optional[dict] = None,
         host: Optional[str] = '0.0.0.0',
         host_in: Optional[str] = '0.0.0.0',
         install_requirements: Optional[bool] = False,
         log_config: Optional[str] = None,
+        metrics: Optional[bool] = False,
+        metrics_exporter_host: Optional[str] = None,
+        metrics_exporter_port: Optional[int] = None,
         monitoring: Optional[bool] = False,
         name: Optional[str] = None,
         native: Optional[bool] = False,
@@ -872,6 +937,9 @@ class Flow(
         timeout_ready: Optional[int] = 600000,
         timeout_send: Optional[int] = None,
         tls: Optional[bool] = False,
+        traces_exporter_host: Optional[str] = None,
+        traces_exporter_port: Optional[int] = None,
+        tracing: Optional[bool] = False,
         upload_files: Optional[List[str]] = None,
         uses: Optional[Union[str, Type['BaseExecutor'], dict]] = 'BaseExecutor',
         uses_after: Optional[Union[str, Type['BaseExecutor'], dict]] = None,
@@ -910,11 +978,15 @@ class Flow(
               - To access specified gpus based on device id, use `--gpus device=[YOUR-GPU-DEVICE-ID]`
               - To access specified gpus based on multiple device id, use `--gpus device=[YOUR-GPU-DEVICE-ID1],device=[YOUR-GPU-DEVICE-ID2]`
               - To specify more parameters, use `--gpus device=[YOUR-GPU-DEVICE-ID],runtime=nvidia,capabilities=display
+        :param grpc_metadata: The metadata to be passed to the gRPC request.
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
         :param host: The host address of the runtime, by default it is 0.0.0.0. In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts, separated by commas. Then, every resulting address will be considered as one replica of the Executor.
         :param host_in: The host address for binding to, by default it is 0.0.0.0
         :param install_requirements: If set, install `requirements.txt` in the Hub Executor bundle to local
         :param log_config: The YAML config of the logger used in this object.
+        :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.
+        :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.
+        :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.
         :param monitoring: If set, spawn an http server with a prometheus endpoint to expose metrics
         :param name: The name of this object.
 
@@ -958,6 +1030,9 @@ class Flow(
         :param timeout_ready: The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting forever
         :param timeout_send: The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default
         :param tls: If set, connect to deployment using tls encryption
+        :param traces_exporter_host: If tracing is enabled, this hostname will be used to configure the trace exporter agent.
+        :param traces_exporter_port: If tracing is enabled, this port will be used to configure the trace exporter agent.
+        :param tracing: If set, the sdk implementation of the OpenTelemetry tracer will be available and will be enabled for automatic tracing of requests and customer span creation. Otherwise a no-op implementation will be provided.
         :param upload_files: The files on the host to be uploaded to the remote
           workspace. This can be useful when your Deployment has more
           file dependencies beyond a single YAML file, e.g.
@@ -1059,11 +1134,15 @@ class Flow(
               - To access specified gpus based on device id, use `--gpus device=[YOUR-GPU-DEVICE-ID]`
               - To access specified gpus based on multiple device id, use `--gpus device=[YOUR-GPU-DEVICE-ID1],device=[YOUR-GPU-DEVICE-ID2]`
               - To specify more parameters, use `--gpus device=[YOUR-GPU-DEVICE-ID],runtime=nvidia,capabilities=display
+        :param grpc_metadata: The metadata to be passed to the gRPC request.
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
         :param host: The host address of the runtime, by default it is 0.0.0.0. In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts, separated by commas. Then, every resulting address will be considered as one replica of the Executor.
         :param host_in: The host address for binding to, by default it is 0.0.0.0
         :param install_requirements: If set, install `requirements.txt` in the Hub Executor bundle to local
         :param log_config: The YAML config of the logger used in this object.
+        :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.
+        :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.
+        :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.
         :param monitoring: If set, spawn an http server with a prometheus endpoint to expose metrics
         :param name: The name of this object.
 
@@ -1107,6 +1186,9 @@ class Flow(
         :param timeout_ready: The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting forever
         :param timeout_send: The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default
         :param tls: If set, connect to deployment using tls encryption
+        :param traces_exporter_host: If tracing is enabled, this hostname will be used to configure the trace exporter agent.
+        :param traces_exporter_port: If tracing is enabled, this port will be used to configure the trace exporter agent.
+        :param tracing: If set, the sdk implementation of the OpenTelemetry tracer will be available and will be enabled for automatic tracing of requests and customer span creation. Otherwise a no-op implementation will be provided.
         :param upload_files: The files on the host to be uploaded to the remote
           workspace. This can be useful when your Deployment has more
           file dependencies beyond a single YAML file, e.g.
@@ -1203,7 +1285,6 @@ class Flow(
                 deployment_role=deployment_role,
             )
         )
-
         parser = set_deployment_parser()
         if deployment_role == DeploymentRoleType.GATEWAY:
             parser = set_gateway_parser()
@@ -1398,6 +1479,7 @@ class Flow(
                 needs={op_flow._last_deployment},
                 graph_description=op_flow._get_graph_representation(),
                 deployments_addresses=op_flow._get_deployments_addresses(),
+                deployments_metadata=op_flow._get_deployments_metadata(),
                 graph_conditions=op_flow._get_graph_conditions(),
                 deployments_disabled_reduce=op_flow._get_disabled_reduce_deployments(),
                 uses=op_flow.args.uses,
@@ -2352,6 +2434,9 @@ class Flow(
                 k8s_deployments_addresses=self._get_k8s_deployments_addresses(
                     k8s_namespace
                 )
+                if node == 'gateway'
+                else None,
+                k8s_deployments_metadata=self._get_k8s_deployments_metadata()
                 if node == 'gateway'
                 else None,
             )

@@ -1,18 +1,11 @@
 (flow-yaml-spec)=
 # {octicon}`file-code` YAML specification
 
-This page outlines the specification for valid {class}`~jina.Executor` YAML files.
-
-Such YAML configurations can be used to generate a {class}`~jina.Executor` object via {meth}`~jina.jaml.JAMLCompatible.load_config`.
-
 To generate a YAML configuration from a {class}`~jina.Flow` Python object, use {meth}`~jina.jaml.JAMLCompatible.save_config`.
 
 ## YAML completion in IDE
 
-We provide a [JSON Schema](https://json-schema.org/) for your IDE to enable code completion, syntax validation, members listing and displaying help text. Here is a [video tutorial](https://youtu.be/qOD-6mihUzQ) to walk you through the setup.
-
-<iframe width="560" height="315" src="https://www.youtube.com/embed/qOD-6mihUzQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-
+We provide a [JSON Schema](https://json-schema.org/) for your IDE to enable code completion, syntax validation, members listing and displaying help text.
 
 ### PyCharm users
 
@@ -33,10 +26,7 @@ We provide a [JSON Schema](https://json-schema.org/) for your IDE to enable code
 
 You can bind Schema to any file suffix you commonly used for Jina Flow's YAML.
 
-
 ## Example YAML
-
-The following constitutes an example Flow YAML:
 
 ```yaml
 jtype: Flow
@@ -69,7 +59,7 @@ String indicating the version of the Flow.
 
 ### `with`
 
-Keyword arguments passed to Flow `__init__()` method. You can set Flow-specific arguments and Gateway-specific arguments here:
+Keyword arguments are passed to a Flow's `__init__()` method. You can set Flow-specific arguments and Gateway-specific arguments here:
 
 #### Flow arguments
 
@@ -94,9 +84,7 @@ All keyword arguments passed to the Flow {meth}`~jina.Flow.add` method can be us
 
 ## Variables
 
-Jina Flow YAMLs support variables and variable substitution according to the [Github Actions syntax](https://docs.github.com/en/actions/learn-github-actions/environment-variables).
-
-This means that the following variable substitutions are supported:
+Jina Flow YAML supports variables and variable substitution according to the [Github Actions syntax](https://docs.github.com/en/actions/learn-github-actions/environment-variables):
 
 ### Environment variables
 

@@ -4,8 +4,8 @@ import os
 import time
 
 import pytest
-from docarray import DocumentArray
 
+from docarray import DocumentArray
 from jina import Executor, requests
 from jina.helper import random_port
 from jina.parsers import set_gateway_parser, set_pod_parser
@@ -32,6 +32,7 @@ class ProcessExecutor(Executor):
 def _create_gateway_runtime(port, uses, uses_with, worker_port):
     graph_description = '{"start-gateway": ["pod0"], "pod0": ["end-gateway"]}'
     pod_addresses = f'{{"pod0": ["0.0.0.0:{worker_port}"]}}'
+    deployments_metadata = '{"pod0": {"key1": "value1", "key2": "value2"}}'
     with GatewayRuntime(
         set_gateway_parser().parse_args(
             [
@@ -45,6 +46,8 @@ def _create_gateway_runtime(port, uses, uses_with, worker_port):
                 graph_description,
                 '--deployments-addresses',
                 pod_addresses,
+                '--deployments-metadata',
+                deployments_metadata,
             ]
         )
     ) as runtime:

@@ -24,7 +24,7 @@ from jina.orchestrate.pods.container_helper import (
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.gateway import GatewayRuntime
 
-if TYPE_CHECKING:
+if TYPE_CHECKING: # pragma: no cover
     from docker.client import DockerClient
 
 
