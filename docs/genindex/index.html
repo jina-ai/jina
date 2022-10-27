@@ -1101,7 +1101,7 @@
 </li>
           <li><a href="../api/jina.serve.networking/#jina.serve.networking.ReplicaList.close">(jina.serve.networking.ReplicaList method)</a>
 </li>
-          <li><a href="../api/jina.serve.runtimes.request_handlers.data_request_handler/#jina.serve.runtimes.request_handlers.data_request_handler.DataRequestHandler.close">(jina.serve.runtimes.request_handlers.data_request_handler.DataRequestHandler method)</a>
+          <li><a href="../api/jina.serve.runtimes.request_handlers.worker_request_handler/#jina.serve.runtimes.request_handlers.worker_request_handler.WorkerRequestHandler.close">(jina.serve.runtimes.request_handlers.worker_request_handler.WorkerRequestHandler method)</a>
 </li>
           <li><a href="../api/jina.serve.streamer/#jina.serve.streamer.GatewayStreamer.close">(jina.serve.streamer.GatewayStreamer method)</a>
 </li>
@@ -1464,8 +1464,6 @@
 </li>
         <li><a href="../api/jina.types.request.data/#jina.types.request.data.DataRequest">DataRequest (class in jina.types.request.data)</a>
 </li>
-        <li><a href="../api/jina.serve.runtimes.request_handlers.data_request_handler/#jina.serve.runtimes.request_handlers.data_request_handler.DataRequestHandler">DataRequestHandler (class in jina.serve.runtimes.request_handlers.data_request_handler)</a>
-</li>
         <li><a href="../api/jina.proto.serializer/#jina.proto.serializer.DataRequestListProto">DataRequestListProto (class in jina.proto.serializer)</a>
 </li>
         <li><a href="../api/jina.proto.serializer/#jina.proto.serializer.DataRequestProto">DataRequestProto (class in jina.proto.serializer)</a>
@@ -1570,10 +1568,10 @@
 </li>
         <li><a href="../api/jina.jaml.helper/#jina.jaml.helper.JinaLoader.determine_encoding">determine_encoding() (jina.jaml.helper.JinaLoader method)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.enums/#jina.enums.DataInputType.DICT">DICT (jina.enums.DataInputType attribute)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaEndpointRequestModel.dict">dict() (jina.serve.runtimes.gateway.http.models.JinaEndpointRequestModel method)</a>
 
         <ul>
@@ -2145,6 +2143,8 @@
 </li>
         <li><a href="../api/jina.enums/#jina.enums.GatewayProtocolType">GatewayProtocolType (class in jina.enums)</a>
 </li>
+        <li><a href="../api/jina.serve.runtimes.gateway.request_handling/#jina.serve.runtimes.gateway.request_handling.GatewayRequestHandler">GatewayRequestHandler (class in jina.serve.runtimes.gateway.request_handling)</a>
+</li>
         <li><a href="../api/jina.serve.runtimes.gateway/#jina.serve.runtimes.gateway.GatewayRuntime">GatewayRuntime (class in jina.serve.runtimes.gateway)</a>
 </li>
         <li><a href="../api/jina.serve.streamer/#jina.serve.streamer.GatewayStreamer">GatewayStreamer (class in jina.serve.streamer)</a>
@@ -2189,9 +2189,9 @@
 </li>
         <li><a href="../api/jina.orchestrate.pods.container_helper/#jina.orchestrate.pods.container_helper.get_docker_network">get_docker_network() (in module jina.orchestrate.pods.container_helper)</a>
 </li>
-        <li><a href="../api/jina.serve.runtimes.request_handlers.data_request_handler/#jina.serve.runtimes.request_handlers.data_request_handler.DataRequestHandler.get_docs_from_request">get_docs_from_request() (jina.serve.runtimes.request_handlers.data_request_handler.DataRequestHandler static method)</a>
+        <li><a href="../api/jina.serve.runtimes.request_handlers.worker_request_handler/#jina.serve.runtimes.request_handlers.worker_request_handler.WorkerRequestHandler.get_docs_from_request">get_docs_from_request() (jina.serve.runtimes.request_handlers.worker_request_handler.WorkerRequestHandler static method)</a>
 </li>
-        <li><a href="../api/jina.serve.runtimes.request_handlers.data_request_handler/#jina.serve.runtimes.request_handlers.data_request_handler.DataRequestHandler.get_docs_matrix_from_request">get_docs_matrix_from_request() (jina.serve.runtimes.request_handlers.data_request_handler.DataRequestHandler static method)</a>
+        <li><a href="../api/jina.serve.runtimes.request_handlers.worker_request_handler/#jina.serve.runtimes.request_handlers.worker_request_handler.WorkerRequestHandler.get_docs_matrix_from_request">get_docs_matrix_from_request() (jina.serve.runtimes.request_handlers.worker_request_handler.WorkerRequestHandler static method)</a>
 </li>
         <li><a href="../api/jina.jaml.helper/#jina.jaml.helper.JinaLoader.get_event">get_event() (jina.jaml.helper.JinaLoader method)</a>
 </li>
@@ -2221,10 +2221,10 @@
 </li>
         <li><a href="../api/jina.helper/#jina.helper.get_internal_ip">get_internal_ip() (in module jina.helper)</a>
 </li>
-        <li><a href="../api/jina.jaml.helper/#jina.jaml.helper.get_jina_loader_with_runtime">get_jina_loader_with_runtime() (in module jina.jaml.helper)</a>
-</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="../api/jina.jaml.helper/#jina.jaml.helper.get_jina_loader_with_runtime">get_jina_loader_with_runtime() (in module jina.jaml.helper)</a>
+</li>
         <li><a href="../api/jina/#jina.Document.get_json_schema">get_json_schema() (jina.Document class method)</a>
 
         <ul>
@@ -2253,7 +2253,7 @@
 </li>
         <li><a href="../api/jina.helper/#jina.helper.get_or_reuse_loop">get_or_reuse_loop() (in module jina.helper)</a>
 </li>
-        <li><a href="../api/jina.serve.runtimes.request_handlers.data_request_handler/#jina.serve.runtimes.request_handlers.data_request_handler.DataRequestHandler.get_parameters_dict_from_request">get_parameters_dict_from_request() (jina.serve.runtimes.request_handlers.data_request_handler.DataRequestHandler static method)</a>
+        <li><a href="../api/jina.serve.runtimes.request_handlers.worker_request_handler/#jina.serve.runtimes.request_handlers.worker_request_handler.WorkerRequestHandler.get_parameters_dict_from_request">get_parameters_dict_from_request() (jina.serve.runtimes.request_handlers.worker_request_handler.WorkerRequestHandler static method)</a>
 </li>
         <li><a href="../api/jina.jaml.parsers/#jina.jaml.parsers.get_parser">get_parser() (in module jina.jaml.parsers)</a>
 </li>
@@ -2344,12 +2344,12 @@
         <ul>
           <li><a href="../api/jina.logging.logger/#jina.logging.logger.SysLogHandlerWrapper.handle">(jina.logging.logger.SysLogHandlerWrapper method)</a>
 </li>
-          <li><a href="../api/jina.serve.runtimes.request_handlers.data_request_handler/#jina.serve.runtimes.request_handlers.data_request_handler.DataRequestHandler.handle">(jina.serve.runtimes.request_handlers.data_request_handler.DataRequestHandler method)</a>
+          <li><a href="../api/jina.serve.runtimes.request_handlers.worker_request_handler/#jina.serve.runtimes.request_handlers.worker_request_handler.WorkerRequestHandler.handle">(jina.serve.runtimes.request_handlers.worker_request_handler.WorkerRequestHandler method)</a>
 </li>
         </ul></li>
-        <li><a href="../api/jina.serve.runtimes.gateway.request_handling/#jina.serve.runtimes.gateway.request_handling.RequestHandler.handle_request">handle_request() (jina.serve.runtimes.gateway.request_handling.RequestHandler method)</a>
+        <li><a href="../api/jina.serve.runtimes.gateway.request_handling/#jina.serve.runtimes.gateway.request_handling.GatewayRequestHandler.handle_request">handle_request() (jina.serve.runtimes.gateway.request_handling.GatewayRequestHandler method)</a>
 </li>
-        <li><a href="../api/jina.serve.runtimes.gateway.request_handling/#jina.serve.runtimes.gateway.request_handling.RequestHandler.handle_result">handle_result() (jina.serve.runtimes.gateway.request_handling.RequestHandler method)</a>
+        <li><a href="../api/jina.serve.runtimes.gateway.request_handling/#jina.serve.runtimes.gateway.request_handling.GatewayRequestHandler.handle_result">handle_result() (jina.serve.runtimes.gateway.request_handling.GatewayRequestHandler method)</a>
 </li>
         <li><a href="../api/jina.logging.logger/#jina.logging.logger.RichHandler.handleError">handleError() (jina.logging.logger.RichHandler method)</a>
 
@@ -3508,10 +3508,10 @@
 </li>
         </ul></li>
         <li>
-    jina.serve.runtimes.request_handlers.data_request_handler
+    jina.serve.runtimes.request_handlers.worker_request_handler
 
         <ul>
-          <li><a href="../api/jina.serve.runtimes.request_handlers.data_request_handler/#module-jina.serve.runtimes.request_handlers.data_request_handler">module</a>
+          <li><a href="../api/jina.serve.runtimes.request_handlers.worker_request_handler/#module-jina.serve.runtimes.request_handlers.worker_request_handler">module</a>
 </li>
         </ul></li>
         <li>
@@ -4005,7 +4005,7 @@
 </li>
         <li><a href="../api/jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.CustomConfig.max_anystr_length">max_anystr_length (jina.serve.runtimes.gateway.http.models.CustomConfig attribute)</a>
 </li>
-        <li><a href="../api/jina.serve.runtimes.request_handlers.data_request_handler/#jina.serve.runtimes.request_handlers.data_request_handler.DataRequestHandler.merge_routes">merge_routes() (jina.serve.runtimes.request_handlers.data_request_handler.DataRequestHandler static method)</a>
+        <li><a href="../api/jina.serve.runtimes.request_handlers.worker_request_handler/#jina.serve.runtimes.request_handlers.worker_request_handler.WorkerRequestHandler.merge_routes">merge_routes() (jina.serve.runtimes.request_handlers.worker_request_handler.WorkerRequestHandler static method)</a>
 </li>
         <li><a href="../api/jina.types.mixin/#jina.types.mixin.ProtoTypeMixin.MergeFrom">MergeFrom() (jina.types.mixin.ProtoTypeMixin method)</a>
 
@@ -4311,7 +4311,7 @@
 </li>
           <li><a href="../api/jina.serve.runtimes.request_handlers/#module-jina.serve.runtimes.request_handlers">jina.serve.runtimes.request_handlers</a>
 </li>
-          <li><a href="../api/jina.serve.runtimes.request_handlers.data_request_handler/#module-jina.serve.runtimes.request_handlers.data_request_handler">jina.serve.runtimes.request_handlers.data_request_handler</a>
+          <li><a href="../api/jina.serve.runtimes.request_handlers.worker_request_handler/#module-jina.serve.runtimes.request_handlers.worker_request_handler">jina.serve.runtimes.request_handlers.worker_request_handler</a>
 </li>
           <li><a href="../api/jina.serve.runtimes.worker/#module-jina.serve.runtimes.worker">jina.serve.runtimes.worker</a>
 </li>
@@ -4923,12 +4923,12 @@
         <li><a href="../api/jina/#jina.DocumentArray.reduce">reduce() (jina.DocumentArray method)</a>
 
         <ul>
-          <li><a href="../api/jina.serve.runtimes.request_handlers.data_request_handler/#jina.serve.runtimes.request_handlers.data_request_handler.DataRequestHandler.reduce">(jina.serve.runtimes.request_handlers.data_request_handler.DataRequestHandler static method)</a>
+          <li><a href="../api/jina.serve.runtimes.request_handlers.worker_request_handler/#jina.serve.runtimes.request_handlers.worker_request_handler.WorkerRequestHandler.reduce">(jina.serve.runtimes.request_handlers.worker_request_handler.WorkerRequestHandler static method)</a>
 </li>
         </ul></li>
         <li><a href="../api/jina/#jina.DocumentArray.reduce_all">reduce_all() (jina.DocumentArray method)</a>
 </li>
-        <li><a href="../api/jina.serve.runtimes.request_handlers.data_request_handler/#jina.serve.runtimes.request_handlers.data_request_handler.DataRequestHandler.reduce_requests">reduce_requests() (jina.serve.runtimes.request_handlers.data_request_handler.DataRequestHandler static method)</a>
+        <li><a href="../api/jina.serve.runtimes.request_handlers.worker_request_handler/#jina.serve.runtimes.request_handlers.worker_request_handler.WorkerRequestHandler.reduce_requests">reduce_requests() (jina.serve.runtimes.request_handlers.worker_request_handler.WorkerRequestHandler static method)</a>
 </li>
         <li><a href="../api/jina.logging.profile/#jina.logging.profile.ProgressBar.refresh">refresh() (jina.logging.profile.ProgressBar method)</a>
 </li>
@@ -4970,11 +4970,11 @@
 </li>
         <li><a href="../api/jina.logging.logger/#jina.logging.logger.RichHandler.render_message">render_message() (jina.logging.logger.RichHandler method)</a>
 </li>
-        <li><a href="../api/jina.serve.runtimes.request_handlers.data_request_handler/#jina.serve.runtimes.request_handlers.data_request_handler.DataRequestHandler.replace_docs">replace_docs() (jina.serve.runtimes.request_handlers.data_request_handler.DataRequestHandler static method)</a>
+        <li><a href="../api/jina.serve.runtimes.request_handlers.worker_request_handler/#jina.serve.runtimes.request_handlers.worker_request_handler.WorkerRequestHandler.replace_docs">replace_docs() (jina.serve.runtimes.request_handlers.worker_request_handler.WorkerRequestHandler static method)</a>
 </li>
         <li><a href="../api/jina.enums/#jina.enums.replace_enum_to_str">replace_enum_to_str() (in module jina.enums)</a>
 </li>
-        <li><a href="../api/jina.serve.runtimes.request_handlers.data_request_handler/#jina.serve.runtimes.request_handlers.data_request_handler.DataRequestHandler.replace_parameters">replace_parameters() (jina.serve.runtimes.request_handlers.data_request_handler.DataRequestHandler static method)</a>
+        <li><a href="../api/jina.serve.runtimes.request_handlers.worker_request_handler/#jina.serve.runtimes.request_handlers.worker_request_handler.WorkerRequestHandler.replace_parameters">replace_parameters() (jina.serve.runtimes.request_handlers.worker_request_handler.WorkerRequestHandler static method)</a>
 </li>
         <li><a href="../api/jina.serve.networking/#jina.serve.networking.ReplicaList">ReplicaList (class in jina.serve.networking)</a>
 </li>
@@ -4994,8 +4994,6 @@
         </ul></li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="../api/jina.serve.runtimes.gateway.request_handling/#jina.serve.runtimes.gateway.request_handling.RequestHandler">RequestHandler (class in jina.serve.runtimes.gateway.request_handling)</a>
-</li>
         <li><a href="../api/jina/#jina.requests">requests() (in module jina)</a>
 
         <ul>
@@ -5984,6 +5982,8 @@
 </li>
         <li><a href="../api/jina_cli.api/#jina_cli.api.worker_runtime">worker_runtime() (in module jina_cli.api)</a>
 </li>
+        <li><a href="../api/jina.serve.runtimes.request_handlers.worker_request_handler/#jina.serve.runtimes.request_handlers.worker_request_handler.WorkerRequestHandler">WorkerRequestHandler (class in jina.serve.runtimes.request_handlers.worker_request_handler)</a>
+</li>
         <li><a href="../api/jina.serve.runtimes.worker/#jina.serve.runtimes.worker.WorkerRuntime">WorkerRuntime (class in jina.serve.runtimes.worker)</a>
 </li>
         <li><a href="../api/jina/#jina.AsyncFlow.workspace">workspace (jina.AsyncFlow property)</a>
@@ -6068,7 +6068,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Oct 26, 2022</div>
+                            Last updated on Oct 27, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

@@ -1,0 +1,7 @@
+jina.serve.runtimes.request\_handlers.worker\_request\_handler module
+=====================================================================
+
+.. automodule:: jina.serve.runtimes.request_handlers.worker_request_handler
+   :members:
+   :undoc-members:
+   :show-inheritance:

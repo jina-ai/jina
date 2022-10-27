@@ -7,7 +7,7 @@ Submodules
 .. toctree::
    :maxdepth: 4
 
-   jina.serve.runtimes.request_handlers.data_request_handler
+   jina.serve.runtimes.request_handlers.worker_request_handler
 
 Module contents
 ---------------

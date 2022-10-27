@@ -400,7 +400,7 @@
 <span class="kn">from</span> <span class="nn">jina.serve.instrumentation</span> <span class="kn">import</span> <span class="n">MetricsTimer</span>
 <span class="kn">from</span> <span class="nn">jina.serve.runtimes.asyncio</span> <span class="kn">import</span> <span class="n">AsyncNewLoopRuntime</span>
 <span class="kn">from</span> <span class="nn">jina.serve.runtimes.helper</span> <span class="kn">import</span> <span class="n">_get_grpc_server_options</span>
-<span class="kn">from</span> <span class="nn">jina.serve.runtimes.request_handlers.data_request_handler</span> <span class="kn">import</span> <span class="n">DataRequestHandler</span>
+<span class="kn">from</span> <span class="nn">jina.serve.runtimes.request_handlers.worker_request_handler</span> <span class="kn">import</span> <span class="n">WorkerRequestHandler</span>
 <span class="kn">from</span> <span class="nn">jina.types.request.data</span> <span class="kn">import</span> <span class="n">DataRequest</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span> <span class="c1"># pragma: no cover</span>
@@ -424,7 +424,7 @@
 
 <div class="viewcode-block" id="WorkerRuntime.async_setup"><a class="viewcode-back" href="../../../../../api/jina.serve.runtimes.worker/#jina.serve.runtimes.worker.WorkerRuntime.async_setup">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Start the DataRequestHandler and wait for the GRPC and Monitoring servers to start</span>
+<span class="sd">        Start the WorkerRequestHandler and wait for the GRPC and Monitoring servers to start</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">metrics_registry</span><span class="p">:</span>
             <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span>
@@ -484,8 +484,8 @@
 
         <span class="c1"># Keep this initialization order</span>
         <span class="c1"># otherwise readiness check is not valid</span>
-        <span class="c1"># The DataRequestHandler needs to be started BEFORE the grpc server</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_data_request_handler</span> <span class="o">=</span> <span class="n">DataRequestHandler</span><span class="p">(</span>
+        <span class="c1"># The WorkerRequestHandler needs to be started BEFORE the grpc server</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_worker_request_handler</span> <span class="o">=</span> <span class="n">WorkerRequestHandler</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">metrics_registry</span><span class="p">,</span>
@@ -496,7 +496,7 @@
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_async_setup_grpc_server</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Start the DataRequestHandler and wait for the GRPC server to start</span>
+<span class="sd">        Start the WorkerRequestHandler and wait for the GRPC server to start</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_grpc_server</span> <span class="o">=</span> <span class="n">grpc</span><span class="o">.</span><span class="n">aio</span><span class="o">.</span><span class="n">server</span><span class="p">(</span>
@@ -550,7 +550,7 @@
         <span class="sd">&quot;&quot;&quot;Close the data request handler&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_health_servicer</span><span class="o">.</span><span class="n">enter_graceful_shutdown</span><span class="p">()</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">async_cancel</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_data_request_handler</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_worker_request_handler</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="WorkerRuntime.process_single_data"><a class="viewcode-back" href="../../../../../api/jina.serve.runtimes.worker/#jina.serve.runtimes.worker.WorkerRuntime.process_single_data">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">process_single_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">DataRequest</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataRequest</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -573,7 +573,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;got an endpoint discovery request&#39;</span><span class="p">)</span>
         <span class="n">endpointsProto</span> <span class="o">=</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">EndpointsProto</span><span class="p">()</span>
         <span class="n">endpointsProto</span><span class="o">.</span><span class="n">endpoints</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
-            <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data_request_handler</span><span class="o">.</span><span class="n">_executor</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+            <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_worker_request_handler</span><span class="o">.</span><span class="n">_executor</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">endpointsProto</span></div>
 
@@ -603,7 +603,7 @@
                 <span class="n">tracing_context</span> <span class="o">=</span> <span class="n">WorkerRuntime</span><span class="o">.</span><span class="n">_extract_tracing_context</span><span class="p">(</span>
                     <span class="n">context</span><span class="o">.</span><span class="n">invocation_metadata</span><span class="p">()</span>
                 <span class="p">)</span>
-                <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_request_handler</span><span class="o">.</span><span class="n">handle</span><span class="p">(</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_worker_request_handler</span><span class="o">.</span><span class="n">handle</span><span class="p">(</span>
                     <span class="n">requests</span><span class="o">=</span><span class="n">requests</span><span class="p">,</span> <span class="n">tracing_context</span><span class="o">=</span><span class="n">tracing_context</span>
                 <span class="p">)</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_successful_requests_metrics</span><span class="p">:</span>
@@ -622,7 +622,7 @@
                     <span class="n">exc_info</span><span class="o">=</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">quiet_error</span><span class="p">,</span>
                 <span class="p">)</span>
 
-                <span class="n">requests</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">add_exception</span><span class="p">(</span><span class="n">ex</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_request_handler</span><span class="o">.</span><span class="n">_executor</span><span class="p">)</span>
+                <span class="n">requests</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">add_exception</span><span class="p">(</span><span class="n">ex</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_worker_request_handler</span><span class="o">.</span><span class="n">_executor</span><span class="p">)</span>
                 <span class="n">context</span><span class="o">.</span><span class="n">set_trailing_metadata</span><span class="p">(((</span><span class="s1">&#39;is-error&#39;</span><span class="p">,</span> <span class="s1">&#39;true&#39;</span><span class="p">),))</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_failed_requests_metrics</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_failed_requests_metrics</span><span class="o">.</span><span class="n">inc</span><span class="p">()</span>
@@ -669,7 +669,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Oct 26, 2022</div>
+                            Last updated on Oct 27, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

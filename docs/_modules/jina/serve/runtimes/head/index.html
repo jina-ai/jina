@@ -407,7 +407,7 @@
 <span class="kn">from</span> <span class="nn">jina.serve.networking</span> <span class="kn">import</span> <span class="n">GrpcConnectionPool</span>
 <span class="kn">from</span> <span class="nn">jina.serve.runtimes.asyncio</span> <span class="kn">import</span> <span class="n">AsyncNewLoopRuntime</span>
 <span class="kn">from</span> <span class="nn">jina.serve.runtimes.helper</span> <span class="kn">import</span> <span class="n">_get_grpc_server_options</span>
-<span class="kn">from</span> <span class="nn">jina.serve.runtimes.request_handlers.data_request_handler</span> <span class="kn">import</span> <span class="n">DataRequestHandler</span>
+<span class="kn">from</span> <span class="nn">jina.serve.runtimes.request_handlers.worker_request_handler</span> <span class="kn">import</span> <span class="n">WorkerRequestHandler</span>
 <span class="kn">from</span> <span class="nn">jina.types.request.data</span> <span class="kn">import</span> <span class="n">DataRequest</span><span class="p">,</span> <span class="n">Response</span>
 
 
@@ -694,7 +694,7 @@
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">DataRequest</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;recv </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">requests</span><span class="p">)</span><span class="si">}</span><span class="s1"> DataRequest(s)&#39;</span><span class="p">)</span>
 
-        <span class="n">DataRequestHandler</span><span class="o">.</span><span class="n">merge_routes</span><span class="p">(</span><span class="n">requests</span><span class="p">)</span>
+        <span class="n">WorkerRequestHandler</span><span class="o">.</span><span class="n">merge_routes</span><span class="p">(</span><span class="n">requests</span><span class="p">)</span>
 
         <span class="n">uses_before_metadata</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">uses_before_address</span><span class="p">:</span>
@@ -739,11 +739,11 @@
                 <span class="n">retries</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_retries</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">worker_results</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reduce</span><span class="p">:</span>
-            <span class="n">DataRequestHandler</span><span class="o">.</span><span class="n">reduce_requests</span><span class="p">(</span><span class="n">worker_results</span><span class="p">)</span>
+            <span class="n">WorkerRequestHandler</span><span class="o">.</span><span class="n">reduce_requests</span><span class="p">(</span><span class="n">worker_results</span><span class="p">)</span>
         <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">worker_results</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reduce</span><span class="p">:</span>
             <span class="c1"># worker returned multiple responsed, but the head is configured to skip reduction</span>
             <span class="c1"># just concatenate the docs in this case</span>
-            <span class="n">response_request</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">docs</span> <span class="o">=</span> <span class="n">DataRequestHandler</span><span class="o">.</span><span class="n">get_docs_from_request</span><span class="p">(</span>
+            <span class="n">response_request</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">docs</span> <span class="o">=</span> <span class="n">WorkerRequestHandler</span><span class="o">.</span><span class="n">get_docs_from_request</span><span class="p">(</span>
                 <span class="n">requests</span><span class="p">,</span> <span class="n">field</span><span class="o">=</span><span class="s1">&#39;docs&#39;</span>
             <span class="p">)</span>
 
@@ -795,7 +795,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Oct 26, 2022</div>
+                            Last updated on Oct 27, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

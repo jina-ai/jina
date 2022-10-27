@@ -445,8 +445,8 @@
 
     <span class="k">with</span> <span class="n">runtime_cls</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="k">as</span> <span class="n">rt</span><span class="p">:</span>
         <span class="n">name</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">rt</span><span class="o">.</span><span class="n">_data_request_handler</span><span class="o">.</span><span class="n">_executor</span><span class="o">.</span><span class="n">metas</span><span class="o">.</span><span class="n">name</span>
-            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">rt</span><span class="p">,</span> <span class="s1">&#39;_data_request_handler&#39;</span><span class="p">)</span>
+            <span class="n">rt</span><span class="o">.</span><span class="n">_worker_request_handler</span><span class="o">.</span><span class="n">_executor</span><span class="o">.</span><span class="n">metas</span><span class="o">.</span><span class="n">name</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">rt</span><span class="p">,</span> <span class="s1">&#39;_worker_request_handler&#39;</span><span class="p">)</span>
             <span class="k">else</span> <span class="n">rt</span><span class="o">.</span><span class="n">name</span>
         <span class="p">)</span>
         <span class="n">rt</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Executor </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1"> started&#39;</span><span class="p">)</span>
@@ -477,7 +477,7 @@
 
     <span class="k">with</span> <span class="n">WorkerRuntime</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="k">as</span> <span class="n">runtime</span><span class="p">:</span>
         <span class="n">runtime</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s1">&#39;Executor </span><span class="si">{</span><span class="n">runtime</span><span class="o">.</span><span class="n">_data_request_handler</span><span class="o">.</span><span class="n">_executor</span><span class="o">.</span><span class="n">metas</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> started&#39;</span>
+            <span class="sa">f</span><span class="s1">&#39;Executor </span><span class="si">{</span><span class="n">runtime</span><span class="o">.</span><span class="n">_worker_request_handler</span><span class="o">.</span><span class="n">_executor</span><span class="o">.</span><span class="n">metas</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> started&#39;</span>
         <span class="p">)</span>
         <span class="n">runtime</span><span class="o">.</span><span class="n">run_forever</span><span class="p">()</span></div>
 
@@ -627,7 +627,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Oct 26, 2022</div>
+                            Last updated on Oct 27, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

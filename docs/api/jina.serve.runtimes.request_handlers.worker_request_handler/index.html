@@ -4,11 +4,11 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-<meta property="og:title" content="jina.serve.runtimes.request_handlers.data_request_handler module" />
+<meta property="og:title" content="jina.serve.runtimes.request_handlers.worker_request_handler module" />
   
 <meta property="og:type" content="website" />
   
-<meta property="og:url" content="https://docs.jina.ai/api/jina.serve.runtimes.request_handlers.data_request_handler/" />
+<meta property="og:url" content="https://docs.jina.ai/api/jina.serve.runtimes.request_handlers.worker_request_handler/" />
   
 <meta property="og:site_name" content="Jina 3.11.1 Documentation" />
   
@@ -34,10 +34,10 @@
 
 <script async defer src="https://buttons.github.io/buttons.js"></script>
     <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" />
-        <link rel="canonical" href="https://docs.jina.ai/api/jina.serve.runtimes.request_handlers.data_request_handler.html" />
+        <link rel="canonical" href="https://docs.jina.ai/api/jina.serve.runtimes.request_handlers.worker_request_handler.html" />
 
     <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
-        <title>jina.serve.runtimes.request_handlers.data_request_handler module - Jina 3.11.1 documentation</title>
+        <title>jina.serve.runtimes.request_handlers.worker_request_handler module - Jina 3.11.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -415,11 +415,11 @@
                     </label>
                 </div>
                 <article role="main">
-                    <section id="module-jina.serve.runtimes.request_handlers.data_request_handler">
-<span id="jina-serve-runtimes-request-handlers-data-request-handler-module"></span><h1>jina.serve.runtimes.request_handlers.data_request_handler module<a class="headerlink" href="#module-jina.serve.runtimes.request_handlers.data_request_handler" title="Permalink to this heading">#</a></h1>
+                    <section id="module-jina.serve.runtimes.request_handlers.worker_request_handler">
+<span id="jina-serve-runtimes-request-handlers-worker-request-handler-module"></span><h1>jina.serve.runtimes.request_handlers.worker_request_handler module<a class="headerlink" href="#module-jina.serve.runtimes.request_handlers.worker_request_handler" title="Permalink to this heading">#</a></h1>
 <dl class="py class">
-<dt class="sig sig-object py" id="jina.serve.runtimes.request_handlers.data_request_handler.DataRequestHandler">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.serve.runtimes.request_handlers.data_request_handler.</span></span><span class="sig-name descname"><span class="pre">DataRequestHandler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metrics_registry</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tracer_provider</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meter_provider</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/request_handlers/data_request_handler/#DataRequestHandler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.request_handlers.data_request_handler.DataRequestHandler" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="jina.serve.runtimes.request_handlers.worker_request_handler.WorkerRequestHandler">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.serve.runtimes.request_handlers.worker_request_handler.</span></span><span class="sig-name descname"><span class="pre">WorkerRequestHandler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metrics_registry</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tracer_provider</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meter_provider</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/request_handlers/worker_request_handler/#WorkerRequestHandler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.request_handlers.worker_request_handler.WorkerRequestHandler" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Object to encapsulate the code related to handle the data requests passing to executor and its returned values</p>
 <p>Initialize private parameters and execute private loading functions.</p>
@@ -436,8 +436,8 @@
 </dd>
 </dl>
 <dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.request_handlers.data_request_handler.DataRequestHandler.handle">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">handle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">requests</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tracing_context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/request_handlers/data_request_handler/#DataRequestHandler.handle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.request_handlers.data_request_handler.DataRequestHandler.handle" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="jina.serve.runtimes.request_handlers.worker_request_handler.WorkerRequestHandler.handle">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">handle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">requests</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tracing_context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/request_handlers/worker_request_handler/#WorkerRequestHandler.handle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.request_handlers.worker_request_handler.WorkerRequestHandler.handle" title="Permalink to this definition">#</a></dt>
 <dd><p>Initialize private parameters and execute private loading functions.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -456,8 +456,8 @@
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.request_handlers.data_request_handler.DataRequestHandler.replace_docs">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">replace_docs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">docs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ndarrray_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/request_handlers/data_request_handler/#DataRequestHandler.replace_docs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.request_handlers.data_request_handler.DataRequestHandler.replace_docs" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="jina.serve.runtimes.request_handlers.worker_request_handler.WorkerRequestHandler.replace_docs">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">replace_docs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">docs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ndarrray_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/request_handlers/worker_request_handler/#WorkerRequestHandler.replace_docs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.request_handlers.worker_request_handler.WorkerRequestHandler.replace_docs" title="Permalink to this definition">#</a></dt>
 <dd><p>Replaces the docs in a message with new Documents.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -474,8 +474,8 @@
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.request_handlers.data_request_handler.DataRequestHandler.replace_parameters">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">replace_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/request_handlers/data_request_handler/#DataRequestHandler.replace_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.request_handlers.data_request_handler.DataRequestHandler.replace_parameters" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="jina.serve.runtimes.request_handlers.worker_request_handler.WorkerRequestHandler.replace_parameters">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">replace_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/request_handlers/worker_request_handler/#WorkerRequestHandler.replace_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.request_handlers.worker_request_handler.WorkerRequestHandler.replace_parameters" title="Permalink to this definition">#</a></dt>
 <dd><p>Replaces the parameters in a message with new Documents.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -491,8 +491,8 @@
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.request_handlers.data_request_handler.DataRequestHandler.merge_routes">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">merge_routes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">requests</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/request_handlers/data_request_handler/#DataRequestHandler.merge_routes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.request_handlers.data_request_handler.DataRequestHandler.merge_routes" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="jina.serve.runtimes.request_handlers.worker_request_handler.WorkerRequestHandler.merge_routes">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">merge_routes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">requests</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/request_handlers/worker_request_handler/#WorkerRequestHandler.merge_routes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.request_handlers.worker_request_handler.WorkerRequestHandler.merge_routes" title="Permalink to this definition">#</a></dt>
 <dd><p>Merges all routes found in requests into the first message</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -505,14 +505,14 @@
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.request_handlers.data_request_handler.DataRequestHandler.close">
-<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/request_handlers/data_request_handler/#DataRequestHandler.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.request_handlers.data_request_handler.DataRequestHandler.close" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="jina.serve.runtimes.request_handlers.worker_request_handler.WorkerRequestHandler.close">
+<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/request_handlers/worker_request_handler/#WorkerRequestHandler.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.request_handlers.worker_request_handler.WorkerRequestHandler.close" title="Permalink to this definition">#</a></dt>
 <dd><p>Close the data request handler, by closing the executor</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.request_handlers.data_request_handler.DataRequestHandler.get_docs_matrix_from_request">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_docs_matrix_from_request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">requests</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/request_handlers/data_request_handler/#DataRequestHandler.get_docs_matrix_from_request"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.request_handlers.data_request_handler.DataRequestHandler.get_docs_matrix_from_request" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="jina.serve.runtimes.request_handlers.worker_request_handler.WorkerRequestHandler.get_docs_matrix_from_request">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_docs_matrix_from_request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">requests</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/request_handlers/worker_request_handler/#WorkerRequestHandler.get_docs_matrix_from_request"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.request_handlers.worker_request_handler.WorkerRequestHandler.get_docs_matrix_from_request" title="Permalink to this definition">#</a></dt>
 <dd><p>Returns a docs matrix from a list of DataRequest objects.
 :type requests: <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.DataRequest" title="jina.types.request.data.DataRequest"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataRequest</span></code></a>]
 :param requests: List of DataRequest objects
@@ -523,8 +523,8 @@
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.request_handlers.data_request_handler.DataRequestHandler.get_parameters_dict_from_request">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_parameters_dict_from_request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">requests</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/request_handlers/data_request_handler/#DataRequestHandler.get_parameters_dict_from_request"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.request_handlers.data_request_handler.DataRequestHandler.get_parameters_dict_from_request" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="jina.serve.runtimes.request_handlers.worker_request_handler.WorkerRequestHandler.get_parameters_dict_from_request">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_parameters_dict_from_request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">requests</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/request_handlers/worker_request_handler/#WorkerRequestHandler.get_parameters_dict_from_request"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.request_handlers.worker_request_handler.WorkerRequestHandler.get_parameters_dict_from_request" title="Permalink to this definition">#</a></dt>
 <dd><p>Returns a parameters dict from a list of DataRequest objects.
 :type requests: <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.DataRequest" title="jina.types.request.data.DataRequest"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataRequest</span></code></a>]
 :param requests: List of DataRequest objects
@@ -533,8 +533,8 @@
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.request_handlers.data_request_handler.DataRequestHandler.get_docs_from_request">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_docs_from_request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">requests</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/request_handlers/data_request_handler/#DataRequestHandler.get_docs_from_request"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.request_handlers.data_request_handler.DataRequestHandler.get_docs_from_request" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="jina.serve.runtimes.request_handlers.worker_request_handler.WorkerRequestHandler.get_docs_from_request">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_docs_from_request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">requests</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/request_handlers/worker_request_handler/#WorkerRequestHandler.get_docs_from_request"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.request_handlers.worker_request_handler.WorkerRequestHandler.get_docs_from_request" title="Permalink to this definition">#</a></dt>
 <dd><p>Gets a field from the message</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -553,8 +553,8 @@
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.request_handlers.data_request_handler.DataRequestHandler.reduce">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">reduce</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">docs_matrix</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/request_handlers/data_request_handler/#DataRequestHandler.reduce"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.request_handlers.data_request_handler.DataRequestHandler.reduce" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="jina.serve.runtimes.request_handlers.worker_request_handler.WorkerRequestHandler.reduce">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">reduce</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">docs_matrix</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/request_handlers/worker_request_handler/#WorkerRequestHandler.reduce"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.request_handlers.worker_request_handler.WorkerRequestHandler.reduce" title="Permalink to this definition">#</a></dt>
 <dd><p>Reduces a list of DocumentArrays into one DocumentArray. Changes are applied to the first
 DocumentArray in-place.</p>
 <p>Reduction consists in reducing every DocumentArray in <cite>docs_matrix</cite> sequentially using
@@ -590,8 +590,8 @@ Other non-data properties are ignored.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.request_handlers.data_request_handler.DataRequestHandler.reduce_requests">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">reduce_requests</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">requests</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/request_handlers/data_request_handler/#DataRequestHandler.reduce_requests"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.request_handlers.data_request_handler.DataRequestHandler.reduce_requests" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="jina.serve.runtimes.request_handlers.worker_request_handler.WorkerRequestHandler.reduce_requests">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">reduce_requests</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">requests</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/request_handlers/worker_request_handler/#WorkerRequestHandler.reduce_requests"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.request_handlers.worker_request_handler.WorkerRequestHandler.reduce_requests" title="Permalink to this definition">#</a></dt>
 <dd><p>Reduces a list of requests containing DocumentArrays inton one request object. Changes are applied to the first
 request object in-place.</p>
 <p>Reduction consists in reducing every DocumentArray in <cite>requests</cite> sequentially using
@@ -627,7 +627,7 @@ The resulting DataRequest object contains Documents of all DocumentArrays inside
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Oct 26, 2022</div>
+                            Last updated on Oct 27, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -659,18 +659,18 @@ The resulting DataRequest object contains Documents of all DocumentArrays inside
                 <div class="toc-tree-container">
                     <div class="toc-tree">
                         <ul>
-<li><a class="reference internal" href="#">jina.serve.runtimes.request_handlers.data_request_handler module</a><ul>
-<li><a class="reference internal" href="#jina.serve.runtimes.request_handlers.data_request_handler.DataRequestHandler"><code class="docutils literal notranslate"><span class="pre">DataRequestHandler</span></code></a><ul>
-<li><a class="reference internal" href="#jina.serve.runtimes.request_handlers.data_request_handler.DataRequestHandler.handle"><code class="docutils literal notranslate"><span class="pre">DataRequestHandler.handle()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.request_handlers.data_request_handler.DataRequestHandler.replace_docs"><code class="docutils literal notranslate"><span class="pre">DataRequestHandler.replace_docs()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.request_handlers.data_request_handler.DataRequestHandler.replace_parameters"><code class="docutils literal notranslate"><span class="pre">DataRequestHandler.replace_parameters()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.request_handlers.data_request_handler.DataRequestHandler.merge_routes"><code class="docutils literal notranslate"><span class="pre">DataRequestHandler.merge_routes()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.request_handlers.data_request_handler.DataRequestHandler.close"><code class="docutils literal notranslate"><span class="pre">DataRequestHandler.close()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.request_handlers.data_request_handler.DataRequestHandler.get_docs_matrix_from_request"><code class="docutils literal notranslate"><span class="pre">DataRequestHandler.get_docs_matrix_from_request()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.request_handlers.data_request_handler.DataRequestHandler.get_parameters_dict_from_request"><code class="docutils literal notranslate"><span class="pre">DataRequestHandler.get_parameters_dict_from_request()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.request_handlers.data_request_handler.DataRequestHandler.get_docs_from_request"><code class="docutils literal notranslate"><span class="pre">DataRequestHandler.get_docs_from_request()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.request_handlers.data_request_handler.DataRequestHandler.reduce"><code class="docutils literal notranslate"><span class="pre">DataRequestHandler.reduce()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.request_handlers.data_request_handler.DataRequestHandler.reduce_requests"><code class="docutils literal notranslate"><span class="pre">DataRequestHandler.reduce_requests()</span></code></a></li>
+<li><a class="reference internal" href="#">jina.serve.runtimes.request_handlers.worker_request_handler module</a><ul>
+<li><a class="reference internal" href="#jina.serve.runtimes.request_handlers.worker_request_handler.WorkerRequestHandler"><code class="docutils literal notranslate"><span class="pre">WorkerRequestHandler</span></code></a><ul>
+<li><a class="reference internal" href="#jina.serve.runtimes.request_handlers.worker_request_handler.WorkerRequestHandler.handle"><code class="docutils literal notranslate"><span class="pre">WorkerRequestHandler.handle()</span></code></a></li>
+<li><a class="reference internal" href="#jina.serve.runtimes.request_handlers.worker_request_handler.WorkerRequestHandler.replace_docs"><code class="docutils literal notranslate"><span class="pre">WorkerRequestHandler.replace_docs()</span></code></a></li>
+<li><a class="reference internal" href="#jina.serve.runtimes.request_handlers.worker_request_handler.WorkerRequestHandler.replace_parameters"><code class="docutils literal notranslate"><span class="pre">WorkerRequestHandler.replace_parameters()</span></code></a></li>
+<li><a class="reference internal" href="#jina.serve.runtimes.request_handlers.worker_request_handler.WorkerRequestHandler.merge_routes"><code class="docutils literal notranslate"><span class="pre">WorkerRequestHandler.merge_routes()</span></code></a></li>
+<li><a class="reference internal" href="#jina.serve.runtimes.request_handlers.worker_request_handler.WorkerRequestHandler.close"><code class="docutils literal notranslate"><span class="pre">WorkerRequestHandler.close()</span></code></a></li>
+<li><a class="reference internal" href="#jina.serve.runtimes.request_handlers.worker_request_handler.WorkerRequestHandler.get_docs_matrix_from_request"><code class="docutils literal notranslate"><span class="pre">WorkerRequestHandler.get_docs_matrix_from_request()</span></code></a></li>
+<li><a class="reference internal" href="#jina.serve.runtimes.request_handlers.worker_request_handler.WorkerRequestHandler.get_parameters_dict_from_request"><code class="docutils literal notranslate"><span class="pre">WorkerRequestHandler.get_parameters_dict_from_request()</span></code></a></li>
+<li><a class="reference internal" href="#jina.serve.runtimes.request_handlers.worker_request_handler.WorkerRequestHandler.get_docs_from_request"><code class="docutils literal notranslate"><span class="pre">WorkerRequestHandler.get_docs_from_request()</span></code></a></li>
+<li><a class="reference internal" href="#jina.serve.runtimes.request_handlers.worker_request_handler.WorkerRequestHandler.reduce"><code class="docutils literal notranslate"><span class="pre">WorkerRequestHandler.reduce()</span></code></a></li>
+<li><a class="reference internal" href="#jina.serve.runtimes.request_handlers.worker_request_handler.WorkerRequestHandler.reduce_requests"><code class="docutils literal notranslate"><span class="pre">WorkerRequestHandler.reduce_requests()</span></code></a></li>
 </ul>
 </li>
 </ul>

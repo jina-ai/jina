@@ -433,8 +433,8 @@
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.request_handling.RequestHandler">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.serve.runtimes.gateway.request_handling.</span></span><span class="sig-name descname"><span class="pre">RequestHandler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">metrics_registry</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">runtime_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/gateway/request_handling/#RequestHandler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.gateway.request_handling.RequestHandler" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.request_handling.GatewayRequestHandler">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.serve.runtimes.gateway.request_handling.</span></span><span class="sig-name descname"><span class="pre">GatewayRequestHandler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">metrics_registry</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">runtime_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/gateway/request_handling/#GatewayRequestHandler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.gateway.request_handling.GatewayRequestHandler" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#jina.serve.runtimes.gateway.request_handling.MonitoringRequestMixin" title="jina.serve.runtimes.gateway.request_handling.MonitoringRequestMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">MonitoringRequestMixin</span></code></a></p>
 <p>Class that handles the requests arriving to the gateway and the result extracted from the requests future.</p>
 <dl class="field-list simple">
@@ -446,8 +446,8 @@
 </dd>
 </dl>
 <dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.request_handling.RequestHandler.handle_request">
-<span class="sig-name descname"><span class="pre">handle_request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graph</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">connection_pool</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/gateway/request_handling/#RequestHandler.handle_request"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.gateway.request_handling.RequestHandler.handle_request" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.request_handling.GatewayRequestHandler.handle_request">
+<span class="sig-name descname"><span class="pre">handle_request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graph</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">connection_pool</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/gateway/request_handling/#GatewayRequestHandler.handle_request"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.gateway.request_handling.GatewayRequestHandler.handle_request" title="Permalink to this definition">#</a></dt>
 <dd><p>Function that handles the requests arriving to the gateway. This will be passed to the streamer.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -466,8 +466,8 @@
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.request_handling.RequestHandler.handle_result">
-<span class="sig-name descname"><span class="pre">handle_result</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/gateway/request_handling/#RequestHandler.handle_result"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.gateway.request_handling.RequestHandler.handle_result" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.request_handling.GatewayRequestHandler.handle_result">
+<span class="sig-name descname"><span class="pre">handle_result</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/gateway/request_handling/#GatewayRequestHandler.handle_result"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.gateway.request_handling.GatewayRequestHandler.handle_result" title="Permalink to this definition">#</a></dt>
 <dd><p>Function that handles the result when extracted from the request future</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
@@ -496,7 +496,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Oct 26, 2022</div>
+                            Last updated on Oct 27, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -530,9 +530,9 @@
                         <ul>
 <li><a class="reference internal" href="#">jina.serve.runtimes.gateway.request_handling module</a><ul>
 <li><a class="reference internal" href="#jina.serve.runtimes.gateway.request_handling.MonitoringRequestMixin"><code class="docutils literal notranslate"><span class="pre">MonitoringRequestMixin</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.request_handling.RequestHandler"><code class="docutils literal notranslate"><span class="pre">RequestHandler</span></code></a><ul>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.request_handling.RequestHandler.handle_request"><code class="docutils literal notranslate"><span class="pre">RequestHandler.handle_request()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.request_handling.RequestHandler.handle_result"><code class="docutils literal notranslate"><span class="pre">RequestHandler.handle_result()</span></code></a></li>
+<li><a class="reference internal" href="#jina.serve.runtimes.gateway.request_handling.GatewayRequestHandler"><code class="docutils literal notranslate"><span class="pre">GatewayRequestHandler</span></code></a><ul>
+<li><a class="reference internal" href="#jina.serve.runtimes.gateway.request_handling.GatewayRequestHandler.handle_request"><code class="docutils literal notranslate"><span class="pre">GatewayRequestHandler.handle_request()</span></code></a></li>
+<li><a class="reference internal" href="#jina.serve.runtimes.gateway.request_handling.GatewayRequestHandler.handle_result"><code class="docutils literal notranslate"><span class="pre">GatewayRequestHandler.handle_result()</span></code></a></li>
 </ul>
 </li>
 </ul>

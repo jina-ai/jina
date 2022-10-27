@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../../../genindex/" /><link rel="search" title="Search" href="../../../../../../search/" />
-        <link rel="canonical" href="https://docs.jina.ai/_modules/jina/serve/runtimes/request_handlers/data_request_handler.html" />
+        <link rel="canonical" href="https://docs.jina.ai/_modules/jina/serve/runtimes/request_handlers/worker_request_handler.html" />
 
     <link rel="shortcut icon" href="../../../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
-        <title>jina.serve.runtimes.request_handlers.data_request_handler - Jina 3.11.1 documentation</title>
+        <title>jina.serve.runtimes.request_handlers.worker_request_handler - Jina 3.11.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/copybutton.css" />
@@ -384,7 +384,7 @@
                     </label>
                 </div>
                 <article role="main">
-                    <h1>Source code for jina.serve.runtimes.request_handlers.data_request_handler</h1><div class="highlight"><pre>
+                    <h1>Source code for jina.serve.runtimes.request_handlers.worker_request_handler</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
 
 <span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
@@ -405,7 +405,7 @@
     <span class="kn">from</span> <span class="nn">jina.logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
 
 
-<div class="viewcode-block" id="DataRequestHandler"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.request_handlers.data_request_handler/#jina.serve.runtimes.request_handlers.data_request_handler.DataRequestHandler">[docs]</a><span class="k">class</span> <span class="nc">DataRequestHandler</span><span class="p">:</span>
+<div class="viewcode-block" id="WorkerRequestHandler"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.request_handlers.worker_request_handler/#jina.serve.runtimes.request_handlers.worker_request_handler.WorkerRequestHandler">[docs]</a><span class="k">class</span> <span class="nc">WorkerRequestHandler</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Object to encapsulate the code related to handle the data requests passing to executor and its returned values&quot;&quot;&quot;</span>
 
     <span class="n">_KEY_RESULT</span> <span class="o">=</span> <span class="s1">&#39;__results__&#39;</span>
@@ -570,7 +570,7 @@
             <span class="s1">&#39;runtime_name&#39;</span><span class="p">:</span> <span class="n">runtime_name</span><span class="p">,</span>
         <span class="p">}</span>
 
-<div class="viewcode-block" id="DataRequestHandler.handle"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.request_handlers.data_request_handler/#jina.serve.runtimes.request_handlers.data_request_handler.DataRequestHandler.handle">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">handle</span><span class="p">(</span>
+<div class="viewcode-block" id="WorkerRequestHandler.handle"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.request_handlers.worker_request_handler/#jina.serve.runtimes.request_handlers.worker_request_handler.WorkerRequestHandler.handle">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">handle</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">requests</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s1">&#39;DataRequest&#39;</span><span class="p">],</span> <span class="n">tracing_context</span><span class="p">:</span> <span class="s1">&#39;Context&#39;</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataRequest</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Initialize private parameters and execute private loading functions.</span>
@@ -597,7 +597,7 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                 <span class="p">)</span><span class="o">.</span><span class="n">observe</span><span class="p">(</span><span class="n">req</span><span class="o">.</span><span class="n">nbytes</span><span class="p">)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_request_size_histogram</span><span class="p">:</span>
-                <span class="n">attributes</span> <span class="o">=</span> <span class="n">DataRequestHandler</span><span class="o">.</span><span class="n">_metric_attributes</span><span class="p">(</span>
+                <span class="n">attributes</span> <span class="o">=</span> <span class="n">WorkerRequestHandler</span><span class="o">.</span><span class="n">_metric_attributes</span><span class="p">(</span>
                     <span class="n">requests</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">exec_endpoint</span><span class="p">,</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_executor</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
@@ -606,7 +606,7 @@
 
         <span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_params</span><span class="p">(</span><span class="n">requests</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">parameters</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_executor</span><span class="o">.</span><span class="n">metas</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
 
-        <span class="n">docs</span> <span class="o">=</span> <span class="n">DataRequestHandler</span><span class="o">.</span><span class="n">get_docs_from_request</span><span class="p">(</span>
+        <span class="n">docs</span> <span class="o">=</span> <span class="n">WorkerRequestHandler</span><span class="o">.</span><span class="n">get_docs_from_request</span><span class="p">(</span>
             <span class="n">requests</span><span class="p">,</span>
             <span class="n">field</span><span class="o">=</span><span class="s1">&#39;docs&#39;</span><span class="p">,</span>
         <span class="p">)</span>
@@ -616,7 +616,7 @@
             <span class="n">req_endpoint</span><span class="o">=</span><span class="n">requests</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">exec_endpoint</span><span class="p">,</span>
             <span class="n">docs</span><span class="o">=</span><span class="n">docs</span><span class="p">,</span>
             <span class="n">parameters</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>
-            <span class="n">docs_matrix</span><span class="o">=</span><span class="n">DataRequestHandler</span><span class="o">.</span><span class="n">get_docs_matrix_from_request</span><span class="p">(</span>
+            <span class="n">docs_matrix</span><span class="o">=</span><span class="n">WorkerRequestHandler</span><span class="o">.</span><span class="n">get_docs_matrix_from_request</span><span class="p">(</span>
                 <span class="n">requests</span><span class="p">,</span>
                 <span class="n">field</span><span class="o">=</span><span class="s1">&#39;docs&#39;</span><span class="p">,</span>
             <span class="p">),</span>
@@ -649,14 +649,14 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
             <span class="p">)</span><span class="o">.</span><span class="n">inc</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">docs</span><span class="p">))</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_document_processed_counter</span><span class="p">:</span>
-            <span class="n">attributes</span> <span class="o">=</span> <span class="n">DataRequestHandler</span><span class="o">.</span><span class="n">_metric_attributes</span><span class="p">(</span>
+            <span class="n">attributes</span> <span class="o">=</span> <span class="n">WorkerRequestHandler</span><span class="o">.</span><span class="n">_metric_attributes</span><span class="p">(</span>
                 <span class="n">requests</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">exec_endpoint</span><span class="p">,</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_executor</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_document_processed_counter</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">docs</span><span class="p">),</span> <span class="n">attributes</span><span class="o">=</span><span class="n">attributes</span><span class="p">)</span>
 
-        <span class="n">DataRequestHandler</span><span class="o">.</span><span class="n">replace_docs</span><span class="p">(</span><span class="n">requests</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">docs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">output_array_type</span><span class="p">)</span>
+        <span class="n">WorkerRequestHandler</span><span class="o">.</span><span class="n">replace_docs</span><span class="p">(</span><span class="n">requests</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">docs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">output_array_type</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sent_response_size_metrics</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_sent_response_size_metrics</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span>
@@ -665,7 +665,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
             <span class="p">)</span><span class="o">.</span><span class="n">observe</span><span class="p">(</span><span class="n">requests</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">nbytes</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sent_response_size_histogram</span><span class="p">:</span>
-            <span class="n">attributes</span> <span class="o">=</span> <span class="n">DataRequestHandler</span><span class="o">.</span><span class="n">_metric_attributes</span><span class="p">(</span>
+            <span class="n">attributes</span> <span class="o">=</span> <span class="n">WorkerRequestHandler</span><span class="o">.</span><span class="n">_metric_attributes</span><span class="p">(</span>
                 <span class="n">requests</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">exec_endpoint</span><span class="p">,</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_executor</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
@@ -676,7 +676,7 @@
 
         <span class="k">return</span> <span class="n">requests</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="DataRequestHandler.replace_docs"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.request_handlers.data_request_handler/#jina.serve.runtimes.request_handlers.data_request_handler.DataRequestHandler.replace_docs">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="WorkerRequestHandler.replace_docs"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.request_handlers.worker_request_handler/#jina.serve.runtimes.request_handlers.worker_request_handler.WorkerRequestHandler.replace_docs">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">replace_docs</span><span class="p">(</span>
         <span class="n">request</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s1">&#39;DataRequest&#39;</span><span class="p">],</span> <span class="n">docs</span><span class="p">:</span> <span class="s1">&#39;DocumentArray&#39;</span><span class="p">,</span> <span class="n">ndarrray_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -688,7 +688,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">request</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">set_docs_convert_arrays</span><span class="p">(</span><span class="n">docs</span><span class="p">,</span> <span class="n">ndarray_type</span><span class="o">=</span><span class="n">ndarrray_type</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="DataRequestHandler.replace_parameters"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.request_handlers.data_request_handler/#jina.serve.runtimes.request_handlers.data_request_handler.DataRequestHandler.replace_parameters">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="WorkerRequestHandler.replace_parameters"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.request_handlers.worker_request_handler/#jina.serve.runtimes.request_handlers.worker_request_handler.WorkerRequestHandler.replace_parameters">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">replace_parameters</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s1">&#39;DataRequest&#39;</span><span class="p">],</span> <span class="n">parameters</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Replaces the parameters in a message with new Documents.</span>
 
@@ -697,7 +697,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">request</span><span class="o">.</span><span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span></div>
 
-<div class="viewcode-block" id="DataRequestHandler.merge_routes"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.request_handlers.data_request_handler/#jina.serve.runtimes.request_handlers.data_request_handler.DataRequestHandler.merge_routes">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="WorkerRequestHandler.merge_routes"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.request_handlers.worker_request_handler/#jina.serve.runtimes.request_handlers.worker_request_handler.WorkerRequestHandler.merge_routes">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">merge_routes</span><span class="p">(</span><span class="n">requests</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s1">&#39;DataRequest&#39;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Merges all routes found in requests into the first message</span>
 
@@ -712,13 +712,13 @@
                     <span class="n">requests</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">routes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">route</span><span class="p">)</span>
                     <span class="n">existing_executor_routes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">route</span><span class="o">.</span><span class="n">executor</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="DataRequestHandler.close"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.request_handlers.data_request_handler/#jina.serve.runtimes.request_handlers.data_request_handler.DataRequestHandler.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="WorkerRequestHandler.close"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.request_handlers.worker_request_handler/#jina.serve.runtimes.request_handlers.worker_request_handler.WorkerRequestHandler.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Close the data request handler, by closing the executor&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_closed</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_executor</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_is_closed</span> <span class="o">=</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="DataRequestHandler.get_docs_matrix_from_request"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.request_handlers.data_request_handler/#jina.serve.runtimes.request_handlers.data_request_handler.DataRequestHandler.get_docs_matrix_from_request">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="WorkerRequestHandler.get_docs_matrix_from_request"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.request_handlers.worker_request_handler/#jina.serve.runtimes.request_handlers.worker_request_handler.WorkerRequestHandler.get_docs_matrix_from_request">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">get_docs_matrix_from_request</span><span class="p">(</span>
         <span class="n">requests</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s1">&#39;DataRequest&#39;</span><span class="p">],</span>
         <span class="n">field</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -740,7 +740,7 @@
         <span class="k">if</span> <span class="n">len_r</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">result</span></div>
 
-<div class="viewcode-block" id="DataRequestHandler.get_parameters_dict_from_request"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.request_handlers.data_request_handler/#jina.serve.runtimes.request_handlers.data_request_handler.DataRequestHandler.get_parameters_dict_from_request">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="WorkerRequestHandler.get_parameters_dict_from_request"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.request_handlers.worker_request_handler/#jina.serve.runtimes.request_handlers.worker_request_handler.WorkerRequestHandler.get_parameters_dict_from_request">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">get_parameters_dict_from_request</span><span class="p">(</span>
         <span class="n">requests</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s1">&#39;DataRequest&#39;</span><span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Dict&#39;</span><span class="p">:</span>
@@ -749,7 +749,7 @@
 <span class="sd">        :param requests: List of DataRequest objects</span>
 <span class="sd">        :return: parameters matrix: list of parameters (Dict) objects</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">key_result</span> <span class="o">=</span> <span class="n">DataRequestHandler</span><span class="o">.</span><span class="n">_KEY_RESULT</span>
+        <span class="n">key_result</span> <span class="o">=</span> <span class="n">WorkerRequestHandler</span><span class="o">.</span><span class="n">_KEY_RESULT</span>
         <span class="n">parameters</span> <span class="o">=</span> <span class="n">requests</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">parameters</span>
         <span class="k">if</span> <span class="n">key_result</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">parameters</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
             <span class="n">parameters</span><span class="p">[</span><span class="n">key_result</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
@@ -760,7 +760,7 @@
 
         <span class="k">return</span> <span class="n">parameters</span></div>
 
-<div class="viewcode-block" id="DataRequestHandler.get_docs_from_request"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.request_handlers.data_request_handler/#jina.serve.runtimes.request_handlers.data_request_handler.DataRequestHandler.get_docs_from_request">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="WorkerRequestHandler.get_docs_from_request"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.request_handlers.worker_request_handler/#jina.serve.runtimes.request_handlers.worker_request_handler.WorkerRequestHandler.get_docs_from_request">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">get_docs_from_request</span><span class="p">(</span>
         <span class="n">requests</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s1">&#39;DataRequest&#39;</span><span class="p">],</span>
         <span class="n">field</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -786,7 +786,7 @@
 
         <span class="k">return</span> <span class="n">result</span></div>
 
-<div class="viewcode-block" id="DataRequestHandler.reduce"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.request_handlers.data_request_handler/#jina.serve.runtimes.request_handlers.data_request_handler.DataRequestHandler.reduce">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="WorkerRequestHandler.reduce"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.request_handlers.worker_request_handler/#jina.serve.runtimes.request_handlers.worker_request_handler.WorkerRequestHandler.reduce">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">reduce</span><span class="p">(</span><span class="n">docs_matrix</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s1">&#39;DocumentArray&#39;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;DocumentArray&#39;</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Reduces a list of DocumentArrays into one DocumentArray. Changes are applied to the first</span>
@@ -814,7 +814,7 @@
             <span class="n">da</span><span class="o">.</span><span class="n">reduce_all</span><span class="p">(</span><span class="n">docs_matrix</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
             <span class="k">return</span> <span class="n">da</span></div>
 
-<div class="viewcode-block" id="DataRequestHandler.reduce_requests"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.request_handlers.data_request_handler/#jina.serve.runtimes.request_handlers.data_request_handler.DataRequestHandler.reduce_requests">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="WorkerRequestHandler.reduce_requests"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.request_handlers.worker_request_handler/#jina.serve.runtimes.request_handlers.worker_request_handler.WorkerRequestHandler.reduce_requests">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">reduce_requests</span><span class="p">(</span><span class="n">requests</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s1">&#39;DataRequest&#39;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s1">&#39;DataRequest&#39;</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Reduces a list of requests containing DocumentArrays inton one request object. Changes are applied to the first</span>
@@ -827,16 +827,16 @@
 <span class="sd">        :param requests: List of DataRequest objects</span>
 <span class="sd">        :return: the resulting DataRequest</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">docs_matrix</span> <span class="o">=</span> <span class="n">DataRequestHandler</span><span class="o">.</span><span class="n">get_docs_matrix_from_request</span><span class="p">(</span>
+        <span class="n">docs_matrix</span> <span class="o">=</span> <span class="n">WorkerRequestHandler</span><span class="o">.</span><span class="n">get_docs_matrix_from_request</span><span class="p">(</span>
             <span class="n">requests</span><span class="p">,</span> <span class="n">field</span><span class="o">=</span><span class="s1">&#39;docs&#39;</span>
         <span class="p">)</span>
 
         <span class="c1"># Reduction is applied in-place to the first DocumentArray in the matrix</span>
-        <span class="n">da</span> <span class="o">=</span> <span class="n">DataRequestHandler</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="n">docs_matrix</span><span class="p">)</span>
-        <span class="n">DataRequestHandler</span><span class="o">.</span><span class="n">replace_docs</span><span class="p">(</span><span class="n">requests</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">da</span><span class="p">)</span>
+        <span class="n">da</span> <span class="o">=</span> <span class="n">WorkerRequestHandler</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="n">docs_matrix</span><span class="p">)</span>
+        <span class="n">WorkerRequestHandler</span><span class="o">.</span><span class="n">replace_docs</span><span class="p">(</span><span class="n">requests</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">da</span><span class="p">)</span>
 
-        <span class="n">params</span> <span class="o">=</span> <span class="n">DataRequestHandler</span><span class="o">.</span><span class="n">get_parameters_dict_from_request</span><span class="p">(</span><span class="n">requests</span><span class="p">)</span>
-        <span class="n">DataRequestHandler</span><span class="o">.</span><span class="n">replace_parameters</span><span class="p">(</span><span class="n">requests</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">params</span><span class="p">)</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="n">WorkerRequestHandler</span><span class="o">.</span><span class="n">get_parameters_dict_from_request</span><span class="p">(</span><span class="n">requests</span><span class="p">)</span>
+        <span class="n">WorkerRequestHandler</span><span class="o">.</span><span class="n">replace_parameters</span><span class="p">(</span><span class="n">requests</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">params</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">requests</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div></div>
 </pre></div>
@@ -853,7 +853,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Oct 26, 2022</div>
+                            Last updated on Oct 27, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
