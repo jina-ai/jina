@@ -239,7 +239,7 @@ This will generate a single `docker-compose.yml` file containing all the Executo
 
 For an advance utilisation of Docker Compose with jina please refer to this {ref}`How to <docker-compose>` 
 
-
+(kubernetes-export)
 ### Kubernetes
 
 ```python
