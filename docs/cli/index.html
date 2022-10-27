@@ -298,6 +298,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../fundamentals/client/instrumenting-client/">Instrumentation</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../fundamentals/k8s/">Kubernetes Support</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../jina-ai-cloud/"><svg aria-hidden="true" class="sd-octicon sd-octicon-flame" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M7.998 14.5c2.832 0 5-1.98 5-4.5 0-1.463-.68-2.19-1.879-3.383l-.036-.037c-1.013-1.008-2.3-2.29-2.834-4.434-.322.256-.63.579-.864.953-.432.696-.621 1.58-.046 2.73.473.947.67 2.284-.278 3.232-.61.61-1.545.84-2.403.633a2.788 2.788 0 01-1.436-.874A3.21 3.21 0 003 10c0 2.53 2.164 4.5 4.998 4.5zM9.533.753C9.496.34 9.16.009 8.77.146 7.035.75 4.34 3.187 5.997 6.5c.344.689.285 1.218.003 1.5-.419.419-1.54.487-2.04-.832-.173-.454-.659-.762-1.035-.454C2.036 7.44 1.5 8.702 1.5 10c0 3.512 2.998 6 6.498 6s6.5-2.5 6.5-6c0-2.137-1.128-3.26-2.312-4.438-1.19-1.184-2.436-2.425-2.653-4.81z" fill-rule="evenodd"></path></svg> Jina AI Cloud</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../jina-ai-cloud/login/">Login &amp; Token Management</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../fundamentals/executor/hub/">Executor Hub</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -322,7 +323,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../how-to/gpu-executor/">Build a GPU Executor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../how-to/external-executor/">Include external Executors in a Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../how-to/docker-compose/">Deploy with Docker Compose</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../how-to/kubernetes/">Deploy with Kubernetes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../how-to/kubernetes/">Deploy on Kubernetes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../how-to/opentelemetry/">Observability and Instrumentation with OpenTelemetry and Jina</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../how-to/opentelemetry-migration/">Migrate from Prometheus/Grafana to OpenTelemetry/Prometheus/Grafana</a></li>
 </ul>
@@ -587,7 +588,7 @@ which should be structured as a python package. For more details, please see the
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data to bind to, default a random port between [49152, 65535]</p>
-<p>Default: 55176</p>
+<p>Default: 51020</p>
 </dd>
 <dt><kbd>--host-in</kbd></dt>
 <dd><p>The host address for binding to, by default it is 0.0.0.0</p>
@@ -699,7 +700,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--port</kbd></dt>
 <dd><p>The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (<cite>–external</cite> or <cite>external=True</cite>) this can be a list of ports, separated by commas. Then, every resulting address will be considered as one replica of the Executor.</p>
-<p>Default: “62723”</p>
+<p>Default: “54818”</p>
 </dd>
 <dt><kbd>--monitoring</kbd></dt>
 <dd><p>If set, spawn an http server with a prometheus endpoint to expose metrics</p>
@@ -707,7 +708,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--port-monitoring</kbd></dt>
 <dd><p>The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</p>
-<p>Default: “57562”</p>
+<p>Default: “51500”</p>
 </dd>
 <dt><kbd>--retries</kbd></dt>
 <dd><p>Number of retries per gRPC call. If &lt;0 it defaults to max(3, num_replicas)</p>
@@ -1266,7 +1267,7 @@ which should be structured as a python package.</p>
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data to bind to, default a random port between [49152, 65535]</p>
-<p>Default: 64909</p>
+<p>Default: 58412</p>
 </dd>
 <dt><kbd>--host-in</kbd></dt>
 <dd><p>The host address for binding to, by default it is 0.0.0.0</p>
@@ -1291,7 +1292,7 @@ Defaults to retaining whatever type is returned by the Executor.</p>
 </dd>
 <dt><kbd>--port-expose</kbd></dt>
 <dd><p>The port that the gateway exposes for clients for GRPC connections.</p>
-<p>Default: 53069</p>
+<p>Default: 51684</p>
 </dd>
 <dt><kbd>--compression</kbd></dt>
 <dd><p>Possible choices: NoCompression, Deflate, Gzip</p>
@@ -1326,7 +1327,7 @@ Defaults to retaining whatever type is returned by the Executor.</p>
 </dd>
 <dt><kbd>--port</kbd></dt>
 <dd><p>The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (<cite>–external</cite> or <cite>external=True</cite>) this can be a list of ports, separated by commas. Then, every resulting address will be considered as one replica of the Executor.</p>
-<p>Default: “56342”</p>
+<p>Default: “58217”</p>
 </dd>
 <dt><kbd>--monitoring</kbd></dt>
 <dd><p>If set, spawn an http server with a prometheus endpoint to expose metrics</p>
@@ -1334,7 +1335,7 @@ Defaults to retaining whatever type is returned by the Executor.</p>
 </dd>
 <dt><kbd>--port-monitoring</kbd></dt>
 <dd><p>The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</p>
-<p>Default: “61138”</p>
+<p>Default: “63585”</p>
 </dd>
 <dt><kbd>--retries</kbd></dt>
 <dd><p>Number of retries per gRPC call. If &lt;0 it defaults to max(3, num_replicas)</p>
@@ -1975,7 +1976,7 @@ which should be structured as a python package. For more details, please see the
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data to bind to, default a random port between [49152, 65535]</p>
-<p>Default: 52261</p>
+<p>Default: 51384</p>
 </dd>
 <dt><kbd>--host-in</kbd></dt>
 <dd><p>The host address for binding to, by default it is 0.0.0.0</p>
@@ -2087,7 +2088,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--port</kbd></dt>
 <dd><p>The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (<cite>–external</cite> or <cite>external=True</cite>) this can be a list of ports, separated by commas. Then, every resulting address will be considered as one replica of the Executor.</p>
-<p>Default: “61403”</p>
+<p>Default: “63549”</p>
 </dd>
 <dt><kbd>--monitoring</kbd></dt>
 <dd><p>If set, spawn an http server with a prometheus endpoint to expose metrics</p>
@@ -2095,7 +2096,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--port-monitoring</kbd></dt>
 <dd><p>The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</p>
-<p>Default: “51122”</p>
+<p>Default: “64000”</p>
 </dd>
 <dt><kbd>--retries</kbd></dt>
 <dd><p>Number of retries per gRPC call. If &lt;0 it defaults to max(3, num_replicas)</p>
@@ -2296,7 +2297,7 @@ which should be structured as a python package. For more details, please see the
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data to bind to, default a random port between [49152, 65535]</p>
-<p>Default: 64107</p>
+<p>Default: 62340</p>
 </dd>
 <dt><kbd>--host-in</kbd></dt>
 <dd><p>The host address for binding to, by default it is 0.0.0.0</p>
@@ -2408,7 +2409,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--port</kbd></dt>
 <dd><p>The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (<cite>–external</cite> or <cite>external=True</cite>) this can be a list of ports, separated by commas. Then, every resulting address will be considered as one replica of the Executor.</p>
-<p>Default: “54265”</p>
+<p>Default: “60669”</p>
 </dd>
 <dt><kbd>--monitoring</kbd></dt>
 <dd><p>If set, spawn an http server with a prometheus endpoint to expose metrics</p>
@@ -2416,7 +2417,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--port-monitoring</kbd></dt>
 <dd><p>The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</p>
-<p>Default: “53063”</p>
+<p>Default: “51182”</p>
 </dd>
 <dt><kbd>--retries</kbd></dt>
 <dd><p>Number of retries per gRPC call. If &lt;0 it defaults to max(3, num_replicas)</p>
