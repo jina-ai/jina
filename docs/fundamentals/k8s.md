@@ -93,7 +93,7 @@ YAML's `with` block.
 (kubernetes-replicas)=
 ## Scaling Executors: Replicas and shards
 
-Jina supports two ways of scaling:
+Jina supports two types of scaling:
 
 - **Replicas** can be used with any Executor type and are typically used for performance and availability.
 - **Shards** are used for partitioning data and should only be used with indexers since they store state.
