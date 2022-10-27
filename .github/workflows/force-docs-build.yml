@@ -86,7 +86,7 @@ jobs:
       - name: Moving old doc versions
         run: |
           cd docs
-          for i in $(cat _versions.json | jq '.[].version' | tr -d '"'); do if [ -d "$i" ]; then; mv "$i" /tmp/gen-html; fi; done
+          for i in $(cat _versions.json | jq '.[].version' | tr -d '"'); do if [ -d "$i" ]; then mv "$i" /tmp/gen-html; fi; done
       - name: Swap in new docs
         run: |
           rm -rf ./docs
