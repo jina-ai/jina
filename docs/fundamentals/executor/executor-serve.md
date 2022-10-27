@@ -72,6 +72,7 @@ the Executor, and `**kwargs` is passed to the internal {meth}`~jina.Flow` initia
 For more details on these arguments and the workings of a Flow, see the {ref}`Flow section <flow-cookbook>`.
 ````
 
+(kubernetes-executor)=
 ## Serve via Kubernetes
 You can generate Kubernetes configuration files for your containerized Executor by using the static `Executor.to_kubernetes_yaml()` method. This works like {ref}`deploying a Flow in Kubernetes <kubernetes>`, because your Executor is wrapped automatically in a Flow and uses the very same deployment techniques.
 
