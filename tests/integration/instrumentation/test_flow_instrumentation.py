@@ -94,7 +94,7 @@ def test_executor_instrumentation(jaeger_port, otlp_collector, otlp_receiver_por
     assert len(spans_with_error(server_spans)) == 0
     assert len(spans_with_error(client_spans)) == 0
     assert len(internal_spans) == 2
-    # Errors reported by DataRequestHandler and request method level spans
+    # Errors reported by WorkerRequestHandler and request method level spans
     assert len(spans_with_error(internal_spans)) == 2
 
     trace_ids = get_trace_ids(client_traces)

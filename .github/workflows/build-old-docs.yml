@@ -74,6 +74,10 @@ jobs:
           mv ./brand.html ./docs/_templates/sidebar/brand.html
       - name: Install dependencies
         run: |
+          wget https://raw.githubusercontent.com/${{ inputs.repo_owner }}/${{ inputs.package }}/master/docs/pin_requirements.py
+          wget https://raw.githubusercontent.com/${{ inputs.repo_owner }}/${{ inputs.package }}/master/docs/correct_some_requirements.sh
+          python pin_requirements.py extra-requirements.txt
+          bash correct_some_requirements.sh
           pip install .[devel]
           cd docs
           pip install -r requirements.txt
