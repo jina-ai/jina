@@ -237,7 +237,7 @@ jina export docker-compose flow.yml docker-compose.yml
 
 This will generate a single `docker-compose.yml` file containing all the Executors of the Flow.
 
-For an advance utilisation of Docker Compose with jina please refer to this {ref}`How to <docker-compose>` 
+For advanced utilization of Docker Compose with Jina, refer to {ref}`How to <docker-compose>` 
 
 (kubernetes-export)=
 ### Kubernetes

@@ -44,8 +44,7 @@ solutions in the cloud:
 - [Azure Kubernetes Service](https://azure.microsoft.com/en-us/services/kubernetes-service)
 - [Digital Ocean](https://www.digitalocean.com/products/kubernetes/)
 
-And you need to install Linkerd in your K8s cluster.  To use Linkerd, [install the Linkerd CLI](https://linkerd.io/2.11/getting-started/).
-After that, [install its control plane](https://linkerd.io/2.11/getting-started/) in your cluster.
+You need to install Linkerd in your K8s cluster. To use Linkerd, [install the Linkerd CLI](https://linkerd.io/2.11/getting-started/) and [its control plane](https://linkerd.io/2.11/getting-started/) in your cluster.
 This automatically sets up and manages the service mesh proxies when you deploy the Flow.
 
 To understand why you need to install a service mesh like Linkerd refer to this  {ref}`section <service-mesh-k8s>`
@@ -317,7 +316,7 @@ You can find more information about these commands in the [official Kubernetes d
 
 ## Key takeaways
 
-To put it briefly, there are just three key steps about deploying a Jina Flow on Kubernetes:
+In short, there are just three key steps to deploy a Jina Flow on Kubernetes:
 
 1. Use `f.to_kubernetes_yaml()` to generate Kubernetes configuration files from a Jina Flow object.
 2. Apply the generated file via `kubectl`(Modify the generated files if necessary)

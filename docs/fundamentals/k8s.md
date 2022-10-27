@@ -1,13 +1,13 @@
 (kubernetes-docs)=
 # Kubernetes Support
 
-Jina is a cloud native framework and therefore run natively and easily on Kubernetes.
+Jina is a cloud-native framework and therefore runs natively and easily on Kubernetes.
 Deploying a Jina Flow on Kubernetes is actually the recommended way to use Jina in production.
 
 
-A {class}`~jina.Flow` is composed of different microservices called {class}`~jina.Executor`s which natively run in container. This mean that Kubernetes can natively take over the lifetime management of Executors. 
+A {class}`~jina.Flow` is composed of different microservices called {class}`~jina.Executor`s which natively run in containers. This means that Kubernetes can natively take over the lifetime management of Executors. 
 
-Deploying a {class}`~jina.Flow` on Kubernetes means wrapping these microservices container in the appropriate K8s abstraction (Deployment, StatefulSet, ...) expose them internally via K8s Service and 
+Deploying a {class}`~jina.Flow` on Kubernetes means wrapping these microservice containers in the appropriate K8s abstraction (Deployment, StatefulSet, and so on), exposing them internally via K8s service and 
 connecting them together by passing the right set of parameters.
 
 ## Automatically translate a Flow to Kubernetes concept
@@ -19,8 +19,8 @@ translation work automatically.
 ```
 
 This helper function can be called from:
-* our Python interface to translate a Flow define in Python to k8s yaml files
-* our CLI interface to export a YAML Flow to k8s yaml files
+* Jina's Python interface to translate a Flow defined in Python to K8s YAML files
+* Jina's CLI interface to export a YAML Flow to K8s YAML files
 
 ```{seealso}
 More detail in the {ref}`Flow export documentation <kubernetes-export>`
@@ -29,25 +29,23 @@ More detail in the {ref}`Flow export documentation <kubernetes-export>`
 
 ## Extra Kubernetes options
 
-In general, Jina follows the following principle when it comes to deploying in Kubernetes:
+In general, Jina follows a single principle when it comes to deploying in Kubernetes:
 You, the user, know your use case and requirements the best.
-This means that while Jina generates configurations for you that run out of the box, as a professional user you should
-always see them as just a starting point to get you off the ground.
+This means that, while Jina generates configurations for you that run out of the box, as a professional user you should always see them as just a starting point to get you off the ground.
 
 ```{hint}
 The export funciton{meth}`~jina.Flow.to_kubernetes_yaml` is a helper function to get your stared off the ground. **There are meant to be updated and adapted to every use case**
 ```
-````{admonition} Matching jina versions
+````{admonition} Matching Jina versions
 :class: caution
-If you change the Docker images for {class}`~jina.Executor` and {class}`~jina.Gateway` in your Kubernetes generated file, ensure that al of them are built with the same Jina version to guarantee compatibility.
+If you change the Docker images for {class}`~jina.Executor` and {class}`~jina.Gateway` in your Kubernetes-generated file, ensure that all of them are built with the same Jina version to guarantee compatibility.
 ````
 
-You can't add basic Kubernetes feature like `Secrets`, `ConfigMap` or `Labels` via the Pythonic or YAML interface. This is intentional
-and doesn't mean that we don't support these features. On the contrary, we let you fully express your Kubernetes configuration by using the Kubernetes API to add you own Kubernetes standard to Jina.
+You can't add basic Kubernetes features like `Secrets`, `ConfigMap` or `Labels` via the Pythonic or YAML interface. This is intentional and doesn't mean that we don't support these features. On the contrary, we let you fully express your Kubernetes configuration by using the Kubernetes API to add your own Kubernetes standard to Jina.
 
 ````{admonition} Hint
 :class: hint
-We recommend dumping the Kubernetes configuration files and then editing the files to suit your needs.
+We recommend you dump the Kubernetes configuration files and then edit them to suit your needs.
 ````
 
 Here are possible configuration options you may need to add or change
@@ -61,14 +59,13 @@ Here are possible configuration options you may need to add or change
 
 
 (service-mesh-k8s)=
-## Required Service Mesh 
+## Required service mesh
 
 ```{caution}
 A Service Mesh is required to be installed and correctly configured in the K8s cluster in which your deployed your Flow.
 ```
 
-Service meshes work by attaching a tiny proxy to each of your Kubernetes pods, allowing for smart rerouting, load balancing,
-request retrying, and host of other [features](https://linkerd.io/2.11/features/).
+Service meshes work by attaching a tiny proxy to each of your Kubernetes Pods, allowing for smart rerouting, load balancing, request retrying, and host of [other features](https://linkerd.io/2.11/features/).
 
 Jina relies on a service mesh to load balance requests between replicas of the same Executor.
 You can use your favourite Kubernetes service mesh in combination with your Jina Flow, but the configuration files
@@ -79,7 +76,7 @@ generated by `to_kubernetes_config()` already include all necessary annotations 
 You can use any service mesh with Jina, but Jina Kubernetes configurations come with Linkerd annotations out of the box.
 ````
 
-To use Linkerd you can follow the [install the Linkerd CLI](https://linkerd.io/2.11/getting-started/).
+To use Linkerd you can follow the [install the Linkerd CLI guide](https://linkerd.io/2.11/getting-started/).
 
 ````{admonition} Caution
 :class: caution
@@ -89,7 +86,7 @@ Be careful about setting up service mesh level retries in combination with Jina,
 Jina's own {ref}`retry policy <flow-error-handling>`.
 
 Instead, you can disable Jina level retries by setting `Flow(retries=0)` in Python, or `retries: 0` in the Flow
-YAML `with` block.
+YAML's `with` block.
 ````
 
 
@@ -103,10 +100,10 @@ Jina supports two ways of scaling:
 
 Check {ref}`here <scale-out>` for more information about these scaling mechanisms.
 
-For shards, Jina creates a separate Deployment in Kubernetes per Shard.
+For shards, Jina creates one separate Deployment in Kubernetes per Shard.
 Setting `f.add(..., shards=num_shards)` is sufficient to create a corresponding Kubernetes configuration.
 
-For replicas, Jina uses [Kubernetes native replica scaling](https://kubernetes.io/docs/tutorials/kubernetes-basics/scale/scale-intro/) and **relies on a service mesh** to load balance requests between replicas of the same Executor.
+For replicas, Jina uses [Kubernetes native replica scaling](https://kubernetes.io/docs/tutorials/kubernetes-basics/scale/scale-intro/) and **relies on a service mesh** to load-balance requests between replicas of the same Executor.
 Without a service mesh installed in your Kubernetes cluster, all traffic will be routed to the same replica.
 
 ````{admonition} See Also
@@ -152,5 +149,5 @@ JCloud is a free CPU/GPU hosting platform for Jina projects.
 - {ref}`Step by Step deployement of a Jina Flow on K8s <kubernetes>`
 - {ref}`Flow export documentation <kubernetes-export>`
 - {meth}`~jina.Flow.to_kubernetes_yaml`
-- {ref}`Documentation on deploying a standalone Executor on K8s <kubernetes-executor>`
+- {ref}`Deploy a standalone Executor on K8s <kubernetes-executor>`
 - [Kubernetes Documentation](https://kubernetes.io/docs/home/)
