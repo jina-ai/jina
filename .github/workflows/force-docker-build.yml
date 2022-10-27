@@ -37,6 +37,8 @@ jobs:
         py_version: [ "3.7", "3.8", "3.9" ]  # default "" = 3.7
     steps:
       - uses: actions/checkout@v2.5.0
+        with:
+          fetch-depth: 100
       - name: Set envs and versions
         run: |
           DEFAULT_PY_VERSION="3.7"
@@ -69,6 +71,7 @@ jobs:
               PIP_TAG=-${PIP_TAG}
           fi
           
+          git fetch --depth=1 origin +refs/tags/*:refs/tags/*
           LAST_VER_TAG=$(git tag -l | sort -V | tail -n1)
           PRE_VERSION=-dev$(git rev-list $LAST_VER_TAG..HEAD --count)
 
