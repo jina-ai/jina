@@ -64,7 +64,7 @@ Here are possible configuration options you may need to add or change
 (service-mesh-k8s)=
 ## Required Service Mesh 
 
-```caution
+```{caution}
 A Service Mesh is required to be installed and correctly configured in the K8s clusteri in which your deployed your Flow.
 ```
 
