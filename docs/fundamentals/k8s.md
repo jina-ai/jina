@@ -129,6 +129,27 @@ You can use a custom Docker image for the Gateway deployment by setting the envr
 ````
 
 
+## Deploying On Jina AI Cloud
+
+Jina AI host its own Cloud based on Kubernetes cluster to manage your Flow:
+
+```{hint}
+Check out {ref}`jcloud` if you want a **one-click** solution to deploy and host Jina, leveraging a cloud-native stack of Kubernetes, Prometheus and Grafana, **without worrying about provisioning**.
+```
+
+:::::{grid} 2
+:gutter: 3
+
+::::{grid-item-card} {octicon}`cpu;1.5em` Deploy a Flow to JCloud
+:link: fundamentals/jcloud/index
+:link-type: doc
+:class-card: color-gradient-card-2
+
+JCloud is a free CPU/GPU hosting platform for Jina projects.
+::::
+:::::
+
+
 
 ## See further
 - {ref}`Step by Step deployement of a Jina Flow on K8s <kubernetes>`

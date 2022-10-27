@@ -2,7 +2,7 @@
 # Deploy with Kubernetes
 
 
-```{tip}
+```{hint}
 This guide is designed for users who want to **manually** deploy a Jina project on Kubernetes.
 
 Check out {ref}`jcloud` if you want a **one-click** solution to deploy and host Jina, leveraging a cloud-native stack of Kubernetes, Prometheus and Grafana, **without worrying about provisioning**.
