@@ -14,7 +14,7 @@ connecting them together by passing the right set of parameters.
 
 
 ```{hint}
-Manually building these Kubernetes YAML object is long and cumbersome. Therefore we provide a helper function{meth}`~jina.Flow.to_kubernetes_yaml()` that does most of this
+Manually building these Kubernetes YAML object is long and cumbersome. Therefore we provide a helper function {meth}`~jina.Flow.to_kubernetes_yaml` that does most of this
 translation work automatically. 
 ```
 
@@ -36,7 +36,7 @@ This means that while Jina generates configurations for you that run out of the 
 always see them as just a starting point to get you off the ground.
 
 ```{hint}
-The export funciton{meth}`~jina.Flow.to_kubernetes_yaml()` is a helper function to get your stared off the ground. **There are meant to be updated and adapted to every use case**
+The export funciton{meth}`~jina.Flow.to_kubernetes_yaml` is a helper function to get your stared off the ground. **There are meant to be updated and adapted to every use case**
 ```
 ````{admonition} Matching jina versions
 :class: caution
@@ -155,6 +155,6 @@ JCloud is a free CPU/GPU hosting platform for Jina projects.
 ## See further
 - {ref}`Step by Step deployement of a Jina Flow on K8s <kubernetes>`
 - {ref}`Flow export documentation <kubernetes-export>`
--{meth}`~jina.Flow.to_kubernetes_yaml()`
+-{meth}`~jina.Flow.to_kubernetes_yaml`
 - {ref}`Documentation on deploying a standalone Executor on K8s <kubernetes-executor>`
 - [Kubernetes Documentation](https://kubernetes.io/docs/home/)
