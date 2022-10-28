@@ -265,7 +265,7 @@ class Flow(
         :param native: If set, only native Executors is allowed, and the Executor is always run inside WorkerRuntime.
         :param no_crud_endpoints: If set, `/index`, `/search`, `/update`, `/delete` endpoints are removed from HTTP interface.
 
-                  Any executor that has `@requests(on=...)` bind with those values will receive data requests.
+                  Any executor that has `@requests(on=...)` bound with those values will receive data requests.
         :param no_debug_endpoints: If set, `/status` `/post` endpoints are removed from HTTP interface.
         :param output_array_type: The type of array `tensor` and `embedding` will be serialized to.
 
@@ -469,7 +469,7 @@ class Flow(
         :param native: If set, only native Executors is allowed, and the Executor is always run inside WorkerRuntime.
         :param no_crud_endpoints: If set, `/index`, `/search`, `/update`, `/delete` endpoints are removed from HTTP interface.
 
-                  Any executor that has `@requests(on=...)` bind with those values will receive data requests.
+                  Any executor that has `@requests(on=...)` bound with those values will receive data requests.
         :param no_debug_endpoints: If set, `/status` `/post` endpoints are removed from HTTP interface.
         :param output_array_type: The type of array `tensor` and `embedding` will be serialized to.
 

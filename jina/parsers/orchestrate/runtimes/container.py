@@ -46,7 +46,7 @@ Note,
         '--gpus',
         type=str,
         help='''
-    This argument allows dockerized Jina executor discover local gpu devices.
+    This argument allows dockerized Jina pods to discover local gpu devices.
 
     Note, 
     - To access all gpus, use `--gpus all`.
@@ -61,5 +61,5 @@ Note,
         '--disable-auto-volume',
         action='store_true',
         default=False,
-        help='Do not automatically mount a volume for dockerized Executors.',
+        help='Do not automatically mount a volume for dockerized pod.',
     )
