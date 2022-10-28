@@ -146,3 +146,10 @@ def mixin_scalable_deployment_parser(parser):
         default=1,
         help='The number of replicas in the deployment',
     )
+
+    gp.add_argument(
+        '--native',
+        action='store_true',
+        default=False,
+        help='If set, only native Executors is allowed, and the Executor is always run inside WorkerRuntime.',
+    )

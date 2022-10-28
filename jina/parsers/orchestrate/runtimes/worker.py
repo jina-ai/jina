@@ -74,13 +74,6 @@ which should be structured as a python package. For more details, please see the
     )
 
     gp.add_argument(
-        '--native',
-        action='store_true',
-        default=False,
-        help='If set, only native Executors is allowed, and the Executor is always run inside WorkerRuntime.',
-    )
-
-    gp.add_argument(
         '--output-array-type',
         type=str,
         default=None,
