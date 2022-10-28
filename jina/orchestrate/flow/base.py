@@ -218,7 +218,7 @@ class Flow(
         :param deployments_disable_reduce: list JSON disabling the built-in merging mechanism for each Deployment listed
         :param deployments_metadata: JSON dictionary with the request metadata for each Deployment
         :param description: The description of this HTTP server. It will be used in automatics docs such as Swagger UI.
-        :param disable_auto_volume: Do not automatically mount a volume for dockerized pod.
+        :param disable_auto_volume: Do not automatically mount a volume for dockerized Gateways.
         :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker '
           container.
 
@@ -228,7 +228,7 @@ class Flow(
         :param expose_endpoints: A JSON string that represents a map from executor endpoints (`@requests(on=...)`) to HTTP endpoints.
         :param expose_graphql_endpoint: If set, /graphql endpoint is added to HTTP interface.
         :param floating: If set, the current Pod/Deployment can not be further chained, and the next `.add()` will chain after the last Pod/Deployment not this current one.
-        :param gpus: This argument allows dockerized Jina pods to discover local gpu devices.
+        :param gpus: This argument allows dockerized Jina Gateways to discover local gpu devices.
 
               Note,
               - To access all gpus, use `--gpus all`.
@@ -405,7 +405,7 @@ class Flow(
         :param deployments_disable_reduce: list JSON disabling the built-in merging mechanism for each Deployment listed
         :param deployments_metadata: JSON dictionary with the request metadata for each Deployment
         :param description: The description of this HTTP server. It will be used in automatics docs such as Swagger UI.
-        :param disable_auto_volume: Do not automatically mount a volume for dockerized pod.
+        :param disable_auto_volume: Do not automatically mount a volume for dockerized Gateways.
         :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker '
           container.
 
@@ -415,7 +415,7 @@ class Flow(
         :param expose_endpoints: A JSON string that represents a map from executor endpoints (`@requests(on=...)`) to HTTP endpoints.
         :param expose_graphql_endpoint: If set, /graphql endpoint is added to HTTP interface.
         :param floating: If set, the current Pod/Deployment can not be further chained, and the next `.add()` will chain after the last Pod/Deployment not this current one.
-        :param gpus: This argument allows dockerized Jina pods to discover local gpu devices.
+        :param gpus: This argument allows dockerized Jina Gateways to discover local gpu devices.
 
               Note,
               - To access all gpus, use `--gpus all`.
@@ -918,7 +918,7 @@ class Flow(
 
         :param compression: The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.
         :param connection_list: dictionary JSON with a list of connections to configure
-        :param disable_auto_volume: Do not automatically mount a volume for dockerized pod.
+        :param disable_auto_volume: Do not automatically mount a volume for dockerized Executors.
         :param disable_reduce: Disable the built-in reduce mechanism, set this if the reduction is to be handled by the Executor connected to this Head
         :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker '
           container.
@@ -930,7 +930,7 @@ class Flow(
         :param external: The Deployment will be considered an external Deployment that has been started independently from the Flow.This Deployment will not be context managed by the Flow.
         :param floating: If set, the current Pod/Deployment can not be further chained, and the next `.add()` will chain after the last Pod/Deployment not this current one.
         :param force_update: If set, always pull the latest Hub Executor bundle even it exists on local
-        :param gpus: This argument allows dockerized Jina pods to discover local gpu devices.
+        :param gpus: This argument allows dockerized Jina Executors to discover local gpu devices.
 
               Note,
               - To access all gpus, use `--gpus all`.
@@ -1074,7 +1074,7 @@ class Flow(
 
         :param compression: The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.
         :param connection_list: dictionary JSON with a list of connections to configure
-        :param disable_auto_volume: Do not automatically mount a volume for dockerized pod.
+        :param disable_auto_volume: Do not automatically mount a volume for dockerized Executors.
         :param disable_reduce: Disable the built-in reduce mechanism, set this if the reduction is to be handled by the Executor connected to this Head
         :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker '
           container.
@@ -1086,7 +1086,7 @@ class Flow(
         :param external: The Deployment will be considered an external Deployment that has been started independently from the Flow.This Deployment will not be context managed by the Flow.
         :param floating: If set, the current Pod/Deployment can not be further chained, and the next `.add()` will chain after the last Pod/Deployment not this current one.
         :param force_update: If set, always pull the latest Hub Executor bundle even it exists on local
-        :param gpus: This argument allows dockerized Jina pods to discover local gpu devices.
+        :param gpus: This argument allows dockerized Jina Executors to discover local gpu devices.
 
               Note,
               - To access all gpus, use `--gpus all`.
