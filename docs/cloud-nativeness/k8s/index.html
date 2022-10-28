@@ -4,15 +4,15 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-<meta property="og:title" content="Deploy with Docker Compose" />
+<meta property="og:title" content=" Kubernetes Support" />
   
 <meta property="og:type" content="website" />
   
-<meta property="og:url" content="https://docs.jina.ai/how-to/docker-compose/" />
+<meta property="og:url" content="https://docs.jina.ai/cloud-nativeness/k8s/" />
   
 <meta property="og:site_name" content="Jina 3.11.1 Documentation" />
   
-<meta property="og:description" content="One of the simplest ways to prototype or serve in production is to run your Flow with docker-compose. A Flow is composed of Executor s which run Python code that operates on DocumentArray. These Executors live in different runtimes depending on how you want to deploy your Flow. By default, if you..." />
+<meta property="og:description" content="Jina is a cloud-native framework and therefore runs natively and easily on Kubernetes. Deploying a Jina Flow on Kubernetes is actually the recommended way to use Jina in production. A Flow is composed of different microservices called Executor s which natively run in containers. This means that K..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
@@ -35,11 +35,11 @@
 </script>
 
 <script async defer src="https://buttons.github.io/buttons.js"></script>
-    <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="Deploy on Kubernetes" href="../kubernetes/" /><link rel="prev" title="Include external Executors in a Flow" href="../external-executor/" />
-        <link rel="canonical" href="https://docs.jina.ai/how-to/docker-compose.html" />
+    <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="Deploy on Kubernetes" href="../kubernetes/" /><link rel="prev" title="Include external Executors in a Flow" href="../../how-to/external-executor/" />
+        <link rel="canonical" href="https://docs.jina.ai/cloud-nativeness/k8s.html" />
 
     <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
-        <title>Deploy with Docker Compose - Jina 3.11.1 documentation</title>
+        <title>Kubernetes Support - Jina 3.11.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -48,7 +48,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     <link rel="stylesheet" type="text/css" href="../../_static/main.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/docbot.css" />
-    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" />
     
     
 
@@ -250,7 +250,7 @@
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
     <p class="caption" role="heading"><span class="caption-text">Introduction</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../get-started/what-is-cross-modal-multi-modal/">What is Cross-Modal &amp; Multi-Modal?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../get-started/what-is-cross-modal-multi-modal/">What is Multimodal?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../get-started/what-is-jina/">What is Jina?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../get-started/comparing-alternatives/">Comparing to Alternatives</a></li>
 </ul>
@@ -266,7 +266,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../get-started/create-app/"><svg aria-hidden="true" class="sd-octicon sd-octicon-milestone" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M7.75 0a.75.75 0 01.75.75V3h3.634c.414 0 .814.147 1.13.414l2.07 1.75a1.75 1.75 0 010 2.672l-2.07 1.75a1.75 1.75 0 01-1.13.414H8.5v5.25a.75.75 0 11-1.5 0V10H2.75A1.75 1.75 0 011 8.25v-3.5C1 3.784 1.784 3 2.75 3H7V.75A.75.75 0 017.75 0zm0 8.5h4.384a.25.25 0 00.161-.06l2.07-1.75a.25.25 0 000-.38l-2.07-1.75a.25.25 0 00-.161-.06H2.75a.25.25 0 00-.25.25v3.5c0 .138.112.25.25.25h5z" fill-rule="evenodd"></path></svg> Create First Project</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
-<ul class="current">
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../../fundamentals/architecture-overview/">Basic Concepts</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/executor/">Executor</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-api/">Basics</a></li>
@@ -298,7 +298,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/client/instrumenting-client/">Instrumentation</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../fundamentals/k8s/">Kubernetes Support</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../jina-ai-cloud/"><svg aria-hidden="true" class="sd-octicon sd-octicon-flame" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M7.998 14.5c2.832 0 5-1.98 5-4.5 0-1.463-.68-2.19-1.879-3.383l-.036-.037c-1.013-1.008-2.3-2.29-2.834-4.434-.322.256-.63.579-.864.953-.432.696-.621 1.58-.046 2.73.473.947.67 2.284-.278 3.232-.61.61-1.545.84-2.403.633a2.788 2.788 0 01-1.436-.874A3.21 3.21 0 003 10c0 2.53 2.164 4.5 4.998 4.5zM9.533.753C9.496.34 9.16.009 8.77.146 7.035.75 4.34 3.187 5.997 6.5c.344.689.285 1.218.003 1.5-.419.419-1.54.487-2.04-.832-.173-.454-.659-.762-1.035-.454C2.036 7.44 1.5 8.702 1.5 10c0 3.512 2.998 6 6.498 6s6.5-2.5 6.5-6c0-2.137-1.128-3.26-2.312-4.438-1.19-1.184-2.436-2.425-2.653-4.81z" fill-rule="evenodd"></path></svg> Jina AI Cloud</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../jina-ai-cloud/login/">Login &amp; Token Management</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../fundamentals/executor/hub/">Executor Hub</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -308,24 +307,33 @@
 <li class="toctree-l3"><a class="reference internal" href="../../fundamentals/executor/hub/use-hub-executor/">Use</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../fundamentals/jcloud/">JCloud Hosting</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../fundamentals/jcloud/">Jina AI Cloud Hosting</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../fundamentals/jcloud/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l1 current has-children"><a class="reference internal" href="../"><svg aria-hidden="true" class="sd-octicon sd-octicon-book" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M0 1.75A.75.75 0 01.75 1h4.253c1.227 0 2.317.59 3 1.501A3.744 3.744 0 0111.006 1h4.245a.75.75 0 01.75.75v10.5a.75.75 0 01-.75.75h-4.507a2.25 2.25 0 00-1.591.659l-.622.621a.75.75 0 01-1.06 0l-.622-.621A2.25 2.25 0 005.258 13H.75a.75.75 0 01-.75-.75V1.75zm8.755 3a2.25 2.25 0 012.25-2.25H14.5v9h-3.757c-.71 0-1.4.201-1.992.572l.004-7.322zm-1.504 7.324l.004-5.073-.002-2.253A2.25 2.25 0 005.003 2.5H1.5v9h3.757a3.75 3.75 0 011.994.574z" fill-rule="evenodd"></path></svg> How-To</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../realtime-streaming/">Build real-time streaming service</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../flow-switch/">Conditional route request inside a Flow</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../scale-out/">Scale out with replicas and shards</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../how-to/"><svg aria-hidden="true" class="sd-octicon sd-octicon-book" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M0 1.75A.75.75 0 01.75 1h4.253c1.227 0 2.317.59 3 1.501A3.744 3.744 0 0111.006 1h4.245a.75.75 0 01.75.75v10.5a.75.75 0 01-.75.75h-4.507a2.25 2.25 0 00-1.591.659l-.622.621a.75.75 0 01-1.06 0l-.622-.621A2.25 2.25 0 005.258 13H.75a.75.75 0 01-.75-.75V1.75zm8.755 3a2.25 2.25 0 012.25-2.25H14.5v9h-3.757c-.71 0-1.4.201-1.992.572l.004-7.322zm-1.504 7.324l.004-5.073-.002-2.253A2.25 2.25 0 005.003 2.5H1.5v9h3.757a3.75 3.75 0 011.994.574z" fill-rule="evenodd"></path></svg> How-To</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/realtime-streaming/">Build real-time streaming service</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/flow-switch/">Conditional route request inside a Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/scale-out/">Scale out with replicas and shards</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/clean-code/">Write clean &amp; efficient code</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../google-colab/">Run on Google Colab with GPU/TPU</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../gpu-executor/">Build a GPU Executor</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../external-executor/">Include external Executors in a Flow</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Deploy with Docker Compose</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/google-colab/">Run on Google Colab with GPU/TPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/gpu-executor/">Build a GPU Executor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/external-executor/">Include external Executors in a Flow</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Cloud Native</span></p>
+<ul class="current">
+<li class="toctree-l1 current has-children current-page"><a class="current reference internal" href="#"><span class="fas fa-dharmachakra"></span> Kubernetes Support</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../kubernetes/">Deploy on Kubernetes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../opentelemetry/">Observability and Instrumentation with OpenTelemetry and Jina</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../opentelemetry-migration/">Migrate from Prometheus/Grafana to OpenTelemetry/Prometheus/Grafana</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../docker-compose/"><span class="fab fa-docker"></span> Docker Compose Support</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../opentelemetry/"><svg aria-hidden="true" class="sd-octicon sd-octicon-telescope-fill" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M8.531 10.21a.75.75 0 01.944.253l2.644 3.864a.75.75 0 11-1.238.847L9 12.424v2.826a.75.75 0 01-1.5 0v-2.826l-1.881 2.75a.75.75 0 01-1.238-.848l2.048-2.992a.75.75 0 01.293-.252l1.81-.871zM11.905.42a1.5 1.5 0 012.144.49l1.692 2.93a1.5 1.5 0 01-.649 2.102L2.895 11.815a1.5 1.5 0 01-1.95-.602l-.68-1.176a1.5 1.5 0 01.455-1.99L11.905.422zM3.279 8.119l.835 1.445 1.355-.653-.947-1.64-1.243.848zm7.728-1.874L9.6 3.808l1.243-.848 1.52 2.631-1.356.653z" fill-rule="evenodd"></path></svg> OpenTelemetry Support</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../opentelemetry-migration/">Migrate from Prometheus/Grafana to OpenTelemetry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../monitoring/">Prometheus/Grafana Support (Legacy)</a></li>
 </ul>
 </li>
 </ul>
@@ -418,167 +426,122 @@
                     </label>
                 </div>
                 <article role="main">
-                    <section id="deploy-with-docker-compose">
-<span id="docker-compose"></span><h1>Deploy with Docker Compose<a class="headerlink" href="#deploy-with-docker-compose" title="Permalink to this heading">#</a></h1>
-<p>One of the simplest ways to prototype or serve in
-production is to run your <a class="reference internal" href="../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> with <code class="docutils literal notranslate"><span class="pre">docker-compose</span></code>.</p>
-<p>A <a class="reference internal" href="../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> is composed of <a class="reference internal" href="../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>s which run Python code
-that operates on <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code>. These <code class="docutils literal notranslate"><span class="pre">Executors</span></code> live in different runtimes depending on how you want to deploy
-your Flow.</p>
-<p>By default, if you are serving your Flow locally they live within processes. Nevertheless,
-because Jina is cloud native your Flow can easily manage Executors that live in containers and that are
-orchestrated by your favorite tools. One of the simplest is Docker Compose which is supported out of the box.</p>
-<p>You can deploy a Flow with Docker Compose in one line:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
-<span class="n">flow</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">(</span><span class="o">...</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="o">...</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
-<span class="hll"><span class="n">flow</span><span class="o">.</span><span class="n">to_docker_compose_yaml</span><span class="p">(</span><span class="s1">&#39;docker-compose.yml&#39;</span><span class="p">)</span>
-</span></pre></div>
+                    <section id="kubernetes-support">
+<span id="kubernetes-docs"></span><h1><span class="fas fa-dharmachakra"></span> Kubernetes Support<a class="headerlink" href="#kubernetes-support" title="Permalink to this heading">#</a></h1>
+<div class="toctree-wrapper compound">
 </div>
-<p>Jina generates a <code class="docutils literal notranslate"><span class="pre">docker-compose.yml</span></code> configuration file corresponding with your Flow. You can use this directly with
-Docker Compose, avoiding the overhead of manually defining all of your Flow’s services.</p>
-<div class="caution admonition">
-<p class="admonition-title">Use Docker-based Executors</p>
-<p>All Executors in the Flow should be used with <code class="docutils literal notranslate"><span class="pre">jinahub+docker://...</span></code> or <code class="docutils literal notranslate"><span class="pre">docker://...</span></code>.</p>
+<p>Jina is a cloud-native framework and therefore runs natively and easily on Kubernetes.
+Deploying a Jina Flow on Kubernetes is actually the recommended way to use Jina in production.</p>
+<p>A <a class="reference internal" href="../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> is composed of different microservices called <a class="reference internal" href="../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>s which natively run in containers. This means that Kubernetes can natively take over the lifetime management of Executors.</p>
+<p>Deploying a <a class="reference internal" href="../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> on Kubernetes means wrapping these microservice containers in the appropriate K8s abstraction (Deployment, StatefulSet, and so on), exposing them internally via K8s service and connecting them together by passing the right set of parameters.</p>
+<section id="automatically-translate-a-flow-to-kubernetes-concept">
+<h2>Automatically translate a Flow to Kubernetes concept<a class="headerlink" href="#automatically-translate-a-flow-to-kubernetes-concept" title="Permalink to this heading">#</a></h2>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>Manually building these Kubernetes YAML object is long and cumbersome. Therefore we provide a helper function <a class="reference internal" href="../../api/jina/#jina.Flow.to_kubernetes_yaml" title="jina.Flow.to_kubernetes_yaml"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_kubernetes_yaml()</span></code></a> that does most of this
+translation work automatically.</p>
 </div>
-<div class="caution admonition">
-<p class="admonition-title">Health check available from 3.1.3</p>
-<p>If you use Executors that rely on Docker images built with a version of Jina prior to 3.1.3, remove the
-health check from the dumped YAML file, otherwise your Docker Compose services will
-always be “unhealthy.”</p>
+<p>This helper function can be called from:</p>
+<ul class="simple">
+<li><p>Jina’s Python interface to translate a Flow defined in Python to K8s YAML files</p></li>
+<li><p>Jina’s CLI interface to export a YAML Flow to K8s YAML files</p></li>
+</ul>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>More detail in the <a class="reference internal" href="../../fundamentals/flow/create-flow/#kubernetes-export"><span class="std std-ref">Flow export documentation</span></a></p>
+</div>
+</section>
+<section id="extra-kubernetes-options">
+<h2>Extra Kubernetes options<a class="headerlink" href="#extra-kubernetes-options" title="Permalink to this heading">#</a></h2>
+<p>In general, Jina follows a single principle when it comes to deploying in Kubernetes:
+You, the user, know your use case and requirements the best.
+This means that, while Jina generates configurations for you that run out of the box, as a professional user you should always see them as just a starting point to get you off the ground.</p>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>The export funciton<a class="reference internal" href="../../api/jina/#jina.Flow.to_kubernetes_yaml" title="jina.Flow.to_kubernetes_yaml"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_kubernetes_yaml()</span></code></a> is a helper function to get your stared off the ground. <strong>There are meant to be updated and adapted to every use case</strong></p>
 </div>
 <div class="caution admonition">
 <p class="admonition-title">Matching Jina versions</p>
-<p>If you change the Docker images in your Docker Compose generated file, ensure that all services included in
-the Gateway are built with the same Jina version to guarantee compatibility.</p>
+<p>If you change the Docker images for <a class="reference internal" href="../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a> and <a class="reference internal" href="../../api/jina/#jina.Gateway" title="jina.Gateway"><code class="xref py py-class docutils literal notranslate"><span class="pre">Gateway</span></code></a> in your Kubernetes-generated file, ensure that all of them are built with the same Jina version to guarantee compatibility.</p>
 </div>
-<section id="example-index-and-search-images-using-clipencoder-and-annliteindexer">
-<h2>Example: Index and search images using CLIPEncoder and ANNLiteIndexer<a class="headerlink" href="#example-index-and-search-images-using-clipencoder-and-annliteindexer" title="Permalink to this heading">#</a></h2>
-<p>Install <a class="reference external" href="https://docs.docker.com/compose/install/"><code class="docutils literal notranslate"><span class="pre">Docker</span> <span class="pre">Compose</span></code></a> locally to follow this how-to.</p>
-<p>This example shows how to build and deploy a Flow with Docker Compose, using <a class="reference external" href="https://cloud.jina.ai/executor/0hnlmu3q"><code class="docutils literal notranslate"><span class="pre">CLIPImageEncoder</span></code></a>
-as an image encoder and <a class="reference external" href="https://cloud.jina.ai/executor/7yypg8qk"><code class="docutils literal notranslate"><span class="pre">ANNLiteIndexer</span></code></a> as an indexer to perform fast nearest
-neighbor retrieval on image embeddings.</p>
-<section id="deploy-the-flow">
-<h3>Deploy the Flow<a class="headerlink" href="#deploy-the-flow" title="Permalink to this heading">#</a></h3>
-<p>First define the Flow and generate the Docker Compose YAML configuration:</p>
-<div class="tab-set docutils">
-<input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">YAML</label><div class="tab-content docutils">
-<p>In a <code class="docutils literal notranslate"><span class="pre">flow.yml</span></code> file :</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
-<span class="nt">with</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8080</span><span class="w"></span>
-<span class="w">  </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http</span><span class="w"></span>
-<span class="nt">executors</span><span class="p">:</span><span class="w"></span>
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">encoder</span><span class="w"></span>
-<span class="w">  </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinahub+docker://CLIPEncoder</span><span class="w"></span>
-<span class="w">  </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span><span class="w"></span>
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">indexer</span><span class="w"></span>
-<span class="w">  </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinahub+docker://AnnLiteIndexer</span><span class="w"></span>
-<span class="w">  </span><span class="nt">uses_with</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">dim</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">512</span><span class="w"></span>
-<span class="w">  </span><span class="nt">shards</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span><span class="w"></span>
-</pre></div>
-</div>
-<p>Then in a shell run:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>jina <span class="nb">export</span> docker-compose flow.yml docker-compose.yml 
-</pre></div>
-</div>
-</div>
-<input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--2">Python</label><div class="tab-content docutils">
-<p>In python run</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
-
-<span class="n">flow</span> <span class="o">=</span> <span class="p">(</span>
-    <span class="n">Flow</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">8080</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="s1">&#39;http&#39;</span><span class="p">)</span>
-    <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;encoder&#39;</span><span class="p">,</span> <span class="n">uses</span><span class="o">=</span><span class="s1">&#39;jinahub+docker://CLIPEncoder&#39;</span><span class="p">,</span> <span class="n">replicas</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-    <span class="o">.</span><span class="n">add</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;indexer&#39;</span><span class="p">,</span>
-        <span class="n">uses</span><span class="o">=</span><span class="s1">&#39;jinahub+docker://AnnLiteIndexer&#39;</span><span class="p">,</span>
-        <span class="n">uses_with</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;dim&#39;</span><span class="p">:</span> <span class="mi">512</span><span class="p">},</span>
-        <span class="n">shards</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-    <span class="p">)</span>
-<span class="p">)</span>
-<span class="n">flow</span><span class="o">.</span><span class="n">to_docker_compose_yaml</span><span class="p">(</span><span class="s1">&#39;docker-compose.yml&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-</div>
+<p>You can’t add basic Kubernetes features like <code class="docutils literal notranslate"><span class="pre">Secrets</span></code>, <code class="docutils literal notranslate"><span class="pre">ConfigMap</span></code> or <code class="docutils literal notranslate"><span class="pre">Labels</span></code> via the Pythonic or YAML interface. This is intentional and doesn’t mean that we don’t support these features. On the contrary, we let you fully express your Kubernetes configuration by using the Kubernetes API to add your own Kubernetes standard to Jina.</p>
 <div class="hint admonition">
 <p class="admonition-title">Hint</p>
-<p>You can use a custom jina Docker image for the Gateway service by setting the envrironment variable <code class="docutils literal notranslate"><span class="pre">JINA_GATEWAY_IMAGE</span></code> to the desired image before generating the configuration.</p>
+<p>We recommend you dump the Kubernetes configuration files and then edit them to suit your needs.</p>
 </div>
-<p>let’s take a look at the generated compose file:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;3.3&#39;</span><span class="w"></span>
-<span class="nn">...</span><span class="w"></span>
-<span class="nt">services</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">encoder-rep-0</span><span class="p">:</span><span class="w">  </span><span class="c1"># # # # # # # # # # #          </span><span class="w"></span>
-<span class="w">                  </span><span class="c1">#     Encoder       #</span><span class="w"></span>
-<span class="w">  </span><span class="nt">encoder-rep-1</span><span class="p">:</span><span class="w">  </span><span class="c1"># # # # # # # # # # #</span><span class="w"></span>
-
-<span class="w">  </span><span class="nt">indexer-head</span><span class="p">:</span><span class="w">   </span><span class="c1"># # # # # # # # # # #          </span><span class="w"></span>
-<span class="w">                  </span><span class="c1">#                   #</span><span class="w"></span>
-<span class="w">  </span><span class="nt">indexer-0</span><span class="p">:</span><span class="w">      </span><span class="c1">#     Indexer       #</span><span class="w"></span>
-<span class="w">                  </span><span class="c1">#                   #</span><span class="w"></span>
-<span class="w">  </span><span class="nt">indexer-1</span><span class="p">:</span><span class="w">      </span><span class="c1"># # # # # # # # # # #</span><span class="w"></span>
-
-<span class="w">  </span><span class="nt">gateway</span><span class="p">:</span><span class="w"> </span>
-<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">...</span><span class="w"></span>
-<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">ports</span><span class="p p-Indicator">:</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8080:8080</span><span class="w"></span>
-</pre></div>
-</div>
-<div class="caution admonition tip">
-<p class="admonition-title">Tip</p>
-<p>The default compose file generated by the Flow contains no special configuration or settings. You may want to
-adapt it to your own needs.</p>
-</div>
-<p>You can see that six services are created:</p>
+<p>Here are possible configuration options you may need to add or change</p>
 <ul class="simple">
-<li><p>1 for the <strong>Gateway</strong> which is the entrypoint of the <strong>Flow</strong>.</p></li>
-<li><p>2 associated with the encoder for the two Replicas.</p></li>
-<li><p>3 associated with the indexer, one for the Head and two for the Shards.</p></li>
+<li><p>Add labels <code class="docutils literal notranslate"><span class="pre">selector</span></code>s to the Deployments to suit your case</p></li>
+<li><p>Add <code class="docutils literal notranslate"><span class="pre">requests</span></code> and <code class="docutils literal notranslate"><span class="pre">limits</span></code> for the resources of the different Pods</p></li>
+<li><p>Set up persistent volume storage to save your data on disk</p></li>
+<li><p>Pass custom configuration to your Executor with <code class="docutils literal notranslate"><span class="pre">ConfigMap</span></code></p></li>
+<li><p>Manage credentials of your Executor with secrets</p></li>
+<li><p>Edit the default rolling update configuration</p></li>
 </ul>
-<p>Now, you can deploy this Flow :</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker-compose -f docker-compose.yml up
-</pre></div>
+</section>
+<section id="required-service-mesh">
+<span id="service-mesh-k8s"></span><h2>Required service mesh<a class="headerlink" href="#required-service-mesh" title="Permalink to this heading">#</a></h2>
+<div class="admonition caution">
+<p class="admonition-title">Caution</p>
+<p>A Service Mesh is required to be installed and correctly configured in the K8s cluster in which your deployed your Flow.</p>
+</div>
+<p>Service meshes work by attaching a tiny proxy to each of your Kubernetes Pods, allowing for smart rerouting, load balancing, request retrying, and host of <a class="reference external" href="https://linkerd.io/2.11/features/">other features</a>.</p>
+<p>Jina relies on a service mesh to load balance requests between replicas of the same Executor.
+You can use your favourite Kubernetes service mesh in combination with your Jina Flow, but the configuration files
+generated by <code class="docutils literal notranslate"><span class="pre">to_kubernetes_config()</span></code> already include all necessary annotations for the <a class="reference external" href="https://linkerd.io">Linkerd service mesh</a>.</p>
+<div class="hint admonition">
+<p class="admonition-title">Hint</p>
+<p>You can use any service mesh with Jina, but Jina Kubernetes configurations come with Linkerd annotations out of the box.</p>
+</div>
+<p>To use Linkerd you can follow the <a class="reference external" href="https://linkerd.io/2.11/getting-started/">install the Linkerd CLI guide</a>.</p>
+<div class="caution admonition">
+<p class="admonition-title">Caution</p>
+<p>Many service meshes can perform retries themselves.
+Be careful about setting up service mesh level retries in combination with Jina, as it may lead to unwanted behaviour in combination with
+Jina’s own <a class="reference internal" href="../../fundamentals/flow/when-things-go-wrong/#flow-error-handling"><span class="std std-ref">retry policy</span></a>.</p>
+<p>Instead, you can disable Jina level retries by setting <code class="docutils literal notranslate"><span class="pre">Flow(retries=0)</span></code> in Python, or <code class="docutils literal notranslate"><span class="pre">retries:</span> <span class="pre">0</span></code> in the Flow
+YAML’s <code class="docutils literal notranslate"><span class="pre">with</span></code> block.</p>
 </div>
 </section>
-<section id="query-the-flow">
-<h3>Query the Flow<a class="headerlink" href="#query-the-flow" title="Permalink to this heading">#</a></h3>
-<p>Once we see that all the services in the Flow are ready, we can send index and search requests.</p>
-<p>First define a client:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina.clients</span> <span class="kn">import</span> <span class="n">Client</span>
-
-<span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;http://localhost:8080&#39;</span><span class="p">)</span>
-</pre></div>
+<section id="scaling-executors-replicas-and-shards">
+<span id="kubernetes-replicas"></span><h2>Scaling Executors: Replicas and shards<a class="headerlink" href="#scaling-executors-replicas-and-shards" title="Permalink to this heading">#</a></h2>
+<p>Jina supports two types of scaling:</p>
+<ul class="simple">
+<li><p><strong>Replicas</strong> can be used with any Executor type and are typically used for performance and availability.</p></li>
+<li><p><strong>Shards</strong> are used for partitioning data and should only be used with indexers since they store state.</p></li>
+</ul>
+<p>Check <a class="reference internal" href="../../how-to/scale-out/#scale-out"><span class="std std-ref">here</span></a> for more information about these scaling mechanisms.</p>
+<p>For shards, Jina creates one separate Deployment in Kubernetes per Shard.
+Setting <code class="docutils literal notranslate"><span class="pre">f.add(...,</span> <span class="pre">shards=num_shards)</span></code> is sufficient to create a corresponding Kubernetes configuration.</p>
+<p>For replicas, Jina uses <a class="reference external" href="https://kubernetes.io/docs/tutorials/kubernetes-basics/scale/scale-intro/">Kubernetes native replica scaling</a> and <strong>relies on a service mesh</strong> to load-balance requests between replicas of the same Executor.
+Without a service mesh installed in your Kubernetes cluster, all traffic will be routed to the same replica.</p>
+<div class="seealso admonition">
+<p class="admonition-title">See Also</p>
+<p>The impossibility of load balancing between different replicas is a limitation of Kubernetes in combination with gRPC.
+If you want to learn more about this limitation, see <a class="reference external" href="https://kubernetes.io/blog/2018/11/07/grpc-load-balancing-on-kubernetes-without-tears/">this</a> Kubernetes Blog post.</p>
 </div>
-<p>Then index the set of images we want to search:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
-
-<span class="n">da</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="o">.</span><span class="n">pull</span><span class="p">(</span><span class="s1">&#39;demo-da-images-jina&#39;</span><span class="p">,</span> <span class="n">show_progress</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-<span class="n">da_query</span> <span class="o">=</span> <span class="n">da</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># one document for query</span>
-<span class="n">da_index</span> <span class="o">=</span> <span class="n">da</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>  <span class="c1"># the rest is for indexing</span>
-
-<span class="n">indexed_docs</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="n">da_index</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Indexed Documents: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">indexed_docs</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>Indexed Documents: <span class="m">99</span>
-</pre></div>
-</div>
-<p>We indexed 99 Documents!</p>
-<p>Now we can search for the closest image to the query image:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">queried_docs</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="n">da_query</span><span class="p">)</span>
-
-<span class="n">matches</span> <span class="o">=</span> <span class="n">queried_docs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">matches</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Matched Documents: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">matches</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>Matched Documents: <span class="m">10</span>
-</pre></div>
-</div>
-<p>This gives us the list of the ten closest images to the query.</p>
 </section>
+<section id="scaling-the-gateway">
+<h2>Scaling the Gateway<a class="headerlink" href="#scaling-the-gateway" title="Permalink to this heading">#</a></h2>
+<p>The <a class="reference internal" href="../../fundamentals/gateway/#flow"><span class="std std-ref">Gateway</span></a> is responsible for providing the API of the <a class="reference internal" href="../../fundamentals/gateway/#flow"><span class="std std-ref">Flow</span></a>.
+If you have a large Flow with many Clients and many replicated Executors, the Gateway can become the bottleneck.
+In this case you can also scale up the Gateway deployment to be backed by multiple Kubernetes Pods.
+This is done by the regular means of Kubernetes: Either increase the number of replicas in the  <span class="xref std std-ref">generated yaml configuration files</span> or <a class="reference external" href="https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#scaling-a-deployment">add replicas while running</a>.
+To expose your Gateway replicas outside Kubernetes, you can add a load balancer as described <a class="reference internal" href="../kubernetes/#kubernetes-expose"><span class="std std-ref">here</span></a>.</p>
+<div class="hint admonition">
+<p class="admonition-title">Hint</p>
+<p>You can use a custom Docker image for the Gateway deployment by setting the envrironment variable <code class="docutils literal notranslate"><span class="pre">JINA_GATEWAY_IMAGE</span></code> to the desired image before generating the configuration.</p>
+</div>
+</section>
+<section id="see-also">
+<h2>See also<a class="headerlink" href="#see-also" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="../kubernetes/#kubernetes"><span class="std std-ref">Step by step deployment of a Jina Flow on Kubernetes</span></a></p></li>
+<li><p><a class="reference internal" href="../../fundamentals/flow/create-flow/#kubernetes-export"><span class="std std-ref">Export a Flow to Kubernetes</span></a></p></li>
+<li><p><a class="reference internal" href="../../api/jina/#jina.Flow.to_kubernetes_yaml" title="jina.Flow.to_kubernetes_yaml"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_kubernetes_yaml()</span></code></a></p></li>
+<li><p><a class="reference internal" href="../../fundamentals/executor/executor-serve/#kubernetes-executor"><span class="std std-ref">Deploy a standalone Executor on Kubernetes</span></a></p></li>
+<li><p><a class="reference external" href="https://kubernetes.io/docs/home/">Kubernetes Documentation</a></p></li>
+</ul>
 </section>
 </section>
 
@@ -596,7 +559,7 @@ adapt it to your own needs.</p>
                         </div>
                         <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
                     </a>
-                    <a class="prev-page" href="../external-executor/">
+                    <a class="prev-page" href="../../how-to/external-executor/">
                         <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
                         <div class="page-info">
                             <div class="context">
@@ -645,12 +608,13 @@ adapt it to your own needs.</p>
                 <div class="toc-tree-container">
                     <div class="toc-tree">
                         <ul>
-<li><a class="reference internal" href="#">Deploy with Docker Compose</a><ul>
-<li><a class="reference internal" href="#example-index-and-search-images-using-clipencoder-and-annliteindexer">Example: Index and search images using CLIPEncoder and ANNLiteIndexer</a><ul>
-<li><a class="reference internal" href="#deploy-the-flow">Deploy the Flow</a></li>
-<li><a class="reference internal" href="#query-the-flow">Query the Flow</a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#"><span class="fas fa-dharmachakra"></span> Kubernetes Support</a><ul>
+<li><a class="reference internal" href="#automatically-translate-a-flow-to-kubernetes-concept">Automatically translate a Flow to Kubernetes concept</a></li>
+<li><a class="reference internal" href="#extra-kubernetes-options">Extra Kubernetes options</a></li>
+<li><a class="reference internal" href="#required-service-mesh">Required service mesh</a></li>
+<li><a class="reference internal" href="#scaling-executors-replicas-and-shards">Scaling Executors: Replicas and shards</a></li>
+<li><a class="reference internal" href="#scaling-the-gateway">Scaling the Gateway</a></li>
+<li><a class="reference internal" href="#see-also">See also</a></li>
 </ul>
 </li>
 </ul>

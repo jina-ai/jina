@@ -1,5 +1,12 @@
 (kubernetes-docs)=
-# Kubernetes Support
+# {fas}`dharmachakra` Kubernetes Support
+
+```{toctree}
+:hidden:
+
+kubernetes
+```
+
 
 Jina is a cloud-native framework and therefore runs natively and easily on Kubernetes.
 Deploying a Jina Flow on Kubernetes is actually the recommended way to use Jina in production.
@@ -8,22 +15,6 @@ A {class}`~jina.Flow` is composed of different microservices called {class}`~jin
 
 Deploying a {class}`~jina.Flow` on Kubernetes means wrapping these microservice containers in the appropriate K8s abstraction (Deployment, StatefulSet, and so on), exposing them internally via K8s service and connecting them together by passing the right set of parameters.
 
-## Deploying on Jina AI Cloud
-
-Check out Jina AI Cloud {ref}`jcloud` if you want a **one-click** solution to deploy and host Jina, leveraging a cloud-native stack of Kubernetes, Prometheus and Grafana, **without worrying about provisioning**.
-
-:::::{grid} 2
-:gutter: 3
-
-::::{grid-item-card} {octicon}`cpu;1.5em` Deploy a Flow to JCloud
-:link: /fundamentals/jcloud/index
-:link-type: doc
-:class-card: color-gradient-card-2
-
-JCloud is a free CPU/GPU hosting platform for Jina projects.
-::::
-
-:::::
 
 ## Automatically translate a Flow to Kubernetes concept
 

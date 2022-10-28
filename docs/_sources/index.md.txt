@@ -147,6 +147,15 @@ jina-ai-cloud/index
 how-to/index
 ```
 
+```{toctree}
+:caption: Cloud Native
+:hidden:
+
+cloud-nativeness/k8s
+cloud-nativeness/docker-compose
+cloud-nativeness/opentelemetry
+```
+
 
 
 ```{toctree}
