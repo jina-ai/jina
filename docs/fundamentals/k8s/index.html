@@ -423,8 +423,24 @@
 <p>Jina is a cloud-native framework and therefore runs natively and easily on Kubernetes.
 Deploying a Jina Flow on Kubernetes is actually the recommended way to use Jina in production.</p>
 <p>A <a class="reference internal" href="../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> is composed of different microservices called <a class="reference internal" href="../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>s which natively run in containers. This means that Kubernetes can natively take over the lifetime management of Executors.</p>
-<p>Deploying a <a class="reference internal" href="../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> on Kubernetes means wrapping these microservice containers in the appropriate K8s abstraction (Deployment, StatefulSet, and so on), exposing them internally via K8s service and
-connecting them together by passing the right set of parameters.</p>
+<p>Deploying a <a class="reference internal" href="../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> on Kubernetes means wrapping these microservice containers in the appropriate K8s abstraction (Deployment, StatefulSet, and so on), exposing them internally via K8s service and connecting them together by passing the right set of parameters.</p>
+<section id="deploying-on-jina-ai-cloud">
+<h2>Deploying on Jina AI Cloud<a class="headerlink" href="#deploying-on-jina-ai-cloud" title="Permalink to this heading">#</a></h2>
+<p>Check out Jina AI Cloud <a class="reference internal" href="../jcloud/#jcloud"><span class="std std-ref">JCloud Hosting</span></a> if you want a <strong>one-click</strong> solution to deploy and host Jina, leveraging a cloud-native stack of Kubernetes, Prometheus and Grafana, <strong>without worrying about provisioning</strong>.</p>
+<div class="sd-container-fluid sd-sphinx-override sd-mb-4 docutils">
+<div class="sd-row sd-row-cols-2 sd-row-cols-xs-2 sd-row-cols-sm-2 sd-row-cols-md-2 sd-row-cols-lg-2 sd-g-3 sd-g-xs-3 sd-g-sm-3 sd-g-md-3 sd-g-lg-3 docutils">
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover color-gradient-card-2 docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-cpu" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M8.75 8a.75.75 0 00-.75.75v6.5c0 .414.336.75.75.75h6.5a.75.75 0 00.75-.75v-6.5a.75.75 0 00-.75-.75h-6.5zm.75 6.5v-5h5v5h-5z"></path><path fill-rule="evenodd" d="M15.25 1a.75.75 0 01.75.75V4h2.25c.966 0 1.75.784 1.75 1.75V8h2.25a.75.75 0 010 1.5H20v5h2.25a.75.75 0 010 1.5H20v2.25A1.75 1.75 0 0118.25 20H16v2.25a.75.75 0 01-1.5 0V20h-5v2.25a.75.75 0 01-1.5 0V20H5.75A1.75 1.75 0 014 18.25V16H1.75a.75.75 0 010-1.5H4v-5H1.75a.75.75 0 010-1.5H4V5.75C4 4.784 4.784 4 5.75 4H8V1.75a.75.75 0 011.5 0V4h5V1.75a.75.75 0 01.75-.75zm3 17.5a.25.25 0 00.25-.25V5.75a.25.25 0 00-.25-.25H5.75a.25.25 0 00-.25.25v12.5c0 .138.112.25.25.25h12.5z"></path></svg> Deploy a Flow to JCloud</div>
+<p class="sd-card-text">JCloud is a free CPU/GPU hosting platform for Jina projects.</p>
+</div>
+<a class="sd-stretched-link reference internal" href="../jcloud/"><span class="doc"></span></a></div>
+</div>
+</div>
+</div>
+</section>
 <section id="automatically-translate-a-flow-to-kubernetes-concept">
 <h2>Automatically translate a Flow to Kubernetes concept<a class="headerlink" href="#automatically-translate-a-flow-to-kubernetes-concept" title="Permalink to this heading">#</a></h2>
 <div class="admonition hint">
@@ -524,30 +540,13 @@ To expose your Gateway replicas outside Kubernetes, you can add a load balancer 
 <p>You can use a custom Docker image for the Gateway deployment by setting the envrironment variable <code class="docutils literal notranslate"><span class="pre">JINA_GATEWAY_IMAGE</span></code> to the desired image before generating the configuration.</p>
 </div>
 </section>
-<section id="deploying-on-jina-ai-cloud">
-<h2>Deploying On Jina AI Cloud<a class="headerlink" href="#deploying-on-jina-ai-cloud" title="Permalink to this heading">#</a></h2>
-<p>Check out Jina AI Cloud <a class="reference internal" href="../jcloud/#jcloud"><span class="std std-ref">JCloud Hosting</span></a> if you want a <strong>one-click</strong> solution to deploy and host Jina, leveraging a cloud-native stack of Kubernetes, Prometheus and Grafana, <strong>without worrying about provisioning</strong>.</p>
-<div class="sd-container-fluid sd-sphinx-override sd-mb-4 docutils">
-<div class="sd-row sd-row-cols-2 sd-row-cols-xs-2 sd-row-cols-sm-2 sd-row-cols-md-2 sd-row-cols-lg-2 sd-g-3 sd-g-xs-3 sd-g-sm-3 sd-g-md-3 sd-g-lg-3 docutils">
-<div class="sd-col sd-d-flex-row docutils">
-<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover color-gradient-card-2 docutils">
-<div class="sd-card-body docutils">
-<div class="sd-card-title sd-font-weight-bold docutils">
-<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-cpu" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M8.75 8a.75.75 0 00-.75.75v6.5c0 .414.336.75.75.75h6.5a.75.75 0 00.75-.75v-6.5a.75.75 0 00-.75-.75h-6.5zm.75 6.5v-5h5v5h-5z"></path><path fill-rule="evenodd" d="M15.25 1a.75.75 0 01.75.75V4h2.25c.966 0 1.75.784 1.75 1.75V8h2.25a.75.75 0 010 1.5H20v5h2.25a.75.75 0 010 1.5H20v2.25A1.75 1.75 0 0118.25 20H16v2.25a.75.75 0 01-1.5 0V20h-5v2.25a.75.75 0 01-1.5 0V20H5.75A1.75 1.75 0 014 18.25V16H1.75a.75.75 0 010-1.5H4v-5H1.75a.75.75 0 010-1.5H4V5.75C4 4.784 4.784 4 5.75 4H8V1.75a.75.75 0 011.5 0V4h5V1.75a.75.75 0 01.75-.75zm3 17.5a.25.25 0 00.25-.25V5.75a.25.25 0 00-.25-.25H5.75a.25.25 0 00-.25.25v12.5c0 .138.112.25.25.25h12.5z"></path></svg> Deploy a Flow to JCloud</div>
-<p class="sd-card-text">JCloud is a free CPU/GPU hosting platform for Jina projects.</p>
-</div>
-<span class="sd-stretched-link"></span></div>
-</div>
-</div>
-</div>
-</section>
-<section id="see-further">
-<h2>See further<a class="headerlink" href="#see-further" title="Permalink to this heading">#</a></h2>
+<section id="see-also">
+<h2>See also<a class="headerlink" href="#see-also" title="Permalink to this heading">#</a></h2>
 <ul class="simple">
-<li><p><a class="reference internal" href="../../how-to/kubernetes/#kubernetes"><span class="std std-ref">Step by Step deployement of a Jina Flow on K8s</span></a></p></li>
-<li><p><a class="reference internal" href="../flow/create-flow/#kubernetes-export"><span class="std std-ref">Flow export documentation</span></a></p></li>
+<li><p><a class="reference internal" href="../../how-to/kubernetes/#kubernetes"><span class="std std-ref">Step by step deployment of a Jina Flow on Kubernetes</span></a></p></li>
+<li><p><a class="reference internal" href="../flow/create-flow/#kubernetes-export"><span class="std std-ref">Export a Flow to Kubernetes</span></a></p></li>
 <li><p><a class="reference internal" href="../../api/jina/#jina.Flow.to_kubernetes_yaml" title="jina.Flow.to_kubernetes_yaml"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_kubernetes_yaml()</span></code></a></p></li>
-<li><p><a class="reference internal" href="../executor/executor-serve/#kubernetes-executor"><span class="std std-ref">Deploy a standalone Executor on K8s</span></a></p></li>
+<li><p><a class="reference internal" href="../executor/executor-serve/#kubernetes-executor"><span class="std std-ref">Deploy a standalone Executor on Kubernetes</span></a></p></li>
 <li><p><a class="reference external" href="https://kubernetes.io/docs/home/">Kubernetes Documentation</a></p></li>
 </ul>
 </section>
@@ -584,7 +583,7 @@ To expose your Gateway replicas outside Kubernetes, you can add a load balancer 
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Oct 27, 2022</div>
+                            Last updated on Oct 28, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -617,13 +616,13 @@ To expose your Gateway replicas outside Kubernetes, you can add a load balancer 
                     <div class="toc-tree">
                         <ul>
 <li><a class="reference internal" href="#">Kubernetes Support</a><ul>
+<li><a class="reference internal" href="#deploying-on-jina-ai-cloud">Deploying on Jina AI Cloud</a></li>
 <li><a class="reference internal" href="#automatically-translate-a-flow-to-kubernetes-concept">Automatically translate a Flow to Kubernetes concept</a></li>
 <li><a class="reference internal" href="#extra-kubernetes-options">Extra Kubernetes options</a></li>
 <li><a class="reference internal" href="#required-service-mesh">Required service mesh</a></li>
 <li><a class="reference internal" href="#scaling-executors-replicas-and-shards">Scaling Executors: Replicas and shards</a></li>
 <li><a class="reference internal" href="#scaling-the-gateway">Scaling the Gateway</a></li>
-<li><a class="reference internal" href="#deploying-on-jina-ai-cloud">Deploying On Jina AI Cloud</a></li>
-<li><a class="reference internal" href="#see-further">See further</a></li>
+<li><a class="reference internal" href="#see-also">See also</a></li>
 </ul>
 </li>
 </ul>

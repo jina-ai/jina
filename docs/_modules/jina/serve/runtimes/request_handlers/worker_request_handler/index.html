@@ -396,7 +396,7 @@
 <span class="kn">from</span> <span class="nn">jina.serve.executors</span> <span class="kn">import</span> <span class="n">BaseExecutor</span>
 <span class="kn">from</span> <span class="nn">jina.types.request.data</span> <span class="kn">import</span> <span class="n">DataRequest</span>
 
-<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span> <span class="c1"># pragma: no cover</span>
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
     <span class="kn">import</span> <span class="nn">argparse</span>
 
     <span class="kn">from</span> <span class="nn">opentelemetry</span> <span class="kn">import</span> <span class="n">metrics</span><span class="p">,</span> <span class="n">trace</span>
@@ -572,12 +572,12 @@
         <span class="p">}</span>
 
 <div class="viewcode-block" id="WorkerRequestHandler.handle"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.request_handlers.worker_request_handler/#jina.serve.runtimes.request_handlers.worker_request_handler.WorkerRequestHandler.handle">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">handle</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">requests</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s1">&#39;DataRequest&#39;</span><span class="p">],</span> <span class="n">tracing_context</span><span class="p">:</span> <span class="s1">&#39;Context&#39;</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">requests</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s1">&#39;DataRequest&#39;</span><span class="p">],</span> <span class="n">tracing_context</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;Context&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataRequest</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Initialize private parameters and execute private loading functions.</span>
 
 <span class="sd">        :param requests: The messages to handle containing a DataRequest</span>
-<span class="sd">        :param tracing_context: OpenTelemetry tracing context from the originating request.</span>
+<span class="sd">        :param tracing_context: Optional OpenTelemetry tracing context from the originating request.</span>
 <span class="sd">        :returns: the processed message</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># skip executor if endpoints mismatch</span>
@@ -657,7 +657,9 @@
             <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_document_processed_counter</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">docs</span><span class="p">),</span> <span class="n">attributes</span><span class="o">=</span><span class="n">attributes</span><span class="p">)</span>
 
-        <span class="n">WorkerRequestHandler</span><span class="o">.</span><span class="n">replace_docs</span><span class="p">(</span><span class="n">requests</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">docs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">output_array_type</span><span class="p">)</span>
+        <span class="n">WorkerRequestHandler</span><span class="o">.</span><span class="n">replace_docs</span><span class="p">(</span>
+            <span class="n">requests</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">docs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">output_array_type</span>
+        <span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sent_response_size_metrics</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_sent_response_size_metrics</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span>
@@ -854,7 +856,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Oct 27, 2022</div>
+                            Last updated on Oct 28, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
