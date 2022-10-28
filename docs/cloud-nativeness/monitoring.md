@@ -1,5 +1,5 @@
 (monitoring)=
-# Monitor with Prometheus and Grafana
+# Prometheus/Grafana Support (Legacy)
 
 ```{admonition} Deprecated
 :class: caution
