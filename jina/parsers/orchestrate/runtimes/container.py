@@ -2,9 +2,10 @@
 from jina.parsers.helper import KVAppendAction, add_arg_group
 
 
-def mixin_container_runtime_parser(parser):
+def mixin_container_runtime_parser(parser, pod_type: str = 'executor'):
     """Mixing in arguments required by :class:`ContainerRuntime` into the given parser.
     :param parser: the parser instance to which we add arguments
+    :param pod_type: the pod_type configured by the parser. Can be either 'executor' for an Executor pod or 'gateway' for a Gateway pod
     """
     gp = add_arg_group(parser, title='ContainerRuntime')
 
@@ -45,8 +46,8 @@ Note,
     gp.add_argument(
         '--gpus',
         type=str,
-        help='''
-    This argument allows dockerized Jina pods to discover local gpu devices.
+        help=f'''
+    This argument allows dockerized Jina {pod_type.title()}s to discover local gpu devices.
 
     Note, 
     - To access all gpus, use `--gpus all`.
@@ -61,5 +62,5 @@ Note,
         '--disable-auto-volume',
         action='store_true',
         default=False,
-        help='Do not automatically mount a volume for dockerized pod.',
+        help=f'Do not automatically mount a volume for dockerized {pod_type.title()}s.',
     )

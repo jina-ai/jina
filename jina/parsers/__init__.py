@@ -81,7 +81,7 @@ def set_gateway_parser(parser=None):
     )
 
     mixin_base_deployment_parser(parser)
-    mixin_container_runtime_parser(parser)
+    mixin_container_runtime_parser(parser, pod_type='gateway')
     mixin_prefetch_parser(parser)
     mixin_http_gateway_parser(parser)
     mixin_graphql_parser(parser)
