@@ -163,14 +163,12 @@ class Flow(
         deployments_disable_reduce: Optional[str] = '[]',
         deployments_metadata: Optional[str] = '{}',
         description: Optional[str] = None,
-        disable_auto_volume: Optional[bool] = False,
         docker_kwargs: Optional[dict] = None,
         entrypoint: Optional[str] = None,
         env: Optional[dict] = None,
         expose_endpoints: Optional[str] = None,
         expose_graphql_endpoint: Optional[bool] = False,
         floating: Optional[bool] = False,
-        gpus: Optional[str] = None,
         graph_conditions: Optional[str] = '{}',
         graph_description: Optional[str] = '{}',
         grpc_server_options: Optional[dict] = None,
@@ -206,7 +204,6 @@ class Flow(
         uses: Optional[Union[str, Type['BaseExecutor'], dict]] = None,
         uses_with: Optional[dict] = None,
         uvicorn_kwargs: Optional[dict] = None,
-        volumes: Optional[List[str]] = None,
         workspace: Optional[str] = None,
         **kwargs,
     ):
@@ -218,7 +215,6 @@ class Flow(
         :param deployments_disable_reduce: list JSON disabling the built-in merging mechanism for each Deployment listed
         :param deployments_metadata: JSON dictionary with the request metadata for each Deployment
         :param description: The description of this HTTP server. It will be used in automatics docs such as Swagger UI.
-        :param disable_auto_volume: Do not automatically mount a volume for dockerized Gateways.
         :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker '
           container.
 
@@ -228,14 +224,6 @@ class Flow(
         :param expose_endpoints: A JSON string that represents a map from executor endpoints (`@requests(on=...)`) to HTTP endpoints.
         :param expose_graphql_endpoint: If set, /graphql endpoint is added to HTTP interface.
         :param floating: If set, the current Pod/Deployment can not be further chained, and the next `.add()` will chain after the last Pod/Deployment not this current one.
-        :param gpus: This argument allows dockerized Jina Gateways to discover local gpu devices.
-
-              Note,
-              - To access all gpus, use `--gpus all`.
-              - To access multiple gpus, e.g. make use of 2 gpus, use `--gpus 2`.
-              - To access specified gpus based on device id, use `--gpus device=[YOUR-GPU-DEVICE-ID]`
-              - To access specified gpus based on multiple device id, use `--gpus device=[YOUR-GPU-DEVICE-ID1],device=[YOUR-GPU-DEVICE-ID2]`
-              - To specify more parameters, use `--gpus device=[YOUR-GPU-DEVICE-ID],runtime=nvidia,capabilities=display
         :param graph_conditions: Dictionary stating which filtering conditions each Executor in the graph requires to receive Documents.
         :param graph_description: Routing graph for the gateway
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
@@ -298,12 +286,6 @@ class Flow(
         :param uvicorn_kwargs: Dictionary of kwargs arguments that will be passed to Uvicorn server when starting the server
 
           More details can be found in Uvicorn docs: https://www.uvicorn.org/settings/
-        :param volumes: The path on the host to be mounted inside the container.
-
-          Note,
-          - If separated by `:`, then the first part will be considered as the local host path and the second part is the path in the container system.
-          - If no split provided, then the basename of that directory will be mounted into container's root path, e.g. `--volumes="/user/test/my-workspace"` will be mounted into `/my-workspace` inside the container.
-          - All volumes are mounted with read-write mode.
         :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.
 
         .. # noqa: DAR202
@@ -405,7 +387,6 @@ class Flow(
         :param deployments_disable_reduce: list JSON disabling the built-in merging mechanism for each Deployment listed
         :param deployments_metadata: JSON dictionary with the request metadata for each Deployment
         :param description: The description of this HTTP server. It will be used in automatics docs such as Swagger UI.
-        :param disable_auto_volume: Do not automatically mount a volume for dockerized Gateways.
         :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker '
           container.
 
@@ -415,14 +396,6 @@ class Flow(
         :param expose_endpoints: A JSON string that represents a map from executor endpoints (`@requests(on=...)`) to HTTP endpoints.
         :param expose_graphql_endpoint: If set, /graphql endpoint is added to HTTP interface.
         :param floating: If set, the current Pod/Deployment can not be further chained, and the next `.add()` will chain after the last Pod/Deployment not this current one.
-        :param gpus: This argument allows dockerized Jina Gateways to discover local gpu devices.
-
-              Note,
-              - To access all gpus, use `--gpus all`.
-              - To access multiple gpus, e.g. make use of 2 gpus, use `--gpus 2`.
-              - To access specified gpus based on device id, use `--gpus device=[YOUR-GPU-DEVICE-ID]`
-              - To access specified gpus based on multiple device id, use `--gpus device=[YOUR-GPU-DEVICE-ID1],device=[YOUR-GPU-DEVICE-ID2]`
-              - To specify more parameters, use `--gpus device=[YOUR-GPU-DEVICE-ID],runtime=nvidia,capabilities=display
         :param graph_conditions: Dictionary stating which filtering conditions each Executor in the graph requires to receive Documents.
         :param graph_description: Routing graph for the gateway
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
@@ -485,12 +458,6 @@ class Flow(
         :param uvicorn_kwargs: Dictionary of kwargs arguments that will be passed to Uvicorn server when starting the server
 
           More details can be found in Uvicorn docs: https://www.uvicorn.org/settings/
-        :param volumes: The path on the host to be mounted inside the container.
-
-          Note,
-          - If separated by `:`, then the first part will be considered as the local host path and the second part is the path in the container system.
-          - If no split provided, then the basename of that directory will be mounted into container's root path, e.g. `--volumes="/user/test/my-workspace"` will be mounted into `/my-workspace` inside the container.
-          - All volumes are mounted with read-write mode.
         :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.
         :param env: The map of environment variables that are available inside runtime
         :param inspect: The strategy on those inspect deployments in the flow.

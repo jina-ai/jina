@@ -142,6 +142,7 @@ fundamentals/executor/index
 fundamentals/flow/index
 fundamentals/gateway/index
 fundamentals/client/client
+fundamentals/k8s
 jina-ai-cloud/index
 how-to/index
 ```
