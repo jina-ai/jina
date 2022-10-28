@@ -81,14 +81,24 @@ import hubble
 hubble.login()
 ```
 
-#### Login from Jupyter notebook/Google Colab
+#### Login from Jupyter Notebook/Google Colab
 
 ```python
 import hubble
 
 # Use Personal Access Token or browser to login.
 # Token will be saved locally.
-hubble.notebook_login()
+hubble.login()
+```
+
+#### Login from Jupyter Lab
+
+```python
+import hubble
+
+# Use Personal Access Token or browser to login.
+# Token will be saved locally.
+hubble.login(interactive=False)
 ```
 
 ### Check login status
