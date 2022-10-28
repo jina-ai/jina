@@ -1,5 +1,5 @@
 (docker-compose)=
-# Deploy with Docker Compose
+# {fab}`docker` Docker Compose Support
 
 One of the simplest ways to prototype or serve in
 production is to run your {class}`~jina.Flow` with `docker-compose`.
