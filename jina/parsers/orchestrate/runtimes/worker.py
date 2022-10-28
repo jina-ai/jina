@@ -92,4 +92,12 @@ Supports the same types as `docarray.to_protobuf(.., ndarray_type=...)`, which c
 Defaults to retaining whatever type is returned by the Executor.
 ''',
     )
+
+    gp.add_argument(
+        '--exit-on-exceptions',
+        type=str,
+        default=[],
+        nargs='*',
+        help='List of exceptions that will cause the Executor to shut down.',
+    )
     mixin_base_runtime_parser(gp)

@@ -30,11 +30,3 @@ def mixin_base_runtime_parser(arg_group):
         help="Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}",
         default=None,
     )
-
-    arg_group.add_argument(
-        '--exit-on-exceptions',
-        type=str,
-        default=[],
-        nargs='*',
-        help='List of exceptions that will cause the Executor to shut down.',
-    )
