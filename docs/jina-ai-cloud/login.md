@@ -91,16 +91,6 @@ import hubble
 hubble.login()
 ```
 
-#### Login from Jupyter Lab
-
-```python
-import hubble
-
-# Use Personal Access Token or browser to login.
-# Token will be saved locally.
-hubble.login(interactive=False)
-```
-
 ### Check login status
 
 ```python
