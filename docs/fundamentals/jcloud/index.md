@@ -18,7 +18,7 @@ yaml-spec
 :width: 0 %
 ```
 
-After building a Jina project, the next step is to deploy and host it on the cloud. JCloud is Jina's reliable, scalable and production-ready cloud-hosting solution that manages your project lifecycle without surprises or hidden development costs.
+After building a Jina project, the next step is to deploy and host it on the cloud. [JCloud](https://cloud.jina.ai/) is Jina's reliable, scalable and production-ready cloud-hosting solution that manages your project lifecycle without surprises or hidden development costs.
 
 ```{tip}
 At present, JCloud hosts all your Jina projects and offers computational/storage resources **for free**!
