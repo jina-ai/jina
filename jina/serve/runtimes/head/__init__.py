@@ -5,6 +5,7 @@ import json
 import os
 from abc import ABC
 from collections import defaultdict
+from functools import total_ordering
 from typing import Dict, List, Optional, Tuple
 
 import grpc
@@ -20,7 +21,9 @@ from jina.serve.instrumentation import MetricsTimer
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.helper import _get_grpc_server_options
-from jina.serve.runtimes.request_handlers.worker_request_handler import WorkerRequestHandler
+from jina.serve.runtimes.request_handlers.worker_request_handler import (
+    WorkerRequestHandler,
+)
 from jina.types.request.data import DataRequest, Response
 
 
@@ -311,16 +314,18 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
 
         uses_before_metadata = None
         if self.uses_before_address:
-            (
-                response,
-                uses_before_metadata,
-            ) = await self.connection_pool.send_requests_once(
+            uses_before_result = await self.connection_pool.send_requests_once(
                 requests,
                 deployment='uses_before',
                 timeout=self.timeout_send,
                 retries=self._retries,
             )
-            requests = [response]
+
+            if isinstance(uses_before_result, BaseException):
+                raise uses_before_result
+            else:
+                (response, uses_before_metadata) = uses_before_result
+                requests = [response]
 
         worker_send_tasks = self.connection_pool.send_requests(
             requests=requests,
@@ -329,8 +334,16 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
             timeout=self.timeout_send,
             retries=self._retries,
         )
+        total_shards = len(worker_send_tasks)
 
-        worker_results = await asyncio.gather(*worker_send_tasks)
+        all_worker_results = await asyncio.gather(*worker_send_tasks)
+        worker_results = list(
+            filter(lambda x: isinstance(x, Tuple), all_worker_results)
+        )
+        exceptions = list(
+            filter(lambda x: isinstance(x, BaseException), all_worker_results)
+        )
+        failed_shards = len(exceptions)
 
         if len(worker_results) == 0:
             raise RuntimeError(
@@ -342,31 +355,43 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
         response_request = worker_results[0]
         uses_after_metadata = None
         if self.uses_after_address:
-            (
-                response_request,
-                uses_after_metadata,
-            ) = await self.connection_pool.send_requests_once(
+            uses_after_result = await self.connection_pool.send_requests_once(
                 worker_results,
                 deployment='uses_after',
                 timeout=self.timeout_send,
                 retries=self._retries,
             )
+            if isinstance(uses_after_result, BaseException):
+                raise uses_after_result
+            else:
+                (response_request, uses_after_metadata) = uses_after_result
         elif len(worker_results) > 1 and self._reduce:
-            WorkerRequestHandler.reduce_requests(worker_results)
+            response_request = WorkerRequestHandler.reduce_requests(worker_results)
         elif len(worker_results) > 1 and not self._reduce:
-            # worker returned multiple responsed, but the head is configured to skip reduction
+            # worker returned multiple responses, but the head is configured to skip reduction
             # just concatenate the docs in this case
             response_request.data.docs = WorkerRequestHandler.get_docs_from_request(
                 requests, field='docs'
             )
 
         merged_metadata = self._merge_metadata(
-            metadata, uses_after_metadata, uses_before_metadata
+            metadata,
+            uses_after_metadata,
+            uses_before_metadata,
+            total_shards,
+            failed_shards,
         )
 
         return response_request, merged_metadata
 
-    def _merge_metadata(self, metadata, uses_after_metadata, uses_before_metadata):
+    def _merge_metadata(
+        self,
+        metadata,
+        uses_after_metadata,
+        uses_before_metadata,
+        total_shards,
+        failed_shards,
+    ):
         merged_metadata = {}
         if uses_before_metadata:
             for key, value in uses_before_metadata:
@@ -377,6 +402,9 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
         if uses_after_metadata:
             for key, value in uses_after_metadata:
                 merged_metadata[key] = value
+
+        merged_metadata['total_shards'] = str(total_shards)
+        merged_metadata['failed_shards'] = str(failed_shards)
         return merged_metadata
 
     async def _status(self, empty, context) -> jina_pb2.JinaInfoProto:

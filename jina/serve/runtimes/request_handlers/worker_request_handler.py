@@ -432,7 +432,7 @@ class WorkerRequestHandler:
     @staticmethod
     def reduce_requests(requests: List['DataRequest']) -> 'DataRequest':
         """
-        Reduces a list of requests containing DocumentArrays inton one request object. Changes are applied to the first
+        Reduces a list of requests containing DocumentArrays into one request object. Changes are applied to the first
         request object in-place.
 
         Reduction consists in reducing every DocumentArray in `requests` sequentially using
