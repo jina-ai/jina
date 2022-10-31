@@ -79,7 +79,10 @@ class V1Parser(VersionedYAMLParser):
                 method = p_deployment_attr.get('method', 'add')
                 # support methods: add, needs, inspect
                 getattr(obj, method)(**p_deployment_attr, copy_flow=False)
-
+        gateway = data.get('gateway', {})
+        if gateway:
+            gateway_attr = {kk: expand_env_var(vv) for kk, vv in gateway.items()}
+            obj.config_gateway(**gateway_attr)
         return obj
 
     def dump(self, data: 'Flow') -> Dict:
