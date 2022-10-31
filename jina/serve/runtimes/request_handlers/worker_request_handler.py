@@ -183,7 +183,7 @@ class WorkerRequestHandler:
             'runtime_name': runtime_name,
         }
 
-    def _record_request_size_prometheus(self, requests):
+    def _record_request_size_metrics(self, requests):
         for req in requests:
             if self._request_size_metrics:
                 self._request_size_metrics.labels(
@@ -199,7 +199,7 @@ class WorkerRequestHandler:
                 )
                 self._request_size_histogram.record(req.nbytes, attributes=attributes)
 
-    def _record_docs_processed_prometheus(self, requests, docs):
+    def _record_docs_processed_metrics(self, requests, docs):
         if self._document_processed_metrics:
             self._document_processed_metrics.labels(
                 requests[0].header.exec_endpoint,
@@ -214,7 +214,7 @@ class WorkerRequestHandler:
             )
             self._document_processed_counter.add(len(docs), attributes=attributes)
 
-    def _record_response_size_prometheus(self, requests):
+    def _record_response_size_metrics(self, requests):
         if self._sent_response_size_metrics:
             self._sent_response_size_metrics.labels(
                 requests[0].header.exec_endpoint,
@@ -276,7 +276,7 @@ class WorkerRequestHandler:
             )
             return requests[0]
 
-        self._record_request_size_prometheus(requests)
+        self._record_request_size_metrics(requests)
 
         params = self._parse_params(requests[0].parameters, self._executor.metas.name)
         docs = WorkerRequestHandler.get_docs_from_request(
@@ -298,8 +298,8 @@ class WorkerRequestHandler:
 
         docs = self._set_result(requests, return_data, docs)
 
-        self._record_docs_processed_prometheus(requests, docs)
-        self._record_response_size_prometheus(requests)
+        self._record_docs_processed_metrics(requests, docs)
+        self._record_response_size_metrics(requests)
 
         return requests[0]
 
