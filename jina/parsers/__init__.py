@@ -3,6 +3,8 @@ from jina.parsers.helper import _SHOW_ALL_ARGS
 from jina.parsers.orchestrate.runtimes.container import mixin_container_runtime_parser
 from jina.parsers.orchestrate.runtimes.head import mixin_head_parser
 
+GATEWAY_NAME = 'gateway'
+
 
 def set_pod_parser(parser=None):
     """Set the parser for the Pod
@@ -93,7 +95,7 @@ def set_gateway_parser(parser=None):
     from jina.enums import DeploymentRoleType
 
     parser.set_defaults(
-        name='gateway',
+        name=GATEWAY_NAME,
         runtime_cls='GatewayRuntime',
         deployment_role=DeploymentRoleType.GATEWAY,
     )

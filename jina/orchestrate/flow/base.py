@@ -69,6 +69,7 @@ from jina.logging.logger import JinaLogger
 from jina.orchestrate.deployments import Deployment
 from jina.orchestrate.flow.builder import _hanging_deployments, allowed_levels
 from jina.parsers import (
+    GATEWAY_NAME,
     set_client_cli_parser,
     set_deployment_parser,
     set_gateway_parser,
@@ -92,7 +93,6 @@ if TYPE_CHECKING:
     from jina.orchestrate.flow.asyncio import AsyncFlow
     from jina.serve.executors import BaseExecutor
 
-GATEWAY_NAME = 'gateway'
 FALLBACK_PARSERS = [
     set_gateway_parser(),
     set_deployment_parser(),
@@ -589,6 +589,14 @@ class Flow(
         known_keys = vars(args)
         self._common_kwargs = {k: v for k, v in kwargs.items() if k not in known_keys}
 
+        # gateway args inherit from flow args
+        # TODO: we need a better exclusion of Flow parameters
+        self._gateway_kwargs = {
+            k: v
+            for k, v in self._common_kwargs.items()
+            if k not in {'uses', 'uses_with'}
+        }
+
         self._kwargs = ArgNamespace.get_non_defaults_args(
             args, _flow_parser
         )  #: for yaml dump
@@ -667,7 +675,7 @@ class Flow(
         deployments_addresses: Dict[str, List[str]],
         deployments_metadata: Dict[str, Dict[str, str]],
         graph_conditions: Dict[str, Dict],
-        deployments_disabled_reduce: List[str],
+        deployments_disable_reduce: List[str],
         **kwargs,
     ):
         kwargs.update(
@@ -683,7 +691,7 @@ class Flow(
             )
         )
 
-        kwargs.update(self._common_kwargs)
+        kwargs.update(self._gateway_kwargs)
         args = ArgNamespace.kwargs2namespace(kwargs, set_gateway_parser())
 
         # We need to check later if the port was manually set or randomly
@@ -695,7 +703,7 @@ class Flow(
         args.graph_conditions = json.dumps(graph_conditions)
         args.deployments_addresses = json.dumps(deployments_addresses)
         args.deployments_metadata = json.dumps(deployments_metadata)
-        args.deployments_disable_reduce = json.dumps(deployments_disabled_reduce)
+        args.deployments_disable_reduce = json.dumps(deployments_disable_reduce)
         self._deployment_nodes[GATEWAY_NAME] = Deployment(args, needs)
 
     def _get_deployments_metadata(self) -> Dict[str, Dict[str, str]]:
@@ -1272,9 +1280,12 @@ class Flow(
         for key, value in op_flow._common_kwargs.items():
 
             # do not inherit from all the argument from the flow
+            # TODO: we should be explicit about args we inheret (maybe whitelist)
             if key not in kwargs and key not in [
                 'port',
                 'port_monitoring',
+                'uses',
+                'uses_with',
             ]:
                 kwargs[key] = value
 
@@ -1315,6 +1326,109 @@ class Flow(
 
         if not args.floating:
             op_flow._last_deployment = deployment_name
+
+        return op_flow
+
+    @allowed_levels([FlowBuildLevel.EMPTY])
+    def config_gateway(
+        self,
+        args: Optional['argparse.Namespace'] = None,
+        **kwargs,
+    ) -> Union['Flow', 'AsyncFlow']:
+
+        """
+        Configure the gateway
+        :param compression: The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.
+        :param connection_list: dictionary JSON with a list of connections to configure
+        :param disable_auto_volume: Do not automatically mount a volume for dockerized Executors.
+        :param disable_reduce: Disable the built-in reduce mechanism, set this if the reduction is to be handled by the Executor connected to this Head
+        :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker '
+          container.
+
+          More details can be found in the Docker SDK docs:  https://docker-py.readthedocs.io/en/stable/
+        :param entrypoint: The entrypoint command overrides the ENTRYPOINT in Docker image. when not set then the Docker image ENTRYPOINT takes effective.
+        :param env: The map of environment variables that are available inside runtime
+        :param exit_on_exceptions: List of exceptions that will cause the Gateway to shut down.
+        :param gpus: This argument allows dockerized Jina Gateway discover local gpu devices.
+
+              Note,
+              - To access all gpus, use `--gpus all`.
+              - To access multiple gpus, e.g. make use of 2 gpus, use `--gpus 2`.
+              - To access specified gpus based on device id, use `--gpus device=[YOUR-GPU-DEVICE-ID]`
+              - To access specified gpus based on multiple device id, use `--gpus device=[YOUR-GPU-DEVICE-ID1],device=[YOUR-GPU-DEVICE-ID2]`
+              - To specify more parameters, use `--gpus device=[YOUR-GPU-DEVICE-ID],runtime=nvidia,capabilities=display
+        :param grpc_metadata: The metadata to be passed to the gRPC request.
+        :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
+        :param host_in: The host address for binding to, by default it is 0.0.0.0
+        :param install_requirements: If set, install `requirements.txt` in the Hub Gateway bundle to local
+        :param log_config: The YAML config of the logger used in this object.
+        :param name: The name of this object.
+
+              This will be used in the following places:
+              - how you refer to this object in Python/YAML/CLI
+              - visualization
+              - log message header
+              - ...
+
+              When not given, then the default naming strategy will apply.
+        :param port: The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (`--external` or `external=True`) this can be a list of ports, separated by commas. Then, every resulting address will be considered as one replica of the Executor.
+        :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]
+        :param py_modules: The customized python modules need to be imported before loading the Gateway
+
+          Note that the recommended way is to only import a single module - a simple python file, if your
+          gateway can be defined in a single file, or an ``__init__.py`` file if you have multiple files,
+          which should be structured as a python package.
+        :param quiet: If set, then no log will be emitted from this object.
+        :param quiet_error: If set, then exception stack information will not be added to the log
+        :param quiet_remote_logs: Do not display the streaming of remote logs on local console
+        :param replicas: The number of replicas in the deployment
+        :param retries: Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
+        :param shards: The number of shards in the deployment running at the same time. For more details check https://docs.jina.ai/fundamentals/flow/create-flow/#complex-flow-topologies
+        :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever
+        :param timeout_ready: The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting forever
+        :param timeout_send: The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default
+        :param tls: If set, connect to deployment using tls encryption
+        :param upload_files: The files on the host to be uploaded to the remote
+          workspace. This can be useful when your Deployment has more
+          file dependencies beyond a single YAML file, e.g.
+          Python files, data files.
+
+          Note,
+          - currently only flatten structure is supported, which means if you upload `[./foo/a.py, ./foo/b.pp, ./bar/c.yml]`, then they will be put under the _same_ workspace on the remote, losing all hierarchies.
+          - by default, `--uses` YAML file is always uploaded.
+          - uploaded files are by default isolated across the runs. To ensure files are submitted to the same workspace across different runs, use `--workspace-id` to specify the workspace.
+        :param uses: The config of the gateway, it could be one of the followings:
+                  * the string literal of an Gateway class name
+                  * a Gateway YAML file (.yml, .yaml, .jaml)
+                  * a docker image (must start with `docker://`)
+                  * the string literal of a YAML config (must start with `!` or `jtype: `)
+        :param uses_with: Dictionary of keyword arguments that will override the `with` configuration in `uses`
+        :param volumes: The path on the host to be mounted inside the container.
+
+          Note,
+          - If separated by `:`, then the first part will be considered as the local host path and the second part is the path in the container system.
+          - If no split provided, then the basename of that directory will be mounted into container's root path, e.g. `--volumes="/user/test/my-workspace"` will be mounted into `/my-workspace` inside the container.
+          - All volumes are mounted with read-write mode.
+        :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.
+        :param needs: the name of the Deployment(s) that this Deployment receives data from. One can also use "gateway" to indicate the connection with the gateway.
+        :param copy_flow: when set to true, then always copy the current Flow and do the modification on top of it then return, otherwise, do in-line modification
+        :param kwargs: other keyword-value arguments that the Deployment CLI supports
+        :return: a (new) Flow object with modification
+        :return: a (new) Flow object with modification
+
+        .. # noqa: DAR102
+        .. # noqa: DAR202
+        .. # noqa: DAR101
+        .. # noqa: DAR003
+        """
+
+        copy_flow = kwargs.pop('copy_flow', True)
+
+        op_flow = copy.deepcopy(self) if copy_flow else self
+
+        # TODO: properly merge between Flow and Gateway args
+        for key, value in kwargs.items():
+            op_flow._gateway_kwargs[key] = value
 
         return op_flow
 
@@ -1481,7 +1595,7 @@ class Flow(
                 deployments_addresses=op_flow._get_deployments_addresses(),
                 deployments_metadata=op_flow._get_deployments_metadata(),
                 graph_conditions=op_flow._get_graph_conditions(),
-                deployments_disabled_reduce=op_flow._get_disabled_reduce_deployments(),
+                deployments_disable_reduce=op_flow._get_disabled_reduce_deployments(),
                 uses=op_flow.args.uses,
             )
 
@@ -1776,7 +1890,7 @@ class Flow(
             port=self.port,
             protocol=self.protocol,
         )
-        kwargs.update(self._common_kwargs)
+        kwargs.update(self._gateway_kwargs)
         return Client(**kwargs)
 
     @property
@@ -1950,7 +2064,7 @@ class Flow(
         if GATEWAY_NAME in self._deployment_nodes:
             return self._deployment_nodes[GATEWAY_NAME].port
         else:
-            return self._common_kwargs.get('port', None)
+            return self._gateway_kwargs.get('port', None)
 
     @port.setter
     def port(self, value: int):
@@ -1958,11 +2072,11 @@ class Flow(
 
         :param value: the new port to expose
         """
-        self._common_kwargs['port'] = value
+        self._gateway_kwargs['port'] = value
 
         # Flow is build to graph already
         if self._build_level >= FlowBuildLevel.GRAPH:
-            self[GATEWAY_NAME].args.port = self._common_kwargs['port']
+            self[GATEWAY_NAME].args.port = self._gateway_kwargs['port']
 
         # Flow is running already, then close the existing gateway
         if self._build_level >= FlowBuildLevel.RUNNING:
@@ -1978,7 +2092,7 @@ class Flow(
         if GATEWAY_NAME in self._deployment_nodes:
             return self._deployment_nodes[GATEWAY_NAME].host
         else:
-            return self._common_kwargs.get('host', __default_host__)
+            return self._gateway_kwargs.get('host', __default_host__)
 
     @host.setter
     def host(self, value: str):
@@ -1986,11 +2100,11 @@ class Flow(
 
         :param value: the new port to expose
         """
-        self._common_kwargs['host'] = value
+        self._gateway_kwargs['host'] = value
 
         # Flow is build to graph already
         if self._build_level >= FlowBuildLevel.GRAPH:
-            self[GATEWAY_NAME].args.host = self._common_kwargs['host']
+            self[GATEWAY_NAME].args.host = self._gateway_kwargs['host']
 
         # Flow is running already, then close the existing gateway
         if self._build_level >= FlowBuildLevel.RUNNING:
@@ -2016,7 +2130,7 @@ class Flow(
         if GATEWAY_NAME in self._deployment_nodes:
             return self[GATEWAY_NAME].args.port_monitoring
         else:
-            return self._common_kwargs.get('port_monitoring', None)
+            return self._gateway_kwargs.get('port_monitoring', None)
 
     @property
     def address_private(self) -> str:
@@ -2217,7 +2331,7 @@ class Flow(
 
         :return: the protocol of this Flow
         """
-        v = self._common_kwargs.get('protocol', GatewayProtocolType.GRPC)
+        v = self._gateway_kwargs.get('protocol', GatewayProtocolType.GRPC)
         if isinstance(v, str):
             v = GatewayProtocolType.from_string(v)
         return v
@@ -2233,15 +2347,15 @@ class Flow(
             raise RuntimeError('Protocol can not be changed after the Flow has started')
 
         if isinstance(value, str):
-            self._common_kwargs['protocol'] = GatewayProtocolType.from_string(value)
+            self._gateway_kwargs['protocol'] = GatewayProtocolType.from_string(value)
         elif isinstance(value, GatewayProtocolType):
-            self._common_kwargs['protocol'] = value
+            self._gateway_kwargs['protocol'] = value
         else:
             raise TypeError(f'{value} must be either `str` or `GatewayProtocolType`')
 
         # Flow is build to graph already
         if self._build_level >= FlowBuildLevel.GRAPH:
-            self[GATEWAY_NAME].args.protocol = self._common_kwargs['protocol']
+            self[GATEWAY_NAME].args.protocol = self._gateway_kwargs['protocol']
 
     def __getitem__(self, item):
         if isinstance(item, str):
@@ -2520,9 +2634,9 @@ class Flow(
 
         # noqa: DAR201
         """
-        if 'port' in self._common_kwargs:
-            kwargs = copy.deepcopy(self._common_kwargs)
-            kwargs['port'] = self._common_kwargs['port']
+        if 'port' in self._gateway_kwargs:
+            kwargs = copy.deepcopy(self._gateway_kwargs)
+            kwargs['port'] = self._gateway_kwargs['port']
 
         return ArgNamespace.kwargs2namespace(kwargs, set_client_cli_parser())
 
@@ -2532,14 +2646,14 @@ class Flow(
 
         # noqa: DAR201
         """
-        return ArgNamespace.kwargs2namespace(self._common_kwargs, set_gateway_parser())
+        return ArgNamespace.kwargs2namespace(self._gateway_kwargs, set_gateway_parser())
 
     def _update_network_interface(self, **kwargs):
         """Update the network interface of this Flow (affects Gateway & Client)
 
         :param kwargs: new network settings
         """
-        self._common_kwargs.update(kwargs)
+        self._gateway_kwargs.update(kwargs)
 
     def __getattribute__(self, item):
         obj = super().__getattribute__(item)
