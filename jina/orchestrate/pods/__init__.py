@@ -109,7 +109,7 @@ class BasePod(ABC):
 
         if hasattr(self.args, 'port'):
             self.args.port = self.args.port
-        self.args.parallel = self.args.shards
+        self.args.parallel = getattr(self.args, 'shards', 1)
         self.name = self.args.name or self.__class__.__name__
         self.is_forked = False
         self.logger = JinaLogger(self.name, **vars(self.args))

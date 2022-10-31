@@ -1,5 +1,5 @@
 (jcloud)=
-# JCloud Hosting
+# Jina AI Cloud Hosting
 
 
 ```{toctree}
@@ -18,15 +18,15 @@ yaml-spec
 :width: 0 %
 ```
 
-After building a Jina project, the next step is to deploy and host it on the cloud. [JCloud](https://cloud.jina.ai/) is Jina's reliable, scalable and production-ready cloud-hosting solution that manages your project lifecycle without surprises or hidden development costs.
+After building a Jina project, the next step is to deploy and host it on the cloud. [Jina AI Cloud](https://cloud.jina.ai/) is Jina's reliable, scalable and production-ready cloud-hosting solution that manages your project lifecycle without surprises or hidden development costs.
 
 ```{tip}
-At present, JCloud hosts all your Jina projects and offers computational/storage resources **for free**!
+At present, Jina AI Cloud hosts all your Jina projects and offers computational/storage resources **for free**!
 ```
 
 ## Basics
 
-JCloud provides a CLI that you can use via `jina cloud` from the terminal (or `jcloud` or simply `jc` for minimalists.)
+Jina AI Cloud provides a CLI that you can use via `jina cloud` from the terminal (or `jcloud` or simply `jc` for minimalists.)
 
 ````{hint}
 You can also install just the JCloud CLI without installing the Jina package.
@@ -195,7 +195,7 @@ jc status 15937a10bd
 
 ### Monitoring
 
-Basic monitoring is provided to Flows deployed on JCloud.
+Basic monitoring is provided to Flows deployed on Jina AI Cloud.
 
 To access the [Grafana](https://grafana.com/)-powered dashboard, first get {ref}`the status of the Flow<jcloud-flow-status>`. The `dashboards` link is displayed at the bottom of the pane. Visit the URL to find basic metrics like 'Number of Request Gateway Received' and 'Time elapsed between receiving a request and sending back the response':
 
@@ -246,7 +246,7 @@ jc deploy flow.yml --env-file flow.env
 
 #### Project folder
 
-- You can include your environment variables in the `.env` file in the local project and JCloud manages them.
+- You can include your environment variables in the `.env` file in the local project and Jina AI Cloud manages them.
 - You can optionally pass a `custom.env`.
   ```bash
   jc deploy ./hello --env-file ./hello/custom.env

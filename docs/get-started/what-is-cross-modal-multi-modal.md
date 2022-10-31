@@ -1,5 +1,5 @@
 (intro-cm)=
-# What is Cross-Modal & Multi-Modal?
+# What is Multimodal?
 
 Jina is the framework for helping you build cross-modal and multi-modal applications on the cloud. But first, what is cross-modal and multi-modal? And what are the applications? This chapter will answer these preliminary questions.
 

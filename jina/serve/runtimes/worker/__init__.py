@@ -1,6 +1,6 @@
 import argparse
 from abc import ABC
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING, List, Optional
 
 import grpc
 from grpc_health.v1 import health, health_pb2, health_pb2_grpc
@@ -13,10 +13,12 @@ from jina.proto import jina_pb2, jina_pb2_grpc
 from jina.serve.instrumentation import MetricsTimer
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.helper import _get_grpc_server_options
-from jina.serve.runtimes.request_handlers.worker_request_handler import WorkerRequestHandler
+from jina.serve.runtimes.request_handlers.worker_request_handler import (
+    WorkerRequestHandler,
+)
 from jina.types.request.data import DataRequest
 
-if TYPE_CHECKING: # pragma: no cover
+if TYPE_CHECKING:  # pragma: no cover
     from opentelemetry.propagate import Context
 
 
@@ -190,12 +192,16 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         )
         return endpointsProto
 
-    @staticmethod
-    def _extract_tracing_context(metadata: grpc.aio.Metadata) -> 'Context':
-        from opentelemetry.propagate import extract
+    def _extract_tracing_context(
+        self, metadata: grpc.aio.Metadata
+    ) -> Optional['Context']:
+        if self.tracer:
+            from opentelemetry.propagate import extract
 
-        context = extract(dict(metadata))
-        return context
+            context = extract(dict(metadata))
+            return context
+
+        return None
 
     async def process_data(self, requests: List[DataRequest], context) -> DataRequest:
         """
@@ -213,7 +219,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
                 if self.logger.debug_enabled:
                     self._log_data_request(requests[0])
 
-                tracing_context = WorkerRuntime._extract_tracing_context(
+                tracing_context = self._extract_tracing_context(
                     context.invocation_metadata()
                 )
                 result = await self._worker_request_handler.handle(

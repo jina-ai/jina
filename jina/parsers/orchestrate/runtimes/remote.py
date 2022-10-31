@@ -227,7 +227,7 @@ def mixin_http_gateway_parser(parser=None):
         help='''
         If set, `/index`, `/search`, `/update`, `/delete` endpoints are removed from HTTP interface.
 
-        Any executor that has `@requests(on=...)` bind with those values will receive data requests.
+        Any executor that has `@requests(on=...)` bound with those values will receive data requests.
         ''',
     )
 
