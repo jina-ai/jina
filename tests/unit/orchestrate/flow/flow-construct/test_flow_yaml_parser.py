@@ -198,3 +198,15 @@ def test_flow_yaml_override_with_protocol():
     assert f2.protocol == GatewayProtocolType.HTTP
     f3 = Flow.load_config(path, uses_with={'protocol': 'websocket'})
     assert f3.protocol == GatewayProtocolType.WEBSOCKET
+
+
+def test_load_flow_with_gateway():
+    path = os.path.join(cur_dir.parent.parent.parent, 'yaml/flow_with_gateway.yml')
+    flow = Flow.load_config(
+        path,
+        uses_with={'protocol': 'grpc', 'port': 12345},
+    )
+    with flow:
+        # protocol and port are overridden by the gateway configuration
+        assert flow.protocol == GatewayProtocolType.HTTP
+        assert flow.port == 12344
