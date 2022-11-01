@@ -183,25 +183,7 @@ class WorkerRequestHandler:
             'runtime_name': runtime_name,
         }
 
-    async def handle(
-        self, requests: List['DataRequest'], tracing_context: Optional['Context'] = None
-    ) -> DataRequest:
-        """Initialize private parameters and execute private loading functions.
-
-        :param requests: The messages to handle containing a DataRequest
-        :param tracing_context: Optional OpenTelemetry tracing context from the originating request.
-        :returns: the processed message
-        """
-        # skip executor if endpoints mismatch
-        if (
-            requests[0].header.exec_endpoint not in self._executor.requests
-            and __default_endpoint__ not in self._executor.requests
-        ):
-            self.logger.debug(
-                f'skip executor: mismatch request, exec_endpoint: {requests[0].header.exec_endpoint}, requests: {self._executor.requests}'
-            )
-            return requests[0]
-
+    def _record_request_size_monitoring(self, requests):
         for req in requests:
             if self._request_size_metrics:
                 self._request_size_metrics.labels(
@@ -217,24 +199,39 @@ class WorkerRequestHandler:
                 )
                 self._request_size_histogram.record(req.nbytes, attributes=attributes)
 
-        params = self._parse_params(requests[0].parameters, self._executor.metas.name)
+    def _record_docs_processed_monitoring(self, requests, docs):
+        if self._document_processed_metrics:
+            self._document_processed_metrics.labels(
+                requests[0].header.exec_endpoint,
+                self._executor.__class__.__name__,
+                self.args.name,
+            ).inc(len(docs))
+        if self._document_processed_counter:
+            attributes = WorkerRequestHandler._metric_attributes(
+                requests[0].header.exec_endpoint,
+                self._executor.__class__.__name__,
+                self.args.name,
+            )
+            self._document_processed_counter.add(len(docs), attributes=attributes)
 
-        docs = WorkerRequestHandler.get_docs_from_request(
-            requests,
-            field='docs',
-        )
+    def _record_response_size_monitoring(self, requests):
+        if self._sent_response_size_metrics:
+            self._sent_response_size_metrics.labels(
+                requests[0].header.exec_endpoint,
+                self._executor.__class__.__name__,
+                self.args.name,
+            ).observe(requests[0].nbytes)
+        if self._sent_response_size_histogram:
+            attributes = WorkerRequestHandler._metric_attributes(
+                requests[0].header.exec_endpoint,
+                self._executor.__class__.__name__,
+                self.args.name,
+            )
+            self._sent_response_size_histogram.record(
+                requests[0].nbytes, attributes=attributes
+            )
 
-        # executor logic
-        return_data = await self._executor.__acall__(
-            req_endpoint=requests[0].header.exec_endpoint,
-            docs=docs,
-            parameters=params,
-            docs_matrix=WorkerRequestHandler.get_docs_matrix_from_request(
-                requests,
-                field='docs',
-            ),
-            tracing_context=tracing_context,
-        )
+    def _set_result(self, requests, return_data, docs):
         # assigning result back to request
         if return_data is not None:
             if isinstance(return_data, DocumentArray):
@@ -255,39 +252,54 @@ class WorkerRequestHandler:
                     f'but getting {return_data!r}'
                 )
 
-        if self._document_processed_metrics:
-            self._document_processed_metrics.labels(
-                requests[0].header.exec_endpoint,
-                self._executor.__class__.__name__,
-                self.args.name,
-            ).inc(len(docs))
-        if self._document_processed_counter:
-            attributes = WorkerRequestHandler._metric_attributes(
-                requests[0].header.exec_endpoint,
-                self._executor.__class__.__name__,
-                self.args.name,
-            )
-            self._document_processed_counter.add(len(docs), attributes=attributes)
-
         WorkerRequestHandler.replace_docs(
             requests[0], docs, self.args.output_array_type
         )
+        return docs
 
-        if self._sent_response_size_metrics:
-            self._sent_response_size_metrics.labels(
-                requests[0].header.exec_endpoint,
-                self._executor.__class__.__name__,
-                self.args.name,
-            ).observe(requests[0].nbytes)
-        if self._sent_response_size_histogram:
-            attributes = WorkerRequestHandler._metric_attributes(
-                requests[0].header.exec_endpoint,
-                self._executor.__class__.__name__,
-                self.args.name,
+    async def handle(
+        self, requests: List['DataRequest'], tracing_context: Optional['Context'] = None
+    ) -> DataRequest:
+        """Initialize private parameters and execute private loading functions.
+
+        :param requests: The messages to handle containing a DataRequest
+        :param tracing_context: Optional OpenTelemetry tracing context from the originating request.
+        :returns: the processed message
+        """
+        # skip executor if endpoints mismatch
+        if (
+            requests[0].header.exec_endpoint not in self._executor.requests
+            and __default_endpoint__ not in self._executor.requests
+        ):
+            self.logger.debug(
+                f'skip executor: mismatch request, exec_endpoint: {requests[0].header.exec_endpoint}, requests: {self._executor.requests}'
             )
-            self._sent_response_size_histogram.record(
-                requests[0].nbytes, attributes=attributes
-            )
+            return requests[0]
+
+        self._record_request_size_monitoring(requests)
+
+        params = self._parse_params(requests[0].parameters, self._executor.metas.name)
+        docs = WorkerRequestHandler.get_docs_from_request(
+            requests,
+            field='docs',
+        )
+
+        # executor logic
+        return_data = await self._executor.__acall__(
+            req_endpoint=requests[0].header.exec_endpoint,
+            docs=docs,
+            parameters=params,
+            docs_matrix=WorkerRequestHandler.get_docs_matrix_from_request(
+                requests,
+                field='docs',
+            ),
+            tracing_context=tracing_context,
+        )
+
+        docs = self._set_result(requests, return_data, docs)
+
+        self._record_docs_processed_monitoring(requests, docs)
+        self._record_response_size_monitoring(requests)
 
         return requests[0]
 
