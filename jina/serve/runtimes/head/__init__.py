@@ -1,14 +1,13 @@
 import argparse
 import asyncio
-import contextlib
 import json
 import os
 from abc import ABC
 from collections import defaultdict
-from functools import total_ordering
 from typing import Dict, List, Optional, Tuple
 
 import grpc
+from grpc.aio import AioRpcError
 from grpc_health.v1 import health, health_pb2, health_pb2_grpc
 from grpc_reflection.v1alpha import reflection
 
@@ -321,7 +320,7 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
                 retries=self._retries,
             )
 
-            if isinstance(uses_before_result, BaseException):
+            if isinstance(uses_before_result, (AioRpcError, InternalNetworkError)):
                 raise uses_before_result
             else:
                 (response, uses_before_metadata) = uses_before_result
@@ -341,7 +340,10 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
             filter(lambda x: isinstance(x, Tuple), all_worker_results)
         )
         exceptions = list(
-            filter(lambda x: isinstance(x, BaseException), all_worker_results)
+            filter(
+                lambda x: isinstance(x, (AioRpcError, InternalNetworkError)),
+                all_worker_results,
+            )
         )
         failed_shards = len(exceptions)
 
@@ -361,7 +363,7 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
                 timeout=self.timeout_send,
                 retries=self._retries,
             )
-            if isinstance(uses_after_result, BaseException):
+            if isinstance(uses_after_result, (AioRpcError, InternalNetworkError)):
                 raise uses_after_result
             else:
                 (response_request, uses_after_metadata) = uses_after_result
