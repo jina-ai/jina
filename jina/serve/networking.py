@@ -820,36 +820,6 @@ class GrpcConnectionPool:
             )
             return None
 
-    def send_request_once(
-        self,
-        request: Request,
-        deployment: str,
-        metadata: Optional[Dict[str, str]] = None,
-        head: bool = False,
-        shard_id: Optional[int] = None,
-        timeout: Optional[float] = None,
-        retries: Optional[int] = -1,
-    ) -> asyncio.Task:
-        """Send msg to target via only one of the pooled connections
-        :param request: request to send
-        :param deployment: name of the Jina deployment to send the message to
-        :param metadata: metadata to send with the request
-        :param head: If True it is send to the head, otherwise to the worker pods
-        :param shard_id: Send to a specific shard of the deployment, ignored for polling ALL
-        :param timeout: timeout for sending the requests
-        :param retries: number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
-        :return: asyncio.Task representing the send call
-        """
-        return self.send_requests_once(
-            [request],
-            deployment=deployment,
-            metadata=metadata,
-            head=head,
-            shard_id=shard_id,
-            timeout=timeout,
-            retries=retries,
-        )
-
     def send_requests_once(
         self,
         requests: List[Request],
@@ -1077,7 +1047,7 @@ class GrpcConnectionPool:
                         timeout=timeout,
                     )
                 except AioRpcError as e:
-                    await self._handle_aiorpcerror(
+                    error = await self._handle_aiorpcerror(
                         error=e,
                         retry_i=i,
                         tried_addresses=tried_addresses,
@@ -1085,6 +1055,8 @@ class GrpcConnectionPool:
                         connection_list=connection_list,
                         total_num_tries=total_num_tries,
                     )
+                    if error:
+                        raise error
                 except AttributeError:
                     return default_endpoints_proto, None
 
