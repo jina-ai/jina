@@ -76,8 +76,9 @@ Installed along with Jina, you can leverage the `hubble` package to manage login
 ```python
 import hubble
 
-# Login via browser or Personal Access Token. The token will be saved locally.
-# In Jupyter/Google Colab, interactive login will be used automatically.
+# Log in via browser or [Personal Access Token](https://cloud.jina.ai/settings/tokens). The token is saved locally.
+
+# In Jupyter/Google Colab, interactive login is used automatically.
 # To disable this feature, run `hubble.login(interactive=False)`.
 hubble.login() 
 ```
