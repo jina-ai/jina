@@ -82,7 +82,7 @@ class V1Parser(VersionedYAMLParser):
         gateway = data.get('gateway', {})
         if gateway:
             gateway_attr = {kk: expand_env_var(vv) for kk, vv in gateway.items()}
-            obj.config_gateway(**gateway_attr)
+            obj.config_gateway(**gateway_attr, copy_flow=False)
         return obj
 
     def dump(self, data: 'Flow') -> Dict:
