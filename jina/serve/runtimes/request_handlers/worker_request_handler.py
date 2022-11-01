@@ -252,9 +252,9 @@ class WorkerRequestHandler:
                     f'but getting {return_data!r}'
                 )
 
-            WorkerRequestHandler.replace_docs(
-                requests[0], docs, self.args.output_array_type
-            )
+        WorkerRequestHandler.replace_docs(
+            requests[0], docs, self.args.output_array_type
+        )
         return docs
 
     async def handle(
