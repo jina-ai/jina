@@ -14,7 +14,7 @@ from grpc_reflection.v1alpha.reflection_pb2_grpc import ServerReflectionStub
 
 from jina import __default_endpoint__
 from jina.enums import PollingType
-from jina.excepts import EstablishGrpcConnectionError
+from jina.excepts import EstablishGrpcConnectionError, InternalNetworkError
 from jina.importer import ImportExtensions
 from jina.logging.logger import JinaLogger
 from jina.proto import jina_pb2, jina_pb2_grpc
@@ -952,7 +952,7 @@ class GrpcConnectionPool:
         total_num_tries: int = 1,  # number of retries + 1
         current_address: str = '',  # the specific address that was contacted during this attempt
         connection_list: Optional[ReplicaList] = None,
-    ) -> Optional[BaseException]:
+    ) -> Optional[Union[AioRpcError, InternalNetworkError]]:
         # connection failures, cancelled requests, and timed out requests should be retried
         # all other cases should not be retried and will be raised immediately
         # connection failures have the code grpc.StatusCode.UNAVAILABLE
