@@ -21,17 +21,6 @@ Check out {ref}`jcloud` if you want a **one-click** solution to deploy and host 
 ```
 
 
-:::::{grid} 2
-:gutter: 3
-
-::::{grid-item-card} {octicon}`cpu;1.5em` Deploy a Flow to JCloud
-:link: fundamentals/jcloud/index
-:link-type: doc
-:class-card: color-gradient-card-2
-
-JCloud is a free CPU/GPU hosting platform for Jina projects.
-::::
-:::::
 
 ## Preliminaries
 

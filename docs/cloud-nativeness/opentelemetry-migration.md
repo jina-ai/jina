@@ -1,5 +1,5 @@
 (opentelemetry-migration)=
-# Migrate from Prometheus/Grafana to OpenTelemetry/Prometheus/Grafana 
+# Migrate from Prometheus/Grafana to OpenTelemetry
 
 The {ref}`Prometheus/Grafana <monitoring>` based monitoring setup will soon be deprecated in favor of the {ref}`OpenTelemetry setup <opentelemetry>`. This section provides the details required to update/migrate your Prometheus configuration and Grafana dashboard to continue monitoring with OpenTelemetry. Refer to {ref}`Opentelemetry setup <opentelemetry>` for the new setup before proceeding further.
 

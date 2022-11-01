@@ -1,17 +1,22 @@
 (kubernetes-docs)=
-# Kubernetes Support
+# {fas}`dharmachakra` Kubernetes Support
+
+```{toctree}
+:hidden:
+
+kubernetes
+```
+
 
 Jina is a cloud-native framework and therefore runs natively and easily on Kubernetes.
 Deploying a Jina Flow on Kubernetes is actually the recommended way to use Jina in production.
 
-
 A {class}`~jina.Flow` is composed of different microservices called {class}`~jina.Executor`s which natively run in containers. This means that Kubernetes can natively take over the lifetime management of Executors. 
 
-Deploying a {class}`~jina.Flow` on Kubernetes means wrapping these microservice containers in the appropriate K8s abstraction (Deployment, StatefulSet, and so on), exposing them internally via K8s service and 
-connecting them together by passing the right set of parameters.
+Deploying a {class}`~jina.Flow` on Kubernetes means wrapping these microservice containers in the appropriate K8s abstraction (Deployment, StatefulSet, and so on), exposing them internally via K8s service and connecting them together by passing the right set of parameters.
+
 
 ## Automatically translate a Flow to Kubernetes concept
-
 
 ```{hint}
 Manually building these Kubernetes YAML object is long and cumbersome. Therefore we provide a helper function {meth}`~jina.Flow.to_kubernetes_yaml` that does most of this
@@ -25,7 +30,6 @@ This helper function can be called from:
 ```{seealso}
 More detail in the {ref}`Flow export documentation <kubernetes-export>`
 ```
-
 
 ## Extra Kubernetes options
 
@@ -89,7 +93,6 @@ Instead, you can disable Jina level retries by setting `Flow(retries=0)` in Pyth
 YAML's `with` block.
 ````
 
-
 (kubernetes-replicas)=
 ## Scaling Executors: Replicas and shards
 
@@ -125,29 +128,9 @@ To expose your Gateway replicas outside Kubernetes, you can add a load balancer 
 You can use a custom Docker image for the Gateway deployment by setting the envrironment variable `JINA_GATEWAY_IMAGE` to the desired image before generating the configuration.
 ````
 
-
-## Deploying On Jina AI Cloud
-
-Check out Jina AI Cloud {ref}`jcloud` if you want a **one-click** solution to deploy and host Jina, leveraging a cloud-native stack of Kubernetes, Prometheus and Grafana, **without worrying about provisioning**.
-
-
-:::::{grid} 2
-:gutter: 3
-
-::::{grid-item-card} {octicon}`cpu;1.5em` Deploy a Flow to JCloud
-:link: fundamentals/jcloud/index
-:link-type: doc
-:class-card: color-gradient-card-2
-
-JCloud is a free CPU/GPU hosting platform for Jina projects.
-::::
-:::::
-
-
-
-## See further
-- {ref}`Step by Step deployement of a Jina Flow on K8s <kubernetes>`
-- {ref}`Flow export documentation <kubernetes-export>`
+## See also
+- {ref}`Step by step deployment of a Jina Flow on Kubernetes <kubernetes>`
+- {ref}`Export a Flow to Kubernetes <kubernetes-export>`
 - {meth}`~jina.Flow.to_kubernetes_yaml`
-- {ref}`Deploy a standalone Executor on K8s <kubernetes-executor>`
+- {ref}`Deploy a standalone Executor on Kubernetes <kubernetes-executor>`
 - [Kubernetes Documentation](https://kubernetes.io/docs/home/)

@@ -88,21 +88,6 @@ def mixin_pod_parser(parser, pod_type: str = 'worker'):
     )
 
     gp.add_argument(
-        '--shards',
-        type=int,
-        default=1,
-        help='The number of shards in the deployment running at the same time. For more details check '
-        'https://docs.jina.ai/fundamentals/flow/create-flow/#complex-flow-topologies',
-    )
-
-    gp.add_argument(
-        '--replicas',
-        type=int,
-        default=1,
-        help='The number of replicas in the deployment',
-    )
-
-    gp.add_argument(
         '--port',
         type=str,
         default=str(helper.random_port()),

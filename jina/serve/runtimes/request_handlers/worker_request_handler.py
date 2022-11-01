@@ -8,7 +8,7 @@ from jina.importer import ImportExtensions
 from jina.serve.executors import BaseExecutor
 from jina.types.request.data import DataRequest
 
-if TYPE_CHECKING: # pragma: no cover
+if TYPE_CHECKING:  # pragma: no cover
     import argparse
 
     from opentelemetry import metrics, trace
@@ -184,12 +184,12 @@ class WorkerRequestHandler:
         }
 
     async def handle(
-        self, requests: List['DataRequest'], tracing_context: 'Context' = None
+        self, requests: List['DataRequest'], tracing_context: Optional['Context'] = None
     ) -> DataRequest:
         """Initialize private parameters and execute private loading functions.
 
         :param requests: The messages to handle containing a DataRequest
-        :param tracing_context: OpenTelemetry tracing context from the originating request.
+        :param tracing_context: Optional OpenTelemetry tracing context from the originating request.
         :returns: the processed message
         """
         # skip executor if endpoints mismatch
@@ -269,7 +269,9 @@ class WorkerRequestHandler:
             )
             self._document_processed_counter.add(len(docs), attributes=attributes)
 
-        WorkerRequestHandler.replace_docs(requests[0], docs, self.args.output_array_type)
+        WorkerRequestHandler.replace_docs(
+            requests[0], docs, self.args.output_array_type
+        )
 
         if self._sent_response_size_metrics:
             self._sent_response_size_metrics.labels(
