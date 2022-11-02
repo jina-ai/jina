@@ -47,7 +47,7 @@ _dummy_gateway_yaml_path = os.path.join(
         ),
     ],
 )
-def test_flow_custom_gateway(uses, uses_with, expected):
+def test_flow_custom_gateway_no_executor(uses, uses_with, expected):
 
     flow = (
         Flow()
