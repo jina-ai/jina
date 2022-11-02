@@ -4,6 +4,7 @@ import pytest
 
 from jina import Flow
 from tests.helper import (
+    ProcessExecutor,
     _validate_custom_gateway_process,
     _validate_dummy_custom_gateway_response,
 )
@@ -46,7 +47,7 @@ _dummy_gateway_yaml_path = os.path.join(
         ),
     ],
 )
-def test_custom_gateway_no_executors(uses, uses_with, expected):
+def test_flow_custom_gateway(uses, uses_with, expected):
 
     flow = (
         Flow()
