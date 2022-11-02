@@ -596,6 +596,25 @@ def test_gateway_only_flows_no_error(capsys, protocol):
     assert not captured.err
 
 
+@pytest.mark.slow
+def test_flow_with_custom_gateway(tmpdir):
+    # flow params are overridden by gateway params here
+    f = (
+        Flow(protocol='grpc', port=12344)
+        .config_gateway(uses='HTTPGateway', protocol='http', port=12345)
+        .add(name='executor')
+    )
+
+    with f:
+        _validate_flow(f)
+
+    f.save_config(os.path.join(str(tmpdir), 'tmp.yml'))
+    Flow.load_config(os.path.join(str(tmpdir), 'tmp.yml'))
+
+    with Flow.load_config(os.path.join(str(tmpdir), 'tmp.yml')) as f:
+        _validate_flow(f)
+
+
 def _validate_flow(f):
     graph_dict = f._get_graph_representation()
     addresses = f._get_deployments_addresses()
