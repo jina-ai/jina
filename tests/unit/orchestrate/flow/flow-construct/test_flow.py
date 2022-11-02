@@ -8,7 +8,7 @@ import pytest
 from docarray.document.generators import from_ndarray
 
 from jina import Document, DocumentArray, Executor, Flow, __windows__, requests
-from jina.enums import FlowBuildLevel
+from jina.enums import FlowBuildLevel, GatewayProtocolType
 from jina.excepts import RuntimeFailToStart
 from jina.helper import random_identity
 from jina.orchestrate.deployments import BaseDeployment
@@ -597,7 +597,7 @@ def test_gateway_only_flows_no_error(capsys, protocol):
 
 
 @pytest.mark.slow
-def test_flow_with_custom_gateway(tmpdir):
+def test_load_flow_with_custom_gateway(tmpdir):
     # flow params are overridden by gateway params here
     f = (
         Flow(protocol='grpc', port=12344)
@@ -609,9 +609,14 @@ def test_flow_with_custom_gateway(tmpdir):
         _validate_flow(f)
 
     f.save_config(os.path.join(str(tmpdir), 'tmp.yml'))
-    Flow.load_config(os.path.join(str(tmpdir), 'tmp.yml'))
+    f = Flow.load_config(os.path.join(str(tmpdir), 'tmp.yml'))
+
+    assert f.port == 12345
+    assert f.protocol == GatewayProtocolType.HTTP
 
     with Flow.load_config(os.path.join(str(tmpdir), 'tmp.yml')) as f:
+        assert f.port == 12345
+        assert f.protocol == GatewayProtocolType.HTTP
         _validate_flow(f)
 
 
