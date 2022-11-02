@@ -127,8 +127,8 @@ class V1Parser(VersionedYAMLParser):
             if k == 'gateway':
                 if 'JINA_FULL_CLI' in os.environ:
                     r['with'].update(kwargs)
-                else:
-                    continue
+                if kwargs:
+                    r['gateway'] = kwargs
             else:
                 last_name = kwargs['name']
                 r['executors'].append(kwargs)
