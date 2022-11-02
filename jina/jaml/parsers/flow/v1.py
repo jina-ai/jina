@@ -114,8 +114,6 @@ class V1Parser(VersionedYAMLParser):
 
             # get nondefault kwargs
             parser = set_deployment_parser()
-            if v.role == DeploymentRoleType.GATEWAY:
-                parser = set_gateway_parser()
 
             non_default_kw = ArgNamespace.get_non_defaults_args(v.args, parser)
 
@@ -124,13 +122,21 @@ class V1Parser(VersionedYAMLParser):
             for t in _get_taboo(parser):
                 if t in kwargs:
                     kwargs.pop(t)
-            if k == 'gateway':
-                if 'JINA_FULL_CLI' in os.environ:
-                    r['with'].update(kwargs)
-                if kwargs:
-                    r['gateway'] = kwargs
-            else:
+            if k != 'gateway':
                 last_name = kwargs['name']
                 r['executors'].append(kwargs)
 
+        gateway_kwargs = {}
+        gateway_parser = set_gateway_parser()
+        non_default_kw = ArgNamespace.get_non_defaults_args(
+            data.gateway_args, gateway_parser
+        )
+        gateway_kwargs.update(non_default_kw)
+        for t in _get_taboo(gateway_parser):
+            if t in gateway_kwargs:
+                gateway_kwargs.pop(t)
+        if 'JINA_FULL_CLI' in os.environ:
+            r['with'].update(gateway_kwargs)
+        if gateway_kwargs:
+            r['gateway'] = gateway_kwargs
         return r
