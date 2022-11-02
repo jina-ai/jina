@@ -200,8 +200,11 @@ def test_flow_yaml_override_with_protocol():
     assert f3.protocol == GatewayProtocolType.WEBSOCKET
 
 
-def test_load_flow_with_gateway():
-    path = os.path.join(cur_dir.parent.parent.parent, 'yaml/flow_with_gateway.yml')
+@pytest.mark.parametrize(
+    'yaml_file', ['yaml/flow_with_gateway.yml', 'yaml/flow_with_gateway_nested.yml']
+)
+def test_load_flow_with_gateway(yaml_file):
+    path = os.path.join(cur_dir.parent.parent.parent, yaml_file)
     flow = Flow.load_config(
         path,
         uses_with={'protocol': 'grpc', 'port': 12345},
