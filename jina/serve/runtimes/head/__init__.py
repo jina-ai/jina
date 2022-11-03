@@ -379,7 +379,7 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
                 retries=self._retries,
             )
         elif len(worker_results) > 1 and self._reduce:
-            response_request = WorkerRequestHandler.reduce_requests(worker_results)
+            WorkerRequestHandler.reduce_requests(worker_results)
         elif len(worker_results) > 1 and not self._reduce:
             # worker returned multiple responses, but the head is configured to skip reduction
             # just concatenate the docs in this case

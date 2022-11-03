@@ -140,9 +140,7 @@ class TopologyGraph:
                             need_copy=not copy_request_at_send
                         )
                     if self._reduce and len(self.parts_to_send) > 1:
-                        self.parts_to_send = [
-                            WorkerRequestHandler.reduce_requests(self.parts_to_send)
-                        ]
+                        WorkerRequestHandler.reduce_requests(self.parts_to_send)
 
                     # avoid sending to executor which does not bind to this endpoint
                     if endpoint is not None and executor_endpoint_mapping is not None:
