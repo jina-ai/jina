@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING, Dict, List, Optional
 
 from docarray import DocumentArray
+
 from jina import __default_endpoint__
 from jina.excepts import BadConfigSource
 from jina.importer import ImportExtensions
@@ -10,10 +11,11 @@ from jina.types.request.data import DataRequest
 if TYPE_CHECKING:  # pragma: no cover
     import argparse
 
-    from jina.logging.logger import JinaLogger
     from opentelemetry import metrics, trace
     from opentelemetry.context.context import Context
     from prometheus_client import CollectorRegistry
+
+    from jina.logging.logger import JinaLogger
 
 
 class WorkerRequestHandler:
@@ -68,8 +70,9 @@ class WorkerRequestHandler:
                 required=True,
                 help_text='You need to install the `prometheus_client` to use the montitoring functionality of jina',
             ):
-                from jina.serve.monitoring import _SummaryDeprecated
                 from prometheus_client import Counter, Summary
+
+                from jina.serve.monitoring import _SummaryDeprecated
 
                 self._document_processed_metrics = Counter(
                     'document_processed',
@@ -448,3 +451,5 @@ class WorkerRequestHandler:
 
         params = WorkerRequestHandler.get_parameters_dict_from_request(requests)
         WorkerRequestHandler.replace_parameters(requests[0], params)
+
+        return requests[0]
