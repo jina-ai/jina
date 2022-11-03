@@ -147,7 +147,7 @@ class MetricsTimer:
         self._histogram_metric_labels = histogram_metric_labels
 
     def _new_timer(self):
-        return self.__class__(self._summary_metric, self._histogram)
+        return self.__class__(self._summary_metric, self._histogram, self._histogram_metric_labels)
 
     def __enter__(self):
         self._start = default_timer()
