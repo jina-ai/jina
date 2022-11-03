@@ -7,7 +7,7 @@ from grpc_health.v1 import health, health_pb2, health_pb2_grpc
 from grpc_reflection.v1alpha import reflection
 
 from jina.excepts import RuntimeTerminated
-from jina.helper import get_full_version
+from jina.helper import get_full_version, replace_args_with_secrets
 from jina.importer import ImportExtensions
 from jina.proto import jina_pb2, jina_pb2_grpc
 from jina.serve.instrumentation import MetricsTimer
@@ -34,6 +34,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         :param args: args from CLI
         :param kwargs: keyword args
         """
+        args = replace_args_with_secrets(args, getattr(args, 'secrets', {}))
         self._health_servicer = health.HealthServicer(experimental_non_blocking=True)
         super().__init__(args, **kwargs)
 

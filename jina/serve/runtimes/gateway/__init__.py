@@ -1,8 +1,6 @@
 import argparse
 import asyncio
-import os
 import urllib
-from abc import ABC
 from http import HTTPStatus
 from typing import TYPE_CHECKING, Optional, Union
 
@@ -13,11 +11,11 @@ from jina.helper import is_port_free
 from jina.parsers.helper import _set_gateway_uses
 from jina.serve.gateway import BaseGateway
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
+from jina.helper import replace_args_with_secrets
 
-if TYPE_CHECKING: # pragma: no cover
+if TYPE_CHECKING:  # pragma: no cover
     import multiprocessing
     import threading
-
 
 # Keep these imports even if not used, since YAML parser needs to find them in imported modules
 from jina.serve.runtimes.gateway.grpc import GRPCGateway
@@ -35,14 +33,15 @@ class GatewayRuntime(AsyncNewLoopRuntime):
     """
 
     def __init__(
-        self,
-        args: argparse.Namespace,
-        cancel_event: Optional[
-            Union['asyncio.Event', 'multiprocessing.Event', 'threading.Event']
-        ] = None,
-        **kwargs,
+            self,
+            args: argparse.Namespace,
+            cancel_event: Optional[
+                Union['asyncio.Event', 'multiprocessing.Event', 'threading.Event']
+            ] = None,
+            **kwargs,
     ):
         # this order is intentional: The timeout is needed in _create_topology_graph(), called by super
+        args = replace_args_with_secrets(args, getattr(args, 'secrets', {}))
         self.timeout_send = args.timeout_send
         if self.timeout_send:
             self.timeout_send /= 1e3  # convert ms to seconds
@@ -134,9 +133,9 @@ class GatewayRuntime(AsyncNewLoopRuntime):
         """
 
         if (
-            protocol is None
-            or protocol == GatewayProtocolType.GRPC
-            or protocol == 'grpc'
+                protocol is None
+                or protocol == GatewayProtocolType.GRPC
+                or protocol == 'grpc'
         ):
             res = AsyncNewLoopRuntime.is_ready(ctrl_address)
         else:
@@ -149,12 +148,12 @@ class GatewayRuntime(AsyncNewLoopRuntime):
 
     @classmethod
     def wait_for_ready_or_shutdown(
-        cls,
-        timeout: Optional[float],
-        ready_or_shutdown_event: Union['multiprocessing.Event', 'threading.Event'],
-        ctrl_address: str,
-        protocol: Optional[str] = 'grpc',
-        **kwargs,
+            cls,
+            timeout: Optional[float],
+            ready_or_shutdown_event: Union['multiprocessing.Event', 'threading.Event'],
+            ctrl_address: str,
+            protocol: Optional[str] = 'grpc',
+            **kwargs,
     ):
         """
         Check if the runtime has successfully started
