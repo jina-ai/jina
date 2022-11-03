@@ -64,19 +64,32 @@ class _NetworkingHistograms:
     send_requests_bytes_metrics: Optional['Histogram'] = None
     histogram_metric_labels: Dict[str, str] = None
 
-    def record_sending_requests_time_metrics(self, value: int):
+    def record_sending_requests_time_metrics(self, value: int, additional_labels: Optional[Dict[str, str]] = None):
+        if additional_labels is None:
+            labels = self.histogram_metric_labels
+        else:
+            labels = {**self.histogram_metric_labels, **additional_labels}
+            
         if self.sending_requests_time_metrics:
-            self.sending_requests_time_metrics.record(
-                value, self.histogram_metric_labels
-            )
+            self.sending_requests_time_metrics.record(value, labels)
 
-    def record_received_response_bytes(self, value: int):
+    def record_received_response_bytes(self, value: int, additional_labels: Optional[Dict[str, str]] = None):
+        if additional_labels is None:
+            labels = self.histogram_metric_labels
+        else:
+            labels = {**self.histogram_metric_labels, **additional_labels}
+
         if self.received_response_bytes:
-            self.received_response_bytes.record(value, self.histogram_metric_labels)
+            self.received_response_bytes.record(value, labels)
 
-    def record_send_requests_bytes_metrics(self, value: int):
+    def record_send_requests_bytes_metrics(self, value: int, additional_labels: Optional[Dict[str, str]] = None):
+        if additional_labels is None:
+            labels = self.histogram_metric_labels
+        else:
+            labels = {**self.histogram_metric_labels, **additional_labels}
+
         if self.send_requests_bytes_metrics:
-            self.send_requests_bytes_metrics.record(value, self.histogram_metric_labels)
+            self.send_requests_bytes_metrics.record(value, labels)
 
 
 class ReplicaList:
@@ -329,9 +342,11 @@ class GrpcConnectionPool:
             self._histograms = histograms
             self._initialized = False
 
-            if self._histograms is not None:
-                if self._histograms.histogram_metric_labels is not None:
-                    self._histograms.histogram_metric_labels.update(deployment_name=deployment_name)
+            if self._histograms:
+                self.stub_specific_labels = {
+                    'deployment': deployment_name,
+                    'address': address,
+                }
 
         # This has to be done lazily, because the target endpoint may not be available
         # when a connection is added
@@ -373,21 +388,25 @@ class GrpcConnectionPool:
             return response, metadata
 
         def _get_metric_timer(self):
+            labels = {
+                **self._histograms.histogram_metric_labels,
+                **self.stub_specific_labels,
+            }
             return MetricsTimer(
                 self._metrics.sending_requests_time_metrics,
                 self._histograms.sending_requests_time_metrics,
-                self._histograms.histogram_metric_labels,
+                labels,
             )
 
         def _record_request_bytes_metric(self, nbytes: int):
             if self._metrics.send_requests_bytes_metrics:
                 self._metrics.send_requests_bytes_metrics.observe(nbytes)
-            self._histograms.record_send_requests_bytes_metrics(nbytes)
+            self._histograms.record_send_requests_bytes_metrics(nbytes, self.stub_specific_labels)
 
         def _record_received_bytes_metric(self, nbytes: int):
             if self._metrics.received_response_bytes:
                 self._metrics.received_response_bytes.observe(nbytes)
-            self._histograms.record_received_response_bytes(nbytes)
+            self._histograms.record_received_response_bytes(nbytes, self.stub_specific_labels)
 
         async def send_requests(
             self,
