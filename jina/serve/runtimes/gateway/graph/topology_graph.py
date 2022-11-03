@@ -7,7 +7,6 @@ from typing import Dict, List, Optional, Tuple
 
 import grpc.aio
 from grpc.aio import AioRpcError
-
 from jina import __default_endpoint__
 from jina.excepts import InternalNetworkError
 from jina.serve.networking import GrpcConnectionPool
@@ -160,7 +159,7 @@ class TopologyGraph:
                         return request, metadata
                     # otherwise, send to executor and get response
                     try:
-                        result = await connection_pool.send_requests_once(
+                        resp, metadata = await connection_pool.send_requests_once(
                             requests=self.parts_to_send,
                             deployment=self.name,
                             metadata=self._metadata,
@@ -169,10 +168,6 @@ class TopologyGraph:
                             timeout=self._timeout_send,
                             retries=self._retries,
                         )
-                        if isinstance(result, (AioRpcError, InternalNetworkError)):
-                            raise result
-                        else:
-                            resp, metadata = result
                         if WorkerRequestHandler._KEY_RESULT in resp.parameters:
                             # Accumulate results from each Node and then add them to the original
                             self.result_in_params_returned = resp.parameters[

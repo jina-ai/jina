@@ -338,18 +338,16 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
 
         uses_before_metadata = None
         if self.uses_before_address:
-            uses_before_result = await self.connection_pool.send_requests_once(
+            (
+                response,
+                uses_before_metadata,
+            ) = await self.connection_pool.send_requests_once(
                 requests,
                 deployment='uses_before',
                 timeout=self.timeout_send,
                 retries=self._retries,
             )
-
-            if isinstance(uses_before_result, (AioRpcError, InternalNetworkError)):
-                raise uses_before_result
-            else:
-                (response, uses_before_metadata) = uses_before_result
-                requests = [response]
+            requests = [response]
 
         (
             worker_results,
@@ -371,16 +369,15 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
         response_request = worker_results[0]
         uses_after_metadata = None
         if self.uses_after_address:
-            uses_after_result = await self.connection_pool.send_requests_once(
+            (
+                response_request,
+                uses_after_metadata,
+            ) = await self.connection_pool.send_requests_once(
                 worker_results,
                 deployment='uses_after',
                 timeout=self.timeout_send,
                 retries=self._retries,
             )
-            if isinstance(uses_after_result, (AioRpcError, InternalNetworkError)):
-                raise uses_after_result
-            else:
-                (response_request, uses_after_metadata) = uses_after_result
         elif len(worker_results) > 1 and self._reduce:
             response_request = WorkerRequestHandler.reduce_requests(worker_results)
         elif len(worker_results) > 1 and not self._reduce:
