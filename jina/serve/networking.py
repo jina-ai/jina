@@ -925,7 +925,7 @@ class GrpcConnectionPool:
         total_num_tries: int = 1,  # number of retries + 1
         current_address: str = '',  # the specific address that was contacted during this attempt
         connection_list: Optional[ReplicaList] = None,
-    ) -> Optional[Union[AioRpcError, InternalNetworkError]]:
+    ) -> 'Optional[Union[AioRpcError, InternalNetworkError]]':
         # connection failures, cancelled requests, and timed out requests should be retried
         # all other cases should not be retried and will be raised immediately
         # connection failures have the code grpc.StatusCode.UNAVAILABLE
@@ -972,7 +972,7 @@ class GrpcConnectionPool:
         metadata: Optional[Dict[str, str]] = None,
         timeout: Optional[float] = None,
         retries: Optional[int] = -1,
-    ) -> asyncio.Task[Union[Tuple, AioRpcError, InternalNetworkError]]:
+    ) -> 'asyncio.Task[Union[Tuple, AioRpcError, InternalNetworkError]]':
         # this wraps the awaitable object from grpc as a coroutine so it can be used as a task
         # the grpc call function is not a coroutine but some _AioCall
 
