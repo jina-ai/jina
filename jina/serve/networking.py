@@ -389,8 +389,6 @@ class GrpcConnectionPool:
         def _get_metric_timer(self):
             if self._histograms.histogram_metric_labels is None:
                 labels = None
-            elif self.stub_specific_labels is None:
-                labels = self._histograms.histogram_metric_labels
             else:
                 labels = {
                     **self._histograms.histogram_metric_labels,
