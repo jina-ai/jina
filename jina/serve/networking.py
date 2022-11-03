@@ -329,7 +329,9 @@ class GrpcConnectionPool:
             self._histograms = histograms
             self._initialized = False
 
-            self._histograms.histogram_metric_labels.update(deployment_name=deployment_name)
+            if self._histograms is not None:
+                if self._histograms.histogram_metric_labels is not None:
+                    self._histograms.histogram_metric_labels.update(deployment_name=deployment_name)
 
         # This has to be done lazily, because the target endpoint may not be available
         # when a connection is added
