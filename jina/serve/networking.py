@@ -64,29 +64,28 @@ class _NetworkingHistograms:
     send_requests_bytes_metrics: Optional['Histogram'] = None
     histogram_metric_labels: Dict[str, str] = None
 
-    def record_sending_requests_time_metrics(self, value: int, additional_labels: Optional[Dict[str, str]] = None):
+    def get_labels(self, additional_labels: Optional[Dict[str, str]] = None):
+        # TODO: This is quite ugly. Surely there's a better way
+        if self.histogram_metric_labels is None:
+            return None
         if additional_labels is None:
-            labels = self.histogram_metric_labels
-        else:
-            labels = {**self.histogram_metric_labels, **additional_labels}
+            return self.histogram_metric_labels
+        return {**self.histogram_metric_labels, **additional_labels}
+
+    def record_sending_requests_time_metrics(self, value: int, additional_labels: Optional[Dict[str, str]] = None):
+        labels = self.get_labels(additional_labels)
             
         if self.sending_requests_time_metrics:
             self.sending_requests_time_metrics.record(value, labels)
 
     def record_received_response_bytes(self, value: int, additional_labels: Optional[Dict[str, str]] = None):
-        if additional_labels is None:
-            labels = self.histogram_metric_labels
-        else:
-            labels = {**self.histogram_metric_labels, **additional_labels}
+        labels = self.get_labels(additional_labels)
 
         if self.received_response_bytes:
             self.received_response_bytes.record(value, labels)
 
     def record_send_requests_bytes_metrics(self, value: int, additional_labels: Optional[Dict[str, str]] = None):
-        if additional_labels is None:
-            labels = self.histogram_metric_labels
-        else:
-            labels = {**self.histogram_metric_labels, **additional_labels}
+        labels = self.get_labels(additional_labels)
 
         if self.send_requests_bytes_metrics:
             self.send_requests_bytes_metrics.record(value, labels)
@@ -388,10 +387,16 @@ class GrpcConnectionPool:
             return response, metadata
 
         def _get_metric_timer(self):
-            labels = {
-                **self._histograms.histogram_metric_labels,
-                **self.stub_specific_labels,
-            }
+            if self._histograms.histogram_metric_labels is None:
+                labels = None
+            elif self.stub_specific_labels is None:
+                labels = self._histograms.histogram_metric_labels
+            else:
+                labels = {
+                    **self._histograms.histogram_metric_labels,
+                    **self.stub_specific_labels,
+                }
+
             return MetricsTimer(
                 self._metrics.sending_requests_time_metrics,
                 self._histograms.sending_requests_time_metrics,
