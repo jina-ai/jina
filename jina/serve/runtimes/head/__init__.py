@@ -345,6 +345,8 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
             )
         )
         failed_shards = len(exceptions)
+        if failed_shards:
+            self.logger.warning(f'{failed_shards} shards out of {total_shards} failed.')
 
         if len(worker_results) == 0:
             if exceptions:
