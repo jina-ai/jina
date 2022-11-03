@@ -112,7 +112,7 @@ class ReplicaList:
         handling of race condition if multiple callers reset a connection at the same time.
 
         :param address: Target address of this connection
-        :param address: Target deployment of this connection
+        :param deployment_name: Target deployment of this connection
         :returns: The reset connection or None if there was no connection for the given address
         """
         self._logger.debug(f'resetting connection to {address}')
@@ -146,7 +146,7 @@ class ReplicaList:
         """
         Add connection with address to the connection list
         :param address: Target address of this connection
-        :param address: Target deployment of this connection
+        :param deployment_name: Target deployment of this connection
         """
         if address not in self._address_to_connection_idx:
             self._address_to_connection_idx[address] = len(self._connections)
@@ -980,6 +980,7 @@ class GrpcConnectionPool:
         },  # same deployment can have multiple addresses (replicas)
         total_num_tries: int = 1,  # number of retries + 1
         current_address: str = '',  # the specific address that was contacted during this attempt
+        current_deployment: str = '',  # the specific deployment that was contacted during this attempt
         connection_list: Optional[ReplicaList] = None,
     ):
         # connection failures, cancelled requests, and timed out requests should be retried
@@ -1005,7 +1006,7 @@ class GrpcConnectionPool:
             # after connection failure the gRPC `channel` gets stuck in a failure state for a few seconds
             # removing and re-adding the connection (stub) is faster & more reliable than just waiting
             if connection_list:
-                await connection_list.reset_connection(current_address)
+                await connection_list.reset_connection(current_address, current_deployment)
 
             raise InternalNetworkError(
                 og_exception=error,
@@ -1067,6 +1068,7 @@ class GrpcConnectionPool:
                         tried_addresses=tried_addresses,
                         total_num_tries=total_num_tries,
                         current_address=current_connection.address,
+                        current_deployment=current_connection.deployment_name,
                         connection_list=connections,
                     )
 
@@ -1108,6 +1110,7 @@ class GrpcConnectionPool:
                         retry_i=i,
                         tried_addresses=tried_addresses,
                         current_address=connection.address,
+                        current_deployment=connection.deployment_name,
                         connection_list=connection_list,
                         total_num_tries=total_num_tries,
                     )
