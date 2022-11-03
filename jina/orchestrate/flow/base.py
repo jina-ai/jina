@@ -859,6 +859,7 @@ class Flow(
         replicas: Optional[int] = 1,
         retries: Optional[int] = -1,
         runtime_cls: Optional[str] = 'WorkerRuntime',
+        secrets: Optional[dict] = None,
         shards: Optional[int] = 1,
         timeout_ctrl: Optional[int] = 60,
         timeout_ready: Optional[int] = 600000,
@@ -952,6 +953,7 @@ class Flow(
         :param replicas: The number of replicas in the deployment
         :param retries: Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
         :param runtime_cls: The runtime class to run inside the Pod
+        :param secrets: The Secrets object that will be passed to the Executor/Gateway.
         :param shards: The number of shards in the deployment running at the same time. For more details check https://docs.jina.ai/fundamentals/flow/create-flow/#complex-flow-topologies
         :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever
         :param timeout_ready: The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting forever
@@ -1108,6 +1110,7 @@ class Flow(
         :param replicas: The number of replicas in the deployment
         :param retries: Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
         :param runtime_cls: The runtime class to run inside the Pod
+        :param secrets: The Secrets object that will be passed to the Executor/Gateway.
         :param shards: The number of shards in the deployment running at the same time. For more details check https://docs.jina.ai/fundamentals/flow/create-flow/#complex-flow-topologies
         :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever
         :param timeout_ready: The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting forever
