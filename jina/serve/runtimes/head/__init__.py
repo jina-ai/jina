@@ -10,7 +10,6 @@ import grpc
 from grpc.aio import AioRpcError
 from grpc_health.v1 import health, health_pb2, health_pb2_grpc
 from grpc_reflection.v1alpha import reflection
-
 from jina.enums import PollingType
 from jina.excepts import InternalNetworkError
 from jina.helper import get_full_version
@@ -348,6 +347,9 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
         failed_shards = len(exceptions)
 
         if len(worker_results) == 0:
+            if exceptions:
+                # raise the underlying error first
+                raise exceptions[0]
             raise RuntimeError(
                 f'Head {self.name} did not receive a response when sending message to worker pods'
             )
