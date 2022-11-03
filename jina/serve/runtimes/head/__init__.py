@@ -303,6 +303,32 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
 
         return response
 
+    async def _gather_worker_tasks(self, requests, endpoint):
+        worker_send_tasks = self.connection_pool.send_requests(
+            requests=requests,
+            deployment=self._deployment_name,
+            polling_type=self._polling[endpoint],
+            timeout=self.timeout_send,
+            retries=self._retries,
+        )
+
+        all_worker_results = await asyncio.gather(*worker_send_tasks)
+        worker_results = list(
+            filter(lambda x: isinstance(x, Tuple), all_worker_results)
+        )
+        exceptions = list(
+            filter(
+                lambda x: isinstance(x, (AioRpcError, InternalNetworkError)),
+                all_worker_results,
+            )
+        )
+        total_shards = len(worker_send_tasks)
+        failed_shards = len(exceptions)
+        if failed_shards:
+            self.logger.warning(f'{failed_shards} shards out of {total_shards} failed.')
+
+        return worker_results, exceptions, total_shards, failed_shards
+
     async def _handle_data_request(
         self, requests: List[DataRequest], endpoint: Optional[str]
     ) -> Tuple[DataRequest, Dict]:
@@ -325,28 +351,12 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
                 (response, uses_before_metadata) = uses_before_result
                 requests = [response]
 
-        worker_send_tasks = self.connection_pool.send_requests(
-            requests=requests,
-            deployment=self._deployment_name,
-            polling_type=self._polling[endpoint],
-            timeout=self.timeout_send,
-            retries=self._retries,
-        )
-        total_shards = len(worker_send_tasks)
-
-        all_worker_results = await asyncio.gather(*worker_send_tasks)
-        worker_results = list(
-            filter(lambda x: isinstance(x, Tuple), all_worker_results)
-        )
-        exceptions = list(
-            filter(
-                lambda x: isinstance(x, (AioRpcError, InternalNetworkError)),
-                all_worker_results,
-            )
-        )
-        failed_shards = len(exceptions)
-        if failed_shards:
-            self.logger.warning(f'{failed_shards} shards out of {total_shards} failed.')
+        (
+            worker_results,
+            exceptions,
+            total_shards,
+            failed_shards,
+        ) = await self._gather_worker_tasks(requests, endpoint)
 
         if len(worker_results) == 0:
             if exceptions:
