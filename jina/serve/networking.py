@@ -105,13 +105,14 @@ class ReplicaList:
         self.aio_tracing_client_interceptors = aio_tracing_client_interceptors
         self.tracing_client_interceptors = tracing_client_interceptor
 
-    async def reset_connection(self, address: str) -> Union[grpc.aio.Channel, None]:
+    async def reset_connection(self, address: str, deployment_name: str) -> Union[grpc.aio.Channel, None]:
         """
         Removes and then re-adds a connection.
         Result is the same as calling :meth:`remove_connection` and then :meth:`add_connection`, but this allows for
         handling of race condition if multiple callers reset a connection at the same time.
 
         :param address: Target address of this connection
+        :param address: Target deployment of this connection
         :returns: The reset connection or None if there was no connection for the given address
         """
         self._logger.debug(f'resetting connection to {address}')
@@ -134,21 +135,22 @@ class ReplicaList:
             self._destroyed_event.set()
             # re-add connection:
             self._address_to_connection_idx[address] = id_to_reset
-            stubs, channel = self._create_connection(address)
+            stubs, channel = self._create_connection(address, deployment_name)
             self._address_to_channel[address] = channel
             self._connections[id_to_reset] = stubs
 
             return connection_to_reset
         return None
 
-    def add_connection(self, address: str):
+    def add_connection(self, address: str, deployment_name: str):
         """
         Add connection with address to the connection list
         :param address: Target address of this connection
+        :param address: Target deployment of this connection
         """
         if address not in self._address_to_connection_idx:
             self._address_to_connection_idx[address] = len(self._connections)
-            stubs, channel = self._create_connection(address)
+            stubs, channel = self._create_connection(address, deployment_name)
             self._address_to_channel[address] = channel
             self._connections.append(stubs)
 
@@ -187,13 +189,14 @@ class ReplicaList:
 
         return None
 
-    def _create_connection(self, address):
+    def _create_connection(self, address, deployment_name: str):
         parsed_address = urlparse(address)
         address = parsed_address.netloc if parsed_address.netloc else address
         use_tls = parsed_address.scheme in TLS_PROTOCOL_SCHEMES
 
         stubs, channel = GrpcConnectionPool.create_async_channel_stub(
             address,
+            deployment_name=deployment_name,
             metrics=self._metrics,
             histograms=self._histograms,
             tls=use_tls,
@@ -315,14 +318,19 @@ class GrpcConnectionPool:
             self,
             address,
             channel,
+            deployment_name: str,
             metrics: _NetworkingMetrics,
             histograms: _NetworkingHistograms,
         ):
             self.address = address
             self.channel = channel
+            # TODO: Should we still have this if it's already wrapped in the histogram labels?
+            self.deployment_name = deployment_name
             self._metrics = metrics
             self._histograms = histograms
             self._initialized = False
+
+            self._histograms.histogram_metric_labels.update(deployment_name=deployment_name)
 
         # This has to be done lazily, because the target endpoint may not be available
         # when a connection is added
@@ -363,6 +371,23 @@ class GrpcConnectionPool:
             )
             return response, metadata
 
+        def _get_metric_timer(self):
+            return MetricsTimer(
+                self._metrics.sending_requests_time_metrics,
+                self._histograms.sending_requests_time_metrics,
+                self._histograms.histogram_metric_labels,
+            )
+
+        def _record_request_bytes_metric(self, nbytes: int):
+            if self._metrics.send_requests_bytes_metrics:
+                self._metrics.send_requests_bytes_metrics.observe(nbytes)
+            self._histograms.record_send_requests_bytes_metrics(nbytes)
+
+        def _record_received_bytes_metric(self, nbytes: int):
+            if self._metrics.received_response_bytes:
+                self._metrics.received_response_bytes.observe(nbytes)
+            self._histograms.record_received_response_bytes(nbytes)
+
         async def send_requests(
             self,
             requests: List[Request],
@@ -385,6 +410,7 @@ class GrpcConnectionPool:
                 await self._init_stubs()
             request_type = type(requests[0])
 
+            timer = self._get_metric_timer()
             if request_type == DataRequest and len(requests) == 1:
                 if self.single_data_stub:
                     call_result = self.single_data_stub.process_single_data(
@@ -393,61 +419,32 @@ class GrpcConnectionPool:
                         compression=compression,
                         timeout=timeout,
                     )
-                    if self._metrics.send_requests_bytes_metrics:
-                        self._metrics.send_requests_bytes_metrics.observe(
-                            requests[0].nbytes
-                        )
-                    self._histograms.record_send_requests_bytes_metrics(
-                        requests[0].nbytes
-                    )
-                    with MetricsTimer(
-                        self._metrics.sending_requests_time_metrics,
-                        self._histograms.sending_requests_time_metrics,
-                        self._histograms.histogram_metric_labels,
-                    ):
+                    self._record_request_bytes_metric(requests[0].nbytes)
+                    with timer:
                         metadata, response = (
                             await call_result.trailing_metadata(),
                             await call_result,
                         )
-
-                        if self._metrics.received_response_bytes:
-                            self._metrics.received_response_bytes.observe(
-                                response.nbytes
-                            )
-                        self._histograms.record_received_response_bytes(response.nbytes)
+                        self._record_received_bytes_metric(response.nbytes)
                     return response, metadata
 
                 elif self.stream_stub:
                     for response in requests:
-                        if self._metrics.send_requests_bytes_metrics:
-                            self._metrics.send_requests_bytes_metrics.observe(
-                                response.nbytes
-                            )
-                        self._histograms.record_send_requests_bytes_metrics(
-                            response.nbytes
-                        )
+                        self._record_request_bytes_metric(response.nbytes)
 
-                    with MetricsTimer(
-                        self._metrics.sending_requests_time_metrics,
-                        self._histograms.sending_requests_time_metrics,
-                        self._histograms.histogram_metric_labels,
-                    ):
+                    with timer:
                         async for response in self.stream_stub.Call(
                             iter(requests),
                             compression=compression,
                             timeout=timeout,
                             metadata=metadata,
                         ):
-                            if self._metrics.received_response_bytes:
-                                self._metrics.received_response_bytes.observe(
-                                    response.nbytes
-                                )
-                            self._histograms.record_received_response_bytes(
-                                response.nbytes
-                            )
-
+                            self._record_received_bytes_metric(response.nbytes)
                             return response, None
+
             if request_type == DataRequest and len(requests) > 1:
+                # TODO: This section of the code has no observability
+                # TODO: Does this section not need to deal with streaming stubs?
                 if self.data_list_stub:
                     call_result = self.data_list_stub.process_data(
                         requests,
@@ -455,11 +452,7 @@ class GrpcConnectionPool:
                         compression=compression,
                         timeout=timeout,
                     )
-                    with MetricsTimer(
-                        self._metrics.sending_requests_time_metrics,
-                        self._histograms.sending_requests_time_metrics,
-                        self._histograms.histogram_metric_labels,
-                    ):
+                    with timer:
                         metadata, response = (
                             await call_result.trailing_metadata(),
                             await call_result,
@@ -614,7 +607,7 @@ class GrpcConnectionPool:
                 self._logger.debug(
                     f'adding connection for deployment {deployment}/{type}/{entity_id} to {address}'
                 )
-                self._deployments[deployment][type][entity_id].add_connection(address)
+                self._deployments[deployment][type][entity_id].add_connection(address, deployment_name=deployment)
             else:
                 self._logger.debug(
                     f'ignoring activation of pod, {address} already known'
@@ -1379,6 +1372,7 @@ class GrpcConnectionPool:
     @staticmethod
     def create_async_channel_stub(
         address,
+        deployment_name: str,
         metrics: _NetworkingMetrics,
         histograms: _NetworkingHistograms,
         tls=False,
@@ -1389,6 +1383,7 @@ class GrpcConnectionPool:
         Creates an async GRPC Channel. This channel has to be closed eventually!
 
         :param address: the address to create the connection to, like 127.0.0.0.1:8080
+        :param deployment_name: the name of the deployment (e.g. executor0)
         :param tls: if True, use tls for the grpc channel
         :param root_certificates: the path to the root certificates for tls, only u
         :param metrics: NetworkingMetrics object that contain optional metrics
@@ -1405,7 +1400,7 @@ class GrpcConnectionPool:
         )
 
         return (
-            GrpcConnectionPool.ConnectionStubs(address, channel, metrics, histograms),
+            GrpcConnectionPool.ConnectionStubs(address, channel, deployment_name, metrics, histograms),
             channel,
         )
 
