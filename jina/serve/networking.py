@@ -324,7 +324,6 @@ class GrpcConnectionPool:
         ):
             self.address = address
             self.channel = channel
-            # TODO: Should we still have this if it's already wrapped in the histogram labels?
             self.deployment_name = deployment_name
             self._metrics = metrics
             self._histograms = histograms
