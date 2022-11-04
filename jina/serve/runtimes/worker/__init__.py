@@ -34,7 +34,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         :param args: args from CLI
         :param kwargs: keyword args
         """
-        args = replace_args_with_secrets(args, getattr(args, 'secrets', {}))
+        args = replace_args_with_secrets(args, getattr(args, 'secrets', []))
         self._health_servicer = health.HealthServicer(experimental_non_blocking=True)
         super().__init__(args, **kwargs)
 

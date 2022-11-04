@@ -44,7 +44,7 @@ class KVAppendAction(argparse.Action):
         for value in values:
             try:
                 d.update(json.loads(value))
-            except json.JSONDecodeError:
+            except json.JSONDecodeError as e:
                 try:
                     k, v = re.split(r'[:=]\s*', value, maxsplit=1)
                 except ValueError:
@@ -52,6 +52,28 @@ class KVAppendAction(argparse.Action):
                         f'could not parse argument \"{values[0]}\" as k=v format'
                     )
                 d[k] = parse_arg(v)
+        setattr(args, self.dest, d)
+
+
+class ListofDictsAction(argparse.Action):
+    """argparse action to handle input and convert to List of Dictionaries
+    """
+
+    def __call__(self, parser, args, values, option_string=None):
+        """
+        call the ListofDictsAction
+
+
+        .. # noqa: DAR401
+        :param parser: the parser
+        :param args: args to initialize the values
+        :param values: the values to add to the parser
+        :param option_string: inherited, not used
+        """
+        import json
+        d = getattr(args, self.dest) or []
+        for value in values:
+            d.append(json.loads(value.replace("\'", "\"")))
         setattr(args, self.dest, d)
 
 

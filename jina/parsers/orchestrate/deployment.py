@@ -36,14 +36,6 @@ def mixin_base_deployment_parser(parser):
     )
 
     gp.add_argument(
-        '--secrets',
-        action=KVAppendAction,
-        metavar='KEY: VALUE',
-        nargs='*',
-        help='The Secrets object that will be passed to the Executor/Gateway.'
-    )
-
-    gp.add_argument(
         '--external',
         action='store_true',
         default=False,

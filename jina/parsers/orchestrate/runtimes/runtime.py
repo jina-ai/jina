@@ -1,6 +1,6 @@
 """Argparser module for WorkerRuntime"""
 from jina import __default_host__, helper
-from jina.parsers.helper import KVAppendAction, add_arg_group
+from jina.parsers.helper import KVAppendAction, ListofDictsAction
 
 
 def mixin_base_runtime_parser(arg_group):
@@ -29,4 +29,11 @@ def mixin_base_runtime_parser(arg_group):
         nargs='*',
         help="Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}",
         default=None,
+    )
+    arg_group.add_argument(
+        '--secrets',
+        action=ListofDictsAction,
+        metavar='KEY: VALUE',
+        nargs='*',
+        help='The Secrets object that will be passed to the Executor/Gateway.'
     )

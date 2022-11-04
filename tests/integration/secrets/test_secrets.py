@@ -5,7 +5,7 @@ from jina import Flow, Executor, requests, DocumentArray
 
 
 @pytest.fixture
-def env_variable():
+def inject_secrets():
     os.environ['TEST_SECRET_KEY_1'] = 'test_secret_value_1'
     os.environ['TEST_SECRET_KEY_2'] = 'test_secret_value_2'
     yield
@@ -13,7 +13,7 @@ def env_variable():
     os.unsetenv('TEST_SECRET_KEY_2')
 
 
-def test_secrets():
+def test_secrets(inject_secrets):
     class SecretTestExecutor(Executor):
 
         def __init__(self, value_read_from_secret_1, value_read_from_secret_2, *args, **kwargs):
@@ -27,10 +27,9 @@ def test_secrets():
                 doc.tags['TEST_SECRET_KEY_1'] = self.value_read_from_secret_1
                 doc.tags['TEST_SECRET_KEY_2'] = self.value_read_from_secret_2
 
-    f = Flow().add(uses=SecretTestExecutor, uses_with={'value_read_from_secret_1': '${{SECRETS.secret_1}}',
+    f = Flow().add(uses=SecretTestExecutor, uses_with={'value_read_from_secret_1': '${{ENV.secret_1}}',
                                                        'value_read_from_secret_2': '${{SECRETS.secret_2}}'},
-                   secrets=[{'name': 'secret_1', 'key': 'TEST_SECRET_KEY_1', 'type': 'env'},
-                            {'name': 'secret_2', 'key': 'TEST_SECRET_KEY_2', 'type': 'env'}])
+                   secrets=[{'name': 'secret_1', 'key': 'TEST_SECRET_KEY_1', 'type': 'env'}, {'name': 'secret_2', 'key': 'TEST_SECRET_KEY_2', 'type': 'env'}])
 
     with f:
         res = f.post(on='/', inputs=DocumentArray.empty(1))

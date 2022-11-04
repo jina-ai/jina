@@ -41,7 +41,7 @@ class GatewayRuntime(AsyncNewLoopRuntime):
             **kwargs,
     ):
         # this order is intentional: The timeout is needed in _create_topology_graph(), called by super
-        args = replace_args_with_secrets(args, getattr(args, 'secrets', {}))
+        args = replace_args_with_secrets(args, getattr(args, 'secrets', []))
         self.timeout_send = args.timeout_send
         if self.timeout_send:
             self.timeout_send /= 1e3  # convert ms to seconds
