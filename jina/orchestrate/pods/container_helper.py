@@ -15,7 +15,7 @@ def get_docker_network(client) -> Optional[str]:
     """
     import docker
 
-    if TYPE_CHECKING:
+    if TYPE_CHECKING: # pragma: no cover
         from docker.models.containers import Container
 
     container: 'Container' = None

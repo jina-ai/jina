@@ -72,6 +72,7 @@ the Executor, and `**kwargs` is passed to the internal {meth}`~jina.Flow` initia
 For more details on these arguments and the workings of a Flow, see the {ref}`Flow section <flow-cookbook>`.
 ````
 
+(kubernetes-executor)=
 ## Serve via Kubernetes
 You can generate Kubernetes configuration files for your containerized Executor by using the static `Executor.to_kubernetes_yaml()` method. This works like {ref}`deploying a Flow in Kubernetes <kubernetes>`, because your Executor is wrapped automatically in a Flow and uses the very same deployment techniques.
 
@@ -88,11 +89,11 @@ Executor.to_kubernetes_yaml(
 ```shell
 kubectl apply -R -f /tmp/config_out_folder
 ```
-The above example deploys the `DummyHubExecutor` from Jina Hub into your Kubernetes cluster.
+The above example deploys the `DummyHubExecutor` from Executor Hub into your Kubernetes cluster.
 
 ````{admonition} Hint
 :class: hint
-The Executor you use needs to be already containerized and stored in a registry accessible from your Kubernetes cluster. We recommend Jina Hub for this.
+The Executor you use needs to be already containerized and stored in a registry accessible from your Kubernetes cluster. We recommend Executor Hub for this.
 ````
 
 (external-shared-executor)=
@@ -120,10 +121,10 @@ Executor.to_docker_compose_yaml(
 ```shell
 docker-compose -f /tmp/docker-compose.yml up
 ```
-The above example runs the `DummyHubExecutor` from Jina Hub locally on your computer using Docker Compose.
+The above example runs the `DummyHubExecutor` from Executor Hub locally on your computer using Docker Compose.
 
 ````{admonition} Hint
 :class: hint
-The Executor you use needs to be already containerized and stored in an accessible registry. We recommend Jina Hub for this.
+The Executor you use needs to be already containerized and stored in an accessible registry. We recommend Executor Hub for this.
 ````
 

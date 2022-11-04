@@ -76,7 +76,7 @@ html_extra_path = ['html_extra']
 html_css_files = [
     'main.css',
     'docbot.css',
-    'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css',
+    'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css',
 ]
 html_js_files = [
     'https://cdn.jsdelivr.net/npm/qabot@0.4'
@@ -102,6 +102,7 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinx.ext.coverage',
     'sphinxcontrib.apidoc',
+    'sphinxcontrib.redirects',
     'sphinxarg.ext',
     'sphinx_copybutton',
     'sphinx_sitemap',
@@ -116,7 +117,7 @@ extensions = [
 intersphinx_mapping = {'docarray': ('https://docarray.jina.ai/', None)}
 myst_enable_extensions = ['colon_fence']
 autosummary_generate = True
-
+redirects_file = 'redirects.txt'
 # -- Custom 404 page
 
 # sphinx-notfound-page

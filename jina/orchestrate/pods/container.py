@@ -24,7 +24,7 @@ from jina.orchestrate.pods.container_helper import (
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.gateway import GatewayRuntime
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from docker.client import DockerClient
 
 
@@ -98,7 +98,9 @@ def _docker_run(
         raise BadImageNameError(f'image: {uses_img} can not be found local & remote.')
 
     _volumes = {}
-    if not args.disable_auto_volume and not args.volumes:
+    if not getattr(args, 'disable_auto_volume', None) and not getattr(
+        args, 'volumes', None
+    ):
         (
             generated_volumes,
             workspace_in_container,
@@ -108,7 +110,7 @@ def _docker_run(
             workspace_in_container if not args.workspace else args.workspace
         )
 
-    if args.volumes:
+    if getattr(args, 'volumes', None):
         for p in args.volumes:
             paths = p.split(':')
             local_path = paths[0]
@@ -123,7 +125,7 @@ def _docker_run(
             }
 
     device_requests = []
-    if args.gpus:
+    if getattr(args, 'gpus', None):
         device_requests = get_gpu_device_requests(args.gpus)
         del args.gpus
 

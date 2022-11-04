@@ -66,7 +66,7 @@ jobs:
         with:
           workflow: Manual Docs Build
           token: ${{ secrets.JINA_DEV_BOT }}
-          inputs: '{ "release_token": "${{ env.release_token }}", "triggered_by": "TAG"}'
+          inputs: '{ "release_token": "${{ env.release_token }}", "triggered_by": "TAG", "build_old_docs": "TRUE"}'
         env:
           release_token: ${{ secrets.JINA_CORE_RELEASE_TOKEN }}
 

@@ -35,7 +35,7 @@ class HTTPGateway(BaseGateway):
         :param no_debug_endpoints: If set, `/status` `/post` endpoints are removed from HTTP interface.
         :param no_crud_endpoints: If set, `/index`, `/search`, `/update`, `/delete` endpoints are removed from HTTP interface.
 
-                  Any executor that has `@requests(on=...)` bind with those values will receive data requests.
+                  Any executor that has `@requests(on=...)` bound with those values will receive data requests.
         :param expose_endpoints: A JSON string that represents a map from executor endpoints (`@requests(on=...)`) to HTTP endpoints.
         :param expose_graphql_endpoint: If set, /graphql endpoint is added to HTTP interface.
         :param cors: If set, a CORS middleware is added to FastAPI frontend to allow cross-origin access.

@@ -88,7 +88,7 @@ class FlowType(type(ExitStack), type(JAMLCompatible)):
 
 _regex_port = r'(.*?):([0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$'
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from jina.clients.base import BaseClient
     from jina.orchestrate.flow.asyncio import AsyncFlow
     from jina.serve.executors import BaseExecutor
@@ -163,15 +163,12 @@ class Flow(
         deployments_disable_reduce: Optional[str] = '[]',
         deployments_metadata: Optional[str] = '{}',
         description: Optional[str] = None,
-        disable_auto_volume: Optional[bool] = False,
         docker_kwargs: Optional[dict] = None,
         entrypoint: Optional[str] = None,
         env: Optional[dict] = None,
-        exit_on_exceptions: Optional[List[str]] = [],
         expose_endpoints: Optional[str] = None,
         expose_graphql_endpoint: Optional[bool] = False,
         floating: Optional[bool] = False,
-        gpus: Optional[str] = None,
         graph_conditions: Optional[str] = '{}',
         graph_description: Optional[str] = '{}',
         grpc_server_options: Optional[dict] = None,
@@ -183,11 +180,8 @@ class Flow(
         metrics_exporter_port: Optional[int] = None,
         monitoring: Optional[bool] = False,
         name: Optional[str] = 'gateway',
-        native: Optional[bool] = False,
         no_crud_endpoints: Optional[bool] = False,
         no_debug_endpoints: Optional[bool] = False,
-        output_array_type: Optional[str] = None,
-        polling: Optional[str] = 'ANY',
         port: Optional[str] = None,
         port_monitoring: Optional[str] = None,
         prefetch: Optional[int] = 1000,
@@ -196,10 +190,8 @@ class Flow(
         py_modules: Optional[List[str]] = None,
         quiet: Optional[bool] = False,
         quiet_error: Optional[bool] = False,
-        replicas: Optional[int] = 1,
         retries: Optional[int] = -1,
         runtime_cls: Optional[str] = 'GatewayRuntime',
-        shards: Optional[int] = 1,
         ssl_certfile: Optional[str] = None,
         ssl_keyfile: Optional[str] = None,
         timeout_ctrl: Optional[int] = 60,
@@ -212,7 +204,6 @@ class Flow(
         uses: Optional[Union[str, Type['BaseExecutor'], dict]] = None,
         uses_with: Optional[dict] = None,
         uvicorn_kwargs: Optional[dict] = None,
-        volumes: Optional[List[str]] = None,
         workspace: Optional[str] = None,
         **kwargs,
     ):
@@ -224,25 +215,15 @@ class Flow(
         :param deployments_disable_reduce: list JSON disabling the built-in merging mechanism for each Deployment listed
         :param deployments_metadata: JSON dictionary with the request metadata for each Deployment
         :param description: The description of this HTTP server. It will be used in automatics docs such as Swagger UI.
-        :param disable_auto_volume: Do not automatically mount a volume for dockerized Executors.
         :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker '
           container.
 
           More details can be found in the Docker SDK docs:  https://docker-py.readthedocs.io/en/stable/
         :param entrypoint: The entrypoint command overrides the ENTRYPOINT in Docker image. when not set then the Docker image ENTRYPOINT takes effective.
         :param env: The map of environment variables that are available inside runtime
-        :param exit_on_exceptions: List of exceptions that will cause the Executor to shut down.
         :param expose_endpoints: A JSON string that represents a map from executor endpoints (`@requests(on=...)`) to HTTP endpoints.
         :param expose_graphql_endpoint: If set, /graphql endpoint is added to HTTP interface.
         :param floating: If set, the current Pod/Deployment can not be further chained, and the next `.add()` will chain after the last Pod/Deployment not this current one.
-        :param gpus: This argument allows dockerized Jina executor discover local gpu devices.
-
-              Note,
-              - To access all gpus, use `--gpus all`.
-              - To access multiple gpus, e.g. make use of 2 gpus, use `--gpus 2`.
-              - To access specified gpus based on device id, use `--gpus device=[YOUR-GPU-DEVICE-ID]`
-              - To access specified gpus based on multiple device id, use `--gpus device=[YOUR-GPU-DEVICE-ID1],device=[YOUR-GPU-DEVICE-ID2]`
-              - To specify more parameters, use `--gpus device=[YOUR-GPU-DEVICE-ID],runtime=nvidia,capabilities=display
         :param graph_conditions: Dictionary stating which filtering conditions each Executor in the graph requires to receive Documents.
         :param graph_description: Routing graph for the gateway
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
@@ -262,24 +243,10 @@ class Flow(
               - ...
 
               When not given, then the default naming strategy will apply.
-        :param native: If set, only native Executors is allowed, and the Executor is always run inside WorkerRuntime.
         :param no_crud_endpoints: If set, `/index`, `/search`, `/update`, `/delete` endpoints are removed from HTTP interface.
 
-                  Any executor that has `@requests(on=...)` bind with those values will receive data requests.
+                  Any executor that has `@requests(on=...)` bound with those values will receive data requests.
         :param no_debug_endpoints: If set, `/status` `/post` endpoints are removed from HTTP interface.
-        :param output_array_type: The type of array `tensor` and `embedding` will be serialized to.
-
-          Supports the same types as `docarray.to_protobuf(.., ndarray_type=...)`, which can be found
-          `here <https://docarray.jina.ai/fundamentals/document/serialization/#from-to-protobuf>`.
-          Defaults to retaining whatever type is returned by the Executor.
-        :param polling: The polling strategy of the Deployment and its endpoints (when `shards>1`).
-              Can be defined for all endpoints of a Deployment or by endpoint.
-              Define per Deployment:
-              - ANY: only one (whoever is idle) Pod polls the message
-              - ALL: all Pods poll the message (like a broadcast)
-              Define per Endpoint:
-              JSON dict, {endpoint: PollingType}
-              {'/custom': 'ALL', '/search': 'ANY', '*': 'ANY'}
         :param port: The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (`--external` or `external=True`) this can be a list of ports, separated by commas. Then, every resulting address will be considered as one replica of the Executor.
         :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]
         :param prefetch: Number of requests fetched from the client before feeding into the first Executor.
@@ -294,10 +261,8 @@ class Flow(
           which should be structured as a python package.
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
-        :param replicas: The number of replicas in the deployment
         :param retries: Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
         :param runtime_cls: The runtime class to run inside the Pod
-        :param shards: The number of shards in the deployment running at the same time. For more details check https://docs.jina.ai/fundamentals/flow/create-flow/#complex-flow-topologies
         :param ssl_certfile: the path to the certificate file
         :param ssl_keyfile: the path to the key file
         :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever
@@ -321,12 +286,6 @@ class Flow(
         :param uvicorn_kwargs: Dictionary of kwargs arguments that will be passed to Uvicorn server when starting the server
 
           More details can be found in Uvicorn docs: https://www.uvicorn.org/settings/
-        :param volumes: The path on the host to be mounted inside the container.
-
-          Note,
-          - If separated by `:`, then the first part will be considered as the local host path and the second part is the path in the container system.
-          - If no split provided, then the basename of that directory will be mounted into container's root path, e.g. `--volumes="/user/test/my-workspace"` will be mounted into `/my-workspace` inside the container.
-          - All volumes are mounted with read-write mode.
         :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.
 
         .. # noqa: DAR202
@@ -428,25 +387,15 @@ class Flow(
         :param deployments_disable_reduce: list JSON disabling the built-in merging mechanism for each Deployment listed
         :param deployments_metadata: JSON dictionary with the request metadata for each Deployment
         :param description: The description of this HTTP server. It will be used in automatics docs such as Swagger UI.
-        :param disable_auto_volume: Do not automatically mount a volume for dockerized Executors.
         :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker '
           container.
 
           More details can be found in the Docker SDK docs:  https://docker-py.readthedocs.io/en/stable/
         :param entrypoint: The entrypoint command overrides the ENTRYPOINT in Docker image. when not set then the Docker image ENTRYPOINT takes effective.
         :param env: The map of environment variables that are available inside runtime
-        :param exit_on_exceptions: List of exceptions that will cause the Executor to shut down.
         :param expose_endpoints: A JSON string that represents a map from executor endpoints (`@requests(on=...)`) to HTTP endpoints.
         :param expose_graphql_endpoint: If set, /graphql endpoint is added to HTTP interface.
         :param floating: If set, the current Pod/Deployment can not be further chained, and the next `.add()` will chain after the last Pod/Deployment not this current one.
-        :param gpus: This argument allows dockerized Jina executor discover local gpu devices.
-
-              Note,
-              - To access all gpus, use `--gpus all`.
-              - To access multiple gpus, e.g. make use of 2 gpus, use `--gpus 2`.
-              - To access specified gpus based on device id, use `--gpus device=[YOUR-GPU-DEVICE-ID]`
-              - To access specified gpus based on multiple device id, use `--gpus device=[YOUR-GPU-DEVICE-ID1],device=[YOUR-GPU-DEVICE-ID2]`
-              - To specify more parameters, use `--gpus device=[YOUR-GPU-DEVICE-ID],runtime=nvidia,capabilities=display
         :param graph_conditions: Dictionary stating which filtering conditions each Executor in the graph requires to receive Documents.
         :param graph_description: Routing graph for the gateway
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
@@ -466,24 +415,10 @@ class Flow(
               - ...
 
               When not given, then the default naming strategy will apply.
-        :param native: If set, only native Executors is allowed, and the Executor is always run inside WorkerRuntime.
         :param no_crud_endpoints: If set, `/index`, `/search`, `/update`, `/delete` endpoints are removed from HTTP interface.
 
-                  Any executor that has `@requests(on=...)` bind with those values will receive data requests.
+                  Any executor that has `@requests(on=...)` bound with those values will receive data requests.
         :param no_debug_endpoints: If set, `/status` `/post` endpoints are removed from HTTP interface.
-        :param output_array_type: The type of array `tensor` and `embedding` will be serialized to.
-
-          Supports the same types as `docarray.to_protobuf(.., ndarray_type=...)`, which can be found
-          `here <https://docarray.jina.ai/fundamentals/document/serialization/#from-to-protobuf>`.
-          Defaults to retaining whatever type is returned by the Executor.
-        :param polling: The polling strategy of the Deployment and its endpoints (when `shards>1`).
-              Can be defined for all endpoints of a Deployment or by endpoint.
-              Define per Deployment:
-              - ANY: only one (whoever is idle) Pod polls the message
-              - ALL: all Pods poll the message (like a broadcast)
-              Define per Endpoint:
-              JSON dict, {endpoint: PollingType}
-              {'/custom': 'ALL', '/search': 'ANY', '*': 'ANY'}
         :param port: The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (`--external` or `external=True`) this can be a list of ports, separated by commas. Then, every resulting address will be considered as one replica of the Executor.
         :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]
         :param prefetch: Number of requests fetched from the client before feeding into the first Executor.
@@ -498,10 +433,8 @@ class Flow(
           which should be structured as a python package.
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
-        :param replicas: The number of replicas in the deployment
         :param retries: Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
         :param runtime_cls: The runtime class to run inside the Pod
-        :param shards: The number of shards in the deployment running at the same time. For more details check https://docs.jina.ai/fundamentals/flow/create-flow/#complex-flow-topologies
         :param ssl_certfile: the path to the certificate file
         :param ssl_keyfile: the path to the key file
         :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever
@@ -525,12 +458,6 @@ class Flow(
         :param uvicorn_kwargs: Dictionary of kwargs arguments that will be passed to Uvicorn server when starting the server
 
           More details can be found in Uvicorn docs: https://www.uvicorn.org/settings/
-        :param volumes: The path on the host to be mounted inside the container.
-
-          Note,
-          - If separated by `:`, then the first part will be considered as the local host path and the second part is the path in the container system.
-          - If no split provided, then the basename of that directory will be mounted into container's root path, e.g. `--volumes="/user/test/my-workspace"` will be mounted into `/my-workspace` inside the container.
-          - All volumes are mounted with read-write mode.
         :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.
         :param env: The map of environment variables that are available inside runtime
         :param inspect: The strategy on those inspect deployments in the flow.
@@ -978,7 +905,7 @@ class Flow(
         :param external: The Deployment will be considered an external Deployment that has been started independently from the Flow.This Deployment will not be context managed by the Flow.
         :param floating: If set, the current Pod/Deployment can not be further chained, and the next `.add()` will chain after the last Pod/Deployment not this current one.
         :param force_update: If set, always pull the latest Hub Executor bundle even it exists on local
-        :param gpus: This argument allows dockerized Jina executor discover local gpu devices.
+        :param gpus: This argument allows dockerized Jina Executors to discover local gpu devices.
 
               Note,
               - To access all gpus, use `--gpus all`.
@@ -1134,7 +1061,7 @@ class Flow(
         :param external: The Deployment will be considered an external Deployment that has been started independently from the Flow.This Deployment will not be context managed by the Flow.
         :param floating: If set, the current Pod/Deployment can not be further chained, and the next `.add()` will chain after the last Pod/Deployment not this current one.
         :param force_update: If set, always pull the latest Hub Executor bundle even it exists on local
-        :param gpus: This argument allows dockerized Jina executor discover local gpu devices.
+        :param gpus: This argument allows dockerized Jina Executors to discover local gpu devices.
 
               Note,
               - To access all gpus, use `--gpus all`.

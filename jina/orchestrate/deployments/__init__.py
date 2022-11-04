@@ -788,17 +788,19 @@ class Deployment(BaseDeployment):
     @staticmethod
     def _set_pod_args(args: Namespace) -> Dict[int, List[Namespace]]:
         result = {}
-        sharding_enabled = args.shards and args.shards > 1
+        shards = getattr(args, 'shards', 1)
+        replicas = getattr(args, 'replicas', 1)
+        sharding_enabled = shards and shards > 1
 
         cuda_device_map = None
         if args.env:
             cuda_device_map = Deployment._roundrobin_cuda_device(
-                args.env.get('CUDA_VISIBLE_DEVICES'), args.replicas
+                args.env.get('CUDA_VISIBLE_DEVICES'), replicas
             )
 
-        for shard_id in range(args.shards):
+        for shard_id in range(shards):
             replica_args = []
-            for replica_id in range(args.replicas):
+            for replica_id in range(replicas):
                 _args = copy.deepcopy(args)
                 _args.shard_id = shard_id
                 _args.pod_role = PodRoleType.WORKER
@@ -819,11 +821,11 @@ class Deployment(BaseDeployment):
                 # the gateway needs to respect the assigned port
                 if args.deployment_role == DeploymentRoleType.GATEWAY or args.external:
                     _args.port = args.port
-                elif args.shards == 1 and args.replicas == 1:
+                elif shards == 1 and replicas == 1:
                     _args.port = args.port
                     _args.port_monitoring = args.port_monitoring
 
-                elif args.shards == 1:
+                elif shards == 1:
                     _args.port_monitoring = (
                         helper.random_port()
                         if replica_id >= len(args.all_port_monitoring)
@@ -832,9 +834,9 @@ class Deployment(BaseDeployment):
                     # if there are no shards/replicas, we dont need to distribute ports randomly
                     # we should rather use the pre assigned one
                     _args.port = helper.random_port()
-                elif args.shards > 1:
+                elif shards > 1:
                     port_monitoring_index = (
-                        replica_id + args.replicas * shard_id + 1
+                        replica_id + replicas * shard_id + 1
                     )  # the first index is for the head
                     _args.port_monitoring = (
                         helper.random_port()

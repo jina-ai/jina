@@ -236,6 +236,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -600,6 +601,7 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 - [Release Note (`3.9.3`)](#release-note-393)
 - [Release Note (`3.10.0`)](#release-note-3100)
 - [Release Note (`3.10.1`)](#release-note-3101)
+- [Release Note (`3.11.0`)](#release-note-3110)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -15210,4 +15212,60 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```fc83fa29```](https://github.com/jina-ai/jina/commit/fc83fa299fcd1cdb7523d38d791c912a31580b25)] __-__ update announcement in readme and docs (*Jina Dev Bot*)
  - [[```1810f178```](https://github.com/jina-ai/jina/commit/1810f178ba000cda2a4f6d98d590132c51338f87)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```d2760cdd```](https://github.com/jina-ai/jina/commit/d2760cddec14c28693e1bab5926965d1fc3e49d7)] __-__ __version__: the next version will be 3.10.1 (*Jina Dev Bot*)
+
+<a name=release-note-3-11-0></a>
+## Release Note (`3.11.0`)
+
+> Release time: 2022-10-24 14:42:35
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Girish Chandrashekar,  Joan Fontanals,  Han Xiao,  AlaeddineAbdessalem,  felix-wang,  Alex Cureton-Griffiths,  zhangkai,  Andrei Ungureanu,  Anthony Le,  Johannes Messner,  samsja,  Jina Dev Bot,  🙇
+
+
+### 🆕 New Features
+
+ - [[```81199a51```](https://github.com/jina-ai/jina/commit/81199a51061b6ecb68b34c0b2781ae11caa06e70)] __-__ add GRPC metadata to Executors and Gateway deployments (#5221) (*felix-wang*)
+ - [[```287d16a2```](https://github.com/jina-ai/jina/commit/287d16a27c39e3f258897158f2274f2c7cca4df9)] __-__ bump hubble-sdk v0.22.2, show local location of Executors in Hub (#5282) (*zhangkai*)
+ - [[```6f852dac```](https://github.com/jina-ai/jina/commit/6f852dac58a94e68d365608ab42c7f50ca8274c8)] __-__ dump to StatefulSet in K8s when volumes are passed to Executor (#5265) (*Joan Fontanals*)
+ - [[```71e42221```](https://github.com/jina-ai/jina/commit/71e422211fe10930d384f2bf679785d3c415f514)] __-__ record existing Prometheus metrics into OpenTelemetry Histograms (#5275) (*Girish Chandrashekar*)
+ - [[```a8dce571```](https://github.com/jina-ai/jina/commit/a8dce571850da9e9f4e4c7a0306baa94dac5e2d7)] __-__ add default tracing interceptors to Head grpc connection pool (#5271) (*Girish Chandrashekar*)
+ - [[```107631e9```](https://github.com/jina-ai/jina/commit/107631e955b21db8a4ddb3bee02130de3650d032)] __-__ __instrumentation__: add OpenTelemetry tracing and metrics with basic configurations (#5175) (*Girish Chandrashekar*)
+
+### 🐞 Bug fixes
+
+ - [[```573f6076```](https://github.com/jina-ai/jina/commit/573f60768049d7f0f26f2cca9b051307e83a20ef)] __-__ invalid input raise exception (#5141) (*Joan Fontanals*)
+
+### 📗 Documentation
+
+ - [[```d2797a5a```](https://github.com/jina-ai/jina/commit/d2797a5a58dda4dc769bf4b1b328fffb7c2defcb)] __-__ docs for OpenTelemetry instrumentation (#5291) (*Girish Chandrashekar*)
+ - [[```41ea53e8```](https://github.com/jina-ai/jina/commit/41ea53e806cd67e96dcad9b42e09eb0032eb30d3)] __-__ add jina ai cloud restructure jcloud and hub (#5298) (*Han Xiao*)
+ - [[```c1d9438d```](https://github.com/jina-ai/jina/commit/c1d9438dabad0992318735c4f4f8428f098098dd)] __-__ __jcloud__: standardize naming conventions (#5285) (*Alex Cureton-Griffiths*)
+ - [[```8d1df1bd```](https://github.com/jina-ai/jina/commit/8d1df1bd57149e65911e2830eec117b029569d9c)] __-__ fix typo in realtime-streaming (#5288) (*Anthony Le*)
+ - [[```9f7895f0```](https://github.com/jina-ai/jina/commit/9f7895f0024bbb2aa928a2ecf266aa5fce909dd6)] __-__ __flow-switch__: fix broken restructuredtext syntax (#5289) (*Alex Cureton-Griffiths*)
+ - [[```baba97a1```](https://github.com/jina-ai/jina/commit/baba97a112b8667922c6c38d60b584e49530a1cf)] __-__ __compare-alternatives__: fix english (#5290) (*Alex Cureton-Griffiths*)
+ - [[```62c5fe91```](https://github.com/jina-ai/jina/commit/62c5fe91e51e00d7f61257582b6e42348c9e39e4)] __-__ __how-to__: tidy up language (#5287) (*Alex Cureton-Griffiths*)
+ - [[```43a1ebae```](https://github.com/jina-ai/jina/commit/43a1ebae18f9dd8db293a21a9fdb9c45530a8528)] __-__ __jcloud__: tidy up language (#5284) (*Alex Cureton-Griffiths*)
+ - [[```9981d341```](https://github.com/jina-ai/jina/commit/9981d341e375c428af3b9a945e07f26659f7ed4c)] __-__ fix metrics naming (#5277) (*samsja*)
+ - [[```bcf17c38```](https://github.com/jina-ai/jina/commit/bcf17c385a38b0dcaf9bc0eb283ce71d969f0f65)] __-__ __flow__: clean up (#5255) (*Alex Cureton-Griffiths*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```8cedfd33```](https://github.com/jina-ai/jina/commit/8cedfd3362d9e0bb19b875f90c00e3b6b0bdba66)] __-__ fix test coverage and pin pytest-cov version (#5297) (*AlaeddineAbdessalem*)
+ - [[```a3892732```](https://github.com/jina-ai/jina/commit/a3892732ec0ba3bec705378feed5b7e8194adb91)] __-__ update github actions to avoid deprecation warnings (#5296) (*Joan Fontanals*)
+ - [[```e7e94a4c```](https://github.com/jina-ai/jina/commit/e7e94a4c69d3c2fd11f49610165bc114d6ade3f7)] __-__ codecov ignore some extra large files (#5294) (*Joan Fontanals*)
+ - [[```9d208783```](https://github.com/jina-ai/jina/commit/9d208783978ad450ac609a148461ca0d4cfea988)] __-__ setup python action bump version v4 (#5293) (*Joan Fontanals*)
+ - [[```def2cc50```](https://github.com/jina-ai/jina/commit/def2cc50e1e90ba314ba730b32accaa821257cd6)] __-__ fix deprecation of github actions (#5292) (*Joan Fontanals*)
+ - [[```78c47fec```](https://github.com/jina-ai/jina/commit/78c47fec7b9552aaa431ddb39f3bf1a2b66735db)] __-__ allow release from any branch (#5278) (*Johannes Messner*)
+
+### 🍹 Other Improvements
+
+ - [[```2caac49c```](https://github.com/jina-ai/jina/commit/2caac49c14ae1322b4470eac9a87e2afd79f3bf0)] __-__ __version__: bump release version to 3.11.0 (#5304) (*Girish Chandrashekar*)
+ - [[```f5a362f0```](https://github.com/jina-ai/jina/commit/f5a362f0ffc5070c104c840ab7833689d39b7bdb)] __-__ add pragma no cover to TYPE_CHECKING branch (#5299) (*Joan Fontanals*)
+ - [[```e071381c```](https://github.com/jina-ai/jina/commit/e071381cfa958f8d31f7078fecb144c0c99a5130)] __-__ remove unused class (#5295) (*Joan Fontanals*)
+ - [[```6cb9bcd7```](https://github.com/jina-ai/jina/commit/6cb9bcd7615419d80f535af2065b0038b84c5a4f)] __-__ bump hubble sdk (#5279) (*Andrei Ungureanu*)
+ - [[```5d2d8f1d```](https://github.com/jina-ai/jina/commit/5d2d8f1d501e281579474c4e2d6288897ff95b2f)] __-__ update announcement in readme and docs (*Jina Dev Bot*)
+ - [[```d8c15436```](https://github.com/jina-ai/jina/commit/d8c15436cd1b96322118f4576b7c1be25f453361)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```0b1f2bf6```](https://github.com/jina-ai/jina/commit/0b1f2bf62e2cf8c35578ed070ce3dd6a92b4239f)] __-__ __version__: the next version will be 3.10.2 (*Jina Dev Bot*)
 

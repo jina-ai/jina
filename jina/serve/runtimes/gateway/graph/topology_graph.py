@@ -11,7 +11,7 @@ from jina import __default_endpoint__
 from jina.excepts import InternalNetworkError
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.helper import _parse_specific_params
-from jina.serve.runtimes.request_handlers.data_request_handler import DataRequestHandler
+from jina.serve.runtimes.request_handlers.worker_request_handler import WorkerRequestHandler
 from jina.types.request.data import DataRequest
 
 
@@ -139,7 +139,7 @@ class TopologyGraph:
                         )
                     if self._reduce and len(self.parts_to_send) > 1:
                         self.parts_to_send = [
-                            DataRequestHandler.reduce_requests(self.parts_to_send)
+                            WorkerRequestHandler.reduce_requests(self.parts_to_send)
                         ]
 
                     # avoid sending to executor which does not bind to this endpoint
@@ -166,10 +166,10 @@ class TopologyGraph:
                             timeout=self._timeout_send,
                             retries=self._retries,
                         )
-                        if DataRequestHandler._KEY_RESULT in resp.parameters:
+                        if WorkerRequestHandler._KEY_RESULT in resp.parameters:
                             # Accumulate results from each Node and then add them to the original
                             self.result_in_params_returned = resp.parameters[
-                                DataRequestHandler._KEY_RESULT
+                                WorkerRequestHandler._KEY_RESULT
                             ]
                         request.parameters = request_input_parameters
                         resp.parameters = request_input_parameters

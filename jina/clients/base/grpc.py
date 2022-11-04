@@ -3,6 +3,7 @@ import json
 from typing import TYPE_CHECKING, Optional
 
 import grpc
+from grpc import RpcError
 
 from jina.clients.base import BaseClient
 from jina.clients.helper import callback_exec
@@ -11,7 +12,7 @@ from jina.logging.profile import ProgressBar
 from jina.proto import jina_pb2, jina_pb2_grpc
 from jina.serve.networking import GrpcConnectionPool
 
-if TYPE_CHECKING:
+if TYPE_CHECKING: # pragma: no cover
     from jina.clients.base import CallbackFnType, InputType
 
 
@@ -51,6 +52,8 @@ class GRPCBaseClient(BaseClient):
                     self.logger.error(
                         f'Returned code is not expected! Exception: {response.exception}'
                     )
+        except RpcError as e:
+            self.logger.error(f'RpcError: {e.details()}')
         except Exception as e:
             self.logger.error(f'Error while getting response from grpc server {e!r}')
 

@@ -79,13 +79,13 @@ DocArray is the foundational data structure of Jina. Before starting Jina, first
 {term}`Flow` orchestrates Executors into a processing pipeline to build a multi-modal/cross-modal application
 ::::
 
-::::{grid-item-card} {octicon}`package-dependents;1.5em` Explore Jina Hub
+::::{grid-item-card} {octicon}`package-dependents;1.5em` Explore Executor Hub
 :link: fundamentals/executor/hub/index
 :link-type: doc
 :class-card: color-gradient-card-1
 
 
-Jina Hub is an Executor marketplace that allows you to share, explore and test Executors.
+Executor Hub is an Executor marketplace that allows you to share, explore and test Executors.
 
 ::::
 
@@ -142,9 +142,18 @@ fundamentals/executor/index
 fundamentals/flow/index
 fundamentals/gateway/index
 fundamentals/client/client
-fundamentals/executor/hub/index
-fundamentals/jcloud/index
+fundamentals/k8s
+jina-ai-cloud/index
 how-to/index
+```
+
+```{toctree}
+:caption: Cloud Native
+:hidden:
+
+cloud-nativeness/k8s
+cloud-nativeness/docker-compose
+cloud-nativeness/opentelemetry
 ```
 
 

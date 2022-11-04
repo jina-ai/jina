@@ -57,7 +57,7 @@ To use a private Executor, you must provide the `SECRET` which is generated afte
 If you are a Mac user, please use `host.docker.internal` as your URL when you want to connect a local port from an Executor
 Docker container.
 
-For example: [PostgreSQLStorage](https://hub.jina.ai/executor/d45rawx6)
+For example: [PostgreSQLStorage](https://cloud.jina.ai/executor/d45rawx6)
 will connect PostgreSQL server which was started locally. Then you must use it with:
 
 ```python
@@ -103,7 +103,7 @@ You can disable automatic volume setting by passing `f.add(..., disable_auto_vol
 
 ## Use in Flow via source code
 
-Use the source code from Jina Hub in your Python code:
+Use the source code from Executor Hub in your Python code:
 
 ```python
 from jina import Flow

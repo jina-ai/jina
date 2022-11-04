@@ -179,7 +179,7 @@ Here's the deal. These features come out of the box with the above 15 lines of c
 - gRPC, Websockets, HTTP, GraphQL gateway support
 - Microservice from day one, seamless Docker containerization
 - Explicit version and dependency control
-- Reusable building blocks from [Hub marketplace](https://hub.jina.ai)
+- Reusable building blocks from [Hub marketplace](https://cloud.jina.ai)
 - Immediate observability via Prometheus and Grafana
 - Seamless Kubernetes integration.
 
@@ -221,7 +221,7 @@ Just like MLOps, the benefits of using Jina include:
 - Improved model ({term}`Executor` in Jina) quality: Automating machine learning workflows can help to ensure that models are of a high quality, as well as improve the process of model testing and validation.
 - Infrastructure as code (Flow YAML in Jina): Infrastructure as code is another key DevOps practice that can be applied to machine learning. It involves using code to provision and manage infrastructure, in order to make it more flexible and scalable.
 - Monitoring and logging: Monitoring and logging are important for ensuring the quality of machine learning models. They can help to identify errors and issues early on, so that they can be fixed quickly.
-- Model management (Jina Hub): Model management is a process that helps to keep track of different versions of machine learning models, in order to ensure that the correct model is being used for each task.
+- Model management (Executor Hub): Model management is a process that helps to keep track of different versions of machine learning models, ensuring the correct model is being used for each task.
 
 ## Summary
 

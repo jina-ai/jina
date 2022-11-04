@@ -19,7 +19,7 @@ def set_pod_parser(parser=None):
 
     from hubble.executor.parsers.pull import mixin_hub_pull_options_parser
 
-    from jina.parsers.orchestrate.base import mixin_base_ppr_parser
+    from jina.parsers.orchestrate.base import mixin_scalable_deployment_parser
     from jina.parsers.orchestrate.pod import mixin_pod_parser
     from jina.parsers.orchestrate.runtimes.container import (
         mixin_container_runtime_parser,
@@ -30,7 +30,7 @@ def set_pod_parser(parser=None):
     from jina.parsers.orchestrate.runtimes.remote import mixin_remote_runtime_parser
     from jina.parsers.orchestrate.runtimes.worker import mixin_worker_runtime_parser
 
-    mixin_base_ppr_parser(parser)
+    mixin_scalable_deployment_parser(parser)
     mixin_worker_runtime_parser(parser)
     mixin_container_runtime_parser(parser)
     mixin_remote_runtime_parser(parser)
@@ -73,7 +73,7 @@ def set_gateway_parser(parser=None):
 
         parser = set_base_parser()
 
-    from jina.parsers.orchestrate.base import mixin_base_ppr_parser
+    from jina.parsers.orchestrate.base import mixin_base_deployment_parser
     from jina.parsers.orchestrate.pod import mixin_pod_parser
     from jina.parsers.orchestrate.runtimes.remote import (
         mixin_gateway_parser,
@@ -81,10 +81,9 @@ def set_gateway_parser(parser=None):
         mixin_http_gateway_parser,
         mixin_prefetch_parser,
     )
-    from jina.parsers.orchestrate.runtimes.worker import mixin_worker_runtime_parser
 
-    mixin_base_ppr_parser(parser)
-    mixin_container_runtime_parser(parser)
+    mixin_base_deployment_parser(parser)
+    mixin_container_runtime_parser(parser, pod_type='gateway')
     mixin_prefetch_parser(parser)
     mixin_http_gateway_parser(parser)
     mixin_graphql_parser(parser)
