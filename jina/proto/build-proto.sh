@@ -2,14 +2,19 @@
 set -e
 
 # Do NOT use this directly, use jinaai/protogen image
-# use jinaai/protogen:3.21 in order to use compiler version == 21 (creates pb/docarray_pb2.py)
+# use jinaai/protogen:v21 in order to use compiler version == 21 (creates pb/docarray_pb2.py)
 # and use jinaai/protogen:latest to use compiler version <= 20 (creates pb2/docarray_pb2.py)
-# make sure to use jinaai/protogen:3.21 to avoid overriting the module
+# make sure to use jinaai/protogen:v21 to avoid overriting the module
 #
 # current dir: jina root (the one with README.md)
 # run the following in bash:
 # docker run -v $(pwd)/jina/proto:/jina/proto jinaai/protogen
 # finally, set back owner of the generated files using: sudo chown -R $(id -u ${USER}):$(id -g ${USER}) ./jina/proto
+
+# The protogen docker image can also be build locally using:
+# docker build -f Dockerfiles/protogen.Dockerfile -t jinaai/protogen:local .
+# or
+# docker build -f Dockerfiles/protogen-3.21.Dockerfile -t jinaai/protogen-3.21:local .
 
 SRC_DIR=./
 MODULE=jina
