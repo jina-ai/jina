@@ -1,6 +1,7 @@
 import os
 
 import pytest
+import requests
 
 from jina import Flow
 from tests.helper import (
@@ -9,6 +10,8 @@ from tests.helper import (
     _validate_dummy_custom_gateway_response,
 )
 from tests.unit.yaml.dummy_gateway import DummyGateway
+
+# TODO: check whether this file is actually part of CI
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 _dummy_gateway_yaml_path = os.path.join(
@@ -59,3 +62,14 @@ def test_flow_custom_gateway_no_executor(uses, uses_with, expected):
         _validate_custom_gateway_process(
             flow.port, 'hello', {'text': 'helloworld', 'tags': {'processed': True}}
         )
+
+
+def test_flow_custom_gateway_via_flow_uses_disabled():
+    uses_with = {'arg1': 'arg1', 'arg2': 'arg2', 'arg3': 'arg3'}
+    flow = Flow(uses='DummyGateway', uses_with=uses_with)
+
+    # the uses parameter is ignored here and not be applied on the gateway, therefore, the gateway
+    # is just a GRPC gateway
+    with pytest.raises(ConnectionError):
+        with flow:
+            _ = requests.get(f'http://127.0.0.1:{flow.port}/').json()
