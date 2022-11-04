@@ -1596,7 +1596,7 @@ class Flow(
                 deployments_metadata=op_flow._get_deployments_metadata(),
                 graph_conditions=op_flow._get_graph_conditions(),
                 deployments_disable_reduce=op_flow._get_disabled_reduce_deployments(),
-                uses=op_flow.args.uses,
+                uses=op_flow.gateway_args.uses,
             )
 
         removed_deployments = []
