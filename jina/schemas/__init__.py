@@ -1,3 +1,6 @@
+from jina.schemas.gateway import schema_gateway
+
+
 def get_full_schema() -> dict:
     """Get full schema
     :return: the full schema for Jina core as a dict.
@@ -16,6 +19,7 @@ def get_full_schema() -> dict:
         schema_metas,
         schema_deployment,
         IMPORTED.schema_executors,
+        schema_gateway,
     ]:
         definitions.update(s)
 
