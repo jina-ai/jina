@@ -352,6 +352,7 @@ ac_table = {
             '--uses-before',
             '--uses-after',
             '--when',
+            '--secrets',
             '--external',
             '--grpc-metadata',
             '--deployment-role',

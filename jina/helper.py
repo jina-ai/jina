@@ -928,8 +928,7 @@ secrets_name_regex = re.compile(secret_name_regex_str)
 
 
 def replace_args_with_secrets(args, secrets):
-    print(f' secrets {secrets}')
-    # TODO: Validate Secrets (perhaps dataclass from dict)
+    # TODO: Validate Secrets template (name, key, type) (perhaps dataclass from dict)
 
     def replace_recursive(b):
         for k, v in b.items():
@@ -940,16 +939,18 @@ def replace_args_with_secrets(args, secrets):
 
                     name_match = re.search(secrets_name_regex, matched_str)
                     secret_name = matched_str[name_match.span()[0]: name_match.span()[1]][1:][:-1]
-                    print(f' name_match {name_match}')
-                    print(f' secret_name {secret_name}')
 
                     for secret in secrets:
                         if secret['name'] == secret_name:
-                            out = re.sub(secrets_regex_str, os.environ[secret['key']], v)
+                            secret_value = os.environ[secret['key']]
+                            out = re.sub(secrets_regex_str, secret_value, v)
+                            b[k] = out
             if type(v) == dict:
                 replace_recursive(v)
 
-    replace_recursive(vars(args))
+    d = vars(args)
+    replace_recursive(d)
+
     return args
 
 

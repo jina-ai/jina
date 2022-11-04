@@ -44,7 +44,7 @@ class KVAppendAction(argparse.Action):
         for value in values:
             try:
                 d.update(json.loads(value))
-            except json.JSONDecodeError as e:
+            except json.JSONDecodeError:
                 try:
                     k, v = re.split(r'[:=]\s*', value, maxsplit=1)
                 except ValueError:
