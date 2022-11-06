@@ -12,10 +12,9 @@ from jina.serve.networking import _NetworkingHistograms
 
 
 @pytest.fixture
-def metrics_setup():
+def metrics_setup() -> Tuple[InMemoryMetricReader, MeterProvider]:
     metric_reader = InMemoryMetricReader()
     meter_provider = MeterProvider(metric_readers=[metric_reader])
-    meter_provider = meter_provider
     meter = meter_provider.get_meter('test')
     yield metric_reader, meter
     if hasattr(meter_provider, 'force_flush'):
