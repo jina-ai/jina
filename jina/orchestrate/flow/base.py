@@ -52,6 +52,7 @@ from jina.excepts import (
     RuntimeFailToStart,
 )
 from jina.helper import (
+    GATEWAY_NAME,
     ArgNamespace,
     CatchAllCleanupContextManager,
     _parse_hosts,
@@ -69,7 +70,6 @@ from jina.logging.logger import JinaLogger
 from jina.orchestrate.deployments import Deployment
 from jina.orchestrate.flow.builder import _hanging_deployments, allowed_levels
 from jina.parsers import (
-    GATEWAY_NAME,
     set_client_cli_parser,
     set_deployment_parser,
     set_gateway_parser,
@@ -647,7 +647,7 @@ class Flow(
     def _get_deployments_addresses(self) -> Dict[str, List[str]]:
         graph_dict = {}
         for node, deployment in self._deployment_nodes.items():
-            if node == 'gateway':
+            if node == GATEWAY_NAME:
                 continue
             if deployment.head_args:
                 # add head information
@@ -680,7 +680,7 @@ class Flow(
         from jina.serve.networking import GrpcConnectionPool
 
         for node, v in self._deployment_nodes.items():
-            if node == 'gateway':
+            if node == GATEWAY_NAME:
                 continue
 
             if v.external:
@@ -716,7 +716,7 @@ class Flow(
         from jina.orchestrate.deployments.config.helper import to_compatible_name
 
         for node, v in self._deployment_nodes.items():
-            if node == 'gateway':
+            if node == GATEWAY_NAME:
                 continue
 
             if v.external:
@@ -762,7 +762,7 @@ class Flow(
     def _get_graph_representation(self) -> Dict[str, List[str]]:
         def _add_node(graph, n):
             # in the graph we need to distinguish between start and end gateway, although they are the same deployment
-            if n == 'gateway':
+            if n == GATEWAY_NAME:
                 n = 'start-gateway'
             if n not in graph:
                 graph[n] = []
