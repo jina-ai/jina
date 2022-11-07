@@ -18,6 +18,10 @@ _dummy_gateway_yaml_path = os.path.join(
     cur_dir, '../../../yaml/test-custom-gateway.yml'
 )
 
+_flow_with_dummy_gateway_yaml_path = os.path.join(
+    cur_dir, '../../../yaml/test-flow-custom-gateway-nested-config.yml'
+)
+
 
 @pytest.mark.parametrize(
     'uses,uses_with,expected',
@@ -61,6 +65,15 @@ def test_flow_custom_gateway_no_executor(uses, uses_with, expected):
         _validate_dummy_custom_gateway_response(flow.port, expected)
         _validate_custom_gateway_process(
             flow.port, 'hello', {'text': 'helloworld', 'tags': {'processed': True}}
+        )
+
+
+def test_flow_custom_gateway_nested_config():
+
+    flow = Flow(uses=_flow_with_dummy_gateway_yaml_path)
+    with flow:
+        _validate_dummy_custom_gateway_response(
+            flow.port, {'arg1': 'arg1', 'arg2': 'arg2', 'arg3': 'arg3'}
         )
 
 
