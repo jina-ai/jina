@@ -452,6 +452,7 @@ class GrpcConnectionPool:
                     return response, metadata
 
                 elif self.stream_stub:
+                    # TODO: Is this for loop necessary? Isn't the length always one?
                     for response in requests:
                         self._record_request_bytes_metric(response.nbytes)
 
@@ -466,8 +467,6 @@ class GrpcConnectionPool:
                             return response, None
 
             if request_type == DataRequest and len(requests) > 1:
-                # TODO: This section of the code has no observability
-                # TODO: Does this section not need to deal with streaming stubs?
                 if self.data_list_stub:
                     call_result = self.data_list_stub.process_data(
                         requests,
@@ -475,11 +474,14 @@ class GrpcConnectionPool:
                         compression=compression,
                         timeout=timeout,
                     )
+                    for response in requests:
+                        self._record_request_bytes_metric(response.nbytes)
                     with timer:
                         metadata, response = (
                             await call_result.trailing_metadata(),
                             await call_result,
                         )
+                        self._record_received_bytes_metric(response.nbytes)
                     return response, metadata
                 else:
                     raise ValueError(
