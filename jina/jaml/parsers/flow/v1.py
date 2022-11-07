@@ -4,7 +4,7 @@ from typing import Any, Dict, Optional
 
 from jina import Flow
 from jina.enums import DeploymentRoleType
-from jina.helper import ArgNamespace, expand_env_var
+from jina.helper import GATEWAY_NAME, ArgNamespace, expand_env_var
 from jina.jaml.parsers.base import VersionedYAMLParser
 from jina.parsers import set_deployment_parser, set_gateway_parser
 
@@ -74,12 +74,12 @@ class V1Parser(VersionedYAMLParser):
                 kk: expand_env_var(vv) for kk, vv in deployments.items()
             }
             # in v1 YAML, flow is an optional argument
-            if p_deployment_attr.get('name', None) != 'gateway':
+            if p_deployment_attr.get('name', None) != GATEWAY_NAME:
                 # ignore gateway when reading, it will be added during build()
                 method = p_deployment_attr.get('method', 'add')
                 # support methods: add, needs, inspect
                 getattr(obj, method)(**p_deployment_attr, copy_flow=False)
-        gateway = data.get('gateway', {})
+        gateway = data.get(GATEWAY_NAME, {})
         if gateway:
             gateway_attr = {kk: expand_env_var(vv) for kk, vv in gateway.items()}
             obj.config_gateway(**gateway_attr, copy_flow=False)
@@ -105,7 +105,7 @@ class V1Parser(VersionedYAMLParser):
         if data._deployment_nodes:
             r['executors'] = []
 
-        last_name = 'gateway'
+        last_name = GATEWAY_NAME
         for k, v in data._deployment_nodes.items():
             kwargs = {}
             # only add "needs" when the value is not the last deployment name
@@ -122,7 +122,7 @@ class V1Parser(VersionedYAMLParser):
             for t in _get_taboo(parser):
                 if t in kwargs:
                     kwargs.pop(t)
-            if k != 'gateway':
+            if k != GATEWAY_NAME:
                 last_name = kwargs['name']
                 r['executors'].append(kwargs)
 
@@ -138,5 +138,5 @@ class V1Parser(VersionedYAMLParser):
         if 'JINA_FULL_CLI' in os.environ:
             r['with'].update(gateway_kwargs)
         if gateway_kwargs:
-            r['gateway'] = gateway_kwargs
+            r[GATEWAY_NAME] = gateway_kwargs
         return r
