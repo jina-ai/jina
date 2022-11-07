@@ -87,6 +87,8 @@ class PortAlreadyUsed(RuntimeError, BaseJinaException):
 class EstablishGrpcConnectionError(Exception, BaseJinaException):
     """Raised when Exception occurs when establishing or resetting gRPC connection"""
 
+class InvalidSecrets(Exception, BaseJinaException):
+    """Raised when Secrets argument is not valid"""
 
 class InternalNetworkError(grpc.aio.AioRpcError, BaseJinaException):
     """

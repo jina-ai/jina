@@ -28,7 +28,7 @@ def test_secrets(inject_secrets):
                 doc.tags['TEST_SECRET_KEY_2'] = self.value_read_from_secret_2
 
     f = Flow().add(uses=SecretTestExecutor, uses_with={'value_read_from_secret_1': '${{SECRETS.secret_1}}',
-                                                       'value_read_from_secret_2': '${{SECRETS.secret_2}}'},
+                                                       'value_read_from_secret_2': '${{SECRETS.TEST_SECRET_KEY_2}}'},
                    secrets=[{'name': 'secret_1', 'key': 'TEST_SECRET_KEY_1', 'type': 'env'}, {'name': 'secret_2', 'key': 'TEST_SECRET_KEY_2', 'type': 'env'}])
 
     with f:

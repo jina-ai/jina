@@ -919,41 +919,6 @@ def is_valid_local_config_source(path: str) -> bool:
         return False
 
 
-secrets_regex_str = r'\${{\s?SECRETS\.[a-zA-Z0-9_]*\s?}}|\${{\s?secrets\.[a-zA-Z0-9_]*\s?}}'
-secret_name_regex_str = r'\.(.*?)(\s|\})'
-secrets_regex = re.compile(
-    secrets_regex_str
-)  # matches expressions of form '${{ SECRETS.var }}' or '${{ secrets.var }}'
-secrets_name_regex = re.compile(secret_name_regex_str)
-
-
-def replace_args_with_secrets(args, secrets):
-    # TODO: Validate Secrets template (name, key, type) (perhaps dataclass from dict)
-
-    def replace_recursive(b):
-        for k, v in b.items():
-            if type(v) == str:
-                match = re.search(secrets_regex, v)
-                if match is not None:
-                    matched_str = v[match.span()[0]: match.span()[1]]
-
-                    name_match = re.search(secrets_name_regex, matched_str)
-                    secret_name = matched_str[name_match.span()[0]: name_match.span()[1]][1:][:-1]
-
-                    for secret in secrets:
-                        if secret['name'] == secret_name:
-                            secret_value = os.environ[secret['key']]
-                            out = re.sub(secrets_regex_str, secret_value, v)
-                            b[k] = out
-            if type(v) == dict:
-                replace_recursive(v)
-
-    d = vars(args)
-    replace_recursive(d)
-
-    return args
-
-
 def get_full_version() -> Optional[Tuple[Dict, Dict]]:
     """
     Get the version of libraries used in Jina and environment variables.

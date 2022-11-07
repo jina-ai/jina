@@ -11,7 +11,7 @@ from jina.helper import is_port_free
 from jina.parsers.helper import _set_gateway_uses
 from jina.serve.gateway import BaseGateway
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
-from jina.helper import replace_args_with_secrets
+from jina.serve.secrets import replace_args_with_secrets
 
 if TYPE_CHECKING:  # pragma: no cover
     import multiprocessing

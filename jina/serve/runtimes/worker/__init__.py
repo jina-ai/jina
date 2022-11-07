@@ -7,7 +7,8 @@ from grpc_health.v1 import health, health_pb2, health_pb2_grpc
 from grpc_reflection.v1alpha import reflection
 
 from jina.excepts import RuntimeTerminated
-from jina.helper import get_full_version, replace_args_with_secrets
+from jina.helper import get_full_version
+from jina.serve.secrets import replace_args_with_secrets
 from jina.importer import ImportExtensions
 from jina.proto import jina_pb2, jina_pb2_grpc
 from jina.serve.instrumentation import MetricsTimer

@@ -12,7 +12,8 @@ from grpc_reflection.v1alpha import reflection
 
 from jina.enums import PollingType
 from jina.excepts import InternalNetworkError
-from jina.helper import get_full_version, replace_args_with_secrets
+from jina.helper import get_full_version
+from jina.serve.secrets import replace_args_with_secrets
 from jina.importer import ImportExtensions
 from jina.proto import jina_pb2, jina_pb2_grpc
 from jina.serve.instrumentation import MetricsTimer
