@@ -803,6 +803,9 @@ class Deployment(BaseDeployment):
             for replica_id in range(replicas):
                 _args = copy.deepcopy(args)
                 _args.shard_id = shard_id
+                # for gateway pods, the pod role shouldn't be changed
+                if _args.pod_role != PodRoleType.GATEWAY:
+                    _args.pod_role = PodRoleType.WORKER
                 _args.pod_role = PodRoleType.WORKER
 
                 if cuda_device_map:
