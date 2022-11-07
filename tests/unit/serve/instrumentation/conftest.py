@@ -9,6 +9,7 @@ from opentelemetry.sdk.metrics.export import (
     MetricExporter,
     MetricExportResult,
     MetricsData,
+    PeriodicExportingMetricReader,
 )
 
 
@@ -52,20 +53,22 @@ class DirMetricExporter(MetricExporter):
 
     def __del__(self):
         self.f.close()
+    
+class RealPeriodicExportingMetricReader(PeriodicExportingMetricReader): ...
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='function')
 def monkeypatch_metric_exporter(
     tmpdir_factory: pytest.TempdirFactory,
 ) -> Tuple[Callable, Callable]:
     import opentelemetry.sdk.metrics.export
-    from opentelemetry.sdk.metrics.export import PeriodicExportingMetricReader
     from pathlib import Path
     import time
     import os
     import json
 
     collect_path = Path(tmpdir_factory.mktemp('otel-collector'))
+    print(f"OTel Collector path: {collect_path}")
     metrics_path = collect_path / 'metrics'
     os.mkdir(metrics_path)
 
@@ -78,7 +81,7 @@ def monkeypatch_metric_exporter(
             tick_counter = int(f.read())
         with open(tick_counter_filename, 'w') as f:
             f.write(str(tick_counter + 1))
-        time.sleep(1)
+        time.sleep(3)
 
     def _get_service_name(otel_measurement):
         return otel_measurement[0]['resource_metrics'][0]['resource']['attributes'][
@@ -95,7 +98,7 @@ def monkeypatch_metric_exporter(
             for i in map(read_metric_file, metrics_path.glob('*'))
         }
 
-    class PatchedTextReader(PeriodicExportingMetricReader):
+    class PatchedTextReader(RealPeriodicExportingMetricReader):
         def __init__(self, *args, **kwargs) -> None:
             self.exporter = DirMetricExporter(metrics_path)
             self.tick_counter = 0
@@ -116,4 +119,5 @@ def monkeypatch_metric_exporter(
             self.collect(timeout_millis=self._export_interval_millis)
 
     opentelemetry.sdk.metrics.export.PeriodicExportingMetricReader = PatchedTextReader
+
     return collect_metrics, read_metrics
