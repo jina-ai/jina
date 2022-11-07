@@ -452,6 +452,7 @@ class WorkerRequestHandler:
         The resulting DataRequest object contains Documents of all DocumentArrays inside requests.
 
         :param requests: List of DataRequest objects
+        :return: the resulting DataRequest
         """
         docs_matrix = WorkerRequestHandler.get_docs_matrix_from_request(
             requests, field='docs'
