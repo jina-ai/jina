@@ -17,7 +17,7 @@ from jina.parsers import set_pod_parser
 from jina.proto import jina_pb2, jina_pb2_grpc
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
-from jina.serve.runtimes.request_handlers.data_request_handler import DataRequestHandler
+from jina.serve.runtimes.request_handlers.worker_request_handler import WorkerRequestHandler
 from jina.serve.runtimes.worker import WorkerRuntime
 
 
@@ -154,7 +154,7 @@ def test_error_in_worker_runtime(monkeypatch):
     def fail(*args, **kwargs):
         raise RuntimeError('intentional error')
 
-    monkeypatch.setattr(DataRequestHandler, 'handle', fail)
+    monkeypatch.setattr(WorkerRequestHandler, 'handle', fail)
 
     def start_runtime(args, cancel_event):
         with WorkerRuntime(args, cancel_event=cancel_event) as runtime:
@@ -441,7 +441,7 @@ async def test_error_in_worker_runtime_with_exit_on_exceptions(monkeypatch):
     def fail(*args, **kwargs):
         raise RuntimeError('intentional error')
 
-    monkeypatch.setattr(DataRequestHandler, 'handle', fail)
+    monkeypatch.setattr(WorkerRequestHandler, 'handle', fail)
 
     def start_runtime(args, cancel_event):
         with WorkerRuntime(args, cancel_event=cancel_event) as runtime:

@@ -20,7 +20,7 @@ from jina.serve.instrumentation import MetricsTimer
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.helper import _get_grpc_server_options
-from jina.serve.runtimes.request_handlers.data_request_handler import DataRequestHandler
+from jina.serve.runtimes.request_handlers.worker_request_handler import WorkerRequestHandler
 from jina.types.request.data import DataRequest, Response
 
 
@@ -307,7 +307,7 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
     ) -> Tuple[DataRequest, Dict]:
         self.logger.debug(f'recv {len(requests)} DataRequest(s)')
 
-        DataRequestHandler.merge_routes(requests)
+        WorkerRequestHandler.merge_routes(requests)
 
         uses_before_metadata = None
         if self.uses_before_address:
@@ -352,11 +352,11 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
                 retries=self._retries,
             )
         elif len(worker_results) > 1 and self._reduce:
-            DataRequestHandler.reduce_requests(worker_results)
+            WorkerRequestHandler.reduce_requests(worker_results)
         elif len(worker_results) > 1 and not self._reduce:
             # worker returned multiple responsed, but the head is configured to skip reduction
             # just concatenate the docs in this case
-            response_request.data.docs = DataRequestHandler.get_docs_from_request(
+            response_request.data.docs = WorkerRequestHandler.get_docs_from_request(
                 requests, field='docs'
             )
 

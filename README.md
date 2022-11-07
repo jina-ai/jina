@@ -35,7 +35,7 @@ Applications built with Jina enjoy the following features out of the box:
   - Async and non-blocking data processing over dynamic flows.
 
 ☁️ **Cloud-native**
-  - Seamless Docker container integration: sharing, exploring, sandboxing, versioning and dependency control via [Jina Hub](https://hub.jina.ai).
+  - Seamless Docker container integration: sharing, exploring, sandboxing, versioning and dependency control via [Executor Hub](https://cloud.jina.ai).
   - Full observability via Prometheus and Grafana.
   - Fast deployment to Kubernetes, Docker Compose.
 
@@ -338,7 +338,7 @@ executors:
 
 ### Seamless Container integration
 
-Without having to worry about dependencies, you can easily share your Executors with others; or use public/private Executors in your project thanks to [Jina Hub](https://hub.jina.ai).
+Without having to worry about dependencies, you can easily share your Executors with others; or use public/private Executors in your project thanks to [Executor Hub](https://cloud.jina.ai).
 
 To create an Executor:
 
@@ -346,7 +346,7 @@ To create an Executor:
 jina hub new 
 ```
 
-To push it to Jina Hub:
+To push it to Executor Hub:
 
 ```bash
 jina hub push .
@@ -368,7 +368,7 @@ Behind this smooth experience is advanced management of Executors:
 ---
 
 <p align="center">
-<a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/.github/readme/cloud-native-banner.png?raw=true" alt="Jina: Seamless Container Integration" width="100%"></a>
+<a href="https://docs.jina.ai"><img src=".github/readme/cloud-native-banner.png?raw=true" alt="Jina: Seamless Container Integration" width="100%"></a>
 </p>
 
 ### Fast-lane to cloud-native
@@ -387,7 +387,7 @@ jina export docker-compose flow.yml docker-compose.yml
 docker-compose up
 ```
 
-Using Prometheus becomes easy:
+Tracing and monitoring with OpenTelemetry is straightforward:
 
 ```python
 from jina import Executor, requests, DocumentArray
@@ -396,18 +396,30 @@ from jina import Executor, requests, DocumentArray
 class MyExec(Executor):
     @requests
     def encode(self, docs: DocumentArray, **kwargs):
-        with self.monitor('preprocessing_seconds', 'Time preprocessing the requests'):
-            docs.tensors = preprocessing(docs)
-        with self.monitor(
-            'model_inference_seconds', 'Time doing inference the requests'
-        ):
-            docs.embedding = model_inference(docs.tensors)
+        with self.tracer.start_as_current_span(
+            'encode', context=tracing_context
+        ) as span:
+            with self.monitor(
+                'preprocessing_seconds', 'Time preprocessing the requests'
+            ):
+                docs.tensors = preprocessing(docs)
+            with self.monitor(
+                'model_inference_seconds', 'Time doing inference the requests'
+            ):
+                docs.embedding = model_inference(docs.tensors)
 ```
 
-Using Grafana becomes easy, just [download this JSON](https://github.com/jina-ai/example-grafana-prometheus/blob/main/grafana-dashboards/flow.json) and import it into Grafana:
+You can integrate Jaeger or any other distributed tracing tools to collect and visualize request-level and application level service operation attributes. This helps you analyze request-response lifecycle, application behavior and performance.
+
+To use Grafana, [download this JSON](https://github.com/jina-ai/example-grafana-prometheus/blob/main/grafana-dashboards/flow-histogram-metrics.json) and import it into Grafana:
 
 <p align="center">
-<a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/.github/readme/grafana.png?raw=true" alt="Jina: Seamless Container Integration" width="70%"></a>
+<a href="https://docs.jina.ai"><img src=".github/readme/grafana-histogram-metrics.png?raw=true" alt="Jina: Seamless Container Integration" width="70%"></a>
+</p>
+
+To trace requests with Jaeger:
+<p align="center">
+<a href="https://docs.jina.ai"><img src=".github/readme/jaeger-tracing-example.png?raw=true" alt="Jina: Seamless Container Integration" width="70%"></a>
 </p>
 
 

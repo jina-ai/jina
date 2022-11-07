@@ -85,9 +85,9 @@ This tutorial walks through the basics of spawing a standalone (external) Execut
 [CLI](../cli/index.rst) and {ref}`Executor API section <serve-executor-standalone>`
 ````
 
-## Using Jina Hub
+## Using Executor Hub
 
-The Jina CLI lets you spawn Executors straight from Jina Hub.
+The Jina CLI lets you spawn Executors straight from Executor Hub.
 In this example, we use `CLIPTextEncoder` to create embeddings for our Documents.
 
 First, start the Executor from the terminal. All we need to decide is the `port` that will be used by the Executor.
@@ -170,7 +170,7 @@ class MyExecutor(Executor):
             print(f'Received: "{doc.text}"')
 ```
 
-Since we don't use Jina Hub this time around, we need to tell Jina how to find the Executor that we just defined.
+Since we don't use Executor Hub this time around, we need to tell Jina how to find the Executor that we just defined.
 We do this using a YAML file.
 
 Create a new file called `my-exec.yml`:

@@ -2,7 +2,7 @@
 
 You can use {class}`~jina.Executor` objects directly, just like a regular Python object.
 
-There are two ways to instantiate an Executor object: From a local Python class, or from Jina Hub:
+There are two ways to instantiate an Executor object: From a local Python class, or from Executor Hub:
 
 ````{tab} From local Python
 You can use `Executor` objects directly, just like a regular Python object:
@@ -31,8 +31,8 @@ Text: hello world
 
 
 
-````{tab} From Jina Hub
-You can pull an Executor from Jina Hub and use it directly as a Python object. [Jina Hub](https://hub.jina.ai/) is our marketplace for Executors.
+````{tab} From Executor Hub
+You can pull an Executor from Executor Hub and use it directly as a Python object. [Executor Hub](https://cloud.jina.ai/) is our marketplace for Executors.
 
 ```python
 from docarray import Document, DocumentArray

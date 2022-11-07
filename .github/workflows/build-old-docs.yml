@@ -1,0 +1,128 @@
+name: Build old docs
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_token:
+        description: 'Your release token'
+        required: true
+      triggered_by:
+        description: 'CD | TAG | MANUAL'
+        required: false
+        default: MANUAL
+      package:
+        description: The name of the repo to build documentation for.
+        type: string
+        default: jina
+      repo_owner:
+        description: The owner of the repo to build documentation for. Defaults to 'jina-ai'.
+        type: string
+        default: jina-ai
+      pages_branch:
+        description: Branch that Github Pages observes
+        type: string
+        default: gh-pages
+      git_config_name:
+        type: string
+        default: Jina Dev Bot
+      git_config_email:
+        type: string
+        default: dev-bot@jina.ai
+
+jobs:
+  token-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check release token
+        id: token-check
+        run: | 
+          touch SUCCESS
+        if: inputs.release_token == env.release_token
+        env:
+          release_token: ${{ secrets.JINA_CORE_RELEASE_TOKEN }}
+      - name: Fail release token
+        run: |
+          [[ -f SUCCESS ]]
+      - name: Get versions
+        id: get_versions
+        run: |
+          printf "versions=" >> $GITHUB_OUTPUT
+          curl https://raw.githubusercontent.com/${{ inputs.repo_owner }}/${{ inputs.package }}/master/docs/_versions.json >> $GITHUB_OUTPUT
+    outputs:
+      versions: ${{ steps.get_versions.outputs.versions }}
+
+  build-doc:
+    needs: token-check
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJson(needs.token-check.outputs.versions) }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+          ref: ${{ matrix.version }}
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.7'
+      - name: Get latest templates
+        run: |
+          git show --summary
+          echo "Get latest sidebar brand template"
+          wget https://raw.githubusercontent.com/${{ inputs.repo_owner }}/${{ inputs.package }}/master/docs/_templates/sidebar/brand.html
+          mv ./brand.html ./docs/_templates/sidebar/brand.html
+      - name: Install dependencies
+        run: |
+          wget https://raw.githubusercontent.com/${{ inputs.repo_owner }}/${{ inputs.package }}/master/docs/pin_requirements.py
+          wget https://raw.githubusercontent.com/${{ inputs.repo_owner }}/${{ inputs.package }}/master/docs/correct_some_requirements.sh
+          python pin_requirements.py extra-requirements.txt
+          bash correct_some_requirements.sh
+          pip install .[devel]
+          cd docs
+          pip install -r requirements.txt
+          pip install --pre -U furo
+          pip install sphinx-markdown-tables==0.0.17
+      - name: Sphinx Build
+        run: |
+          cd docs
+          bash makedoc.sh local-only
+      - name: Package build into artifact
+        run: |
+          mv ./docs/_build/dirhtml ./${{ matrix.version }}
+          zip -r /tmp/build.zip ./${{ matrix.version }}/*
+      - name: Upload built html
+        uses: actions/upload-artifact@v3
+        with:
+            name: ${{ matrix.version }}
+            path: /tmp/build.zip
+            retention-days: 1
+  
+  push-docs:
+    runs-on: ubuntu-latest
+    needs: build-doc
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+          ref: ${{ inputs.pages_branch }}
+      - uses: actions/download-artifact@v3
+        with:
+          path: /tmp/artifacts
+      - name: Clear old builds
+        run: |
+          cd docs
+          for i in $(ls /tmp/artifacts); do git rm -rf "$i" || true; done
+      - name: In with new builds
+        run: |
+          cd docs
+          for i in $(ls /tmp/artifacts); do unzip "/tmp/artifacts/$i/build.zip"; done
+          rm _versions.json || true
+          wget https://raw.githubusercontent.com/${{ inputs.repo_owner }}/${{ inputs.package }}/master/docs/_versions.json
+      - name: Push it up!
+        run: |
+          git config --local user.email "${{ inputs.git_config_email }}"
+          git config --local user.name "${{ inputs.git_config_name }}"
+          git show --summary
+          git add . && git commit -m "chore(docs): update old docs due to ${{github.event_name}} on ${{github.repository}}"
+          git push origin

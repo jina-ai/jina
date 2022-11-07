@@ -38,7 +38,7 @@ List of strings defining the Executor's Python dependencies. Most notably this m
 ### `metas`
 Collection containing meta-information about the Executor.
 
-Your Executor is annotated with this information when publishing to Jina Hub. To get better appeal on Jina Hub, set the `metas` fields to the correct values:
+Your Executor is annotated with this information when publishing to Executor Hub. To get better appeal on Executor Hub, set the `metas` fields to the correct values:
 
 - **`name`**: Human-readable name of the Executor.
 - **`description`**: Human-readable description of the Executor. 

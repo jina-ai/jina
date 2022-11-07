@@ -4,7 +4,7 @@
 Once you understand what an {class}`~jina.Executor` is and how to use it inside a {class}`~jina.Flow`, you may want to wrap it into a container so you can isolate its dependencies and make it ready to run in the cloud or Kubernetes.
 
 ````{tip}
-The recommended way to containerize an Executor is to leverage {ref}`Jina Hub <jina-hub>` to ensure your Executor can run as a container. It handles auto-provisioning, building, version control, etc:
+The recommended way to containerize an Executor is to leverage {ref}`Executor Hub <jina-hub>` to ensure your Executor can run as a container. It handles auto-provisioning, building, version control, etc:
 
 ```bash
 jina hub new

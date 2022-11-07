@@ -11,7 +11,7 @@ from jina.helper import convert_tuple_to_list, iscoroutinefunction
 from jina.importer import ImportExtensions
 from jina.serve.executors.metas import get_default_metas
 
-if TYPE_CHECKING:
+if TYPE_CHECKING: # pragma: no cover
     from jina import DocumentArray
 
 

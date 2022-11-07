@@ -9,7 +9,7 @@ from jina.serve.streamer import GatewayStreamer
 
 __all__ = ['BaseGateway']
 
-if TYPE_CHECKING:
+if TYPE_CHECKING: # pragma: no cover
     from grpc.aio._interceptor import ClientInterceptor, ServerInterceptor
     from opentelemetry import trace
     from opentelemetry.instrumentation.grpc._client import (

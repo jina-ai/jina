@@ -1,39 +1,26 @@
 (kubernetes)=
-# Deploy with Kubernetes
+# Deploy on Kubernetes
+
+This how-to will go through deploying a simple Flow using Kubernetes, customizing the Kubernetes configuration
+to your needs, and scaling Executors using replicas and shards.
+
+Deploying a {class}`~jina.Flow` in Kubernetes is the recommended way to use Jina in production.
+
+Since a {class}`~jina.Flow` is composed of {class}`~jina.Executor`s which can run in different runtimes depending on how you deploy
+the Flow, Kubernetes can easily take over the lifetime management of Executors.  
+
+```{seelaso}
+This page is a step by step guide, refer to the {ref}`Kubernetes support documentation <kubernetes-docs>` for more details
+```
 
 
-```{tip}
+```{hint}
 This guide is designed for users who want to **manually** deploy a Jina project on Kubernetes.
 
 Check out {ref}`jcloud` if you want a **one-click** solution to deploy and host Jina, leveraging a cloud-native stack of Kubernetes, Prometheus and Grafana, **without worrying about provisioning**.
 ```
 
 
-:::::{grid} 2
-:gutter: 3
-
-::::{grid-item-card} {octicon}`cpu;1.5em` Deploy a Flow to JCloud
-:link: fundamentals/jcloud/index
-:link-type: doc
-:class-card: color-gradient-card-2
-
-JCloud is a free CPU/GPU hosting platform for Jina projects.
-::::
-:::::
-
-
-Deploying a {class}`~jina.Flow` in Kubernetes is the recommended way to use Jina in production.
-
-Since a {class}`~jina.Flow` is composed of {class}`~jina.Executor`s which can run in different runtimes depending on how you deploy
-the Flow, Kubernetes can easily take over the lifetime management of Executors. 
-
-In general, Jina follows the following principle when it comes to deploying in Kubernetes:
-You, the user, know your use case and requirements the best.
-This means that while Jina generates configurations for you that run out of the box, as a professional user you should
-always see them as just a starting point to get you off the ground.
-
-This how-to will go through deploying a simple Flow using Kubernetes, customizing the Kubernetes configuration
-to your needs, and scaling Executors using replicas and shards.
 
 ## Preliminaries
 
@@ -46,8 +33,11 @@ solutions in the cloud:
 - [Azure Kubernetes Service](https://azure.microsoft.com/en-us/services/kubernetes-service)
 - [Digital Ocean](https://www.digitalocean.com/products/kubernetes/)
 
+You need to install Linkerd in your K8s cluster. To use Linkerd, [install the Linkerd CLI](https://linkerd.io/2.11/getting-started/) and [its control plane](https://linkerd.io/2.11/getting-started/) in your cluster.
+This automatically sets up and manages the service mesh proxies when you deploy the Flow.
 
-(kubernetes-deploy)=
+To understand why you need to install a service mesh like Linkerd refer to this  {ref}`section <service-mesh-k8s>`
+
 ## Deploy a simple Flow
 
 By *simple* in this context we mean a Flow without replicated or sharded Executors - you can see how to use those in
@@ -70,7 +60,7 @@ You can essentially define any Flow of your liking.
 Just ensure that all Executors are containerized, either by using *'jinahub+docker'*, or by {ref}`containerizing your local
 Executors <dockerize-exec>`.
 
-The example Flow here simply encodes and indexes text or image data using two Executors from [Jina Hub](https://hub.jina.ai/).
+The example Flow here simply encodes and indexes text or image data using two Executors from [Executor Hub](https://cloud.jina.ai/).
  
 Next, generate Kubernetes YAML configs from the Flow.
 It's good practice to define a new Kubernetes namespace for that purpose:
@@ -162,67 +152,6 @@ with portforward.forward('custom-namespace', 'gateway-7df8765bd9-xf5tf', 8080, 8
     print(f' Indexed documents: {len(docs)}')
 ```
 
-(kubernetes-replicas)=
-## Scaling Executors: Replicas and shards
-
-Jina supports two ways of scaling:
-
-- **Replicas** can be used with any Executor type and are typically used for performance and availability.
-- **Shards** are used for partitioning data and should only be used with indexers since they store state.
-
-Check {ref}`here <scale-out>` for more information about these scaling mechanisms.
-
-For shards, Jina creates a separate Deployment in Kubernetes per Shard.
-Setting `f.add(..., shards=num_shards)` is sufficient to create a corresponding Kubernetes configuration.
-
-For replicas, Jina uses [Kubernetes native replica scaling](https://kubernetes.io/docs/tutorials/kubernetes-basics/scale/scale-intro/) and **relies on a service mesh** to load balance requests between replicas of the same Executor.
-Without a service mesh installed in your Kubernetes cluster, all traffic will be routed to the same replica.
-
-````{admonition} See Also
-:class: seealso
-
-The impossibility of load balancing between different replicas is a limitation of Kubernetes in combination with gRPC.
-If you want to learn more about this limitation, see [this](https://kubernetes.io/blog/2018/11/07/grpc-load-balancing-on-kubernetes-without-tears/) Kubernetes Blog post.
-````
-
-### Install a service mesh
-
-Service meshes work by attaching a tiny proxy to each of your Kubernetes pods, allowing for smart rerouting, load balancing,
-request retrying, and host of other [features](https://linkerd.io/2.11/features/).
-
-Jina relies on a service mesh to load balance request between replicas of the same Executor.
-You can use your favourite Kubernetes service mesh in combination with your Jina Flow, but the configuration files
-generated by `to_kubernetes_config()` already include all necessary annotations for the [Linkerd service mesh](https://linkerd.io).
-
-````{admonition} Hint
-:class: hint
-You can use any service mesh with Jina, but Jina Kubernetes configurations come with Linkerd annotations out of the box.
-````
-
-To use Linkerd, [install the Linkerd CLI](https://linkerd.io/2.11/getting-started/).
-After that, [install its control plane](https://linkerd.io/2.11/getting-started/) in your cluster.
-This automatically sets up and manages the service mesh proxies when you deploy the Flow.
-
-Once the Flow is deployed on Kubernetes, you can use all the native Kubernetes tools like `kubectl` to perform operations on the Pods and Deployments. 
-
-You can use this to [add or remove replicas](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#scaling-a-deployment), to run [rolling update](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#updating-a-deployment) operations, etc ...
-
-````{admonition} Caution
-:class: caution
-
-Many service meshes can perform retries themselves.
-Be careful about setting up service mesh level retries in combination with Jina, as it may lead to unwanted behaviour in combination with
-Jina's own {ref}`retry policy <flow-error-handling>`.
-
-Instead, you can disable Jina level retries by setting `Flow(retries=0)` in Python, or `retries: 0` in the Flow
-YAML `with` block.
-````
-
-````{admonition} Matching jina versions
-:class: caution
-If you change the Docker images in your Docker Compose generated file, ensure that all services included in the gateway are built with the same Jina version to guarantee compatibility.
-````
-
 ### Deploy Flow with shards and replicas
 
 After your service mesh is installed, your cluster is ready to run a Flow with scaled Executors.
@@ -274,37 +203,6 @@ If you already have the simple Flow from the first example running on your clust
 ```shell
 kubectl apply -R -f ./k8s_flow
 ```
-
-## Scaling the Gateway
-The Gateway is responsible for providing the API of the {ref}`Flow <flow>`.
-If you have a large Flow with many Clients and many replicated Executors, the Gateway can become the bottleneck.
-In this case you can also scale up the Gateway deployment to be backed by multiple Kubernetes Pods.
-This is done by the regular means of Kubernetes: Either increase the number of replicas in the  {ref}`generated yaml configuration files <kubernetes-deploy>` or [add replicas while running](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#scaling-a-deployment).
-To expose your Gateway replicas outside Kubernetes, you can add a load balancer as described {ref}`here <kubernetes-expose>`.
-
-````{admonition} Hint
-:class: hint
-You can use a custom Docker image for the Gateway deployment by setting the envrironment variable `JINA_GATEWAY_IMAGE` to the desired image before generating the configuration.
-````
-
-## Extra Kubernetes options
-
-You can't add basic Kubernetes feature like `Secrets`, `ConfigMap` or `Labels` via the Pythonic interface. This is intentional
-and doesn't mean that we don't support these features. On the contrary, we let you fully express your Kubernetes configuration by using the Kubernetes API to add you own Kubernetes standard to Jina.
-
-````{admonition} Hint
-:class: hint
-We recommend dumping the Kubernetes configuration files and then editing the files to suit your needs.
-````
-
-Here are possible configuration options you may need to add or change
-
-- Add labels `selector`s to the Deployments to suit your case
-- Add `requests` and `limits` for the resources of the different Pods 
-- Set up persistent volume storage to save your data on disk
-- Pass custom configuration to your Executor with `ConfigMap` 
-- Manage credentials of your Executor with secrets
-- Edit the default rolling update configuration
 
 
 (kubernetes-expose)=
@@ -407,14 +305,14 @@ You can find more information about these commands in the [official Kubernetes d
 
 ## Key takeaways
 
-To put it briefly, there are just three key takeaways about deploying a Jina Flow on Kubernetes:
+In short, there are just three key steps to deploy a Jina Flow on Kubernetes:
 
 1. Use `f.to_kubernetes_yaml()` to generate Kubernetes configuration files from a Jina Flow object.
-2. Modify the generated files freely - you know better what you need than we do!
-3. Use a service mesh to enable replicated Executors.
+2. Apply the generated file via `kubectl`(Modify the generated files if necessary)
+3. Expose your Flow outside the K8s cluster
 
 ## See also
-
+- {ref}`Kubernetes support documentation <kubernetes-docs>`
 - {ref}`Monitor the Flow once it is deployed <monitoring>`
 - {ref}`See how failures and retries are handled <flow-error-handling>`
 - {ref}`Learn more about scaling Executors <scale-out>`

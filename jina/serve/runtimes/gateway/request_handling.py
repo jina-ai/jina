@@ -12,9 +12,9 @@ from jina.proto import jina_pb2
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.gateway.graph.topology_graph import TopologyGraph
 from jina.serve.runtimes.helper import _is_param_for_specific_executor
-from jina.serve.runtimes.request_handlers.data_request_handler import DataRequestHandler
+from jina.serve.runtimes.request_handlers.worker_request_handler import WorkerRequestHandler
 
-if TYPE_CHECKING:
+if TYPE_CHECKING: # pragma: no cover
     from asyncio import Future
 
     from opentelemetry.metrics import Meter
@@ -224,7 +224,7 @@ class MonitoringRequestMixin:
             self._update_end_failed_requests_metrics()
 
 
-class RequestHandler(MonitoringRequestMixin):
+class GatewayRequestHandler(MonitoringRequestMixin):
     """
     Class that handles the requests arriving to the gateway and the result extracted from the requests future.
 
@@ -364,7 +364,7 @@ class RequestHandler(MonitoringRequestMixin):
                 collect_results = request_graph.collect_all_results()
                 resp_params = response.parameters
                 if len(collect_results) > 0:
-                    resp_params[DataRequestHandler._KEY_RESULT] = collect_results
+                    resp_params[WorkerRequestHandler._KEY_RESULT] = collect_results
                     response.parameters = resp_params
                 return response
 

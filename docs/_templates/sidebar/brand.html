@@ -16,26 +16,33 @@
   {%- endif %}
   {% endblock brand_content %}
 </a>
+<script>
+  function setPrefix(prefix){
+    window.location.href = prefix
+  }
+</script>
+<script defer>
+  fetch(`https://${window.location.host}/_versions.json`)
+  .then((resp) => resp.json())
+  .then((data) => {
+    var versionSelector = document.getElementsByClassName("version-select")[0];
+    var currentPrefix = window.location.href.toString().split(window.location.host)[1].split('/')[1];
+
+    for(var i = 0; i < data.length; i++){
+      var option = document.createElement("option");
+      option.innerHTML = data[i].version;
+      option.value = "/" + data[i].version;
+      versionSelector.appendChild(option);
+      if(currentPrefix === data[i].version){
+        versionSelector.selectedIndex = i + 1;
+      }
+    }
+  })
+  .catch((err) => console.log(err));
+</script>
 <div class="sd-d-flex-row sd-align-major-spaced">
   <a class="github-button" href="https://github.com/jina-ai/jina" data-icon="octicon-star" data-show-count="true" aria-label="Star jina-ai/jina on GitHub" style="opacity: 0;">Star</a>
-  {% if versions %}
-  <select onChange="window.location.href=this.value" class="version-select">
-      {%- for item in versions|reverse %}
-        {% if item.name == latest_jina_version %}
-          {% set new_url = item.url if current_version.name == latest_jina_version else item.url | replace('/' + latest_jina_version, "") %}
-          {% if current_version.version == item.version %}
-            <option value="{{ new_url }}" selected="selected" >latest ({{ item.name }})</option>
-          {% else %}
-            <option value="{{ new_url }}" >latest({{ item.name }})</option>
-          {% endif %}
-        {% else %}
-          {% if current_version.version == item.version %}
-            <option value="{{ item.url }}" selected="selected" >{{ item.name }}</option>
-          {% else %}
-            <option value="{{ item.url }}" >{{ item.name }}</option>
-          {% endif %}
-        {% endif %}
-      {%- endfor %}
+  <select onChange="setPrefix(this.value)" class="version-select">
+    <option value="/">latest</option>
   </select>
-  {% endif %}
 </div>

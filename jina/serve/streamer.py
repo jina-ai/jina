@@ -4,12 +4,12 @@ from docarray import DocumentArray
 from jina.logging.logger import JinaLogger
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.gateway.graph.topology_graph import TopologyGraph
-from jina.serve.runtimes.gateway.request_handling import RequestHandler
+from jina.serve.runtimes.gateway.request_handling import GatewayRequestHandler
 from jina.serve.stream import RequestStreamer
 
 __all__ = ['GatewayStreamer']
 
-if TYPE_CHECKING:
+if TYPE_CHECKING: # pragma: no cover
     from grpc.aio._interceptor import ClientInterceptor
     from opentelemetry.instrumentation.grpc._client import (
         OpenTelemetryClientInterceptor,
@@ -82,7 +82,7 @@ class GatewayStreamer:
             aio_tracing_client_interceptors,
             tracing_client_interceptor,
         )
-        request_handler = RequestHandler(metrics_registry, meter, runtime_name)
+        request_handler = GatewayRequestHandler(metrics_registry, meter, runtime_name)
 
         self._streamer = RequestStreamer(
             request_handler=request_handler.handle_request(

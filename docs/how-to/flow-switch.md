@@ -121,7 +121,7 @@ class ImageIndexer(Executor):
 As you can see, image data was only processed by `ImageIndexer`, and text data was only processed by `TextIndexer`.
 
 However, there's a problem with this approach:
-Sometimes you can't easily control the endpoints of all Executors, for example when you are using {ref}`Jina Hub <jina-hub>` or {ref}`external Executors <external-executor>`.
+Sometimes you can't easily control the endpoints of all Executors, for example when you are using {ref}`Executor Hub <jina-hub>` or {ref}`external Executors <external-executor>`.
 
 To solve this, filter conditions easily add selection control to your Flow.
 
