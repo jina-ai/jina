@@ -64,7 +64,8 @@ class _NetworkingHistograms:
     send_requests_bytes_metrics: Optional['Histogram'] = None
     histogram_metric_labels: Dict[str, str] = None
 
-    def _get_labels(self, additional_labels: Optional[Dict[str, str]] = None):
+    def _get_labels(self, additional_labels: Optional[Dict[str, str]] = None) -> Optional[Dict[str, str]]:
+
         if self.histogram_metric_labels is None:
             return None
         if additional_labels is None:
