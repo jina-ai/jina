@@ -1013,7 +1013,6 @@ class GrpcConnectionPool:
                         connection_list=connections,
                     )
                     if error:
-                        print(f'--->returning error: {type(error)}')
                         return error
 
         return asyncio.create_task(task_wrapper())
