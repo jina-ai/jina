@@ -11,8 +11,6 @@ from tests.helper import (
 )
 from tests.unit.yaml.dummy_gateway import DummyGateway
 
-# TODO: check whether this file is actually part of CI
-
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 _dummy_gateway_yaml_path = os.path.join(
     cur_dir, '../../../yaml/test-custom-gateway.yml'
@@ -83,6 +81,6 @@ def test_flow_custom_gateway_via_flow_uses_disabled():
 
     # the uses parameter is ignored here and not be applied on the gateway, therefore, the gateway
     # is just a GRPC gateway
-    with pytest.raises(ConnectionError):
+    with pytest.raises(requests.ConnectionError):
         with flow:
             _ = requests.get(f'http://127.0.0.1:{flow.port}/').json()

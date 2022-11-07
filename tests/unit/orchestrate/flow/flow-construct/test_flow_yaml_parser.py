@@ -204,7 +204,8 @@ def test_flow_yaml_override_with_protocol():
 
 
 @pytest.mark.parametrize(
-    'yaml_file', ['yaml/flow_with_gateway.yml', 'yaml/flow_with_gateway_nested.yml']
+    'yaml_file',
+    ['yaml/flow_with_gateway.yml', 'yaml/test-flow-custom-gateway-nested-config.yml'],
 )
 def test_load_flow_with_gateway(yaml_file):
     path = os.path.join(cur_dir.parent.parent.parent, yaml_file)
