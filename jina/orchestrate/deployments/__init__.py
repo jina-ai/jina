@@ -742,7 +742,12 @@ class Deployment(BaseDeployment):
                 parts = value.split(':')
 
                 if len(parts) == 1:
-                    # slice(stop)
+                    try:
+                        int(parts[0])
+                    except:
+                        use_uuids = True
+                    if use_uuids:
+                        return parts
                     parts = [parts[0], str(int(parts[0]) + 1)]
             else:
                 # try to detect if parts are not numbers
