@@ -24,10 +24,9 @@ def test_gateway_metric_labels(monkeypatch_metric_exporter):
         name="second_exec", uses=SecondExec
     ) as f:
         f.post('/')
-        f.plot('flow.png')
-
         collect_metrics()
         metrics = read_metrics()
+
         gateway_metrics = metrics['gateway/rep-0'][0]['resource_metrics'][0][
             'scope_metrics'
         ][0]['metrics']
