@@ -78,6 +78,8 @@ from jina.parsers.flow import set_flow_parser
 from jina.serve.networking import host_is_local, in_docker
 
 __all__ = ['Flow']
+GATEWAY_ARGS_BLACKLIST = ['uses', 'uses_with']
+EXECUTOR_ARGS_BLACKLIST = ['port', 'port_monitoring', 'uses', 'uses_with']
 
 
 class FlowType(type(ExitStack), type(JAMLCompatible)):
@@ -517,11 +519,10 @@ class Flow(
         self._common_kwargs = {k: v for k, v in kwargs.items() if k not in known_keys}
 
         # gateway args inherit from flow args
-        # TODO: we need a better exclusion of Flow parameters
         self._gateway_kwargs = {
             k: v
             for k, v in self._common_kwargs.items()
-            if k not in {'uses', 'uses_with'}
+            if k not in GATEWAY_ARGS_BLACKLIST
         }
 
         self._kwargs = ArgNamespace.get_non_defaults_args(
@@ -1206,14 +1207,8 @@ class Flow(
         # set the kwargs inherit from `Flow(kwargs1=..., kwargs2=)`
         for key, value in op_flow._common_kwargs.items():
 
-            # do not inherit from all the argument from the flow
-            # TODO: we should be explicit about args we inheret (maybe whitelist)
-            if key not in kwargs and key not in [
-                'port',
-                'port_monitoring',
-                'uses',
-                'uses_with',
-            ]:
+            # do not inherit from all the argument from the flow and respect EXECUTOR_ARGS_BLACKLIST
+            if key not in kwargs and key not in EXECUTOR_ARGS_BLACKLIST:
                 kwargs[key] = value
 
         # update kwargs of this Deployment
@@ -1353,7 +1348,7 @@ class Flow(
 
         op_flow = copy.deepcopy(self) if copy_flow else self
 
-        # TODO: properly merge between Flow and Gateway args
+        # override gateway args inherited from Flow API
         for key, value in kwargs.items():
             op_flow._gateway_kwargs[key] = value
 
