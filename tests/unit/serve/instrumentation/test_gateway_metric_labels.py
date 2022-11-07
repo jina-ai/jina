@@ -100,21 +100,35 @@ def test_gateway_metric_labels(monkeypatch_metric_exporter):
             ]
         )
 
-        assert {'first_exec', 'second_exec'} == {i['attributes']['deployment'] for i in gateway_metric_data_point['jina_received_response_bytes']}
-        assert {'first_exec', 'second_exec'} == {i['attributes']['deployment'] for i in gateway_metric_data_point['jina_sent_request_bytes']}
-        assert {'first_exec', 'second_exec'} == {i['attributes']['deployment'] for i in gateway_metric_data_point['jina_sending_request_seconds']}
+        assert {'first_exec', 'second_exec'} == {
+            i['attributes']['deployment']
+            for i in gateway_metric_data_point['jina_received_response_bytes']
+        }
+        assert {'first_exec', 'second_exec'} == {
+            i['attributes']['deployment']
+            for i in gateway_metric_data_point['jina_sent_request_bytes']
+        }
+        assert {'first_exec', 'second_exec'} == {
+            i['attributes']['deployment']
+            for i in gateway_metric_data_point['jina_sending_request_seconds']
+        }
 
 
 def test_merge_with_no_reduce(monkeypatch_metric_exporter):
     collect_metrics, read_metrics = monkeypatch_metric_exporter
 
-    f = Flow(
-        tracing=False,
-        metrics=True,
-        metrics_exporter_host='localhost',
-        metrics_exporter_port=4317,
-        port=12345,
-    ).add(name='name1').add(name='name2', needs=['gateway']).add(name='name3', needs=['name1', 'name2'], disable_reduce=True)
+    f = (
+        Flow(
+            tracing=False,
+            metrics=True,
+            metrics_exporter_host='localhost',
+            metrics_exporter_port=4317,
+            port=12345,
+        )
+        .add(name='name1')
+        .add(name='name2', needs=['gateway'])
+        .add(name='name3', needs=['name1', 'name2'], disable_reduce=True)
+    )
     with f:
         f.post('/')
         collect_metrics()
@@ -127,6 +141,15 @@ def test_merge_with_no_reduce(monkeypatch_metric_exporter):
             i['name']: i['data']['data_points'] for i in gateway_metrics
         }
 
-        assert {'name1', 'name2', 'name3'} == {i['attributes']['deployment'] for i in gateway_metric_data_point['jina_received_response_bytes']}
-        assert {'name1', 'name2', 'name3'} == {i['attributes']['deployment'] for i in gateway_metric_data_point['jina_sent_request_bytes']}
-        assert {'name1', 'name2', 'name3'} == {i['attributes']['deployment'] for i in gateway_metric_data_point['jina_sending_request_seconds']}
+        assert {'name1', 'name2', 'name3'} == {
+            i['attributes']['deployment']
+            for i in gateway_metric_data_point['jina_received_response_bytes']
+        }
+        assert {'name1', 'name2', 'name3'} == {
+            i['attributes']['deployment']
+            for i in gateway_metric_data_point['jina_sent_request_bytes']
+        }
+        assert {'name1', 'name2', 'name3'} == {
+            i['attributes']['deployment']
+            for i in gateway_metric_data_point['jina_sending_request_seconds']
+        }
