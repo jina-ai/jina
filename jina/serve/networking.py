@@ -11,6 +11,7 @@ from grpc.aio import AioRpcError
 from grpc_health.v1 import health_pb2, health_pb2_grpc
 from grpc_reflection.v1alpha.reflection_pb2 import ServerReflectionRequest
 from grpc_reflection.v1alpha.reflection_pb2_grpc import ServerReflectionStub
+
 from jina import __default_endpoint__
 from jina.enums import PollingType
 from jina.excepts import EstablishGrpcConnectionError, InternalNetworkError
@@ -852,10 +853,7 @@ class GrpcConnectionPool:
                 timeout=timeout,
                 retries=retries,
             )
-            if isinstance(result, (AioRpcError, InternalNetworkError)):
-                raise result
-            else:
-                return result
+            return result
         else:
             self._logger.debug(
                 f'no available connections for deployment {deployment} and shard {shard_id}'
@@ -1015,6 +1013,7 @@ class GrpcConnectionPool:
                         connection_list=connections,
                     )
                     if error:
+                        print(f'--->returning error: {type(error)}')
                         return error
 
         return asyncio.create_task(task_wrapper())

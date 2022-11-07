@@ -10,6 +10,7 @@ import grpc
 from grpc.aio import AioRpcError
 from grpc_health.v1 import health, health_pb2, health_pb2_grpc
 from grpc_reflection.v1alpha import reflection
+
 from jina.enums import PollingType
 from jina.excepts import InternalNetworkError
 from jina.helper import get_full_version
@@ -318,7 +319,7 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
         )
         exceptions = list(
             filter(
-                lambda x: isinstance(x, (AioRpcError, InternalNetworkError)),
+                lambda x: issubclass(type(x), BaseException),
                 all_worker_results,
             )
         )
@@ -338,16 +339,17 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
 
         uses_before_metadata = None
         if self.uses_before_address:
-            (
-                response,
-                uses_before_metadata,
-            ) = await self.connection_pool.send_requests_once(
+            result = await self.connection_pool.send_requests_once(
                 requests,
                 deployment='uses_before',
                 timeout=self.timeout_send,
                 retries=self._retries,
             )
-            requests = [response]
+            if issubclass(type(result), BaseException):
+                raise result
+            else:
+                response, uses_before_metadata = result
+                requests = [response]
 
         (
             worker_results,
@@ -369,15 +371,16 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
         response_request = worker_results[0]
         uses_after_metadata = None
         if self.uses_after_address:
-            (
-                response_request,
-                uses_after_metadata,
-            ) = await self.connection_pool.send_requests_once(
+            result = await self.connection_pool.send_requests_once(
                 worker_results,
                 deployment='uses_after',
                 timeout=self.timeout_send,
                 retries=self._retries,
             )
+            if issubclass(type(result), BaseException):
+                raise result
+            else:
+                response_request, uses_after_metadata = result
         elif len(worker_results) > 1 and self._reduce:
             response_request = WorkerRequestHandler.reduce_requests(worker_results)
         elif len(worker_results) > 1 and not self._reduce:
