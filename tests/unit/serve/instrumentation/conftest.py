@@ -53,8 +53,6 @@ class DirMetricExporter(MetricExporter):
 
     def __del__(self):
         self.f.close()
-    
-class RealPeriodicExportingMetricReader(PeriodicExportingMetricReader): ...
 
 
 @pytest.fixture(scope='function')
@@ -81,7 +79,7 @@ def monkeypatch_metric_exporter(
             tick_counter = int(f.read())
         with open(tick_counter_filename, 'w') as f:
             f.write(str(tick_counter + 1))
-        time.sleep(3)
+        time.sleep(2)
 
     def _get_service_name(otel_measurement):
         return otel_measurement[0]['resource_metrics'][0]['resource']['attributes'][
@@ -98,14 +96,14 @@ def monkeypatch_metric_exporter(
             for i in map(read_metric_file, metrics_path.glob('*'))
         }
 
-    class PatchedTextReader(RealPeriodicExportingMetricReader):
+    class PatchedTextReader(PeriodicExportingMetricReader):
         def __init__(self, *args, **kwargs) -> None:
             self.exporter = DirMetricExporter(metrics_path)
             self.tick_counter = 0
 
             super().__init__(
                 exporter=self.exporter,
-                export_interval_millis=1_000,
+                export_interval_millis=500,
             )
 
         def _ticker(self) -> None:
@@ -118,6 +116,7 @@ def monkeypatch_metric_exporter(
                     self.collect(timeout_millis=self._export_timeout_millis)
             self.collect(timeout_millis=self._export_interval_millis)
 
+    real_reader = opentelemetry.sdk.metrics.export.PeriodicExportingMetricReader
     opentelemetry.sdk.metrics.export.PeriodicExportingMetricReader = PatchedTextReader
-
-    return collect_metrics, read_metrics
+    yield collect_metrics, read_metrics
+    opentelemetry.sdk.metrics.export.PeriodicExportingMetricReader = real_reader
