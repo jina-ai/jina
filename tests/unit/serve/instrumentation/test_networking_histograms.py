@@ -25,20 +25,20 @@ def metrics_setup() -> Tuple[InMemoryMetricReader, MeterProvider]:
 
 def test_get_labels():
     a: _NetworkingHistograms = _NetworkingHistograms()
-    assert a.get_labels() == None
+    assert a._get_labels() == None
 
     HIST_LABELS = {
         'a': 1,
         'b': 2,
     }
     a.histogram_metric_labels = HIST_LABELS
-    assert a.get_labels() == HIST_LABELS
+    assert a._get_labels() == HIST_LABELS
 
     ADD_LABELS = {
         'b': 3,
         'c': 4,
     }
-    assert a.get_labels(ADD_LABELS) == {**HIST_LABELS, **ADD_LABELS}
+    assert a._get_labels(ADD_LABELS) == {**HIST_LABELS, **ADD_LABELS}
 
 
 def test_recording_methods(metrics_setup: Tuple[InMemoryMetricReader, Meter]):

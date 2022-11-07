@@ -64,8 +64,7 @@ class _NetworkingHistograms:
     send_requests_bytes_metrics: Optional['Histogram'] = None
     histogram_metric_labels: Dict[str, str] = None
 
-    def get_labels(self, additional_labels: Optional[Dict[str, str]] = None):
-        # TODO: This is quite ugly. Surely there's a better way
+    def _get_labels(self, additional_labels: Optional[Dict[str, str]] = None):
         if self.histogram_metric_labels is None:
             return None
         if additional_labels is None:
@@ -73,19 +72,19 @@ class _NetworkingHistograms:
         return {**self.histogram_metric_labels, **additional_labels}
 
     def record_sending_requests_time_metrics(self, value: int, additional_labels: Optional[Dict[str, str]] = None):
-        labels = self.get_labels(additional_labels)
+        labels = self._get_labels(additional_labels)
             
         if self.sending_requests_time_metrics:
             self.sending_requests_time_metrics.record(value, labels)
 
     def record_received_response_bytes(self, value: int, additional_labels: Optional[Dict[str, str]] = None):
-        labels = self.get_labels(additional_labels)
+        labels = self._get_labels(additional_labels)
 
         if self.received_response_bytes:
             self.received_response_bytes.record(value, labels)
 
     def record_send_requests_bytes_metrics(self, value: int, additional_labels: Optional[Dict[str, str]] = None):
-        labels = self.get_labels(additional_labels)
+        labels = self._get_labels(additional_labels)
 
         if self.send_requests_bytes_metrics:
             self.send_requests_bytes_metrics.record(value, labels)
