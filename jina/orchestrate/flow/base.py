@@ -1402,7 +1402,7 @@ class Flow(
     ) -> Union['Flow', 'AsyncFlow']:
         # implementation_stub_inject_start_config_gateway
 
-        """Configure the gateway
+        """Configure the Gateway inside a Flow. The Gateway exposes your Flow logic as a service to the internet according to the protocol and configuration you choose.
 
         :param compression: The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.
         :param cors: If set, a CORS middleware is added to FastAPI frontend to allow cross-origin access.
@@ -1482,7 +1482,7 @@ class Flow(
 
           More details can be found in Uvicorn docs: https://www.uvicorn.org/settings/
         :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.
-
+        :return: a (new) Flow object with modification
         .. # noqa: DAR102
         .. # noqa: DAR202
         .. # noqa: DAR101
