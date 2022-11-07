@@ -806,7 +806,6 @@ class Deployment(BaseDeployment):
                 # for gateway pods, the pod role shouldn't be changed
                 if _args.pod_role != PodRoleType.GATEWAY:
                     _args.pod_role = PodRoleType.WORKER
-                _args.pod_role = PodRoleType.WORKER
 
                 if cuda_device_map:
                     _args.env['CUDA_VISIBLE_DEVICES'] = str(cuda_device_map[replica_id])
