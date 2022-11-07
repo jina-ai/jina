@@ -1251,13 +1251,17 @@ class Flow(
 
         return op_flow
 
+    # overload_inject_start_config_gateway
+
+    # overload_inject_end_config_gateway
+
     @allowed_levels([FlowBuildLevel.EMPTY])
     def config_gateway(
         self,
         args: Optional['argparse.Namespace'] = None,
         **kwargs,
     ) -> Union['Flow', 'AsyncFlow']:
-
+        # implementation_stub_inject_start_config_gateway
         """
         Configure the gateway
         :param compression: The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.
@@ -1343,6 +1347,7 @@ class Flow(
         .. # noqa: DAR101
         .. # noqa: DAR003
         """
+        # implementation_stub_inject_end_config_gateway
 
         copy_flow = kwargs.pop('copy_flow', True)
 
