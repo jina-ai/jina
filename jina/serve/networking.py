@@ -14,7 +14,7 @@ from grpc_reflection.v1alpha.reflection_pb2_grpc import ServerReflectionStub
 
 from jina import __default_endpoint__
 from jina.enums import PollingType
-from jina.excepts import EstablishGrpcConnectionError
+from jina.excepts import EstablishGrpcConnectionError, InternalNetworkError
 from jina.importer import ImportExtensions
 from jina.logging.logger import JinaLogger
 from jina.proto import jina_pb2, jina_pb2_grpc
@@ -26,7 +26,7 @@ TLS_PROTOCOL_SCHEMES = ['grpcs', 'https', 'wss']
 
 from typing import TYPE_CHECKING
 
-if TYPE_CHECKING: # pragma: no cover
+if TYPE_CHECKING:  # pragma: no cover
     from grpc.aio._interceptor import ClientInterceptor
     from opentelemetry.instrumentation.grpc._client import (
         OpenTelemetryClientInterceptor,
@@ -755,42 +755,6 @@ class GrpcConnectionPool:
         )
         self._deployment_address_map = {}
 
-    def send_request(
-        self,
-        request: Request,
-        deployment: str,
-        head: bool = False,
-        shard_id: Optional[int] = None,
-        polling_type: PollingType = PollingType.ANY,
-        endpoint: Optional[str] = None,
-        metadata: Optional[Dict[str, str]] = None,
-        timeout: Optional[float] = None,
-        retries: Optional[int] = -1,
-    ) -> List[asyncio.Task]:
-        """Send a single message to target via one or all of the pooled connections, depending on polling_type. Convenience function wrapper around send_request.
-        :param request: a single request to send
-        :param deployment: name of the Jina deployment to send the message to
-        :param head: If True it is send to the head, otherwise to the worker pods
-        :param shard_id: Send to a specific shard of the deployment, ignored for polling ALL
-        :param polling_type: defines if the message should be send to any or all pooled connections for the target
-        :param endpoint: endpoint to target with the request
-        :param metadata: metadata to send with the request
-        :param timeout: timeout for sending the requests
-        :param retries: number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
-        :return: list of asyncio.Task items for each send call
-        """
-        return self.send_requests(
-            requests=[request],
-            deployment=deployment,
-            head=head,
-            shard_id=shard_id,
-            polling_type=polling_type,
-            endpoint=endpoint,
-            metadata=metadata,
-            timeout=timeout,
-            retries=retries,
-        )
-
     def send_requests(
         self,
         requests: List[Request],
@@ -872,36 +836,6 @@ class GrpcConnectionPool:
             )
             return None
 
-    def send_request_once(
-        self,
-        request: Request,
-        deployment: str,
-        metadata: Optional[Dict[str, str]] = None,
-        head: bool = False,
-        shard_id: Optional[int] = None,
-        timeout: Optional[float] = None,
-        retries: Optional[int] = -1,
-    ) -> asyncio.Task:
-        """Send msg to target via only one of the pooled connections
-        :param request: request to send
-        :param deployment: name of the Jina deployment to send the message to
-        :param metadata: metadata to send with the request
-        :param head: If True it is send to the head, otherwise to the worker pods
-        :param shard_id: Send to a specific shard of the deployment, ignored for polling ALL
-        :param timeout: timeout for sending the requests
-        :param retries: number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
-        :return: asyncio.Task representing the send call
-        """
-        return self.send_requests_once(
-            [request],
-            deployment=deployment,
-            metadata=metadata,
-            head=head,
-            shard_id=shard_id,
-            timeout=timeout,
-            retries=retries,
-        )
-
     def send_requests_once(
         self,
         requests: List[Request],
@@ -927,7 +861,7 @@ class GrpcConnectionPool:
         """
         replicas = self._connections.get_replicas(deployment, head, shard_id)
         if replicas:
-            return self._send_requests(
+            result = self._send_requests(
                 requests,
                 replicas,
                 endpoint=endpoint,
@@ -935,6 +869,7 @@ class GrpcConnectionPool:
                 timeout=timeout,
                 retries=retries,
             )
+            return result
         else:
             self._logger.debug(
                 f'no available connections for deployment {deployment} and shard {shard_id}'
@@ -1005,7 +940,7 @@ class GrpcConnectionPool:
         current_address: str = '',  # the specific address that was contacted during this attempt
         current_deployment: str = '',  # the specific deployment that was contacted during this attempt
         connection_list: Optional[ReplicaList] = None,
-    ):
+    ) -> 'Optional[Union[AioRpcError, InternalNetworkError]]':
         # connection failures, cancelled requests, and timed out requests should be retried
         # all other cases should not be retried and will be raised immediately
         # connection failures have the code grpc.StatusCode.UNAVAILABLE
@@ -1018,7 +953,7 @@ class GrpcConnectionPool:
             and error.code() != grpc.StatusCode.CANCELLED
             and error.code() != grpc.StatusCode.DEADLINE_EXCEEDED
         ):
-            raise
+            return error
         elif (
             error.code() == grpc.StatusCode.UNAVAILABLE
             or error.code() == grpc.StatusCode.DEADLINE_EXCEEDED
@@ -1031,7 +966,7 @@ class GrpcConnectionPool:
             if connection_list:
                 await connection_list.reset_connection(current_address, current_deployment)
 
-            raise InternalNetworkError(
+            return InternalNetworkError(
                 og_exception=error,
                 request_id=request_id,
                 dest_addr=tried_addresses,
@@ -1042,6 +977,7 @@ class GrpcConnectionPool:
                 f'GRPC call failed with code {error.code()}, retry attempt {retry_i + 1}/{total_num_tries - 1}.'
                 f' Trying next replica, if available.'
             )
+            return None
 
     def _send_requests(
         self,
@@ -1051,7 +987,7 @@ class GrpcConnectionPool:
         metadata: Optional[Dict[str, str]] = None,
         timeout: Optional[float] = None,
         retries: Optional[int] = -1,
-    ) -> asyncio.Task:
+    ) -> 'asyncio.Task[Union[Tuple, AioRpcError, InternalNetworkError]]':
         # this wraps the awaitable object from grpc as a coroutine so it can be used as a task
         # the grpc call function is not a coroutine but some _AioCall
 
@@ -1084,7 +1020,7 @@ class GrpcConnectionPool:
                         timeout=timeout,
                     )
                 except AioRpcError as e:
-                    await self._handle_aiorpcerror(
+                    error = await self._handle_aiorpcerror(
                         error=e,
                         retry_i=i,
                         request_id=requests[0].request_id,
@@ -1094,6 +1030,8 @@ class GrpcConnectionPool:
                         current_deployment=current_connection.deployment_name,
                         connection_list=connections,
                     )
+                    if error:
+                        return error
 
         return asyncio.create_task(task_wrapper())
 
@@ -1128,7 +1066,7 @@ class GrpcConnectionPool:
                         timeout=timeout,
                     )
                 except AioRpcError as e:
-                    await self._handle_aiorpcerror(
+                    error = await self._handle_aiorpcerror(
                         error=e,
                         retry_i=i,
                         tried_addresses=tried_addresses,
@@ -1137,6 +1075,8 @@ class GrpcConnectionPool:
                         connection_list=connection_list,
                         total_num_tries=total_num_tries,
                     )
+                    if error:
+                        raise error
                 except AttributeError:
                     return default_endpoints_proto, None
 
