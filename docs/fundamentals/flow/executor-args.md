@@ -17,6 +17,8 @@
 | `py_modules` | The customized python modules need to be imported before loading the executor<br><br>Note that the recommended way is to only import a single module - a simple python file, if your<br>executor can be defined in a single file, or an ``__init__.py`` file if you have multiple files,<br>which should be structured as a python package. For more details, please see the<br>`Executor cookbook <https://docs.jina.ai/fundamentals/executor/executor-files/>`__ | `array` | `None` |
 | `output_array_type` | The type of array `tensor` and `embedding` will be serialized to.<br><br>Supports the same types as `docarray.to_protobuf(.., ndarray_type=...)`, which can be found <br>`here <https://docarray.jina.ai/fundamentals/document/serialization/#from-to-protobuf>`.<br>Defaults to retaining whatever type is returned by the Executor. | `string` | `None` |
 | `exit_on_exceptions` | List of exceptions that will cause the Executor to shut down. | `array` | `[]` |
+| `disable_reduce` | Disable the built-in reduce mechanism, set this if the reduction is to be handled by the Executor, if the Executor is expected to handle `docs_matrix` | `boolean` | `False` |
+| `docs_by_executor` | If enabled, in combination with `--disable-reduce`,the `docs_matrix` received by Executor will be a dictionary with previous Executor name in the key and docs as values | `boolean` | `False` |
 | `port` | The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (`--external` or `external=True`) this can be a list of ports, separated by commas. Then, every resulting address will be considered as one replica of the Executor. | `string` | `random in [49152, 65535]` |
 | `host_in` | The host address for binding to, by default it is 0.0.0.0 | `string` | `0.0.0.0` |
 | `grpc_server_options` | Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1} | `object` | `None` |
@@ -47,5 +49,4 @@
 | `uses_before_address` | The address of the uses-before runtime | `string` | `None` |
 | `uses_after_address` | The address of the uses-before runtime | `string` | `None` |
 | `connection_list` | dictionary JSON with a list of connections to configure | `string` | `None` |
-| `disable_reduce` | Disable the built-in reduce mechanism, set this if the reduction is to be handled by the Executor connected to this Head | `boolean` | `False` |
 | `timeout_send` | The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default | `number` | `None` |
