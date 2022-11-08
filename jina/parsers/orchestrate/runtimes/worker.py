@@ -92,4 +92,19 @@ Defaults to retaining whatever type is returned by the Executor.
         nargs='*',
         help='List of exceptions that will cause the Executor to shut down.',
     )
+
+    gp.add_argument(
+        '--disable-reduce',
+        action='store_true',
+        default=False,
+        help='Disable the built-in reduce mechanism, set this if the reduction is to be handled by the Executor, if the Executor is expected to handle `docs_matrix`',
+    )
+
+    gp.add_argument(
+        '--docs-by-executor',
+        action='store_true',
+        default=False,
+        help='If enabled, in combination with `--disable-reduce`,the `docs_matrix` received by Executor will be a dictionary with previous Executor name in the key and docs as values',
+    )
+
     mixin_base_runtime_parser(gp)

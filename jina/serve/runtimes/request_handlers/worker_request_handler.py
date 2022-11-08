@@ -291,7 +291,7 @@ class WorkerRequestHandler:
             docs_matrix=WorkerRequestHandler.get_docs_matrix_from_request(
                 requests,
                 field='docs',
-                as_list=False
+                as_list=not self.args.docs_by_executor
             ),
             tracing_context=tracing_context,
         )

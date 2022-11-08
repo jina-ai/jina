@@ -13,7 +13,8 @@ def test_needs_merge():
         add(name='exec2',
             needs=['exec0', 'exec1'],
             uses=TestMergeDictDocMatrixExecutor,
-            disable_reduce=True)
+            disable_reduce=True,
+            docs_by_executor=True)
 
     with f:
         f.post(on='/', inputs=DocumentArray.empty(2))
