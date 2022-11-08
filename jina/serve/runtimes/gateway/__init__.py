@@ -1,8 +1,6 @@
 import argparse
 import asyncio
-import os
 import urllib
-from abc import ABC
 from http import HTTPStatus
 from typing import TYPE_CHECKING, Optional, Union
 

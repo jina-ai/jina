@@ -6,7 +6,6 @@ from datetime import datetime
 from typing import Dict, List, Optional, Tuple
 
 import grpc.aio
-from grpc.aio import AioRpcError
 
 from jina import __default_endpoint__
 from jina.excepts import InternalNetworkError

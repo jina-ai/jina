@@ -7,9 +7,8 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Callable, Dict, List, Optional, Sequence, Union
 
 from jina import __cache_path__
-from jina.helper import convert_tuple_to_list, iscoroutinefunction
+from jina.helper import iscoroutinefunction
 from jina.importer import ImportExtensions
-from jina.serve.executors.metas import get_default_metas
 
 if TYPE_CHECKING: # pragma: no cover
     from jina import DocumentArray
