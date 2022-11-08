@@ -435,14 +435,15 @@ class GrpcConnectionPool:
 
             timer = self._get_metric_timer()
             if request_type == DataRequest and len(requests) == 1:
+                request = requests[0]
                 if self.single_data_stub:
+                    self._record_request_bytes_metric(request.nbytes)
                     call_result = self.single_data_stub.process_single_data(
-                        requests[0],
+                        request,
                         metadata=metadata,
                         compression=compression,
                         timeout=timeout,
                     )
-                    self._record_request_bytes_metric(requests[0].nbytes)
                     with timer:
                         metadata, response = (
                             await call_result.trailing_metadata(),
@@ -452,8 +453,7 @@ class GrpcConnectionPool:
                     return response, metadata
 
                 elif self.stream_stub:
-                    for response in requests:
-                        self._record_request_bytes_metric(response.nbytes)
+                    self._record_request_bytes_metric(request.nbytes)
 
                     with timer:
                         async for response in self.stream_stub.Call(
@@ -466,9 +466,9 @@ class GrpcConnectionPool:
                             return response, None
 
             if request_type == DataRequest and len(requests) > 1:
-                # TODO: This section of the code has no observability
-                # TODO: Does this section not need to deal with streaming stubs?
                 if self.data_list_stub:
+                    for request in requests:
+                        self._record_request_bytes_metric(request.nbytes)
                     call_result = self.data_list_stub.process_data(
                         requests,
                         metadata=metadata,
@@ -480,6 +480,7 @@ class GrpcConnectionPool:
                             await call_result.trailing_metadata(),
                             await call_result,
                         )
+                        self._record_received_bytes_metric(response.nbytes)
                     return response, metadata
                 else:
                     raise ValueError(
