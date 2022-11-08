@@ -211,7 +211,6 @@ def test_load_flow_with_gateway(yaml_file):
     path = os.path.join(cur_dir.parent.parent.parent, yaml_file)
     flow = Flow.load_config(
         path,
-        uses_with={'protocol': 'grpc', 'port': 12345},
     )
     with flow:
         # protocol and port are overridden by the gateway configuration
