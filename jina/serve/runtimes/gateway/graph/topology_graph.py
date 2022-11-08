@@ -6,12 +6,15 @@ from datetime import datetime
 from typing import Dict, List, Optional, Tuple
 
 import grpc.aio
+from grpc.aio import AioRpcError
 
 from jina import __default_endpoint__
 from jina.excepts import InternalNetworkError
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.helper import _parse_specific_params
-from jina.serve.runtimes.request_handlers.worker_request_handler import WorkerRequestHandler
+from jina.serve.runtimes.request_handlers.worker_request_handler import (
+    WorkerRequestHandler,
+)
 from jina.types.request.data import DataRequest
 
 
@@ -157,7 +160,7 @@ class TopologyGraph:
                         return request, metadata
                     # otherwise, send to executor and get response
                     try:
-                        resp, metadata = await connection_pool.send_requests_once(
+                        result = await connection_pool.send_requests_once(
                             requests=self.parts_to_send,
                             deployment=self.name,
                             metadata=self._metadata,
@@ -166,6 +169,10 @@ class TopologyGraph:
                             timeout=self._timeout_send,
                             retries=self._retries,
                         )
+                        if issubclass(type(result), BaseException):
+                            raise result
+                        else:
+                            resp, metadata = result
                         if WorkerRequestHandler._KEY_RESULT in resp.parameters:
                             # Accumulate results from each Node and then add them to the original
                             self.result_in_params_returned = resp.parameters[
