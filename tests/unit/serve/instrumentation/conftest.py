@@ -66,7 +66,6 @@ def monkeypatch_metric_exporter(
     import json
 
     collect_path = Path(tmpdir_factory.mktemp('otel-collector'))
-    print(f"OTel Collector path: {collect_path}")
     metrics_path = collect_path / 'metrics'
     os.mkdir(metrics_path)
 
