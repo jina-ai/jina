@@ -336,14 +336,17 @@ async def test_flow_with_workspace(logger, docker_images, tmpdir):
     indirect=True,
 )
 async def test_flow_with_custom_gateway(logger, docker_images, tmpdir):
-    flow = Flow(
-        name='docker-compose-flow-custom-gateway',
-        port=9090,
-        protocol='http',
-        uses=f'docker://{docker_images[0]}',
-    ).add(
-        name='test_executor',
-        uses=f'docker://{docker_images[1]}',
+    flow = (
+        Flow(name='docker-compose-flow-custom-gateway')
+        .config_gateway(
+            port=9090,
+            protocol='http',
+            uses=f'docker://{docker_images[0]}',
+        )
+        .add(
+            name='test_executor',
+            uses=f'docker://{docker_images[1]}',
+        )
     )
 
     dump_path = os.path.join(str(tmpdir), 'docker-compose-flow-custom-gateway.yml')

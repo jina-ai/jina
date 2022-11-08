@@ -278,6 +278,16 @@ entries = [
         overload_fn='Client',
         class_method=False,
     ),
+    dict(
+        cli_entrypoint='gateway',
+        doc_str_title='Configure the Gateway inside a Flow. The Gateway exposes your Flow logic as a service to the internet according to the protocol and configuration you choose.',
+        doc_str_return='the new Flow object',
+        return_type=None,
+        filepath='../jina/orchestrate/flow/base.py',
+        overload_fn='config_gateway',
+        class_method=True,
+        regex_tag='config_gateway',
+    ),
 ]
 
 # param
@@ -305,6 +315,15 @@ implementation_stub_entries = [
         class_method=True,
         overload_tags=['client_flow', 'gateway_flow', 'flow'],
         regex_tag='flow',
+    ),
+    dict(
+        doc_str_return='the new Flow object',
+        return_type="Union['Flow', 'AsyncFlow']",
+        filepath='../jina/orchestrate/flow/base.py',
+        overload_fn='config_gateway',
+        class_method=True,
+        overload_tags=['config_gateway'],
+        regex_tag='config_gateway',
     ),
     dict(
         doc_str_return='the new Client object',

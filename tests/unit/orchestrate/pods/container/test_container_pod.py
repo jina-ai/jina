@@ -286,7 +286,7 @@ def test_container_pod_custom_gateway(dummy_custom_gateway_docker_image_built):
 def test_container_pod_with_flow_custom_gateway(
     dummy_custom_gateway_docker_image_built,
 ):
-    flow = Flow(uses='docker://custom-gateway', protocol='http')
+    flow = Flow().config_gateway(uses='docker://custom-gateway', protocol='http')
     with flow:
         _validate_dummy_custom_gateway_response(
             flow.port, {'arg1': 'hello', 'arg2': 'world', 'arg3': 'default-arg3'}

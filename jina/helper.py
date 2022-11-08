@@ -67,6 +67,7 @@ __all__ = [
 ]
 
 T = TypeVar('T')
+GATEWAY_NAME = 'gateway'
 
 
 def deprecated_alias(**aliases):
@@ -1456,7 +1457,7 @@ def dunder_get(_dict: Any, key: str) -> Any:
     return dunder_get(result, part2) if part2 else result
 
 
-if TYPE_CHECKING: # pragma: no cover
+if TYPE_CHECKING:  # pragma: no cover
     from fastapi import FastAPI
 
 

@@ -458,7 +458,7 @@ def test_external_flow_with_grpc_metadata():
             for doc in docs:
                 doc.text = 'external'
 
-    external_flow = Flow(uses=DummyGRPCGateway).add(uses=ExtExecutor)
+    external_flow = Flow().config_gateway(uses=DummyGRPCGateway).add(uses=ExtExecutor)
 
     with external_flow:
         d = Document(text='sunset with green landscape by the river')
