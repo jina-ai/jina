@@ -71,7 +71,7 @@ def test_flow_custom_gateway_nested_config():
     flow = Flow.load_config(_flow_with_dummy_gateway_yaml_path)
     with flow:
         _validate_dummy_custom_gateway_response(
-            flow.port, {'arg1': 'arg1', 'arg2': 'arg2', 'arg3': 'arg3'}
+            flow.port, {'arg1': 'hello', 'arg2': 'world', 'arg3': 'default-arg3'}
         )
 
 
