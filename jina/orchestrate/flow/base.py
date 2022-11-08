@@ -1482,7 +1482,7 @@ class Flow(
 
           More details can be found in Uvicorn docs: https://www.uvicorn.org/settings/
         :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.
-        :return: a (new) Flow object with modification
+
         .. # noqa: DAR102
         .. # noqa: DAR202
         .. # noqa: DAR101
