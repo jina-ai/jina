@@ -318,7 +318,7 @@ implementation_stub_entries = [
     ),
     dict(
         doc_str_return='the new Flow object',
-        return_type=None,
+        return_type="Union['Flow', 'AsyncFlow']",
         filepath='../jina/orchestrate/flow/base.py',
         overload_fn='config_gateway',
         class_method=True,
