@@ -835,6 +835,7 @@ class Flow(
         disable_auto_volume: Optional[bool] = False,
         disable_reduce: Optional[bool] = False,
         docker_kwargs: Optional[dict] = None,
+        docs_by_executor: Optional[bool] = False,
         entrypoint: Optional[str] = None,
         env: Optional[dict] = None,
         exit_on_exceptions: Optional[List[str]] = [],
@@ -892,11 +893,12 @@ class Flow(
         :param compression: The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.
         :param connection_list: dictionary JSON with a list of connections to configure
         :param disable_auto_volume: Do not automatically mount a volume for dockerized Executors.
-        :param disable_reduce: Disable the built-in reduce mechanism, set this if the reduction is to be handled by the Executor connected to this Head
+        :param disable_reduce: Disable the built-in reduce mechanism, set this if the reduction is to be handled by the Executor, if the Executor is expected to handle `docs_matrix`
         :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker '
           container.
 
           More details can be found in the Docker SDK docs:  https://docker-py.readthedocs.io/en/stable/
+        :param docs_by_executor: If enabled, in combination with `--disable-reduce`,the `docs_matrix` received by Executor will be a dictionary with previous Executor name in the key and docs as values
         :param entrypoint: The entrypoint command overrides the ENTRYPOINT in Docker image. when not set then the Docker image ENTRYPOINT takes effective.
         :param env: The map of environment variables that are available inside runtime
         :param exit_on_exceptions: List of exceptions that will cause the Executor to shut down.
@@ -1048,11 +1050,12 @@ class Flow(
         :param compression: The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.
         :param connection_list: dictionary JSON with a list of connections to configure
         :param disable_auto_volume: Do not automatically mount a volume for dockerized Executors.
-        :param disable_reduce: Disable the built-in reduce mechanism, set this if the reduction is to be handled by the Executor connected to this Head
+        :param disable_reduce: Disable the built-in reduce mechanism, set this if the reduction is to be handled by the Executor, if the Executor is expected to handle `docs_matrix`
         :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker '
           container.
 
           More details can be found in the Docker SDK docs:  https://docker-py.readthedocs.io/en/stable/
+        :param docs_by_executor: If enabled, in combination with `--disable-reduce`,the `docs_matrix` received by Executor will be a dictionary with previous Executor name in the key and docs as values
         :param entrypoint: The entrypoint command overrides the ENTRYPOINT in Docker image. when not set then the Docker image ENTRYPOINT takes effective.
         :param env: The map of environment variables that are available inside runtime
         :param exit_on_exceptions: List of exceptions that will cause the Executor to shut down.

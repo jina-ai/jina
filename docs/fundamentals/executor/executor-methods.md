@@ -50,11 +50,14 @@ with f:
 ```
 
 ```shell
-           Flow@18048[I]:🎉 Flow is ready to use!                                                   
-	🔗 Protocol: 		GRPC
-	🏠 Local access:	0.0.0.0:52255
-	🔒 Private network:	192.168.1.187:52255
-	🌐 Public address:	212.231.186.65:52255
+────────────────────────── 🎉 Flow is ready to serve! ──────────────────────────
+╭────────────── 🔗 Endpoint ───────────────╮
+│  ⛓     Protocol                    GRPC  │
+│  🏠       Local           0.0.0.0:55925  │
+│  🔒     Private     192.168.1.187:55925  │
+│  🌍      Public    212.231.186.65:55925  │
+╰──────────────────────────────────────────╯
+
 Calling foo
 Calling bar
 Calling foo
@@ -120,7 +123,7 @@ any other `list`-like object in a Python function.
 
 - `docs_matrix`:  This is the least common parameter to be used for an Executor. This is needed when an Executor is used inside a Flow to merge or reduce the output of more than one other Executor.
  
-
+- `tracing_context`: Context needed if you want to add custom traces. Check {ref}`how to add custom traces in your Executor <instrumenting-executor>`
 
 
 ````{admonition} Hint
