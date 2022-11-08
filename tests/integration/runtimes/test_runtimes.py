@@ -5,11 +5,15 @@ import threading
 import time
 from collections import defaultdict
 
+import grpc
 import pytest
 
-from jina import Client, Document, Executor, requests
+from jina import Client, Document, DocumentArray, Executor, requests
+from jina.clients.request import request_generator
 from jina.enums import PollingType
 from jina.parsers import set_gateway_parser, set_pod_parser
+from jina.proto import jina_pb2_grpc
+from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.gateway import GatewayRuntime
 from jina.serve.runtimes.head import HeadRuntime
@@ -737,3 +741,66 @@ def _create_gateway_runtime(
 async def async_inputs():
     for _ in range(20):
         yield Document(text='client0-Request')
+
+
+@pytest.mark.asyncio
+async def test_head_runtime_with_offline_shards(port_generator):
+    head_port = port_generator()
+
+    # create the shards
+    shard_processes = []
+    worker_ports = []
+    connection_list_dict = defaultdict(list)
+    for i in range(2):
+        # create worker
+        worker_port = port_generator()
+        # create a single worker runtime
+        worker_process = multiprocessing.Process(
+            target=_create_worker_runtime, args=(worker_port, f'pod0/shard/{i}')
+        )
+        shard_processes.append(worker_process)
+        worker_process.start()
+
+        await asyncio.sleep(0.1)
+        worker_ports.append(worker_port)
+        connection_list_dict[i].append(f'127.0.0.1:{worker_port}')
+
+    # create a failing connection/port
+    worker_port = port_generator()
+    worker_ports.append(worker_port)
+    connection_list_dict[i + 1].append(f'127.0.0.1:{worker_port}')
+
+    # create a single head runtime
+    head_process = multiprocessing.Process(
+        target=_create_head_runtime,
+        args=(head_port, connection_list_dict, 'head', 'ALL'),
+    )
+    head_process.start()
+
+    AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+        timeout=1.0,
+        ctrl_address=f'0.0.0.0:{head_port}',
+        ready_or_shutdown_event=multiprocessing.Event(),
+    )
+
+    with grpc.insecure_channel(
+        f'0.0.0.0:{head_port}',
+        options=GrpcConnectionPool.get_default_grpc_options(),
+    ) as channel:
+        stub = jina_pb2_grpc.JinaSingleDataRequestRPCStub(channel)
+        _, call = stub.process_single_data.with_call(
+            list(request_generator('/index', DocumentArray([Document(text='abc')])))[0]
+        )
+        call_metadata = dict(call.trailing_metadata())
+        assert len(call_metadata) == 2
+        assert call_metadata['total_shards'] == '3'
+        assert call_metadata['failed_shards'] == '1'
+
+    # clean up runtimes
+    head_process.terminate()
+    for shard_process in shard_processes:
+        shard_process.terminate()
+
+    head_process.join()
+    for shard_process in shard_processes:
+        shard_process.join()
