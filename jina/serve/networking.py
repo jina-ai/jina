@@ -437,13 +437,13 @@ class GrpcConnectionPool:
             if request_type == DataRequest and len(requests) == 1:
                 request = requests[0]
                 if self.single_data_stub:
+                    self._record_request_bytes_metric(request.nbytes)
                     call_result = self.single_data_stub.process_single_data(
                         request,
                         metadata=metadata,
                         compression=compression,
                         timeout=timeout,
                     )
-                    self._record_request_bytes_metric(request.nbytes)
                     with timer:
                         metadata, response = (
                             await call_result.trailing_metadata(),
@@ -467,14 +467,14 @@ class GrpcConnectionPool:
 
             if request_type == DataRequest and len(requests) > 1:
                 if self.data_list_stub:
+                    for request in requests:
+                        self._record_request_bytes_metric(request.nbytes)
                     call_result = self.data_list_stub.process_data(
                         requests,
                         metadata=metadata,
                         compression=compression,
                         timeout=timeout,
                     )
-                    for request in requests:
-                        self._record_request_bytes_metric(request.nbytes)
                     with timer:
                         metadata, response = (
                             await call_result.trailing_metadata(),
