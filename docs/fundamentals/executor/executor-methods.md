@@ -100,13 +100,13 @@ from jina import Executor, requests, DocumentArray
 class MyExecutor(Executor):
     @requests
     async def foo(
-        self, docs: DocumentArray, parameters: Dict, docs_matrix: List[DocumentArray]
+        self, docs: DocumentArray, parameters: Dict, docs_matrix: Union[Dict[str, DocumentArray], List[DocumentArray]]
     ) -> Union[DocumentArray, Dict, None]:
         pass
 
     @requests
     def bar(
-        self, docs: DocumentArray, parameters: Dict, docs_matrix: List[DocumentArray]
+        self, docs: DocumentArray, parameters: Dict, docs_matrix: Union[Dict[str, DocumentArray], List[DocumentArray]]
     ) -> Union[DocumentArray, Dict, None]:
         pass
 ```
@@ -119,7 +119,6 @@ any other `list`-like object in a Python function.
 - `parameters`: A Dict object that passes extra parameters to Executor functions.
 
 - `docs_matrix`:  This is the least common parameter to be used for an Executor. This is needed when an Executor is used inside a Flow to merge or reduce the output of more than one other Executor.
-
  
 
 
@@ -202,20 +201,73 @@ f = (
 )
 
 with f:
-    returned_docs = f.post(on='/', Document())
+    returned_docs = f.post(on='/', inputs=Document())
 
 print(f'Resulting documents {returned_docs[0].text}')
 ```
 
-
 ```shell
-           Flow@1244[I]:🎉 Flow is ready to use!
-	🔗 Protocol: 		GRPC
-	🏠 Local access:	0.0.0.0:54550
-	🔒 Private network:	192.168.1.187:54550
-	🌐 Public address:	212.231.186.65:54550
+────────────────────────── 🎉 Flow is ready to serve! ──────────────────────────
+╭────────────── 🔗 Endpoint ───────────────╮
+│  ⛓     Protocol                    GRPC  │
+│  🏠       Local           0.0.0.0:55761  │
+│  🔒     Private     192.168.1.187:55761  │
+│  🌍      Public    212.231.186.65:55761  │
+╰──────────────────────────────────────────╯
+
 MergeExec processing pairs of Documents "Exec1" and "Exec2"
 Resulting documents Document merging from "Exec1" and "Exec2"
+```
+
+When merging Documents from more than one upstream Executor, sometimes you want to control which Documents come from which Executor.
+You can use the `docs_by_executor` argument to make sure that the Executor will receive the `docs_matrix` as a dictionary where the `key` will be the last Executor 
+processing that previous request and the `DocumentArray` of the request as the values.
+
+```python
+from jina import Flow, Executor, requests, Document
+
+
+class Exec1(Executor):
+    @requests
+    def foo(self, docs, **kwargs):
+        for doc in docs:
+            doc.text = 'Exec1'
+
+
+class Exec2(Executor):
+    @requests
+    def foo(self, docs, **kwargs):
+        for doc in docs:
+            doc.text = 'Exec2'
+
+
+class MergeExec(Executor):
+    @requests
+    def foo(self, docs_matrix, **kwargs):
+        print(docs_matrix)
+
+f = (
+    Flow()
+    .add(uses=Exec1, name='exec1')
+    .add(uses=Exec2, name='exec2')
+    .add(uses=MergeExec, needs=['exec1', 'exec2'], disable_reduce=True, docs_by_executor=True)
+)
+
+with f:
+    f.post(on='/', Document())
+```
+
+
+```shell
+────────────────────────── 🎉 Flow is ready to serve! ──────────────────────────
+╭────────────── 🔗 Endpoint ───────────────╮
+│  ⛓     Protocol                    GRPC  │
+│  🏠       Local           0.0.0.0:56286  │
+│  🔒     Private     192.168.1.187:56286  │
+│  🌍      Public    212.231.186.65:56286  │
+╰──────────────────────────────────────────╯
+
+{'exec1': <DocumentArray (length=1) at 140270975034640>, 'exec2': <DocumentArray (length=1) at 140270975034448>}
 ```
 
 (async-executors)=
@@ -227,7 +279,7 @@ Python to write concurrent code.
 
 
 ```python
-from jina import Executor, requests, Flow
+from jina import Executor, requests
 
 
 class MyExecutor(Executor):
@@ -269,12 +321,16 @@ with f:
 ```
 
 ```shell
-           Flow@20588[I]:🎉 Flow is ready to use!
-	🔗 Protocol: 		GRPC
-	🏠 Local access:	0.0.0.0:62598
-	🔒 Private network:	192.168.1.187:62598
-	🌐 Public address:	212.231.186.65:62598
-⠙       DONE ━╸━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 0:00:01 100% ETA: 0 seconds 41 steps done in 1 second
+────────────────────────── 🎉 Flow is ready to serve! ──────────────────────────
+╭────────────── 🔗 Endpoint ───────────────╮
+│  ⛓     Protocol                    GRPC  │
+│  🏠       Local           0.0.0.0:54153  │
+│  🔒     Private     192.168.1.187:54153  │
+│  🌍      Public    212.231.186.65:54153  │
+╰──────────────────────────────────────────╯
+
+  DONE ━━━━━━━━━━━━━━━━━━━━━━ 0:00:01 100% ETA: 0:00:00 50 steps done in 1      
+                                                        second  
 ```
 
 ````
@@ -305,12 +361,16 @@ with f:
 ```
 
 ```shell
-           Flow@20394[I]:🎉 Flow is ready to use!
-	🔗 Protocol: 		GRPC
-	🏠 Local access:	0.0.0.0:52592
-	🔒 Private network:	192.168.1.187:52592
-	🌐 Public address:	212.231.186.65:52592
-⠏       DONE ━╸━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 0:00:50 100% ETA: 0 seconds 41 steps done in 50 seconds
+────────────────────────── 🎉 Flow is ready to serve! ──────────────────────────
+╭────────────── 🔗 Endpoint ───────────────╮
+│  ⛓     Protocol                    GRPC  │
+│  🏠       Local           0.0.0.0:52340  │
+│  🔒     Private     192.168.1.187:52340  │
+│  🌍      Public    212.231.186.65:52340  │
+╰──────────────────────────────────────────╯
+
+  DONE ━━━━━━━━━━━━━━━━━━━━━━ 0:00:50 100% ETA: 0:00:00 50 steps done in 50     
+                                                        seconds        
 ```
 ````
 
@@ -333,9 +393,6 @@ class DummyExecutor(Executor):
     async def process(self, docs: DocumentArray, **kwargs):
         self.c.post('/', docs)
 ```
-
-
-
 
 
 ## Returns
@@ -457,11 +514,14 @@ with f:
 
 
 ```shell
-           Flow@23300[I]:🎉 Flow is ready to use!                                                   
-	🔗 Protocol: 		GRPC
-	🏠 Local access:	0.0.0.0:61855
-	🔒 Private network:	192.168.1.187:61855
-	🌐 Public address:	212.231.186.65:61855
+────────────────────────── 🎉 Flow is ready to serve! ──────────────────────────
+╭────────────── 🔗 Endpoint ───────────────╮
+│  ⛓     Protocol                    GRPC  │
+│  🏠       Local           0.0.0.0:58746  │
+│  🔒     Private     192.168.1.187:58746  │
+│  🌍      Public    212.231.186.65:58746  │
+╰──────────────────────────────────────────╯
+
  ProcessDocuments: received document with text "request1"
  PrintExecutor: received document with text: "I changed the executor in place"
  ProcessDocuments: received document with text: "request2"
