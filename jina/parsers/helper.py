@@ -1,4 +1,5 @@
 """Module for helper functions in the parser"""
+
 import argparse
 import os
 from typing import Tuple

@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING, Optional, Sequence
 from jina.jaml import JAMLCompatible
 from jina.logging.logger import JinaLogger
 from jina.serve.helper import store_init_kwargs, wrap_func
-from jina.serve.streamer import GatewayStreamer
 
 __all__ = ['BaseGateway']
 
