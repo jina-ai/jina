@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Dict, List, Optional
+from typing import TYPE_CHECKING, Dict, List, Optional, Union
 
 from docarray import DocumentArray
 
@@ -43,7 +43,6 @@ class WorkerRequestHandler:
         """
         super().__init__()
         self.args = args
-        self.args.parallel = self.args.shards
         self.logger = logger
         self._is_closed = False
         self._load_executor(
@@ -292,6 +291,7 @@ class WorkerRequestHandler:
             docs_matrix=WorkerRequestHandler.get_docs_matrix_from_request(
                 requests,
                 field='docs',
+                as_list=False
             ),
             tracing_context=tracing_context,
         )
@@ -349,23 +349,32 @@ class WorkerRequestHandler:
     def get_docs_matrix_from_request(
         requests: List['DataRequest'],
         field: str,
-    ) -> List['DocumentArray']:
+        as_list: bool = True
+    ) -> Union[List['DocumentArray'], Dict[str, 'DocumentArray']]:
         """
         Returns a docs matrix from a list of DataRequest objects.
+
         :param requests: List of DataRequest objects
         :param field: field to be retrieved
+        :param as_list: boolean defining if it would need to be returned as a list
+
         :return: docs matrix: list of DocumentArray objects
         """
-        if len(requests) > 1:
-            result = [getattr(request, field) for request in requests]
-        else:
-            result = [getattr(requests[0], field)]
+        if as_list:
+            if len(requests) > 1:
+                result = [getattr(request, field) for request in requests]
+            else:
+                result = [getattr(requests[0], field)]
 
-        # to unify all length=0 DocumentArray (or any other results) will simply considered as None
-        # otherwise, the executor has to handle [None, None, None] or [DocArray(0), DocArray(0), DocArray(0)]
-        len_r = sum(len(r) for r in result)
-        if len_r:
-            return result
+            # to unify all length=0 DocumentArray (or any other results) will simply considered as None
+            # otherwise, the executor has to handle [None, None, None] or [DocArray(0), DocArray(0), DocArray(0)]
+            len_r = sum(len(r) for r in result)
+            if len_r > 0:
+                return result
+        else:
+            if len(requests) > 1:
+                result = {req.last_executor: req.docs for req in requests}
+                return result
 
     @staticmethod
     def get_parameters_dict_from_request(
@@ -455,7 +464,7 @@ class WorkerRequestHandler:
         :return: the resulting DataRequest
         """
         docs_matrix = WorkerRequestHandler.get_docs_matrix_from_request(
-            requests, field='docs'
+            requests, field='docs', as_list=True
         )
 
         # Reduction is applied in-place to the first DocumentArray in the matrix

@@ -36,6 +36,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         """
         self._health_servicer = health.HealthServicer(experimental_non_blocking=True)
         super().__init__(args, **kwargs)
+        self.deployment_name = self.name.split('/')[0]
 
     async def async_setup(self):
         """
@@ -225,6 +226,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
                 result = await self._worker_request_handler.handle(
                     requests=requests, tracing_context=tracing_context
                 )
+                result.add_executor(self.deployment_name)
                 if self._successful_requests_metrics:
                     self._successful_requests_metrics.inc()
                 if self._successful_requests_counter:
