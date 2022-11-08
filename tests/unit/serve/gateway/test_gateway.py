@@ -5,13 +5,12 @@ import time
 
 import pytest
 
-from docarray import DocumentArray
-from jina import Executor, requests
 from jina.helper import random_port
 from jina.parsers import set_gateway_parser, set_pod_parser
 from jina.serve.runtimes.gateway import GatewayRuntime
 from jina.serve.runtimes.worker import WorkerRuntime
 from tests.helper import (
+    ProcessExecutor,
     _validate_custom_gateway_process,
     _validate_dummy_custom_gateway_response,
 )
@@ -19,14 +18,6 @@ from tests.unit.yaml.dummy_gateway import DummyGateway
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 _dummy_gateway_yaml_path = os.path.join(cur_dir, '../../yaml/test-custom-gateway.yml')
-
-
-class ProcessExecutor(Executor):
-    @requests(on='/')
-    def process(self, docs: DocumentArray, **kwargs):
-        for doc in docs:
-            doc.text = doc.text + 'world'
-            doc.tags['processed'] = True
 
 
 def _create_gateway_runtime(port, uses, uses_with, worker_port):

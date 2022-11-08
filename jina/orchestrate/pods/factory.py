@@ -9,7 +9,7 @@ from jina.enums import PodRoleType
 from jina.orchestrate.pods import Pod
 from jina.orchestrate.pods.container import ContainerPod
 
-if TYPE_CHECKING: # pragma: no cover
+if TYPE_CHECKING:  # pragma: no cover
     from jina.orchestrate.pods import BasePod
 
 
@@ -36,9 +36,9 @@ class PodFactory:
             cargs.uses = HubIO(_hub_args).pull()
 
         if (
-            cargs.pod_role != PodRoleType.HEAD
-            and cargs.uses
-            and cargs.uses.startswith('docker://')
+                cargs.pod_role != PodRoleType.HEAD
+                and cargs.uses
+                and cargs.uses.startswith('docker://')
         ):
             return ContainerPod(cargs)
         else:

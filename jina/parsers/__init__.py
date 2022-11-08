@@ -1,3 +1,4 @@
+from jina.helper import GATEWAY_NAME
 from jina.parsers.client import mixin_comm_protocol_parser
 from jina.parsers.helper import _SHOW_ALL_ARGS
 from jina.parsers.orchestrate.runtimes.container import mixin_container_runtime_parser
@@ -92,7 +93,7 @@ def set_gateway_parser(parser=None):
     from jina.enums import DeploymentRoleType
 
     parser.set_defaults(
-        name='gateway',
+        name=GATEWAY_NAME,
         runtime_cls='GatewayRuntime',
         deployment_role=DeploymentRoleType.GATEWAY,
     )

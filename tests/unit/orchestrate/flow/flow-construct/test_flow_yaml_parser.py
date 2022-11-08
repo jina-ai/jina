@@ -65,8 +65,11 @@ def test_load_dump_load(tmpdir):
     f2.save_config(str(Path(tmpdir) / 'a1.yml'))
 
 
-def test_load_modify_dump_load(tmpdir):
-    f: Flow = Flow.load_config('yaml/flow-gateway.yml')
+@pytest.mark.parametrize(
+    'yaml_file', ['yaml/flow-gateway.yml', 'yaml/flow-gateway-api.yml']
+)
+def test_load_modify_dump_load(tmpdir, yaml_file):
+    f: Flow = Flow.load_config(yaml_file)
     # assert vars inside `with`
     assert f._kwargs['name'] == 'abc'
     assert f.port == 12345
@@ -76,7 +79,7 @@ def test_load_modify_dump_load(tmpdir):
     assert f._deployment_nodes['custom2'].args.uses == 'CustomExecutor2'
     assert int(f._deployment_nodes['custom2'].args.port) == 23456
 
-    # change args inside `with`
+    # change args inside the gateway configuration
     f.port = 12346
     f.protocol = GatewayProtocolType.WEBSOCKET
     # change executor args
@@ -198,3 +201,18 @@ def test_flow_yaml_override_with_protocol():
     assert f2.protocol == GatewayProtocolType.HTTP
     f3 = Flow.load_config(path, uses_with={'protocol': 'websocket'})
     assert f3.protocol == GatewayProtocolType.WEBSOCKET
+
+
+@pytest.mark.parametrize(
+    'yaml_file',
+    ['yaml/flow_with_gateway.yml', 'yaml/test-flow-custom-gateway-nested-config.yml'],
+)
+def test_load_flow_with_gateway(yaml_file):
+    path = os.path.join(cur_dir.parent.parent.parent, yaml_file)
+    flow = Flow.load_config(
+        path,
+    )
+    with flow:
+        # protocol and port are overridden by the gateway configuration
+        assert flow.protocol == GatewayProtocolType.HTTP
+        assert flow.port == 12344

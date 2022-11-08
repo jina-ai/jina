@@ -1,6 +1,5 @@
 import argparse
 import asyncio
-import os
 import signal
 import time
 from abc import ABC, abstractmethod

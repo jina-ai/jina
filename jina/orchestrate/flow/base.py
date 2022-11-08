@@ -52,15 +52,13 @@ from jina.excepts import (
     RuntimeFailToStart,
 )
 from jina.helper import (
+    GATEWAY_NAME,
     ArgNamespace,
     CatchAllCleanupContextManager,
-    _parse_hosts,
-    _parse_ports,
     download_mermaid_url,
     get_internal_ip,
     get_public_ip,
     is_port_free,
-    make_iterable,
     send_telemetry_event,
     typename,
 )
@@ -77,6 +75,8 @@ from jina.parsers.flow import set_flow_parser
 from jina.serve.networking import host_is_local, in_docker
 
 __all__ = ['Flow']
+GATEWAY_ARGS_BLACKLIST = ['uses', 'uses_with']
+EXECUTOR_ARGS_BLACKLIST = ['port', 'port_monitoring', 'uses', 'uses_with']
 
 
 class FlowType(type(ExitStack), type(JAMLCompatible)):
@@ -92,7 +92,6 @@ if TYPE_CHECKING:  # pragma: no cover
     from jina.orchestrate.flow.asyncio import AsyncFlow
     from jina.serve.executors import BaseExecutor
 
-GATEWAY_NAME = 'gateway'
 FALLBACK_PARSERS = [
     set_gateway_parser(),
     set_deployment_parser(),
@@ -516,6 +515,13 @@ class Flow(
         known_keys = vars(args)
         self._common_kwargs = {k: v for k, v in kwargs.items() if k not in known_keys}
 
+        # gateway args inherit from flow args
+        self._gateway_kwargs = {
+            k: v
+            for k, v in self._common_kwargs.items()
+            if k not in GATEWAY_ARGS_BLACKLIST
+        }
+
         self._kwargs = ArgNamespace.get_non_defaults_args(
             args, _flow_parser
         )  #: for yaml dump
@@ -594,7 +600,7 @@ class Flow(
         deployments_addresses: Dict[str, List[str]],
         deployments_metadata: Dict[str, Dict[str, str]],
         graph_conditions: Dict[str, Dict],
-        deployments_disabled_reduce: List[str],
+        deployments_disable_reduce: List[str],
         **kwargs,
     ):
         kwargs.update(
@@ -610,7 +616,7 @@ class Flow(
             )
         )
 
-        kwargs.update(self._common_kwargs)
+        kwargs.update(self._gateway_kwargs)
         args = ArgNamespace.kwargs2namespace(kwargs, set_gateway_parser())
 
         # We need to check later if the port was manually set or randomly
@@ -622,7 +628,7 @@ class Flow(
         args.graph_conditions = json.dumps(graph_conditions)
         args.deployments_addresses = json.dumps(deployments_addresses)
         args.deployments_metadata = json.dumps(deployments_metadata)
-        args.deployments_disable_reduce = json.dumps(deployments_disabled_reduce)
+        args.deployments_disable_reduce = json.dumps(deployments_disable_reduce)
         self._deployment_nodes[GATEWAY_NAME] = Deployment(args, needs)
 
     def _get_deployments_metadata(self) -> Dict[str, Dict[str, str]]:
@@ -639,7 +645,7 @@ class Flow(
     def _get_deployments_addresses(self) -> Dict[str, List[str]]:
         graph_dict = {}
         for node, deployment in self._deployment_nodes.items():
-            if node == 'gateway':
+            if node == GATEWAY_NAME:
                 continue
             if deployment.head_args:
                 # add head information
@@ -672,7 +678,7 @@ class Flow(
         from jina.serve.networking import GrpcConnectionPool
 
         for node, v in self._deployment_nodes.items():
-            if node == 'gateway':
+            if node == GATEWAY_NAME:
                 continue
 
             if v.external:
@@ -708,7 +714,7 @@ class Flow(
         from jina.orchestrate.deployments.config.helper import to_compatible_name
 
         for node, v in self._deployment_nodes.items():
-            if node == 'gateway':
+            if node == GATEWAY_NAME:
                 continue
 
             if v.external:
@@ -754,7 +760,7 @@ class Flow(
     def _get_graph_representation(self) -> Dict[str, List[str]]:
         def _add_node(graph, n):
             # in the graph we need to distinguish between start and end gateway, although they are the same deployment
-            if n == 'gateway':
+            if n == GATEWAY_NAME:
                 n = 'start-gateway'
             if n not in graph:
                 graph[n] = []
@@ -1198,11 +1204,8 @@ class Flow(
         # set the kwargs inherit from `Flow(kwargs1=..., kwargs2=)`
         for key, value in op_flow._common_kwargs.items():
 
-            # do not inherit from all the argument from the flow
-            if key not in kwargs and key not in [
-                'port',
-                'port_monitoring',
-            ]:
+            # do not inherit from all the argument from the flow and respect EXECUTOR_ARGS_BLACKLIST
+            if key not in kwargs and key not in EXECUTOR_ARGS_BLACKLIST:
                 kwargs[key] = value
 
         # update kwargs of this Deployment
@@ -1242,6 +1245,256 @@ class Flow(
 
         if not args.floating:
             op_flow._last_deployment = deployment_name
+
+        return op_flow
+
+    # overload_inject_start_config_gateway
+    @overload
+    def config_gateway(
+        self,
+        *,
+        compression: Optional[str] = None,
+        cors: Optional[bool] = False,
+        deployments_addresses: Optional[str] = '{}',
+        deployments_disable_reduce: Optional[str] = '[]',
+        deployments_metadata: Optional[str] = '{}',
+        description: Optional[str] = None,
+        docker_kwargs: Optional[dict] = None,
+        entrypoint: Optional[str] = None,
+        env: Optional[dict] = None,
+        expose_endpoints: Optional[str] = None,
+        expose_graphql_endpoint: Optional[bool] = False,
+        floating: Optional[bool] = False,
+        graph_conditions: Optional[str] = '{}',
+        graph_description: Optional[str] = '{}',
+        grpc_server_options: Optional[dict] = None,
+        host: Optional[str] = '0.0.0.0',
+        host_in: Optional[str] = '0.0.0.0',
+        log_config: Optional[str] = None,
+        metrics: Optional[bool] = False,
+        metrics_exporter_host: Optional[str] = None,
+        metrics_exporter_port: Optional[int] = None,
+        monitoring: Optional[bool] = False,
+        name: Optional[str] = 'gateway',
+        no_crud_endpoints: Optional[bool] = False,
+        no_debug_endpoints: Optional[bool] = False,
+        port: Optional[str] = None,
+        port_monitoring: Optional[str] = None,
+        prefetch: Optional[int] = 1000,
+        protocol: Optional[str] = 'GRPC',
+        proxy: Optional[bool] = False,
+        py_modules: Optional[List[str]] = None,
+        quiet: Optional[bool] = False,
+        quiet_error: Optional[bool] = False,
+        retries: Optional[int] = -1,
+        runtime_cls: Optional[str] = 'GatewayRuntime',
+        ssl_certfile: Optional[str] = None,
+        ssl_keyfile: Optional[str] = None,
+        timeout_ctrl: Optional[int] = 60,
+        timeout_ready: Optional[int] = 600000,
+        timeout_send: Optional[int] = None,
+        title: Optional[str] = None,
+        traces_exporter_host: Optional[str] = None,
+        traces_exporter_port: Optional[int] = None,
+        tracing: Optional[bool] = False,
+        uses: Optional[Union[str, Type['BaseExecutor'], dict]] = None,
+        uses_with: Optional[dict] = None,
+        uvicorn_kwargs: Optional[dict] = None,
+        workspace: Optional[str] = None,
+        **kwargs,
+    ):
+        """Configure the Gateway inside a Flow. The Gateway exposes your Flow logic as a service to the internet according to the protocol and configuration you choose.
+
+        :param compression: The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.
+        :param cors: If set, a CORS middleware is added to FastAPI frontend to allow cross-origin access.
+        :param deployments_addresses: JSON dictionary with the input addresses of each Deployment
+        :param deployments_disable_reduce: list JSON disabling the built-in merging mechanism for each Deployment listed
+        :param deployments_metadata: JSON dictionary with the request metadata for each Deployment
+        :param description: The description of this HTTP server. It will be used in automatics docs such as Swagger UI.
+        :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker '
+          container.
+
+          More details can be found in the Docker SDK docs:  https://docker-py.readthedocs.io/en/stable/
+        :param entrypoint: The entrypoint command overrides the ENTRYPOINT in Docker image. when not set then the Docker image ENTRYPOINT takes effective.
+        :param env: The map of environment variables that are available inside runtime
+        :param expose_endpoints: A JSON string that represents a map from executor endpoints (`@requests(on=...)`) to HTTP endpoints.
+        :param expose_graphql_endpoint: If set, /graphql endpoint is added to HTTP interface.
+        :param floating: If set, the current Pod/Deployment can not be further chained, and the next `.add()` will chain after the last Pod/Deployment not this current one.
+        :param graph_conditions: Dictionary stating which filtering conditions each Executor in the graph requires to receive Documents.
+        :param graph_description: Routing graph for the gateway
+        :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
+        :param host: The host address of the runtime, by default it is 0.0.0.0. In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts, separated by commas. Then, every resulting address will be considered as one replica of the Executor.
+        :param host_in: The host address for binding to, by default it is 0.0.0.0
+        :param log_config: The YAML config of the logger used in this object.
+        :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.
+        :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.
+        :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.
+        :param monitoring: If set, spawn an http server with a prometheus endpoint to expose metrics
+        :param name: The name of this object.
+
+              This will be used in the following places:
+              - how you refer to this object in Python/YAML/CLI
+              - visualization
+              - log message header
+              - ...
+
+              When not given, then the default naming strategy will apply.
+        :param no_crud_endpoints: If set, `/index`, `/search`, `/update`, `/delete` endpoints are removed from HTTP interface.
+
+                  Any executor that has `@requests(on=...)` bound with those values will receive data requests.
+        :param no_debug_endpoints: If set, `/status` `/post` endpoints are removed from HTTP interface.
+        :param port: The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (`--external` or `external=True`) this can be a list of ports, separated by commas. Then, every resulting address will be considered as one replica of the Executor.
+        :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]
+        :param prefetch: Number of requests fetched from the client before feeding into the first Executor.
+
+              Used to control the speed of data input into a Flow. 0 disables prefetch (1000 requests is the default)
+        :param protocol: Communication protocol between server and client.
+        :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
+        :param py_modules: The customized python modules need to be imported before loading the gateway
+
+          Note that the recommended way is to only import a single module - a simple python file, if your
+          gateway can be defined in a single file, or an ``__init__.py`` file if you have multiple files,
+          which should be structured as a python package.
+        :param quiet: If set, then no log will be emitted from this object.
+        :param quiet_error: If set, then exception stack information will not be added to the log
+        :param retries: Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
+        :param runtime_cls: The runtime class to run inside the Pod
+        :param ssl_certfile: the path to the certificate file
+        :param ssl_keyfile: the path to the key file
+        :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever
+        :param timeout_ready: The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting forever
+        :param timeout_send: The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default
+        :param title: The title of this HTTP server. It will be used in automatics docs such as Swagger UI.
+        :param traces_exporter_host: If tracing is enabled, this hostname will be used to configure the trace exporter agent.
+        :param traces_exporter_port: If tracing is enabled, this port will be used to configure the trace exporter agent.
+        :param tracing: If set, the sdk implementation of the OpenTelemetry tracer will be available and will be enabled for automatic tracing of requests and customer span creation. Otherwise a no-op implementation will be provided.
+        :param uses: The config of the gateway, it could be one of the followings:
+                  * the string literal of an Gateway class name
+                  * a Gateway YAML file (.yml, .yaml, .jaml)
+                  * a docker image (must start with `docker://`)
+                  * the string literal of a YAML config (must start with `!` or `jtype: `)
+                  * the string literal of a JSON config
+
+                  When use it under Python, one can use the following values additionally:
+                  - a Python dict that represents the config
+                  - a text file stream has `.read()` interface
+        :param uses_with: Dictionary of keyword arguments that will override the `with` configuration in `uses`
+        :param uvicorn_kwargs: Dictionary of kwargs arguments that will be passed to Uvicorn server when starting the server
+
+          More details can be found in Uvicorn docs: https://www.uvicorn.org/settings/
+        :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.
+
+        .. # noqa: DAR202
+        .. # noqa: DAR101
+        .. # noqa: DAR003
+        """
+
+    # overload_inject_end_config_gateway
+
+    @allowed_levels([FlowBuildLevel.EMPTY])
+    def config_gateway(
+        self,
+        args: Optional['argparse.Namespace'] = None,
+        **kwargs,
+    ) -> Union['Flow', 'AsyncFlow']:
+        # implementation_stub_inject_start_config_gateway
+
+        """Configure the Gateway inside a Flow. The Gateway exposes your Flow logic as a service to the internet according to the protocol and configuration you choose.
+
+        :param compression: The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.
+        :param cors: If set, a CORS middleware is added to FastAPI frontend to allow cross-origin access.
+        :param deployments_addresses: JSON dictionary with the input addresses of each Deployment
+        :param deployments_disable_reduce: list JSON disabling the built-in merging mechanism for each Deployment listed
+        :param deployments_metadata: JSON dictionary with the request metadata for each Deployment
+        :param description: The description of this HTTP server. It will be used in automatics docs such as Swagger UI.
+        :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker '
+          container.
+
+          More details can be found in the Docker SDK docs:  https://docker-py.readthedocs.io/en/stable/
+        :param entrypoint: The entrypoint command overrides the ENTRYPOINT in Docker image. when not set then the Docker image ENTRYPOINT takes effective.
+        :param env: The map of environment variables that are available inside runtime
+        :param expose_endpoints: A JSON string that represents a map from executor endpoints (`@requests(on=...)`) to HTTP endpoints.
+        :param expose_graphql_endpoint: If set, /graphql endpoint is added to HTTP interface.
+        :param floating: If set, the current Pod/Deployment can not be further chained, and the next `.add()` will chain after the last Pod/Deployment not this current one.
+        :param graph_conditions: Dictionary stating which filtering conditions each Executor in the graph requires to receive Documents.
+        :param graph_description: Routing graph for the gateway
+        :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
+        :param host: The host address of the runtime, by default it is 0.0.0.0. In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts, separated by commas. Then, every resulting address will be considered as one replica of the Executor.
+        :param host_in: The host address for binding to, by default it is 0.0.0.0
+        :param log_config: The YAML config of the logger used in this object.
+        :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.
+        :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.
+        :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.
+        :param monitoring: If set, spawn an http server with a prometheus endpoint to expose metrics
+        :param name: The name of this object.
+
+              This will be used in the following places:
+              - how you refer to this object in Python/YAML/CLI
+              - visualization
+              - log message header
+              - ...
+
+              When not given, then the default naming strategy will apply.
+        :param no_crud_endpoints: If set, `/index`, `/search`, `/update`, `/delete` endpoints are removed from HTTP interface.
+
+                  Any executor that has `@requests(on=...)` bound with those values will receive data requests.
+        :param no_debug_endpoints: If set, `/status` `/post` endpoints are removed from HTTP interface.
+        :param port: The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (`--external` or `external=True`) this can be a list of ports, separated by commas. Then, every resulting address will be considered as one replica of the Executor.
+        :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]
+        :param prefetch: Number of requests fetched from the client before feeding into the first Executor.
+
+              Used to control the speed of data input into a Flow. 0 disables prefetch (1000 requests is the default)
+        :param protocol: Communication protocol between server and client.
+        :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
+        :param py_modules: The customized python modules need to be imported before loading the gateway
+
+          Note that the recommended way is to only import a single module - a simple python file, if your
+          gateway can be defined in a single file, or an ``__init__.py`` file if you have multiple files,
+          which should be structured as a python package.
+        :param quiet: If set, then no log will be emitted from this object.
+        :param quiet_error: If set, then exception stack information will not be added to the log
+        :param retries: Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
+        :param runtime_cls: The runtime class to run inside the Pod
+        :param ssl_certfile: the path to the certificate file
+        :param ssl_keyfile: the path to the key file
+        :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever
+        :param timeout_ready: The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting forever
+        :param timeout_send: The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default
+        :param title: The title of this HTTP server. It will be used in automatics docs such as Swagger UI.
+        :param traces_exporter_host: If tracing is enabled, this hostname will be used to configure the trace exporter agent.
+        :param traces_exporter_port: If tracing is enabled, this port will be used to configure the trace exporter agent.
+        :param tracing: If set, the sdk implementation of the OpenTelemetry tracer will be available and will be enabled for automatic tracing of requests and customer span creation. Otherwise a no-op implementation will be provided.
+        :param uses: The config of the gateway, it could be one of the followings:
+                  * the string literal of an Gateway class name
+                  * a Gateway YAML file (.yml, .yaml, .jaml)
+                  * a docker image (must start with `docker://`)
+                  * the string literal of a YAML config (must start with `!` or `jtype: `)
+                  * the string literal of a JSON config
+
+                  When use it under Python, one can use the following values additionally:
+                  - a Python dict that represents the config
+                  - a text file stream has `.read()` interface
+        :param uses_with: Dictionary of keyword arguments that will override the `with` configuration in `uses`
+        :param uvicorn_kwargs: Dictionary of kwargs arguments that will be passed to Uvicorn server when starting the server
+
+          More details can be found in Uvicorn docs: https://www.uvicorn.org/settings/
+        :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.
+        :return: the new Flow object
+
+        .. # noqa: DAR102
+        .. # noqa: DAR202
+        .. # noqa: DAR101
+        .. # noqa: DAR003
+        """
+        # implementation_stub_inject_end_config_gateway
+
+        copy_flow = kwargs.pop('copy_flow', True)
+
+        op_flow = copy.deepcopy(self) if copy_flow else self
+
+        # override gateway args inherited from Flow API
+        for key, value in kwargs.items():
+            op_flow._gateway_kwargs[key] = value
 
         return op_flow
 
@@ -1408,8 +1661,8 @@ class Flow(
                 deployments_addresses=op_flow._get_deployments_addresses(),
                 deployments_metadata=op_flow._get_deployments_metadata(),
                 graph_conditions=op_flow._get_graph_conditions(),
-                deployments_disabled_reduce=op_flow._get_disabled_reduce_deployments(),
-                uses=op_flow.args.uses,
+                deployments_disable_reduce=op_flow._get_disabled_reduce_deployments(),
+                uses=op_flow.gateway_args.uses,
             )
 
         removed_deployments = []
@@ -1703,7 +1956,7 @@ class Flow(
             port=self.port,
             protocol=self.protocol,
         )
-        kwargs.update(self._common_kwargs)
+        kwargs.update(self._gateway_kwargs)
         return Client(**kwargs)
 
     @property
@@ -1877,7 +2130,7 @@ class Flow(
         if GATEWAY_NAME in self._deployment_nodes:
             return self._deployment_nodes[GATEWAY_NAME].port
         else:
-            return self._common_kwargs.get('port', None)
+            return self._gateway_kwargs.get('port', None)
 
     @port.setter
     def port(self, value: int):
@@ -1885,11 +2138,11 @@ class Flow(
 
         :param value: the new port to expose
         """
-        self._common_kwargs['port'] = value
+        self._gateway_kwargs['port'] = value
 
         # Flow is build to graph already
         if self._build_level >= FlowBuildLevel.GRAPH:
-            self[GATEWAY_NAME].args.port = self._common_kwargs['port']
+            self[GATEWAY_NAME].args.port = self._gateway_kwargs['port']
 
         # Flow is running already, then close the existing gateway
         if self._build_level >= FlowBuildLevel.RUNNING:
@@ -1905,7 +2158,7 @@ class Flow(
         if GATEWAY_NAME in self._deployment_nodes:
             return self._deployment_nodes[GATEWAY_NAME].host
         else:
-            return self._common_kwargs.get('host', __default_host__)
+            return self._gateway_kwargs.get('host', __default_host__)
 
     @host.setter
     def host(self, value: str):
@@ -1913,11 +2166,11 @@ class Flow(
 
         :param value: the new port to expose
         """
-        self._common_kwargs['host'] = value
+        self._gateway_kwargs['host'] = value
 
         # Flow is build to graph already
         if self._build_level >= FlowBuildLevel.GRAPH:
-            self[GATEWAY_NAME].args.host = self._common_kwargs['host']
+            self[GATEWAY_NAME].args.host = self._gateway_kwargs['host']
 
         # Flow is running already, then close the existing gateway
         if self._build_level >= FlowBuildLevel.RUNNING:
@@ -1943,7 +2196,7 @@ class Flow(
         if GATEWAY_NAME in self._deployment_nodes:
             return self[GATEWAY_NAME].args.port_monitoring
         else:
-            return self._common_kwargs.get('port_monitoring', None)
+            return self._gateway_kwargs.get('port_monitoring', None)
 
     @property
     def address_private(self) -> str:
@@ -2144,7 +2397,7 @@ class Flow(
 
         :return: the protocol of this Flow
         """
-        v = self._common_kwargs.get('protocol', GatewayProtocolType.GRPC)
+        v = self._gateway_kwargs.get('protocol', GatewayProtocolType.GRPC)
         if isinstance(v, str):
             v = GatewayProtocolType.from_string(v)
         return v
@@ -2160,15 +2413,15 @@ class Flow(
             raise RuntimeError('Protocol can not be changed after the Flow has started')
 
         if isinstance(value, str):
-            self._common_kwargs['protocol'] = GatewayProtocolType.from_string(value)
+            self._gateway_kwargs['protocol'] = GatewayProtocolType.from_string(value)
         elif isinstance(value, GatewayProtocolType):
-            self._common_kwargs['protocol'] = value
+            self._gateway_kwargs['protocol'] = value
         else:
             raise TypeError(f'{value} must be either `str` or `GatewayProtocolType`')
 
         # Flow is build to graph already
         if self._build_level >= FlowBuildLevel.GRAPH:
-            self[GATEWAY_NAME].args.protocol = self._common_kwargs['protocol']
+            self[GATEWAY_NAME].args.protocol = self._gateway_kwargs['protocol']
 
     def __getitem__(self, item):
         if isinstance(item, str):
@@ -2447,9 +2700,9 @@ class Flow(
 
         # noqa: DAR201
         """
-        if 'port' in self._common_kwargs:
-            kwargs = copy.deepcopy(self._common_kwargs)
-            kwargs['port'] = self._common_kwargs['port']
+        if 'port' in self._gateway_kwargs:
+            kwargs = copy.deepcopy(self._gateway_kwargs)
+            kwargs['port'] = self._gateway_kwargs['port']
 
         return ArgNamespace.kwargs2namespace(kwargs, set_client_cli_parser())
 
@@ -2459,14 +2712,14 @@ class Flow(
 
         # noqa: DAR201
         """
-        return ArgNamespace.kwargs2namespace(self._common_kwargs, set_gateway_parser())
+        return ArgNamespace.kwargs2namespace(self._gateway_kwargs, set_gateway_parser())
 
     def _update_network_interface(self, **kwargs):
         """Update the network interface of this Flow (affects Gateway & Client)
 
         :param kwargs: new network settings
         """
-        self._common_kwargs.update(kwargs)
+        self._gateway_kwargs.update(kwargs)
 
     def __getattribute__(self, item):
         obj = super().__getattribute__(item)
