@@ -453,8 +453,8 @@ class GrpcConnectionPool:
 
                 elif self.stream_stub:
                     # TODO: Is this for loop necessary? Isn't the length always one?
-                    for response in requests:
-                        self._record_request_bytes_metric(response.nbytes)
+                    for request in requests:
+                        self._record_request_bytes_metric(request.nbytes)
 
                     with timer:
                         async for response in self.stream_stub.Call(
@@ -474,8 +474,8 @@ class GrpcConnectionPool:
                         compression=compression,
                         timeout=timeout,
                     )
-                    for response in requests:
-                        self._record_request_bytes_metric(response.nbytes)
+                    for request in requests:
+                        self._record_request_bytes_metric(request.nbytes)
                     with timer:
                         metadata, response = (
                             await call_result.trailing_metadata(),
