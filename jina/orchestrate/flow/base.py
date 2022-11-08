@@ -54,13 +54,10 @@ from jina.excepts import (
 from jina.helper import (
     ArgNamespace,
     CatchAllCleanupContextManager,
-    _parse_hosts,
-    _parse_ports,
     download_mermaid_url,
     get_internal_ip,
     get_public_ip,
     is_port_free,
-    make_iterable,
     send_telemetry_event,
     typename,
 )
