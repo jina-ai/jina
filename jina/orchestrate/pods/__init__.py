@@ -23,7 +23,7 @@ from jina.serve.runtimes.gateway import GatewayRuntime
 
 def _is_main_and_spawn():
     return (
-        multiprocessing.get_start_method().lower() == 'spawn' and __name__ == '__main__'
+        multiprocessing.get_start_method().lower() != 'spawn' or __name__ == '__main__'
     )
 
 
