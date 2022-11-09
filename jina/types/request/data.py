@@ -306,7 +306,7 @@ class DataRequest(Request):
         """
         Returns the name of the last Executor that has processed this Request
 
-        :param executor_name: name of the Executor processing the Request
+        :param executor_name: name of the Executor processing the Request to be added to the routes
         """
         route_proto = jina_pb2.RouteProto()
         route_proto.executor = executor_name
