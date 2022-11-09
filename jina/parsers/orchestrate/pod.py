@@ -88,14 +88,23 @@ def mixin_pod_parser(parser, pod_type: str = 'worker'):
         else argparse.SUPPRESS,
     )
 
-    gp.add_argument(
-        '--port',
-        type=str,
-        default=str(helper.random_port()),
-        help='The port for input data to bind to, default is a random port between [49152, 65535].'
-        ' In the case of an external Executor (`--external` or `external=True`) this can be a list of ports, separated by commas.'
-        ' Then, every resulting address will be considered as one replica of the Executor.',
+    port_description = (
+        'The port for input data to bind to, default is a random port between [49152, 65535]. '
+        'In the case of an external Executor (`--external` or `external=True`) this can be a list of ports, separated by commas. '
+        'Then, every resulting address will be considered as one replica of the Executor.'
     )
+
+    if pod_type != 'gateway':
+        gp.add_argument(
+            '--port', type=str, default=str(helper.random_port()), help=port_description
+        )
+    else:
+        gp.add_argument(
+            '--port',
+            nargs='+',
+            default=[str(helper.random_port())],
+            help=port_description,
+        )
 
     gp.add_argument(
         '--monitoring',

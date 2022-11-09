@@ -147,6 +147,24 @@ which should be structured as a python package.
     )
 
 
+def mixin_gateway_protocol_parser(parser):
+    """Add the arguments for the protocol to the gateway parser
+
+    :param parser: the parser configure
+    """
+
+    from jina.enums import GatewayProtocolType
+
+    parser.add_argument(
+        '--protocol',
+        nargs='+',
+        type=GatewayProtocolType.from_string,
+        choices=list(GatewayProtocolType),
+        default=GatewayProtocolType.GRPC,
+        help=f'Possible communication protocols between server and client. Choose any list combination of the following choices: {[protocol.to_string() for protocol in list(GatewayProtocolType)]}.',
+    )
+
+
 def _add_host(arg_group):
     arg_group.add_argument(
         '--host',
