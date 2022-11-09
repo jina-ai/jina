@@ -1,6 +1,6 @@
 # Remarks
 
-- Define & start the Flow via an explicit function call inside `if __name__ == '__main__'`. For example
+- Define & start the Flow via an explicit function call inside `if __name__ == '__main__'`, **especially when using `spawn` multiprocessing start method**. For example
 
     ````{tab} ✅ Do
     ```{code-block} python
