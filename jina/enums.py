@@ -54,7 +54,14 @@ class BetterEnum(IntEnum, metaclass=EnumType):
     """The base class of Enum used in Jina."""
 
     def __str__(self):
-        return self.name
+        return self.to_string()
+
+    def to_string(self):
+        """
+        Convert the Enum to string representation
+        :return: the string representation of the enum
+        """
+        return self.name.lower()
 
     def __format__(self, format_spec):  # noqa
         """
@@ -175,13 +182,6 @@ class GatewayProtocolType(BetterEnum):
     GRPC = 0
     HTTP = 1
     WEBSOCKET = 2
-
-    def to_string(self):
-        """
-        Convert the Enum to string representation
-        :return: the string representation of the enum
-        """
-        return self.name.lower()
 
 
 class PodRoleType(BetterEnum):
