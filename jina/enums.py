@@ -176,6 +176,13 @@ class GatewayProtocolType(BetterEnum):
     HTTP = 1
     WEBSOCKET = 2
 
+    def to_string(self):
+        """
+        Convert the Enum to string representation
+        :return: the string representation of the enum
+        """
+        return self.name.lower()
+
 
 class PodRoleType(BetterEnum):
     """The enum of a Pod role."""
