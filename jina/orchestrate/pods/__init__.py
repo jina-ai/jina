@@ -4,6 +4,7 @@ import os
 import threading
 import time
 from abc import ABC, abstractmethod
+from multiprocessing import freeze_support
 from typing import Dict, Optional, Type, Union
 
 from jina import __ready_msg__, __stop_msg__, __windows__
@@ -314,28 +315,31 @@ class Pod(BasePod):
     def __init__(self, args: 'argparse.Namespace'):
         super().__init__(args)
         self.runtime_cls = self._get_runtime_cls()
-        self.worker = multiprocessing.Process(
-            target=run,
-            kwargs={
-                'args': args,
-                'name': self.name,
-                'envs': self._envs,
-                'is_started': self.is_started,
-                'is_shutdown': self.is_shutdown,
-                'is_ready': self.is_ready,
-                'runtime_cls': self.runtime_cls,
-                'jaml_classes': JAML.registered_classes(),
-            },
-            name=self.name,
-            daemon=False,
-        )
+        if __name__ == '__main__':
+            freeze_support()
+            self.worker = multiprocessing.Process(
+                target=run,
+                kwargs={
+                    'args': args,
+                    'name': self.name,
+                    'envs': self._envs,
+                    'is_started': self.is_started,
+                    'is_shutdown': self.is_shutdown,
+                    'is_ready': self.is_ready,
+                    'runtime_cls': self.runtime_cls,
+                    'jaml_classes': JAML.registered_classes(),
+                },
+                name=self.name,
+                daemon=False,
+            )
 
     def start(self):
         """Start the Pod.
         This method calls :meth:`start` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.
         .. #noqa: DAR201
         """
-        self.worker.start()
+        if __name__ == '__main__':
+            self.worker.start()
         self.is_forked = multiprocessing.get_start_method().lower() == 'fork'
 
         if not self.args.noblock_on_start:
