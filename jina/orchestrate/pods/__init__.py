@@ -354,7 +354,8 @@ class Pod(BasePod):
         :param kwargs: extra keyword arguments to pass to join
         """
         self.logger.debug(f'joining the process')
-        self.worker.join(*args, **kwargs)
+        if __name__ == '__main__':
+            self.worker.join(*args, **kwargs)
         self.logger.debug(f'successfully joined the process')
 
     def _terminate(self):
@@ -362,7 +363,8 @@ class Pod(BasePod):
         This method calls :meth:`terminate` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.
         """
         self.logger.debug(f'terminating the runtime process')
-        self.worker.terminate()
+        if __name__ == '__main__':
+            self.worker.terminate()
         self.logger.debug(f'runtime process properly terminated')
 
     def _get_runtime_cls(self) -> AsyncNewLoopRuntime:
