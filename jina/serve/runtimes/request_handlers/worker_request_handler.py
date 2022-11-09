@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Dict, List, Optional, Union
+from typing import TYPE_CHECKING, Dict, List, Optional, Tuple
 
 from docarray import DocumentArray
 
@@ -284,15 +284,13 @@ class WorkerRequestHandler:
         )
 
         # executor logic
+        docs_matrix, docs_map = WorkerRequestHandler._get_docs_matrix_from_request(requests)
         return_data = await self._executor.__acall__(
             req_endpoint=requests[0].header.exec_endpoint,
             docs=docs,
             parameters=params,
-            docs_matrix=WorkerRequestHandler.get_docs_matrix_from_request(
-                requests,
-                field='docs',
-                as_list=not self.args.docs_by_executor
-            ),
+            docs_matrix=docs_matrix,
+            docs_map=docs_map,
             tracing_context=tracing_context,
         )
 
@@ -346,35 +344,32 @@ class WorkerRequestHandler:
             self._is_closed = True
 
     @staticmethod
-    def get_docs_matrix_from_request(
+    def _get_docs_matrix_from_request(
         requests: List['DataRequest'],
-        field: str,
-        as_list: bool = True
-    ) -> Union[List['DocumentArray'], Dict[str, 'DocumentArray']]:
+        return_map: bool = True,
+    ) -> Tuple[Optional[List['DocumentArray']], Optional[Dict[str, 'DocumentArray']]]:
         """
         Returns a docs matrix from a list of DataRequest objects.
 
         :param requests: List of DataRequest objects
-        :param field: field to be retrieved
-        :param as_list: boolean defining if it would need to be returned as a list
-
-        :return: docs matrix: list of DocumentArray objects
+        :param return_map: bool indicating if a map should be returned
+        :return: docs matrix and doc: list of DocumentArray objects
         """
-        if as_list:
-            if len(requests) > 1:
-                result = [getattr(request, field) for request in requests]
-            else:
-                result = [getattr(requests[0], field)]
-
-            # to unify all length=0 DocumentArray (or any other results) will simply considered as None
-            # otherwise, the executor has to handle [None, None, None] or [DocArray(0), DocArray(0), DocArray(0)]
-            len_r = sum(len(r) for r in result)
-            if len_r > 0:
-                return result
+        docs_map = None
+        if len(requests) > 1:
+            docs_matrix = [request.docs for request in requests]
+            if return_map:
+                docs_map = {req.last_executor: req.docs for req in requests}
         else:
-            if len(requests) > 1:
-                result = {req.last_executor: req.docs for req in requests}
-                return result
+            docs_matrix = [requests[0].docs]
+
+        # to unify all length=0 DocumentArray (or any other results) will simply considered as None
+        # otherwise, the executor has to handle [None, None, None] or [DocArray(0), DocArray(0), DocArray(0)]
+        len_r = sum(len(r) for r in docs_matrix)
+        if len_r == 0:
+            docs_matrix = None
+
+        return docs_matrix, docs_map
 
     @staticmethod
     def get_parameters_dict_from_request(
@@ -463,8 +458,8 @@ class WorkerRequestHandler:
         :param requests: List of DataRequest objects
         :return: the resulting DataRequest
         """
-        docs_matrix = WorkerRequestHandler.get_docs_matrix_from_request(
-            requests, field='docs', as_list=True
+        docs_matrix, _ = WorkerRequestHandler._get_docs_matrix_from_request(
+            requests
         )
 
         # Reduction is applied in-place to the first DocumentArray in the matrix
