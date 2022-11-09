@@ -21,6 +21,12 @@ __all__ = ['BasePod', 'Pod']
 from jina.serve.runtimes.gateway import GatewayRuntime
 
 
+def _is_main_and_spawn():
+    return (
+        multiprocessing.get_start_method().lower() == 'spawn' and __name__ == '__main__'
+    )
+
+
 def run(
     args: 'argparse.Namespace',
     name: str,
@@ -315,7 +321,7 @@ class Pod(BasePod):
     def __init__(self, args: 'argparse.Namespace'):
         super().__init__(args)
         self.runtime_cls = self._get_runtime_cls()
-        if __name__ == '__main__':
+        if _is_main_and_spawn():
             freeze_support()
             self.worker = multiprocessing.Process(
                 target=run,
@@ -338,7 +344,7 @@ class Pod(BasePod):
         This method calls :meth:`start` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.
         .. #noqa: DAR201
         """
-        if __name__ == '__main__':
+        if _is_main_and_spawn():
             self.worker.start()
         self.is_forked = multiprocessing.get_start_method().lower() == 'fork'
 
@@ -354,7 +360,7 @@ class Pod(BasePod):
         :param kwargs: extra keyword arguments to pass to join
         """
         self.logger.debug(f'joining the process')
-        if __name__ == '__main__':
+        if _is_main_and_spawn():
             self.worker.join(*args, **kwargs)
         self.logger.debug(f'successfully joined the process')
 
@@ -363,7 +369,7 @@ class Pod(BasePod):
         This method calls :meth:`terminate` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.
         """
         self.logger.debug(f'terminating the runtime process')
-        if __name__ == '__main__':
+        if _is_main_and_spawn():
             self.worker.terminate()
         self.logger.debug(f'runtime process properly terminated')
 
