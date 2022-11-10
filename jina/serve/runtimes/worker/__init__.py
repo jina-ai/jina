@@ -36,7 +36,6 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         """
         self._health_servicer = health.HealthServicer(experimental_non_blocking=True)
         super().__init__(args, **kwargs)
-        self.deployment_name = self.name.split('/')[0]
 
     async def async_setup(self):
         """
@@ -102,11 +101,12 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         # otherwise readiness check is not valid
         # The WorkerRequestHandler needs to be started BEFORE the grpc server
         self._worker_request_handler = WorkerRequestHandler(
-            self.args,
-            self.logger,
-            self.metrics_registry,
-            self.tracer_provider,
-            self.meter_provider,
+            args=self.args,
+            logger=self.logger,
+            metrics_registry=self.metrics_registry,
+            tracer_provider=self.tracer_provider,
+            meter_provider=self.meter_provider,
+            deployment_name=self.name.split('/')[0]
         )
         await self._async_setup_grpc_server()
 
@@ -226,7 +226,6 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
                 result = await self._worker_request_handler.handle(
                     requests=requests, tracing_context=tracing_context
                 )
-                result.add_executor(self.deployment_name)
                 if self._successful_requests_metrics:
                     self._successful_requests_metrics.inc()
                 if self._successful_requests_counter:
