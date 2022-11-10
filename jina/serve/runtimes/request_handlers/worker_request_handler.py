@@ -352,22 +352,18 @@ class WorkerRequestHandler:
     @staticmethod
     def _get_docs_matrix_from_request(
         requests: List['DataRequest'],
-        return_map: bool = True,
     ) -> Tuple[Optional[List['DocumentArray']], Optional[Dict[str, 'DocumentArray']]]:
         """
         Returns a docs matrix from a list of DataRequest objects.
 
         :param requests: List of DataRequest objects
-        :param return_map: bool indicating if a map should be returned
         :return: docs matrix and doc: list of DocumentArray objects
         """
-        docs_map = None
-        if len(requests) > 1:
-            docs_matrix = [request.docs for request in requests]
-            if return_map:
-                docs_map = {req.last_executor: req.docs for req in requests}
-        else:
-            docs_matrix = [requests[0].docs]
+        docs_map = {}
+        docs_matrix = []
+        for req in requests:
+            docs_matrix.append(req.docs)
+            docs_map[req.last_executor] = req.docs
 
         # to unify all length=0 DocumentArray (or any other results) will simply considered as None
         # otherwise, the executor has to handle [None, None, None] or [DocArray(0), DocArray(0), DocArray(0)]
