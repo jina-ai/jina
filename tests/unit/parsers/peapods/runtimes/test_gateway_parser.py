@@ -31,3 +31,28 @@ def test_multiple_port_protocol_gateway_kwargs(
     )
     assert args.port == expected_port
     assert args.protocol == expected_protocol
+
+
+@pytest.mark.parametrize(
+    'port,expected_port',
+    [
+        (['12345'], ['12345']),
+        (['12345', '12344'], ['12345', '12344']),
+    ],
+)
+@pytest.mark.parametrize(
+    'protocol,expected_protocol',
+    [
+        (['http'], [GatewayProtocolType.HTTP]),
+        (['GRPC'], [GatewayProtocolType.GRPC]),
+        (['grpc', 'http'], [GatewayProtocolType.GRPC, GatewayProtocolType.HTTP]),
+    ],
+)
+def test_multiple_port_protocol_gateway_args_list(
+    port, protocol, expected_port, expected_protocol
+):
+    args = set_gateway_parser().parse_args(
+        ['--port'] + port + ['--protocol'] + protocol
+    )
+    assert args.port == expected_port
+    assert args.protocol == expected_protocol
