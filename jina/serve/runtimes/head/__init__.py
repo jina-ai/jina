@@ -1,10 +1,9 @@
 import argparse
-import asyncio
 import json
 import os
 from abc import ABC
 from collections import defaultdict
-from typing import Dict, List, Optional, Tuple
+from typing import List
 
 import grpc
 from grpc_health.v1 import health, health_pb2, health_pb2_grpc
@@ -19,9 +18,7 @@ from jina.serve.instrumentation import MetricsTimer
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.helper import _get_grpc_server_options
-from jina.serve.runtimes.request_handlers.worker_request_handler import (
-    WorkerRequestHandler,
-)
+from jina.serve.runtimes.head.request_handling import HeaderRequestHandler
 from jina.types.request.data import DataRequest, Response
 
 
@@ -144,6 +141,7 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
                 deployment='uses_after', address=self.uses_after_address
             )
         self._reduce = not args.disable_reduce
+        self.request_handler = HeaderRequestHandler(logger=self.logger, metrics_registry=self.metrics_registry, meter=self.meter, runtime_name=self.name)
 
     def _default_polling_dict(self, default_polling):
         return defaultdict(
@@ -244,7 +242,17 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
                 self._metric_lables,
             ):
                 endpoint = dict(context.invocation_metadata()).get('endpoint')
-                response, metadata = await self._handle_data_request(requests, endpoint)
+                self.logger.debug(f'recv {len(requests)} DataRequest(s)')
+                response, metadata = await self.request_handler._handle_data_request(requests=requests,
+                                                                                    endpoint=endpoint,
+                                                                                    connection_pool=self.connection_pool,
+                                                                                    uses_before_address=self.uses_before_address,
+                                                                                    uses_after_address=self.uses_after_address,
+                                                                                    retries=self._retries,
+                                                                                    reduce=self._reduce,
+                                                                                    timeout_send=self.timeout_send,
+                                                                                    polling_type=self._polling[endpoint],
+                                                                                    deployment_name=self._deployment_name)
                 context.set_trailing_metadata(metadata.items())
                 return response
         except InternalNetworkError as err:  # can't connect, Flow broken, interrupt the streaming through gRPC error mechanism
@@ -302,125 +310,6 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
             )
 
         return response
-
-    async def _gather_worker_tasks(self, requests, endpoint):
-        worker_send_tasks = self.connection_pool.send_requests(
-            requests=requests,
-            deployment=self._deployment_name,
-            polling_type=self._polling[endpoint],
-            timeout=self.timeout_send,
-            retries=self._retries,
-        )
-
-        all_worker_results = await asyncio.gather(*worker_send_tasks)
-        worker_results = list(
-            filter(lambda x: isinstance(x, Tuple), all_worker_results)
-        )
-        exceptions = list(
-            filter(
-                lambda x: issubclass(type(x), BaseException),
-                all_worker_results,
-            )
-        )
-        total_shards = len(worker_send_tasks)
-        failed_shards = len(exceptions)
-        if failed_shards:
-            self.logger.warning(f'{failed_shards} shards out of {total_shards} failed.')
-
-        return worker_results, exceptions, total_shards, failed_shards
-
-    async def _handle_data_request(
-        self, requests: List[DataRequest], endpoint: Optional[str]
-    ) -> Tuple[DataRequest, Dict]:
-        self.logger.debug(f'recv {len(requests)} DataRequest(s)')
-
-        WorkerRequestHandler.merge_routes(requests)
-
-        uses_before_metadata = None
-        if self.uses_before_address:
-            result = await self.connection_pool.send_requests_once(
-                requests,
-                deployment='uses_before',
-                timeout=self.timeout_send,
-                retries=self._retries,
-            )
-            if issubclass(type(result), BaseException):
-                raise result
-            else:
-                response, uses_before_metadata = result
-                requests = [response]
-
-        (
-            worker_results,
-            exceptions,
-            total_shards,
-            failed_shards,
-        ) = await self._gather_worker_tasks(requests, endpoint)
-
-        if len(worker_results) == 0:
-            if exceptions:
-                # raise the underlying error first
-                raise exceptions[0]
-            raise RuntimeError(
-                f'Head {self.name} did not receive a response when sending message to worker pods'
-            )
-
-        worker_results, metadata = zip(*worker_results)
-
-        response_request = worker_results[0]
-        uses_after_metadata = None
-        if self.uses_after_address:
-            result = await self.connection_pool.send_requests_once(
-                worker_results,
-                deployment='uses_after',
-                timeout=self.timeout_send,
-                retries=self._retries,
-            )
-            if issubclass(type(result), BaseException):
-                raise result
-            else:
-                response_request, uses_after_metadata = result
-        elif len(worker_results) > 1 and self._reduce:
-            response_request = WorkerRequestHandler.reduce_requests(worker_results)
-        elif len(worker_results) > 1 and not self._reduce:
-            # worker returned multiple responses, but the head is configured to skip reduction
-            # just concatenate the docs in this case
-            response_request.data.docs = WorkerRequestHandler.get_docs_from_request(
-                requests, field='docs'
-            )
-
-        merged_metadata = self._merge_metadata(
-            metadata,
-            uses_after_metadata,
-            uses_before_metadata,
-            total_shards,
-            failed_shards,
-        )
-
-        return response_request, merged_metadata
-
-    def _merge_metadata(
-        self,
-        metadata,
-        uses_after_metadata,
-        uses_before_metadata,
-        total_shards,
-        failed_shards,
-    ):
-        merged_metadata = {}
-        if uses_before_metadata:
-            for key, value in uses_before_metadata:
-                merged_metadata[key] = value
-        for meta in metadata:
-            for key, value in meta:
-                merged_metadata[key] = value
-        if uses_after_metadata:
-            for key, value in uses_after_metadata:
-                merged_metadata[key] = value
-
-        merged_metadata['total_shards'] = str(total_shards)
-        merged_metadata['failed_shards'] = str(failed_shards)
-        return merged_metadata
 
     async def _status(self, empty, context) -> jina_pb2.JinaInfoProto:
         """
