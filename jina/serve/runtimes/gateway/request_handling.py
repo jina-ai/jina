@@ -3,9 +3,10 @@ import copy
 from typing import TYPE_CHECKING, Callable, List, Optional, Tuple
 
 import grpc.aio
-from docarray import DocumentArray
 
+from docarray import DocumentArray
 from jina.excepts import InternalNetworkError
+from jina.helper import GATEWAY_NAME
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.gateway.graph.topology_graph import TopologyGraph
 from jina.serve.runtimes.helper import _is_param_for_specific_executor
@@ -30,17 +31,17 @@ class GatewayRequestHandler(MonitoringRequestMixin):
     """
 
     def __init__(
-            self,
-            metrics_registry: Optional['CollectorRegistry'] = None,
-            meter: Optional['Meter'] = None,
-            runtime_name: Optional[str] = None,
+        self,
+        metrics_registry: Optional['CollectorRegistry'] = None,
+        meter: Optional['Meter'] = None,
+        runtime_name: Optional[str] = None,
     ):
         super().__init__(metrics_registry, meter, runtime_name)
         self._executor_endpoint_mapping = None
         self._gathering_endpoints = False
 
     def handle_request(
-            self, graph: 'TopologyGraph', connection_pool: 'GrpcConnectionPool'
+        self, graph: 'TopologyGraph', connection_pool: 'GrpcConnectionPool'
     ) -> Callable[['Request'], 'Tuple[Future, Optional[Future]]']:
         """
         Function that handles the requests arriving to the gateway. This will be passed to the streamer.
@@ -61,8 +62,8 @@ class GatewayRequestHandler(MonitoringRequestMixin):
                 err_code = err.code()
                 if err_code == grpc.StatusCode.UNAVAILABLE:
                     err._details = (
-                            err.details()
-                            + f' |Gateway: Communication error with deployment at address(es) {err.dest_addr}. Head or worker(s) may be down.'
+                        err.details()
+                        + f' |Gateway: Communication error with deployment at address(es) {err.dest_addr}. Head or worker(s) may be down.'
                     )
                     raise err
                 else:
@@ -80,8 +81,8 @@ class GatewayRequestHandler(MonitoringRequestMixin):
 
             if graph.has_filter_conditions:
                 request_doc_ids = request.data.docs[
-                                  :, 'id'
-                                  ]  # used to maintain order of docs that are filtered by executors
+                    :, 'id'
+                ]  # used to maintain order of docs that are filtered by executors
             responding_tasks = []
             floating_tasks = []
             endpoint = request.header.exec_endpoint
@@ -132,12 +133,12 @@ class GatewayRequestHandler(MonitoringRequestMixin):
                 response.data.docs = DocumentArray(sorted_docs)
 
             async def _process_results_at_end_gateway(
-                    tasks: List[asyncio.Task], request_graph: TopologyGraph
+                tasks: List[asyncio.Task], request_graph: TopologyGraph
             ) -> asyncio.Future:
                 try:
                     if (
-                            self._executor_endpoint_mapping is None
-                            and not self._gathering_endpoints
+                        self._executor_endpoint_mapping is None
+                        and not self._gathering_endpoints
                     ):
                         self._gathering_endpoints = True
                         asyncio.create_task(gather_endpoints(request_graph))
@@ -153,6 +154,12 @@ class GatewayRequestHandler(MonitoringRequestMixin):
                 )
 
                 response = filtered_partial_responses[0]
+                # JoanFM: to keep the docs_map feature, need to add the routes in the WorkerRuntime but clear it here
+                # so that routes are properly done. not very clean but refactoring would be costly for such a small
+                # thing, `docs_map` reuses routes potentially not in the best way but works for now
+                for i in reversed(range(len(response.routes))):
+                    if response.routes[i].executor != GATEWAY_NAME:
+                        del response.routes[i]
                 request_graph.add_routes(response)
 
                 if graph.has_filter_conditions:

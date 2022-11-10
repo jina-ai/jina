@@ -50,11 +50,14 @@ with f:
 ```
 
 ```shell
-           Flow@18048[I]:🎉 Flow is ready to use!                                                   
-	🔗 Protocol: 		GRPC
-	🏠 Local access:	0.0.0.0:52255
-	🔒 Private network:	192.168.1.187:52255
-	🌐 Public address:	212.231.186.65:52255
+────────────────────────── 🎉 Flow is ready to serve! ──────────────────────────
+╭────────────── 🔗 Endpoint ───────────────╮
+│  ⛓     Protocol                    GRPC  │
+│  🏠       Local           0.0.0.0:55925  │
+│  🔒     Private     192.168.1.187:55925  │
+│  🌍      Public    212.231.186.65:55925  │
+╰──────────────────────────────────────────╯
+
 Calling foo
 Calling bar
 Calling foo
@@ -93,20 +96,20 @@ All Executor methods decorated by `@requests` need to follow the signature below
 The `async` definition is optional.
 
 ```python
-from typing import Dict, Union, List
+from typing import Dict, Union, List, Optional
 from jina import Executor, requests, DocumentArray
 
 
 class MyExecutor(Executor):
     @requests
     async def foo(
-        self, docs: DocumentArray, parameters: Dict, docs_matrix: List[DocumentArray]
+        self, docs: DocumentArray, parameters: Dict, docs_matrix: Optional[List[DocumentArray]], docs_map: Optional[Dict[str, DocumentArray]]
     ) -> Union[DocumentArray, Dict, None]:
         pass
 
     @requests
     def bar(
-        self, docs: DocumentArray, parameters: Dict, docs_matrix: List[DocumentArray]
+        self, docs: DocumentArray, parameters: Dict, docs_matrix: Optional[List[DocumentArray]], docs_map: Optional[Dict[str, DocumentArray]]
     ) -> Union[DocumentArray, Dict, None]:
         pass
 ```
@@ -118,10 +121,11 @@ any other `list`-like object in a Python function.
 
 - `parameters`: A Dict object that passes extra parameters to Executor functions.
 
-- `docs_matrix`:  This is the least common parameter to be used for an Executor. This is needed when an Executor is used inside a Flow to merge or reduce the output of more than one other Executor.
-
+- `docs_matrix`:  This is one of the least common parameters to be used for an Executor. It is passed when multiple parallel branches lead into the Executor, and `no_reduce=True` is set. Each DocumentArray in the matrix is the output of one previous Executor.
  
+- `docs_map`:  This is also one of the least common parameter to be used for an Executor. It has the same utility as `docs_matrix` but the information comes as a dict with previous Executor names as keys, and DocumentArrays as values.
 
+- `tracing_context`: Context needed if you want to add custom traces. Check {ref}`how to add custom traces in your Executor <instrumenting-executor>`.
 
 
 ````{admonition} Hint
@@ -156,11 +160,14 @@ class MyExecutor(Executor):
 
 ### Multiple DocumentArrays as input argument
 
-You have seen that `Executor` methods can receive three types of parameters: `docs`, `parameters` and `docs_matrix`.
+You have seen that {class}`~jina.Executor` methods can receive multiple parameters.
 
-`docs_matrix` is only used in some special cases.
+`docs_matrix` and `docs_map` are only used in some special cases.
 
-One case is when an Executor receives messages from more than one upstream Executor in the Flow:
+One case is when an Executor receives messages from more than one incoming {class}`~jina.Executor` in the {class}`~jina.Flow`:
+
+If you set `no_reduce` to True and the Executor has more than one incoming Executor, the Executor will receive all the DocumentArrays coming from previous Executors independently under `docs_matrix` and `docs_map`.
+If `no_reduce` is not set or set to False, `docs_map` and `docs_matrix` will be None and the Executor will receive a single DocumentArray resulting from the reducing of all the incoming ones.
 
 ```python
 from jina import Flow, Executor, requests, Document, DocumentArray
@@ -198,24 +205,77 @@ f = (
     Flow()
     .add(uses=Exec1, name='exec1')
     .add(uses=Exec2, name='exec2')
-    .add(uses=MergeExec, needs=['exec1', 'exec2'], disable_reduce=True)
+    .add(uses=MergeExec, needs=['exec1', 'exec2'], no_reduce=True)
 )
 
 with f:
-    returned_docs = f.post(on='/', Document())
+    returned_docs = f.post(on='/', inputs=Document())
 
 print(f'Resulting documents {returned_docs[0].text}')
 ```
 
 
 ```shell
-           Flow@1244[I]:🎉 Flow is ready to use!
-	🔗 Protocol: 		GRPC
-	🏠 Local access:	0.0.0.0:54550
-	🔒 Private network:	192.168.1.187:54550
-	🌐 Public address:	212.231.186.65:54550
+────────────────────────── 🎉 Flow is ready to serve! ──────────────────────────
+╭────────────── 🔗 Endpoint ───────────────╮
+│  ⛓     Protocol                    GRPC  │
+│  🏠       Local           0.0.0.0:55761  │
+│  🔒     Private     192.168.1.187:55761  │
+│  🌍      Public    212.231.186.65:55761  │
+╰──────────────────────────────────────────╯
+
 MergeExec processing pairs of Documents "Exec1" and "Exec2"
 Resulting documents Document merging from "Exec1" and "Exec2"
+```
+
+When merging Documents from more than one upstream {class}`~jina.Executor`, sometimes you want to control which Documents come from which Executor.
+Executor will receive the `docs_map` as a dictionary where the key will be the last Executor processing that previous request and the DocumentArray of the request as the values.
+
+```python
+from jina import Flow, Executor, requests, Document
+
+
+class Exec1(Executor):
+    @requests
+    def foo(self, docs, **kwargs):
+        for doc in docs:
+            doc.text = 'Exec1'
+
+
+class Exec2(Executor):
+    @requests
+    def foo(self, docs, **kwargs):
+        for doc in docs:
+            doc.text = 'Exec2'
+
+
+class MergeExec(Executor):
+    @requests
+    def foo(self, docs_map, **kwargs):
+        print(docs_map)
+
+f = (
+    Flow()
+    .add(uses=Exec1, name='exec1')
+    .add(uses=Exec2, name='exec2')
+    .add(uses=MergeExec, needs=['exec1', 'exec2'], no_reduce=True)
+)
+
+with f:
+    f.post(on='/', Document())
+```
+
+
+```shell
+────────────────────────── 🎉 Flow is ready to serve! ──────────────────────────
+╭────────────── 🔗 Endpoint ───────────────╮
+│  ⛓     Protocol                    GRPC  │
+│  🏠       Local           0.0.0.0:56286  │
+│  🔒     Private     192.168.1.187:56286  │
+│  🌍      Public    212.231.186.65:56286  │
+╰──────────────────────────────────────────╯
+
+{'exec1': <DocumentArray (length=1) at 140270975034640>, 'exec2': <DocumentArray (length=1) at 140270975034448>}
 ```
 
 (async-executors)=
@@ -227,7 +287,7 @@ Python to write concurrent code.
 
 
 ```python
-from jina import Executor, requests, Flow
+from jina import Executor, requests
 
 
 class MyExecutor(Executor):
@@ -240,7 +300,6 @@ class MyExecutor(Executor):
 
 This example has a heavy lifting API which we call several times, and we leverage the
 async Python features to speed up the {class}`~jina.Executor`'s call by calling the API multiple times concurrently. As a counterpart, in an example without `coroutines`, all 50 API calls are queued and nothing is done concurrently.
-
 
 
 ````{tab} Async coroutines
@@ -269,12 +328,16 @@ with f:
 ```
 
 ```shell
-           Flow@20588[I]:🎉 Flow is ready to use!
-	🔗 Protocol: 		GRPC
-	🏠 Local access:	0.0.0.0:62598
-	🔒 Private network:	192.168.1.187:62598
-	🌐 Public address:	212.231.186.65:62598
-⠙       DONE ━╸━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 0:00:01 100% ETA: 0 seconds 41 steps done in 1 second
+────────────────────────── 🎉 Flow is ready to serve! ──────────────────────────
+╭────────────── 🔗 Endpoint ───────────────╮
+│  ⛓     Protocol                    GRPC  │
+│  🏠       Local           0.0.0.0:54153  │
+│  🔒     Private     192.168.1.187:54153  │
+│  🌍      Public    212.231.186.65:54153  │
+╰──────────────────────────────────────────╯
+
+  DONE ━━━━━━━━━━━━━━━━━━━━━━ 0:00:01 100% ETA: 0:00:00 50 steps done in 1      
+                                                        second  
 ```
 
 ````
@@ -305,12 +368,16 @@ with f:
 ```
 
 ```shell
-           Flow@20394[I]:🎉 Flow is ready to use!
-	🔗 Protocol: 		GRPC
-	🏠 Local access:	0.0.0.0:52592
-	🔒 Private network:	192.168.1.187:52592
-	🌐 Public address:	212.231.186.65:52592
-⠏       DONE ━╸━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 0:00:50 100% ETA: 0 seconds 41 steps done in 50 seconds
+────────────────────────── 🎉 Flow is ready to serve! ──────────────────────────
+╭────────────── 🔗 Endpoint ───────────────╮
+│  ⛓     Protocol                    GRPC  │
+│  🏠       Local           0.0.0.0:52340  │
+│  🔒     Private     192.168.1.187:52340  │
+│  🌍      Public    212.231.186.65:52340  │
+╰──────────────────────────────────────────╯
+
+  DONE ━━━━━━━━━━━━━━━━━━━━━━ 0:00:50 100% ETA: 0:00:00 50 steps done in 50     
+                                                        seconds        
 ```
 ````
 
@@ -333,9 +400,6 @@ class DummyExecutor(Executor):
     async def process(self, docs: DocumentArray, **kwargs):
         self.c.post('/', docs)
 ```
-
-
-
 
 
 ## Returns
@@ -457,11 +521,14 @@ with f:
 
 
 ```shell
-           Flow@23300[I]:🎉 Flow is ready to use!                                                   
-	🔗 Protocol: 		GRPC
-	🏠 Local access:	0.0.0.0:61855
-	🔒 Private network:	192.168.1.187:61855
-	🌐 Public address:	212.231.186.65:61855
+────────────────────────── 🎉 Flow is ready to serve! ──────────────────────────
+╭────────────── 🔗 Endpoint ───────────────╮
+│  ⛓     Protocol                    GRPC  │
+│  🏠       Local           0.0.0.0:58746  │
+│  🔒     Private     192.168.1.187:58746  │
+│  🌍      Public    212.231.186.65:58746  │
+╰──────────────────────────────────────────╯
+
  ProcessDocuments: received document with text "request1"
  PrintExecutor: received document with text: "I changed the executor in place"
  ProcessDocuments: received document with text: "request2"

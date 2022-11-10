@@ -17,8 +17,8 @@ from jina.proto import jina_pb2, jina_pb2_grpc
 from jina.serve.instrumentation import MetricsTimer
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
-from jina.serve.runtimes.helper import _get_grpc_server_options
 from jina.serve.runtimes.head.request_handling import HeaderRequestHandler
+from jina.serve.runtimes.helper import _get_grpc_server_options
 from jina.types.request.data import DataRequest, Response
 
 
@@ -30,9 +30,9 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
     DEFAULT_POLLING = PollingType.ANY
 
     def __init__(
-            self,
-            args: argparse.Namespace,
-            **kwargs,
+        self,
+        args: argparse.Namespace,
+        **kwargs,
     ):
         """Initialize grpc server for the head runtime.
         :param args: args from CLI
@@ -58,8 +58,8 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
 
         if self.metrics_registry:
             with ImportExtensions(
-                    required=True,
-                    help_text='You need to install the `prometheus_client` to use the montitoring functionality of jina',
+                required=True,
+                help_text='You need to install the `prometheus_client` to use the montitoring functionality of jina',
             ):
                 from prometheus_client import Summary
 
@@ -140,9 +140,13 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
             self.connection_pool.add_connection(
                 deployment='uses_after', address=self.uses_after_address
             )
-        self._reduce = not args.disable_reduce
-        self.request_handler = HeaderRequestHandler(logger=self.logger, metrics_registry=self.metrics_registry,
-                                                    meter=self.meter, runtime_name=self.name)
+        self._reduce = not args.no_reduce
+        self.request_handler = HeaderRequestHandler(
+            logger=self.logger,
+            metrics_registry=self.metrics_registry,
+            meter=self.meter,
+            runtime_name=self.name,
+        )
 
     def _default_polling_dict(self, default_polling):
         return defaultdict(
@@ -238,23 +242,24 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
         """
         try:
             with MetricsTimer(
-                    self._summary,
-                    self._receiving_reqeust_seconds_metric,
-                    self._metric_lables,
+                self._summary,
+                self._receiving_reqeust_seconds_metric,
+                self._metric_lables,
             ):
                 endpoint = dict(context.invocation_metadata()).get('endpoint')
                 self.logger.debug(f'recv {len(requests)} DataRequest(s)')
-                response, metadata = await self.request_handler._handle_data_request(requests=requests,
-                                                                                     endpoint=endpoint,
-                                                                                     connection_pool=self.connection_pool,
-                                                                                     uses_before_address=self.uses_before_address,
-                                                                                     uses_after_address=self.uses_after_address,
-                                                                                     retries=self._retries,
-                                                                                     reduce=self._reduce,
-                                                                                     timeout_send=self.timeout_send,
-                                                                                     polling_type=self._polling[
-                                                                                         endpoint],
-                                                                                     deployment_name=self._deployment_name)
+                response, metadata = await self.request_handler._handle_data_request(
+                    requests=requests,
+                    endpoint=endpoint,
+                    connection_pool=self.connection_pool,
+                    uses_before_address=self.uses_before_address,
+                    uses_after_address=self.uses_after_address,
+                    retries=self._retries,
+                    reduce=self._reduce,
+                    timeout_send=self.timeout_send,
+                    polling_type=self._polling[endpoint],
+                    deployment_name=self._deployment_name,
+                )
                 context.set_trailing_metadata(metadata.items())
                 return response
         except InternalNetworkError as err:  # can't connect, Flow broken, interrupt the streaming through gRPC error mechanism
@@ -262,8 +267,8 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
                 err=err, context=context, response=Response()
             )
         except (
-                RuntimeError,
-                Exception,
+            RuntimeError,
+            Exception,
         ) as ex:  # some other error, keep streaming going just add error info
             self.logger.error(
                 f'{ex!r}' + f'\n add "--quiet-error" to suppress the exception details'
