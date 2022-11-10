@@ -1,15 +1,14 @@
 import asyncio
-from typing import TYPE_CHECKING, Dict, List, Optional, Tuple
+from typing import TYPE_CHECKING, Dict, Optional, Tuple
 
 from jina.serve.runtimes.monitoring import MonitoringRequestMixin
 from jina.serve.runtimes.worker.request_handling import WorkerRequestHandler
 
 if TYPE_CHECKING:  # pragma: no cover
-    from jina.logging.logger import JinaLogger
-
     from opentelemetry.metrics import Meter
     from prometheus_client import CollectorRegistry
 
+    from jina.logging.logger import JinaLogger
     from jina.types.request.data import DataRequest
 
 
@@ -22,11 +21,11 @@ class HeaderRequestHandler(MonitoringRequestMixin):
     """
 
     def __init__(
-            self,
-            logger: 'JinaLogger',
-            metrics_registry: Optional['CollectorRegistry'] = None,
-            meter: Optional['Meter'] = None,
-            runtime_name: Optional[str] = None
+        self,
+        logger: 'JinaLogger',
+        metrics_registry: Optional['CollectorRegistry'] = None,
+        meter: Optional['Meter'] = None,
+        runtime_name: Optional[str] = None,
     ):
         super().__init__(metrics_registry, meter, runtime_name)
         self.logger = logger
@@ -34,7 +33,15 @@ class HeaderRequestHandler(MonitoringRequestMixin):
         self._gathering_endpoints = False
         self.runtime_name = runtime_name
 
-    async def _gather_worker_tasks(self, requests, connection_pool, deployment_name, polling_type, timeout_send, retries):
+    async def _gather_worker_tasks(
+        self,
+        requests,
+        connection_pool,
+        deployment_name,
+        polling_type,
+        timeout_send,
+        retries,
+    ):
         worker_send_tasks = connection_pool.send_requests(
             requests=requests,
             deployment=deployment_name,
@@ -62,11 +69,11 @@ class HeaderRequestHandler(MonitoringRequestMixin):
 
     @staticmethod
     def _merge_metadata(
-            metadata,
-            uses_after_metadata,
-            uses_before_metadata,
-            total_shards,
-            failed_shards,
+        metadata,
+        uses_after_metadata,
+        uses_before_metadata,
+        total_shards,
+        failed_shards,
     ):
         merged_metadata = {}
         if uses_before_metadata:
@@ -84,9 +91,17 @@ class HeaderRequestHandler(MonitoringRequestMixin):
         return merged_metadata
 
     async def _handle_data_request(
-            self, requests: List[DataRequest], connection_pool, uses_before_address, uses_after_address,
-            timeout_send, retries, reduce, polling_type, deployment_name
-    ) -> Tuple[DataRequest, Dict]:
+        self,
+        requests,
+        connection_pool,
+        uses_before_address,
+        uses_after_address,
+        timeout_send,
+        retries,
+        reduce,
+        polling_type,
+        deployment_name,
+    ) -> Tuple['DataRequest', Dict]:
         for req in requests:
             self._update_start_request_metrics(req)
         WorkerRequestHandler.merge_routes(requests)
@@ -110,9 +125,14 @@ class HeaderRequestHandler(MonitoringRequestMixin):
             exceptions,
             total_shards,
             failed_shards,
-        ) = await self._gather_worker_tasks(requests=requests, deployment_name=deployment_name,
-                                            timeout_send=timeout_send, connection_pool=connection_pool,
-                                            polling_type=polling_type, retries=retries)
+        ) = await self._gather_worker_tasks(
+            requests=requests,
+            deployment_name=deployment_name,
+            timeout_send=timeout_send,
+            connection_pool=connection_pool,
+            polling_type=polling_type,
+            retries=retries,
+        )
 
         if len(worker_results) == 0:
             if exceptions:
