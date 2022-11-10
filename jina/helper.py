@@ -935,8 +935,14 @@ def get_full_version() -> Optional[Tuple[Dict, Dict]]:
     import yaml
     from google.protobuf.internal import api_implementation
     from grpc import _grpcio_metadata
-    from hubble import __version__ as __hubble_version__
-    from jcloud import __version__ as __jcloud_version__
+    try:
+        from hubble import __version__ as __hubble_version__
+    except:
+        __hubble_version__ = 'not-available'
+    try:
+        from jcloud import __version__ as __jcloud_version__
+    except:
+        __jcloud_version__ = 'not-available'
 
     from jina import (
         __docarray_version__,
