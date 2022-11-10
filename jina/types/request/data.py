@@ -310,6 +310,7 @@ class DataRequest(Request):
         """
         route_proto = jina_pb2.RouteProto()
         route_proto.executor = executor_name
+        print(f' type {type(self.proto_wo_data.routes)}')
         self.proto_wo_data.routes.append(route_proto)
 
     @property

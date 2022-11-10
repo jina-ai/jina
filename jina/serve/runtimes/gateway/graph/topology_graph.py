@@ -127,10 +127,8 @@ class TopologyGraph:
                 request.parameters = _parse_specific_params(
                     request.parameters, self.name
                 )
-                if copy_request_at_send:
-                    self.parts_to_send.append(copy.deepcopy(request))
-                else:
-                    self.parts_to_send.append(request)
+                req_to_send = copy.deepcopy(request) if copy_request_at_send else request
+                self.parts_to_send.append(req_to_send)
                 # this is a specific needs
                 if len(self.parts_to_send) == self.number_of_parts:
                     self.start_time = datetime.utcnow()
