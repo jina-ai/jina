@@ -17,6 +17,7 @@ To use these enums in YAML config, following the example below:
 """
 
 from enum import Enum, EnumMeta, Flag, IntEnum
+from typing import List, Union
 
 
 class EnumType(EnumMeta):
@@ -182,6 +183,15 @@ class GatewayProtocolType(BetterEnum):
     GRPC = 0
     HTTP = 1
     WEBSOCKET = 2
+
+    @classmethod
+    def from_string_list(cls, string_list: List[Union[str, 'GatewayProtocolType']]):
+        """
+        Returns a list of Enums from a list of strings or enums
+        :param string_list: list of strings or enums
+        :return: a list of Enums
+        """
+        return [cls.from_string(s) if isinstance(s, str) else s for s in string_list]
 
 
 class PodRoleType(BetterEnum):

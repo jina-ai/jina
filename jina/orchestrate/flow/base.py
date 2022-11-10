@@ -2123,22 +2123,31 @@ class Flow(
         return f'https://mermaid.ink/{img_type}/{encoded_str}'
 
     @property
-    def port(self) -> int:
+    def port(self) -> Union[List[int], Optional[int]]:
         """Return the exposed port of the gateway
         .. # noqa: DAR201
         """
         if GATEWAY_NAME in self._deployment_nodes:
-            return self._deployment_nodes[GATEWAY_NAME].port
+            res = self._deployment_nodes[GATEWAY_NAME].port
         else:
-            return self._gateway_kwargs.get('port', None)
+            res = self._gateway_kwargs.get('port', None)
+        if not isinstance(res, list):
+            return res
+        elif len(res) == 1:
+            return res[0]
+        else:
+            return res
 
     @port.setter
-    def port(self, value: int):
+    def port(self, value: Union[int, List[int]]):
         """Set the new exposed port of the Flow (affects Gateway and Client)
 
         :param value: the new port to expose
         """
-        self._gateway_kwargs['port'] = value
+        if isinstance(value, int):
+            self._gateway_kwargs['port'] = [value]
+        elif isinstance(value, list):
+            self._gateway_kwargs['port'] = value
 
         # Flow is build to graph already
         if self._build_level >= FlowBuildLevel.GRAPH:
@@ -2392,18 +2401,25 @@ class Flow(
             pass
 
     @property
-    def protocol(self) -> GatewayProtocolType:
+    def protocol(self) -> Union[GatewayProtocolType, List[GatewayProtocolType]]:
         """Return the protocol of this Flow
 
-        :return: the protocol of this Flow
+        :return: the protocol of this Flow, if only 1 protocol is supported otherwise returns the list of protocols
         """
-        v = self._gateway_kwargs.get('protocol', GatewayProtocolType.GRPC)
-        if isinstance(v, str):
-            v = GatewayProtocolType.from_string(v)
-        return v
+        v = self._gateway_kwargs.get('protocol', [GatewayProtocolType.GRPC])
+        if not isinstance(v, list):
+            v = [v]
+        v = GatewayProtocolType.from_string_list(v)
+        if len(v) == 1:
+            return v[0]
+        else:
+            return v
 
     @protocol.setter
-    def protocol(self, value: Union[str, GatewayProtocolType]):
+    def protocol(
+        self,
+        value: Union[str, GatewayProtocolType, List[str], List[GatewayProtocolType]],
+    ):
         """Set the protocol of this Flow, can only be set before the Flow has been started
 
         :param value: the protocol to set
@@ -2413,11 +2429,17 @@ class Flow(
             raise RuntimeError('Protocol can not be changed after the Flow has started')
 
         if isinstance(value, str):
-            self._gateway_kwargs['protocol'] = GatewayProtocolType.from_string(value)
+            self._gateway_kwargs['protocol'] = [GatewayProtocolType.from_string(value)]
         elif isinstance(value, GatewayProtocolType):
-            self._gateway_kwargs['protocol'] = value
+            self._gateway_kwargs['protocol'] = [value]
+        elif isinstance(value, list):
+            self._gateway_kwargs['protocol'] = GatewayProtocolType.from_string_list(
+                value
+            )
         else:
-            raise TypeError(f'{value} must be either `str` or `GatewayProtocolType`')
+            raise TypeError(
+                f'{value} must be either `str` or `GatewayProtocolType` or list of protocols'
+            )
 
         # Flow is build to graph already
         if self._build_level >= FlowBuildLevel.GRAPH:
