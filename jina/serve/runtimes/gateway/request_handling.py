@@ -143,7 +143,7 @@ class GatewayRequestHandler(MonitoringRequestMixin):
                         asyncio.create_task(gather_endpoints(request_graph))
 
                     partial_responses = await asyncio.gather(*tasks)
-                except Exception as e:
+                except Exception:
                     # update here failed request
                     self._update_end_failed_requests_metrics()
                     raise

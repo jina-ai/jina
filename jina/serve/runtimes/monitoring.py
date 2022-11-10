@@ -230,7 +230,6 @@ class MonitoringRequestMixin:
             self._failed_requests_counter.add(1, attributes=self._metric_labels)
 
     def _update_end_request_metrics(self, result: 'Request'):
-
         if result.status.code != jina_pb2.StatusProto.ERROR:
             self._update_end_successful_requests_metrics(result)
         else:

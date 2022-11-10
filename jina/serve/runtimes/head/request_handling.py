@@ -87,7 +87,8 @@ class HeaderRequestHandler(MonitoringRequestMixin):
             self, requests: List[DataRequest], connection_pool, uses_before_address, uses_after_address,
             timeout_send, retries, reduce, polling_type, deployment_name
     ) -> Tuple[DataRequest, Dict]:
-
+        for req in requests:
+            self._update_start_request_metrics(req)
         WorkerRequestHandler.merge_routes(requests)
 
         uses_before_metadata = None
@@ -116,6 +117,7 @@ class HeaderRequestHandler(MonitoringRequestMixin):
         if len(worker_results) == 0:
             if exceptions:
                 # raise the underlying error first
+                self._update_end_failed_requests_metrics()
                 raise exceptions[0]
             raise RuntimeError(
                 f'Head {self.runtime_name} did not receive a response when sending message to worker pods'
@@ -152,5 +154,7 @@ class HeaderRequestHandler(MonitoringRequestMixin):
             total_shards,
             failed_shards,
         )
+
+        self._update_end_request_metrics(response_request)
 
         return response_request, merged_metadata
