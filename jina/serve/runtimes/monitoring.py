@@ -12,6 +12,7 @@ if TYPE_CHECKING:  # pragma: no cover
 
     from jina.types.request import Request
 
+
 class MonitoringMixin:
     """The Monitoring Mixin for pods"""
 
@@ -28,12 +29,12 @@ class MonitoringMixin:
             self.metrics_registry = None
 
         if self.args.monitoring:
-
             from prometheus_client import start_http_server
 
             start_http_server(
                 int(self.args.port_monitoring), registry=self.metrics_registry
             )
+
 
 class MonitoringRequestMixin:
     """

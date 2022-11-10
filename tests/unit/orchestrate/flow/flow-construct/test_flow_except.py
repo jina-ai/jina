@@ -313,7 +313,7 @@ def test_flow_timeout_send():
 
 
 def test_flow_head_runtime_failure(monkeypatch):
-    from jina.serve.runtimes.request_handlers.worker_request_handler import (
+    from jina.serve.runtimes.worker.worker_request_handler import (
         WorkerRequestHandler,
     )
 
