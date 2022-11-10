@@ -304,7 +304,7 @@ class DataRequest(Request):
 
     def add_executor(self, executor_name: str):
         """
-        Returns the name of the last Executor that has processed this Request
+        Adds Executor the the request routes
 
         :param executor_name: name of the Executor processing the Request to be added to the routes
         """

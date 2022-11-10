@@ -121,11 +121,11 @@ any other `list`-like object in a Python function.
 
 - `parameters`: A Dict object that passes extra parameters to Executor functions.
 
-- `docs_matrix`:  This is one of the least common parameter to be used for an Executor. This is needed when an Executor is used inside a Flow to merge or reduce the output of more than one other Executor.
+- `docs_matrix`:  This is one of the least common parameters to be used for an Executor. It is passed when multiple parallel branches lead into the Executor, and `disable_reduce=True` is set. Each DocumentArray in the matrix is the output of one previous Executor.
  
-- `docs_map`:  This is one of the least common parameter to be used for an Executor. It has the same utility as `docs_matrix` but the information comes as a dict with previous Executor names as keys. If onl
+- `docs_map`:  This is also one of the least common parameter to be used for an Executor. It has the same utility as `docs_matrix` but the information comes as a dict with previous Executor names as keys, and DocumentArrays as values.
 
-- `tracing_context`: Context needed if you want to add custom traces. Check {ref}`how to add custom traces in your Executor <instrumenting-executor>`
+- `tracing_context`: Context needed if you want to add custom traces. Check {ref}`how to add custom traces in your Executor <instrumenting-executor>`.
 
 
 ````{admonition} Hint
@@ -164,7 +164,7 @@ You have seen that {class}`~jina.Executor` methods can receive multiple paramete
 
 `docs_matrix` and `docs_map` are only used in some special cases.
 
-One case is when an Executor receives messages from more than one upstream {class}`~jina.Executor` in the {class}`~jina.Flow`:
+One case is when an Executor receives messages from more than one incoming {class}`~jina.Executor` in the {class}`~jina.Flow`:
 
 If you set `disable_reduce` to True and the Executor has more than one incoming Executor, the Executor will receive all the DocumentArrays coming from previous Executors independently under `docs_matrix` and `docs_map`.
 If `disable_reduce` is not set or set to False, `docs_map` and `docs_matrix` will be None and the Executor will receive a single DocumentArray resulting from the reducing of all the incoming ones.
