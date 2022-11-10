@@ -250,7 +250,6 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
                 self.logger.debug(f'recv {len(requests)} DataRequest(s)')
                 response, metadata = await self.request_handler._handle_data_request(
                     requests=requests,
-                    endpoint=endpoint,
                     connection_pool=self.connection_pool,
                     uses_before_address=self.uses_before_address,
                     uses_after_address=self.uses_after_address,
