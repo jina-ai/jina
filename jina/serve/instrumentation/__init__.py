@@ -11,6 +11,32 @@ if TYPE_CHECKING:  # pragma: no cover
     from prometheus_client import Summary
 
 
+def _get_resource_attributes(service_name: str):
+    from opentelemetry.semconv.resource import ResourceAttributes
+    import os
+
+    attributes = {ResourceAttributes.SERVICE_NAME: service_name}
+    if "K8S_NAMESPACE_NAME" in os.environ:
+        attributes[ResourceAttributes.K8S_NAMESPACE_NAME] = os.environ[
+            "K8S_NAMESPACE_NAME"
+        ]
+    if "K8S_DEPLOYMENT_NAME" in os.environ:
+        attributes[ResourceAttributes.K8S_DEPLOYMENT_NAME] = os.environ[
+            "K8S_DEPLOYMENT_NAME"
+        ]
+    if "K8S_STATEFULSET_NAME" in os.environ:
+        attributes[ResourceAttributes.K8S_STATEFULSET_NAME] = os.environ[
+            "K8S_STATEFULSET_NAME"
+        ]
+    if "K8S_CLUSTER_NAME" in os.environ:
+        attributes[ResourceAttributes.K8S_CLUSTER_NAME] = os.environ["K8S_CLUSTER_NAME"]
+    if "K8S_NODE_NAME" in os.environ:
+        attributes[ResourceAttributes.K8S_NODE_NAME] = os.environ["K8S_NODE_NAME"]
+    if "K8S_POD_NAME" in os.environ:
+        attributes[ResourceAttributes.K8S_POD_NAME] = os.environ["K8S_POD_NAME"]
+    return attributes
+
+
 class InstrumentationMixin:
     '''Instrumentation mixin for OpenTelemetery Tracing and Metrics handling'''
 
@@ -32,11 +58,11 @@ class InstrumentationMixin:
             from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import (
                 OTLPSpanExporter,
             )
-            from opentelemetry.sdk.resources import SERVICE_NAME, Resource
+            from opentelemetry.sdk.resources import Resource
             from opentelemetry.sdk.trace import TracerProvider
             from opentelemetry.sdk.trace.export import BatchSpanProcessor
 
-            resource = Resource(attributes={SERVICE_NAME: name})
+            resource = Resource(attributes=_get_resource_attributes(name))
             provider = TracerProvider(resource=resource)
             processor = BatchSpanProcessor(
                 OTLPSpanExporter(
@@ -57,9 +83,9 @@ class InstrumentationMixin:
             )
             from opentelemetry.sdk.metrics import MeterProvider
             from opentelemetry.sdk.metrics.export import PeriodicExportingMetricReader
-            from opentelemetry.sdk.resources import SERVICE_NAME, Resource
+            from opentelemetry.sdk.resources import Resource
 
-            resource = Resource(attributes={SERVICE_NAME: name})
+            resource = Resource(attributes=_get_resource_attributes(name))
 
             metric_reader = PeriodicExportingMetricReader(
                 OTLPMetricExporter(
