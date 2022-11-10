@@ -143,7 +143,7 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
             self.connection_pool.add_connection(
                 deployment='uses_after', address=self.uses_after_address
             )
-        self._reduce = not args.disable_reduce
+        self._reduce = not args.no_reduce
 
     def _default_polling_dict(self, default_polling):
         return defaultdict(

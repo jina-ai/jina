@@ -94,6 +94,7 @@ Defaults to retaining whatever type is returned by the Executor.
     )
 
     gp.add_argument(
+        '--no-reduce',
         '--disable-reduce',
         action='store_true',
         default=False,

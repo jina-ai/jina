@@ -159,7 +159,7 @@ class Flow(
         compression: Optional[str] = None,
         cors: Optional[bool] = False,
         deployments_addresses: Optional[str] = '{}',
-        deployments_disable_reduce: Optional[str] = '[]',
+        deployments_no_reduce: Optional[str] = '[]',
         deployments_metadata: Optional[str] = '{}',
         description: Optional[str] = None,
         docker_kwargs: Optional[dict] = None,
@@ -211,7 +211,7 @@ class Flow(
         :param compression: The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.
         :param cors: If set, a CORS middleware is added to FastAPI frontend to allow cross-origin access.
         :param deployments_addresses: JSON dictionary with the input addresses of each Deployment
-        :param deployments_disable_reduce: list JSON disabling the built-in merging mechanism for each Deployment listed
+        :param deployments_no_reduce: list JSON disabling the built-in merging mechanism for each Deployment listed
         :param deployments_metadata: JSON dictionary with the request metadata for each Deployment
         :param description: The description of this HTTP server. It will be used in automatics docs such as Swagger UI.
         :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker '
@@ -383,7 +383,7 @@ class Flow(
         :param compression: The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.
         :param cors: If set, a CORS middleware is added to FastAPI frontend to allow cross-origin access.
         :param deployments_addresses: JSON dictionary with the input addresses of each Deployment
-        :param deployments_disable_reduce: list JSON disabling the built-in merging mechanism for each Deployment listed
+        :param deployments_no_reduce: list JSON disabling the built-in merging mechanism for each Deployment listed
         :param deployments_metadata: JSON dictionary with the request metadata for each Deployment
         :param description: The description of this HTTP server. It will be used in automatics docs such as Swagger UI.
         :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker '
@@ -600,7 +600,7 @@ class Flow(
         deployments_addresses: Dict[str, List[str]],
         deployments_metadata: Dict[str, Dict[str, str]],
         graph_conditions: Dict[str, Dict],
-        deployments_disable_reduce: List[str],
+        deployments_no_reduce: List[str],
         **kwargs,
     ):
         kwargs.update(
@@ -628,7 +628,7 @@ class Flow(
         args.graph_conditions = json.dumps(graph_conditions)
         args.deployments_addresses = json.dumps(deployments_addresses)
         args.deployments_metadata = json.dumps(deployments_metadata)
-        args.deployments_disable_reduce = json.dumps(deployments_disable_reduce)
+        args.deployments_no_reduce = json.dumps(deployments_no_reduce)
         self._deployment_nodes[GATEWAY_NAME] = Deployment(args, needs)
 
     def _get_deployments_metadata(self) -> Dict[str, Dict[str, str]]:
@@ -752,7 +752,7 @@ class Flow(
     def _get_disabled_reduce_deployments(self) -> List[str]:
         disabled_deployments = []
         for node, v in self._deployment_nodes.items():
-            if v.args.disable_reduce:
+            if v.args.no_reduce:
                 disabled_deployments.append(node)
 
         return disabled_deployments
@@ -833,7 +833,7 @@ class Flow(
         compression: Optional[str] = None,
         connection_list: Optional[str] = None,
         disable_auto_volume: Optional[bool] = False,
-        disable_reduce: Optional[bool] = False,
+        no_reduce: Optional[bool] = False,
         docker_kwargs: Optional[dict] = None,
         entrypoint: Optional[str] = None,
         env: Optional[dict] = None,
@@ -892,7 +892,7 @@ class Flow(
         :param compression: The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.
         :param connection_list: dictionary JSON with a list of connections to configure
         :param disable_auto_volume: Do not automatically mount a volume for dockerized Executors.
-        :param disable_reduce: Disable the built-in reduction mechanism. Set this if the reduction is to be handled by the Executor itself by operating on a `docs_matrix` or `docs_map`
+        :param no_reduce: Disable the built-in reduction mechanism. Set this if the reduction is to be handled by the Executor itself by operating on a `docs_matrix` or `docs_map`
         :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker '
           container.
 
@@ -1048,7 +1048,7 @@ class Flow(
         :param compression: The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.
         :param connection_list: dictionary JSON with a list of connections to configure
         :param disable_auto_volume: Do not automatically mount a volume for dockerized Executors.
-        :param disable_reduce: Disable the built-in reduction mechanism. Set this if the reduction is to be handled by the Executor itself by operating on a `docs_matrix` or `docs_map`
+        :param no_reduce: Disable the built-in reduction mechanism. Set this if the reduction is to be handled by the Executor itself by operating on a `docs_matrix` or `docs_map`
         :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker '
           container.
 
@@ -1236,7 +1236,7 @@ class Flow(
             port = helper.random_port()
             args.port = port
 
-        if len(needs) > 1 and args.external and args.disable_reduce:
+        if len(needs) > 1 and args.external and args.no_reduce:
             raise ValueError(
                 'External Executors with multiple needs have to do auto reduce.'
             )
@@ -1256,7 +1256,7 @@ class Flow(
         compression: Optional[str] = None,
         cors: Optional[bool] = False,
         deployments_addresses: Optional[str] = '{}',
-        deployments_disable_reduce: Optional[str] = '[]',
+        deployments_no_reduce: Optional[str] = '[]',
         deployments_metadata: Optional[str] = '{}',
         description: Optional[str] = None,
         docker_kwargs: Optional[dict] = None,
@@ -1308,7 +1308,7 @@ class Flow(
         :param compression: The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.
         :param cors: If set, a CORS middleware is added to FastAPI frontend to allow cross-origin access.
         :param deployments_addresses: JSON dictionary with the input addresses of each Deployment
-        :param deployments_disable_reduce: list JSON disabling the built-in merging mechanism for each Deployment listed
+        :param deployments_no_reduce: list JSON disabling the built-in merging mechanism for each Deployment listed
         :param deployments_metadata: JSON dictionary with the request metadata for each Deployment
         :param description: The description of this HTTP server. It will be used in automatics docs such as Swagger UI.
         :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker '
@@ -1404,7 +1404,7 @@ class Flow(
         :param compression: The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.
         :param cors: If set, a CORS middleware is added to FastAPI frontend to allow cross-origin access.
         :param deployments_addresses: JSON dictionary with the input addresses of each Deployment
-        :param deployments_disable_reduce: list JSON disabling the built-in merging mechanism for each Deployment listed
+        :param deployments_no_reduce: list JSON disabling the built-in merging mechanism for each Deployment listed
         :param deployments_metadata: JSON dictionary with the request metadata for each Deployment
         :param description: The description of this HTTP server. It will be used in automatics docs such as Swagger UI.
         :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker '
@@ -1661,7 +1661,7 @@ class Flow(
                 deployments_addresses=op_flow._get_deployments_addresses(),
                 deployments_metadata=op_flow._get_deployments_metadata(),
                 graph_conditions=op_flow._get_graph_conditions(),
-                deployments_disable_reduce=op_flow._get_disabled_reduce_deployments(),
+                deployments_no_reduce=op_flow._get_disabled_reduce_deployments(),
                 uses=op_flow.gateway_args.uses,
             )
 

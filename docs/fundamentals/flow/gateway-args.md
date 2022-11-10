@@ -32,7 +32,7 @@
 | `graph_conditions` | Dictionary stating which filtering conditions each Executor in the graph requires to receive Documents. | `string` | `{}` |
 | `deployments_addresses` | JSON dictionary with the input addresses of each Deployment | `string` | `{}` |
 | `deployments_metadata` | JSON dictionary with the request metadata for each Deployment | `string` | `{}` |
-| `deployments_disable_reduce` | list JSON disabling the built-in merging mechanism for each Deployment listed | `string` | `[]` |
+| `deployments_no_reduce` | list JSON disabling the built-in merging mechanism for each Deployment listed | `string` | `[]` |
 | `compression` | The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression. | `string` | `None` |
 | `timeout_send` | The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default | `number` | `None` |
 | `runtime_cls` | The runtime class to run inside the Pod | `string` | `GatewayRuntime` |

@@ -171,7 +171,7 @@ class AppendNameExecutor(Executor):
 
 @pytest.mark.slow
 def test_pod_activates_replicas():
-    args_list = ['--replicas', '3', '--shards', '2', '--disable-reduce']
+    args_list = ['--replicas', '3', '--shards', '2', '--no-reduce']
     args = set_deployment_parser().parse_args(args_list)
     args.uses = 'AppendNameExecutor'
     with Deployment(args) as pod:

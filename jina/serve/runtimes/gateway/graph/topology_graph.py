@@ -328,7 +328,7 @@ class TopologyGraph:
         graph_representation: Dict,
         graph_conditions: Dict = {},
         deployments_metadata: Dict = {},
-        deployments_disable_reduce: List[str] = [],
+        deployments_no_reduce: List[str] = [],
         timeout_send: Optional[float] = 1.0,
         retries: Optional[int] = -1,
         *args,
@@ -363,7 +363,7 @@ class TopologyGraph:
                 floating=node_name in floating_deployment_set,
                 filter_condition=condition,
                 metadata=metadata,
-                reduce=node_name not in deployments_disable_reduce,
+                reduce=node_name not in deployments_no_reduce,
                 timeout_send=timeout_send,
                 retries=retries,
             )
