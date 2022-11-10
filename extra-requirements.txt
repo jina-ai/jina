@@ -48,7 +48,6 @@ opentelemetry-instrumentation-fastapi>=0.33b0: perf,standard,devel
 opentelemetry-exporter-otlp-proto-grpc>=1.13.0: perf,standrad,devel
 fastapi>=0.76.0:            standard,devel
 uvicorn[standard]:          standard,devel
-docarray[common]>=0.16.3:   standard,devel
 docker:                     standard,devel
 pathspec:                   standard,devel
 cryptography:               standard,devel
