@@ -11,7 +11,7 @@ from jina import __default_endpoint__
 from jina.excepts import InternalNetworkError
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.helper import _parse_specific_params
-from jina.serve.runtimes.worker.worker_request_handler import (
+from jina.serve.runtimes.worker.request_handling import (
     WorkerRequestHandler,
 )
 from jina.types.request.data import DataRequest

@@ -2,7 +2,7 @@ import asyncio
 from typing import TYPE_CHECKING, Dict, List, Optional, Tuple
 
 from jina.serve.runtimes.monitoring import MonitoringRequestMixin
-from jina.serve.runtimes.worker.worker_request_handler import WorkerRequestHandler
+from jina.serve.runtimes.worker.request_handling import WorkerRequestHandler
 
 if TYPE_CHECKING:  # pragma: no cover
     from jina.logging.logger import JinaLogger
