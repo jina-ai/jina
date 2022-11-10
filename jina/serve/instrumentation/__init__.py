@@ -10,30 +10,24 @@ if TYPE_CHECKING:  # pragma: no cover
     from opentelemetry.metrics import Histogram
     from prometheus_client import Summary
 
+ENV_RESOURCE_ATTRIBUTES = [
+    'K8S_NAMESPACE_NAME',
+    'K8S_DEPLOYMENT_NAME',
+    'K8S_STATEFULSET_NAME',
+    'K8S_CLUSTER_NAME',
+    'K8S_NODE_NAME',
+    'K8S_POD_NAME',
+]
+
 
 def _get_resource_attributes(service_name: str):
     from opentelemetry.semconv.resource import ResourceAttributes
     import os
 
     attributes = {ResourceAttributes.SERVICE_NAME: service_name}
-    if "K8S_NAMESPACE_NAME" in os.environ:
-        attributes[ResourceAttributes.K8S_NAMESPACE_NAME] = os.environ[
-            "K8S_NAMESPACE_NAME"
-        ]
-    if "K8S_DEPLOYMENT_NAME" in os.environ:
-        attributes[ResourceAttributes.K8S_DEPLOYMENT_NAME] = os.environ[
-            "K8S_DEPLOYMENT_NAME"
-        ]
-    if "K8S_STATEFULSET_NAME" in os.environ:
-        attributes[ResourceAttributes.K8S_STATEFULSET_NAME] = os.environ[
-            "K8S_STATEFULSET_NAME"
-        ]
-    if "K8S_CLUSTER_NAME" in os.environ:
-        attributes[ResourceAttributes.K8S_CLUSTER_NAME] = os.environ["K8S_CLUSTER_NAME"]
-    if "K8S_NODE_NAME" in os.environ:
-        attributes[ResourceAttributes.K8S_NODE_NAME] = os.environ["K8S_NODE_NAME"]
-    if "K8S_POD_NAME" in os.environ:
-        attributes[ResourceAttributes.K8S_POD_NAME] = os.environ["K8S_POD_NAME"]
+    for attribute in ENV_RESOURCE_ATTRIBUTES:
+        if attribute in os.environ:
+            attributes[ResourceAttributes.__dict__[attribute]] = os.environ[attribute]
     return attributes
 
 
