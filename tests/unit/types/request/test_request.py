@@ -295,3 +295,14 @@ def test_proto_wo_data_docs():  # check if we can access the docs after deserial
     new_data_request = DataRequest(bytes_)
 
     assert new_data_request.docs == r.docs
+
+
+def test_req_add_get_executors():
+    r = DataRequest()
+    r.add_executor('one')
+    assert r.last_executor == 'one'
+    r.add_executor('two')
+    assert r.last_executor == 'two'
+
+    r2 = DataRequest.from_proto(r.proto)
+    assert r2.last_executor == 'two'

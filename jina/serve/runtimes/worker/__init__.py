@@ -101,11 +101,12 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         # otherwise readiness check is not valid
         # The WorkerRequestHandler needs to be started BEFORE the grpc server
         self._worker_request_handler = WorkerRequestHandler(
-            self.args,
-            self.logger,
-            self.metrics_registry,
-            self.tracer_provider,
-            self.meter_provider,
+            args=self.args,
+            logger=self.logger,
+            metrics_registry=self.metrics_registry,
+            tracer_provider=self.tracer_provider,
+            meter_provider=self.meter_provider,
+            deployment_name=self.name.split('/')[0]
         )
         await self._async_setup_grpc_server()
 

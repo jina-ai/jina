@@ -127,10 +127,8 @@ class TopologyGraph:
                 request.parameters = _parse_specific_params(
                     request.parameters, self.name
                 )
-                if copy_request_at_send:
-                    self.parts_to_send.append(copy.deepcopy(request))
-                else:
-                    self.parts_to_send.append(request)
+                req_to_send = copy.deepcopy(request) if copy_request_at_send else request
+                self.parts_to_send.append(req_to_send)
                 # this is a specific needs
                 if len(self.parts_to_send) == self.number_of_parts:
                     self.start_time = datetime.utcnow()
@@ -328,7 +326,7 @@ class TopologyGraph:
         graph_representation: Dict,
         graph_conditions: Dict = {},
         deployments_metadata: Dict = {},
-        deployments_disable_reduce: List[str] = [],
+        deployments_no_reduce: List[str] = [],
         timeout_send: Optional[float] = 1.0,
         retries: Optional[int] = -1,
         *args,
@@ -363,7 +361,7 @@ class TopologyGraph:
                 floating=node_name in floating_deployment_set,
                 filter_condition=condition,
                 metadata=metadata,
-                reduce=node_name not in deployments_disable_reduce,
+                reduce=node_name not in deployments_no_reduce,
                 timeout_send=timeout_send,
                 retries=retries,
             )

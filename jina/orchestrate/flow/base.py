@@ -159,8 +159,8 @@ class Flow(
         compression: Optional[str] = None,
         cors: Optional[bool] = False,
         deployments_addresses: Optional[str] = '{}',
-        deployments_disable_reduce: Optional[str] = '[]',
         deployments_metadata: Optional[str] = '{}',
+        deployments_no_reduce: Optional[str] = '[]',
         description: Optional[str] = None,
         docker_kwargs: Optional[dict] = None,
         entrypoint: Optional[str] = None,
@@ -172,7 +172,6 @@ class Flow(
         graph_description: Optional[str] = '{}',
         grpc_server_options: Optional[dict] = None,
         host: Optional[str] = '0.0.0.0',
-        host_in: Optional[str] = '0.0.0.0',
         log_config: Optional[str] = None,
         metrics: Optional[bool] = False,
         metrics_exporter_host: Optional[str] = None,
@@ -211,8 +210,8 @@ class Flow(
         :param compression: The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.
         :param cors: If set, a CORS middleware is added to FastAPI frontend to allow cross-origin access.
         :param deployments_addresses: JSON dictionary with the input addresses of each Deployment
-        :param deployments_disable_reduce: list JSON disabling the built-in merging mechanism for each Deployment listed
         :param deployments_metadata: JSON dictionary with the request metadata for each Deployment
+        :param deployments_no_reduce: list JSON disabling the built-in merging mechanism for each Deployment listed
         :param description: The description of this HTTP server. It will be used in automatics docs such as Swagger UI.
         :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker '
           container.
@@ -227,7 +226,6 @@ class Flow(
         :param graph_description: Routing graph for the gateway
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
         :param host: The host address of the runtime, by default it is 0.0.0.0. In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts, separated by commas. Then, every resulting address will be considered as one replica of the Executor.
-        :param host_in: The host address for binding to, by default it is 0.0.0.0
         :param log_config: The YAML config of the logger used in this object.
         :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.
         :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.
@@ -246,7 +244,7 @@ class Flow(
 
                   Any executor that has `@requests(on=...)` bound with those values will receive data requests.
         :param no_debug_endpoints: If set, `/status` `/post` endpoints are removed from HTTP interface.
-        :param port: The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (`--external` or `external=True`) this can be a list of ports, separated by commas. Then, every resulting address will be considered as one replica of the Executor.
+        :param port: The port for input data to bind to, default is a random port between [49152, 65535].In the case of an external Executor (`--external` or `external=True`) this can be a list of ports, separated by commas.  Then, every resulting address will be considered as one replica of the Executor.
         :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]
         :param prefetch: Number of requests fetched from the client before feeding into the first Executor.
 
@@ -383,8 +381,8 @@ class Flow(
         :param compression: The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.
         :param cors: If set, a CORS middleware is added to FastAPI frontend to allow cross-origin access.
         :param deployments_addresses: JSON dictionary with the input addresses of each Deployment
-        :param deployments_disable_reduce: list JSON disabling the built-in merging mechanism for each Deployment listed
         :param deployments_metadata: JSON dictionary with the request metadata for each Deployment
+        :param deployments_no_reduce: list JSON disabling the built-in merging mechanism for each Deployment listed
         :param description: The description of this HTTP server. It will be used in automatics docs such as Swagger UI.
         :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker '
           container.
@@ -399,7 +397,6 @@ class Flow(
         :param graph_description: Routing graph for the gateway
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
         :param host: The host address of the runtime, by default it is 0.0.0.0. In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts, separated by commas. Then, every resulting address will be considered as one replica of the Executor.
-        :param host_in: The host address for binding to, by default it is 0.0.0.0
         :param log_config: The YAML config of the logger used in this object.
         :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.
         :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.
@@ -418,7 +415,7 @@ class Flow(
 
                   Any executor that has `@requests(on=...)` bound with those values will receive data requests.
         :param no_debug_endpoints: If set, `/status` `/post` endpoints are removed from HTTP interface.
-        :param port: The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (`--external` or `external=True`) this can be a list of ports, separated by commas. Then, every resulting address will be considered as one replica of the Executor.
+        :param port: The port for input data to bind to, default is a random port between [49152, 65535].In the case of an external Executor (`--external` or `external=True`) this can be a list of ports, separated by commas.  Then, every resulting address will be considered as one replica of the Executor.
         :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]
         :param prefetch: Number of requests fetched from the client before feeding into the first Executor.
 
@@ -600,7 +597,7 @@ class Flow(
         deployments_addresses: Dict[str, List[str]],
         deployments_metadata: Dict[str, Dict[str, str]],
         graph_conditions: Dict[str, Dict],
-        deployments_disable_reduce: List[str],
+        deployments_no_reduce: List[str],
         **kwargs,
     ):
         kwargs.update(
@@ -628,7 +625,7 @@ class Flow(
         args.graph_conditions = json.dumps(graph_conditions)
         args.deployments_addresses = json.dumps(deployments_addresses)
         args.deployments_metadata = json.dumps(deployments_metadata)
-        args.deployments_disable_reduce = json.dumps(deployments_disable_reduce)
+        args.deployments_no_reduce = json.dumps(deployments_no_reduce)
         self._deployment_nodes[GATEWAY_NAME] = Deployment(args, needs)
 
     def _get_deployments_metadata(self) -> Dict[str, Dict[str, str]]:
@@ -752,7 +749,7 @@ class Flow(
     def _get_disabled_reduce_deployments(self) -> List[str]:
         disabled_deployments = []
         for node, v in self._deployment_nodes.items():
-            if v.args.disable_reduce:
+            if v.args.no_reduce:
                 disabled_deployments.append(node)
 
         return disabled_deployments
@@ -833,7 +830,6 @@ class Flow(
         compression: Optional[str] = None,
         connection_list: Optional[str] = None,
         disable_auto_volume: Optional[bool] = False,
-        disable_reduce: Optional[bool] = False,
         docker_kwargs: Optional[dict] = None,
         entrypoint: Optional[str] = None,
         env: Optional[dict] = None,
@@ -845,7 +841,6 @@ class Flow(
         grpc_metadata: Optional[dict] = None,
         grpc_server_options: Optional[dict] = None,
         host: Optional[str] = '0.0.0.0',
-        host_in: Optional[str] = '0.0.0.0',
         install_requirements: Optional[bool] = False,
         log_config: Optional[str] = None,
         metrics: Optional[bool] = False,
@@ -854,6 +849,7 @@ class Flow(
         monitoring: Optional[bool] = False,
         name: Optional[str] = None,
         native: Optional[bool] = False,
+        no_reduce: Optional[bool] = False,
         output_array_type: Optional[str] = None,
         polling: Optional[str] = 'ANY',
         port: Optional[str] = None,
@@ -892,7 +888,6 @@ class Flow(
         :param compression: The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.
         :param connection_list: dictionary JSON with a list of connections to configure
         :param disable_auto_volume: Do not automatically mount a volume for dockerized Executors.
-        :param disable_reduce: Disable the built-in reduce mechanism, set this if the reduction is to be handled by the Executor connected to this Head
         :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker '
           container.
 
@@ -914,7 +909,6 @@ class Flow(
         :param grpc_metadata: The metadata to be passed to the gRPC request.
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
         :param host: The host address of the runtime, by default it is 0.0.0.0. In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts, separated by commas. Then, every resulting address will be considered as one replica of the Executor.
-        :param host_in: The host address for binding to, by default it is 0.0.0.0
         :param install_requirements: If set, install `requirements.txt` in the Hub Executor bundle to local
         :param log_config: The YAML config of the logger used in this object.
         :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.
@@ -931,6 +925,7 @@ class Flow(
 
               When not given, then the default naming strategy will apply.
         :param native: If set, only native Executors is allowed, and the Executor is always run inside WorkerRuntime.
+        :param no_reduce: Disable the built-in reduction mechanism. Set this if the reduction is to be handled by the Executor itself by operating on a `docs_matrix` or `docs_map`
         :param output_array_type: The type of array `tensor` and `embedding` will be serialized to.
 
           Supports the same types as `docarray.to_protobuf(.., ndarray_type=...)`, which can be found
@@ -944,7 +939,7 @@ class Flow(
               Define per Endpoint:
               JSON dict, {endpoint: PollingType}
               {'/custom': 'ALL', '/search': 'ANY', '*': 'ANY'}
-        :param port: The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (`--external` or `external=True`) this can be a list of ports, separated by commas. Then, every resulting address will be considered as one replica of the Executor.
+        :param port: The port for input data to bind to, default is a random port between [49152, 65535].In the case of an external Executor (`--external` or `external=True`) this can be a list of ports, separated by commas.  Then, every resulting address will be considered as one replica of the Executor.
         :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]
         :param py_modules: The customized python modules need to be imported before loading the executor
 
@@ -1048,7 +1043,6 @@ class Flow(
         :param compression: The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.
         :param connection_list: dictionary JSON with a list of connections to configure
         :param disable_auto_volume: Do not automatically mount a volume for dockerized Executors.
-        :param disable_reduce: Disable the built-in reduce mechanism, set this if the reduction is to be handled by the Executor connected to this Head
         :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker '
           container.
 
@@ -1070,7 +1064,6 @@ class Flow(
         :param grpc_metadata: The metadata to be passed to the gRPC request.
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
         :param host: The host address of the runtime, by default it is 0.0.0.0. In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts, separated by commas. Then, every resulting address will be considered as one replica of the Executor.
-        :param host_in: The host address for binding to, by default it is 0.0.0.0
         :param install_requirements: If set, install `requirements.txt` in the Hub Executor bundle to local
         :param log_config: The YAML config of the logger used in this object.
         :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.
@@ -1087,6 +1080,7 @@ class Flow(
 
               When not given, then the default naming strategy will apply.
         :param native: If set, only native Executors is allowed, and the Executor is always run inside WorkerRuntime.
+        :param no_reduce: Disable the built-in reduction mechanism. Set this if the reduction is to be handled by the Executor itself by operating on a `docs_matrix` or `docs_map`
         :param output_array_type: The type of array `tensor` and `embedding` will be serialized to.
 
           Supports the same types as `docarray.to_protobuf(.., ndarray_type=...)`, which can be found
@@ -1100,7 +1094,7 @@ class Flow(
               Define per Endpoint:
               JSON dict, {endpoint: PollingType}
               {'/custom': 'ALL', '/search': 'ANY', '*': 'ANY'}
-        :param port: The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (`--external` or `external=True`) this can be a list of ports, separated by commas. Then, every resulting address will be considered as one replica of the Executor.
+        :param port: The port for input data to bind to, default is a random port between [49152, 65535].In the case of an external Executor (`--external` or `external=True`) this can be a list of ports, separated by commas.  Then, every resulting address will be considered as one replica of the Executor.
         :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]
         :param py_modules: The customized python modules need to be imported before loading the executor
 
@@ -1236,7 +1230,7 @@ class Flow(
             port = helper.random_port()
             args.port = port
 
-        if len(needs) > 1 and args.external and args.disable_reduce:
+        if len(needs) > 1 and args.external and args.no_reduce:
             raise ValueError(
                 'External Executors with multiple needs have to do auto reduce.'
             )
@@ -1256,8 +1250,8 @@ class Flow(
         compression: Optional[str] = None,
         cors: Optional[bool] = False,
         deployments_addresses: Optional[str] = '{}',
-        deployments_disable_reduce: Optional[str] = '[]',
         deployments_metadata: Optional[str] = '{}',
+        deployments_no_reduce: Optional[str] = '[]',
         description: Optional[str] = None,
         docker_kwargs: Optional[dict] = None,
         entrypoint: Optional[str] = None,
@@ -1269,7 +1263,6 @@ class Flow(
         graph_description: Optional[str] = '{}',
         grpc_server_options: Optional[dict] = None,
         host: Optional[str] = '0.0.0.0',
-        host_in: Optional[str] = '0.0.0.0',
         log_config: Optional[str] = None,
         metrics: Optional[bool] = False,
         metrics_exporter_host: Optional[str] = None,
@@ -1308,8 +1301,8 @@ class Flow(
         :param compression: The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.
         :param cors: If set, a CORS middleware is added to FastAPI frontend to allow cross-origin access.
         :param deployments_addresses: JSON dictionary with the input addresses of each Deployment
-        :param deployments_disable_reduce: list JSON disabling the built-in merging mechanism for each Deployment listed
         :param deployments_metadata: JSON dictionary with the request metadata for each Deployment
+        :param deployments_no_reduce: list JSON disabling the built-in merging mechanism for each Deployment listed
         :param description: The description of this HTTP server. It will be used in automatics docs such as Swagger UI.
         :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker '
           container.
@@ -1324,7 +1317,6 @@ class Flow(
         :param graph_description: Routing graph for the gateway
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
         :param host: The host address of the runtime, by default it is 0.0.0.0. In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts, separated by commas. Then, every resulting address will be considered as one replica of the Executor.
-        :param host_in: The host address for binding to, by default it is 0.0.0.0
         :param log_config: The YAML config of the logger used in this object.
         :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.
         :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.
@@ -1343,7 +1335,7 @@ class Flow(
 
                   Any executor that has `@requests(on=...)` bound with those values will receive data requests.
         :param no_debug_endpoints: If set, `/status` `/post` endpoints are removed from HTTP interface.
-        :param port: The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (`--external` or `external=True`) this can be a list of ports, separated by commas. Then, every resulting address will be considered as one replica of the Executor.
+        :param port: The port for input data to bind to, default is a random port between [49152, 65535].In the case of an external Executor (`--external` or `external=True`) this can be a list of ports, separated by commas.  Then, every resulting address will be considered as one replica of the Executor.
         :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]
         :param prefetch: Number of requests fetched from the client before feeding into the first Executor.
 
@@ -1404,8 +1396,8 @@ class Flow(
         :param compression: The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.
         :param cors: If set, a CORS middleware is added to FastAPI frontend to allow cross-origin access.
         :param deployments_addresses: JSON dictionary with the input addresses of each Deployment
-        :param deployments_disable_reduce: list JSON disabling the built-in merging mechanism for each Deployment listed
         :param deployments_metadata: JSON dictionary with the request metadata for each Deployment
+        :param deployments_no_reduce: list JSON disabling the built-in merging mechanism for each Deployment listed
         :param description: The description of this HTTP server. It will be used in automatics docs such as Swagger UI.
         :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker '
           container.
@@ -1420,7 +1412,6 @@ class Flow(
         :param graph_description: Routing graph for the gateway
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
         :param host: The host address of the runtime, by default it is 0.0.0.0. In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts, separated by commas. Then, every resulting address will be considered as one replica of the Executor.
-        :param host_in: The host address for binding to, by default it is 0.0.0.0
         :param log_config: The YAML config of the logger used in this object.
         :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.
         :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.
@@ -1439,7 +1430,7 @@ class Flow(
 
                   Any executor that has `@requests(on=...)` bound with those values will receive data requests.
         :param no_debug_endpoints: If set, `/status` `/post` endpoints are removed from HTTP interface.
-        :param port: The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (`--external` or `external=True`) this can be a list of ports, separated by commas. Then, every resulting address will be considered as one replica of the Executor.
+        :param port: The port for input data to bind to, default is a random port between [49152, 65535].In the case of an external Executor (`--external` or `external=True`) this can be a list of ports, separated by commas.  Then, every resulting address will be considered as one replica of the Executor.
         :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]
         :param prefetch: Number of requests fetched from the client before feeding into the first Executor.
 
@@ -1661,7 +1652,7 @@ class Flow(
                 deployments_addresses=op_flow._get_deployments_addresses(),
                 deployments_metadata=op_flow._get_deployments_metadata(),
                 graph_conditions=op_flow._get_graph_conditions(),
-                deployments_disable_reduce=op_flow._get_disabled_reduce_deployments(),
+                deployments_no_reduce=op_flow._get_disabled_reduce_deployments(),
                 uses=op_flow.gateway_args.uses,
             )
 
