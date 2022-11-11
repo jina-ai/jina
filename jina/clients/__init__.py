@@ -24,7 +24,7 @@ def Client(
     metrics_exporter_host: Optional[str] = None,
     metrics_exporter_port: Optional[int] = None,
     port: Optional[int] = None,
-    protocol: Optional[str] = 'GRPC',
+    protocol: Optional[str] = 'grpc',
     proxy: Optional[bool] = False,
     tls: Optional[bool] = False,
     traces_exporter_host: Optional[str] = None,
