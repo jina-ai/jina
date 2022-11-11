@@ -1,7 +1,6 @@
 from typing import TYPE_CHECKING, Dict, List, Optional, Tuple
 
 from docarray import DocumentArray
-
 from jina import __default_endpoint__
 from jina.excepts import BadConfigSource
 from jina.importer import ImportExtensions
@@ -288,7 +287,9 @@ class WorkerRequestHandler:
         )
 
         # executor logic
-        docs_matrix, docs_map = WorkerRequestHandler._get_docs_matrix_from_request(requests)
+        docs_matrix, docs_map = WorkerRequestHandler._get_docs_matrix_from_request(
+            requests
+        )
         return_data = await self._executor.__acall__(
             req_endpoint=requests[0].header.exec_endpoint,
             docs=docs,
@@ -461,9 +462,7 @@ class WorkerRequestHandler:
         :param requests: List of DataRequest objects
         :return: the resulting DataRequest
         """
-        docs_matrix, _ = WorkerRequestHandler._get_docs_matrix_from_request(
-            requests
-        )
+        docs_matrix, _ = WorkerRequestHandler._get_docs_matrix_from_request(requests)
 
         # Reduction is applied in-place to the first DocumentArray in the matrix
         da = WorkerRequestHandler.reduce(docs_matrix)

@@ -166,9 +166,13 @@ You can find more information on the different type of metrics in Prometheus [he
 |-----------------------------------------|-------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------|
 | `jina_receiving_request_seconds`        | [Histogram](https://opentelemetry.io/docs/reference/specification/metrics/api/#histogram)    | Measures the time elapsed between receiving a request from the Gateway and sending back the response.         |
 | `jina_sending_request_seconds`          | [Histogram](https://opentelemetry.io/docs/reference/specification/metrics/api/#histogram)    | Measures the time elapsed between sending a downstream request to an Executor and receiving the response back. |
-| `jina_sent_request_bytes`            | [Histogram](https://opentelemetry.io/docs/reference/specification/metrics/api/#histogram)    | Measures the size in bytes of the request sent by the Head to the Executor.                     |
+| `jina_number_of_pending_requests`   | [UpDownCounter](https://opentelemetry.io/docs/reference/specification/metrics/api/#updowncounter)| Counts the number of pending requests.                                                                          |
+| `jina_successful_requests`    | [Counter](https://opentelemetry.io/docs/reference/specification/metrics/api/#counter)                  | Counts the number of successful requests returned by the Head.                                               |
+| `jina_failed_requests`        | [Counter](https://opentelemetry.io/docs/reference/specification/metrics/api/#counter)   | Counts the number of failed requests returned by the Head.                                                   |
 | `jina_sent_request_bytes`               | [Histogram](https://opentelemetry.io/docs/reference/specification/metrics/api/#histogram)    | Measures the size in bytes of the request sent by the Head to the Executor.                                   |
 | `jina_received_response_bytes`          | [Histogram](https://opentelemetry.io/docs/reference/specification/metrics/api/#histogram)    | Measures the size in bytes of the response returned by the Executor.                                          |
+| `jina_received_request_bytes`           | [Histogram](https://opentelemetry.io/docs/reference/specification/metrics/api/#histogram)   | Measures the size of the request in bytes received at the Head level.                                        |
+| `jina_sent_response_bytes`              | [Histogram](https://opentelemetry.io/docs/reference/specification/metrics/api/#histogram)   | Measures the size in bytes of the response returned from the Head to the Gateway.                             |
 
 #### Executor Pods
 
