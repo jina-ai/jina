@@ -56,3 +56,9 @@ def test_multiple_port_protocol_gateway_args_list(
     )
     assert args.port == expected_port
     assert args.protocol == expected_protocol
+
+
+def test_default_port_protocol_gateway():
+    args = set_gateway_parser().parse_args([])
+    assert len(args.port) == 1
+    assert args.protocol == [GatewayProtocolType.GRPC]
