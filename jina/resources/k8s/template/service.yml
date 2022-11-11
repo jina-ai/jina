@@ -7,10 +7,6 @@ metadata:
     app: {target}
 spec:
   type: {type}
-  ports:
-    - port: {port}
-      targetPort: {port}
-      name: port
-      protocol: TCP
+  ports: {service-ports-section}
   selector:
     app: {target}

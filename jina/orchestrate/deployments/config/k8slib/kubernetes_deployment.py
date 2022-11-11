@@ -8,29 +8,29 @@ from jina.serve.networking import GrpcConnectionPool
 
 
 def get_template_yamls(
-        name: str,
-        namespace: str,
-        image_name: str,
-        container_cmd: str,
-        container_args: str,
-        replicas: int,
-        pull_policy: str,
-        jina_deployment_name: str,
-        pod_type: str,
-        shard_id: Optional[int] = None,
-        port: Optional[int] = None,
-        env: Optional[Dict] = None,
-        gpus: Optional[Union[int, str]] = None,
-        image_name_uses_before: Optional[str] = None,
-        image_name_uses_after: Optional[str] = None,
-        container_cmd_uses_before: Optional[str] = None,
-        container_cmd_uses_after: Optional[str] = None,
-        container_args_uses_before: Optional[str] = None,
-        container_args_uses_after: Optional[str] = None,
-        monitoring: bool = False,
-        port_monitoring: Optional[int] = None,
-        protocol: Optional[str] = None,
-        volumes: Optional[List[str]] = None,
+    name: str,
+    namespace: str,
+    image_name: str,
+    container_cmd: str,
+    container_args: str,
+    replicas: int,
+    pull_policy: str,
+    jina_deployment_name: str,
+    pod_type: str,
+    shard_id: Optional[int] = None,
+    port: Optional[Union[int, List[int]]] = None,
+    env: Optional[Dict] = None,
+    gpus: Optional[Union[int, str]] = None,
+    image_name_uses_before: Optional[str] = None,
+    image_name_uses_after: Optional[str] = None,
+    container_cmd_uses_before: Optional[str] = None,
+    container_cmd_uses_after: Optional[str] = None,
+    container_args_uses_before: Optional[str] = None,
+    container_args_uses_after: Optional[str] = None,
+    monitoring: bool = False,
+    port_monitoring: Optional[int] = None,
+    protocol: Optional[Union[str, List[str]]] = None,
+    volumes: Optional[List[str]] = None,
 ) -> List[Dict]:
     """Get the yaml description of a service on Kubernetes
 
@@ -55,7 +55,7 @@ def get_template_yamls(
     :param container_args_uses_after: arguments used for uses_after container on the k8s pod
     :param monitoring: enable monitoring on the deployment
     :param port_monitoring: port which will be exposed, for the prometheus server, by the deployed containers
-    :param protocol: In case of being a Gateway, the protocol used to expose its server
+    :param protocol: In case of being a Gateway, the protocol or protocols list used to expose its server
     :param volumes: If volumes are passed to Executors, Jina will create a StatefulSet instead of Deployment and include the first volume in the volume mounts
     :return: Return a dictionary with all the yaml configuration needed for a deployment
     """
@@ -88,19 +88,50 @@ def get_template_yamls(
         'shard_id': f'\"{shard_id}\"' if shard_id is not None else '\"\"',
         'pod_type': pod_type,
         'protocol': str(protocol).lower() if protocol is not None else '',
-        'volume_path': volumes[0] if volumes is not None else None
+        'volume_path': volumes[0] if volumes is not None else None,
     }
 
     if gpus:
         template_params['device_plugins'] = {'nvidia.com/gpu': gpus}
 
     template_name = 'deployment-executor' if name != 'gateway' else 'deployment-gateway'
+    service_ports_section = '''
+    - port: {port}
+      targetPort: {port}
+      name: port{port_id}
+      protocol: TCP
+'''
+
+    if isinstance(port, list):
+        template_params['ports-section'] = ''.join(
+            [f'\n            - containerPort: {_p}' for _p in port]
+        )
+        template_params['port'] = port[0]
+        template_params['service-ports-section'] = '\n'.join(
+            [
+                service_ports_section.format(port=_p, port_id=i)
+                for i, _p in enumerate(port)
+            ]
+        )
+    else:
+        template_params['service-ports-section'] = service_ports_section.format(
+            port=port, port_id=''
+        )
+
+    if isinstance(protocol, list):
+        template_params['protocol'] = protocol[0]
 
     if volumes:
         template_name = 'statefulset-executor'
-        template_params['accessModes'] = json.loads(os.environ.get('JINA_K8S_ACCESS_MODES', '["ReadWriteOnce"]'))
-        template_params['storageClassName'] = os.environ.get('JINA_K8S_STORAGE_CLASS_NAME', 'standard')
-        template_params['storageCapacity'] = os.environ.get('JINA_K8S_STORAGE_CAPACITY', '10G')
+        template_params['accessModes'] = json.loads(
+            os.environ.get('JINA_K8S_ACCESS_MODES', '["ReadWriteOnce"]')
+        )
+        template_params['storageClassName'] = os.environ.get(
+            'JINA_K8S_STORAGE_CLASS_NAME', 'standard'
+        )
+        template_params['storageCapacity'] = os.environ.get(
+            'JINA_K8S_STORAGE_CAPACITY', '10G'
+        )
     elif image_name_uses_before and image_name_uses_after:
         template_name = 'deployment-uses-before-after'
     elif image_name_uses_before:
@@ -137,6 +168,7 @@ def get_template_yamls(
                 'target': name,
                 'namespace': namespace,
                 'port': port,
+                'service-ports-section': template_params['service-ports-section'],
                 'type': 'ClusterIP',
             },
         )
@@ -154,7 +186,7 @@ def get_template_yamls(
             },
         ),
         service_yaml,
-        template_yaml
+        template_yaml,
     ]
 
     if service_monitor_yaml:
@@ -164,7 +196,7 @@ def get_template_yamls(
 
 
 def get_cli_params(
-        arguments: Namespace, skip_list: Tuple[str] = (), port: Optional[int] = None
+    arguments: Namespace, skip_list: Tuple[str] = (), port: Optional[int] = None
 ) -> str:
     """Get cli parameters based on the arguments.
 
@@ -176,16 +208,16 @@ def get_cli_params(
     """
     arguments.host = '0.0.0.0'
     skip_attributes = [
-                          'uses',  # set manually
-                          'uses_with',  # set manually
-                          'runtime_cls',  # set manually
-                          'workspace',
-                          'log_config',
-                          'polling_type',
-                          'uses_after',
-                          'uses_before',
-                          'replicas',
-                      ] + list(skip_list)
+        'uses',  # set manually
+        'uses_with',  # set manually
+        'runtime_cls',  # set manually
+        'workspace',
+        'log_config',
+        'polling_type',
+        'uses_after',
+        'uses_before',
+        'replicas',
+    ] + list(skip_list)
     if port:
         arguments.port = port
     arg_list = [
