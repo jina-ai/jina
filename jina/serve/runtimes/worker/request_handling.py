@@ -268,7 +268,6 @@ class WorkerRequestHandler:
         :returns: the processed message
         """
         # skip executor if endpoints mismatch
-        exec_class_name = self._executor.__class__.__name__
         if (requests[0].header.exec_endpoint not in self._executor.requests
                 and __default_endpoint__ not in self._executor.requests
         ):

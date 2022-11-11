@@ -216,6 +216,11 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
     @property
     def requests(self):
+        """
+        Get the request dictionary corresponding to this specific class
+
+        :return: Returns the requests corresponding to the specific Executor instance class
+        """
         if not hasattr(self, 'requests_by_class'):
             self.requests_by_class = {}
         if self.__class__.__name__ not in self.requests_by_class:
