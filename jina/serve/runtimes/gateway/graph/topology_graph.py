@@ -11,9 +11,7 @@ from jina import __default_endpoint__
 from jina.excepts import InternalNetworkError
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.helper import _parse_specific_params
-from jina.serve.runtimes.request_handlers.worker_request_handler import (
-    WorkerRequestHandler,
-)
+from jina.serve.runtimes.worker.request_handling import WorkerRequestHandler
 from jina.types.request.data import DataRequest
 
 
@@ -127,7 +125,9 @@ class TopologyGraph:
                 request.parameters = _parse_specific_params(
                     request.parameters, self.name
                 )
-                req_to_send = copy.deepcopy(request) if copy_request_at_send else request
+                req_to_send = (
+                    copy.deepcopy(request) if copy_request_at_send else request
+                )
                 self.parts_to_send.append(req_to_send)
                 # this is a specific needs
                 if len(self.parts_to_send) == self.number_of_parts:
