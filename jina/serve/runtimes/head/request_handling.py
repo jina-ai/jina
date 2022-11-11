@@ -16,7 +16,7 @@ class HeaderRequestHandler(MonitoringRequestMixin):
     """
     Class that handles the requests arriving to the head and the results extracted from the requests future.
 
-    :param metrics_registry: optional metrics registry for prometheus used if we need to expose metrics from the executor or from the data request handler
+    :param metrics_registry: optional metrics registry for prometheus. Used if we need to expose metrics from the executor or from the data request handler
     :param runtime_name: optional runtime_name that will be registered during monitoring
     """
 
