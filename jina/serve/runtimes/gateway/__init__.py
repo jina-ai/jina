@@ -12,7 +12,7 @@ from jina.parsers.helper import _set_gateway_uses
 from jina.serve.gateway import BaseGateway
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 
-if TYPE_CHECKING: # pragma: no cover
+if TYPE_CHECKING:  # pragma: no cover
     import multiprocessing
     import threading
 
@@ -47,6 +47,10 @@ class GatewayRuntime(AsyncNewLoopRuntime):
         _set_gateway_uses(args)
         super().__init__(args, cancel_event, **kwargs)
 
+    @classmethod
+    def _cast_port(cls, port):
+        return [int(_p) for _p in port]
+
     async def async_setup(self):
         """
         The async method setup the runtime.
@@ -62,7 +66,6 @@ class GatewayRuntime(AsyncNewLoopRuntime):
             uses_with=dict(
                 name=self.name,
                 grpc_server_options=self.args.grpc_server_options,
-                port=self.args.port,
                 title=self.args.title,
                 description=self.args.description,
                 no_debug_endpoints=self.args.no_debug_endpoints,
@@ -79,6 +82,8 @@ class GatewayRuntime(AsyncNewLoopRuntime):
             uses_metas={},
             runtime_args={  # these are not parsed to the yaml config file but are pass directly during init
                 'name': self.args.name,
+                'port': self.args.port,
+                'protocol': self.args.protocol,
             },
             py_modules=self.args.py_modules,
             extra_search_paths=self.args.extra_search_paths,

@@ -266,8 +266,9 @@ class Deployment(BaseDeployment):
             self.ext_repl_schemes,
             self.ext_repl_tls,
         ) = ([], [], [], [])
-        self._parse_external_replica_hosts_and_ports()
-        self._parse_addresses_into_host_and_port()
+        if self.args.pod_role != PodRoleType.GATEWAY:
+            self._parse_external_replica_hosts_and_ports()
+            self._parse_addresses_into_host_and_port()
         if len(self.ext_repl_ports) > 1:
             self.args.replicas = len(self.ext_repl_ports)
 
@@ -792,9 +793,7 @@ class Deployment(BaseDeployment):
             selected_devices = []
             if device_str[2:]:
 
-                for device in Deployment._parse_devices(
-                    device_str[2:], num_devices
-                ):
+                for device in Deployment._parse_devices(device_str[2:], num_devices):
                     selected_devices.append(device)
             else:
                 selected_devices = range(num_devices)

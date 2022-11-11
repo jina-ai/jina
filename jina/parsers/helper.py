@@ -267,8 +267,8 @@ def _set_gateway_uses(args: 'argparse.Namespace'):
         GatewayProtocolType.WEBSOCKET: 'WebSocketGateway',
         GatewayProtocolType.HTTP: 'HTTPGateway',
     }
-    if not args.uses:
-        args.uses = gateway_dict[args.protocol]
+    if not args.uses and len(args.protocol) == 1:
+        args.uses = gateway_dict[args.protocol[0]]
 
 
 _chf = _ColoredHelpFormatter

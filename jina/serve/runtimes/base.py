@@ -56,12 +56,16 @@ class BaseRuntime:
     ):
         super().__init__()
         self.args = args
-        self.args.port = int(self.args.port)
+        self.args.port = self._cast_port(self.args.port)
         if args.name:
             self.name = f'{args.name}/{self.__class__.__name__}'
         else:
             self.name = self.__class__.__name__
         self.logger = JinaLogger(self.name, **vars(self.args))
+
+    @classmethod
+    def _cast_port(cls, port):
+        return int(port)
 
     def run_forever(self):
         """Running the blocking procedure inside ``S``. Note, once this method is called,

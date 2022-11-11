@@ -1624,7 +1624,7 @@ def _parse_url(host):
     return scheme, host, port
 
 
-def is_port_free(host: str, port: Union[int, str]) -> bool:
+def _single_port_free(host: str, port: Union[int, str]) -> bool:
     try:
         port = int(port)
     except ValueError:
@@ -1634,6 +1634,13 @@ def is_port_free(host: str, port: Union[int, str]) -> bool:
             return False
         else:
             return True
+
+
+def is_port_free(host: str, port: Union[int, str, List[Union[int, str]]]) -> bool:
+    if isinstance(port, list):
+        return all([_single_port_free(host, _p) for _p in port])
+    else:
+        return _single_port_free(host, port)
 
 
 def _parse_ports(port: str) -> Union[int, List]:
@@ -1658,7 +1665,7 @@ def _parse_ports(port: str) -> Union[int, List]:
     except ValueError as e:
         if ',' in port:
             port = [int(port_) for port_ in port.split(',')]
-        else:
+        elif not isinstance(port, list):
             raise e
     return port
 
