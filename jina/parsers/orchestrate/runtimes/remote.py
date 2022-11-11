@@ -89,14 +89,6 @@ which should be structured as a python package.
 
     mixin_base_runtime_parser(gp)
 
-    gp.add_argument(
-        '--port-expose',
-        type=int,
-        dest='port',
-        default=helper.random_port(),
-        help='The port that the gateway exposes for clients for GRPC connections.',
-    )
-
     parser.add_argument(
         '--graph-description',
         type=str,
