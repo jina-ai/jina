@@ -1033,6 +1033,8 @@ class GrpcConnectionPool:
                     )
                     if error:
                         return error
+                except Exception as e:
+                    return e
 
         return asyncio.create_task(task_wrapper())
 
