@@ -18,7 +18,7 @@ from jina.serve.executors.metas import get_executor_taboo
 from jina.serve.helper import store_init_kwargs, wrap_func
 from jina.serve.instrumentation import MetricsTimer
 
-if TYPE_CHECKING: # pragma: no cover
+if TYPE_CHECKING:  # pragma: no cover
     from opentelemetry.context.context import Context
 
 __dry_run_endpoint__ = '_jina_dry_run_'
@@ -149,12 +149,6 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
     def _dry_run_func(self, *args, **kwargs):
         pass
-
-    def _add_runtime_args(self, _runtime_args: Optional[Dict]):
-        if _runtime_args:
-            self.runtime_args = SimpleNamespace(**_runtime_args)
-        else:
-            self.runtime_args = SimpleNamespace()
 
     def _init_monitoring(self):
         if (

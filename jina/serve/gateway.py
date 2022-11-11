@@ -1,6 +1,6 @@
 import abc
 import argparse
-from typing import TYPE_CHECKING, Optional, Sequence
+from typing import TYPE_CHECKING, Dict, Optional, Sequence
 
 from jina.jaml import JAMLCompatible
 from jina.logging.logger import JinaLogger
@@ -8,7 +8,7 @@ from jina.serve.helper import store_init_kwargs, wrap_func
 
 __all__ = ['BaseGateway']
 
-if TYPE_CHECKING: # pragma: no cover
+if TYPE_CHECKING:  # pragma: no cover
     from grpc.aio._interceptor import ClientInterceptor, ServerInterceptor
     from opentelemetry import trace
     from opentelemetry.instrumentation.grpc._client import (
@@ -63,15 +63,17 @@ class BaseGateway(JAMLCompatible, metaclass=GatewayType):
     def __init__(
         self,
         name: Optional[str] = 'gateway',
+        runtime_args: Optional[Dict] = None,
         **kwargs,
     ):
         """
         :param name: Gateway pod name
+        :param runtime_args: a dict of arguments injected from :class:`Runtime` during runtime
         :param kwargs: additional extra keyword arguments to avoid failing when extra params ara passed that are not expected
         """
         self.streamer = None
+        self._add_runtime_args(runtime_args)
         self.name = name
-        # TODO: original implementation also passes args, maybe move this to a setter/initializer func
         self.logger = JinaLogger(self.name)
 
     def inject_dependencies(
