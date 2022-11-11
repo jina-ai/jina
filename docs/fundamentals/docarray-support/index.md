@@ -1,4 +1,4 @@
-(docarray-support)=
+(docaray-dependency)=
 # From DocArray to Jina
 
 DocArray is an upstream dependency of Jina. Without DocArray, Jina can not run.

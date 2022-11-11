@@ -143,7 +143,7 @@ fundamentals/flow/index
 fundamentals/gateway/index
 fundamentals/client/client
 fundamentals/k8s
-fundamentals/docarray-support/index
+fundamentals/docaray-dependency/index
 jina-ai-cloud/index
 how-to/index
 
