@@ -2,7 +2,6 @@
 import functools
 import inspect
 import os
-from contextlib import nullcontext
 from pathlib import Path
 from typing import TYPE_CHECKING, Callable, Dict, List, Optional, Sequence, Union
 
@@ -10,7 +9,7 @@ from jina import __cache_path__
 from jina.helper import iscoroutinefunction
 from jina.importer import ImportExtensions
 
-if TYPE_CHECKING: # pragma: no cover
+if TYPE_CHECKING:  # pragma: no cover
     from jina import DocumentArray
 
 
@@ -44,11 +43,10 @@ def avoid_concurrent_lock_cls(cls):
                 )
 
             if self.__class__ == cls:
-                file_lock = nullcontext()
                 with ImportExtensions(
-                    required=False,
-                    help_text=f'FileLock is needed to guarantee non-concurrent initialization of replicas in the same '
-                    f'machine.',
+                        required=False,
+                        help_text=f'FileLock is needed to guarantee non-concurrent initialization of replicas in the '
+                                  f'same machine.',
                 ):
                     import filelock
 
@@ -69,19 +67,44 @@ def avoid_concurrent_lock_cls(cls):
     return avoid_concurrent_lock_wrapper
 
 
+def _init_requests_by_class(cls):
+    """
+    To allow inheritance and still have coherent usage of `requests`. Makes sure that a child class inherits requests from parents
+
+    :param cls: The class.
+    """
+    if not hasattr(cls, 'requests_by_class'):
+        cls.requests_by_class = {}
+
+    if cls.__name__ not in cls.requests_by_class:
+        cls.requests_by_class[cls.__name__] = {}
+
+        def _inherit_from_parent_class_inner(cls_):
+            for parent_class in cls_.__bases__:
+                parent_dict = cls.requests_by_class.get(parent_class.__name__, {})
+                for k, v in parent_dict.items():
+                    if k not in cls.requests_by_class[cls.__name__]:
+                        cls.requests_by_class[cls.__name__][k] = v
+                _inherit_from_parent_class_inner(parent_class)
+
+        # assume that `requests` is called when importing class, so parent classes will be processed before
+        # inherit all the requests from parents
+        _inherit_from_parent_class_inner(cls)
+
+
 def requests(
-    func: Callable[
-        [
-            'DocumentArray',
-            Dict,
-            'DocumentArray',
-            List['DocumentArray'],
-            List['DocumentArray'],
-        ],
-        Optional[Union['DocumentArray', Dict]],
-    ] = None,
-    *,
-    on: Optional[Union[str, Sequence[str]]] = None,
+        func: Optional[Callable[
+            [
+                'DocumentArray',
+                Dict,
+                'DocumentArray',
+                List['DocumentArray'],
+                List['DocumentArray'],
+            ],
+            Optional[Union['DocumentArray', Dict]],
+        ]] = None,
+        *,
+        on: Optional[Union[str, Sequence[str]]] = None,
 ):
     """
     `@requests` defines the endpoints of an Executor. It has a keyword `on=` to define the endpoint.
@@ -133,10 +156,9 @@ def requests(
 
     class FunctionMapper:
         def __init__(self, fn):
-
             arg_spec = inspect.getfullargspec(fn)
             if not arg_spec.varkw and not __args_executor_func__.issubset(
-                arg_spec.args
+                    arg_spec.args
             ):
                 raise TypeError(
                     f'{fn} accepts only {arg_spec.args} which is fewer than expected, '
@@ -144,10 +166,9 @@ def requests(
                 )
 
             if iscoroutinefunction(fn):
-
                 @functools.wraps(fn)
                 async def arg_wrapper(
-                    executor_instance, *args, **kwargs
+                        executor_instance, *args, **kwargs
                 ):  # we need to get the summary from the executor, so we need to access the self
                     return await fn(executor_instance, *args, **kwargs)
 
@@ -156,22 +177,20 @@ def requests(
 
                 @functools.wraps(fn)
                 def arg_wrapper(
-                    executor_instance, *args, **kwargs
+                        executor_instance, *args, **kwargs
                 ):  # we need to get the summary from the executor, so we need to access the self
                     return fn(executor_instance, *args, **kwargs)
 
                 self.fn = arg_wrapper
 
         def __set_name__(self, owner, name):
+            _init_requests_by_class(owner)
             self.fn.class_name = owner.__name__
-            if not hasattr(owner, 'requests'):
-                owner.requests = {}
-
             if isinstance(on, (list, tuple)):
                 for o in on:
-                    owner.requests[o] = self.fn
+                    owner.requests_by_class[owner.__name__][o] = self.fn
             else:
-                owner.requests[on or __default_endpoint__] = self.fn
+                owner.requests_by_class[owner.__name__][on or __default_endpoint__] = self.fn
 
             setattr(owner, name, self.fn)
 
@@ -182,9 +201,9 @@ def requests(
 
 
 def monitor(
-    *,
-    name: Optional[str] = None,
-    documentation: Optional[str] = None,
+        *,
+        name: Optional[str] = None,
+        documentation: Optional[str] = None,
 ):
     """
     Decorator and context manager that allows monitoring of an Executor.
@@ -250,7 +269,6 @@ def monitor(
     """
 
     def _decorator(func: Callable):
-
         name_ = name if name else f'{func.__name__}_seconds'
         documentation_ = (
             documentation
