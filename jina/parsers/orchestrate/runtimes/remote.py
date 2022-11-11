@@ -126,6 +126,7 @@ which should be structured as a python package.
     )
 
     parser.add_argument(
+        '--deployments-no-reduce',
         '--deployments-disable-reduce',
         type=str,
         help='list JSON disabling the built-in merging mechanism for each Deployment listed',
@@ -150,6 +151,7 @@ which should be structured as a python package.
 def _add_host(arg_group):
     arg_group.add_argument(
         '--host',
+        '--host-in',
         type=str,
         default=__default_host__,
         help=f'The host address of the runtime, by default it is {__default_host__}.'

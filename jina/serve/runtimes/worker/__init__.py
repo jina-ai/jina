@@ -13,9 +13,7 @@ from jina.proto import jina_pb2, jina_pb2_grpc
 from jina.serve.instrumentation import MetricsTimer
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.helper import _get_grpc_server_options
-from jina.serve.runtimes.worker.request_handling import (
-    WorkerRequestHandler,
-)
+from jina.serve.runtimes.worker.request_handling import WorkerRequestHandler
 from jina.types.request.data import DataRequest
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -101,11 +99,12 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         # otherwise readiness check is not valid
         # The WorkerRequestHandler needs to be started BEFORE the grpc server
         self._request_handler = WorkerRequestHandler(
-            self.args,
-            self.logger,
-            self.metrics_registry,
-            self.tracer_provider,
-            self.meter_provider,
+            args=self.args,
+            logger=self.logger,
+            metrics_registry=self.metrics_registry,
+            tracer_provider=self.tracer_provider,
+            meter_provider=self.meter_provider,
+            deployment_name=self.name.split('/')[0],
         )
         await self._async_setup_grpc_server()
 
