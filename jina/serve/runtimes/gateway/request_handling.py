@@ -8,6 +8,7 @@ from docarray import DocumentArray
 
 from jina.excepts import InternalNetworkError
 from jina.importer import ImportExtensions
+from jina.helper import GATEWAY_NAME
 from jina.proto import jina_pb2
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.gateway.graph.topology_graph import TopologyGraph
@@ -346,7 +347,7 @@ class GatewayRequestHandler(MonitoringRequestMixin):
                         asyncio.create_task(gather_endpoints(request_graph))
 
                     partial_responses = await asyncio.gather(*tasks)
-                except Exception as e:
+                except Exception:
                     # update here failed request
                     self._update_end_failed_requests_metrics()
                     raise
@@ -356,6 +357,12 @@ class GatewayRequestHandler(MonitoringRequestMixin):
                 )
 
                 response = filtered_partial_responses[0]
+                # JoanFM: to keep the docs_map feature, need to add the routes in the WorkerRuntime but clear it here
+                # so that routes are properly done. not very clean but refactoring would be costly for such a small
+                # thing, `docs_map` reuses routes potentially not in the best way but works for now
+                for i in reversed(range(len(response.routes))):
+                    if response.routes[i].executor != GATEWAY_NAME:
+                        del response.routes[i]
                 request_graph.add_routes(response)
 
                 if graph.has_filter_conditions:

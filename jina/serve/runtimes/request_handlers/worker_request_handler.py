@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Dict, List, Optional
+from typing import TYPE_CHECKING, Dict, List, Optional, Tuple
 
 from docarray import DocumentArray
 
@@ -30,6 +30,7 @@ class WorkerRequestHandler:
         metrics_registry: Optional['CollectorRegistry'] = None,
         tracer_provider: Optional['trace.TracerProvider'] = None,
         meter_provider: Optional['metrics.MeterProvider'] = None,
+        deployment_name: str = '',
         **kwargs,
     ):
         """Initialize private parameters and execute private loading functions.
@@ -39,11 +40,11 @@ class WorkerRequestHandler:
         :param metrics_registry: optional metrics registry for prometheus used if we need to expose metrics from the executor of from the data request handler
         :param tracer_provider: Optional tracer_provider that will be provided to the executor for tracing
         :param meter_provider: Optional meter_provider that will be provided to the executor for metrics
+        :param deployment_name: name of the deployment to use as Executor name to set in requests
         :param kwargs: extra keyword arguments
         """
         super().__init__()
         self.args = args
-        self.args.parallel = self.args.shards
         self.logger = logger
         self._is_closed = False
         self._load_executor(
@@ -57,6 +58,7 @@ class WorkerRequestHandler:
             else None
         )
         self._init_monitoring(metrics_registry, meter)
+        self.deployment_name = deployment_name
 
     def _init_monitoring(
         self,
@@ -285,18 +287,20 @@ class WorkerRequestHandler:
         )
 
         # executor logic
+        docs_matrix, docs_map = WorkerRequestHandler._get_docs_matrix_from_request(requests)
         return_data = await self._executor.__acall__(
             req_endpoint=requests[0].header.exec_endpoint,
             docs=docs,
             parameters=params,
-            docs_matrix=WorkerRequestHandler.get_docs_matrix_from_request(
-                requests,
-                field='docs',
-            ),
+            docs_matrix=docs_matrix,
+            docs_map=docs_map,
             tracing_context=tracing_context,
         )
 
         docs = self._set_result(requests, return_data, docs)
+
+        for req in requests:
+            req.add_executor(self.deployment_name)
 
         self._record_docs_processed_monitoring(requests, docs)
         self._record_response_size_monitoring(requests)
@@ -346,26 +350,28 @@ class WorkerRequestHandler:
             self._is_closed = True
 
     @staticmethod
-    def get_docs_matrix_from_request(
+    def _get_docs_matrix_from_request(
         requests: List['DataRequest'],
-        field: str,
-    ) -> List['DocumentArray']:
+    ) -> Tuple[Optional[List['DocumentArray']], Optional[Dict[str, 'DocumentArray']]]:
         """
         Returns a docs matrix from a list of DataRequest objects.
+
         :param requests: List of DataRequest objects
-        :param field: field to be retrieved
-        :return: docs matrix: list of DocumentArray objects
+        :return: docs matrix and doc: list of DocumentArray objects
         """
-        if len(requests) > 1:
-            result = [getattr(request, field) for request in requests]
-        else:
-            result = [getattr(requests[0], field)]
+        docs_map = {}
+        docs_matrix = []
+        for req in requests:
+            docs_matrix.append(req.docs)
+            docs_map[req.last_executor] = req.docs
 
         # to unify all length=0 DocumentArray (or any other results) will simply considered as None
         # otherwise, the executor has to handle [None, None, None] or [DocArray(0), DocArray(0), DocArray(0)]
-        len_r = sum(len(r) for r in result)
-        if len_r:
-            return result
+        len_r = sum(len(r) for r in docs_matrix)
+        if len_r == 0:
+            docs_matrix = None
+
+        return docs_matrix, docs_map
 
     @staticmethod
     def get_parameters_dict_from_request(
@@ -454,8 +460,8 @@ class WorkerRequestHandler:
         :param requests: List of DataRequest objects
         :return: the resulting DataRequest
         """
-        docs_matrix = WorkerRequestHandler.get_docs_matrix_from_request(
-            requests, field='docs'
+        docs_matrix, _ = WorkerRequestHandler._get_docs_matrix_from_request(
+            requests
         )
 
         # Reduction is applied in-place to the first DocumentArray in the matrix

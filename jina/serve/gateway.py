@@ -115,14 +115,14 @@ class BaseGateway(JAMLCompatible, metaclass=GatewayType):
         graph_conditions = json.loads(args.graph_conditions)
         deployments_addresses = json.loads(args.deployments_addresses)
         deployments_metadata = json.loads(args.deployments_metadata)
-        deployments_disable_reduce = json.loads(args.deployments_disable_reduce)
+        deployments_no_reduce = json.loads(args.deployments_no_reduce)
 
         self.streamer = GatewayStreamer(
             graph_representation=graph_description,
             executor_addresses=deployments_addresses,
             graph_conditions=graph_conditions,
             deployments_metadata=deployments_metadata,
-            deployments_disable_reduce=deployments_disable_reduce,
+            deployments_no_reduce=deployments_no_reduce,
             timeout_send=timeout_send,
             retries=args.retries,
             compression=args.compression,

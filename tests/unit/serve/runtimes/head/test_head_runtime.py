@@ -47,7 +47,7 @@ def test_message_merging(disable_reduce):
     if not disable_reduce:
         args = set_pod_parser().parse_args([])
     else:
-        args = set_pod_parser().parse_args(['--disable-reduce'])
+        args = set_pod_parser().parse_args(['--no-reduce'])
     args.polling = PollingType.ALL
     connection_list_dict = {0: [f'ip1:8080'], 1: [f'ip2:8080'], 2: [f'ip3:8080']}
     args.connection_list = json.dumps(connection_list_dict)
