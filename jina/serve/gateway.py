@@ -47,7 +47,10 @@ class GatewayType(type(JAMLCompatible), type):
             reg_cls_set.add(cls_id)
             setattr(cls, '_registered_class', reg_cls_set)
             wrap_func(
-                cls, ['__init__'], store_init_kwargs, taboo={'self', 'args', 'kwargs'}
+                cls,
+                ['__init__'],
+                store_init_kwargs,
+                taboo={'self', 'args', 'kwargs', 'runtime_args'},
             )
         return cls
 
