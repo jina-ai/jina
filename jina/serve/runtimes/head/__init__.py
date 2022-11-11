@@ -12,9 +12,7 @@ from grpc_reflection.v1alpha import reflection
 from jina.enums import PollingType
 from jina.excepts import InternalNetworkError
 from jina.helper import get_full_version
-from jina.importer import ImportExtensions
 from jina.proto import jina_pb2, jina_pb2_grpc
-from jina.serve.instrumentation import MetricsTimer
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.head.request_handling import HeaderRequestHandler
@@ -55,32 +53,6 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
             tracing_client_interceptor=self.tracing_client_interceptor(),
         )
         self._retries = self.args.retries
-
-        if self.metrics_registry:
-            with ImportExtensions(
-                required=True,
-                help_text='You need to install the `prometheus_client` to use the montitoring functionality of jina',
-            ):
-                from prometheus_client import Summary
-
-            self._summary = Summary(
-                'receiving_request_seconds',
-                'Time spent processing request',
-                registry=self.metrics_registry,
-                namespace='jina',
-                labelnames=('runtime_name',),
-            ).labels(self.args.name)
-        else:
-            self._summary = None
-
-        if self.meter:
-            self._receiving_reqeust_seconds_metric = self.meter.create_histogram(
-                name='jina_receiving_request_seconds',
-                description='Time spent processing request',
-            )
-        else:
-            self._receiving_reqeust_seconds_metric = None
-        self._metric_lables = {'runtime_name': self.args.name}
 
         polling = getattr(args, 'polling', self.DEFAULT_POLLING.name)
         try:
@@ -241,26 +213,21 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
         :returns: the response request
         """
         try:
-            with MetricsTimer(
-                self._summary,
-                self._receiving_reqeust_seconds_metric,
-                self._metric_lables,
-            ):
-                endpoint = dict(context.invocation_metadata()).get('endpoint')
-                self.logger.debug(f'recv {len(requests)} DataRequest(s)')
-                response, metadata = await self.request_handler._handle_data_request(
-                    requests=requests,
-                    connection_pool=self.connection_pool,
-                    uses_before_address=self.uses_before_address,
-                    uses_after_address=self.uses_after_address,
-                    retries=self._retries,
-                    reduce=self._reduce,
-                    timeout_send=self.timeout_send,
-                    polling_type=self._polling[endpoint],
-                    deployment_name=self._deployment_name,
-                )
-                context.set_trailing_metadata(metadata.items())
-                return response
+            endpoint = dict(context.invocation_metadata()).get('endpoint')
+            self.logger.debug(f'recv {len(requests)} DataRequest(s)')
+            response, metadata = await self.request_handler._handle_data_request(
+                requests=requests,
+                connection_pool=self.connection_pool,
+                uses_before_address=self.uses_before_address,
+                uses_after_address=self.uses_after_address,
+                retries=self._retries,
+                reduce=self._reduce,
+                timeout_send=self.timeout_send,
+                polling_type=self._polling[endpoint],
+                deployment_name=self._deployment_name,
+            )
+            context.set_trailing_metadata(metadata.items())
+            return response
         except InternalNetworkError as err:  # can't connect, Flow broken, interrupt the streaming through gRPC error mechanism
             return self._handle_internalnetworkerror(
                 err=err, context=context, response=Response()
