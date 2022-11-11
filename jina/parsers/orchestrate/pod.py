@@ -96,12 +96,17 @@ def mixin_pod_parser(parser, pod_type: str = 'worker'):
 
     if pod_type != 'gateway':
         gp.add_argument(
-            '--port', '--port-in', type=str, default=str(helper.random_port()), help=port_description
+            '--port',
+            '--port-in',
+            type=str,
+            default=str(helper.random_port()),
+            help=port_description,
         )
     else:
         gp.add_argument(
             '--port',
             '--port-in',
+            type=str,
             nargs='+',
             default=[str(helper.random_port())],
             help=port_description,
