@@ -343,7 +343,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                 else:
                     return func(self, tracing_context=tracing_context, **kwargs)
 
-        func = self.requests[req_endpoint]
+        func = self.requests[self.__class__.__name__][req_endpoint]
 
         runtime_name = (
             self.runtime_args.name if hasattr(self.runtime_args, 'name') else None
