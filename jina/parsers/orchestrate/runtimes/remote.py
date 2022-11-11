@@ -153,7 +153,7 @@ def mixin_gateway_protocol_parser(parser):
         nargs='+',
         type=GatewayProtocolType.from_string,
         choices=list(GatewayProtocolType),
-        default=GatewayProtocolType.GRPC,
+        default=[GatewayProtocolType.GRPC],
         help=f'Possible communication protocols between server and client. Choose any list combination of the following choices: {[protocol.to_string() for protocol in list(GatewayProtocolType)]}.',
     )
 
