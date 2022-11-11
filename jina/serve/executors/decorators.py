@@ -81,8 +81,10 @@ def _init_requests_by_class(cls):
 
         def _inherit_from_parent_class_inner(cls_):
             for parent_class in cls_.__bases__:
-                cls.requests_by_class[cls.__name__].update(
-                    cls.requests_by_class.get(parent_class.__name__, {}))
+                parent_dict = cls.requests_by_class.get(parent_class.__name__, {})
+                for k, v in parent_dict.items():
+                    if k not in cls.requests_by_class[cls.__name__]:
+                        cls.requests_by_class[cls.__name__][k] = v
                 _inherit_from_parent_class_inner(parent_class)
 
         # assume that `requests` is called when importing class, so parent classes will be processed before

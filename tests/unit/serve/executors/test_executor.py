@@ -547,3 +547,33 @@ async def test_blocking_sync_exec():
 
     cancel_event.set()
     runtime_thread.join()
+
+
+def test_executors_inheritance_binding():
+    class A(Executor):
+        @requests(on='/index')
+        def a(self, **kwargs):
+            pass
+
+        @requests
+        def default_a(self, **kwargs):
+            pass
+
+    class B(A):
+
+        @requests(on='/index')
+        def b(self, **kwargs):
+            pass
+
+    class C(B):
+        pass
+
+    assert set(A().requests.keys()) == {'/index', '/default', '_jina_dry_run_'}
+    assert A().requests['/index'] == A.a
+    assert A().requests['/default'] == A.default_a
+    assert set(B().requests.keys()) == {'/index', '/default', '_jina_dry_run_'}
+    assert B().requests['/index'] == B.b
+    assert B().requests['/default'] == A.default_a
+    assert set(C().requests.keys()) == {'/index', '/default', '_jina_dry_run_'}
+    assert C().requests['/index'] == B.b
+    assert C().requests['/default'] == A.default_a
