@@ -155,6 +155,7 @@ class HeaderRequestHandler(MonitoringRequestMixin):
                 retries=retries,
             )
             if issubclass(type(result), BaseException):
+                self._update_end_failed_requests_metrics()
                 raise result
             else:
                 response_request, uses_after_metadata = result
