@@ -269,9 +269,8 @@ class WorkerRequestHandler:
         """
         # skip executor if endpoints mismatch
         exec_class_name = self._executor.__class__.__name__
-        if ((exec_class_name not in self._executor.requests or
-             requests[0].header.exec_endpoint not in self._executor.requests[self._executor.__class__.__name__])
-                and __default_endpoint__ not in self._executor.requests[self._executor.__class__.__name__]
+        if (requests[0].header.exec_endpoint not in self._executor.requests
+                and __default_endpoint__ not in self._executor.requests
         ):
             self.logger.debug(
                 f'skip executor: mismatch request, exec_endpoint: {requests[0].header.exec_endpoint}, requests: {self._executor.requests}'

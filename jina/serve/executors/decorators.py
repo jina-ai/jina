@@ -161,17 +161,17 @@ def requests(
 
         def __set_name__(self, owner, name):
             self.fn.class_name = owner.__name__
-            if not hasattr(owner, 'requests'):
-                owner.requests = {}
+            if not hasattr(owner, 'requests_by_class'):
+                owner.requests_by_class = {}
 
-            if owner.__name__ not in owner.requests:
-                owner.requests[owner.__name__] = {}
+            if owner.__name__ not in owner.requests_by_class:
+                owner.requests_by_class[owner.__name__] = {}
 
             if isinstance(on, (list, tuple)):
                 for o in on:
-                    owner.requests[owner.__name__][o] = self.fn
+                    owner.requests_by_class[owner.__name__][o] = self.fn
             else:
-                owner.requests[owner.__name__][on or __default_endpoint__] = self.fn
+                owner.requests_by_class[owner.__name__][on or __default_endpoint__] = self.fn
 
             setattr(owner, name, self.fn)
 
