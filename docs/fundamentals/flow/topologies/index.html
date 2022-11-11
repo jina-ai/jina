@@ -3,21 +3,14 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
-
 <meta property="og:title" content="Topology" />
-  
 <meta property="og:type" content="website" />
-  
 <meta property="og:url" content="https://docs.jina.ai/fundamentals/flow/topologies/" />
-  
 <meta property="og:site_name" content="Jina 3.11.1 Documentation" />
-  
 <meta property="og:description" content="Flow s are not restricted to sequential execution. Internally they are modeled as graphs, so they can represent any complex, non-cyclic topology. A typical use case for such a Flow is a topology with a common pre-processing part, but different indexers separating embeddings and data. To define a ..." />
-  
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
-  
 <meta property="og:image:alt" content="Jina 3.11.1 Documentation" />
-  
+<meta name="description" content="Flow s are not restricted to sequential execution. Internally they are modeled as graphs, so they can represent any complex, non-cyclic topology. A typical use case for such a Flow is a topology with a common pre-processing part, but different indexers separating embeddings and data. To define a ..." />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
@@ -35,7 +28,8 @@
 </script>
 
 <script async defer src="https://buttons.github.io/buttons.js"></script>
-    <link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" /><link rel="next" title="Instrumentation" href="../instrumenting-flow/" /><link rel="prev" title="Add Executors" href="../add-executors/" />
+    
+<link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" /><link rel="next" title="Instrumentation" href="../instrumenting-flow/" /><link rel="prev" title="Add Executors" href="../add-executors/" />
         <link rel="canonical" href="https://docs.jina.ai/fundamentals/flow/topologies.html" />
 
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
@@ -287,6 +281,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../health-check/">Readiness &amp; health check</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../when-things-go-wrong/">Handle exceptions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../remarks/">Remarks</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../gateway/">Gateway</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -478,7 +473,7 @@ To define a custom topology you can use the <code class="docutils literal notran
 </pre></div>
 </div>
 <p>Both <code class="docutils literal notranslate"><span class="pre">BarExecutor</span></code> and <code class="docutils literal notranslate"><span class="pre">BazExecutor</span></code> only received a single <code class="docutils literal notranslate"><span class="pre">Document</span></code> from <code class="docutils literal notranslate"><span class="pre">FooExecutor</span></code> because they are run in parallel. The last Executor <code class="docutils literal notranslate"><span class="pre">executor3</span></code> receives both DocumentArrays and merges them automatically.
-This automated merging can be disabled with <code class="docutils literal notranslate"><span class="pre">disable_reduce=True</span></code>. This is useful for providing custom merge logic in a separate Executor. In this case the last <code class="docutils literal notranslate"><span class="pre">.add()</span></code> call would look like <code class="docutils literal notranslate"><span class="pre">.add(needs=['barExecutor',</span> <span class="pre">'bazExecutor'],</span> <span class="pre">uses=CustomMergeExecutor,</span> <span class="pre">disable_reduce=True)</span></code>. This feature requires Jina &gt;= 3.0.2.</p>
+This automated merging can be disabled with <code class="docutils literal notranslate"><span class="pre">no_reduce=True</span></code>. This is useful for providing custom merge logic in a separate Executor. In this case the last <code class="docutils literal notranslate"><span class="pre">.add()</span></code> call would look like <code class="docutils literal notranslate"><span class="pre">.add(needs=['barExecutor',</span> <span class="pre">'bazExecutor'],</span> <span class="pre">uses=CustomMergeExecutor,</span> <span class="pre">no_reduce=True)</span></code>. This feature requires Jina &gt;= 3.0.2.</p>
 <section id="replicate-executors">
 <span id="id1"></span><h2>Replicate Executors<a class="headerlink" href="#replicate-executors" title="Permalink to this heading">#</a></h2>
 <p>Replication creates multiple copies of the same <a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>. Each request in the <a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> is then passed to only one replica (instance) of that Executor. This is useful for performance and availability:</p>
@@ -596,7 +591,7 @@ The Flow then assigns each available GPU to replicas in a round-robin fashion.</
 </tbody>
 </table>
 </div>
-<p>You can restrict the visible devices in round-robin assignment by assigning a list of devices ids <code class="docutils literal notranslate"><span class="pre">CUDA_VISIBLE_DEVICES=RR1,3</span></code>. This creates the following assignment:</p>
+<p>You can restrict the visible devices in round-robin assignment by assigning the list of device IDs to <code class="docutils literal notranslate"><span class="pre">CUDA_VISIBLE_DEVICES=RR1,3</span></code>. This creates the following assignment:</p>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
@@ -618,6 +613,34 @@ The Flow then assigns each available GPU to replicas in a round-robin fashion.</
 <td><p>3</p></td>
 </tr>
 <tr class="row-even"><td><p>1</p></td>
+<td><p>4</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>You can also refer to GPUs by their UUID. For instance, you could assign a list of device UUIDs <code class="docutils literal notranslate"><span class="pre">CUDA_VISIBLE_DEVICES=RRGPU-0aaaaaaa-74d2-7297-d557-12771b6a79d5,GPU-0bbbbbbb-74d2-7297-d557-12771b6a79d5,GPU-0ccccccc-74d2-7297-d557-12771b6a79d5,GPU-0ddddddd-74d2-7297-d557-12771b6a79d5</span></code>.
+Check <a class="reference external" href="https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#env-vars">CUDA Documentation</a> to see the accepted formats to assign CUDA devices by UUID.</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>GPU device</p></th>
+<th class="head"><p>Replica ID</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>GPU-0aaaaaaa-74d2-7297-d557-12771b6a79d5</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-odd"><td><p>GPU-0bbbbbbb-74d2-7297-d557-12771b6a79d5</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-even"><td><p>GPU-0ccccccc-74d2-7297-d557-12771b6a79d5</p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-odd"><td><p>GPU-0ddddddd-74d2-7297-d557-12771b6a79d5</p></td>
+<td><p>3</p></td>
+</tr>
+<tr class="row-even"><td><p>GPU-0aaaaaaa-74d2-7297-d557-12771b6a79d5</p></td>
 <td><p>4</p></td>
 </tr>
 </tbody>
@@ -842,7 +865,7 @@ This means that you can not only use this feature to build complex logic, but al
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Oct 28, 2022</div>
+                            Last updated on Nov 11, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

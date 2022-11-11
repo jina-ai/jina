@@ -254,6 +254,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../fundamentals/flow/health-check/">Readiness &amp; health check</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../fundamentals/flow/when-things-go-wrong/">Handle exceptions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../fundamentals/flow/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../fundamentals/flow/remarks/">Remarks</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../fundamentals/gateway/">Gateway</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -1128,7 +1129,7 @@
 <span class="sd">        :return: slice</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="n">all_devices</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_devices</span><span class="p">)</span>
+        <span class="n">use_uuids</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">WRAPPED_SLICE_BASE</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
             <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 
@@ -1138,13 +1139,28 @@
                 <span class="n">parts</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)</span>
 
                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-                    <span class="c1"># slice(stop)</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="nb">int</span><span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                    <span class="k">except</span><span class="p">:</span>
+                        <span class="n">use_uuids</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="k">if</span> <span class="n">use_uuids</span><span class="p">:</span>
+                        <span class="k">return</span> <span class="n">parts</span>
                     <span class="n">parts</span> <span class="o">=</span> <span class="p">[</span><span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)]</span>
-                <span class="c1"># else: slice(start, stop[, step])</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">return</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">parts</span><span class="p">]</span>
+                <span class="c1"># try to detect if parts are not numbers</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="nb">int</span><span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="k">except</span><span class="p">:</span>
+                    <span class="n">use_uuids</span> <span class="o">=</span> <span class="kc">True</span>
+
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">use_uuids</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">parts</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">parts</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">parts</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">all_devices</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_devices</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">all_devices</span><span class="p">[</span><span class="nb">slice</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">if</span> <span class="n">p</span> <span class="k">else</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">parts</span><span class="p">])]</span>
 
     <span class="nd">@staticmethod</span>
@@ -1172,10 +1188,11 @@
 
             <span class="n">selected_devices</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">if</span> <span class="n">device_str</span><span class="p">[</span><span class="mi">2</span><span class="p">:]:</span>
-                <span class="k">for</span> <span class="n">device_num</span> <span class="ow">in</span> <span class="n">Deployment</span><span class="o">.</span><span class="n">_parse_devices</span><span class="p">(</span>
+
+                <span class="k">for</span> <span class="n">device</span> <span class="ow">in</span> <span class="n">Deployment</span><span class="o">.</span><span class="n">_parse_devices</span><span class="p">(</span>
                     <span class="n">device_str</span><span class="p">[</span><span class="mi">2</span><span class="p">:],</span> <span class="n">num_devices</span>
                 <span class="p">):</span>
-                    <span class="n">selected_devices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">device_num</span><span class="p">)</span>
+                    <span class="n">selected_devices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">selected_devices</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_devices</span><span class="p">)</span>
             <span class="n">_c</span> <span class="o">=</span> <span class="n">cycle</span><span class="p">(</span><span class="n">selected_devices</span><span class="p">)</span>
@@ -1199,7 +1216,9 @@
             <span class="k">for</span> <span class="n">replica_id</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">replicas</span><span class="p">):</span>
                 <span class="n">_args</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
                 <span class="n">_args</span><span class="o">.</span><span class="n">shard_id</span> <span class="o">=</span> <span class="n">shard_id</span>
-                <span class="n">_args</span><span class="o">.</span><span class="n">pod_role</span> <span class="o">=</span> <span class="n">PodRoleType</span><span class="o">.</span><span class="n">WORKER</span>
+                <span class="c1"># for gateway pods, the pod role shouldn&#39;t be changed</span>
+                <span class="k">if</span> <span class="n">_args</span><span class="o">.</span><span class="n">pod_role</span> <span class="o">!=</span> <span class="n">PodRoleType</span><span class="o">.</span><span class="n">GATEWAY</span><span class="p">:</span>
+                    <span class="n">_args</span><span class="o">.</span><span class="n">pod_role</span> <span class="o">=</span> <span class="n">PodRoleType</span><span class="o">.</span><span class="n">WORKER</span>
 
                 <span class="k">if</span> <span class="n">cuda_device_map</span><span class="p">:</span>
                     <span class="n">_args</span><span class="o">.</span><span class="n">env</span><span class="p">[</span><span class="s1">&#39;CUDA_VISIBLE_DEVICES&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">cuda_device_map</span><span class="p">[</span><span class="n">replica_id</span><span class="p">])</span>
@@ -1432,7 +1451,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Oct 28, 2022</div>
+                            Last updated on Nov 11, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

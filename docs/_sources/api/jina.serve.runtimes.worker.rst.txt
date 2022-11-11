@@ -1,6 +1,14 @@
 jina.serve.runtimes.worker package
 ==================================
 
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   jina.serve.runtimes.worker.request_handling
+
 Module contents
 ---------------
 

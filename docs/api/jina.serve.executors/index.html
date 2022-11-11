@@ -3,21 +3,14 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
-
 <meta property="og:title" content="jina.serve.executors package" />
-  
 <meta property="og:type" content="website" />
-  
 <meta property="og:url" content="https://docs.jina.ai/api/jina.serve.executors/" />
-  
 <meta property="og:site_name" content="Jina 3.11.1 Documentation" />
-  
 <meta property="og:description" content="Submodules: jina.serve.executors.decorators module- avoid_concurrent_lock_cls(), requests(), monitor()., jina.serve.executors.metas module- get_default_metas(), get_executor_taboo().. Module contents:" />
-  
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
-  
 <meta property="og:image:alt" content="Jina 3.11.1 Documentation" />
-  
+<meta name="description" content="Submodules: jina.serve.executors.decorators module- avoid_concurrent_lock_cls(), requests(), monitor()., jina.serve.executors.metas module- get_default_metas(), get_executor_taboo().. Module contents:" />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
@@ -35,7 +28,8 @@
 </script>
 
 <script async defer src="https://buttons.github.io/buttons.js"></script>
-    <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" />
+    
+<link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" />
         <link rel="canonical" href="https://docs.jina.ai/api/jina.serve.executors.html" />
 
     <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
@@ -287,6 +281,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/health-check/">Readiness &amp; health check</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/when-things-go-wrong/">Handle exceptions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/remarks/">Remarks</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/gateway/">Gateway</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -492,6 +487,17 @@
 </ul>
 </dd>
 </dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="jina.serve.executors.BaseExecutor.requests">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">requests</span></span><a class="headerlink" href="#jina.serve.executors.BaseExecutor.requests" title="Permalink to this definition">#</a></dt>
+<dd><p>Get the request dictionary corresponding to this specific class</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Returns the requests corresponding to the specific Executor instance class</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.serve.executors.BaseExecutor.close">
 <span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/executors/#BaseExecutor.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.executors.BaseExecutor.close" title="Permalink to this definition">#</a></dt>
@@ -747,6 +753,11 @@ implements <code class="xref py py-class docutils literal notranslate"><span cla
 </dl>
 </dd></dl>
 
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.serve.executors.BaseExecutor.requests_by_class">
+<span class="sig-name descname"><span class="pre">requests_by_class</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'BaseExecutor':</span> <span class="pre">{}}</span></em><a class="headerlink" href="#jina.serve.executors.BaseExecutor.requests_by_class" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.serve.executors.BaseExecutor.save_config">
 <span class="sig-name descname"><span class="pre">save_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.executors.BaseExecutor.save_config" title="Permalink to this definition">#</a></dt>
@@ -776,7 +787,7 @@ implements <code class="xref py py-class docutils literal notranslate"><span cla
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Oct 28, 2022</div>
+                            Last updated on Nov 11, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -812,6 +823,7 @@ implements <code class="xref py py-class docutils literal notranslate"><span cla
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
 <li><a class="reference internal" href="#module-jina.serve.executors">Module contents</a><ul>
 <li><a class="reference internal" href="#jina.serve.executors.BaseExecutor"><code class="docutils literal notranslate"><span class="pre">BaseExecutor</span></code></a><ul>
+<li><a class="reference internal" href="#jina.serve.executors.BaseExecutor.requests"><code class="docutils literal notranslate"><span class="pre">BaseExecutor.requests</span></code></a></li>
 <li><a class="reference internal" href="#jina.serve.executors.BaseExecutor.close"><code class="docutils literal notranslate"><span class="pre">BaseExecutor.close()</span></code></a></li>
 <li><a class="reference internal" href="#jina.serve.executors.BaseExecutor.workspace"><code class="docutils literal notranslate"><span class="pre">BaseExecutor.workspace</span></code></a></li>
 <li><a class="reference internal" href="#jina.serve.executors.BaseExecutor.from_hub"><code class="docutils literal notranslate"><span class="pre">BaseExecutor.from_hub()</span></code></a></li>
@@ -827,6 +839,7 @@ implements <code class="xref py py-class docutils literal notranslate"><span cla
 <li><a class="reference internal" href="#jina.serve.executors.BaseExecutor.monitor"><code class="docutils literal notranslate"><span class="pre">BaseExecutor.monitor()</span></code></a></li>
 <li><a class="reference internal" href="#jina.serve.executors.BaseExecutor.is_valid_jaml"><code class="docutils literal notranslate"><span class="pre">BaseExecutor.is_valid_jaml()</span></code></a></li>
 <li><a class="reference internal" href="#jina.serve.executors.BaseExecutor.load_config"><code class="docutils literal notranslate"><span class="pre">BaseExecutor.load_config()</span></code></a></li>
+<li><a class="reference internal" href="#jina.serve.executors.BaseExecutor.requests_by_class"><code class="docutils literal notranslate"><span class="pre">BaseExecutor.requests_by_class</span></code></a></li>
 <li><a class="reference internal" href="#jina.serve.executors.BaseExecutor.save_config"><code class="docutils literal notranslate"><span class="pre">BaseExecutor.save_config()</span></code></a></li>
 </ul>
 </li>

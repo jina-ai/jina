@@ -254,6 +254,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../fundamentals/flow/health-check/">Readiness &amp; health check</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../fundamentals/flow/when-things-go-wrong/">Handle exceptions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../fundamentals/flow/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../fundamentals/flow/remarks/">Remarks</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../../fundamentals/gateway/">Gateway</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -400,7 +401,7 @@
 
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
 <span class="kn">from</span> <span class="nn">jina.enums</span> <span class="kn">import</span> <span class="n">DeploymentRoleType</span>
-<span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">ArgNamespace</span><span class="p">,</span> <span class="n">expand_env_var</span>
+<span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">GATEWAY_NAME</span><span class="p">,</span> <span class="n">ArgNamespace</span><span class="p">,</span> <span class="n">expand_env_var</span>
 <span class="kn">from</span> <span class="nn">jina.jaml.parsers.base</span> <span class="kn">import</span> <span class="n">VersionedYAMLParser</span>
 <span class="kn">from</span> <span class="nn">jina.parsers</span> <span class="kn">import</span> <span class="n">set_deployment_parser</span><span class="p">,</span> <span class="n">set_gateway_parser</span>
 
@@ -470,12 +471,15 @@
                 <span class="n">kk</span><span class="p">:</span> <span class="n">expand_env_var</span><span class="p">(</span><span class="n">vv</span><span class="p">)</span> <span class="k">for</span> <span class="n">kk</span><span class="p">,</span> <span class="n">vv</span> <span class="ow">in</span> <span class="n">deployments</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
             <span class="p">}</span>
             <span class="c1"># in v1 YAML, flow is an optional argument</span>
-            <span class="k">if</span> <span class="n">p_deployment_attr</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="o">!=</span> <span class="s1">&#39;gateway&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">p_deployment_attr</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="o">!=</span> <span class="n">GATEWAY_NAME</span><span class="p">:</span>
                 <span class="c1"># ignore gateway when reading, it will be added during build()</span>
                 <span class="n">method</span> <span class="o">=</span> <span class="n">p_deployment_attr</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;method&#39;</span><span class="p">,</span> <span class="s1">&#39;add&#39;</span><span class="p">)</span>
                 <span class="c1"># support methods: add, needs, inspect</span>
                 <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">method</span><span class="p">)(</span><span class="o">**</span><span class="n">p_deployment_attr</span><span class="p">,</span> <span class="n">copy_flow</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-
+        <span class="n">gateway</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">GATEWAY_NAME</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="k">if</span> <span class="n">gateway</span><span class="p">:</span>
+            <span class="n">gateway_attr</span> <span class="o">=</span> <span class="p">{</span><span class="n">kk</span><span class="p">:</span> <span class="n">expand_env_var</span><span class="p">(</span><span class="n">vv</span><span class="p">)</span> <span class="k">for</span> <span class="n">kk</span><span class="p">,</span> <span class="n">vv</span> <span class="ow">in</span> <span class="n">gateway</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">config_gateway</span><span class="p">(</span><span class="o">**</span><span class="n">gateway_attr</span><span class="p">,</span> <span class="n">copy_flow</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">obj</span></div>
 
 <div class="viewcode-block" id="V1Parser.dump"><a class="viewcode-back" href="../../../../../../api/jina.jaml.parsers.flow.v1/#jina.jaml.parsers.flow.v1.V1Parser.dump">[docs]</a>    <span class="k">def</span> <span class="nf">dump</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="s1">&#39;Flow&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
@@ -498,7 +502,7 @@
         <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">_deployment_nodes</span><span class="p">:</span>
             <span class="n">r</span><span class="p">[</span><span class="s1">&#39;executors&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
 
-        <span class="n">last_name</span> <span class="o">=</span> <span class="s1">&#39;gateway&#39;</span>
+        <span class="n">last_name</span> <span class="o">=</span> <span class="n">GATEWAY_NAME</span>
         <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">_deployment_nodes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{}</span>
             <span class="c1"># only add &quot;needs&quot; when the value is not the last deployment name</span>
@@ -507,8 +511,6 @@
 
             <span class="c1"># get nondefault kwargs</span>
             <span class="n">parser</span> <span class="o">=</span> <span class="n">set_deployment_parser</span><span class="p">()</span>
-            <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">role</span> <span class="o">==</span> <span class="n">DeploymentRoleType</span><span class="o">.</span><span class="n">GATEWAY</span><span class="p">:</span>
-                <span class="n">parser</span> <span class="o">=</span> <span class="n">set_gateway_parser</span><span class="p">()</span>
 
             <span class="n">non_default_kw</span> <span class="o">=</span> <span class="n">ArgNamespace</span><span class="o">.</span><span class="n">get_non_defaults_args</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="n">parser</span><span class="p">)</span>
 
@@ -517,15 +519,23 @@
             <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">_get_taboo</span><span class="p">(</span><span class="n">parser</span><span class="p">):</span>
                 <span class="k">if</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
                     <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="s1">&#39;gateway&#39;</span><span class="p">:</span>
-                <span class="k">if</span> <span class="s1">&#39;JINA_FULL_CLI&#39;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">:</span>
-                    <span class="n">r</span><span class="p">[</span><span class="s1">&#39;with&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="k">continue</span>
-            <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">k</span> <span class="o">!=</span> <span class="n">GATEWAY_NAME</span><span class="p">:</span>
                 <span class="n">last_name</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
                 <span class="n">r</span><span class="p">[</span><span class="s1">&#39;executors&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
 
+        <span class="n">gateway_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">gateway_parser</span> <span class="o">=</span> <span class="n">set_gateway_parser</span><span class="p">()</span>
+        <span class="n">non_default_kw</span> <span class="o">=</span> <span class="n">ArgNamespace</span><span class="o">.</span><span class="n">get_non_defaults_args</span><span class="p">(</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">gateway_args</span><span class="p">,</span> <span class="n">gateway_parser</span>
+        <span class="p">)</span>
+        <span class="n">gateway_kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">non_default_kw</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">_get_taboo</span><span class="p">(</span><span class="n">gateway_parser</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">gateway_kwargs</span><span class="p">:</span>
+                <span class="n">gateway_kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s1">&#39;JINA_FULL_CLI&#39;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">:</span>
+            <span class="n">r</span><span class="p">[</span><span class="s1">&#39;with&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">gateway_kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">gateway_kwargs</span><span class="p">:</span>
+            <span class="n">r</span><span class="p">[</span><span class="n">GATEWAY_NAME</span><span class="p">]</span> <span class="o">=</span> <span class="n">gateway_kwargs</span>
         <span class="k">return</span> <span class="n">r</span></div></div>
 </pre></div>
                 </article>
@@ -541,7 +551,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Oct 28, 2022</div>
+                            Last updated on Nov 11, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

@@ -3,21 +3,14 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
-
 <meta property="og:title" content="Login & Token Management" />
-  
 <meta property="og:type" content="website" />
-  
 <meta property="og:url" content="https://docs.jina.ai/jina-ai-cloud/login/" />
-  
 <meta property="og:site_name" content="Jina 3.11.1 Documentation" />
-  
 <meta property="og:description" content="To use Jina AI Cloud, you need to log in, either via a GitHub or Google account. This section describes how to log in Jina AI Cloud and manage the personal access token. You can do it via webpage, via CLI or via Python API. via Webpage: Visit https://jina.ai and click on the “login” button. Login..." />
-  
 <meta property="og:image" content="https://docs.jina.ai/_images/login-1.png" />
-  
 <meta property="og:image:alt" content="Jina 3.11.1 Documentation" />
-  
+<meta name="description" content="To use Jina AI Cloud, you need to log in, either via a GitHub or Google account. This section describes how to log in Jina AI Cloud and manage the personal access token. You can do it via webpage, via CLI or via Python API. via Webpage: Visit https://jina.ai and click on the “login” button. Login..." />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
@@ -35,7 +28,8 @@
 </script>
 
 <script async defer src="https://buttons.github.io/buttons.js"></script>
-    <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="Executor Hub" href="../../fundamentals/executor/hub/" /><link rel="prev" title="Jina AI Cloud" href="../" />
+    
+<link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="Executor Hub" href="../../fundamentals/executor/hub/" /><link rel="prev" title="Jina AI Cloud" href="../" />
         <link rel="canonical" href="https://docs.jina.ai/jina-ai-cloud/login.html" />
 
     <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
@@ -287,6 +281,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/health-check/">Readiness &amp; health check</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/when-things-go-wrong/">Handle exceptions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/remarks/">Remarks</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/gateway/">Gateway</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -497,21 +492,12 @@
 <h3>Login<a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">hubble</span>
 
-<span class="c1"># Open browser automatically and login via 3rd party.</span>
-<span class="c1"># Token will be saved locally.</span>
-<span class="n">hubble</span><span class="o">.</span><span class="n">login</span><span class="p">()</span>
+<span class="c1"># Log in via browser or PAT. The token is saved locally.</span>
+<span class="c1"># In Jupyter/Google Colab, interactive login is used automatically.</span>
+<span class="c1"># To disable this feature, run `hubble.login(interactive=False)`.</span>
+<span class="n">hubble</span><span class="o">.</span><span class="n">login</span><span class="p">()</span> 
 </pre></div>
 </div>
-<section id="login-from-jupyter-notebook-google-colab">
-<h4>Login from Jupyter notebook/Google Colab<a class="headerlink" href="#login-from-jupyter-notebook-google-colab" title="Permalink to this heading">#</a></h4>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">hubble</span>
-
-<span class="c1"># Use Personal Access Token or browser to login.</span>
-<span class="c1"># Token will be saved locally.</span>
-<span class="n">hubble</span><span class="o">.</span><span class="n">notebook_login</span><span class="p">()</span>
-</pre></div>
-</div>
-</section>
 </section>
 <section id="check-login-status">
 <h3>Check login status<a class="headerlink" href="#check-login-status" title="Permalink to this heading">#</a></h3>
@@ -653,7 +639,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Oct 28, 2022</div>
+                            Last updated on Nov 11, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -703,10 +689,7 @@
 </ul>
 </li>
 <li><a class="reference internal" href="#via-python-api">via Python API</a><ul>
-<li><a class="reference internal" href="#id3">Login</a><ul>
-<li><a class="reference internal" href="#login-from-jupyter-notebook-google-colab">Login from Jupyter notebook/Google Colab</a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#id3">Login</a></li>
 <li><a class="reference internal" href="#check-login-status">Check login status</a></li>
 <li><a class="reference internal" href="#get-a-personal-access-token">Get a personal access token</a></li>
 <li><a class="reference internal" href="#id4">Logout</a></li>

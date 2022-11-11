@@ -254,6 +254,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/flow/health-check/">Readiness &amp; health check</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/flow/when-things-go-wrong/">Handle exceptions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/flow/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/flow/remarks/">Remarks</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../fundamentals/gateway/">Gateway</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -394,7 +395,22 @@
                 </div>
                 <article role="main">
                     <h1>Source code for jina.serve.runtimes.monitoring</h1><div class="highlight"><pre>
-<div class="viewcode-block" id="MonitoringMixin"><a class="viewcode-back" href="../../../../../api/jina.serve.runtimes.monitoring/#jina.serve.runtimes.monitoring.MonitoringMixin">[docs]</a><span></span><span class="k">class</span> <span class="nc">MonitoringMixin</span><span class="p">:</span>
+<span></span><span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Optional</span>
+
+<span class="kn">from</span> <span class="nn">jina.importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
+<span class="kn">from</span> <span class="nn">jina.proto</span> <span class="kn">import</span> <span class="n">jina_pb2</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+    <span class="kn">from</span> <span class="nn">opentelemetry.metrics</span> <span class="kn">import</span> <span class="n">Meter</span>
+    <span class="kn">from</span> <span class="nn">prometheus_client</span> <span class="kn">import</span> <span class="n">CollectorRegistry</span>
+
+    <span class="kn">from</span> <span class="nn">jina.types.request</span> <span class="kn">import</span> <span class="n">Request</span>
+
+
+<div class="viewcode-block" id="MonitoringMixin"><a class="viewcode-back" href="../../../../../api/jina.serve.runtimes.monitoring/#jina.serve.runtimes.monitoring.MonitoringMixin">[docs]</a><span class="k">class</span> <span class="nc">MonitoringMixin</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;The Monitoring Mixin for pods&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">_setup_monitoring</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -410,12 +426,211 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">metrics_registry</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">monitoring</span><span class="p">:</span>
-
             <span class="kn">from</span> <span class="nn">prometheus_client</span> <span class="kn">import</span> <span class="n">start_http_server</span>
 
             <span class="n">start_http_server</span><span class="p">(</span>
                 <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port_monitoring</span><span class="p">),</span> <span class="n">registry</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">metrics_registry</span>
             <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MonitoringRequestMixin"><a class="viewcode-back" href="../../../../../api/jina.serve.runtimes.monitoring/#jina.serve.runtimes.monitoring.MonitoringRequestMixin">[docs]</a><span class="k">class</span> <span class="nc">MonitoringRequestMixin</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Mixin for the request handling monitoring</span>
+
+<span class="sd">    :param metrics_registry: optional metrics registry for prometheus used if we need to expose metrics from the executor or from the data request handler</span>
+<span class="sd">    :param runtime_name: optional runtime_name that will be registered during monitoring</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">metrics_registry</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;CollectorRegistry&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">meter</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;Meter&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">runtime_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_request_init_time</span> <span class="o">=</span> <span class="p">{}</span> <span class="k">if</span> <span class="n">metrics_registry</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_meter_request_init_time</span> <span class="o">=</span> <span class="p">{}</span> <span class="k">if</span> <span class="n">meter</span> <span class="k">else</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="n">metrics_registry</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span>
+                    <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="n">help_text</span><span class="o">=</span><span class="s1">&#39;You need to install the `prometheus_client` to use the montitoring functionality of jina&#39;</span><span class="p">,</span>
+            <span class="p">):</span>
+                <span class="kn">from</span> <span class="nn">prometheus_client</span> <span class="kn">import</span> <span class="n">Counter</span><span class="p">,</span> <span class="n">Gauge</span><span class="p">,</span> <span class="n">Summary</span>
+
+                <span class="kn">from</span> <span class="nn">jina.serve.monitoring</span> <span class="kn">import</span> <span class="n">_SummaryDeprecated</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_receiving_request_metrics</span> <span class="o">=</span> <span class="n">Summary</span><span class="p">(</span>
+                <span class="s1">&#39;receiving_request_seconds&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;Time spent processing successful request&#39;</span><span class="p">,</span>
+                <span class="n">registry</span><span class="o">=</span><span class="n">metrics_registry</span><span class="p">,</span>
+                <span class="n">namespace</span><span class="o">=</span><span class="s1">&#39;jina&#39;</span><span class="p">,</span>
+                <span class="n">labelnames</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;runtime_name&#39;</span><span class="p">,),</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span><span class="n">runtime_name</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pending_requests_metrics</span> <span class="o">=</span> <span class="n">Gauge</span><span class="p">(</span>
+                <span class="s1">&#39;number_of_pending_requests&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;Number of pending requests&#39;</span><span class="p">,</span>
+                <span class="n">registry</span><span class="o">=</span><span class="n">metrics_registry</span><span class="p">,</span>
+                <span class="n">namespace</span><span class="o">=</span><span class="s1">&#39;jina&#39;</span><span class="p">,</span>
+                <span class="n">labelnames</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;runtime_name&#39;</span><span class="p">,),</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span><span class="n">runtime_name</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_failed_requests_metrics</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">(</span>
+                <span class="s1">&#39;failed_requests&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;Number of failed requests&#39;</span><span class="p">,</span>
+                <span class="n">registry</span><span class="o">=</span><span class="n">metrics_registry</span><span class="p">,</span>
+                <span class="n">namespace</span><span class="o">=</span><span class="s1">&#39;jina&#39;</span><span class="p">,</span>
+                <span class="n">labelnames</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;runtime_name&#39;</span><span class="p">,),</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span><span class="n">runtime_name</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_successful_requests_metrics</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">(</span>
+                <span class="s1">&#39;successful_requests&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;Number of successful requests&#39;</span><span class="p">,</span>
+                <span class="n">registry</span><span class="o">=</span><span class="n">metrics_registry</span><span class="p">,</span>
+                <span class="n">namespace</span><span class="o">=</span><span class="s1">&#39;jina&#39;</span><span class="p">,</span>
+                <span class="n">labelnames</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;runtime_name&#39;</span><span class="p">,),</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span><span class="n">runtime_name</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_request_size_metrics</span> <span class="o">=</span> <span class="n">_SummaryDeprecated</span><span class="p">(</span>
+                <span class="n">old_name</span><span class="o">=</span><span class="s1">&#39;request_size_bytes&#39;</span><span class="p">,</span>
+                <span class="n">name</span><span class="o">=</span><span class="s1">&#39;received_request_bytes&#39;</span><span class="p">,</span>
+                <span class="n">documentation</span><span class="o">=</span><span class="s1">&#39;The size in bytes of the request returned to the client&#39;</span><span class="p">,</span>
+                <span class="n">namespace</span><span class="o">=</span><span class="s1">&#39;jina&#39;</span><span class="p">,</span>
+                <span class="n">labelnames</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;runtime_name&#39;</span><span class="p">,),</span>
+                <span class="n">registry</span><span class="o">=</span><span class="n">metrics_registry</span><span class="p">,</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span><span class="n">runtime_name</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_sent_response_bytes</span> <span class="o">=</span> <span class="n">Summary</span><span class="p">(</span>
+                <span class="s1">&#39;sent_response_bytes&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;The size in bytes of the request returned to the client&#39;</span><span class="p">,</span>
+                <span class="n">namespace</span><span class="o">=</span><span class="s1">&#39;jina&#39;</span><span class="p">,</span>
+                <span class="n">labelnames</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;runtime_name&#39;</span><span class="p">,),</span>
+                <span class="n">registry</span><span class="o">=</span><span class="n">metrics_registry</span><span class="p">,</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span><span class="n">runtime_name</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_receiving_request_metrics</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pending_requests_metrics</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_failed_requests_metrics</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_successful_requests_metrics</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_request_size_metrics</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_sent_response_bytes</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="n">meter</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_receiving_request_histogram</span> <span class="o">=</span> <span class="n">meter</span><span class="o">.</span><span class="n">create_histogram</span><span class="p">(</span>
+                <span class="n">name</span><span class="o">=</span><span class="s1">&#39;jina_receiving_request_seconds&#39;</span><span class="p">,</span>
+                <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Time spent processing successful request&#39;</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pending_requests_up_down_counter</span> <span class="o">=</span> <span class="n">meter</span><span class="o">.</span><span class="n">create_up_down_counter</span><span class="p">(</span>
+                <span class="n">name</span><span class="o">=</span><span class="s1">&#39;jina_number_of_pending_requests&#39;</span><span class="p">,</span>
+                <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Number of pending requests&#39;</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_failed_requests_counter</span> <span class="o">=</span> <span class="n">meter</span><span class="o">.</span><span class="n">create_counter</span><span class="p">(</span>
+                <span class="n">name</span><span class="o">=</span><span class="s1">&#39;jina_failed_requests&#39;</span><span class="p">,</span>
+                <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Number of failed requests&#39;</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_successful_requests_counter</span> <span class="o">=</span> <span class="n">meter</span><span class="o">.</span><span class="n">create_counter</span><span class="p">(</span>
+                <span class="n">name</span><span class="o">=</span><span class="s1">&#39;jina_successful_requests&#39;</span><span class="p">,</span>
+                <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Number of successful requests&#39;</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_request_size_histogram</span> <span class="o">=</span> <span class="n">meter</span><span class="o">.</span><span class="n">create_histogram</span><span class="p">(</span>
+                <span class="n">name</span><span class="o">=</span><span class="s1">&#39;jina_received_request_bytes&#39;</span><span class="p">,</span>
+                <span class="n">description</span><span class="o">=</span><span class="s1">&#39;The size in bytes of the request returned to the client&#39;</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_sent_response_bytes_histogram</span> <span class="o">=</span> <span class="n">meter</span><span class="o">.</span><span class="n">create_histogram</span><span class="p">(</span>
+                <span class="n">name</span><span class="o">=</span><span class="s1">&#39;jina_sent_response_bytes&#39;</span><span class="p">,</span>
+                <span class="n">description</span><span class="o">=</span><span class="s1">&#39;The size in bytes of the request returned to the client&#39;</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_receiving_request_histogram</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pending_requests_up_down_counter</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_failed_requests_counter</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_successful_requests_counter</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_request_size_histogram</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_sent_response_bytes_histogram</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_metric_labels</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;runtime_name&#39;</span><span class="p">:</span> <span class="n">runtime_name</span><span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">_update_start_request_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="s1">&#39;Request&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_request_size_metrics</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_request_size_metrics</span><span class="o">.</span><span class="n">observe</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">nbytes</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_request_size_histogram</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_request_size_histogram</span><span class="o">.</span><span class="n">record</span><span class="p">(</span>
+                <span class="n">request</span><span class="o">.</span><span class="n">nbytes</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_metric_labels</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_receiving_request_metrics</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_request_init_time</span><span class="p">[</span><span class="n">request</span><span class="o">.</span><span class="n">request_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_receiving_request_histogram</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_meter_request_init_time</span><span class="p">[</span><span class="n">request</span><span class="o">.</span><span class="n">request_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pending_requests_metrics</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pending_requests_metrics</span><span class="o">.</span><span class="n">inc</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pending_requests_up_down_counter</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pending_requests_up_down_counter</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+                <span class="mi">1</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_metric_labels</span>
+            <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_update_end_successful_requests_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result</span><span class="p">:</span> <span class="s1">&#39;Request&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_receiving_request_metrics</span>
+        <span class="p">):</span>  <span class="c1"># this one should only be observed when the metrics is succesful</span>
+            <span class="n">init_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_request_init_time</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">request_id</span>
+            <span class="p">)</span>  <span class="c1"># need to pop otherwise it stays in memory forever</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_receiving_request_metrics</span><span class="o">.</span><span class="n">observe</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">init_time</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_receiving_request_histogram</span>
+        <span class="p">):</span>  <span class="c1"># this one should only be observed when the metrics is succesful</span>
+            <span class="n">init_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_meter_request_init_time</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">request_id</span>
+            <span class="p">)</span>  <span class="c1"># need to pop otherwise it stays in memory forever</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_receiving_request_histogram</span><span class="o">.</span><span class="n">record</span><span class="p">(</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">init_time</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_metric_labels</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pending_requests_metrics</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pending_requests_metrics</span><span class="o">.</span><span class="n">dec</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pending_requests_up_down_counter</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pending_requests_up_down_counter</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+                <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_metric_labels</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_successful_requests_metrics</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_successful_requests_metrics</span><span class="o">.</span><span class="n">inc</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_successful_requests_counter</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_successful_requests_counter</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_metric_labels</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sent_response_bytes</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_sent_response_bytes</span><span class="o">.</span><span class="n">observe</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">nbytes</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sent_response_bytes_histogram</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_sent_response_bytes_histogram</span><span class="o">.</span><span class="n">record</span><span class="p">(</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">nbytes</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_metric_labels</span>
+            <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_update_end_failed_requests_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pending_requests_metrics</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pending_requests_metrics</span><span class="o">.</span><span class="n">dec</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pending_requests_up_down_counter</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pending_requests_up_down_counter</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+                <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_metric_labels</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_failed_requests_metrics</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_failed_requests_metrics</span><span class="o">.</span><span class="n">inc</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_failed_requests_counter</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_failed_requests_counter</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_metric_labels</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_update_end_request_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result</span><span class="p">:</span> <span class="s1">&#39;Request&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">code</span> <span class="o">!=</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">StatusProto</span><span class="o">.</span><span class="n">ERROR</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_update_end_successful_requests_metrics</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_update_end_failed_requests_metrics</span><span class="p">()</span></div>
 </pre></div>
                 </article>
             </div>
@@ -430,7 +645,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Oct 28, 2022</div>
+                            Last updated on Nov 11, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

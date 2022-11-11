@@ -76,19 +76,10 @@ Installed along with Jina, you can leverage the `hubble` package to manage login
 ```python
 import hubble
 
-# Open browser automatically and login via 3rd party.
-# Token will be saved locally.
-hubble.login()
-```
-
-#### Login from Jupyter notebook/Google Colab
-
-```python
-import hubble
-
-# Use Personal Access Token or browser to login.
-# Token will be saved locally.
-hubble.notebook_login()
+# Log in via browser or PAT. The token is saved locally.
+# In Jupyter/Google Colab, interactive login is used automatically.
+# To disable this feature, run `hubble.login(interactive=False)`.
+hubble.login() 
 ```
 
 ### Check login status
