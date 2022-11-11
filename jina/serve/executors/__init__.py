@@ -3,6 +3,7 @@ import inspect
 import multiprocessing
 import os
 import threading
+import copy
 import warnings
 from types import SimpleNamespace
 from typing import TYPE_CHECKING, Any, Dict, Optional, Type, Union
@@ -13,7 +14,7 @@ from jina.helper import ArgNamespace, T, iscoroutinefunction, typename
 from jina.importer import ImportExtensions
 from jina.jaml import JAML, JAMLCompatible, env_var_regex, internal_var_regex
 from jina.logging.logger import JinaLogger
-from jina.serve.executors.decorators import avoid_concurrent_lock_cls
+from jina.serve.executors.decorators import avoid_concurrent_lock_cls, _init_requests_by_class
 from jina.serve.executors.metas import get_executor_taboo
 from jina.serve.helper import store_init_kwargs, wrap_func
 from jina.serve.instrumentation import MetricsTimer
@@ -37,6 +38,8 @@ class ExecutorType(type(JAMLCompatible), type):
         :return: Executor class
         """
         _cls = super().__new__(cls, *args, **kwargs)
+        # this needs to be here, in the case where Executors inherited do not define new `requests`
+        _init_requests_by_class(_cls)
         return cls.register_class(_cls)
 
     @staticmethod
@@ -47,7 +50,6 @@ class ExecutorType(type(JAMLCompatible), type):
         :param cls: The class.
         :return: The class, after being registered.
         """
-
         reg_cls_set = getattr(cls, '_registered_class', set())
 
         cls_id = f'{cls.__module__}.{cls.__name__}'
@@ -221,11 +223,16 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
         :return: Returns the requests corresponding to the specific Executor instance class
         """
-        if not hasattr(self, 'requests_by_class'):
-            self.requests_by_class = {}
-        if self.__class__.__name__ not in self.requests_by_class:
-            self.requests_by_class[self.__class__.__name__] = {}
-        return self.requests_by_class[self.__class__.__name__]
+        if hasattr(self, '_requests'):
+            return self._requests
+        else:
+            if not hasattr(self, 'requests_by_class'):
+                self.requests_by_class = {}
+            if self.__class__.__name__ not in self.requests_by_class:
+                self.requests_by_class[self.__class__.__name__] = {}
+            # we need to copy so that different instances with different (requests) in input do not disturb one another
+            self._requests = copy.copy(self.requests_by_class[self.__class__.__name__])
+            return self._requests
 
     def _add_requests(self, _requests: Optional[Dict]):
         if _requests:

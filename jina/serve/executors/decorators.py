@@ -2,7 +2,6 @@
 import functools
 import inspect
 import os
-from contextlib import nullcontext
 from pathlib import Path
 from typing import TYPE_CHECKING, Callable, Dict, List, Optional, Sequence, Union
 
@@ -66,6 +65,29 @@ def avoid_concurrent_lock_cls(cls):
         return arg_wrapper
 
     return avoid_concurrent_lock_wrapper
+
+
+def _init_requests_by_class(cls):
+    """
+    To allow inheritance and still have coherent usage of `requests`. Makes sure that a child class inherits requests from parents
+
+    :param cls: The class.
+    """
+    if not hasattr(cls, 'requests_by_class'):
+        cls.requests_by_class = {}
+
+    if cls.__name__ not in cls.requests_by_class:
+        cls.requests_by_class[cls.__name__] = {}
+
+        def _inherit_from_parent_class_inner(cls_):
+            for parent_class in cls_.__bases__:
+                cls.requests_by_class[cls.__name__].update(
+                    cls.requests_by_class.get(parent_class.__name__, {}))
+                _inherit_from_parent_class_inner(parent_class)
+
+        # assume that `requests` is called when importing class, so parent classes will be processed before
+        # inherit all the requests from parents
+        _inherit_from_parent_class_inner(cls)
 
 
 def requests(
@@ -160,13 +182,8 @@ def requests(
                 self.fn = arg_wrapper
 
         def __set_name__(self, owner, name):
+            _init_requests_by_class(owner)
             self.fn.class_name = owner.__name__
-            if not hasattr(owner, 'requests_by_class'):
-                owner.requests_by_class = {}
-
-            if owner.__name__ not in owner.requests_by_class:
-                owner.requests_by_class[owner.__name__] = {}
-
             if isinstance(on, (list, tuple)):
                 for o in on:
                     owner.requests_by_class[owner.__name__][o] = self.fn
