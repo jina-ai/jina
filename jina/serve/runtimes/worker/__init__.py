@@ -13,9 +13,7 @@ from jina.proto import jina_pb2, jina_pb2_grpc
 from jina.serve.instrumentation import MetricsTimer
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.helper import _get_grpc_server_options
-from jina.serve.runtimes.request_handlers.worker_request_handler import (
-    WorkerRequestHandler,
-)
+from jina.serve.runtimes.worker.request_handling import WorkerRequestHandler
 from jina.types.request.data import DataRequest
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -100,13 +98,13 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         # Keep this initialization order
         # otherwise readiness check is not valid
         # The WorkerRequestHandler needs to be started BEFORE the grpc server
-        self._worker_request_handler = WorkerRequestHandler(
+        self._request_handler = WorkerRequestHandler(
             args=self.args,
             logger=self.logger,
             metrics_registry=self.metrics_registry,
             tracer_provider=self.tracer_provider,
             meter_provider=self.meter_provider,
-            deployment_name=self.name.split('/')[0]
+            deployment_name=self.name.split('/')[0],
         )
         await self._async_setup_grpc_server()
 
@@ -166,7 +164,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         """Close the data request handler"""
         self._health_servicer.enter_graceful_shutdown()
         await self.async_cancel()
-        self._worker_request_handler.close()
+        self._request_handler.close()
 
     async def process_single_data(self, request: DataRequest, context) -> DataRequest:
         """
@@ -189,7 +187,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         self.logger.debug('got an endpoint discovery request')
         endpointsProto = jina_pb2.EndpointsProto()
         endpointsProto.endpoints.extend(
-            list(self._worker_request_handler._executor.requests.keys())
+            list(self._request_handler._executor.requests.keys())
         )
         return endpointsProto
 
@@ -223,7 +221,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
                 tracing_context = self._extract_tracing_context(
                     context.invocation_metadata()
                 )
-                result = await self._worker_request_handler.handle(
+                result = await self._request_handler.handle(
                     requests=requests, tracing_context=tracing_context
                 )
                 if self._successful_requests_metrics:
@@ -242,7 +240,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
                     exc_info=not self.args.quiet_error,
                 )
 
-                requests[0].add_exception(ex, self._worker_request_handler._executor)
+                requests[0].add_exception(ex, self._request_handler._executor)
                 context.set_trailing_metadata((('is-error', 'true'),))
                 if self._failed_requests_metrics:
                     self._failed_requests_metrics.inc()
