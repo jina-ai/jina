@@ -62,3 +62,6 @@ def test_default_port_protocol_gateway():
     args = set_gateway_parser().parse_args([])
     assert len(args.port) == 1
     assert args.protocol == [GatewayProtocolType.GRPC]
+
+
+# TODO: test ArgNamespace.get_non_defaults_args

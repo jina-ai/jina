@@ -99,7 +99,7 @@ def mixin_pod_parser(parser, pod_type: str = 'worker'):
             '--port',
             '--port-in',
             type=str,
-            default=str(helper.random_port()),
+            default=[str(helper.random_port())],
             help=port_description,
         )
     else:
