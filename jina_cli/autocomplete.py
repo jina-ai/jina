@@ -138,7 +138,6 @@ ac_table = {
             '--uses-with',
             '--py-modules',
             '--grpc-server-options',
-            '--port-expose',
             '--graph-description',
             '--graph-conditions',
             '--deployments-addresses',
