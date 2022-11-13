@@ -230,7 +230,7 @@ def run(
         def _is_ready():
             if args.pod_role == PodRoleType.GATEWAY:
                 return GatewayRuntime.is_ready(
-                    runtime_ctrl_address, protocol=args.protocol
+                    runtime_ctrl_address, protocol=args.protocol[0]
                 )
             else:
                 return AsyncNewLoopRuntime.is_ready(runtime_ctrl_address)
