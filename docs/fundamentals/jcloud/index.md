@@ -48,13 +48,14 @@ For the rest of this section, we use `jc` or `jcloud`. But again they are interc
 
 In Jina's idiom, a project is a [Flow](https://docs.jina.ai/fundamentals/flow/), which represents an end-to-end task such as indexing, searching or recommending. In this document, we use "project" and "Flow" interchangeably.
 
+````{tip}
+To deploy Flows on JCloud, all Executors need to be pushed to Jina Hub. If you haven't done so, please refer to [this guide](https://docs.jina.ai/chapters/hub/build-your-first-executor.html).
+````
+
+
 ```{caution}
 Flows have a maximum {ref}`lifetime<jcloud-lifetime>` after which they are automatically deleted.
 ```
-
-A Flow can have two types of file structure: a single YAML file or a project folder.
-
-#### Single YAML file
 
 A self-contained YAML file, consisting of all configuration at the [Flow](https://docs.jina.ai/fundamentals/flow/)-level and [Executor](https://docs.jina.ai/fundamentals/executor/)-level.
 
@@ -82,75 +83,59 @@ jina flow --uses flow.yml
 ```
 ````
 
+(jcloud-flow-status)=
+### Get status
 
-#### Project folder
-
-````{tip}
-The best practice of creating a JCloud project is to use:
-
-```
-jc new
-```
-
-This ensures the correct project structure accepted by JCloud.
-````
-
-Just like a regular Python project, you can have sub-folders of Executor implementations and a `flow.yml` on the top-level to connect all Executors together.
-
-You can create an example local project using `jc new hello`. The default structure looks like:
-
-```
-hello/
-├── .env
-├── executor1
-│   ├── config.yml
-│   ├── executor.py
-│   └── requirements.txt
-└── flow.yml
-```
-
-Where:
-
-- `hello/` is your top-level project folder.
-- `executor1` directory has all Executor related code/configuration. You can read the best practices for [file structures](https://docs.jina.ai/fundamentals/executor/executor-files/). Multiple Executor directories can be created.
-- `flow.yml` Your Flow YAML.
-- `.env` All environment variables used during deployment.
-
-To deploy:
-
+To get the status of a Flow:
 ```bash
-jc deploy hello
+jc status 15937a10bd
 ```
 
-The Flow is successfully deployed when you see:
-
-```{figure} deploy.png
+```{figure} img/status.png
 :width: 70%
 ```
 
-You will get a Flow ID, say `173503c192`. This ID is required to manage, view logs and remove the Flow.
+### Monitoring
 
-As this Flow is deployed with the default gRPC gateway (feel free to change it to `http` or `websocket`), you can use `jina.Client` to access it:
+Basic monitoring is provided to Flows deployed on Jina AI Cloud.
 
-```python
-from jina import Client, Document
+To access the [Grafana](https://grafana.com/)-powered dashboard, first get {ref}`the status of the Flow<jcloud-flow-status>`. The `dashboards` link is displayed at the bottom of the pane. Visit the URL to find basic metrics like 'Number of Request Gateway Received' and 'Time elapsed between receiving a request and sending back the response':
 
-c = Client(host='https://173503c192.wolf.jina.ai')
-print(c.post('/', Document(text='hello')))
+```{figure} monitoring.png
+:width: 70%
 ```
 
-### View logs
+### List Flows
 
-To watch the logs in real time:
+To list all of your "ALIVE" Flows:
 
 ```bash
-jc logs 173503c192
+jc list
 ```
 
-You can also stream logs for a particular Executor by passing its name:
+```{figure} img/list.png
+:width: 70%
+```
+
+You can also filter your Flows by passing a phase:
 
 ```bash
-jc logs 173503c192 --executor sentencizer
+jc list --phase Deleted
+```
+
+
+```{figure} img/list_deleted.png
+:width: 70%
+```
+
+Or see all Flows:
+
+```bash
+jc list --status ALL
+```
+
+```{figure} img/list_all.png
+:width: 70%
 ```
 
 ### Remove Flows
@@ -181,92 +166,6 @@ By default, removing multiple or all Flows is an interactive process where you m
 export JCLOUD_NO_INTERACTIVE=1
 ```
 
-(jcloud-flow-status)=
-### Get status
-
-To get the status of a Flow:
-```bash
-jc status 15937a10bd
-```
-
-```{figure} status.png
-:width: 70%
-```
-
-### Monitoring
-
-Basic monitoring is provided to Flows deployed on Jina AI Cloud.
-
-To access the [Grafana](https://grafana.com/)-powered dashboard, first get {ref}`the status of the Flow<jcloud-flow-status>`. The `dashboards` link is displayed at the bottom of the pane. Visit the URL to find basic metrics like 'Number of Request Gateway Received' and 'Time elapsed between receiving a request and sending back the response':
-
-```{figure} monitoring.png
-:width: 70%
-```
-
-### List Flows
-
-To list all of your "ALIVE" Flows:
-
-```bash
-jc list
-```
-
-```{figure} list.png
-:width: 70%
-```
-
-You can also filter your Flows by passing a status:
-
-```bash
-jc list --status FAILED
-```
-
-
-```{figure} list_failed.png
-:width: 70%
-```
-
-Or see all Flows:
-
-```bash
-jc list --status ALL
-```
-
-```{figure} list_all.png
-:width: 70%
-```
-
-### Pass environment variables
-
-#### Single YAML
-
-```bash
-jc deploy flow.yml --env-file flow.env
-```
-
-#### Project folder
-
-- You can include your environment variables in the `.env` file in the local project and Jina AI Cloud manages them.
-- You can optionally pass a `custom.env`.
-  ```bash
-  jc deploy ./hello --env-file ./hello/custom.env
-  ```
-  
-## Troubleshooting
-
-If your deployment failed, enable verbose logging and redeploy it. You can add `--loglevel DEBUG` _before_ each CLI subcommand:
-
-```bash
-jc --loglevel DEBUG deploy flow.yml
-```
-
-Alternatively, you can configure it by using environment variable `JCLOUD_LOGLEVEL`:
-
-```bash
-JCLOUD_LOGLEVEL=DEBUG jc deploy flow.yml
-```
-
-If you don't see any obvious errors, please raise an issue in [the JCloud repository](https://github.com/jina-ai/jcloud/issues/new/choose).
 
 ## Restrictions
 

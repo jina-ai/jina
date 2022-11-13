@@ -109,7 +109,8 @@ executors:
   - name: executor1
     uses: jinahub+docker://Executor1
     jcloud:
-      capacity: on-demand
+      resources:
+        capacity: on-demand
 ```
 
 ### Memory
@@ -137,15 +138,7 @@ JCloud supports two kinds of storage types: [efs](https://aws.amazon.com/efs/) (
 
 ````{hint}
 
-By default, we attach an `efs` to all Executors in a Flow. The benefits of doing so are:
-
-- It can grow dynamically, so you don't need to shrink/grow volumes as and when necessary.
-- All Executors in the Flow can share a disk.
-- The same disk can also be shared with another Flow by passing a workspace-id while deploying a Flow.
-
-```bash
-jc deploy flow.yml --workspace-id <prev-flow-id>
-```
+By default, we attach an `efs` to all Executors in a Flow. The benefits of doing so is - it can grow dynamically, so you don't need to shrink/grow volumes as and when necessary.
 
 If your Executor needs high IO, you can use `ebs` instead. Please note that:
 
@@ -273,9 +266,9 @@ executors:
     uses: jinahub+docker://Encoder
 ```
 
-### Disable gateway
+## Expose Executors
 
-A Flow deployment without a gateway is often used for {ref}`external-executors`, which can be shared over different Flows. You can disable a gateway by setting `expose_gateway: false`:
+A Flow deployment without a gateway is often used for {ref}`external-executors`, which can be shared over different Flows. You can expose an Executor by setting `expose: true`:
 
 ```{code-block} yaml
 ---
@@ -283,27 +276,31 @@ emphasize-lines: 3
 ---
 jtype: Flow
 jcloud:
-  expose_gateway: false
+  expose: false       # don't expose the Gateway
 executors:
   - name: custom
     uses: jinahub+docker://CustomExecutor
+    jcloud:
+      expose: true    # expose the Executor
 ```
 
 ```{figure} external-executor.png
 :width: 70%
 ```
 
-You can also deploy and expose multiple external Executors:
+You can deploy the Gateway along with multiple Executors:
 
 ```yaml
 jtype: Flow
-jcloud:
-  expose_gateway: false
 executors:
   - name: custom1
     uses: jinahub+docker://CustomExecutor1
+    jcloud:
+      expose: true    # expose the Executor
   - name: custom2
     uses: jinahub+docker://CustomExecutor2
+    jcloud:
+      expose: true    # expose the Executor
 ```
 
 ```{figure} external-executors-multiple.png
