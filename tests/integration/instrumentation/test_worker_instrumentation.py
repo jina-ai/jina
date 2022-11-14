@@ -17,10 +17,6 @@ def test_span_order(jaeger_port, otlp_collector, otlp_receiver_port):
         time.sleep(8)
 
     traces = get_traces(jaeger_port, 'executor0/rep-0')
-    with open('tmp.json', 'w') as f:
-        import json
-
-        json.dump(traces, f)
     process_single_data_span_ids = set()
     search_request_parent_span_ids = set()
     for trace in traces:

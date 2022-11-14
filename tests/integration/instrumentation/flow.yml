@@ -3,6 +3,6 @@ version: '1'
 with:
   tracing: true
   traces_exporter_host: localhost
-  traces_exporter_port: 4317
+  traces_exporter_port: ${OTLP_RECEIVER_PORT}
 executors:
   - uses: ExecutorTestWithTracing
