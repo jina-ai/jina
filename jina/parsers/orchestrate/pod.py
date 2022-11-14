@@ -6,7 +6,12 @@ from typing import Dict
 
 from jina import helper
 from jina.enums import PodRoleType
-from jina.parsers.helper import _SHOW_ALL_ARGS, KVAppendAction, add_arg_group
+from jina.parsers.helper import (
+    _SHOW_ALL_ARGS,
+    CastToIntAction,
+    KVAppendAction,
+    add_arg_group,
+)
 
 
 @dataclass
@@ -106,6 +111,7 @@ def mixin_pod_parser(parser, pod_type: str = 'worker'):
         gp.add_argument(
             '--port',
             '--port-in',
+            action=CastToIntAction,
             type=str,
             nargs='+',
             default=[str(helper.random_port())],

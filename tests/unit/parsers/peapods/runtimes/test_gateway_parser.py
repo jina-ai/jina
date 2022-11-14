@@ -10,9 +10,9 @@ from jina.parsers import set_gateway_parser
 @pytest.mark.parametrize(
     'port,expected_port',
     [
-        ('12345', ['12345']),
-        ([12345], ['12345']),
-        ([12345, 12344], ['12345', '12344']),
+        ('12345', [12345]),
+        ([12345], [12345]),
+        ([12345, 12344], [12345, 12344]),
     ],
 )
 @pytest.mark.parametrize(
@@ -36,8 +36,8 @@ def test_multiple_port_protocol_gateway_kwargs(
 @pytest.mark.parametrize(
     'port,expected_port',
     [
-        (['12345'], ['12345']),
-        (['12345', '12344'], ['12345', '12344']),
+        (['12345'], [12345]),
+        (['12345', '12344'], [12345, 12344]),
     ],
 )
 @pytest.mark.parametrize(

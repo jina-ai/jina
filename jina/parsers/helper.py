@@ -271,4 +271,23 @@ def _set_gateway_uses(args: 'argparse.Namespace'):
         args.uses = gateway_dict[args.protocol[0]]
 
 
+class CastToIntAction(argparse.Action):
+    """argparse action to cast a list of values to int"""
+
+    def __call__(self, parser, args, values, option_string=None):
+        """
+        call the CastToIntAction
+
+
+        .. # noqa: DAR401
+        :param parser: the parser
+        :param args: args to initialize the values
+        :param values: the values to add to the parser
+        :param option_string: inherited, not used
+        """
+
+        d = [int(value) for value in values]
+        setattr(args, self.dest, d)
+
+
 _chf = _ColoredHelpFormatter
