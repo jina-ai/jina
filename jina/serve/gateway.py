@@ -174,6 +174,6 @@ class BaseGateway(JAMLCompatible, metaclass=GatewayType):
         pass
 
     def _set_single_port_protocol(self):
-        if len(self.runtime_args.port) != 1 or len(self.runtime_args.protocol) != 1:
-            raise ValueError(f'{self.__class__} expects exactly 1 port and 1 protcol')
+        if len(self.runtime_args.port) < 1 or len(self.runtime_args.protocol) < 1:
+            raise ValueError(f'{self.__class__} expects at least 1 port and 1 protcol')
         self.port = self.runtime_args.port[0]

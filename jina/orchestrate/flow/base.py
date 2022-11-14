@@ -2232,34 +2232,44 @@ class Flow(
 
         address_table = self._init_table()
 
-        _protocol = str(self.protocol)
-        if self.gateway_args.ssl_certfile and self.gateway_args.ssl_keyfile:
-            _protocol = f'{self.protocol}S'
-            address_table.add_row(
-                ':chains:', 'Protocol', f':closed_lock_with_key: {_protocol}'
-            )
-
+        if not isinstance(self.protocol, list):
+            _protocols = [str(self.protocol)]
         else:
-            address_table.add_row(':chains:', 'Protocol', _protocol)
+            _protocols = [str(_p) for _p in self.protocol]
 
-        _protocol = _protocol.lower()
-        address_table.add_row(
-            ':house:',
-            'Local',
-            f'[link={_protocol}://{self.host}:{self.port}]{self.host}:{self.port}[/]',
-        )
-        address_table.add_row(
-            ':lock:',
-            'Private',
-            f'[link={_protocol}://{self.address_private}:{self.port}]{self.address_private}:{self.port}[/]',
-        )
+        if not isinstance(self.port, list):
+            _ports = [self.port]
+        else:
+            _ports = [str(_p) for _p in self.port]
 
-        if self.address_public:
+        for _port, _protocol in zip(_ports, _protocols):
+            if self.gateway_args.ssl_certfile and self.gateway_args.ssl_keyfile:
+                _protocol = f'{_protocol}S'
+                address_table.add_row(
+                    ':chains:', 'Protocol', f':closed_lock_with_key: {_protocol}'
+                )
+
+            else:
+                address_table.add_row(':chains:', 'Protocol', _protocol)
+
+            _protocol = _protocol.lower()
             address_table.add_row(
-                ':earth_africa:',
-                'Public',
-                f'[link={_protocol}://{self.address_public}:{self.port}]{self.address_public}:{self.port}[/]',
+                ':house:',
+                'Local',
+                f'[link={_protocol}://{self.host}:{_port}]{self.host}:{_port}[/]',
             )
+            address_table.add_row(
+                ':lock:',
+                'Private',
+                f'[link={_protocol}://{self.address_private}:{_port}]{self.address_private}:{_port}[/]',
+            )
+
+            if self.address_public:
+                address_table.add_row(
+                    ':earth_africa:',
+                    'Public',
+                    f'[link={_protocol}://{self.address_public}:{_port}]{self.address_public}:{_port}[/]',
+                )
 
         all_panels.append(
             Panel(
