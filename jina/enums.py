@@ -62,7 +62,7 @@ class BetterEnum(IntEnum, metaclass=EnumType):
         Convert the Enum to string representation
         :return: the string representation of the enum
         """
-        return self.name.lower()
+        return self.name
 
     def __format__(self, format_spec):  # noqa
         """
