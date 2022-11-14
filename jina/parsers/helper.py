@@ -267,6 +267,7 @@ def _set_gateway_uses(args: 'argparse.Namespace'):
         GatewayProtocolType.WEBSOCKET: 'WebSocketGateway',
         GatewayProtocolType.HTTP: 'HTTPGateway',
     }
+    # TODO: either raise an error or select the first protocol
     if not args.uses and len(args.protocol) == 1:
         args.uses = gateway_dict[args.protocol[0]]
 
@@ -285,9 +286,18 @@ class CastToIntAction(argparse.Action):
         :param values: the values to add to the parser
         :param option_string: inherited, not used
         """
-
-        d = [int(value) for value in values]
+        if isinstance(values, list):
+            d = [_port_to_int(port) for port in values]
+        else:
+            d = _port_to_int(values)
         setattr(args, self.dest, d)
+
+
+def _port_to_int(port):
+    try:
+        return int(port)
+    except ValueError:
+        raise ValueError(f'port {port} is not an integer and cannot be cast to one')
 
 
 _chf = _ColoredHelpFormatter

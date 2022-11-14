@@ -104,7 +104,8 @@ def mixin_pod_parser(parser, pod_type: str = 'worker'):
             '--port',
             '--port-in',
             type=str,
-            default=[str(helper.random_port())],
+            default=helper.random_port(),
+            action=CastToIntAction,
             help=port_description,
         )
     else:
@@ -114,7 +115,7 @@ def mixin_pod_parser(parser, pod_type: str = 'worker'):
             action=CastToIntAction,
             type=str,
             nargs='+',
-            default=[str(helper.random_port())],
+            default=[helper.random_port()],
             help=port_description,
         )
 

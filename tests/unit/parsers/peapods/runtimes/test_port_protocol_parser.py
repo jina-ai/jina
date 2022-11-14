@@ -2,7 +2,7 @@ import pytest
 
 from jina.enums import GatewayProtocolType
 from jina.helper import ArgNamespace
-from jina.parsers import set_gateway_parser
+from jina.parsers import set_gateway_parser, set_pod_parser
 
 # TODO: make sure this file is covered in CI
 
@@ -56,6 +56,11 @@ def test_multiple_port_protocol_gateway_args_list(
     )
     assert args.port == expected_port
     assert args.protocol == expected_protocol
+
+
+def test_pod_port_cast():
+    args = set_pod_parser().parse_args(['--port', '12345'])
+    assert args.port == 12345
 
 
 def test_default_port_protocol_gateway():

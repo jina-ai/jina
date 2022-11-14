@@ -47,10 +47,6 @@ class GatewayRuntime(AsyncNewLoopRuntime):
         _set_gateway_uses(args)
         super().__init__(args, cancel_event, **kwargs)
 
-    @classmethod
-    def _cast_port(cls, port):
-        return [int(_p) for _p in port]
-
     async def async_setup(self):
         """
         The async method setup the runtime.
