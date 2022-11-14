@@ -1,0 +1,9 @@
+FROM python:3.10-alpine
+WORKDIR /home
+
+COPY ./requirements.txt /home/requirements.txt
+RUN ["pip", "install", "-r", "requirements.txt"]
+
+COPY ./app.py /home/app.py
+
+ENTRYPOINT [ "python", "./app.py" ]
