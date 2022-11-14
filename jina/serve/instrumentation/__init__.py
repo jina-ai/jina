@@ -2,7 +2,7 @@ import functools
 from timeit import default_timer
 from typing import TYPE_CHECKING, Dict, Optional, Sequence
 
-if TYPE_CHECKING: # pragma: no cover
+if TYPE_CHECKING:  # pragma: no cover
     from grpc.aio._interceptor import ClientInterceptor, ServerInterceptor
     from opentelemetry.instrumentation.grpc._client import (
         OpenTelemetryClientInterceptor,
@@ -27,6 +27,7 @@ class InstrumentationMixin:
 
         self.tracing = tracing
         self.metrics = metrics
+        print('--->', traces_exporter_host, traces_exporter_port)
 
         if tracing:
             from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import (
@@ -34,16 +35,20 @@ class InstrumentationMixin:
             )
             from opentelemetry.sdk.resources import SERVICE_NAME, Resource
             from opentelemetry.sdk.trace import TracerProvider
-            from opentelemetry.sdk.trace.export import BatchSpanProcessor
+            from opentelemetry.sdk.trace.export import (
+                BatchSpanProcessor,
+                ConsoleSpanExporter,
+            )
 
             resource = Resource(attributes={SERVICE_NAME: name})
             provider = TracerProvider(resource=resource)
-            processor = BatchSpanProcessor(
-                OTLPSpanExporter(
-                    endpoint=f'{traces_exporter_host}:{traces_exporter_port}',
-                    insecure=True,
-                )
-            )
+            # processor = BatchSpanProcessor(
+            # OTLPSpanExporter(
+            # endpoint=f'{traces_exporter_host}:{traces_exporter_port}',
+            # insecure=True,
+            # )
+            # )
+            processor = BatchSpanProcessor(ConsoleSpanExporter())
             provider.add_span_processor(processor)
             self.tracer_provider = provider
             self.tracer = provider.get_tracer(name)
@@ -147,7 +152,9 @@ class MetricsTimer:
         self._histogram_metric_labels = histogram_metric_labels
 
     def _new_timer(self):
-        return self.__class__(self._summary_metric, self._histogram, self._histogram_metric_labels)
+        return self.__class__(
+            self._summary_metric, self._histogram, self._histogram_metric_labels
+        )
 
     def __enter__(self):
         self._start = default_timer()
