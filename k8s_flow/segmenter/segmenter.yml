@@ -86,19 +86,11 @@ spec:
               fieldPath: metadata.uid
         - name: JINA_DEPLOYMENT_NAME
           value: segmenter
-        - name: K8S_DEPLOYMENT_NAME
-          value: segmenter
-        - name: K8S_NAMESPACE_NAME
-          value: meow
-        - name: K8S_POD_NAME
-          valueFrom:
-            fieldRef:
-              fieldPath: metadata.name
         envFrom:
         - configMapRef:
             name: segmenter-configmap
-        image: test-executor:0.13.1
-        imagePullPolicy: Never
+        image: test-executor
+        imagePullPolicy: IfNotPresent
         name: executor
         ports:
         - containerPort: 8080

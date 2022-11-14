@@ -87,14 +87,6 @@ spec:
               fieldPath: metadata.uid
         - name: JINA_DEPLOYMENT_NAME
           value: gateway
-        - name: K8S_DEPLOYMENT_NAME
-          value: gateway
-        - name: K8S_NAMESPACE_NAME
-          value: meow
-        - name: K8S_POD_NAME
-          valueFrom:
-            fieldRef:
-              fieldPath: metadata.name
         envFrom:
         - configMapRef:
             name: gateway-configmap
