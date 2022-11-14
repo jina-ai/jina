@@ -384,7 +384,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         if self.tracer:
             with self.tracer.start_as_current_span(
                 req_endpoint, context=tracing_context
-            ) as _:
+            ):
                 from opentelemetry.propagate import extract
                 from opentelemetry.trace.propagation.tracecontext import (
                     TraceContextTextMapPropagator,
