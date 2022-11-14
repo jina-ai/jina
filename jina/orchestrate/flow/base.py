@@ -849,7 +849,6 @@ class Flow(
         no_reduce: Optional[bool] = False,
         output_array_type: Optional[str] = None,
         polling: Optional[str] = 'ANY',
-        port: Optional[str] = None,
         port_monitoring: Optional[str] = None,
         py_modules: Optional[List[str]] = None,
         quiet: Optional[bool] = False,
@@ -936,7 +935,6 @@ class Flow(
               Define per Endpoint:
               JSON dict, {endpoint: PollingType}
               {'/custom': 'ALL', '/search': 'ANY', '*': 'ANY'}
-        :param port: The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (`--external` or `external=True`) this can be a list of ports, separated by commas. Then, every resulting address will be considered as one replica of the Executor.
         :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]
         :param py_modules: The customized python modules need to be imported before loading the executor
 
@@ -1091,7 +1089,6 @@ class Flow(
               Define per Endpoint:
               JSON dict, {endpoint: PollingType}
               {'/custom': 'ALL', '/search': 'ANY', '*': 'ANY'}
-        :param port: The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (`--external` or `external=True`) this can be a list of ports, separated by commas. Then, every resulting address will be considered as one replica of the Executor.
         :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]
         :param py_modules: The customized python modules need to be imported before loading the executor
 
