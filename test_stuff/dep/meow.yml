@@ -2,9 +2,9 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: woof
+  name: meow
   labels:
-    app: woof
+    app: meow
     component: meow-collector
 spec:
   ports:
@@ -20,12 +20,12 @@ kind: Deployment
 metadata:
   name: meow-collector
   labels:
-    app: woof
+    app: meow
     component: meow-collector
 spec:
   selector:
     matchLabels:
-      app: woof
+      app: meow
       component: meow-collector
   minReadySeconds: 5
   progressDeadlineSeconds: 120
@@ -33,7 +33,7 @@ spec:
   template:
     metadata:
       labels:
-        app: woof
+        app: meow
         component: meow-collector
     spec:
       containers:
