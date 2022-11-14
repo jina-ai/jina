@@ -1,0 +1,8 @@
+jtype: Flow
+version: '1'
+with:
+  tracing: true
+  traces_exporter_host: localhost
+  traces_exporter_port: 4317
+executors:
+  - uses: ExecutorTestWithTracing
