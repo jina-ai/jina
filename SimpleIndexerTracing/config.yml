@@ -1,0 +1,8 @@
+jtype: SimpleIndexerTracing
+py_modules:
+  - executor.py
+metas:
+  name: SimpleIndexerTracing
+  description: 
+  url: 
+  keywords: []

@@ -27,7 +27,7 @@ class InstrumentationMixin:
 
         self.tracing = tracing
         self.metrics = metrics
-        print('--->', traces_exporter_host, traces_exporter_port)
+        print('--->tracing info:', traces_exporter_host, traces_exporter_port)
 
         if tracing:
             from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import (

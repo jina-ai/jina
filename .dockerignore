@@ -12,3 +12,4 @@
 !daemon/**
 !docarray/**
 !fastentrypoints.py
+!SimpleIndexerTracing/**

@@ -182,7 +182,7 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, InstrumentationMixin, AB
         :return: True if status is ready else False.
         """
 
-        print('--->address', ctrl_address)
+        # print('--->address', ctrl_address)
         try:
             from grpc_health.v1 import health_pb2, health_pb2_grpc
 
