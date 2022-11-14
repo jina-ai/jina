@@ -5,8 +5,11 @@ from tests.integration.instrumentation import ExecutorTestWithTracing, get_trace
 
 
 def test_span_order(jaeger_port, otlp_collector, otlp_receiver_port):
-    # cannot use the pythonic f = Flow(...) because an actual gateway process is not started
-    f = Flow.load_config('flow.yml')
+    f = Flow(
+        tracing=True,
+        traces_exporter_host='localhost',
+        traces_exporter_port=otlp_receiver_port,
+    ).add(uses=ExecutorTestWithTracing)
 
     with f:
         from jina import DocumentArray
