@@ -34,6 +34,8 @@ def _cli_to_schema(
         pv['default_literal'] = pv['default']
         if isinstance(pv['default'], str):
             pv['default_literal'] = "'" + pv['default'] + "'"
+        elif isinstance(pv['default'], list):
+            pv['default_literal'] = [str(item) for item in pv['default']]
         if p['default_random']:
             pv['default_literal'] = None
 
