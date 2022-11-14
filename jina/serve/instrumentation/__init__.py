@@ -27,7 +27,7 @@ class InstrumentationMixin:
 
         self.tracing = tracing
         self.metrics = metrics
-        print('--->tracing info:', traces_exporter_host, traces_exporter_port)
+        print('--->tracing', traces_exporter_host, traces_exporter_port)
 
         if tracing:
             from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import (
@@ -61,17 +61,21 @@ class InstrumentationMixin:
                 OTLPMetricExporter,
             )
             from opentelemetry.sdk.metrics import MeterProvider
-            from opentelemetry.sdk.metrics.export import PeriodicExportingMetricReader
+            from opentelemetry.sdk.metrics.export import (
+                ConsoleMetricExporter,
+                PeriodicExportingMetricReader,
+            )
             from opentelemetry.sdk.resources import SERVICE_NAME, Resource
 
             resource = Resource(attributes={SERVICE_NAME: name})
 
-            metric_reader = PeriodicExportingMetricReader(
-                OTLPMetricExporter(
-                    endpoint=f'{metrics_exporter_host}:{metrics_exporter_port}',
-                    insecure=True,
-                )
-            )
+            # metric_reader = PeriodicExportingMetricReader(
+            #     OTLPMetricExporter(
+            #         endpoint=f'{metrics_exporter_host}:{metrics_exporter_port}',
+            #         insecure=True,
+            #     )
+            # )
+            metric_reader = PeriodicExportingMetricReader(ConsoleMetricExporter)
             meter_provider = MeterProvider(
                 metric_readers=[metric_reader], resource=resource
             )
