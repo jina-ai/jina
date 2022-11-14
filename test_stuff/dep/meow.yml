@@ -1,0 +1,54 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: woof
+  labels:
+    app: woof
+    component: meow-collector
+spec:
+  ports:
+  - name: metrics # Default endpoint for querying metrics.
+    port: 8000
+    targetPort: 8000
+    protocol: TCP
+  selector:
+    component: meow-collector
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: meow-collector
+  labels:
+    app: woof
+    component: meow-collector
+spec:
+  selector:
+    matchLabels:
+      app: woof
+      component: meow-collector
+  minReadySeconds: 5
+  progressDeadlineSeconds: 120
+  replicas: 1 #TODO - adjust this to your own requirements
+  template:
+    metadata:
+      labels:
+        app: woof
+        component: meow-collector
+    spec:
+      containers:
+      - image: mirror
+        imagePullPolicy: Never
+        name: meow-collector
+        env:
+        - name: MEOW_PORT
+          value: "8000"
+        resources:
+          limits:
+            cpu: 1
+            memory: 2Gi
+          requests:
+            cpu: 200m
+            memory: 400Mi
+        ports:
+        - containerPort: 8000

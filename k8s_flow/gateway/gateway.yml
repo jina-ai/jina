@@ -1,0 +1,115 @@
+apiVersion: v1
+data:
+  JINA_LOG_LEVEL: INFO
+  pythonunbuffered: '1'
+  worker_class: uvicorn.workers.UvicornH11Worker
+kind: ConfigMap
+metadata:
+  name: gateway-configmap
+  namespace: meow
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: gateway
+  name: gateway
+  namespace: meow
+spec:
+  ports:
+  - name: port
+    port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: gateway
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gateway
+  namespace: meow
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gateway
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      annotations:
+        linkerd.io/inject: enabled
+      labels:
+        app: gateway
+        jina_deployment_name: gateway
+        ns: meow
+        pod_type: GATEWAY
+        shard_id: ''
+    spec:
+      containers:
+      - args:
+        - gateway
+        - --k8s-namespace
+        - meow
+        - --expose-endpoints
+        - '{}'
+        - --uses
+        - GRPCGateway
+        - --port
+        - '8080'
+        - --graph-description
+        - '{"segmenter": ["end-gateway"], "start-gateway": ["segmenter"]}'
+        - --deployments-addresses
+        - '{"segmenter": ["grpc://segmenter.meow.svc:8080"]}'
+        - --port-monitoring
+        - '9090'
+        - --tracing
+        - --traces-exporter-host
+        - otel-collector
+        - --traces-exporter-port
+        - '4317'
+        - --metrics
+        - --metrics-exporter-host
+        - otel-collector
+        - --metrics-exporter-port
+        - '4317'
+        command:
+        - jina
+        env:
+        - name: POD_UID
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.uid
+        - name: JINA_DEPLOYMENT_NAME
+          value: gateway
+        - name: K8S_DEPLOYMENT_NAME
+          value: gateway
+        - name: K8S_NAMESPACE_NAME
+          value: meow
+        - name: K8S_POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        envFrom:
+        - configMapRef:
+            name: gateway-configmap
+        image: jinaai/jina:test-pip
+        imagePullPolicy: IfNotPresent
+        name: gateway
+        ports:
+        - containerPort: 8080
+        readinessProbe:
+          exec:
+            command:
+            - jina
+            - ping
+            - gateway
+            - grpc://127.0.0.1:8080
+          initialDelaySeconds: 5
+          periodSeconds: 20
+          timeoutSeconds: 10

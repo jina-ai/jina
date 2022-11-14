@@ -1,0 +1,114 @@
+apiVersion: v1
+data:
+  JINA_LOG_LEVEL: INFO
+  pythonunbuffered: '1'
+  worker_class: uvicorn.workers.UvicornH11Worker
+kind: ConfigMap
+metadata:
+  name: segmenter-configmap
+  namespace: meow
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: segmenter
+  name: segmenter
+  namespace: meow
+spec:
+  ports:
+  - name: port
+    port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: segmenter
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: segmenter
+  namespace: meow
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: segmenter
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      annotations:
+        linkerd.io/inject: enabled
+      labels:
+        app: segmenter
+        jina_deployment_name: segmenter
+        ns: meow
+        pod_type: WORKER
+        shard_id: '0'
+    spec:
+      containers:
+      - args:
+        - executor
+        - --name
+        - segmenter
+        - --k8s-namespace
+        - meow
+        - --uses
+        - config.yml
+        - --port
+        - '8080'
+        - --port-monitoring
+        - '9090'
+        - --tracing
+        - --traces-exporter-host
+        - otel-collector
+        - --traces-exporter-port
+        - '4317'
+        - --metrics
+        - --metrics-exporter-host
+        - otel-collector
+        - --metrics-exporter-port
+        - '4317'
+        - --uses-metas
+        - '{}'
+        - --native
+        command:
+        - jina
+        env:
+        - name: POD_UID
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.uid
+        - name: JINA_DEPLOYMENT_NAME
+          value: segmenter
+        - name: K8S_DEPLOYMENT_NAME
+          value: segmenter
+        - name: K8S_NAMESPACE_NAME
+          value: meow
+        - name: K8S_POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        envFrom:
+        - configMapRef:
+            name: segmenter-configmap
+        image: test-executor:0.13.1
+        imagePullPolicy: Never
+        name: executor
+        ports:
+        - containerPort: 8080
+        readinessProbe:
+          exec:
+            command:
+            - jina
+            - ping
+            - executor
+            - 127.0.0.1:8080
+          initialDelaySeconds: 5
+          periodSeconds: 20
+          timeoutSeconds: 10
