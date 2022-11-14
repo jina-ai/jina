@@ -60,6 +60,8 @@ class OpenTelemetryAioServerInterceptor(
         return _wrap_rpc_behavior(next_handler, telemetry_wrapper)
 
     def _intercept_aio_server_unary(self, behavior, handler_call_details):
+        from jina.helper import iscoroutinefunction
+
         async def _unary_interceptor(request_or_iterator, context):
             with self._set_remote_context(context):
                 with self._start_span(

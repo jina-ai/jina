@@ -27,7 +27,6 @@ class InstrumentationMixin:
 
         self.tracing = tracing
         self.metrics = metrics
-        print('--->tracing', traces_exporter_host, traces_exporter_port)
 
         if tracing:
             from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import (
@@ -35,20 +34,16 @@ class InstrumentationMixin:
             )
             from opentelemetry.sdk.resources import SERVICE_NAME, Resource
             from opentelemetry.sdk.trace import TracerProvider
-            from opentelemetry.sdk.trace.export import (
-                BatchSpanProcessor,
-                ConsoleSpanExporter,
-            )
+            from opentelemetry.sdk.trace.export import BatchSpanProcessor
 
             resource = Resource(attributes={SERVICE_NAME: name})
             provider = TracerProvider(resource=resource)
-            # processor = BatchSpanProcessor(
-            # OTLPSpanExporter(
-            # endpoint=f'{traces_exporter_host}:{traces_exporter_port}',
-            # insecure=True,
-            # )
-            # )
-            processor = BatchSpanProcessor(ConsoleSpanExporter())
+            processor = BatchSpanProcessor(
+                OTLPSpanExporter(
+                    endpoint=f'{traces_exporter_host}:{traces_exporter_port}',
+                    insecure=True,
+                )
+            )
             provider.add_span_processor(processor)
             self.tracer_provider = provider
             self.tracer = provider.get_tracer(name)
@@ -61,21 +56,17 @@ class InstrumentationMixin:
                 OTLPMetricExporter,
             )
             from opentelemetry.sdk.metrics import MeterProvider
-            from opentelemetry.sdk.metrics.export import (
-                ConsoleMetricExporter,
-                PeriodicExportingMetricReader,
-            )
+            from opentelemetry.sdk.metrics.export import PeriodicExportingMetricReader
             from opentelemetry.sdk.resources import SERVICE_NAME, Resource
 
             resource = Resource(attributes={SERVICE_NAME: name})
 
-            # metric_reader = PeriodicExportingMetricReader(
-            #     OTLPMetricExporter(
-            #         endpoint=f'{metrics_exporter_host}:{metrics_exporter_port}',
-            #         insecure=True,
-            #     )
-            # )
-            metric_reader = PeriodicExportingMetricReader(ConsoleMetricExporter)
+            metric_reader = PeriodicExportingMetricReader(
+                OTLPMetricExporter(
+                    endpoint=f'{metrics_exporter_host}:{metrics_exporter_port}',
+                    insecure=True,
+                )
+            )
             meter_provider = MeterProvider(
                 metric_readers=[metric_reader], resource=resource
             )

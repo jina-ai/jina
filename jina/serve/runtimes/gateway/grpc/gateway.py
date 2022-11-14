@@ -35,7 +35,7 @@ class GRPCGateway(BaseGateway):
         self.grpc_server_options = grpc_server_options
         self.ssl_keyfile = ssl_keyfile
         self.ssl_certfile = ssl_certfile
-        self.health_servicer = health.HealthServicer(experimental_non_blocking=True)
+        self.health_servicer = health.aio.HealthServicer()
 
     async def setup_server(self):
         """
@@ -97,7 +97,7 @@ class GRPCGateway(BaseGateway):
     async def teardown(self):
         """Free other resources allocated with the server, e.g, gateway object, ..."""
         await super().teardown()
-        self.health_servicer.enter_graceful_shutdown()
+        await self.health_servicer.enter_graceful_shutdown()
 
     async def stop_server(self):
         """
@@ -118,6 +118,7 @@ class GRPCGateway(BaseGateway):
         :returns: the response request
         """
         from docarray import DocumentArray
+
         from jina.clients.request import request_generator
         from jina.enums import DataInputType
         from jina.serve.executors import __dry_run_endpoint__

@@ -32,7 +32,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         :param args: args from CLI
         :param kwargs: keyword args
         """
-        self._health_servicer = health.HealthServicer(experimental_non_blocking=True)
+        self._health_servicer = health.aio.HealthServicer()
         super().__init__(args, **kwargs)
 
     async def async_setup(self):
@@ -162,7 +162,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
 
     async def async_teardown(self):
         """Close the data request handler"""
-        self._health_servicer.enter_graceful_shutdown()
+        await self._health_servicer.enter_graceful_shutdown()
         await self.async_cancel()
         self._request_handler.close()
 

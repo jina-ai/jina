@@ -36,7 +36,7 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
         :param args: args from CLI
         :param kwargs: keyword args
         """
-        self._health_servicer = health.HealthServicer(experimental_non_blocking=True)
+        self._health_servicer = health.aio.HealthServicer()
 
         super().__init__(args, **kwargs)
         if args.name is None:
@@ -174,7 +174,7 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
 
     async def async_teardown(self):
         """Close the connection pool"""
-        self._health_servicer.enter_graceful_shutdown()
+        await self._health_servicer.enter_graceful_shutdown()
         await self.async_cancel()
         await self.connection_pool.close()
 
