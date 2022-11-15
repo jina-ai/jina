@@ -44,6 +44,7 @@ def test_multiple_protocols_gateway(multi_port_gateway_docker_image_built, uses)
     flow = Flow().config_gateway(
         uses=uses, port=[http_port, grpc_port], protocol=['http', 'grpc']
     )
+    assert flow.port == [http_port, grpc_port]
     grpc_client = Client(protocol='grpc', port=grpc_port)
     with flow:
         grpc_client.post('/', inputs=Document())
