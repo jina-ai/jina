@@ -9,11 +9,13 @@ import yaml
 from docarray import DocumentArray
 from pytest_kind import cluster
 
-from jina import Document, Executor, Flow, requests
+from jina import Client, Document, Executor, Flow, requests
+from jina.helper import random_port
 from jina.orchestrate.deployments import Deployment
 from jina.orchestrate.deployments.config.k8s import K8sDeploymentConfig
 from jina.parsers import set_deployment_parser
 from jina.serve.networking import GrpcConnectionPool
+from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from tests.helper import _validate_dummy_custom_gateway_response
 
 cluster.KIND_VERSION = 'v0.11.1'
@@ -937,6 +939,66 @@ async def test_flow_with_custom_gateway(logger, docker_images, tmpdir):
         assert tags['shard_id'] == 0
 
     core_client.delete_namespace(namespace)
+
+
+@pytest.mark.asyncio
+@pytest.mark.timeout(3600)
+@pytest.mark.parametrize(
+    'docker_images',
+    [['multiprotocol-gateway']],
+    indirect=True,
+)
+def test_flow_multiple_protocols_gateway(logger, docker_images, tmpdir):
+    http_port = random_port()
+    grpc_port = random_port()
+    flow = Flow().config_gateway(
+        uses=f'docker://{docker_images[0]}',
+        port=[http_port, grpc_port],
+        protocol=['http', 'grpc'],
+    )
+
+    dump_path = os.path.join(str(tmpdir), 'k8s-flow-custom-gateway.yml')
+    namespace = 'flow-custom-gateway'.lower()
+    flow.to_kubernetes_yaml(dump_path, k8s_namespace=namespace)
+
+    from kubernetes import client
+
+    api_client = client.ApiClient()
+    core_client = client.CoreV1Api(api_client=api_client)
+    app_client = client.AppsV1Api(api_client=api_client)
+    await create_all_flow_deployments_and_wait_ready(
+        dump_path,
+        namespace=namespace,
+        api_client=api_client,
+        app_client=app_client,
+        core_client=core_client,
+        deployment_replicas_expected={
+            'gateway': 1,
+            'test-executor': 1,
+        },
+        logger=logger,
+    )
+
+    gateway_pod_name = (
+        core_client.list_namespaced_pod(
+            namespace=namespace, label_selector='app=gateway'
+        )
+        .items[0]
+        .metadata.name
+    )
+    config_path = os.environ['KUBECONFIG']
+    import portforward
+
+    with portforward.forward(
+        namespace, gateway_pod_name, flow.port, flow.port, config_path
+    ):
+        import requests
+
+        grpc_client = Client(protocol='grpc', port=grpc_port)
+        grpc_client.post('/', inputs=Document())
+        resp = requests.get(f'http://localhost:{http_port}').json()
+        assert resp['protocol'] == 'http'
+        assert AsyncNewLoopRuntime.is_ready(f'localhost:{grpc_port}')
 
 
 @pytest.mark.timeout(3600)

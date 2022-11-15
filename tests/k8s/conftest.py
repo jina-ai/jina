@@ -152,6 +152,7 @@ def image_name_tag_map():
         'jinaai/jina': 'test-pip',
         'custom-gateway': '0.1.1',
         'test-stateful-executor': '0.13.1',
+        'multiprotocol-gateway': '0.1.1',
     }
 
 
