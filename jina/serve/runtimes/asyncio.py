@@ -39,12 +39,17 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, InstrumentationMixin, AB
         asyncio.set_event_loop(self._loop)
         self.is_cancel = cancel_event or asyncio.Event()
         if not __windows__:
-            # TODO: windows event loops don't support signal handlers
             try:
+                def _cancel(signame):
+                    def _inner_cancel(*args, **kwargs):
+                        self.logger.debug(f'Received signal {signame}')
+                        self.is_cancel.set(),
+                    return _inner_cancel
+
                 for signame in {'SIGINT', 'SIGTERM'}:
                     self._loop.add_signal_handler(
                         getattr(signal, signame),
-                        lambda *args, **kwargs: self.is_cancel.set(),
+                        _cancel(signame),
                     )
             except (ValueError, RuntimeError) as exc:
                 self.logger.warning(

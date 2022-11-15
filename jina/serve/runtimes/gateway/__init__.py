@@ -101,7 +101,7 @@ class GatewayRuntime(AsyncNewLoopRuntime):
     async def _wait_for_cancel(self):
         """Do NOT override this method when inheriting from :class:`GatewayPod`"""
         # handle terminate signals
-        while not self.is_cancel.is_set() and not self.gateway.should_exit:
+        while not self.is_cancel.is_set():
             await asyncio.sleep(0.1)
 
         await self.async_cancel()
