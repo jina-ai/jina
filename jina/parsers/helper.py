@@ -5,6 +5,7 @@ import os
 from typing import Tuple
 
 from jina.enums import GatewayProtocolType
+from jina.logging.predefined import default_logger
 
 _SHOW_ALL_ARGS = 'JINA_FULL_CLI' in os.environ
 
@@ -297,7 +298,10 @@ def _port_to_int(port):
     try:
         return int(port)
     except ValueError:
-        raise ValueError(f'port {port} is not an integer and cannot be cast to one')
+        default_logger.warning(
+            f'port {port} is not an integer and cannot be cast to one'
+        )
+        return port
 
 
 _chf = _ColoredHelpFormatter
