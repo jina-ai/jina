@@ -379,8 +379,8 @@ def test_docker_compose_gateway(deployments_addresses, custom_gateway):
         else f'jinaai/jina:{deployment_config.worker_services[0].version}-py38-standard'
     )
     assert gateway_config['entrypoint'] == ['jina']
-    assert gateway_config['ports'] == [f'{args.port}:{args.port}']
-    assert gateway_config['expose'] == [f'{args.port}']
+    assert gateway_config['ports'] == [f'{args.port[0]}:{args.port[0]}']
+    assert gateway_config['expose'] == [args.port[0]]
     args = gateway_config['command']
     assert args[0] == 'gateway'
     assert '--port' in args
