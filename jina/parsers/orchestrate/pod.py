@@ -111,6 +111,7 @@ def mixin_pod_parser(parser, pod_type: str = 'worker'):
     else:
         gp.add_argument(
             '--port',
+            '--port-expose',
             '--port-in',
             action=CastToIntAction,
             type=str,
