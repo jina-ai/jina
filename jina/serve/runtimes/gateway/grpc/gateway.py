@@ -63,7 +63,9 @@ class GRPCGateway(BaseGateway):
         health_pb2_grpc.add_HealthServicer_to_server(self.health_servicer, self.server)
 
         for service in service_names:
-            self.health_servicer.set(service, health_pb2.HealthCheckResponse.SERVING)
+            await self.health_servicer.set(
+                service, health_pb2.HealthCheckResponse.SERVING
+            )
         reflection.enable_server_reflection(service_names, self.server)
 
         bind_addr = f'{__default_host__}:{self.port}'

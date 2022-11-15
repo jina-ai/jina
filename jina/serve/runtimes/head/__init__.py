@@ -154,7 +154,9 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
         )
 
         for service in service_names:
-            self._health_servicer.set(service, health_pb2.HealthCheckResponse.SERVING)
+            await self._health_servicer.set(
+                service, health_pb2.HealthCheckResponse.SERVING
+            )
         reflection.enable_server_reflection(service_names, self._grpc_server)
 
         bind_addr = f'0.0.0.0:{self.args.port}'
