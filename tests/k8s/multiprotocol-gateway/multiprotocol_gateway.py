@@ -19,7 +19,7 @@ class MultiProtocolGateway(Gateway):
         self.grpc_port = self.runtime_args.port[1]
         self.health_servicer = health.HealthServicer(experimental_non_blocking=True)
 
-    async def setup_http_server(self):
+    async def _setup_http_server(self):
         from fastapi import FastAPI
 
         app = FastAPI(
@@ -34,7 +34,7 @@ class MultiProtocolGateway(Gateway):
             Config(app, host=__default_host__, port=self.http_port)
         )
 
-    async def setup_grpc_server(self):
+    async def _setup_grpc_server(self):
         self.grpc_server = grpc.aio.server()
 
         jina_pb2_grpc.add_JinaRPCServicer_to_server(
@@ -56,11 +56,10 @@ class MultiProtocolGateway(Gateway):
         await self.grpc_server.start()
 
     async def setup_server(self):
-        await self.setup_http_server()
-        await self.setup_grpc_server()
+        await self._setup_http_server()
+        await self._setup_grpc_server()
 
     async def run_server(self):
-        print('running servers')
         await self.http_server.serve()
         await self.grpc_server.wait_for_termination()
 
