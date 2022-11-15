@@ -113,6 +113,7 @@ def mixin_pod_parser(parser, pod_type: str = 'worker'):
             '--port',
             '--port-expose',
             '--port-in',
+            '--ports',
             action=CastToIntAction,
             type=str,
             nargs='+',

@@ -150,6 +150,7 @@ def mixin_gateway_protocol_parser(parser):
 
     parser.add_argument(
         '--protocol',
+        '--protocols',
         nargs='+',
         type=GatewayProtocolType.from_string,
         choices=list(GatewayProtocolType),
