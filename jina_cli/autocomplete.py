@@ -153,6 +153,7 @@ ac_table = {
             '--pod-role',
             '--noblock-on-start',
             '--port',
+            '--port-expose',
             '--port-in',
             '--monitoring',
             '--port-monitoring',
