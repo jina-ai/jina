@@ -168,7 +168,7 @@ class WorkerRequestHandler:
 
     @staticmethod
     def _parse_params(parameters: Dict, executor_name: str):
-        parsed_params = parameters
+        parsed_params = parameters # TODO: Copy? This still points to the same object
         specific_parameters = parameters.get(executor_name, None)
         if specific_parameters:
             parsed_params.update(**specific_parameters)
@@ -266,6 +266,10 @@ class WorkerRequestHandler:
         :param tracing_context: Optional OpenTelemetry tracing context from the originating request.
         :returns: the processed message
         """
+        # JOAN: This true? Why list?
+        # TODO: Just leave this then run all the tests
+        assert len(requests) == 1, "There are places where the handler is called with more than one request __apparently__"
+
         # skip executor if endpoints mismatch
         if (
             requests[0].header.exec_endpoint not in self._executor.requests
@@ -284,6 +288,15 @@ class WorkerRequestHandler:
             field='docs',
         )
 
+        # TODO: Multiple batch queues. One for each endpoint
+
+        # CONSTRAINT: input.size == output.size - Otherwise we cant know whos requests are whos
+        # Enqueue
+        # Wait
+        # Timeout?
+            # Yes: queue.flush
+            # No: Continue
+
         # executor logic
         return_data = await self._executor.__acall__(
             req_endpoint=requests[0].header.exec_endpoint,
@@ -301,6 +314,7 @@ class WorkerRequestHandler:
         self._record_docs_processed_monitoring(requests, docs)
         self._record_response_size_monitoring(requests)
 
+        # Await then return? Or do nothing and assume someone else returns?
         return requests[0]
 
     @staticmethod
