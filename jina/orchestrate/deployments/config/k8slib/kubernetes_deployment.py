@@ -111,6 +111,7 @@ def get_template_yamls(
             ]
         )
     else:
+        template_params['ports-section'] = f'\n            - containerPort: {port}'
         template_params['service-ports-section'] = _get_section_template(
             'service-ports-section', dict(port=port, port_id='')
         )
