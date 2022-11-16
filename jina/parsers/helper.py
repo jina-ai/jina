@@ -268,9 +268,13 @@ def _set_gateway_uses(args: 'argparse.Namespace'):
         GatewayProtocolType.WEBSOCKET: 'WebSocketGateway',
         GatewayProtocolType.HTTP: 'HTTPGateway',
     }
-    # TODO: either raise an error or select the first protocol
-    if not args.uses and len(args.protocol) == 1:
-        args.uses = gateway_dict[args.protocol[0]]
+    if not args.uses:
+        if len(args.protocol) == 1:
+            args.uses = gateway_dict[args.protocol[0]]
+        else:
+            raise ValueError(
+                'You need to specify exactly 1 protocol if you want to use a jina built-in gateway'
+            )
 
 
 class CastToIntAction(argparse.Action):

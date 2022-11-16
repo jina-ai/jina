@@ -14,7 +14,6 @@ from .gateway.multiprotocol_gateway import MultiProtocolGateway
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
-# TODO: make sure this test is called in CI
 @pytest.fixture(scope='module')
 def multi_port_gateway_docker_image_built():
     import docker
@@ -51,3 +50,14 @@ def test_multiple_protocols_gateway(multi_port_gateway_docker_image_built, uses)
         resp = requests.get(f'http://localhost:{http_port}').json()
         assert resp['protocol'] == 'http'
         assert AsyncNewLoopRuntime.is_ready(f'localhost:{grpc_port}')
+
+
+def test_multiple_protocol_disallowed_for_builtin_gateways():
+    flow = Flow().config_gateway(protocol=['http', 'grpc'])
+    with pytest.raises(ValueError) as error_info:
+        with flow:
+            pass
+    assert (
+        'You need to specify exactly 1 protocol if you want to use a jina built-in gateway'
+        in str(error_info.value)
+    )
