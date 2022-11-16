@@ -77,3 +77,10 @@ def _get_deployment_with_device_plugins(deployment: Dict, params: Dict) -> Dict:
         'resources'
     ] = device_plugins
     return deployment
+
+
+def _get_section_template(section_name, params):
+    path = os.path.join(DEFAULT_RESOURCE_DIR, f'{section_name}.yml.tpl')
+    with open(path) as f:
+        template = f.read()
+    return template.format(**params)

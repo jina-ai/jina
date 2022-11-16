@@ -4,6 +4,9 @@ from argparse import Namespace
 from typing import Dict, List, Optional, Tuple, Union
 
 from jina.orchestrate.deployments.config.k8slib import kubernetes_tools
+from jina.orchestrate.deployments.config.k8slib.kubernetes_tools import (
+    _get_section_template,
+)
 from jina.serve.networking import GrpcConnectionPool
 
 
@@ -95,12 +98,6 @@ def get_template_yamls(
         template_params['device_plugins'] = {'nvidia.com/gpu': gpus}
 
     template_name = 'deployment-executor' if name != 'gateway' else 'deployment-gateway'
-    service_ports_section = '''
-    - port: {port}
-      targetPort: {port}
-      name: port{port_id}
-      protocol: TCP
-'''
 
     if isinstance(port, list):
         template_params['ports-section'] = ''.join(
@@ -109,13 +106,13 @@ def get_template_yamls(
         template_params['port'] = port[0]
         template_params['service-ports-section'] = '\n'.join(
             [
-                service_ports_section.format(port=_p, port_id=i)
+                _get_section_template('service-ports-section', dict(port=_p, port_id=i))
                 for i, _p in enumerate(port)
             ]
         )
     else:
-        template_params['service-ports-section'] = service_ports_section.format(
-            port=port, port_id=''
+        template_params['service-ports-section'] = _get_section_template(
+            'service-ports-section', dict(port=port, port_id='')
         )
 
     if isinstance(protocol, list):
