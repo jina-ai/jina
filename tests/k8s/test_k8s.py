@@ -959,8 +959,8 @@ async def test_flow_multiple_protocols_gateway(logger, docker_images, tmpdir):
         protocol=['http', 'grpc'],
     )
 
-    dump_path = os.path.join(str(tmpdir), 'k8s-flow-multiprotocol-gateway.yml')
-    namespace = 'flow-multiprotocol-gateway'.lower()
+    dump_path = os.path.join(str(tmpdir), 'k8s-flow-multiprotocol-gateway')
+    namespace = 'flow-multiprotocol-gateway'
     flow.to_kubernetes_yaml(dump_path, k8s_namespace=namespace)
 
     from kubernetes import client
