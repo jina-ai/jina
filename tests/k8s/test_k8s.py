@@ -976,7 +976,6 @@ async def test_flow_multiple_protocols_gateway(logger, docker_images, tmpdir):
         core_client=core_client,
         deployment_replicas_expected={
             'gateway': 1,
-            'test-executor': 1,
         },
         logger=logger,
     )
