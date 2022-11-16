@@ -55,7 +55,7 @@ class K8sDeploymentConfig:
             self.k8s_deployments_metadata = k8s_deployments_metadata
 
         def get_gateway_yamls(
-                self,
+            self,
         ) -> List[Dict]:
             cargs = copy.copy(self.deployment_args)
             cargs.deployments_addresses = self.k8s_deployments_addresses
@@ -63,7 +63,6 @@ class K8sDeploymentConfig:
             from jina.parsers import set_gateway_parser
 
             taboo = {
-                'uses_with',
                 'uses_metas',
                 'volumes',
                 'uses_before',
@@ -131,7 +130,7 @@ class K8sDeploymentConfig:
             )
 
         def get_runtime_yamls(
-                self,
+            self,
         ) -> List[Dict]:
             cargs = copy.copy(self.deployment_args)
 
@@ -210,7 +209,7 @@ class K8sDeploymentConfig:
                 gpus=cargs.gpus if hasattr(cargs, 'gpus') else None,
                 monitoring=cargs.monitoring,
                 port_monitoring=cargs.port_monitoring,
-                volumes=getattr(cargs, 'volumes', None)
+                volumes=getattr(cargs, 'volumes', None),
             )
 
     def __init__(
@@ -350,7 +349,7 @@ class K8sDeploymentConfig:
         return parsed_args
 
     def to_kubernetes_yaml(
-            self,
+        self,
     ) -> List[Tuple[str, List[Dict]]]:
         """
         Return a list of dictionary configurations. One for each deployment in this Deployment

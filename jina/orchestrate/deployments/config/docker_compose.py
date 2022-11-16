@@ -66,7 +66,6 @@ class DockerComposeConfig:
             from jina.parsers import set_gateway_parser
 
             taboo = {
-                'uses_with',
                 'uses_metas',
                 'volumes',
                 'uses_before',
