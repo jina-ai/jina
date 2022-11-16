@@ -10,12 +10,11 @@ from jina.parsers import set_gateway_parser, set_pod_parser
 from jina.serve.runtimes.gateway import GatewayRuntime
 from jina.serve.runtimes.worker import WorkerRuntime
 from tests.helper import (
-    ProcessExecutor,
     _validate_custom_gateway_process,
     _validate_dummy_custom_gateway_response,
 )
-from tests.unit.yaml.dummy_gateway import DummyGateway
 
+from tests.unit.yaml.dummy_gateway import DummyGateway
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 _dummy_gateway_yaml_path = os.path.join(cur_dir, '../../yaml/test-custom-gateway.yml')
 

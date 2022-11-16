@@ -37,7 +37,7 @@ def test_gateway_concurrency(protocol, reraise):
             for result in results:
                 on_done(result)
 
-    f = Flow(protocol=protocol, port=port).add(parallel=2)
+    f = Flow(protocol=protocol, port=port).add(replicas=2)
     with f:
         threads = []
         status_codes = [None] * CONCURRENCY
