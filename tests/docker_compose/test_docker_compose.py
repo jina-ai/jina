@@ -342,6 +342,7 @@ async def test_flow_with_custom_gateway(logger, docker_images, tmpdir):
             port=9090,
             protocol='http',
             uses=f'docker://{docker_images[0]}',
+            uses_with={'arg1': 'overridden-hello'},
         )
         .add(
             name='test_executor',
@@ -355,7 +356,8 @@ async def test_flow_with_custom_gateway(logger, docker_images, tmpdir):
     with DockerComposeFlow(dump_path):
 
         _validate_dummy_custom_gateway_response(
-            flow.port, {'arg1': 'hello', 'arg2': 'world', 'arg3': 'default-arg3'}
+            flow.port,
+            {'arg1': 'overridden-hello', 'arg2': 'world', 'arg3': 'default-arg3'},
         )
         _validate_custom_gateway_process(
             flow.port,
