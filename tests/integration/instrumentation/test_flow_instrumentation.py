@@ -192,10 +192,10 @@ def test_flow_metrics(
     )
     assert len(receiving_request_seconds_metrics) > 0
     assert receiving_request_seconds_exported_jobs == {
-            'gateway/rep-0',
-            'executor0/head',
-            'executor0/shard-0/rep-0',
-            'executor0/shard-1/rep-0',
+        'gateway/rep-0',
+        'executor0/head',
+        'executor0/shard-0/rep-0',
+        'executor0/shard-1/rep-0',
     }
 
     (
@@ -224,10 +224,10 @@ def test_flow_metrics(
     )
     assert len(sent_response_bytes_metrics) > 0
     assert sent_response_bytes_exported_jobs == {
-            'gateway/rep-0',
-            'executor0/shard-0/rep-0',
-            'executor0/shard-1/rep-0',
-            'executor0/head'
+        'gateway/rep-0',
+        'executor0/shard-0/rep-0',
+        'executor0/shard-1/rep-0',
+        'executor0/head',
     }
 
     (
@@ -237,7 +237,10 @@ def test_flow_metrics(
         prometheus_client, 'jina_number_of_pending_requests'
     )
     assert len(number_of_pending_requests_metrics) > 0
-    assert number_of_pending_requests_exported_jobs == {'gateway/rep-0', 'executor0/head'}
+    assert number_of_pending_requests_exported_jobs == {
+        'gateway/rep-0',
+        'executor0/head',
+    }
 
     (
         failed_requests_metrics,
@@ -245,10 +248,10 @@ def test_flow_metrics(
     ) = get_metrics_and_exported_jobs_by_name(prometheus_client, 'jina_failed_requests')
     assert len(failed_requests_metrics) > 0
     assert failed_requests_exported_jobs == {
-            'gateway/rep-0',
-            'executor0/head',
-            'executor0/shard-0/rep-0',
-            'executor0/shard-1/rep-0',
+        'gateway/rep-0',
+        'executor0/head',
+        'executor0/shard-0/rep-0',
+        'executor0/shard-1/rep-0',
     }
 
     (
@@ -258,7 +261,12 @@ def test_flow_metrics(
         prometheus_client, 'jina_successful_requests'
     )
     assert len(successful_requests_metrics) > 0
-    assert successful_requests_exported_jobs == {'gateway/rep-0', 'executor0/shard-0/rep-0', 'executor0/shard-1/rep-0', 'executor0/head'}
+    assert successful_requests_exported_jobs == {
+        'gateway/rep-0',
+        'executor0/shard-0/rep-0',
+        'executor0/shard-1/rep-0',
+        'executor0/head',
+    }
 
     (
         received_request_bytes_metrics,
@@ -267,7 +275,12 @@ def test_flow_metrics(
         prometheus_client, 'jina_received_request_bytes'
     )
     assert len(received_request_bytes_metrics) > 0
-    assert received_request_bytes_exported_jobs == {'gateway/rep-0', 'executor0/shard-0/rep-0', 'executor0/shard-1/rep-0', 'executor0/head'}
+    assert received_request_bytes_exported_jobs == {
+        'gateway/rep-0',
+        'executor0/shard-0/rep-0',
+        'executor0/shard-1/rep-0',
+        'executor0/head',
+    }
 
     (
         process_requests_seconds_metrics,
@@ -276,7 +289,10 @@ def test_flow_metrics(
         prometheus_client, 'jina_process_request_seconds'
     )
     assert len(process_requests_seconds_metrics) > 0
-    assert process_requests_seconds_exported_jobs == {'executor0/shard-0/rep-0', 'executor0/shard-1/rep-0'}
+    assert process_requests_seconds_exported_jobs == {
+        'executor0/shard-0/rep-0',
+        'executor0/shard-1/rep-0',
+    }
 
     # filter by attributes/labels
     (
@@ -288,7 +304,10 @@ def test_flow_metrics(
         {'executor_endpoint': '/search'},
     )
     assert len(process_requests_seconds_search_endpoint) > 0
-    assert process_requests_seconds_search_endpoint_exported_jobs == {'executor0/shard-0/rep-0', 'executor0/shard-1/rep-0'}
+    assert process_requests_seconds_search_endpoint_exported_jobs == {
+        'executor0/shard-0/rep-0',
+        'executor0/shard-1/rep-0',
+    }
 
     (
         process_requests_seconds_executor,
@@ -299,7 +318,10 @@ def test_flow_metrics(
         {'executor': 'ExecutorFailureWithTracing'},
     )
     assert len(process_requests_seconds_executor) > 0
-    assert process_requests_seconds_executor_exported_jobs == {'executor0/shard-0/rep-0', 'executor0/shard-1/rep-0'}
+    assert process_requests_seconds_executor_exported_jobs == {
+        'executor0/shard-0/rep-0',
+        'executor0/shard-1/rep-0',
+    }
 
     (
         process_requests_seconds_runtime,
