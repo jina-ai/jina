@@ -4,8 +4,6 @@ from jina.enums import GatewayProtocolType
 from jina.helper import ArgNamespace
 from jina.parsers import set_gateway_parser, set_pod_parser
 
-# TODO: make sure this file is covered in CI
-
 
 @pytest.mark.parametrize(
     'port,expected_port',
@@ -69,4 +67,25 @@ def test_default_port_protocol_gateway():
     assert args.protocol == [GatewayProtocolType.GRPC]
 
 
-# TODO: test ArgNamespace.get_non_defaults_args
+def test_get_non_defaults_args():
+    args = set_gateway_parser().parse_args(
+        [
+            '--port',
+            '12345',
+            '12344',
+            '--protocol',
+            'grpc',
+            '--uses',
+            'MyCustomGateway',
+            '--uses-with',
+            '{"arg":"value"}',
+        ]
+    )
+    non_defaults = ArgNamespace.get_non_defaults_args(
+        args,
+        set_gateway_parser(),
+    )
+    assert non_defaults['port'] == [12345, 12344]
+    assert 'protocol' not in non_defaults
+    assert non_defaults['uses'] == 'MyCustomGateway'
+    assert non_defaults['uses_with'] == {'arg': 'value'}
