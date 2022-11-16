@@ -4,9 +4,6 @@ from argparse import Namespace
 from typing import Dict, List, Optional, Tuple, Union
 
 from jina.orchestrate.deployments.config.k8slib import kubernetes_tools
-from jina.orchestrate.deployments.config.k8slib.kubernetes_tools import (
-    _get_section_template,
-)
 from jina.serve.networking import GrpcConnectionPool
 
 
@@ -70,6 +67,16 @@ def get_template_yamls(
     if not port_monitoring:
         port_monitoring = GrpcConnectionPool.K8S_PORT_MONITORING
 
+    # we cast port to list of ports and protocol to list of protocols
+    if not isinstance(port, list):
+        ports = [port]
+    else:
+        ports = port
+    if not isinstance(protocol, list):
+        protocols = [protocol]
+    else:
+        protocols = protocol
+
     template_params = {
         'name': name,
         'namespace': namespace,
@@ -77,7 +84,7 @@ def get_template_yamls(
         'replicas': replicas,
         'command': container_cmd,
         'args': container_args,
-        'port': port,
+        'port': ports[0],
         'port_uses_before': GrpcConnectionPool.K8S_PORT_USES_BEFORE,
         'port_uses_after': GrpcConnectionPool.K8S_PORT_USES_AFTER,
         'args_uses_before': container_args_uses_before,
@@ -90,7 +97,7 @@ def get_template_yamls(
         'jina_deployment_name': jina_deployment_name,
         'shard_id': f'\"{shard_id}\"' if shard_id is not None else '\"\"',
         'pod_type': pod_type,
-        'protocol': str(protocol).lower() if protocol is not None else '',
+        'protocol': str(protocols[0]).lower() if protocols[0] is not None else '',
         'volume_path': volumes[0] if volumes is not None else None,
     }
 
@@ -99,25 +106,9 @@ def get_template_yamls(
 
     template_name = 'deployment-executor' if name != 'gateway' else 'deployment-gateway'
 
-    if isinstance(port, list):
-        template_params['ports-section'] = ''.join(
-            [f'\n            - containerPort: {_p}' for _p in port]
-        )
-        template_params['port'] = port[0]
-        template_params['service-ports-section'] = '\n'.join(
-            [
-                _get_section_template('service-ports-section', dict(port=_p, port_id=i))
-                for i, _p in enumerate(port)
-            ]
-        )
-    else:
-        template_params['ports-section'] = f'\n            - containerPort: {port}'
-        template_params['service-ports-section'] = _get_section_template(
-            'service-ports-section', dict(port=port, port_id='')
-        )
-
-    if isinstance(protocol, list):
-        template_params['protocol'] = protocol[0]
+    template_params['ports-section'] = ''.join(
+        [f'\n            - containerPort: {_p}' for _p in ports]
+    )
 
     if volumes:
         template_name = 'statefulset-executor'
@@ -144,7 +135,8 @@ def get_template_yamls(
                 'name': name,
                 'target': name,
                 'namespace': namespace,
-                'port': port,
+                'port': ports[0],
+                'port-name': 'port',
                 'type': 'ClusterIP',
                 'port_monitoring': port_monitoring,
             },
@@ -164,13 +156,28 @@ def get_template_yamls(
             {
                 'name': name,
                 'target': name,
+                'port-name': 'port',
                 'namespace': namespace,
-                'port': port,
-                'service-ports-section': template_params['service-ports-section'],
+                'port': ports[0],
                 'type': 'ClusterIP',
             },
         )
         service_monitor_yaml = None
+
+    extra_services = [
+        kubernetes_tools.get_yaml(
+            'service',
+            {
+                'name': f'{name}-{i}-{protocol}',
+                'target': f'{name}-{i}-{protocol}',
+                'port-name': 'port',
+                'namespace': namespace,
+                'port': port,
+                'type': 'ClusterIP',
+            },
+        )
+        for i, (port, protocol) in enumerate(zip(ports[1:], protocols[1:]), start=1)
+    ]
 
     template_yaml = kubernetes_tools.get_yaml(template_name, template_params)
 
@@ -184,6 +191,7 @@ def get_template_yamls(
             },
         ),
         service_yaml,
+        *extra_services,
         template_yaml,
     ]
 
