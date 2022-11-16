@@ -948,7 +948,7 @@ async def test_flow_with_custom_gateway(logger, docker_images, tmpdir):
     [['multiprotocol-gateway']],
     indirect=True,
 )
-def test_flow_multiple_protocols_gateway(logger, docker_images, tmpdir):
+async def test_flow_multiple_protocols_gateway(logger, docker_images, tmpdir):
     http_port = random_port()
     grpc_port = random_port()
     flow = Flow().config_gateway(
