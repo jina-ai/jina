@@ -33,7 +33,7 @@ class GRPCGateway(BaseGateway):
         self.grpc_server_options = grpc_server_options
         self.ssl_keyfile = ssl_keyfile
         self.ssl_certfile = ssl_certfile
-        self.health_servicer = health.HealthServicer(experimental_non_blocking=True)
+        self.health_servicer = health.aio.HealthServicer()
 
     async def setup_server(self):
         """
@@ -61,7 +61,9 @@ class GRPCGateway(BaseGateway):
         health_pb2_grpc.add_HealthServicer_to_server(self.health_servicer, self.server)
 
         for service in service_names:
-            self.health_servicer.set(service, health_pb2.HealthCheckResponse.SERVING)
+            await self.health_servicer.set(
+                service, health_pb2.HealthCheckResponse.SERVING
+            )
         reflection.enable_server_reflection(service_names, self.server)
 
         bind_addr = f'{__default_host__}:{self.port}'
@@ -95,7 +97,7 @@ class GRPCGateway(BaseGateway):
     async def teardown(self):
         """Free other resources allocated with the server, e.g, gateway object, ..."""
         await super().teardown()
-        self.health_servicer.enter_graceful_shutdown()
+        await self.health_servicer.enter_graceful_shutdown()
 
     async def stop_server(self):
         """

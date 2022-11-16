@@ -419,7 +419,7 @@ def test_external_flow_with_grpc_metadata():
             )
 
             for service in service_names:
-                self.health_servicer.set(
+                await self.health_servicer.set(
                     service, health_pb2.HealthCheckResponse.SERVING
                 )
             reflection.enable_server_reflection(service_names, self.server)
