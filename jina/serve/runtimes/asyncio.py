@@ -38,6 +38,21 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, InstrumentationMixin, AB
         self._loop = asyncio.new_event_loop()
         asyncio.set_event_loop(self._loop)
         self.is_cancel = cancel_event or asyncio.Event()
+
+
+        self._setup_monitoring()
+        self._setup_instrumentation(
+            name=self.args.name,
+            tracing=self.args.tracing,
+            traces_exporter_host=self.args.traces_exporter_host,
+            traces_exporter_port=self.args.traces_exporter_port,
+            metrics=self.args.metrics,
+            metrics_exporter_host=self.args.metrics_exporter_host,
+            metrics_exporter_port=self.args.metrics_exporter_port,
+        )
+        send_telemetry_event(event='start', obj=self, entity_id=self._entity_id)
+        self._start_time = time.time()
+        self._loop.run_until_complete(self.async_setup())
         if not __windows__:
             try:
                 def _cancel(signame):
@@ -58,30 +73,16 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, InstrumentationMixin, AB
                 )
         else:
             with ImportExtensions(
-                required=True,
-                logger=self.logger,
-                help_text='''If you see a 'DLL load failed' error, please reinstall `pywin32`.
-                If you're using conda, please use the command `conda install -c anaconda pywin32`''',
+                    required=True,
+                    logger=self.logger,
+                    help_text='''If you see a 'DLL load failed' error, please reinstall `pywin32`.
+                    If you're using conda, please use the command `conda install -c anaconda pywin32`''',
             ):
                 import win32api
 
             win32api.SetConsoleCtrlHandler(
                 lambda *args, **kwargs: self.is_cancel.set(), True
             )
-
-        self._setup_monitoring()
-        self._setup_instrumentation(
-            name=self.args.name,
-            tracing=self.args.tracing,
-            traces_exporter_host=self.args.traces_exporter_host,
-            traces_exporter_port=self.args.traces_exporter_port,
-            metrics=self.args.metrics,
-            metrics_exporter_host=self.args.metrics_exporter_host,
-            metrics_exporter_port=self.args.metrics_exporter_port,
-        )
-        send_telemetry_event(event='start', obj=self, entity_id=self._entity_id)
-        self._start_time = time.time()
-        self._loop.run_until_complete(self.async_setup())
 
     def run_forever(self):
         """

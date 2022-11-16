@@ -75,7 +75,3 @@ class DummyGateway(Gateway):
 
     async def stop_server(self):
         self.server.should_exit = True
-
-    @property
-    def should_exit(self) -> bool:
-        return self.server.should_exit
