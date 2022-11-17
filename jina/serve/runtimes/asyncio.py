@@ -20,6 +20,11 @@ if TYPE_CHECKING:  # pragma: no cover
     import multiprocessing
     import threading
 
+HANDLED_SIGNALS = (
+    signal.SIGINT,  # Unix signal 2. Sent by Ctrl+C.
+    signal.SIGTERM,  # Unix signal 15. Sent by `kill <pid>`.
+)
+
 
 class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, InstrumentationMixin, ABC):
     """
@@ -27,45 +32,29 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, InstrumentationMixin, AB
     """
 
     def __init__(
-        self,
-        args: 'argparse.Namespace',
-        cancel_event: Optional[
-            Union['asyncio.Event', 'multiprocessing.Event', 'threading.Event']
-        ] = None,
-        **kwargs,
+            self,
+            args: 'argparse.Namespace',
+            cancel_event: Optional[
+                Union['asyncio.Event', 'multiprocessing.Event', 'threading.Event']
+            ] = None,
+            **kwargs,
     ):
         super().__init__(args, **kwargs)
         self._loop = asyncio.new_event_loop()
         asyncio.set_event_loop(self._loop)
         self.is_cancel = cancel_event or asyncio.Event()
 
+        def _cancel(sig):
+            def _inner_cancel(*args, **kwargs):
+                self.logger.debug(f'Received signal {sig.name}')
+                self.is_cancel.set(),
 
-        self._setup_monitoring()
-        self._setup_instrumentation(
-            name=self.args.name,
-            tracing=self.args.tracing,
-            traces_exporter_host=self.args.traces_exporter_host,
-            traces_exporter_port=self.args.traces_exporter_port,
-            metrics=self.args.metrics,
-            metrics_exporter_host=self.args.metrics_exporter_host,
-            metrics_exporter_port=self.args.metrics_exporter_port,
-        )
-        send_telemetry_event(event='start', obj=self, entity_id=self._entity_id)
-        self._start_time = time.time()
-        self._loop.run_until_complete(self.async_setup())
+            return _inner_cancel
+
         if not __windows__:
             try:
-                def _cancel(signame):
-                    def _inner_cancel(*args, **kwargs):
-                        self.logger.debug(f'Received signal {signame}')
-                        self.is_cancel.set(),
-                    return _inner_cancel
-
-                for signame in {'SIGINT', 'SIGTERM'}:
-                    self._loop.add_signal_handler(
-                        getattr(signal, signame),
-                        _cancel(signame),
-                    )
+                for sig in HANDLED_SIGNALS:
+                    self._loop.add_signal_handler(sig, _cancel(sig), sig, None)
             except (ValueError, RuntimeError) as exc:
                 self.logger.warning(
                     f' The runtime {self.__class__.__name__} will not be able to handle termination signals. '
@@ -83,6 +72,20 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, InstrumentationMixin, AB
             win32api.SetConsoleCtrlHandler(
                 lambda *args, **kwargs: self.is_cancel.set(), True
             )
+
+        self._setup_monitoring()
+        self._setup_instrumentation(
+            name=self.args.name,
+            tracing=self.args.tracing,
+            traces_exporter_host=self.args.traces_exporter_host,
+            traces_exporter_port=self.args.traces_exporter_port,
+            metrics=self.args.metrics,
+            metrics_exporter_host=self.args.metrics_exporter_host,
+            metrics_exporter_port=self.args.metrics_exporter_port,
+        )
+        send_telemetry_event(event='start', obj=self, entity_id=self._entity_id)
+        self._start_time = time.time()
+        self._loop.run_until_complete(self.async_setup())
 
     def run_forever(self):
         """
@@ -201,11 +204,11 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, InstrumentationMixin, AB
 
     @classmethod
     def wait_for_ready_or_shutdown(
-        cls,
-        timeout: Optional[float],
-        ready_or_shutdown_event: Union['multiprocessing.Event', 'threading.Event'],
-        ctrl_address: str,
-        **kwargs,
+            cls,
+            timeout: Optional[float],
+            ready_or_shutdown_event: Union['multiprocessing.Event', 'threading.Event'],
+            ctrl_address: str,
+            **kwargs,
     ):
         """
         Check if the runtime has successfully started

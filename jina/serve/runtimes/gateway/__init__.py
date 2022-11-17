@@ -12,10 +12,9 @@ from jina.parsers.helper import _set_gateway_uses
 from jina.serve.gateway import BaseGateway
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 
-if TYPE_CHECKING: # pragma: no cover
+if TYPE_CHECKING:  # pragma: no cover
     import multiprocessing
     import threading
-
 
 # Keep these imports even if not used, since YAML parser needs to find them in imported modules
 from jina.serve.runtimes.gateway.grpc import GRPCGateway
@@ -33,12 +32,12 @@ class GatewayRuntime(AsyncNewLoopRuntime):
     """
 
     def __init__(
-        self,
-        args: argparse.Namespace,
-        cancel_event: Optional[
-            Union['asyncio.Event', 'multiprocessing.Event', 'threading.Event']
-        ] = None,
-        **kwargs,
+            self,
+            args: argparse.Namespace,
+            cancel_event: Optional[
+                Union['asyncio.Event', 'multiprocessing.Event', 'threading.Event']
+            ] = None,
+            **kwargs,
     ):
         # this order is intentional: The timeout is needed in _create_topology_graph(), called by super
         self.timeout_send = args.timeout_send
@@ -118,6 +117,7 @@ class GatewayRuntime(AsyncNewLoopRuntime):
     async def async_run_forever(self):
         """Running method of the server."""
         await self.gateway.run_server()
+        self.is_cancel.set()
 
     @staticmethod
     def is_ready(ctrl_address: str, protocol: Optional[str] = 'grpc', **kwargs) -> bool:
@@ -132,9 +132,9 @@ class GatewayRuntime(AsyncNewLoopRuntime):
         """
 
         if (
-            protocol is None
-            or protocol == GatewayProtocolType.GRPC
-            or protocol == 'grpc'
+                protocol is None
+                or protocol == GatewayProtocolType.GRPC
+                or protocol == 'grpc'
         ):
             res = AsyncNewLoopRuntime.is_ready(ctrl_address)
         else:
@@ -147,12 +147,12 @@ class GatewayRuntime(AsyncNewLoopRuntime):
 
     @classmethod
     def wait_for_ready_or_shutdown(
-        cls,
-        timeout: Optional[float],
-        ready_or_shutdown_event: Union['multiprocessing.Event', 'threading.Event'],
-        ctrl_address: str,
-        protocol: Optional[str] = 'grpc',
-        **kwargs,
+            cls,
+            timeout: Optional[float],
+            ready_or_shutdown_event: Union['multiprocessing.Event', 'threading.Event'],
+            ctrl_address: str,
+            protocol: Optional[str] = 'grpc',
+            **kwargs,
     ):
         """
         Check if the runtime has successfully started
