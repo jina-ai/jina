@@ -1,6 +1,7 @@
 import argparse
 from abc import ABC
 from typing import TYPE_CHECKING, List, Optional
+from concurrent.futures import ThreadPoolExecutor
 
 import grpc
 from grpc_health.v1 import health, health_pb2, health_pb2_grpc
@@ -32,7 +33,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         :param args: args from CLI
         :param kwargs: keyword args
         """
-        self._health_servicer = health.aio.HealthServicer()
+        self._health_servicer = health.HealthServicer(experimental_thread_pool=ThreadPoolExecutor(1))
         super().__init__(args, **kwargs)
 
     async def async_setup(self):
@@ -140,7 +141,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         )
 
         for service in service_names:
-            await self._health_servicer.set(
+            self._health_servicer.set(
                 service, health_pb2.HealthCheckResponse.SERVING
             )
         reflection.enable_server_reflection(service_names, self._grpc_server)
@@ -164,7 +165,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
 
     async def async_teardown(self):
         """Close the data request handler"""
-        await self._health_servicer.enter_graceful_shutdown()
+        self._health_servicer.enter_graceful_shutdown()
         await self.async_cancel()
         self._request_handler.close()
 
