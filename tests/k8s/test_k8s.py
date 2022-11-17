@@ -18,6 +18,7 @@ from jina.parsers import set_deployment_parser
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from tests.helper import _validate_dummy_custom_gateway_response
+from tests.k8s.conftest import shell_portforward
 
 cluster.KIND_VERSION = 'v0.11.1'
 
@@ -951,7 +952,9 @@ async def test_flow_with_custom_gateway(logger, docker_images, tmpdir):
     [['multiprotocol-gateway']],
     indirect=True,
 )
-async def test_flow_multiple_protocols_gateway(logger, docker_images, tmpdir):
+async def test_flow_multiple_protocols_gateway(
+    logger, docker_images, tmpdir, k8s_cluster
+):
     http_port = random_port()
     grpc_port = random_port()
     flow = Flow().config_gateway(
@@ -989,43 +992,30 @@ async def test_flow_multiple_protocols_gateway(logger, docker_images, tmpdir):
         .metadata.name
     )
     config_path = os.environ['KUBECONFIG']
-    import portforward
 
     # test portforwarding the gateway pod and service using http
-    forwards = [
-        portforward.forward(
-            namespace, gateway_pod_name, http_port, http_port, config_path
-        ),
-        portforward.forward(
-            namespace, 'service/gateway', http_port, http_port, config_path
-        ),
+    forward_args = [
+        [gateway_pod_name, http_port, http_port, namespace],
+        ['service/gateway', http_port, http_port, namespace],
     ]
-    for forward in forwards:
-        with forward:
+    for forward in forward_args:
+        with shell_portforward(k8s_cluster._cluster.kubectl_path, *forward):
             import requests
 
             resp = requests.get(f'http://localhost:{http_port}').json()
             assert resp['protocol'] == 'http'
-        # waiting until portforwarding ends
-        time.sleep(1)
 
     # test portforwarding the gateway pod and service using grpc
-    forwards = [
-        portforward.forward(
-            namespace, gateway_pod_name, grpc_port, grpc_port, config_path
-        ),
-        portforward.forward(
-            namespace, 'service/gateway-1-grpc', grpc_port, grpc_port, config_path
-        ),
+    forward_args = [
+        [gateway_pod_name, grpc_port, grpc_port, namespace],
+        ['service/gateway-1-grpc', grpc_port, grpc_port, namespace],
     ]
-    for forward in forwards:
-        with forward:
+    for forward in forward_args:
+        with shell_portforward(k8s_cluster._cluster.kubectl_path, *forward):
             grpc_client = Client(protocol='grpc', port=grpc_port, asyncio=True)
             async for _ in grpc_client.post('/', inputs=DocumentArray.empty(5)):
                 pass
             assert AsyncNewLoopRuntime.is_ready(f'localhost:{grpc_port}')
-        # waiting until portforwarding ends
-        time.sleep(1)
 
 
 @pytest.mark.timeout(3600)

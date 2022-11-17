@@ -1,6 +1,8 @@
+import contextlib
 import os
 import subprocess
 import tempfile
+import time
 from pathlib import Path
 
 import docker
@@ -197,3 +199,32 @@ def docker_images(request, image_name_tag_map, k8s_cluster):
         image_name + ':' + image_name_tag_map[image_name] for image_name in image_names
     ]
     return images
+
+
+@contextlib.contextmanager
+def shell_portforward(
+    kubectl_path, pod_or_service, port1, port2, namespace, waiting: float = 1
+):
+    try:
+        proc = subprocess.Popen(
+            [
+                kubectl_path,
+                'port-forward',
+                pod_or_service,
+                f'{port1}:{port2}',
+                '--namespace',
+                namespace,
+            ]
+        )
+        # Go and the port-forwarding needs some ms to be ready
+        time.sleep(waiting)
+
+        yield None
+        time.sleep(waiting)
+
+    except Exception as err:
+        # Suppress extension exception
+        raise OSError(err) from None
+
+    finally:
+        proc.kill()
