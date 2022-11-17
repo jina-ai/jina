@@ -2,6 +2,7 @@
 # You need to install linkerd cli on your local machine if you want to run the k8s tests https://linkerd.io/2.11/getting-started/#step-1-install-the-cli
 import asyncio
 import os
+import time
 
 import pytest
 import requests as req
@@ -1005,6 +1006,8 @@ async def test_flow_multiple_protocols_gateway(logger, docker_images, tmpdir):
 
             resp = requests.get(f'http://localhost:{http_port}').json()
             assert resp['protocol'] == 'http'
+        # waiting until portforwarding ends
+        time.sleep(1)
 
     # test portforwarding the gateway pod and service using grpc
     forwards = [
@@ -1021,6 +1024,8 @@ async def test_flow_multiple_protocols_gateway(logger, docker_images, tmpdir):
             async for _ in grpc_client.post('/', inputs=DocumentArray.empty(5)):
                 pass
             assert AsyncNewLoopRuntime.is_ready(f'localhost:{grpc_port}')
+        # waiting until portforwarding ends
+        time.sleep(1)
 
 
 @pytest.mark.timeout(3600)
