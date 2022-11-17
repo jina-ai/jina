@@ -23,6 +23,7 @@ class DummyGateway(Gateway):
     def __init__(
         self,
         port: int = None,
+        host: str = __default_host__,
         arg1: str = None,
         arg2: str = None,
         arg3: str = 'default-arg3',
@@ -30,6 +31,7 @@ class DummyGateway(Gateway):
     ):
         super().__init__(**kwargs)
         self.port = port
+        self.host = host
         self.arg1 = arg1
         self.arg2 = arg2
         self.arg3 = arg3
@@ -64,7 +66,7 @@ class DummyGateway(Gateway):
                 doc = req.to_dict()['data'][0]
             return {'text': doc['text'], 'tags': doc['tags']}
 
-        self.server = Server(Config(app, host=__default_host__, port=self.port))
+        self.server = Server(Config(app, host=self.host, port=self.port))
 
     async def run_server(self):
         await self.server.serve()
