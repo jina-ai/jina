@@ -58,9 +58,10 @@ def _setup(pod0_port, pod1_port):
         ({'pod0__text_to_add': 'param_pod0 '}, 'pod0', 'param_pod0 '),
     ],
 )
+@pytest.mark.parametrize('results_in_order', [False, True])
 @pytest.mark.asyncio
 async def test_custom_gateway(
-    port_generator, parameters, target_executor, expected_text
+    port_generator, parameters, target_executor, expected_text, results_in_order
 ):
     pod0_port = port_generator()
     pod1_port = port_generator()
@@ -84,6 +85,7 @@ async def test_custom_gateway(
             request_size=10,
             parameters=parameters,
             target_executor=target_executor,
+            results_in_order=results_in_order
         ):
             num_resp += 1
             resp.extend(r)
