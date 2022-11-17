@@ -993,8 +993,9 @@ async def test_flow_multiple_protocols_gateway(logger, docker_images, tmpdir):
     with portforward.forward(
         namespace, gateway_pod_name, grpc_port, grpc_port, config_path
     ):
-        grpc_client = Client(protocol='grpc', port=grpc_port)
-        grpc_client.post('/', inputs=Document())
+        grpc_client = Client(protocol='grpc', port=grpc_port, asyncio=True)
+        async for _ in grpc_client.post('/', inputs=DocumentArray.empty(5)):
+            pass
         assert AsyncNewLoopRuntime.is_ready(f'localhost:{grpc_port}')
 
     with portforward.forward(
