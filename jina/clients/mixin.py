@@ -361,7 +361,7 @@ class AsyncPostMixin:
                 initial_backoff=initial_backoff,
                 max_backoff=max_backoff,
                 backoff_multiplier=backoff_multiplier,
-                results_in_order=results_in_order
+                results_in_order=results_in_order,
                 **kwargs,
         ):
             if not return_responses:
