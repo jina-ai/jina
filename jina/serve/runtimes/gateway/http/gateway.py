@@ -101,7 +101,6 @@ class HTTPGateway(BaseGateway):
                 if not config.loaded:
                     config.load()
                 self.lifespan = config.lifespan_class(config)
-                self.install_signal_handlers()
                 await self.startup(sockets=sockets)
                 if self.should_exit:
                     return
@@ -160,11 +159,3 @@ class HTTPGateway(BaseGateway):
     async def run_server(self):
         """Run HTTP server forever"""
         await self.server.serve()
-
-    @property
-    def should_exit(self) -> bool:
-        """
-        Boolean flag that indicates whether the gateway server should exit or not
-        :return: boolean flag
-        """
-        return self.server.should_exit
