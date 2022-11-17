@@ -991,15 +991,19 @@ async def test_flow_multiple_protocols_gateway(logger, docker_images, tmpdir):
     import portforward
 
     with portforward.forward(
-        namespace, gateway_pod_name, flow.port, flow.port, config_path
+        namespace, gateway_pod_name, grpc_port, grpc_port, config_path
+    ):
+        grpc_client = Client(protocol='grpc', port=grpc_port)
+        grpc_client.post('/', inputs=Document())
+        assert AsyncNewLoopRuntime.is_ready(f'localhost:{grpc_port}')
+
+    with portforward.forward(
+        namespace, gateway_pod_name, http_port, http_port, config_path
     ):
         import requests
 
-        grpc_client = Client(protocol='grpc', port=grpc_port)
-        grpc_client.post('/', inputs=Document())
         resp = requests.get(f'http://localhost:{http_port}').json()
         assert resp['protocol'] == 'http'
-        assert AsyncNewLoopRuntime.is_ready(f'localhost:{grpc_port}')
 
 
 @pytest.mark.timeout(3600)
