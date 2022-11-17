@@ -308,7 +308,7 @@ def test_k8s_yaml_gateway(deployments_addresses, custom_gateway):
     assert spec_service['type'] == 'ClusterIP'
     assert len(spec_service['ports']) == 1
     port = spec_service['ports'][0]
-    assert port['name'] == 'port0'
+    assert port['name'] == 'port'
     assert port['protocol'] == 'TCP'
     assert port['port'] == 32465
     assert port['targetPort'] == 32465
