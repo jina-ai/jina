@@ -12,6 +12,7 @@ from typing import (
 from jina.excepts import InternalNetworkError
 from jina.logging.logger import JinaLogger
 from jina.serve.stream.helper import AsyncRequestsIterator, _RequestsCounter
+from jina.types.request.data import DataRequest
 
 __all__ = ['RequestStreamer']
 
@@ -153,7 +154,7 @@ class RequestStreamer:
                 num_reqs += 1
                 requests_to_handle.count += 1
                 if results_in_order:
-                    request_ids.append(request.id)
+                    request_ids.append(request.header.request_id)
                 future_responses, future_hanging = self._request_handler(
                     request=request
                 )
@@ -231,13 +232,14 @@ class RequestStreamer:
                 yield response
             else:
                 # if return_in_order is needed, we have to check if the response is to be returned
-                if response.id == request_ids[0]:
+                response_request_id = await DataRequest.extract_id(response)
+                if response_request_id == request_ids[0]:
                     # is the response's turn to be yielded
                     yield response
                     request_ids.pop(0)
                 else:
                     # is not your turn, put to the end
-                    responses_ids[response.id] = len(responses_list)
+                    responses_ids[response_request_id] = len(responses_list)
                     responses_list.append(response)
 
                 stop_yielding = False
