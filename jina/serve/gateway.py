@@ -145,7 +145,7 @@ class BaseGateway(JAMLCompatible, metaclass=GatewayType):
 
     @abc.abstractmethod
     async def shutdown(self):
-        """Free other resources allocated with the server, e.g, gateway object, ..."""
+        """Shutdown the server and free other allocated resources, e.g, streamer object, health check service, ..."""
         ...
 
     def __enter__(self):
