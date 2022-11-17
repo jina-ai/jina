@@ -14,6 +14,7 @@ class WebSocketGateway(BaseGateway):
     def __init__(
         self,
         port: Optional[int] = None,
+        host: Optional[str] = __default_host__,
         ssl_keyfile: Optional[str] = None,
         ssl_certfile: Optional[str] = None,
         uvicorn_kwargs: Optional[dict] = None,
@@ -22,6 +23,7 @@ class WebSocketGateway(BaseGateway):
     ):
         """Initialize the gateway
         :param port: The port of the Gateway, which the client should connect to.
+        :param host: The host of the Gateway, to which the server will bind to.
         :param ssl_keyfile: the path to the key file
         :param ssl_certfile: the path to the certificate file
         :param uvicorn_kwargs: Dictionary of kwargs arguments that will be passed to Uvicorn server when starting the server
@@ -31,6 +33,7 @@ class WebSocketGateway(BaseGateway):
         """
         super().__init__(**kwargs)
         self.port = port
+        self.host = host
         self.ssl_keyfile = ssl_keyfile
         self.ssl_certfile = ssl_certfile
         self.uvicorn_kwargs = uvicorn_kwargs
@@ -104,7 +107,7 @@ class WebSocketGateway(BaseGateway):
         self.server = UviServer(
             config=Config(
                 app=self.app,
-                host=__default_host__,
+                host=self.host,
                 port=self.port,
                 ws_max_size=1024 * 1024 * 1024,
                 log_level=os.getenv('JINA_LOG_LEVEL', 'error').lower(),

@@ -14,6 +14,7 @@ class HTTPGateway(BaseGateway):
     def __init__(
         self,
         port: Optional[int] = None,
+        host: Optional[str] = __default_host__,
         title: Optional[str] = None,
         description: Optional[str] = None,
         no_debug_endpoints: Optional[bool] = False,
@@ -30,6 +31,7 @@ class HTTPGateway(BaseGateway):
         """Initialize the gateway
             Get the app from FastAPI as the REST interface.
         :param port: The port of the Gateway, which the client should connect to.
+        :param host: The host of the Gateway, to which the server will bind to.
         :param title: The title of this HTTP server. It will be used in automatics docs such as Swagger UI.
         :param description: The description of this HTTP server. It will be used in automatics docs such as Swagger UI.
         :param no_debug_endpoints: If set, `/status` `/post` endpoints are removed from HTTP interface.
@@ -48,6 +50,7 @@ class HTTPGateway(BaseGateway):
         """
         super().__init__(**kwargs)
         self.port = port
+        self.host = host
         self.title = title
         self.description = description
         self.no_debug_endpoints = no_debug_endpoints
@@ -135,7 +138,7 @@ class HTTPGateway(BaseGateway):
         self.server = UviServer(
             config=Config(
                 app=self.app,
-                host=__default_host__,
+                host=self.host,
                 port=self.port,
                 log_level=os.getenv('JINA_LOG_LEVEL', 'error').lower(),
                 **uvicorn_kwargs,

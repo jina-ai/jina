@@ -18,6 +18,7 @@ class GRPCGateway(BaseGateway):
     def __init__(
         self,
         port: Optional[int] = None,
+        host: Optional[str] = __default_host__,
         grpc_server_options: Optional[dict] = None,
         ssl_keyfile: Optional[str] = None,
         ssl_certfile: Optional[str] = None,
@@ -25,6 +26,7 @@ class GRPCGateway(BaseGateway):
     ):
         """Initialize the gateway
         :param port: The port of the Gateway, which the client should connect to.
+        :param host: The host of the Gateway, to which the server will bind to.
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
         :param ssl_keyfile: the path to the key file
         :param ssl_certfile: the path to the certificate file
@@ -32,6 +34,7 @@ class GRPCGateway(BaseGateway):
         """
         super().__init__(**kwargs)
         self.port = port
+        self.host = host
         self.grpc_server_options = grpc_server_options
         self.ssl_keyfile = ssl_keyfile
         self.ssl_certfile = ssl_certfile
@@ -68,7 +71,7 @@ class GRPCGateway(BaseGateway):
             )
         reflection.enable_server_reflection(service_names, self.server)
 
-        bind_addr = f'{__default_host__}:{self.port}'
+        bind_addr = f'{self.host}:{self.port}'
 
         if self.ssl_keyfile and self.ssl_certfile:
             with open(self.ssl_keyfile, 'rb') as f:

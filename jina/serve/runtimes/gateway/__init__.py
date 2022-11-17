@@ -12,7 +12,7 @@ from jina.parsers.helper import _set_gateway_uses
 from jina.serve.gateway import BaseGateway
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 
-if TYPE_CHECKING: # pragma: no cover
+if TYPE_CHECKING:  # pragma: no cover
     import multiprocessing
     import threading
 
@@ -53,7 +53,7 @@ class GatewayRuntime(AsyncNewLoopRuntime):
 
         Setup the uvicorn server.
         """
-        if not (is_port_free(__default_host__, self.args.port)):
+        if not (is_port_free(self.args.host, self.args.port)):
             raise PortAlreadyUsed(f'port:{self.args.port}')
 
         uses_with = self.args.uses_with or {}
@@ -63,6 +63,7 @@ class GatewayRuntime(AsyncNewLoopRuntime):
                 name=self.name,
                 grpc_server_options=self.args.grpc_server_options,
                 port=self.args.port,
+                host=self.args.host,
                 title=self.args.title,
                 description=self.args.description,
                 no_debug_endpoints=self.args.no_debug_endpoints,

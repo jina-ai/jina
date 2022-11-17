@@ -792,9 +792,7 @@ class Deployment(BaseDeployment):
             selected_devices = []
             if device_str[2:]:
 
-                for device in Deployment._parse_devices(
-                    device_str[2:], num_devices
-                ):
+                for device in Deployment._parse_devices(device_str[2:], num_devices):
                     selected_devices.append(device)
             else:
                 selected_devices = range(num_devices)
@@ -880,7 +878,8 @@ class Deployment(BaseDeployment):
 
         _args = copy.deepcopy(args)
         _args.pod_role = PodRoleType.WORKER
-        _args.host = __default_host__
+        if not _args.host:
+            _args.host = __default_host__
         _args.port = helper.random_port()
 
         if _args.name:

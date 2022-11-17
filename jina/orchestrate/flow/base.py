@@ -1775,7 +1775,7 @@ class Flow(
         port_gateway = self._deployment_nodes[GATEWAY_NAME].args.port
 
         if not (
-            is_port_free(__default_host__, port_gateway)
+            is_port_free(self.args.host, port_gateway)
         ):  # we check if the port is not used at parsing time as well for robustness
             raise PortAlreadyUsed(f'port:{port_gateway}')
 
