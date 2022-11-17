@@ -167,7 +167,7 @@ def get_template_yamls(
             'service',
             {
                 'name': f'{name}-{i}-{protocol}'.lower(),
-                'target': f'{name}-{i}-{protocol}'.lower(),
+                'target': name,
                 'namespace': namespace,
                 'port': port,
                 'type': 'ClusterIP',
