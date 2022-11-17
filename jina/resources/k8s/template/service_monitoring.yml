@@ -10,7 +10,7 @@ spec:
   ports:
     - port: {port}
       targetPort: {port}
-      name: {port-name}
+      name: port
       protocol: TCP
     - port: {port_monitoring}
       targetPort: {port_monitoring}

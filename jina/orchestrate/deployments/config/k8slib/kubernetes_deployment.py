@@ -136,7 +136,6 @@ def get_template_yamls(
                 'target': name,
                 'namespace': namespace,
                 'port': ports[0],
-                'port-name': 'port',
                 'type': 'ClusterIP',
                 'port_monitoring': port_monitoring,
             },
@@ -156,7 +155,6 @@ def get_template_yamls(
             {
                 'name': name,
                 'target': name,
-                'port-name': 'port',
                 'namespace': namespace,
                 'port': ports[0],
                 'type': 'ClusterIP',
@@ -168,9 +166,8 @@ def get_template_yamls(
         kubernetes_tools.get_yaml(
             'service',
             {
-                'name': f'{name}-{i}-{protocol}',
-                'target': f'{name}-{i}-{protocol}',
-                'port-name': 'port',
+                'name': f'{name}-{i}-{protocol}'.lower(),
+                'target': f'{name}-{i}-{protocol}'.lower(),
                 'namespace': namespace,
                 'port': port,
                 'type': 'ClusterIP',
