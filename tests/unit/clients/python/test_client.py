@@ -105,6 +105,34 @@ def test_client_websocket(mocker, flow_with_websocket):
         on_error_mock.assert_not_called()
 
 
+# Timeout is necessary to fail in case of hanging client requests
+@pytest.mark.timeout(60)
+def test_client_max_attempts(mocker, flow):
+    with flow:
+        time.sleep(0.5)
+        client = Client(
+            host='localhost',
+            port=flow.port,
+        )
+        # Test that a regular index request triggers the correct callbacks
+        on_always_mock = mocker.Mock()
+        on_error_mock = mocker.Mock()
+        on_done_mock = mocker.Mock()
+        client.post(
+            '/',
+            random_docs(1),
+            request_size=1,
+            max_attempts=5,
+            on_always=on_always_mock,
+            on_error=on_error_mock,
+            on_done=on_done_mock,
+            return_responses=True,
+        )
+        on_always_mock.assert_called_once()
+        on_done_mock.assert_called_once()
+        on_error_mock.assert_not_called()
+
+
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
 def test_client_from_kwargs(protocol):
     Client(port=12345, host='0.0.0.1', protocol=protocol)
