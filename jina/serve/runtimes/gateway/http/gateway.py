@@ -147,7 +147,6 @@ class HTTPGateway(BaseGateway):
         """
         Free resources allocated when setting up HTTP server
         """
-        await self.streamer.close()
         self.server.should_exit = True
         await self.server.shutdown()
 

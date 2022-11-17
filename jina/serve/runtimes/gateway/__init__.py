@@ -107,11 +107,13 @@ class GatewayRuntime(AsyncNewLoopRuntime):
 
     async def async_teardown(self):
         """Shutdown the server."""
+        await self.gateway.streamer.close()
         await self.gateway.shutdown()
         await self.async_cancel()
 
     async def async_cancel(self):
         """Stop the server."""
+        await self.gateway.streamer.close()
         await self.gateway.shutdown()
 
     async def async_run_forever(self):

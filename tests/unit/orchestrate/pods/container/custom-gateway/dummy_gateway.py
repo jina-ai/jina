@@ -70,6 +70,5 @@ class DummyGateway(Gateway):
         await self.server.serve()
 
     async def shutdown(self):
-        await self.streamer.close()
         self.server.should_exit = True
         await self.server.shutdown()

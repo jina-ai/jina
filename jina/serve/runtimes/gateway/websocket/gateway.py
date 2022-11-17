@@ -115,7 +115,6 @@ class WebSocketGateway(BaseGateway):
 
     async def shutdown(self):
         """Free other resources allocated with the server, e.g, gateway object, ..."""
-        await self.streamer.close()
         self.server.should_exit = True
         await self.server.shutdown()
 

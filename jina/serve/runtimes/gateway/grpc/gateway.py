@@ -98,7 +98,6 @@ class GRPCGateway(BaseGateway):
 
     async def shutdown(self):
         """Free other resources allocated with the server, e.g, gateway object, ..."""
-        await self.streamer.close()
         await self.server.stop(0)
         await self.health_servicer.enter_graceful_shutdown()
 
