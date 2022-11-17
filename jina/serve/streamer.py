@@ -18,6 +18,25 @@ if TYPE_CHECKING: # pragma: no cover
     from prometheus_client import CollectorRegistry
 
 
+def _create_topology_graph(
+        graph_description,
+    graph_conditions,
+    deployments_metadata,
+    deployments_no_reduce,
+    timeout_send,
+    retries,
+):
+    # check if it should be in K8s, maybe ConnectionPoolFactory to be created
+    return TopologyGraph(
+        graph_representation=graph_description,
+        graph_conditions=graph_conditions,
+        deployments_metadata=deployments_metadata,
+        deployments_no_reduce=deployments_no_reduce,
+        timeout_send=timeout_send,
+        retries=retries,
+    )
+
+
 class GatewayStreamer:
     """
     Wrapper object to be used in a Custom Gateway. Naming to be defined
@@ -61,7 +80,7 @@ class GatewayStreamer:
         :param aio_tracing_client_interceptors: Optional list of aio grpc tracing server interceptors.
         :param tracing_client_interceptor: Optional gprc tracing server interceptor.
         """
-        topology_graph = self._create_topology_graph(
+        topology_graph = _create_topology_graph(
             graph_representation,
             graph_conditions,
             deployments_metadata,
@@ -93,25 +112,6 @@ class GatewayStreamer:
             logger=logger,
         )
         self._streamer.Call = self._streamer.stream
-
-    def _create_topology_graph(
-        self,
-        graph_description,
-        graph_conditions,
-        deployments_metadata,
-        deployments_no_reduce,
-        timeout_send,
-        retries,
-    ):
-        # check if it should be in K8s, maybe ConnectionPoolFactory to be created
-        return TopologyGraph(
-            graph_representation=graph_description,
-            graph_conditions=graph_conditions,
-            deployments_metadata=deployments_metadata,
-            deployments_no_reduce=deployments_no_reduce,
-            timeout_send=timeout_send,
-            retries=retries,
-        )
 
     def _create_connection_pool(
         self,
@@ -159,6 +159,7 @@ class GatewayStreamer:
         exec_endpoint: Optional[str] = None,
         target_executor: Optional[str] = None,
         parameters: Optional[Dict] = None,
+        results_in_order: bool = False
     ):
         """
         stream documents and stream responses back.
@@ -169,6 +170,7 @@ class GatewayStreamer:
         :param exec_endpoint: The executor endpoint to which to send the Documents
         :param target_executor: A regex expression indicating the Executors that should receive the Request
         :param parameters: Parameters to be attached to the Requests
+        :param results_in_order: return the results in the same order as the request_iterator
         :yield: Yields DocumentArrays or Responses from the Executors
         """
         from jina.types.request.data import DataRequest
@@ -185,7 +187,7 @@ class GatewayStreamer:
                     req.parameters = parameters
                 yield req
 
-        async for resp in self._streamer.stream(_req_generator()):
+        async for resp in self._streamer.stream(request_iterator=_req_generator(), results_in_order=results_in_order):
             if return_results:
                 yield resp
             else:

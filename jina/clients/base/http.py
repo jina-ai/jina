@@ -89,6 +89,7 @@ class HTTPBaseClient(BaseClient):
         initial_backoff: float = 0.5,
         max_backoff: float = 0.1,
         backoff_multiplier: float = 1.5,
+        results_in_order: bool = False,
         **kwargs,
     ):
         """
@@ -100,6 +101,7 @@ class HTTPBaseClient(BaseClient):
         :param initial_backoff: The first retry will happen with a delay of random(0, initial_backoff)
         :param max_backoff: The maximum accepted backoff after the exponential incremental delay
         :param backoff_multiplier: The n-th attempt will occur at random(0, min(initialBackoff*backoffMultiplier**(n-1), maxBackoff))
+        :param results_in_order: return the results in the same order as the inputs
         :param kwargs: kwargs coming from the public interface. Includes arguments to be passed to the `HTTPClientlet`
         :yields: generator over results
         """
@@ -151,7 +153,7 @@ class HTTPBaseClient(BaseClient):
                 logger=self.logger,
                 **vars(self.args),
             )
-            async for response in streamer.stream(request_iterator):
+            async for response in streamer.stream(request_iterator=request_iterator, results_in_order=results_in_order):
                 r_status = response.status
 
                 r_str = await response.json()

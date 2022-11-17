@@ -17,7 +17,7 @@ __all__ = ['RequestStreamer']
 
 from jina.types.request.data import Response
 
-if TYPE_CHECKING: # pragma: no cover
+if TYPE_CHECKING:  # pragma: no cover
     from jina.types.request import Request
 
 
@@ -30,13 +30,13 @@ class RequestStreamer:
         pass
 
     def __init__(
-        self,
-        request_handler: Callable[['Request'], 'Awaitable[Request]'],
-        result_handler: Callable[['Request'], Optional['Request']],
-        prefetch: int = 0,
-        end_of_iter_handler: Optional[Callable[[], None]] = None,
-        logger: Optional['JinaLogger'] = None,
-        **logger_kwargs
+            self,
+            request_handler: Callable[['Request'], 'Awaitable[Request]'],
+            result_handler: Callable[['Request'], Optional['Request']],
+            prefetch: int = 0,
+            end_of_iter_handler: Optional[Callable[[], None]] = None,
+            logger: Optional['JinaLogger'] = None,
+            **logger_kwargs
     ):
         """
         :param request_handler: The callable responsible for handling the request. It should handle a request as input and return a Future to be awaited
@@ -55,25 +55,26 @@ class RequestStreamer:
         self.total_num_floating_tasks_alive = 0
 
     async def stream(
-        self, request_iterator, context=None, *args
+            self, request_iterator, context=None, results_in_order: bool = False, *args
     ) -> AsyncIterator['Request']:
         """
         stream requests from client iterator and stream responses back.
 
         :param request_iterator: iterator of requests
         :param context: context of the grpc call
+        :param results_in_order: return the results in the same order as the request_iterator
         :param args: positional arguments
         :yield: responses from Executors
         """
 
-        async_iter: AsyncIterator = self._stream_requests(request_iterator)
+        async_iter: AsyncIterator = self._stream_requests(request_iterator=request_iterator, results_in_order=results_in_order)
 
         try:
             async for response in async_iter:
                 yield response
         except InternalNetworkError as err:
             if (
-                context is not None
+                    context is not None
             ):  # inside GrpcGateway we can handle the error directly here through the grpc context
                 context.set_details(err.details())
                 context.set_code(err.code())
@@ -88,14 +89,19 @@ class RequestStreamer:
                 raise
 
     async def _stream_requests(
-        self,
-        request_iterator: Union[Iterator, AsyncIterator],
+            self,
+            request_iterator: Union[Iterator, AsyncIterator],
+            results_in_order: bool = False
     ) -> AsyncIterator:
         """Implements request and response handling without prefetching
         :param request_iterator: requests iterator from Client
+        :param results_in_order: return the results in the same order as the request_iterator
         :yield: responses
         """
         result_queue = asyncio.Queue()
+        request_ids = []
+        responses_list = []
+        responses_ids = {}  # map from id to index in responses_list
         floating_results_queue = asyncio.Queue()
         end_of_iter = asyncio.Event()
         all_requests_handled = asyncio.Event()
@@ -140,12 +146,14 @@ class RequestStreamer:
             """
             num_reqs = 0
             async for request in AsyncRequestsIterator(
-                iterator=request_iterator,
-                request_counter=requests_to_handle,
-                prefetch=self._prefetch,
+                    iterator=request_iterator,
+                    request_counter=requests_to_handle,
+                    prefetch=self._prefetch,
             ):
                 num_reqs += 1
                 requests_to_handle.count += 1
+                if results_in_order:
+                    request_ids.append(request.id)
                 future_responses, future_hanging = self._request_handler(
                     request=request
                 )
@@ -168,8 +176,8 @@ class RequestStreamer:
                 future_cancel = asyncio.ensure_future(end_future())
                 result_queue.put_nowait(future_cancel)
             if (
-                all_floating_requests_awaited.is_set()
-                or empty_requests_iterator.is_set()
+                    all_floating_requests_awaited.is_set()
+                    or empty_requests_iterator.is_set()
             ):
                 # It will be waiting for something that will never appear
                 future_cancel = asyncio.ensure_future(end_future())
@@ -177,8 +185,8 @@ class RequestStreamer:
 
         async def handle_floating_responses():
             while (
-                not all_floating_requests_awaited.is_set()
-                and not empty_requests_iterator.is_set()
+                    not all_floating_requests_awaited.is_set()
+                    and not empty_requests_iterator.is_set()
             ):
                 hanging_response = await floating_results_queue.get()
                 try:
@@ -206,15 +214,42 @@ class RequestStreamer:
 
         iterate_requests_task.add_done_callback(iterating_task_done)
 
-        while not all_requests_handled.is_set():
-            future = await result_queue.get()
-            try:
-                response = self._result_handler(future.result())
+        async def receive_responses():
+            while not all_requests_handled.is_set():
+                future = await result_queue.get()
+                try:
+                    response = self._result_handler(future.result())
+                    yield response
+                    requests_to_handle.count -= 1
+                    update_all_handled()
+                except self._EndOfStreaming:
+                    pass
+
+        async for response in receive_responses():
+            if not results_in_order:
+                # if is not needed to return_in_order, just yield responses as they come.
                 yield response
-                requests_to_handle.count -= 1
-                update_all_handled()
-            except self._EndOfStreaming:
-                pass
+            else:
+                # if return_in_order is needed, we have to check if the response is to be returned
+                if response.id == request_ids[0]:
+                    # is the response's turn to be yielded
+                    yield response
+                    request_ids.pop(0)
+                else:
+                    # is not your turn, put to the end
+                    responses_ids[response.id] = len(responses_list)
+                    responses_list.append(response)
+
+                stop_yielding = False
+                while not stop_yielding and len(request_ids) > 0:
+                    next_request_id = request_ids[0]
+                    if next_request_id in responses_ids:
+                        response_index = responses_ids[next_request_id]
+                        del responses_ids[next_request_id]
+                        request_ids.pop(0)
+                        yield responses_list[response_index]
+                    else:
+                        stop_yielding = True
 
     async def wait_floating_requests_end(self):
         """

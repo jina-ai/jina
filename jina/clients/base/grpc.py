@@ -70,6 +70,7 @@ class GRPCBaseClient(BaseClient):
         initial_backoff: float = 0.5,
         max_backoff: float = 0.1,
         backoff_multiplier: float = 1.5,
+        results_in_order: bool = False,
         **kwargs,
     ):
         try:
