@@ -69,7 +69,8 @@ class GRPCBaseClient(BaseClient):
         max_attempts: int = 1,
         initial_backoff: float = 0.5,
         max_backoff: float = 0.1,
-        backoff_multiplier: float = 1.5,
+        backoff_
+        : float = 1.5,
         **kwargs,
     ):
         try:
@@ -95,7 +96,7 @@ class GRPCBaseClient(BaseClient):
                                     "maxAttempts": max_attempts,
                                     "initialBackoff": f"{initial_backoff}s",
                                     "maxBackoff": f"{max_backoff}s",
-                                    "backoffMultiplier": {backoff_multiplier},
+                                    "backoffMultiplier": backoff_multiplier,
                                     "retryableStatusCodes": [
                                         "UNAVAILABLE",
                                         "DEADLINE_EXCEEDED",
