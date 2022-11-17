@@ -990,21 +990,37 @@ async def test_flow_multiple_protocols_gateway(logger, docker_images, tmpdir):
     config_path = os.environ['KUBECONFIG']
     import portforward
 
-    with portforward.forward(
-        namespace, gateway_pod_name, grpc_port, grpc_port, config_path
-    ):
-        grpc_client = Client(protocol='grpc', port=grpc_port, asyncio=True)
-        async for _ in grpc_client.post('/', inputs=DocumentArray.empty(5)):
-            pass
-        assert AsyncNewLoopRuntime.is_ready(f'localhost:{grpc_port}')
+    # test portforwarding the gateway pod and service using http
+    forwards = [
+        portforward.forward(
+            namespace, gateway_pod_name, http_port, http_port, config_path
+        ),
+        portforward.forward(
+            namespace, 'service/gateway', http_port, http_port, config_path
+        ),
+    ]
+    for forward in forwards:
+        with forward:
+            import requests
 
-    with portforward.forward(
-        namespace, gateway_pod_name, http_port, http_port, config_path
-    ):
-        import requests
+            resp = requests.get(f'http://localhost:{http_port}').json()
+            assert resp['protocol'] == 'http'
 
-        resp = requests.get(f'http://localhost:{http_port}').json()
-        assert resp['protocol'] == 'http'
+    # test portforwarding the gateway pod and service using grpc
+    forwards = [
+        portforward.forward(
+            namespace, gateway_pod_name, grpc_port, grpc_port, config_path
+        ),
+        portforward.forward(
+            namespace, 'service/gateway-1-grpc', grpc_port, grpc_port, config_path
+        ),
+    ]
+    for forward in forwards:
+        with forward:
+            grpc_client = Client(protocol='grpc', port=grpc_port, asyncio=True)
+            async for _ in grpc_client.post('/', inputs=DocumentArray.empty(5)):
+                pass
+            assert AsyncNewLoopRuntime.is_ready(f'localhost:{grpc_port}')
 
 
 @pytest.mark.timeout(3600)
