@@ -69,13 +69,7 @@ class DummyGateway(Gateway):
     async def run_server(self):
         await self.server.serve()
 
-    async def teardown(self):
-        await super().teardown()
-        await self.server.shutdown()
-
-    async def stop_server(self):
+    async def shutdown(self):
+        await self.streamer.close()
         self.server.should_exit = True
-
-    @property
-    def should_exit(self) -> bool:
-        return self.server.should_exit
+        await self.server.shutdown()

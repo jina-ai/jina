@@ -143,13 +143,9 @@ class BaseGateway(JAMLCompatible, metaclass=GatewayType):
         """Run server forever"""
         ...
 
-    async def teardown(self):
-        """Free other resources allocated with the server, e.g, gateway object, ..."""
-        await self.streamer.close()
-
     @abc.abstractmethod
-    async def stop_server(self):
-        """Stop server"""
+    async def shutdown(self):
+        """Free other resources allocated with the server, e.g, gateway object, ..."""
         ...
 
     def __enter__(self):
