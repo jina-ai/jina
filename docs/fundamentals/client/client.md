@@ -760,8 +760,8 @@ None
 
 ````
 
-A Client is used to connect to a Flow who processes Documents in an asynchronous and very distributed way. This means that the order in which the Requests are processed may not be the exact same order as they are sent by the Client.
-However, you can force the order of the results to be deterministic and the same as they enter the Flow by passing `results_in_order` parameter to {meth}`~jina.clients.mixin.PostMixin.post`.
+A Client connects to a Flow that processes Documents in an asynchronous and very distributed way. This means that the order of the Flow processing the requests may not be the same order as the Client sending the requests.
+However, you can force the order of the results to be deterministic and the same as when they enter the Flow by passing `results_in_order` parameter to {meth}`~jina.clients.mixin.PostMixin.post`.
 
 ```python
 import random
