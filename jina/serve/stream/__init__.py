@@ -67,6 +67,10 @@ class RequestStreamer:
         :param args: positional arguments
         :yield: responses from Executors
         """
+        if context is not None:
+            for metadatum in context.invocation_metadata():
+                if metadatum.key == '__results_in_order__':
+                    results_in_order = (metadatum.value == 'true')
 
         async_iter: AsyncIterator = self._stream_requests(request_iterator=request_iterator, results_in_order=results_in_order)
 

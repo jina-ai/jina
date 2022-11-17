@@ -111,6 +111,11 @@ class GRPCBaseClient(BaseClient):
                 options.append(("grpc.enable_retries", 1))
                 options.append(("grpc.service_config", service_config_json))
 
+            metadata = kwargs.get('metadata', None)
+            if results_in_order:
+                metadata = metadata or ()
+                metadata = metadata + (('__results_in_order__', 'true'),)
+
             async with GrpcConnectionPool.get_grpc_channel(
                 f'{self.args.host}:{self.args.port}',
                 options=options,
@@ -128,7 +133,7 @@ class GRPCBaseClient(BaseClient):
                         async for resp in stub.Call(
                             req_iter,
                             compression=self.compression,
-                            metadata=kwargs.get('metadata', None),
+                            metadata=metadata,
                             credentials=kwargs.get('credentials', None),
                             timeout=kwargs.get('timeout', None),
                         ):

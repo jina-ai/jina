@@ -5,7 +5,7 @@ import time
 import pytest
 
 
-@pytest.mark.parametrize('protocol', ['grpc', 'http', 'websocket'])
+@pytest.mark.parametrize('protocol', ['grpc'])
 def test_return_order_in_client(protocol):
     class ExecutorRandomSleepExecutor(Executor):
 
