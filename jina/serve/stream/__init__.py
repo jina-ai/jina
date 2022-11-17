@@ -1,4 +1,3 @@
-import argparse
 import asyncio
 from typing import (
     TYPE_CHECKING,

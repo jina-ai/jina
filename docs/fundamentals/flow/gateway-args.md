@@ -25,14 +25,13 @@
 | `uses` | The config of the gateway, it could be one of the followings:<br>        * the string literal of an Gateway class name<br>        * a Gateway YAML file (.yml, .yaml, .jaml)<br>        * a docker image (must start with `docker://`)<br>        * the string literal of a YAML config (must start with `!` or `jtype: `)<br>        * the string literal of a JSON config<br><br>        When use it under Python, one can use the following values additionally:<br>        - a Python dict that represents the config<br>        - a text file stream has `.read()` interface | `string` | `None` |
 | `uses_with` | Dictionary of keyword arguments that will override the `with` configuration in `uses` | `object` | `None` |
 | `py_modules` | The customized python modules need to be imported before loading the gateway<br><br>Note that the recommended way is to only import a single module - a simple python file, if your<br>gateway can be defined in a single file, or an ``__init__.py`` file if you have multiple files,<br>which should be structured as a python package. | `array` | `None` |
-| `port` | The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (`--external` or `external=True`) this can be a list of ports, separated by commas. Then, every resulting address will be considered as one replica of the Executor. | `string` | `random in [49152, 65535]` |
-| `host_in` | The host address for binding to, by default it is 0.0.0.0 | `string` | `0.0.0.0` |
 | `grpc_server_options` | Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1} | `object` | `None` |
+| `port` | The port for input data to bind to, default is a random port between [49152, 65535].In the case of an external Executor (`--external` or `external=True`) this can be a list of ports, separated by commas.  Then, every resulting address will be considered as one replica of the Executor. | `string` | `random in [49152, 65535]` |
 | `graph_description` | Routing graph for the gateway | `string` | `{}` |
 | `graph_conditions` | Dictionary stating which filtering conditions each Executor in the graph requires to receive Documents. | `string` | `{}` |
 | `deployments_addresses` | JSON dictionary with the input addresses of each Deployment | `string` | `{}` |
 | `deployments_metadata` | JSON dictionary with the request metadata for each Deployment | `string` | `{}` |
-| `deployments_disable_reduce` | list JSON disabling the built-in merging mechanism for each Deployment listed | `string` | `[]` |
+| `deployments_no_reduce` | list JSON disabling the built-in merging mechanism for each Deployment listed | `string` | `[]` |
 | `compression` | The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression. | `string` | `None` |
 | `timeout_send` | The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default | `number` | `None` |
 | `runtime_cls` | The runtime class to run inside the Pod | `string` | `GatewayRuntime` |

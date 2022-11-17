@@ -1,6 +1,4 @@
 import argparse
-import urllib
-from http import HTTPStatus
 
 from jina.enums import GatewayProtocolType
 from jina.helper import parse_host_scheme

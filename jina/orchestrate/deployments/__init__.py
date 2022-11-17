@@ -732,7 +732,7 @@ class Deployment(BaseDeployment):
         :return: slice
         """
 
-        all_devices = range(num_devices)
+        use_uuids = False
         if re.match(WRAPPED_SLICE_BASE, value):
             value = value[1:-1]
 
@@ -742,13 +742,28 @@ class Deployment(BaseDeployment):
                 parts = value.split(':')
 
                 if len(parts) == 1:
-                    # slice(stop)
+                    try:
+                        int(parts[0])
+                    except:
+                        use_uuids = True
+                    if use_uuids:
+                        return parts
                     parts = [parts[0], str(int(parts[0]) + 1)]
-                # else: slice(start, stop[, step])
             else:
-                return [int(p) for p in parts]
+                # try to detect if parts are not numbers
+                try:
+                    int(parts[0])
+                except:
+                    use_uuids = True
+
+                if not use_uuids:
+                    return [int(p) for p in parts]
+                else:
+                    return parts
         else:
             parts = []
+
+        all_devices = range(num_devices)
         return all_devices[slice(*[int(p) if p else None for p in parts])]
 
     @staticmethod
@@ -776,10 +791,11 @@ class Deployment(BaseDeployment):
 
             selected_devices = []
             if device_str[2:]:
-                for device_num in Deployment._parse_devices(
+
+                for device in Deployment._parse_devices(
                     device_str[2:], num_devices
                 ):
-                    selected_devices.append(device_num)
+                    selected_devices.append(device)
             else:
                 selected_devices = range(num_devices)
             _c = cycle(selected_devices)
@@ -803,7 +819,9 @@ class Deployment(BaseDeployment):
             for replica_id in range(replicas):
                 _args = copy.deepcopy(args)
                 _args.shard_id = shard_id
-                _args.pod_role = PodRoleType.WORKER
+                # for gateway pods, the pod role shouldn't be changed
+                if _args.pod_role != PodRoleType.GATEWAY:
+                    _args.pod_role = PodRoleType.WORKER
 
                 if cuda_device_map:
                     _args.env['CUDA_VISIBLE_DEVICES'] = str(cuda_device_map[replica_id])

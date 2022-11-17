@@ -11,7 +11,7 @@ from jina import __default_endpoint__
 from jina.excepts import InternalNetworkError
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.helper import _parse_specific_params
-from jina.serve.runtimes.request_handlers.worker_request_handler import WorkerRequestHandler
+from jina.serve.runtimes.worker.request_handling import WorkerRequestHandler
 from jina.types.request.data import DataRequest
 
 
@@ -125,10 +125,10 @@ class TopologyGraph:
                 request.parameters = _parse_specific_params(
                     request.parameters, self.name
                 )
-                if copy_request_at_send:
-                    self.parts_to_send.append(copy.deepcopy(request))
-                else:
-                    self.parts_to_send.append(request)
+                req_to_send = (
+                    copy.deepcopy(request) if copy_request_at_send else request
+                )
+                self.parts_to_send.append(req_to_send)
                 # this is a specific needs
                 if len(self.parts_to_send) == self.number_of_parts:
                     self.start_time = datetime.utcnow()
@@ -157,7 +157,7 @@ class TopologyGraph:
                         return request, metadata
                     # otherwise, send to executor and get response
                     try:
-                        resp, metadata = await connection_pool.send_requests_once(
+                        result = await connection_pool.send_requests_once(
                             requests=self.parts_to_send,
                             deployment=self.name,
                             metadata=self._metadata,
@@ -166,6 +166,10 @@ class TopologyGraph:
                             timeout=self._timeout_send,
                             retries=self._retries,
                         )
+                        if issubclass(type(result), BaseException):
+                            raise result
+                        else:
+                            resp, metadata = result
                         if WorkerRequestHandler._KEY_RESULT in resp.parameters:
                             # Accumulate results from each Node and then add them to the original
                             self.result_in_params_returned = resp.parameters[
@@ -322,7 +326,7 @@ class TopologyGraph:
         graph_representation: Dict,
         graph_conditions: Dict = {},
         deployments_metadata: Dict = {},
-        deployments_disable_reduce: List[str] = [],
+        deployments_no_reduce: List[str] = [],
         timeout_send: Optional[float] = 1.0,
         retries: Optional[int] = -1,
         *args,
@@ -357,7 +361,7 @@ class TopologyGraph:
                 floating=node_name in floating_deployment_set,
                 filter_condition=condition,
                 metadata=metadata,
-                reduce=node_name not in deployments_disable_reduce,
+                reduce=node_name not in deployments_no_reduce,
                 timeout_send=timeout_send,
                 retries=retries,
             )

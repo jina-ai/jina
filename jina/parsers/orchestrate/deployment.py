@@ -1,7 +1,6 @@
 """Argparser module for Deployment runtimes"""
 import argparse
 
-from jina import helper
 from jina.enums import DeploymentRoleType
 from jina.parsers.helper import _SHOW_ALL_ARGS, KVAppendAction, add_arg_group
 

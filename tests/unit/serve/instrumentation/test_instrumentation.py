@@ -86,6 +86,7 @@ def test_timer_decorator(metrics_setup):
         'cat': 'meow',
         'dog': 'woof',
     }
+
     @MetricsTimer(summary, histogram, labels)
     def _sleep():
         time.sleep(0.1)

@@ -1,4 +1,5 @@
 import contextlib
+import copy
 import inspect
 import multiprocessing
 import os
@@ -13,12 +14,15 @@ from jina.helper import ArgNamespace, T, iscoroutinefunction, typename
 from jina.importer import ImportExtensions
 from jina.jaml import JAML, JAMLCompatible, env_var_regex, internal_var_regex
 from jina.logging.logger import JinaLogger
-from jina.serve.executors.decorators import avoid_concurrent_lock_cls
+from jina.serve.executors.decorators import (
+    _init_requests_by_class,
+    avoid_concurrent_lock_cls,
+)
 from jina.serve.executors.metas import get_executor_taboo
 from jina.serve.helper import store_init_kwargs, wrap_func
 from jina.serve.instrumentation import MetricsTimer
 
-if TYPE_CHECKING: # pragma: no cover
+if TYPE_CHECKING:  # pragma: no cover
     from opentelemetry.context.context import Context
 
 __dry_run_endpoint__ = '_jina_dry_run_'
@@ -37,6 +41,8 @@ class ExecutorType(type(JAMLCompatible), type):
         :return: Executor class
         """
         _cls = super().__new__(cls, *args, **kwargs)
+        # this needs to be here, in the case where Executors inherited do not define new `requests`
+        _init_requests_by_class(_cls)
         return cls.register_class(_cls)
 
     @staticmethod
@@ -47,7 +53,6 @@ class ExecutorType(type(JAMLCompatible), type):
         :param cls: The class.
         :return: The class, after being registered.
         """
-
         reg_cls_set = getattr(cls, '_registered_class', set())
 
         cls_id = f'{cls.__module__}.{cls.__name__}'
@@ -214,9 +219,25 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             self.meter_provider = None
             self.meter = None
 
+    @property
+    def requests(self):
+        """
+        Get the request dictionary corresponding to this specific class
+
+        :return: Returns the requests corresponding to the specific Executor instance class
+        """
+        if hasattr(self, '_requests'):
+            return self._requests
+        else:
+            if not hasattr(self, 'requests_by_class'):
+                self.requests_by_class = {}
+            if self.__class__.__name__ not in self.requests_by_class:
+                self.requests_by_class[self.__class__.__name__] = {}
+            # we need to copy so that different instances with different (requests) in input do not disturb one another
+            self._requests = copy.copy(self.requests_by_class[self.__class__.__name__])
+            return self._requests
+
     def _add_requests(self, _requests: Optional[Dict]):
-        if not hasattr(self, 'requests'):
-            self.requests = {}
         if _requests:
             func_names = {f.__name__: e for e, f in self.requests.items()}
             for endpoint, func in _requests.items():
@@ -323,6 +344,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         # noqa: DAR102
         # noqa: DAR201
         """
+
         if req_endpoint in self.requests:
             return await self.__acall_endpoint__(req_endpoint, **kwargs)
         elif __default_endpoint__ in self.requests:
@@ -360,7 +382,9 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         }
 
         if self.tracer:
-            with self.tracer.start_span(req_endpoint, context=tracing_context) as _:
+            with self.tracer.start_as_current_span(
+                req_endpoint, context=tracing_context
+            ):
                 from opentelemetry.propagate import extract
                 from opentelemetry.trace.propagation.tracecontext import (
                     TraceContextTextMapPropagator,
