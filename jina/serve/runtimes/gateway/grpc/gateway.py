@@ -98,14 +98,15 @@ class GRPCGateway(BaseGateway):
 
     async def teardown(self):
         """Free other resources allocated with the server, e.g, gateway object, ..."""
+        await self.server.stop(0)
         await super().teardown()
         await self.health_servicer.enter_graceful_shutdown()
 
-    async def stop_server(self):
-        """
-        Stop GRPC server
-        """
-        await self.server.stop(0)
+    # async def stop_server(self):
+    #     """
+    #     Stop GRPC server
+    #     """
+    #     await self.server.stop(0)
 
     async def run_server(self):
         """Run GRPC server forever"""

@@ -115,14 +115,9 @@ class WebSocketGateway(BaseGateway):
 
     async def teardown(self):
         """Free other resources allocated with the server, e.g, gateway object, ..."""
+        self.server.should_exit = True
         await super().teardown()
         await self.server.shutdown()
-
-    async def stop_server(self):
-        """
-        Stop WebSocket server
-        """
-        self.server.should_exit = True
 
     async def run_server(self):
         """Run WebSocket server forever"""
