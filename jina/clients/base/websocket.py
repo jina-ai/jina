@@ -14,7 +14,7 @@ from jina.logging.profile import ProgressBar
 from jina.proto import jina_pb2
 from jina.serve.stream import RequestStreamer
 
-if TYPE_CHECKING: # pragma: no cover
+if TYPE_CHECKING:  # pragma: no cover
     from jina.clients.base import CallbackFnType, InputType
     from jina.types.request import Request
 
@@ -77,16 +77,17 @@ class WebSocketBaseClient(BaseClient):
             return False
 
     async def _get_results(
-        self,
-        inputs: 'InputType',
-        on_done: 'CallbackFnType',
-        on_error: Optional['CallbackFnType'] = None,
-        on_always: Optional['CallbackFnType'] = None,
-        max_attempts: int = 1,
-        initial_backoff: float = 0.5,
-        max_backoff: float = 0.1,
-        backoff_multiplier: float = 1.5,
-        **kwargs,
+            self,
+            inputs: 'InputType',
+            on_done: 'CallbackFnType',
+            on_error: Optional['CallbackFnType'] = None,
+            on_always: Optional['CallbackFnType'] = None,
+            max_attempts: int = 1,
+            initial_backoff: float = 0.5,
+            max_backoff: float = 0.1,
+            backoff_multiplier: float = 1.5,
+            results_in_order: bool = False,
+            **kwargs,
     ):
         """
         :param inputs: the callable
@@ -97,6 +98,7 @@ class WebSocketBaseClient(BaseClient):
         :param initial_backoff: The first retry will happen with a delay of random(0, initial_backoff)
         :param max_backoff: The maximum accepted backoff after the exponential incremental delay
         :param backoff_multiplier: The n-th attempt will occur at random(0, min(initialBackoff*backoffMultiplier**(n-1), maxBackoff))
+        :param results_in_order: return the results in the same order as the inputs
         :param kwargs: kwargs coming from the public interface. Includes arguments to be passed to the `WebsocketClientlet`
         :yields: generator over results
         """
@@ -162,7 +164,7 @@ class WebSocketBaseClient(BaseClient):
                 asyncio.create_task(iolet.send_eoi())
 
             def _request_handler(
-                request: 'Request',
+                    request: 'Request',
             ) -> 'Tuple[asyncio.Future, Optional[asyncio.Future]]':
                 """
                 For each request in the iterator, we send the `Message` using `iolet.send_message()`.
@@ -194,7 +196,8 @@ class WebSocketBaseClient(BaseClient):
             if receive_task.done():
                 raise RuntimeError('receive task not running, can not send messages')
             try:
-                async for response in streamer.stream(request_iterator):
+                async for response in streamer.stream(request_iterator=request_iterator,
+                                                      results_in_order=results_in_order):
                     callback_exec(
                         response=response,
                         on_error=on_error,

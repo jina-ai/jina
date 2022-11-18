@@ -57,7 +57,7 @@ def test_flow_to_docker_compose_yaml(tmpdir, protocol):
 
     gateway_service = services['gateway']
     assert gateway_service['entrypoint'] == ['jina']
-    assert gateway_service['expose'] == ['9090']
+    assert gateway_service['expose'] == [9090]
     assert gateway_service['ports'] == ['9090:9090']
     gateway_args = gateway_service['command']
     assert gateway_args[0] == 'gateway'
