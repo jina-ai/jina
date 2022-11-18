@@ -3,6 +3,7 @@ import random
 import subprocess
 import socket
 import docker
+import os
 from docker import DockerClient
 from pytest_kind import KindCluster
 from subprocess import CalledProcessError
@@ -14,8 +15,11 @@ from jina.logging.logger import JinaLogger
 
 class KindClusterWrapperV2:
     def __init__(self, kind_cluster: KindCluster, logger: JinaLogger) -> None:
-        self._cluster: KindCluster = kind_cluster
         self._log: JinaLogger = logger
+        self._cluster: KindCluster = kind_cluster
+        self._cluster.ensure_kubectl()
+        self._cluster.ensure_kind()
+        os.environ['KUBECONFIG'] = str(self._cluster.kubeconfig_path)
         self._docker_client: DockerClient = docker.from_env()
 
     def create_namespace(self, namespace: str) -> bool:
@@ -67,11 +71,35 @@ class KindClusterWrapperV2:
             if artifact.startswith('deployment'):
                 deployment_name = artifact.split()[0]
                 self._log.info(f'Awaiting deployment {deployment_name}')
-                print('wait', '--for=condition=available', deployment_name, f"timeout={timeout_seconds}s", '-n', namespace)
-                self._cluster.kubectl('wait', '--for=condition=available', deployment_name, f"--timeout={timeout_seconds}s", '-n', namespace)
+                try:
+                    self._cluster.kubectl('wait', '--for=condition=available', deployment_name, f"--timeout={timeout_seconds}s", '-n', namespace)
+                except CalledProcessError as e:
+                    self._log.error(f'Error while waiting for deployment {deployment_name}: {e}')
+                    self.log_node_summaries(namespace)
+                    self.log_pod_summaries(namespace)
+                    self.log_failing_pods(namespace)
+                    raise e
                 self._log.info(f'Deployment {deployment_name} ready')
+    
+    def log_node_summaries(self, namespace: str) -> None:
+        """Logs node summaries in a namespace."""
+        self._log.info(self._cluster.kubectl('get', 'nodes', '-n', namespace))
+        self._log.info(self._cluster.kubectl('describe', 'nodes', '-n', namespace))
 
-    async def async_deploy_from_dir(self, dir: str, namespace: str, timeout_seconds: int = 300) -> None:
+    def log_pod_summaries(self, namespace: str) -> None:
+        """Logs pod summaries in a namespace."""
+        self._log.error(self._cluster.kubectl('get', 'pods', '-n', namespace))
+        self._log.error(self._cluster.kubectl('describe', 'pods', '-n', namespace))
+
+    def log_failing_pods(self, namespace: str) -> None:
+        """Logs all pods that are not in a running state in a namespace."""
+        self._log.info(f'Logging failing pods in {namespace}')
+        pods = self._cluster.kubectl('get', 'pods', '-n', namespace, '-o', 'jsonpath={.items[*].metadata.name}')
+        for pod in pods.split():
+            if self._cluster.kubectl('get', 'pods', pod, '-n', namespace, '-o', 'jsonpath={.status.phase}') != 'Running':
+                self._log.error(self._cluster.kubectl('logs', pod, '-n', namespace))
+
+    async def async_deploy_from_dir(self, dir: str, namespace: str, timeout_seconds: int = 900) -> None:
         """
         Deploy artifacts from a directory containing the k8s yaml files
         But wait for the deployments to be ready asynchronously
@@ -79,20 +107,10 @@ class KindClusterWrapperV2:
         Args:
             dir: directory containing the k8s yaml files
             namespace: namespace to deploy to
-            timeout_seconds: timeout in seconds. Default is 300 seconds.
+            timeout_seconds: timeout in seconds. Default is 900 seconds.
         """
-        self.create_namespace(namespace)
-        artifacts: str = self._cluster.kubectl("apply", "-Rf", dir, '-n', namespace)
-
-        # Wait for deployments to be available
-        for artifact in artifacts.splitlines():
-            if artifact.startswith('deployment'):
-                deployment_name = artifact.split()[0]
-                self._log.info(f'Awaiting deployment {deployment_name}')
-                # TODO: Timeout should be shorter and should async sleep if failed
-                print('wait', '--for=condition=available', deployment_name, f"timeout={timeout_seconds}s", '-n', namespace)
-                self._cluster.kubectl('wait', '--for=condition=available', deployment_name, f"--timeout={timeout_seconds}s", '-n', namespace)
-                self._log.info(f'Deployment {deployment_name} ready')
+        # TODO: Timeout should be shorter and should async sleep if failed
+        raise NotImplementedError('Not implemented yet')
     
     def build_and_load_docker_image(self, dir: str, image_name: str, tag: str) -> str:
         """Build and load docker image.
