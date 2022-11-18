@@ -15,6 +15,8 @@ from tests.helper import (
 )
 
 from tests.unit.yaml.dummy_gateway import DummyGateway
+
+
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 _dummy_gateway_yaml_path = os.path.join(cur_dir, '../../yaml/test-custom-gateway.yml')
 

@@ -157,16 +157,6 @@ class BaseGateway(JAMLCompatible, metaclass=GatewayType):
         """Stop server"""
         ...
 
-    # some servers need to set a flag useful in handling termination signals
-    # e.g, HTTPGateway/ WebSocketGateway
-    @property
-    def should_exit(self) -> bool:
-        """
-        Boolean flag that indicates whether the gateway server should exit or not
-        :return: boolean flag
-        """
-        return False
-
     def __enter__(self):
         return self
 
