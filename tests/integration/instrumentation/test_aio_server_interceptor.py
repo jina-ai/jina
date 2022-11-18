@@ -64,7 +64,7 @@ def test_default_health_servicer(jaeger_port, otlp_collector, otlp_receiver_port
     gatway_thread.start()
     worker_thread.start()
     try:
-        target = f'{gateway_args.host}:{gateway_args.port}'
+        target = f'{gateway_args.host}:{gateway_args.port[0]}'
         p = multiprocessing.Process(target=check_health, args=(target,))
         p.start()
         p.join()
