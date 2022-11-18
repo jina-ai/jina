@@ -141,18 +141,12 @@ class HTTPGateway(BaseGateway):
 
         await self.server.setup()
 
-    async def teardown(self):
+    async def shutdown(self):
         """
         Free resources allocated when setting up HTTP server
         """
-        await super().teardown()
-        await self.server.shutdown()
-
-    async def stop_server(self):
-        """
-        Stop HTTP server
-        """
         self.server.should_exit = True
+        await self.server.shutdown()
 
     async def run_server(self):
         """Run HTTP server forever"""
