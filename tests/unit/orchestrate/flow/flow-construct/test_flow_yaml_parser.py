@@ -135,7 +135,7 @@ def test_dump_load_build(monkeypatch):
     # these were passed by the user
     assert int(f.port) == int(f2.port)
     # validate gateway args (set during build)
-    assert int(f['gateway'].args.port) == int(f2['gateway'].args.port)
+    assert f['gateway'].args.port == f2['gateway'].args.port
 
 
 def test_load_flow_with_port():

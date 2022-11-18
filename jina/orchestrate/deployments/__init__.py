@@ -266,8 +266,9 @@ class Deployment(BaseDeployment):
             self.ext_repl_schemes,
             self.ext_repl_tls,
         ) = ([], [], [], [])
-        self._parse_external_replica_hosts_and_ports()
-        self._parse_addresses_into_host_and_port()
+        if self.args.pod_role != PodRoleType.GATEWAY:
+            self._parse_external_replica_hosts_and_ports()
+            self._parse_addresses_into_host_and_port()
         if len(self.ext_repl_ports) > 1:
             self.args.replicas = len(self.ext_repl_ports)
 
@@ -434,8 +435,14 @@ class Deployment(BaseDeployment):
         """
         :return: the protocol of this deployment
         """
-        protocol = getattr(self.args, 'protocol', 'grpc')
-        return str(protocol) + ('s' if self.tls_enabled else '')
+        protocol = getattr(self.args, 'protocol', ['grpc'])
+        if not isinstance(protocol, list):
+            protocol = [protocol]
+        protocol = [str(_p) + ('s' if self.tls_enabled else '') for _p in protocol]
+        if len(protocol) == 1:
+            return protocol[0]
+        else:
+            return protocol
 
     @property
     def first_pod_args(self) -> Namespace:
@@ -468,7 +475,7 @@ class Deployment(BaseDeployment):
         """Returns a list of ports exposed by this Deployment.
         Exposed means these are the ports a Client/Gateway is supposed to communicate with.
         For sharded deployments this will be the head_port.
-        For non sharded deployments it will be all replica ports
+        For non-sharded deployments it will be all replica ports
         .. # noqa: DAR201
         """
         if self.head_port:
@@ -476,7 +483,10 @@ class Deployment(BaseDeployment):
         else:
             ports = []
             for replica in self.pod_args['pods'][0]:
-                ports.append(replica.port)
+                if isinstance(replica.port, list):
+                    ports.extend(replica.port)
+                else:
+                    ports.append(replica.port)
             return ports
 
     @property
@@ -484,7 +494,7 @@ class Deployment(BaseDeployment):
         """Returns a list of host addresses exposed by this Deployment.
         Exposed means these are the host a Client/Gateway is supposed to communicate with.
         For sharded deployments this will be the head host.
-        For non sharded deployments it will be all replica hosts
+        For non-sharded deployments it will be all replica hosts
         .. # noqa: DAR201
         """
         if self.head_host:
@@ -792,9 +802,7 @@ class Deployment(BaseDeployment):
             selected_devices = []
             if device_str[2:]:
 
-                for device in Deployment._parse_devices(
-                    device_str[2:], num_devices
-                ):
+                for device in Deployment._parse_devices(device_str[2:], num_devices):
                     selected_devices.append(device)
             else:
                 selected_devices = range(num_devices)

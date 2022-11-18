@@ -2,6 +2,7 @@
 # You need to install linkerd cli on your local machine if you want to run the k8s tests https://linkerd.io/2.11/getting-started/#step-1-install-the-cli
 import asyncio
 import os
+import time
 
 import pytest
 import requests as req
@@ -9,12 +10,15 @@ import yaml
 from docarray import DocumentArray
 from pytest_kind import cluster
 
-from jina import Document, Executor, Flow, requests
+from jina import Client, Document, Executor, Flow, requests
+from jina.helper import random_port
 from jina.orchestrate.deployments import Deployment
 from jina.orchestrate.deployments.config.k8s import K8sDeploymentConfig
 from jina.parsers import set_deployment_parser
 from jina.serve.networking import GrpcConnectionPool
+from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from tests.helper import _validate_dummy_custom_gateway_response
+from tests.k8s.conftest import shell_portforward
 
 cluster.KIND_VERSION = 'v0.11.1'
 
@@ -132,7 +136,7 @@ async def run_test(flow, core_client, namespace, endpoint, n_docs=10, request_si
     import portforward
 
     with portforward.forward(
-        namespace, gateway_pod_name, int(flow.port), int(flow.port), config_path
+        namespace, gateway_pod_name, flow.port, flow.port, config_path
     ):
         client_kwargs = dict(
             host='localhost',
@@ -939,6 +943,79 @@ async def test_flow_with_custom_gateway(logger, docker_images, tmpdir):
         assert tags['shard_id'] == 0
 
     core_client.delete_namespace(namespace)
+
+
+@pytest.mark.asyncio
+@pytest.mark.timeout(3600)
+@pytest.mark.parametrize(
+    'docker_images',
+    [['multiprotocol-gateway']],
+    indirect=True,
+)
+async def test_flow_multiple_protocols_gateway(
+    logger, docker_images, tmpdir, k8s_cluster
+):
+    http_port = random_port()
+    grpc_port = random_port()
+    flow = Flow().config_gateway(
+        uses=f'docker://{docker_images[0]}',
+        port=[http_port, grpc_port],
+        protocol=['http', 'grpc'],
+    )
+
+    dump_path = os.path.join(str(tmpdir), 'k8s-flow-multiprotocol-gateway')
+    namespace = 'flow-multiprotocol-gateway'
+    flow.to_kubernetes_yaml(dump_path, k8s_namespace=namespace)
+
+    from kubernetes import client
+
+    api_client = client.ApiClient()
+    core_client = client.CoreV1Api(api_client=api_client)
+    app_client = client.AppsV1Api(api_client=api_client)
+    await create_all_flow_deployments_and_wait_ready(
+        dump_path,
+        namespace=namespace,
+        api_client=api_client,
+        app_client=app_client,
+        core_client=core_client,
+        deployment_replicas_expected={
+            'gateway': 1,
+        },
+        logger=logger,
+    )
+
+    gateway_pod_name = (
+        core_client.list_namespaced_pod(
+            namespace=namespace, label_selector='app=gateway'
+        )
+        .items[0]
+        .metadata.name
+    )
+    config_path = os.environ['KUBECONFIG']
+
+    # test portforwarding the gateway pod and service using http
+    forward_args = [
+        [gateway_pod_name, http_port, http_port, namespace],
+        ['service/gateway', http_port, http_port, namespace],
+    ]
+    for forward in forward_args:
+        with shell_portforward(k8s_cluster._cluster.kubectl_path, *forward):
+            import requests
+
+            resp = requests.get(f'http://localhost:{http_port}').json()
+            assert resp['protocol'] == 'http'
+
+    # test portforwarding the gateway pod and service using grpc
+    forward_args = [
+        [gateway_pod_name, grpc_port, grpc_port, namespace],
+        ['service/gateway-1-grpc', grpc_port, grpc_port, namespace],
+    ]
+    for forward in forward_args:
+        with shell_portforward(k8s_cluster._cluster.kubectl_path, *forward):
+            grpc_client = Client(protocol='grpc', port=grpc_port, asyncio=True)
+            async for _ in grpc_client.post('/', inputs=DocumentArray.empty(5)):
+                pass
+            assert AsyncNewLoopRuntime.is_ready(f'localhost:{grpc_port}')
 
 
 @pytest.mark.timeout(3600)
