@@ -1,6 +1,6 @@
 import abc
 import argparse
-from typing import TYPE_CHECKING, Optional, Sequence
+from typing import TYPE_CHECKING, Dict, Optional, Sequence
 
 from jina.jaml import JAMLCompatible
 from jina.logging.logger import JinaLogger
@@ -8,7 +8,7 @@ from jina.serve.helper import store_init_kwargs, wrap_func
 
 __all__ = ['BaseGateway']
 
-if TYPE_CHECKING: # pragma: no cover
+if TYPE_CHECKING:  # pragma: no cover
     from grpc.aio._interceptor import ClientInterceptor, ServerInterceptor
     from opentelemetry import trace
     from opentelemetry.instrumentation.grpc._client import (
@@ -47,7 +47,10 @@ class GatewayType(type(JAMLCompatible), type):
             reg_cls_set.add(cls_id)
             setattr(cls, '_registered_class', reg_cls_set)
             wrap_func(
-                cls, ['__init__'], store_init_kwargs, taboo={'self', 'args', 'kwargs'}
+                cls,
+                ['__init__'],
+                store_init_kwargs,
+                taboo={'self', 'args', 'kwargs', 'runtime_args'},
             )
         return cls
 
@@ -63,15 +66,17 @@ class BaseGateway(JAMLCompatible, metaclass=GatewayType):
     def __init__(
         self,
         name: Optional[str] = 'gateway',
+        runtime_args: Optional[Dict] = None,
         **kwargs,
     ):
         """
         :param name: Gateway pod name
+        :param runtime_args: a dict of arguments injected from :class:`Runtime` during runtime
         :param kwargs: additional extra keyword arguments to avoid failing when extra params ara passed that are not expected
         """
         self.streamer = None
+        self._add_runtime_args(runtime_args)
         self.name = name
-        # TODO: original implementation also passes args, maybe move this to a setter/initializer func
         self.logger = JinaLogger(self.name)
 
     def inject_dependencies(
@@ -157,3 +162,8 @@ class BaseGateway(JAMLCompatible, metaclass=GatewayType):
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         pass
+
+    def _set_single_port_protocol(self):
+        if len(self.runtime_args.port) < 1 or len(self.runtime_args.protocol) < 1:
+            raise ValueError(f'{self.__class__} expects at least 1 port and 1 protcol')
+        self.port = self.runtime_args.port[0]

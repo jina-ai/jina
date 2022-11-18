@@ -935,6 +935,7 @@ def get_full_version() -> Optional[Tuple[Dict, Dict]]:
     import yaml
     from google.protobuf.internal import api_implementation
     from grpc import _grpcio_metadata
+
     try:
         from hubble import __version__ as __hubble_version__
     except:
@@ -1630,16 +1631,19 @@ def _parse_url(host):
     return scheme, host, port
 
 
-def is_port_free(host: str, port: Union[int, str]) -> bool:
-    try:
-        port = int(port)
-    except ValueError:
-        raise ValueError(f'port {port} is not an integer and cannot be cast to one')
+def _single_port_free(host: str, port: int) -> bool:
     with socket(AF_INET, SOCK_STREAM) as session:
         if session.connect_ex((host, port)) == 0:
             return False
         else:
             return True
+
+
+def is_port_free(host: str, port: Union[int, List[int]]) -> bool:
+    if isinstance(port, list):
+        return all([_single_port_free(host, _p) for _p in port])
+    else:
+        return _single_port_free(host, port)
 
 
 def _parse_ports(port: str) -> Union[int, List]:
@@ -1664,7 +1668,7 @@ def _parse_ports(port: str) -> Union[int, List]:
     except ValueError as e:
         if ',' in port:
             port = [int(port_) for port_ in port.split(',')]
-        else:
+        elif not isinstance(port, list):
             raise e
     return port
 

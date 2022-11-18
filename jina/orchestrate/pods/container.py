@@ -230,7 +230,7 @@ def run(
         def _is_ready():
             if args.pod_role == PodRoleType.GATEWAY:
                 return GatewayRuntime.is_ready(
-                    runtime_ctrl_address, protocol=args.protocol
+                    runtime_ctrl_address, protocol=args.protocol[0]
                 )
             else:
                 return AsyncNewLoopRuntime.is_ready(runtime_ctrl_address)
@@ -327,7 +327,10 @@ class ContainerPod(BasePod):
             else:
                 ctrl_host = self.args.host
 
-            ctrl_address = f'{ctrl_host}:{self.args.port}'
+            if self.args.pod_role == PodRoleType.GATEWAY:
+                ctrl_address = f'{ctrl_host}:{self.args.port[0]}'
+            else:
+                ctrl_address = f'{ctrl_host}:{self.args.port}'
 
             net_node, runtime_ctrl_address = self._get_network_for_dind_linux(
                 client, ctrl_address
@@ -350,7 +353,10 @@ class ContainerPod(BasePod):
             try:
                 bridge_network = client.networks.get('bridge')
                 if bridge_network:
-                    runtime_ctrl_address = f'{bridge_network.attrs["IPAM"]["Config"][0]["Gateway"]}:{self.args.port}'
+                    if self.args.pod_role == PodRoleType.GATEWAY:
+                        runtime_ctrl_address = f'{bridge_network.attrs["IPAM"]["Config"][0]["Gateway"]}:{self.args.port[0]}'
+                    else:
+                        runtime_ctrl_address = f'{bridge_network.attrs["IPAM"]["Config"][0]["Gateway"]}:{self.args.port}'
             except Exception as ex:
                 self.logger.warning(
                     f'Unable to set control address from "bridge" network: {ex!r}'

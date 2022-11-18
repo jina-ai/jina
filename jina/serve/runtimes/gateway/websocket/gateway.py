@@ -13,7 +13,6 @@ class WebSocketGateway(BaseGateway):
 
     def __init__(
         self,
-        port: Optional[int] = None,
         ssl_keyfile: Optional[str] = None,
         ssl_certfile: Optional[str] = None,
         uvicorn_kwargs: Optional[dict] = None,
@@ -21,7 +20,6 @@ class WebSocketGateway(BaseGateway):
         **kwargs
     ):
         """Initialize the gateway
-        :param port: The port of the Gateway, which the client should connect to.
         :param ssl_keyfile: the path to the key file
         :param ssl_certfile: the path to the certificate file
         :param uvicorn_kwargs: Dictionary of kwargs arguments that will be passed to Uvicorn server when starting the server
@@ -30,7 +28,7 @@ class WebSocketGateway(BaseGateway):
         :param kwargs: keyword args
         """
         super().__init__(**kwargs)
-        self.port = port
+        self._set_single_port_protocol()
         self.ssl_keyfile = ssl_keyfile
         self.ssl_certfile = ssl_certfile
         self.uvicorn_kwargs = uvicorn_kwargs

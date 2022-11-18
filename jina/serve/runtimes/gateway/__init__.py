@@ -32,12 +32,12 @@ class GatewayRuntime(AsyncNewLoopRuntime):
     """
 
     def __init__(
-            self,
-            args: argparse.Namespace,
-            cancel_event: Optional[
-                Union['asyncio.Event', 'multiprocessing.Event', 'threading.Event']
-            ] = None,
-            **kwargs,
+        self,
+        args: argparse.Namespace,
+        cancel_event: Optional[
+            Union['asyncio.Event', 'multiprocessing.Event', 'threading.Event']
+        ] = None,
+        **kwargs,
     ):
         # this order is intentional: The timeout is needed in _create_topology_graph(), called by super
         self.timeout_send = args.timeout_send
@@ -61,7 +61,6 @@ class GatewayRuntime(AsyncNewLoopRuntime):
             uses_with=dict(
                 name=self.name,
                 grpc_server_options=self.args.grpc_server_options,
-                port=self.args.port,
                 title=self.args.title,
                 description=self.args.description,
                 no_debug_endpoints=self.args.no_debug_endpoints,
@@ -78,6 +77,8 @@ class GatewayRuntime(AsyncNewLoopRuntime):
             uses_metas={},
             runtime_args={  # these are not parsed to the yaml config file but are pass directly during init
                 'name': self.args.name,
+                'port': self.args.port,
+                'protocol': self.args.protocol,
             },
             py_modules=self.args.py_modules,
             extra_search_paths=self.args.extra_search_paths,
@@ -100,7 +101,9 @@ class GatewayRuntime(AsyncNewLoopRuntime):
     async def _wait_for_cancel(self):
         """Do NOT override this method when inheriting from :class:`GatewayPod`"""
         # handle terminate signals
-        while not self.is_cancel.is_set():
+        while not self.is_cancel.is_set() and not getattr(
+            self.gateway, '_should_exit', False
+        ):
             await asyncio.sleep(0.1)
 
         await self.async_cancel()
@@ -132,9 +135,9 @@ class GatewayRuntime(AsyncNewLoopRuntime):
         """
 
         if (
-                protocol is None
-                or protocol == GatewayProtocolType.GRPC
-                or protocol == 'grpc'
+            protocol is None
+            or protocol == GatewayProtocolType.GRPC
+            or protocol == 'grpc'
         ):
             res = AsyncNewLoopRuntime.is_ready(ctrl_address)
         else:
@@ -147,12 +150,12 @@ class GatewayRuntime(AsyncNewLoopRuntime):
 
     @classmethod
     def wait_for_ready_or_shutdown(
-            cls,
-            timeout: Optional[float],
-            ready_or_shutdown_event: Union['multiprocessing.Event', 'threading.Event'],
-            ctrl_address: str,
-            protocol: Optional[str] = 'grpc',
-            **kwargs,
+        cls,
+        timeout: Optional[float],
+        ready_or_shutdown_event: Union['multiprocessing.Event', 'threading.Event'],
+        ctrl_address: str,
+        protocol: Optional[str] = 'grpc',
+        **kwargs,
     ):
         """
         Check if the runtime has successfully started

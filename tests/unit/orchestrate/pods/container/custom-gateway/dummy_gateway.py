@@ -21,15 +21,10 @@ class ProcessedResponseModel(BaseModel):
 
 class DummyGateway(Gateway):
     def __init__(
-        self,
-        port: int = None,
-        arg1: str = None,
-        arg2: str = None,
-        arg3: str = 'default-arg3',
-        **kwargs
+        self, arg1: str = None, arg2: str = None, arg3: str = 'default-arg3', **kwargs
     ):
         super().__init__(**kwargs)
-        self.port = port
+        self.port = self.runtime_args.port[0]
         self.arg1 = arg1
         self.arg2 = arg2
         self.arg3 = arg3
