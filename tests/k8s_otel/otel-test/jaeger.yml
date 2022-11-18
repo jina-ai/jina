@@ -3,7 +3,6 @@ apiVersion: v1
 kind: Service
 metadata:
   name: jaeger
-  namespace: otel-test
   labels:
     app: jaeger
 spec:
@@ -21,7 +20,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: jaeger
-  namespace: otel-test
   labels:
     app: jaeger
     component: jaeger-aio

@@ -34,7 +34,7 @@ spec:
         component: grafana-aio
     spec:
       containers:
-      - image: grafana/grafana-ossssssssss
+      - image: grafana/grafana-oss
         name: grafana
         resources:
           limits:

@@ -3,7 +3,6 @@ apiVersion: v1
 kind: Service
 metadata:
   name: prometheus
-  namespace: otel-test
   labels:
     app: prometheus
     component: prometheus
@@ -18,7 +17,6 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: prometheus-cm
-  namespace: otel-test
   labels:
     app: prometheus
     component: prometheus-cm
@@ -35,7 +33,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: prometheus
-  namespace: otel-test
   labels:
     app: prometheus
     component: prometheus
