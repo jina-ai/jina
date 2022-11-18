@@ -769,14 +769,14 @@ import time
 from jina import Flow, Executor, requests, Client, DocumentArray, Document
 
 
-class ExecutorRandomSleepExecutor(Executor):
+class RandomSleepExecutor(Executor):
 
     @requests
     def foo(self, *args, **kwargs):
         rand_sleep = random.uniform(0.1, 1.3)
         time.sleep(rand_sleep)
 
-f = Flow().add(uses=ExecutorRandomSleepExecutor, replicas=3)
+f = Flow().add(uses=RandomSleepExecutor, replicas=3)
 input_text = [f'ordinal-{i}' for i in range(180)]
 input_da = DocumentArray([Document(text=t) for t in input_text])
 with f:
