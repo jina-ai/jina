@@ -8,8 +8,9 @@ from docarray import Document
 from jina import Client, Flow
 from jina.helper import random_port
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
-
-from .gateway.multiprotocol_gateway import MultiProtocolGateway
+from tests.integration.multiple_protocol_gateway.gateway.multiprotocol_gateway import (
+    MultiProtocolGateway,
+)
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 

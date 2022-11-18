@@ -73,5 +73,5 @@ class MultiProtocolGateway(Gateway):
         await self.grpc_server.stop(0)
 
     @property
-    def should_exit(self) -> bool:
+    def _should_exit(self) -> bool:
         return self.http_server.should_exit
