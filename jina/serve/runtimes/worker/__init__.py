@@ -1,7 +1,7 @@
 import argparse
 from abc import ABC
-from typing import TYPE_CHECKING, List, Optional
 from concurrent.futures import ThreadPoolExecutor
+from typing import TYPE_CHECKING, List, Optional
 
 import grpc
 from grpc_health.v1 import health, health_pb2, health_pb2_grpc
@@ -33,7 +33,9 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         :param args: args from CLI
         :param kwargs: keyword args
         """
-        self._health_servicer = health.HealthServicer(experimental_thread_pool=ThreadPoolExecutor(1))
+        self._health_servicer = health.HealthServicer(
+            experimental_thread_pool=ThreadPoolExecutor(1)
+        )
         super().__init__(args, **kwargs)
 
     async def async_setup(self):
@@ -136,14 +138,10 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
             reflection.SERVICE_NAME,
         )
         # Mark all services as healthy.
-        health_pb2_grpc.add_HealthServicer_to_server(
-            self._health_servicer, self._grpc_server
-        )
+        health_pb2_grpc.add_HealthServicer_to_server(self, self._grpc_server)
 
         for service in service_names:
-            self._health_servicer.set(
-                service, health_pb2.HealthCheckResponse.SERVING
-            )
+            self._health_servicer.set(service, health_pb2.HealthCheckResponse.SERVING)
         reflection.enable_server_reflection(service_names, self._grpc_server)
         bind_addr = f'0.0.0.0:{self.args.port}'
         self.logger.debug(f'start listening on {bind_addr}')
@@ -276,3 +274,23 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         for k, v in env_info.items():
             infoProto.envs[k] = str(v)
         return infoProto
+
+    async def Check(
+        self, request: health_pb2.HealthCheckRequest, context
+    ) -> health_pb2.HealthCheckResponse:
+        '''Calls the underlying HealthServicer.Check method with the same arguments
+        :param request: grpc request
+        :param context: grpc request context
+        :returns: the grpc HealthCheckResponse
+        '''
+        return self._health_servicer.Check(request, context)
+
+    async def Watch(
+        self, request: health_pb2.HealthCheckRequest, context
+    ) -> health_pb2.HealthCheckResponse:
+        '''Calls the underlying HealthServicer.Watch method with the same arguments
+        :param request: grpc request
+        :param context: grpc request context
+        :returns: the grpc HealthCheckResponse
+        '''
+        return self._health_servicer.Watch(request, context)
