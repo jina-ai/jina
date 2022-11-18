@@ -1,13 +1,15 @@
 import pytest
 import os
 from pathlib import Path
-from pytest_kind import KindCluster
+from pytest_kind import KindCluster, cluster
 
 from jina.logging.logger import JinaLogger
 from .kind_wrapper import KindClusterWrapperV2
 
+# The default version broke cni at some point. That's why we need to specify the version here.
+# This can and probably should be put in env variable actually.
+cluster.KIND_VERSION = 'v0.11.1'
 
-# TODO: Make sure we aren't building multiple times
 # TODO: Can we get jina image to build here as well?
 @pytest.fixture(scope='session' ,autouse=True)
 def build_and_load_images(k8s_cluster_v2: KindClusterWrapperV2) -> None:
