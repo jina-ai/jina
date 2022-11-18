@@ -1125,6 +1125,31 @@ This may not only be slower, but also require more memory.</p>
 </div>
 </div>
 </div>
+<p>A Client connects to a Flow that processes Documents in an asynchronous and very distributed way. This means that the order of the Flow processing the requests may not be the same order as the Client sending the requests.
+However, you can force the order of the results to be deterministic and the same as when they enter the Flow by passing <code class="docutils literal notranslate"><span class="pre">results_in_order</span></code> parameter to <a class="reference internal" href="../../../api/jina.clients.mixin/#jina.clients.mixin.PostMixin.post" title="jina.clients.mixin.PostMixin.post"><code class="xref py py-meth docutils literal notranslate"><span class="pre">post()</span></code></a>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">Client</span><span class="p">,</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Document</span>
+
+
+<span class="k">class</span> <span class="nc">RandomSleepExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+
+    <span class="nd">@requests</span>
+    <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">rand_sleep</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">1.3</span><span class="p">)</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">rand_sleep</span><span class="p">)</span>
+
+<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">RandomSleepExecutor</span><span class="p">,</span> <span class="n">replicas</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">input_text</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s1">&#39;ordinal-</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">180</span><span class="p">)]</span>
+<span class="n">input_da</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">([</span><span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">t</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">input_text</span><span class="p">])</span>
+<span class="k">with</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="n">f</span><span class="o">.</span><span class="n">port</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="n">f</span><span class="o">.</span><span class="n">protocol</span><span class="p">)</span>
+    <span class="n">output_da</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">input_da</span><span class="p">,</span> <span class="n">request_size</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">results_in_order</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">for</span> <span class="nb">input</span><span class="p">,</span> <span class="n">output</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">input_da</span><span class="p">,</span> <span class="n">output_da</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="nb">input</span><span class="o">.</span><span class="n">text</span> <span class="o">==</span> <span class="n">output</span><span class="o">.</span><span class="n">text</span>
+    
+</pre></div>
+</div>
 </section>
 <section id="enable-compression">
 <span id="client-compress"></span><h2>Enable compression<a class="headerlink" href="#enable-compression" title="Permalink to this heading">#</a></h2>
@@ -1212,7 +1237,7 @@ set the Client’s <code class="docutils literal notranslate"><span class="pre">
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Nov 11, 2022</div>
+                            Last updated on Nov 18, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

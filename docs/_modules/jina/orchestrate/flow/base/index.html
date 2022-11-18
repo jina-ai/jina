@@ -577,10 +577,9 @@
         <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;gateway&#39;</span><span class="p">,</span>
         <span class="n">no_crud_endpoints</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">no_debug_endpoints</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">port</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">port_monitoring</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">prefetch</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span>
-        <span class="n">protocol</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;GRPC&#39;</span><span class="p">,</span>
+        <span class="n">protocol</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;GRPC&#39;</span><span class="p">],</span>
         <span class="n">proxy</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">py_modules</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">quiet</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -641,12 +640,11 @@
 
 <span class="sd">                  Any executor that has `@requests(on=...)` bound with those values will receive data requests.</span>
 <span class="sd">        :param no_debug_endpoints: If set, `/status` `/post` endpoints are removed from HTTP interface.</span>
-<span class="sd">        :param port: The port for input data to bind to, default is a random port between [49152, 65535].In the case of an external Executor (`--external` or `external=True`) this can be a list of ports, separated by commas.  Then, every resulting address will be considered as one replica of the Executor.</span>
 <span class="sd">        :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</span>
 <span class="sd">        :param prefetch: Number of requests fetched from the client before feeding into the first Executor.</span>
 
 <span class="sd">              Used to control the speed of data input into a Flow. 0 disables prefetch (1000 requests is the default)</span>
-<span class="sd">        :param protocol: Communication protocol between server and client.</span>
+<span class="sd">        :param protocol: Possible communication protocols between server and client. Depending on your chosen gateway, choose the convenient protocols from: [&#39;GRPC&#39;, &#39;HTTP&#39;, &#39;WEBSOCKET&#39;].</span>
 <span class="sd">        :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</span>
 <span class="sd">        :param py_modules: The customized python modules need to be imported before loading the gateway</span>
 
@@ -812,12 +810,11 @@
 
 <span class="sd">                  Any executor that has `@requests(on=...)` bound with those values will receive data requests.</span>
 <span class="sd">        :param no_debug_endpoints: If set, `/status` `/post` endpoints are removed from HTTP interface.</span>
-<span class="sd">        :param port: The port for input data to bind to, default is a random port between [49152, 65535].In the case of an external Executor (`--external` or `external=True`) this can be a list of ports, separated by commas.  Then, every resulting address will be considered as one replica of the Executor.</span>
 <span class="sd">        :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</span>
 <span class="sd">        :param prefetch: Number of requests fetched from the client before feeding into the first Executor.</span>
 
 <span class="sd">              Used to control the speed of data input into a Flow. 0 disables prefetch (1000 requests is the default)</span>
-<span class="sd">        :param protocol: Communication protocol between server and client.</span>
+<span class="sd">        :param protocol: Possible communication protocols between server and client. Depending on your chosen gateway, choose the convenient protocols from: [&#39;GRPC&#39;, &#39;HTTP&#39;, &#39;WEBSOCKET&#39;].</span>
 <span class="sd">        :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</span>
 <span class="sd">        :param py_modules: The customized python modules need to be imported before loading the gateway</span>
 
@@ -1249,7 +1246,6 @@
         <span class="n">no_reduce</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">output_array_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">polling</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;ANY&#39;</span><span class="p">,</span>
-        <span class="n">port</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">port_monitoring</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">py_modules</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">quiet</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -1336,7 +1332,6 @@
 <span class="sd">              Define per Endpoint:</span>
 <span class="sd">              JSON dict, {endpoint: PollingType}</span>
 <span class="sd">              {&#39;/custom&#39;: &#39;ALL&#39;, &#39;/search&#39;: &#39;ANY&#39;, &#39;*&#39;: &#39;ANY&#39;}</span>
-<span class="sd">        :param port: The port for input data to bind to, default is a random port between [49152, 65535].In the case of an external Executor (`--external` or `external=True`) this can be a list of ports, separated by commas.  Then, every resulting address will be considered as one replica of the Executor.</span>
 <span class="sd">        :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</span>
 <span class="sd">        :param py_modules: The customized python modules need to be imported before loading the executor</span>
 
@@ -1491,7 +1486,6 @@
 <span class="sd">              Define per Endpoint:</span>
 <span class="sd">              JSON dict, {endpoint: PollingType}</span>
 <span class="sd">              {&#39;/custom&#39;: &#39;ALL&#39;, &#39;/search&#39;: &#39;ANY&#39;, &#39;*&#39;: &#39;ANY&#39;}</span>
-<span class="sd">        :param port: The port for input data to bind to, default is a random port between [49152, 65535].In the case of an external Executor (`--external` or `external=True`) this can be a list of ports, separated by commas.  Then, every resulting address will be considered as one replica of the Executor.</span>
 <span class="sd">        :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</span>
 <span class="sd">        :param py_modules: The customized python modules need to be imported before loading the executor</span>
 
@@ -1668,10 +1662,9 @@
         <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;gateway&#39;</span><span class="p">,</span>
         <span class="n">no_crud_endpoints</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">no_debug_endpoints</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">port</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">port_monitoring</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">prefetch</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span>
-        <span class="n">protocol</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;GRPC&#39;</span><span class="p">,</span>
+        <span class="n">protocol</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;GRPC&#39;</span><span class="p">],</span>
         <span class="n">proxy</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">py_modules</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">quiet</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -1732,12 +1725,11 @@
 
 <span class="sd">                  Any executor that has `@requests(on=...)` bound with those values will receive data requests.</span>
 <span class="sd">        :param no_debug_endpoints: If set, `/status` `/post` endpoints are removed from HTTP interface.</span>
-<span class="sd">        :param port: The port for input data to bind to, default is a random port between [49152, 65535].In the case of an external Executor (`--external` or `external=True`) this can be a list of ports, separated by commas.  Then, every resulting address will be considered as one replica of the Executor.</span>
 <span class="sd">        :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</span>
 <span class="sd">        :param prefetch: Number of requests fetched from the client before feeding into the first Executor.</span>
 
 <span class="sd">              Used to control the speed of data input into a Flow. 0 disables prefetch (1000 requests is the default)</span>
-<span class="sd">        :param protocol: Communication protocol between server and client.</span>
+<span class="sd">        :param protocol: Possible communication protocols between server and client. Depending on your chosen gateway, choose the convenient protocols from: [&#39;GRPC&#39;, &#39;HTTP&#39;, &#39;WEBSOCKET&#39;].</span>
 <span class="sd">        :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</span>
 <span class="sd">        :param py_modules: The customized python modules need to be imported before loading the gateway</span>
 
@@ -1827,12 +1819,11 @@
 
 <span class="sd">                  Any executor that has `@requests(on=...)` bound with those values will receive data requests.</span>
 <span class="sd">        :param no_debug_endpoints: If set, `/status` `/post` endpoints are removed from HTTP interface.</span>
-<span class="sd">        :param port: The port for input data to bind to, default is a random port between [49152, 65535].In the case of an external Executor (`--external` or `external=True`) this can be a list of ports, separated by commas.  Then, every resulting address will be considered as one replica of the Executor.</span>
 <span class="sd">        :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</span>
 <span class="sd">        :param prefetch: Number of requests fetched from the client before feeding into the first Executor.</span>
 
 <span class="sd">              Used to control the speed of data input into a Flow. 0 disables prefetch (1000 requests is the default)</span>
-<span class="sd">        :param protocol: Communication protocol between server and client.</span>
+<span class="sd">        :param protocol: Possible communication protocols between server and client. Depending on your chosen gateway, choose the convenient protocols from: [&#39;GRPC&#39;, &#39;HTTP&#39;, &#39;WEBSOCKET&#39;].</span>
 <span class="sd">        :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</span>
 <span class="sd">        :param py_modules: The customized python modules need to be imported before loading the gateway</span>
 
@@ -2511,22 +2502,31 @@
         <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;https://mermaid.ink/</span><span class="si">{</span><span class="n">img_type</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">encoded_str</span><span class="si">}</span><span class="s1">&#39;</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">port</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">port</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
         <span class="sd">&quot;&quot;&quot;Return the exposed port of the gateway</span>
 <span class="sd">        .. # noqa: DAR201</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">GATEWAY_NAME</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deployment_nodes</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deployment_nodes</span><span class="p">[</span><span class="n">GATEWAY_NAME</span><span class="p">]</span><span class="o">.</span><span class="n">port</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deployment_nodes</span><span class="p">[</span><span class="n">GATEWAY_NAME</span><span class="p">]</span><span class="o">.</span><span class="n">port</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gateway_kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;port&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gateway_kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;port&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">res</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">res</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">res</span>
 
     <span class="nd">@port</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">port</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">port</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]):</span>
         <span class="sd">&quot;&quot;&quot;Set the new exposed port of the Flow (affects Gateway and Client)</span>
 
 <span class="sd">        :param value: the new port to expose</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_gateway_kwargs</span><span class="p">[</span><span class="s1">&#39;port&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_gateway_kwargs</span><span class="p">[</span><span class="s1">&#39;port&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">value</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_gateway_kwargs</span><span class="p">[</span><span class="s1">&#39;port&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
 
         <span class="c1"># Flow is build to graph already</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_level</span> <span class="o">&gt;=</span> <span class="n">FlowBuildLevel</span><span class="o">.</span><span class="n">GRAPH</span><span class="p">:</span>
@@ -2620,34 +2620,44 @@
 
         <span class="n">address_table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_init_table</span><span class="p">()</span>
 
-        <span class="n">_protocol</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">gateway_args</span><span class="o">.</span><span class="n">ssl_certfile</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">gateway_args</span><span class="o">.</span><span class="n">ssl_keyfile</span><span class="p">:</span>
-            <span class="n">_protocol</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="si">}</span><span class="s1">S&#39;</span>
-            <span class="n">address_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
-                <span class="s1">&#39;:chains:&#39;</span><span class="p">,</span> <span class="s1">&#39;Protocol&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;:closed_lock_with_key: </span><span class="si">{</span><span class="n">_protocol</span><span class="si">}</span><span class="s1">&#39;</span>
-            <span class="p">)</span>
-
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">_protocols</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="p">)]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">address_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="s1">&#39;:chains:&#39;</span><span class="p">,</span> <span class="s1">&#39;Protocol&#39;</span><span class="p">,</span> <span class="n">_protocol</span><span class="p">)</span>
+            <span class="n">_protocols</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">_p</span><span class="p">)</span> <span class="k">for</span> <span class="n">_p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="p">]</span>
 
-        <span class="n">_protocol</span> <span class="o">=</span> <span class="n">_protocol</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
-        <span class="n">address_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
-            <span class="s1">&#39;:house:&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;Local&#39;</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s1">&#39;[link=</span><span class="si">{</span><span class="n">_protocol</span><span class="si">}</span><span class="s1">://</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">]</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">[/]&#39;</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="n">address_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
-            <span class="s1">&#39;:lock:&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;Private&#39;</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s1">&#39;[link=</span><span class="si">{</span><span class="n">_protocol</span><span class="si">}</span><span class="s1">://</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">address_private</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">]</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">address_private</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">[/]&#39;</span><span class="p">,</span>
-        <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">_ports</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">_ports</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">_p</span><span class="p">)</span> <span class="k">for</span> <span class="n">_p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="p">]</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">address_public</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">_port</span><span class="p">,</span> <span class="n">_protocol</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">_ports</span><span class="p">,</span> <span class="n">_protocols</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">gateway_args</span><span class="o">.</span><span class="n">ssl_certfile</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">gateway_args</span><span class="o">.</span><span class="n">ssl_keyfile</span><span class="p">:</span>
+                <span class="n">_protocol</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">_protocol</span><span class="si">}</span><span class="s1">S&#39;</span>
+                <span class="n">address_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
+                    <span class="s1">&#39;:chains:&#39;</span><span class="p">,</span> <span class="s1">&#39;Protocol&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;:closed_lock_with_key: </span><span class="si">{</span><span class="n">_protocol</span><span class="si">}</span><span class="s1">&#39;</span>
+                <span class="p">)</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">address_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="s1">&#39;:chains:&#39;</span><span class="p">,</span> <span class="s1">&#39;Protocol&#39;</span><span class="p">,</span> <span class="n">_protocol</span><span class="p">)</span>
+
+            <span class="n">_protocol</span> <span class="o">=</span> <span class="n">_protocol</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
             <span class="n">address_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
-                <span class="s1">&#39;:earth_africa:&#39;</span><span class="p">,</span>
-                <span class="s1">&#39;Public&#39;</span><span class="p">,</span>
-                <span class="sa">f</span><span class="s1">&#39;[link=</span><span class="si">{</span><span class="n">_protocol</span><span class="si">}</span><span class="s1">://</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">address_public</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">]</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">address_public</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">[/]&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;:house:&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;Local&#39;</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s1">&#39;[link=</span><span class="si">{</span><span class="n">_protocol</span><span class="si">}</span><span class="s1">://</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">_port</span><span class="si">}</span><span class="s1">]</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">_port</span><span class="si">}</span><span class="s1">[/]&#39;</span><span class="p">,</span>
             <span class="p">)</span>
+            <span class="n">address_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
+                <span class="s1">&#39;:lock:&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;Private&#39;</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s1">&#39;[link=</span><span class="si">{</span><span class="n">_protocol</span><span class="si">}</span><span class="s1">://</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">address_private</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">_port</span><span class="si">}</span><span class="s1">]</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">address_private</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">_port</span><span class="si">}</span><span class="s1">[/]&#39;</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">address_public</span><span class="p">:</span>
+                <span class="n">address_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
+                    <span class="s1">&#39;:earth_africa:&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;Public&#39;</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s1">&#39;[link=</span><span class="si">{</span><span class="n">_protocol</span><span class="si">}</span><span class="s1">://</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">address_public</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">_port</span><span class="si">}</span><span class="s1">]</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">address_public</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">_port</span><span class="si">}</span><span class="s1">[/]&#39;</span><span class="p">,</span>
+                <span class="p">)</span>
 
         <span class="n">all_panels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
             <span class="n">Panel</span><span class="p">(</span>
@@ -2780,18 +2790,25 @@
             <span class="k">pass</span></div>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">protocol</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GatewayProtocolType</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">protocol</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">GatewayProtocolType</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">GatewayProtocolType</span><span class="p">]]:</span>
         <span class="sd">&quot;&quot;&quot;Return the protocol of this Flow</span>
 
-<span class="sd">        :return: the protocol of this Flow</span>
+<span class="sd">        :return: the protocol of this Flow, if only 1 protocol is supported otherwise returns the list of protocols</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gateway_kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;protocol&#39;</span><span class="p">,</span> <span class="n">GatewayProtocolType</span><span class="o">.</span><span class="n">GRPC</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="n">v</span> <span class="o">=</span> <span class="n">GatewayProtocolType</span><span class="o">.</span><span class="n">from_string</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">v</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gateway_kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;protocol&#39;</span><span class="p">,</span> <span class="p">[</span><span class="n">GatewayProtocolType</span><span class="o">.</span><span class="n">GRPC</span><span class="p">])</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">v</span> <span class="o">=</span> <span class="p">[</span><span class="n">v</span><span class="p">]</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="n">GatewayProtocolType</span><span class="o">.</span><span class="n">from_string_list</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">v</span>
 
     <span class="nd">@protocol</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">protocol</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">GatewayProtocolType</span><span class="p">]):</span>
+    <span class="k">def</span> <span class="nf">protocol</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">value</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">GatewayProtocolType</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">GatewayProtocolType</span><span class="p">]],</span>
+    <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Set the protocol of this Flow, can only be set before the Flow has been started</span>
 
 <span class="sd">        :param value: the protocol to set</span>
@@ -2801,11 +2818,17 @@
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Protocol can not be changed after the Flow has started&#39;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_gateway_kwargs</span><span class="p">[</span><span class="s1">&#39;protocol&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">GatewayProtocolType</span><span class="o">.</span><span class="n">from_string</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_gateway_kwargs</span><span class="p">[</span><span class="s1">&#39;protocol&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">GatewayProtocolType</span><span class="o">.</span><span class="n">from_string</span><span class="p">(</span><span class="n">value</span><span class="p">)]</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">GatewayProtocolType</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_gateway_kwargs</span><span class="p">[</span><span class="s1">&#39;protocol&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_gateway_kwargs</span><span class="p">[</span><span class="s1">&#39;protocol&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">value</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_gateway_kwargs</span><span class="p">[</span><span class="s1">&#39;protocol&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">GatewayProtocolType</span><span class="o">.</span><span class="n">from_string_list</span><span class="p">(</span>
+                <span class="n">value</span>
+            <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s1"> must be either `str` or `GatewayProtocolType`&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s1"> must be either `str` or `GatewayProtocolType` or list of protocols&#39;</span>
+            <span class="p">)</span>
 
         <span class="c1"># Flow is build to graph already</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_level</span> <span class="o">&gt;=</span> <span class="n">FlowBuildLevel</span><span class="o">.</span><span class="n">GRAPH</span><span class="p">:</span>
@@ -3143,7 +3166,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Nov 11, 2022</div>
+                            Last updated on Nov 18, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

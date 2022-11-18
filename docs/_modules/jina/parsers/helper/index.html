@@ -402,6 +402,7 @@
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span>
 
 <span class="kn">from</span> <span class="nn">jina.enums</span> <span class="kn">import</span> <span class="n">GatewayProtocolType</span>
+<span class="kn">from</span> <span class="nn">jina.logging.predefined</span> <span class="kn">import</span> <span class="n">default_logger</span>
 
 <span class="n">_SHOW_ALL_ARGS</span> <span class="o">=</span> <span class="s1">&#39;JINA_FULL_CLI&#39;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span>
 
@@ -665,7 +666,43 @@
         <span class="n">GatewayProtocolType</span><span class="o">.</span><span class="n">HTTP</span><span class="p">:</span> <span class="s1">&#39;HTTPGateway&#39;</span><span class="p">,</span>
     <span class="p">}</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">uses</span><span class="p">:</span>
-        <span class="n">args</span><span class="o">.</span><span class="n">uses</span> <span class="o">=</span> <span class="n">gateway_dict</span><span class="p">[</span><span class="n">args</span><span class="o">.</span><span class="n">protocol</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">protocol</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">args</span><span class="o">.</span><span class="n">uses</span> <span class="o">=</span> <span class="n">gateway_dict</span><span class="p">[</span><span class="n">args</span><span class="o">.</span><span class="n">protocol</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s1">&#39;You need to specify exactly 1 protocol if you want to use a jina built-in gateway&#39;</span>
+            <span class="p">)</span>
+
+
+<div class="viewcode-block" id="CastToIntAction"><a class="viewcode-back" href="../../../../api/jina.parsers.helper/#jina.parsers.helper.CastToIntAction">[docs]</a><span class="k">class</span> <span class="nc">CastToIntAction</span><span class="p">(</span><span class="n">argparse</span><span class="o">.</span><span class="n">Action</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;argparse action to cast a list of values to int&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parser</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">option_string</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        call the CastToIntAction</span>
+
+
+<span class="sd">        .. # noqa: DAR401</span>
+<span class="sd">        :param parser: the parser</span>
+<span class="sd">        :param args: args to initialize the values</span>
+<span class="sd">        :param values: the values to add to the parser</span>
+<span class="sd">        :param option_string: inherited, not used</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="p">[</span><span class="n">_port_to_int</span><span class="p">(</span><span class="n">port</span><span class="p">)</span> <span class="k">for</span> <span class="n">port</span> <span class="ow">in</span> <span class="n">values</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="n">_port_to_int</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dest</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">_port_to_int</span><span class="p">(</span><span class="n">port</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">port</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="n">default_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s1">&#39;port </span><span class="si">{</span><span class="n">port</span><span class="si">}</span><span class="s1"> is not an integer and cannot be cast to one&#39;</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">port</span>
 
 
 <span class="n">_chf</span> <span class="o">=</span> <span class="n">_ColoredHelpFormatter</span>
@@ -683,7 +720,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Nov 11, 2022</div>
+                            Last updated on Nov 18, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

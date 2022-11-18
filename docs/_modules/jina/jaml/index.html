@@ -1189,7 +1189,13 @@
             <span class="k">return</span> <span class="kc">False</span>
         <span class="k">except</span> <span class="n">yaml</span><span class="o">.</span><span class="n">error</span><span class="o">.</span><span class="n">YAMLError</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">True</span>
-        <span class="k">return</span> <span class="kc">True</span></div></div>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+    <span class="k">def</span> <span class="nf">_add_runtime_args</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_runtime_args</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]):</span>
+        <span class="k">if</span> <span class="n">_runtime_args</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">runtime_args</span> <span class="o">=</span> <span class="n">SimpleNamespace</span><span class="p">(</span><span class="o">**</span><span class="n">_runtime_args</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">runtime_args</span> <span class="o">=</span> <span class="n">SimpleNamespace</span><span class="p">()</span></div>
 </pre></div>
                 </article>
             </div>
@@ -1204,7 +1210,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Nov 11, 2022</div>
+                            Last updated on Nov 18, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

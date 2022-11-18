@@ -414,6 +414,7 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span><span class="p">,</span> <span class="n">EnumMeta</span><span class="p">,</span> <span class="n">Flag</span><span class="p">,</span> <span class="n">IntEnum</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span>
 
 
 <div class="viewcode-block" id="EnumType"><a class="viewcode-back" href="../../../api/jina.enums/#jina.enums.EnumType">[docs]</a><span class="k">class</span> <span class="nc">EnumType</span><span class="p">(</span><span class="n">EnumMeta</span><span class="p">):</span>
@@ -451,7 +452,14 @@
     <span class="sd">&quot;&quot;&quot;The base class of Enum used in Jina.&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span>
+
+<div class="viewcode-block" id="BetterEnum.to_string"><a class="viewcode-back" href="../../../api/jina.enums/#jina.enums.BetterEnum.to_string">[docs]</a>    <span class="k">def</span> <span class="nf">to_string</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert the Enum to string representation</span>
+<span class="sd">        :return: the string representation of the enum</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span></div>
 
     <span class="k">def</span> <span class="fm">__format__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">format_spec</span><span class="p">):</span>  <span class="c1"># noqa</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -571,7 +579,16 @@
 
     <span class="n">GRPC</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">HTTP</span> <span class="o">=</span> <span class="mi">1</span>
-    <span class="n">WEBSOCKET</span> <span class="o">=</span> <span class="mi">2</span></div>
+    <span class="n">WEBSOCKET</span> <span class="o">=</span> <span class="mi">2</span>
+
+<div class="viewcode-block" id="GatewayProtocolType.from_string_list"><a class="viewcode-back" href="../../../api/jina.enums/#jina.enums.GatewayProtocolType.from_string_list">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_string_list</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">string_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="s1">&#39;GatewayProtocolType&#39;</span><span class="p">]]):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a list of Enums from a list of strings or enums</span>
+<span class="sd">        :param string_list: list of strings or enums</span>
+<span class="sd">        :return: a list of Enums</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="bp">cls</span><span class="o">.</span><span class="n">from_string</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">string_list</span><span class="p">]</span></div></div>
 
 
 <div class="viewcode-block" id="PodRoleType"><a class="viewcode-back" href="../../../api/jina.enums/#jina.enums.PodRoleType">[docs]</a><span class="k">class</span> <span class="nc">PodRoleType</span><span class="p">(</span><span class="n">BetterEnum</span><span class="p">):</span>
@@ -662,7 +679,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Nov 11, 2022</div>
+                            Last updated on Nov 18, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

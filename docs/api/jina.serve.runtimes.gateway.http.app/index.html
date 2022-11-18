@@ -435,7 +435,7 @@
 <li><p><strong>no_crud_endpoints</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – <p>If set, <cite>/index</cite>, <cite>/search</cite>, <cite>/update</cite>, <cite>/delete</cite> endpoints are removed from HTTP interface.</p>
 <p>Any executor that has <cite>&#64;requests(on=…)</cite> bound with those values will receive data requests.</p>
 </p></li>
-<li><p><strong>expose_endpoints</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – A JSON string that represents a map from executor endpoints (<cite>&#64;requests(on=…)</cite>) to HTTP endpoints.</p></li>
+<li><p><strong>expose_endpoints</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – A JSON string that represents a map from executor endpoints (<cite>&#64;requests(on=…)</cite>) to HTTP endpoints.</p></li>
 <li><p><strong>expose_graphql_endpoint</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – If set, /graphql endpoint is added to HTTP interface.</p></li>
 <li><p><strong>cors</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – If set, a CORS middleware is added to FastAPI frontend to allow cross-origin access.</p></li>
 <li><p><strong>logger</strong> (<a class="reference internal" href="../jina.logging.logger/#jina.logging.logger.JinaLogger" title="jina.logging.logger.JinaLogger"><code class="xref py py-class docutils literal notranslate"><span class="pre">JinaLogger</span></code></a>) – Jina logger.</p></li>
@@ -464,7 +464,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Nov 11, 2022</div>
+                            Last updated on Nov 18, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

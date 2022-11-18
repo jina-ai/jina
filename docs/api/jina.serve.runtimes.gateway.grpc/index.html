@@ -438,7 +438,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.grpc.gateway/#jina.serve.runtimes.gateway.grpc.gateway.GRPCGateway.is_valid_jaml"><code class="docutils literal notranslate"><span class="pre">GRPCGateway.is_valid_jaml()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.grpc.gateway/#jina.serve.runtimes.gateway.grpc.gateway.GRPCGateway.load_config"><code class="docutils literal notranslate"><span class="pre">GRPCGateway.load_config()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.grpc.gateway/#jina.serve.runtimes.gateway.grpc.gateway.GRPCGateway.save_config"><code class="docutils literal notranslate"><span class="pre">GRPCGateway.save_config()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.grpc.gateway/#jina.serve.runtimes.gateway.grpc.gateway.GRPCGateway.should_exit"><code class="docutils literal notranslate"><span class="pre">GRPCGateway.should_exit</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -450,12 +449,10 @@
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-jina.serve.runtimes.gateway.grpc" title="Permalink to this heading">#</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="jina.serve.runtimes.gateway.grpc.GRPCGateway">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.serve.runtimes.gateway.grpc.</span></span><span class="sig-name descname"><span class="pre">GRPCGateway</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grpc_server_options</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ssl_keyfile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ssl_certfile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/gateway/grpc/gateway/#GRPCGateway"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.gateway.grpc.GRPCGateway" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.serve.runtimes.gateway.grpc.</span></span><span class="sig-name descname"><span class="pre">GRPCGateway</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">grpc_server_options</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ssl_keyfile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ssl_certfile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/gateway/grpc/gateway/#GRPCGateway"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.gateway.grpc.GRPCGateway" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="../jina.serve.gateway/#jina.serve.gateway.BaseGateway" title="jina.serve.gateway.BaseGateway"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseGateway</span></code></a></p>
 <p>GRPC Gateway implementation</p>
 <p>Initialize the gateway
-:type port: <code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]
-:param port: The port of the Gateway, which the client should connect to.
 :type grpc_server_options: <code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>]
 :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {‘grpc.max_send_message_length’: -1}
 :type ssl_keyfile: <code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]
@@ -623,14 +620,6 @@ implements <code class="xref py py-class docutils literal notranslate"><span cla
 </dl>
 </dd></dl>
 
-<dl class="py property">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.grpc.GRPCGateway.should_exit">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">should_exit</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#jina.serve.runtimes.gateway.grpc.GRPCGateway.should_exit" title="Permalink to this definition">#</a></dt>
-<dd><p>Boolean flag that indicates whether the gateway server should exit or not
-:rtype: <code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>
-:return: boolean flag</p>
-</dd></dl>
-
 </dd></dl>
 
 </section>
@@ -649,7 +638,7 @@ implements <code class="xref py py-class docutils literal notranslate"><span cla
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Nov 11, 2022</div>
+                            Last updated on Nov 18, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -694,7 +683,6 @@ implements <code class="xref py py-class docutils literal notranslate"><span cla
 <li><a class="reference internal" href="#jina.serve.runtimes.gateway.grpc.GRPCGateway.is_valid_jaml"><code class="docutils literal notranslate"><span class="pre">GRPCGateway.is_valid_jaml()</span></code></a></li>
 <li><a class="reference internal" href="#jina.serve.runtimes.gateway.grpc.GRPCGateway.load_config"><code class="docutils literal notranslate"><span class="pre">GRPCGateway.load_config()</span></code></a></li>
 <li><a class="reference internal" href="#jina.serve.runtimes.gateway.grpc.GRPCGateway.save_config"><code class="docutils literal notranslate"><span class="pre">GRPCGateway.save_config()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.grpc.GRPCGateway.should_exit"><code class="docutils literal notranslate"><span class="pre">GRPCGateway.should_exit</span></code></a></li>
 </ul>
 </li>
 </ul>

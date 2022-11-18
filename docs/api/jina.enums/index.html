@@ -480,6 +480,13 @@
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">IntEnum</span></code></p>
 <p>The base class of Enum used in Jina.</p>
 <dl class="py method">
+<dt class="sig sig-object py" id="jina.enums.BetterEnum.to_string">
+<span class="sig-name descname"><span class="pre">to_string</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/enums/#BetterEnum.to_string"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.enums.BetterEnum.to_string" title="Permalink to this definition">#</a></dt>
+<dd><p>Convert the Enum to string representation
+:return: the string representation of the enum</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="jina.enums.BetterEnum.from_string">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_string</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/enums/#BetterEnum.from_string"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.enums.BetterEnum.from_string" title="Permalink to this definition">#</a></dt>
 <dd><p>Parse the enum from a string.</p>
@@ -630,6 +637,15 @@
 <dt class="sig sig-object py" id="jina.enums.GatewayProtocolType.WEBSOCKET">
 <span class="sig-name descname"><span class="pre">WEBSOCKET</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#jina.enums.GatewayProtocolType.WEBSOCKET" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.enums.GatewayProtocolType.from_string_list">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_string_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/enums/#GatewayProtocolType.from_string_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.enums.GatewayProtocolType.from_string_list" title="Permalink to this definition">#</a></dt>
+<dd><p>Returns a list of Enums from a list of strings or enums
+:type string_list: <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <a class="reference internal" href="#jina.enums.GatewayProtocolType" title="jina.enums.GatewayProtocolType"><code class="xref py py-class docutils literal notranslate"><span class="pre">GatewayProtocolType</span></code></a>]]
+:param string_list: list of strings or enums
+:return: a list of Enums</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -815,7 +831,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Nov 11, 2022</div>
+                            Last updated on Nov 18, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -854,6 +870,7 @@
 </ul>
 </li>
 <li><a class="reference internal" href="#jina.enums.BetterEnum"><code class="docutils literal notranslate"><span class="pre">BetterEnum</span></code></a><ul>
+<li><a class="reference internal" href="#jina.enums.BetterEnum.to_string"><code class="docutils literal notranslate"><span class="pre">BetterEnum.to_string()</span></code></a></li>
 <li><a class="reference internal" href="#jina.enums.BetterEnum.from_string"><code class="docutils literal notranslate"><span class="pre">BetterEnum.from_string()</span></code></a></li>
 </ul>
 </li>
@@ -884,6 +901,7 @@
 <li><a class="reference internal" href="#jina.enums.GatewayProtocolType.GRPC"><code class="docutils literal notranslate"><span class="pre">GatewayProtocolType.GRPC</span></code></a></li>
 <li><a class="reference internal" href="#jina.enums.GatewayProtocolType.HTTP"><code class="docutils literal notranslate"><span class="pre">GatewayProtocolType.HTTP</span></code></a></li>
 <li><a class="reference internal" href="#jina.enums.GatewayProtocolType.WEBSOCKET"><code class="docutils literal notranslate"><span class="pre">GatewayProtocolType.WEBSOCKET</span></code></a></li>
+<li><a class="reference internal" href="#jina.enums.GatewayProtocolType.from_string_list"><code class="docutils literal notranslate"><span class="pre">GatewayProtocolType.from_string_list()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#jina.enums.PodRoleType"><code class="docutils literal notranslate"><span class="pre">PodRoleType</span></code></a><ul>

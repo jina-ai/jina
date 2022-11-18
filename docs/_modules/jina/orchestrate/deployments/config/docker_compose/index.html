@@ -463,7 +463,6 @@
             <span class="kn">from</span> <span class="nn">jina.parsers</span> <span class="kn">import</span> <span class="n">set_gateway_parser</span>
 
             <span class="n">taboo</span> <span class="o">=</span> <span class="p">{</span>
-                <span class="s1">&#39;uses_with&#39;</span><span class="p">,</span>
                 <span class="s1">&#39;uses_metas&#39;</span><span class="p">,</span>
                 <span class="s1">&#39;volumes&#39;</span><span class="p">,</span>
                 <span class="s1">&#39;uses_before&#39;</span><span class="p">,</span>
@@ -489,9 +488,9 @@
 
             <span class="n">container_args</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;gateway&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">_args</span>
 
-            <span class="n">protocol</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">non_defaults</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;protocol&#39;</span><span class="p">,</span> <span class="s1">&#39;grpc&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+            <span class="n">protocol</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">non_defaults</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;protocol&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;grpc&#39;</span><span class="p">])[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
 
-            <span class="n">ports</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">cargs</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span>
+            <span class="n">ports</span> <span class="o">=</span> <span class="n">cargs</span><span class="o">.</span><span class="n">port</span> <span class="o">+</span> <span class="p">(</span>
                 <span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">cargs</span><span class="o">.</span><span class="n">port_monitoring</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="n">cargs</span><span class="o">.</span><span class="n">monitoring</span> <span class="k">else</span> <span class="p">[]</span>
             <span class="p">)</span>
 
@@ -506,7 +505,7 @@
                 <span class="s1">&#39;expose&#39;</span><span class="p">:</span> <span class="n">ports</span><span class="p">,</span>
                 <span class="s1">&#39;ports&#39;</span><span class="p">:</span> <span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">_port</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">_port</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">_port</span> <span class="ow">in</span> <span class="n">ports</span><span class="p">],</span>
                 <span class="s1">&#39;healthcheck&#39;</span><span class="p">:</span> <span class="p">{</span>
-                    <span class="s1">&#39;test&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s1">&#39;jina ping gateway </span><span class="si">{</span><span class="n">protocol</span><span class="si">}</span><span class="s1">://127.0.0.1:</span><span class="si">{</span><span class="n">cargs</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;test&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s1">&#39;jina ping gateway </span><span class="si">{</span><span class="n">protocol</span><span class="si">}</span><span class="s1">://127.0.0.1:</span><span class="si">{</span><span class="n">cargs</span><span class="o">.</span><span class="n">port</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
                     <span class="s1">&#39;interval&#39;</span><span class="p">:</span> <span class="s1">&#39;2s&#39;</span><span class="p">,</span>
                 <span class="p">},</span>
                 <span class="s1">&#39;environment&#39;</span><span class="p">:</span> <span class="n">envs</span><span class="p">,</span>
@@ -865,7 +864,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Nov 11, 2022</div>
+                            Last updated on Nov 18, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

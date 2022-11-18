@@ -399,7 +399,7 @@
 <span class="kn">from</span> <span class="nn">timeit</span> <span class="kn">import</span> <span class="n">default_timer</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span>
 
-<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span> <span class="c1"># pragma: no cover</span>
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
     <span class="kn">from</span> <span class="nn">grpc.aio._interceptor</span> <span class="kn">import</span> <span class="n">ClientInterceptor</span><span class="p">,</span> <span class="n">ServerInterceptor</span>
     <span class="kn">from</span> <span class="nn">opentelemetry.instrumentation.grpc._client</span> <span class="kn">import</span> <span class="p">(</span>
         <span class="n">OpenTelemetryClientInterceptor</span><span class="p">,</span>
@@ -544,7 +544,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_histogram_metric_labels</span> <span class="o">=</span> <span class="n">histogram_metric_labels</span>
 
     <span class="k">def</span> <span class="nf">_new_timer</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_summary_metric</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_histogram</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_histogram_metric_labels</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_summary_metric</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_histogram</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_histogram_metric_labels</span>
+        <span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_start</span> <span class="o">=</span> <span class="n">default_timer</span><span class="p">()</span>
@@ -585,7 +587,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Nov 11, 2022</div>
+                            Last updated on Nov 18, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

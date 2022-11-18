@@ -406,7 +406,7 @@
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;GatewayStreamer&#39;</span><span class="p">]</span>
 
-<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span> <span class="c1"># pragma: no cover</span>
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
     <span class="kn">from</span> <span class="nn">grpc.aio._interceptor</span> <span class="kn">import</span> <span class="n">ClientInterceptor</span>
     <span class="kn">from</span> <span class="nn">opentelemetry.instrumentation.grpc._client</span> <span class="kn">import</span> <span class="p">(</span>
         <span class="n">OpenTelemetryClientInterceptor</span><span class="p">,</span>
@@ -421,22 +421,22 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">graph_representation</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span>
-        <span class="n">executor_addresses</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]],</span>
-        <span class="n">graph_conditions</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="p">{},</span>
-        <span class="n">deployments_metadata</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{},</span>
-        <span class="n">deployments_no_reduce</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[],</span>
-        <span class="n">timeout_send</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">retries</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
-        <span class="n">compression</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">runtime_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;custom gateway&#39;</span><span class="p">,</span>
-        <span class="n">prefetch</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
-        <span class="n">logger</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;JinaLogger&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">metrics_registry</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;CollectorRegistry&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">meter</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;Meter&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">aio_tracing_client_interceptors</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="s1">&#39;ClientInterceptor&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">tracing_client_interceptor</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;OpenTelemetryClientInterceptor&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">graph_representation</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span>
+            <span class="n">executor_addresses</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]],</span>
+            <span class="n">graph_conditions</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="p">{},</span>
+            <span class="n">deployments_metadata</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{},</span>
+            <span class="n">deployments_no_reduce</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[],</span>
+            <span class="n">timeout_send</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">retries</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="n">compression</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">runtime_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;custom gateway&#39;</span><span class="p">,</span>
+            <span class="n">prefetch</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="n">logger</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;JinaLogger&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">metrics_registry</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;CollectorRegistry&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">meter</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;Meter&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">aio_tracing_client_interceptors</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="s1">&#39;ClientInterceptor&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">tracing_client_interceptor</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;OpenTelemetryClientInterceptor&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param graph_representation: A dictionary describing the topology of the Deployments. 2 special nodes are expected, the name `start-gateway` and `end-gateway` to</span>
@@ -458,14 +458,15 @@
 <span class="sd">        :param aio_tracing_client_interceptors: Optional list of aio grpc tracing server interceptors.</span>
 <span class="sd">        :param tracing_client_interceptor: Optional gprc tracing server interceptor.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">topology_graph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_topology_graph</span><span class="p">(</span>
-            <span class="n">graph_representation</span><span class="p">,</span>
-            <span class="n">graph_conditions</span><span class="p">,</span>
-            <span class="n">deployments_metadata</span><span class="p">,</span>
-            <span class="n">deployments_no_reduce</span><span class="p">,</span>
-            <span class="n">timeout_send</span><span class="p">,</span>
-            <span class="n">retries</span><span class="p">,</span>
+        <span class="n">topology_graph</span> <span class="o">=</span> <span class="n">TopologyGraph</span><span class="p">(</span>
+            <span class="n">graph_representation</span><span class="o">=</span><span class="n">graph_representation</span><span class="p">,</span>
+            <span class="n">graph_conditions</span><span class="o">=</span><span class="n">graph_conditions</span><span class="p">,</span>
+            <span class="n">deployments_metadata</span><span class="o">=</span><span class="n">deployments_metadata</span><span class="p">,</span>
+            <span class="n">deployments_no_reduce</span><span class="o">=</span><span class="n">deployments_no_reduce</span><span class="p">,</span>
+            <span class="n">timeout_send</span><span class="o">=</span><span class="n">timeout_send</span><span class="p">,</span>
+            <span class="n">retries</span><span class="o">=</span><span class="n">retries</span><span class="p">,</span>
         <span class="p">)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">runtime_name</span> <span class="o">=</span> <span class="n">runtime_name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">aio_tracing_client_interceptors</span> <span class="o">=</span> <span class="n">aio_tracing_client_interceptors</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tracing_client_interceptor</span> <span class="o">=</span> <span class="n">tracing_client_interceptor</span>
@@ -491,34 +492,15 @@
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_streamer</span><span class="o">.</span><span class="n">Call</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_streamer</span><span class="o">.</span><span class="n">stream</span>
 
-    <span class="k">def</span> <span class="nf">_create_topology_graph</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">graph_description</span><span class="p">,</span>
-        <span class="n">graph_conditions</span><span class="p">,</span>
-        <span class="n">deployments_metadata</span><span class="p">,</span>
-        <span class="n">deployments_no_reduce</span><span class="p">,</span>
-        <span class="n">timeout_send</span><span class="p">,</span>
-        <span class="n">retries</span><span class="p">,</span>
-    <span class="p">):</span>
-        <span class="c1"># check if it should be in K8s, maybe ConnectionPoolFactory to be created</span>
-        <span class="k">return</span> <span class="n">TopologyGraph</span><span class="p">(</span>
-            <span class="n">graph_representation</span><span class="o">=</span><span class="n">graph_description</span><span class="p">,</span>
-            <span class="n">graph_conditions</span><span class="o">=</span><span class="n">graph_conditions</span><span class="p">,</span>
-            <span class="n">deployments_metadata</span><span class="o">=</span><span class="n">deployments_metadata</span><span class="p">,</span>
-            <span class="n">deployments_no_reduce</span><span class="o">=</span><span class="n">deployments_no_reduce</span><span class="p">,</span>
-            <span class="n">timeout_send</span><span class="o">=</span><span class="n">timeout_send</span><span class="p">,</span>
-            <span class="n">retries</span><span class="o">=</span><span class="n">retries</span><span class="p">,</span>
-        <span class="p">)</span>
-
     <span class="k">def</span> <span class="nf">_create_connection_pool</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">deployments_addresses</span><span class="p">,</span>
-        <span class="n">compression</span><span class="p">,</span>
-        <span class="n">metrics_registry</span><span class="p">,</span>
-        <span class="n">meter</span><span class="p">,</span>
-        <span class="n">logger</span><span class="p">,</span>
-        <span class="n">aio_tracing_client_interceptors</span><span class="p">,</span>
-        <span class="n">tracing_client_interceptor</span><span class="p">,</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">deployments_addresses</span><span class="p">,</span>
+            <span class="n">compression</span><span class="p">,</span>
+            <span class="n">metrics_registry</span><span class="p">,</span>
+            <span class="n">meter</span><span class="p">,</span>
+            <span class="n">logger</span><span class="p">,</span>
+            <span class="n">aio_tracing_client_interceptors</span><span class="p">,</span>
+            <span class="n">tracing_client_interceptor</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="c1"># add the connections needed</span>
         <span class="n">connection_pool</span> <span class="o">=</span> <span class="n">GrpcConnectionPool</span><span class="p">(</span>
@@ -549,13 +531,14 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_streamer</span><span class="o">.</span><span class="n">stream</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="GatewayStreamer.stream_docs"><a class="viewcode-back" href="../../../../api/jina.serve.streamer/#jina.serve.streamer.GatewayStreamer.stream_docs">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">stream_docs</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">docs</span><span class="p">:</span> <span class="n">DocumentArray</span><span class="p">,</span>
-        <span class="n">request_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-        <span class="n">return_results</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">exec_endpoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">target_executor</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">parameters</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">docs</span><span class="p">:</span> <span class="n">DocumentArray</span><span class="p">,</span>
+            <span class="n">request_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">return_results</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">exec_endpoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">target_executor</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">parameters</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">results_in_order</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        stream documents and stream responses back.</span>
@@ -566,6 +549,7 @@
 <span class="sd">        :param exec_endpoint: The executor endpoint to which to send the Documents</span>
 <span class="sd">        :param target_executor: A regex expression indicating the Executors that should receive the Request</span>
 <span class="sd">        :param parameters: Parameters to be attached to the Requests</span>
+<span class="sd">        :param results_in_order: return the results in the same order as the request_iterator</span>
 <span class="sd">        :yield: Yields DocumentArrays or Responses from the Executors</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span> <span class="nn">jina.types.request.data</span> <span class="kn">import</span> <span class="n">DataRequest</span>
@@ -582,7 +566,7 @@
                     <span class="n">req</span><span class="o">.</span><span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span>
                 <span class="k">yield</span> <span class="n">req</span>
 
-        <span class="k">async</span> <span class="k">for</span> <span class="n">resp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_streamer</span><span class="o">.</span><span class="n">stream</span><span class="p">(</span><span class="n">_req_generator</span><span class="p">()):</span>
+        <span class="k">async</span> <span class="k">for</span> <span class="n">resp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_streamer</span><span class="o">.</span><span class="n">stream</span><span class="p">(</span><span class="n">request_iterator</span><span class="o">=</span><span class="n">_req_generator</span><span class="p">(),</span> <span class="n">results_in_order</span><span class="o">=</span><span class="n">results_in_order</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">return_results</span><span class="p">:</span>
                 <span class="k">yield</span> <span class="n">resp</span>
             <span class="k">else</span><span class="p">:</span>
@@ -610,7 +594,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Nov 11, 2022</div>
+                            Last updated on Nov 18, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

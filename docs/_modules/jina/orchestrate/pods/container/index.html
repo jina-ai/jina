@@ -627,7 +627,7 @@
         <span class="k">def</span> <span class="nf">_is_ready</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">pod_role</span> <span class="o">==</span> <span class="n">PodRoleType</span><span class="o">.</span><span class="n">GATEWAY</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">GatewayRuntime</span><span class="o">.</span><span class="n">is_ready</span><span class="p">(</span>
-                    <span class="n">runtime_ctrl_address</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">protocol</span>
+                    <span class="n">runtime_ctrl_address</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">protocol</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
                 <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">AsyncNewLoopRuntime</span><span class="o">.</span><span class="n">is_ready</span><span class="p">(</span><span class="n">runtime_ctrl_address</span><span class="p">)</span>
@@ -724,7 +724,10 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">ctrl_host</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">host</span>
 
-            <span class="n">ctrl_address</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">ctrl_host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">pod_role</span> <span class="o">==</span> <span class="n">PodRoleType</span><span class="o">.</span><span class="n">GATEWAY</span><span class="p">:</span>
+                <span class="n">ctrl_address</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">ctrl_host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">ctrl_address</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">ctrl_host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">&#39;</span>
 
             <span class="n">net_node</span><span class="p">,</span> <span class="n">runtime_ctrl_address</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_network_for_dind_linux</span><span class="p">(</span>
                 <span class="n">client</span><span class="p">,</span> <span class="n">ctrl_address</span>
@@ -747,7 +750,10 @@
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">bridge_network</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">networks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;bridge&#39;</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">bridge_network</span><span class="p">:</span>
-                    <span class="n">runtime_ctrl_address</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">bridge_network</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;IPAM&quot;</span><span class="p">][</span><span class="s2">&quot;Config&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;Gateway&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">&#39;</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">pod_role</span> <span class="o">==</span> <span class="n">PodRoleType</span><span class="o">.</span><span class="n">GATEWAY</span><span class="p">:</span>
+                        <span class="n">runtime_ctrl_address</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">bridge_network</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;IPAM&quot;</span><span class="p">][</span><span class="s2">&quot;Config&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;Gateway&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">runtime_ctrl_address</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">bridge_network</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;IPAM&quot;</span><span class="p">][</span><span class="s2">&quot;Config&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;Gateway&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">&#39;</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s1">&#39;Unable to set control address from &quot;bridge&quot; network: </span><span class="si">{</span><span class="n">ex</span><span class="si">!r}</span><span class="s1">&#39;</span>
@@ -842,7 +848,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Nov 11, 2022</div>
+                            Last updated on Nov 18, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

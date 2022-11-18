@@ -452,7 +452,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">k8s_deployments_metadata</span> <span class="o">=</span> <span class="n">k8s_deployments_metadata</span>
 
         <span class="k">def</span> <span class="nf">get_gateway_yamls</span><span class="p">(</span>
-                <span class="bp">self</span><span class="p">,</span>
+            <span class="bp">self</span><span class="p">,</span>
         <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">]:</span>
             <span class="n">cargs</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">deployment_args</span><span class="p">)</span>
             <span class="n">cargs</span><span class="o">.</span><span class="n">deployments_addresses</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">k8s_deployments_addresses</span>
@@ -460,7 +460,6 @@
             <span class="kn">from</span> <span class="nn">jina.parsers</span> <span class="kn">import</span> <span class="n">set_gateway_parser</span>
 
             <span class="n">taboo</span> <span class="o">=</span> <span class="p">{</span>
-                <span class="s1">&#39;uses_with&#39;</span><span class="p">,</span>
                 <span class="s1">&#39;uses_metas&#39;</span><span class="p">,</span>
                 <span class="s1">&#39;volumes&#39;</span><span class="p">,</span>
                 <span class="s1">&#39;uses_before&#39;</span><span class="p">,</span>
@@ -528,7 +527,7 @@
             <span class="p">)</span>
 
         <span class="k">def</span> <span class="nf">get_runtime_yamls</span><span class="p">(</span>
-                <span class="bp">self</span><span class="p">,</span>
+            <span class="bp">self</span><span class="p">,</span>
         <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">]:</span>
             <span class="n">cargs</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">deployment_args</span><span class="p">)</span>
 
@@ -607,7 +606,7 @@
                 <span class="n">gpus</span><span class="o">=</span><span class="n">cargs</span><span class="o">.</span><span class="n">gpus</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">cargs</span><span class="p">,</span> <span class="s1">&#39;gpus&#39;</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
                 <span class="n">monitoring</span><span class="o">=</span><span class="n">cargs</span><span class="o">.</span><span class="n">monitoring</span><span class="p">,</span>
                 <span class="n">port_monitoring</span><span class="o">=</span><span class="n">cargs</span><span class="o">.</span><span class="n">port_monitoring</span><span class="p">,</span>
-                <span class="n">volumes</span><span class="o">=</span><span class="nb">getattr</span><span class="p">(</span><span class="n">cargs</span><span class="p">,</span> <span class="s1">&#39;volumes&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                <span class="n">volumes</span><span class="o">=</span><span class="nb">getattr</span><span class="p">(</span><span class="n">cargs</span><span class="p">,</span> <span class="s1">&#39;volumes&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
             <span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
@@ -747,7 +746,7 @@
         <span class="k">return</span> <span class="n">parsed_args</span>
 
 <div class="viewcode-block" id="K8sDeploymentConfig.to_kubernetes_yaml"><a class="viewcode-back" href="../../../../../../api/jina.orchestrate.deployments.config.k8s/#jina.orchestrate.deployments.config.k8s.K8sDeploymentConfig.to_kubernetes_yaml">[docs]</a>    <span class="k">def</span> <span class="nf">to_kubernetes_yaml</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span>
+        <span class="bp">self</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">]]]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a list of dictionary configurations. One for each deployment in this Deployment</span>
@@ -789,7 +788,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Nov 11, 2022</div>
+                            Last updated on Nov 18, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

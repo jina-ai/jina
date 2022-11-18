@@ -486,14 +486,6 @@
 
     <span class="n">mixin_base_runtime_parser</span><span class="p">(</span><span class="n">gp</span><span class="p">)</span>
 
-    <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s1">&#39;--port-expose&#39;</span><span class="p">,</span>
-        <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
-        <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;port&#39;</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="n">helper</span><span class="o">.</span><span class="n">random_port</span><span class="p">(),</span>
-        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;The port that the gateway exposes for clients for GRPC connections.&#39;</span><span class="p">,</span>
-    <span class="p">)</span>
-
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--graph-description&#39;</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
@@ -542,6 +534,25 @@
         <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s1">&#39;The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default&#39;</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="mixin_gateway_protocol_parser"><a class="viewcode-back" href="../../../../../../api/jina.parsers.orchestrate.runtimes.remote/#jina.parsers.orchestrate.runtimes.remote.mixin_gateway_protocol_parser">[docs]</a><span class="k">def</span> <span class="nf">mixin_gateway_protocol_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Add the arguments for the protocol to the gateway parser</span>
+
+<span class="sd">    :param parser: the parser configure</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="kn">from</span> <span class="nn">jina.enums</span> <span class="kn">import</span> <span class="n">GatewayProtocolType</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;--protocol&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;--protocols&#39;</span><span class="p">,</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;+&#39;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="n">GatewayProtocolType</span><span class="o">.</span><span class="n">from_string</span><span class="p">,</span>
+        <span class="n">choices</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">GatewayProtocolType</span><span class="p">),</span>
+        <span class="n">default</span><span class="o">=</span><span class="p">[</span><span class="n">GatewayProtocolType</span><span class="o">.</span><span class="n">GRPC</span><span class="p">],</span>
+        <span class="n">help</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;Possible communication protocols between server and client. Depending on your chosen gateway, choose the convenient protocols from: </span><span class="si">{</span><span class="p">[</span><span class="n">protocol</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span> <span class="k">for</span> <span class="n">protocol</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">GatewayProtocolType</span><span class="p">)]</span><span class="si">}</span><span class="s1">.&#39;</span><span class="p">,</span>
     <span class="p">)</span></div>
 
 
@@ -699,7 +710,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Nov 11, 2022</div>
+                            Last updated on Nov 18, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

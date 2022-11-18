@@ -423,7 +423,7 @@
 <span id="jina-serve-gateway-module"></span><h1>jina.serve.gateway module<a class="headerlink" href="#module-jina.serve.gateway" title="Permalink to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="jina.serve.gateway.BaseGateway">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.serve.gateway.</span></span><span class="sig-name descname"><span class="pre">BaseGateway</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'gateway'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/gateway/#BaseGateway"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.gateway.BaseGateway" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.serve.gateway.</span></span><span class="sig-name descname"><span class="pre">BaseGateway</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'gateway'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">runtime_args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/gateway/#BaseGateway"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.gateway.BaseGateway" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="../jina.jaml/#jina.jaml.JAMLCompatible" title="jina.jaml.JAMLCompatible"><code class="xref py py-class docutils literal notranslate"><span class="pre">JAMLCompatible</span></code></a></p>
 <p>The base class of all custom Gateways, can be used to build a custom interface to a Jina Flow that supports
 gateway logic</p>
@@ -432,6 +432,7 @@ gateway logic</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>name</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – Gateway pod name</p></li>
+<li><p><strong>runtime_args</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>]) – a dict of arguments injected from <code class="xref py py-class docutils literal notranslate"><span class="pre">Runtime</span></code> during runtime</p></li>
 <li><p><strong>kwargs</strong> – additional extra keyword arguments to avoid failing when extra params ara passed that are not expected</p></li>
 </ul>
 </dd>
@@ -484,14 +485,6 @@ gateway logic</p>
 <dt class="sig sig-object py" id="jina.serve.gateway.BaseGateway.stop_server">
 <em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">stop_server</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/gateway/#BaseGateway.stop_server"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.gateway.BaseGateway.stop_server" title="Permalink to this definition">#</a></dt>
 <dd><p>Stop server</p>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="jina.serve.gateway.BaseGateway.should_exit">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">should_exit</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#jina.serve.gateway.BaseGateway.should_exit" title="Permalink to this definition">#</a></dt>
-<dd><p>Boolean flag that indicates whether the gateway server should exit or not
-:rtype: <code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>
-:return: boolean flag</p>
 </dd></dl>
 
 <dl class="py method">
@@ -601,7 +594,7 @@ implements <code class="xref py py-class docutils literal notranslate"><span cla
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Nov 11, 2022</div>
+                            Last updated on Nov 18, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -640,7 +633,6 @@ implements <code class="xref py py-class docutils literal notranslate"><span cla
 <li><a class="reference internal" href="#jina.serve.gateway.BaseGateway.run_server"><code class="docutils literal notranslate"><span class="pre">BaseGateway.run_server()</span></code></a></li>
 <li><a class="reference internal" href="#jina.serve.gateway.BaseGateway.teardown"><code class="docutils literal notranslate"><span class="pre">BaseGateway.teardown()</span></code></a></li>
 <li><a class="reference internal" href="#jina.serve.gateway.BaseGateway.stop_server"><code class="docutils literal notranslate"><span class="pre">BaseGateway.stop_server()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.gateway.BaseGateway.should_exit"><code class="docutils literal notranslate"><span class="pre">BaseGateway.should_exit</span></code></a></li>
 <li><a class="reference internal" href="#jina.serve.gateway.BaseGateway.is_valid_jaml"><code class="docutils literal notranslate"><span class="pre">BaseGateway.is_valid_jaml()</span></code></a></li>
 <li><a class="reference internal" href="#jina.serve.gateway.BaseGateway.load_config"><code class="docutils literal notranslate"><span class="pre">BaseGateway.load_config()</span></code></a></li>
 <li><a class="reference internal" href="#jina.serve.gateway.BaseGateway.save_config"><code class="docutils literal notranslate"><span class="pre">BaseGateway.save_config()</span></code></a></li>

@@ -9,7 +9,11 @@ Our [Go Client](https://github.com/jina-ai/client-go) supports gRPC, HTTP and We
 
 ## PHP
 
-A big thanks to our community member at [Jonathan Rowley](https://jina-ai.slack.com/team/U03973EA7BN) for developing a [PHP Client](https://github.com/Dco-ai/php-jina) for Jina!
+A big thanks to our community member [Jonathan Rowley](https://jina-ai.slack.com/team/U03973EA7BN) for developing a [PHP client](https://github.com/Dco-ai/php-jina) for Jina!
+
+## Kotlin
+
+A big thanks to our community member [Peter Willemsen](https://jina-ai.slack.com/team/U03R0KNBK98) for developing a [Kotlin client](https://github.com/peterwilli/JinaKotlin) for Jina!
 
 ## HTTP
 
