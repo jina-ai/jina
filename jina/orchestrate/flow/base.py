@@ -180,10 +180,9 @@ class Flow(
         name: Optional[str] = 'gateway',
         no_crud_endpoints: Optional[bool] = False,
         no_debug_endpoints: Optional[bool] = False,
-        port: Optional[str] = None,
         port_monitoring: Optional[str] = None,
         prefetch: Optional[int] = 1000,
-        protocol: Optional[str] = 'GRPC',
+        protocol: Optional[List[str]] = ['GRPC'],
         proxy: Optional[bool] = False,
         py_modules: Optional[List[str]] = None,
         quiet: Optional[bool] = False,
@@ -244,12 +243,11 @@ class Flow(
 
                   Any executor that has `@requests(on=...)` bound with those values will receive data requests.
         :param no_debug_endpoints: If set, `/status` `/post` endpoints are removed from HTTP interface.
-        :param port: The port for input data to bind to, default is a random port between [49152, 65535].In the case of an external Executor (`--external` or `external=True`) this can be a list of ports, separated by commas.  Then, every resulting address will be considered as one replica of the Executor.
         :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]
         :param prefetch: Number of requests fetched from the client before feeding into the first Executor.
 
               Used to control the speed of data input into a Flow. 0 disables prefetch (1000 requests is the default)
-        :param protocol: Communication protocol between server and client.
+        :param protocol: Possible communication protocols between server and client. Depending on your chosen gateway, choose the convenient protocols from: ['GRPC', 'HTTP', 'WEBSOCKET'].
         :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
         :param py_modules: The customized python modules need to be imported before loading the gateway
 
@@ -415,12 +413,11 @@ class Flow(
 
                   Any executor that has `@requests(on=...)` bound with those values will receive data requests.
         :param no_debug_endpoints: If set, `/status` `/post` endpoints are removed from HTTP interface.
-        :param port: The port for input data to bind to, default is a random port between [49152, 65535].In the case of an external Executor (`--external` or `external=True`) this can be a list of ports, separated by commas.  Then, every resulting address will be considered as one replica of the Executor.
         :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]
         :param prefetch: Number of requests fetched from the client before feeding into the first Executor.
 
               Used to control the speed of data input into a Flow. 0 disables prefetch (1000 requests is the default)
-        :param protocol: Communication protocol between server and client.
+        :param protocol: Possible communication protocols between server and client. Depending on your chosen gateway, choose the convenient protocols from: ['GRPC', 'HTTP', 'WEBSOCKET'].
         :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
         :param py_modules: The customized python modules need to be imported before loading the gateway
 
@@ -852,7 +849,6 @@ class Flow(
         no_reduce: Optional[bool] = False,
         output_array_type: Optional[str] = None,
         polling: Optional[str] = 'ANY',
-        port: Optional[str] = None,
         port_monitoring: Optional[str] = None,
         py_modules: Optional[List[str]] = None,
         quiet: Optional[bool] = False,
@@ -939,7 +935,6 @@ class Flow(
               Define per Endpoint:
               JSON dict, {endpoint: PollingType}
               {'/custom': 'ALL', '/search': 'ANY', '*': 'ANY'}
-        :param port: The port for input data to bind to, default is a random port between [49152, 65535].In the case of an external Executor (`--external` or `external=True`) this can be a list of ports, separated by commas.  Then, every resulting address will be considered as one replica of the Executor.
         :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]
         :param py_modules: The customized python modules need to be imported before loading the executor
 
@@ -1094,7 +1089,6 @@ class Flow(
               Define per Endpoint:
               JSON dict, {endpoint: PollingType}
               {'/custom': 'ALL', '/search': 'ANY', '*': 'ANY'}
-        :param port: The port for input data to bind to, default is a random port between [49152, 65535].In the case of an external Executor (`--external` or `external=True`) this can be a list of ports, separated by commas.  Then, every resulting address will be considered as one replica of the Executor.
         :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]
         :param py_modules: The customized python modules need to be imported before loading the executor
 
@@ -1271,10 +1265,9 @@ class Flow(
         name: Optional[str] = 'gateway',
         no_crud_endpoints: Optional[bool] = False,
         no_debug_endpoints: Optional[bool] = False,
-        port: Optional[str] = None,
         port_monitoring: Optional[str] = None,
         prefetch: Optional[int] = 1000,
-        protocol: Optional[str] = 'GRPC',
+        protocol: Optional[List[str]] = ['GRPC'],
         proxy: Optional[bool] = False,
         py_modules: Optional[List[str]] = None,
         quiet: Optional[bool] = False,
@@ -1335,12 +1328,11 @@ class Flow(
 
                   Any executor that has `@requests(on=...)` bound with those values will receive data requests.
         :param no_debug_endpoints: If set, `/status` `/post` endpoints are removed from HTTP interface.
-        :param port: The port for input data to bind to, default is a random port between [49152, 65535].In the case of an external Executor (`--external` or `external=True`) this can be a list of ports, separated by commas.  Then, every resulting address will be considered as one replica of the Executor.
         :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]
         :param prefetch: Number of requests fetched from the client before feeding into the first Executor.
 
               Used to control the speed of data input into a Flow. 0 disables prefetch (1000 requests is the default)
-        :param protocol: Communication protocol between server and client.
+        :param protocol: Possible communication protocols between server and client. Depending on your chosen gateway, choose the convenient protocols from: ['GRPC', 'HTTP', 'WEBSOCKET'].
         :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
         :param py_modules: The customized python modules need to be imported before loading the gateway
 
@@ -1430,12 +1422,11 @@ class Flow(
 
                   Any executor that has `@requests(on=...)` bound with those values will receive data requests.
         :param no_debug_endpoints: If set, `/status` `/post` endpoints are removed from HTTP interface.
-        :param port: The port for input data to bind to, default is a random port between [49152, 65535].In the case of an external Executor (`--external` or `external=True`) this can be a list of ports, separated by commas.  Then, every resulting address will be considered as one replica of the Executor.
         :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]
         :param prefetch: Number of requests fetched from the client before feeding into the first Executor.
 
               Used to control the speed of data input into a Flow. 0 disables prefetch (1000 requests is the default)
-        :param protocol: Communication protocol between server and client.
+        :param protocol: Possible communication protocols between server and client. Depending on your chosen gateway, choose the convenient protocols from: ['GRPC', 'HTTP', 'WEBSOCKET'].
         :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
         :param py_modules: The customized python modules need to be imported before loading the gateway
 
@@ -2114,22 +2105,31 @@ class Flow(
         return f'https://mermaid.ink/{img_type}/{encoded_str}'
 
     @property
-    def port(self) -> int:
+    def port(self) -> Union[List[int], Optional[int]]:
         """Return the exposed port of the gateway
         .. # noqa: DAR201
         """
         if GATEWAY_NAME in self._deployment_nodes:
-            return self._deployment_nodes[GATEWAY_NAME].port
+            res = self._deployment_nodes[GATEWAY_NAME].port
         else:
-            return self._gateway_kwargs.get('port', None)
+            res = self._gateway_kwargs.get('port', None)
+        if not isinstance(res, list):
+            return res
+        elif len(res) == 1:
+            return res[0]
+        else:
+            return res
 
     @port.setter
-    def port(self, value: int):
+    def port(self, value: Union[int, List[int]]):
         """Set the new exposed port of the Flow (affects Gateway and Client)
 
         :param value: the new port to expose
         """
-        self._gateway_kwargs['port'] = value
+        if isinstance(value, int):
+            self._gateway_kwargs['port'] = [value]
+        elif isinstance(value, list):
+            self._gateway_kwargs['port'] = value
 
         # Flow is build to graph already
         if self._build_level >= FlowBuildLevel.GRAPH:
@@ -2223,34 +2223,44 @@ class Flow(
 
         address_table = self._init_table()
 
-        _protocol = str(self.protocol)
-        if self.gateway_args.ssl_certfile and self.gateway_args.ssl_keyfile:
-            _protocol = f'{self.protocol}S'
-            address_table.add_row(
-                ':chains:', 'Protocol', f':closed_lock_with_key: {_protocol}'
-            )
-
+        if not isinstance(self.protocol, list):
+            _protocols = [str(self.protocol)]
         else:
-            address_table.add_row(':chains:', 'Protocol', _protocol)
+            _protocols = [str(_p) for _p in self.protocol]
 
-        _protocol = _protocol.lower()
-        address_table.add_row(
-            ':house:',
-            'Local',
-            f'[link={_protocol}://{self.host}:{self.port}]{self.host}:{self.port}[/]',
-        )
-        address_table.add_row(
-            ':lock:',
-            'Private',
-            f'[link={_protocol}://{self.address_private}:{self.port}]{self.address_private}:{self.port}[/]',
-        )
+        if not isinstance(self.port, list):
+            _ports = [self.port]
+        else:
+            _ports = [str(_p) for _p in self.port]
 
-        if self.address_public:
+        for _port, _protocol in zip(_ports, _protocols):
+            if self.gateway_args.ssl_certfile and self.gateway_args.ssl_keyfile:
+                _protocol = f'{_protocol}S'
+                address_table.add_row(
+                    ':chains:', 'Protocol', f':closed_lock_with_key: {_protocol}'
+                )
+
+            else:
+                address_table.add_row(':chains:', 'Protocol', _protocol)
+
+            _protocol = _protocol.lower()
             address_table.add_row(
-                ':earth_africa:',
-                'Public',
-                f'[link={_protocol}://{self.address_public}:{self.port}]{self.address_public}:{self.port}[/]',
+                ':house:',
+                'Local',
+                f'[link={_protocol}://{self.host}:{_port}]{self.host}:{_port}[/]',
             )
+            address_table.add_row(
+                ':lock:',
+                'Private',
+                f'[link={_protocol}://{self.address_private}:{_port}]{self.address_private}:{_port}[/]',
+            )
+
+            if self.address_public:
+                address_table.add_row(
+                    ':earth_africa:',
+                    'Public',
+                    f'[link={_protocol}://{self.address_public}:{_port}]{self.address_public}:{_port}[/]',
+                )
 
         all_panels.append(
             Panel(
@@ -2383,18 +2393,25 @@ class Flow(
             pass
 
     @property
-    def protocol(self) -> GatewayProtocolType:
+    def protocol(self) -> Union[GatewayProtocolType, List[GatewayProtocolType]]:
         """Return the protocol of this Flow
 
-        :return: the protocol of this Flow
+        :return: the protocol of this Flow, if only 1 protocol is supported otherwise returns the list of protocols
         """
-        v = self._gateway_kwargs.get('protocol', GatewayProtocolType.GRPC)
-        if isinstance(v, str):
-            v = GatewayProtocolType.from_string(v)
-        return v
+        v = self._gateway_kwargs.get('protocol', [GatewayProtocolType.GRPC])
+        if not isinstance(v, list):
+            v = [v]
+        v = GatewayProtocolType.from_string_list(v)
+        if len(v) == 1:
+            return v[0]
+        else:
+            return v
 
     @protocol.setter
-    def protocol(self, value: Union[str, GatewayProtocolType]):
+    def protocol(
+        self,
+        value: Union[str, GatewayProtocolType, List[str], List[GatewayProtocolType]],
+    ):
         """Set the protocol of this Flow, can only be set before the Flow has been started
 
         :param value: the protocol to set
@@ -2404,11 +2421,17 @@ class Flow(
             raise RuntimeError('Protocol can not be changed after the Flow has started')
 
         if isinstance(value, str):
-            self._gateway_kwargs['protocol'] = GatewayProtocolType.from_string(value)
+            self._gateway_kwargs['protocol'] = [GatewayProtocolType.from_string(value)]
         elif isinstance(value, GatewayProtocolType):
-            self._gateway_kwargs['protocol'] = value
+            self._gateway_kwargs['protocol'] = [value]
+        elif isinstance(value, list):
+            self._gateway_kwargs['protocol'] = GatewayProtocolType.from_string_list(
+                value
+            )
         else:
-            raise TypeError(f'{value} must be either `str` or `GatewayProtocolType`')
+            raise TypeError(
+                f'{value} must be either `str` or `GatewayProtocolType` or list of protocols'
+            )
 
         # Flow is build to graph already
         if self._build_level >= FlowBuildLevel.GRAPH:

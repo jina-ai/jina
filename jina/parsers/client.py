@@ -1,8 +1,8 @@
 """Module for argparse for Client"""
 
 
-def mixin_comm_protocol_parser(parser):
-    """Add the arguments for the protocol to the parser
+def mixin_client_protocol_parser(parser):
+    """Add the arguments for the protocol to the client parser
 
     :param parser: the parser configure
     """

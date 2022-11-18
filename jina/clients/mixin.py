@@ -221,6 +221,7 @@ class PostMixin:
             initial_backoff: float = 0.5,
             max_backoff: float = 0.1,
             backoff_multiplier: float = 1.5,
+            results_in_order: bool = False,
             **kwargs,
     ) -> Optional[Union['DocumentArray', List['Response']]]:
         """Post a general data request to the Flow.
@@ -240,6 +241,7 @@ class PostMixin:
         :param initial_backoff: The first retry will happen with a delay of random(0, initial_backoff)
         :param max_backoff: The maximum accepted backoff after the exponential incremental delay
         :param backoff_multiplier: The n-th attempt will occur at random(0, min(initialBackoff*backoffMultiplier**(n-1), maxBackoff))
+        :param results_in_order: return the results in the same order as the inputs
         :param kwargs: additional parameters
         :return: None or DocumentArray containing all response Documents
 
@@ -282,6 +284,7 @@ class PostMixin:
             initial_backoff=initial_backoff,
             max_backoff=max_backoff,
             backoff_multiplier=backoff_multiplier,
+            results_in_order=results_in_order,
             **kwargs,
         )
 
@@ -312,6 +315,7 @@ class AsyncPostMixin:
             initial_backoff: float = 0.5,
             max_backoff: float = 0.1,
             backoff_multiplier: float = 1.5,
+            results_in_order: bool = False,
             **kwargs,
     ) -> AsyncGenerator[None, Union['DocumentArray', 'Response']]:
         """Async Post a general data request to the Flow.
@@ -331,6 +335,7 @@ class AsyncPostMixin:
         :param initial_backoff: The first retry will happen with a delay of random(0, initial_backoff)
         :param max_backoff: The maximum accepted backoff after the exponential incremental delay
         :param backoff_multiplier: The n-th attempt will occur at random(0, min(initialBackoff*backoffMultiplier**(n-1), maxBackoff))
+        :param results_in_order: return the results in the same order as the inputs
         :param kwargs: additional parameters, can be used to pass metadata or authentication information in the server call
         :yield: Response object
 
@@ -356,6 +361,7 @@ class AsyncPostMixin:
                 initial_backoff=initial_backoff,
                 max_backoff=max_backoff,
                 backoff_multiplier=backoff_multiplier,
+                results_in_order=results_in_order,
                 **kwargs,
         ):
             if not return_responses:

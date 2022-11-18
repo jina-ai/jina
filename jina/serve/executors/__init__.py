@@ -155,12 +155,6 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
     def _dry_run_func(self, *args, **kwargs):
         pass
 
-    def _add_runtime_args(self, _runtime_args: Optional[Dict]):
-        if _runtime_args:
-            self.runtime_args = SimpleNamespace(**_runtime_args)
-        else:
-            self.runtime_args = SimpleNamespace()
-
     def _init_monitoring(self):
         if (
             hasattr(self.runtime_args, 'metrics_registry')
