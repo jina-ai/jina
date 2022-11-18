@@ -33,8 +33,7 @@ def multi_port_gateway_docker_image_built():
 @pytest.mark.parametrize(
     'uses',
     [
-        # sigterm not being handled properly in http server
-        # 'MultiProtocolGateway',
+        'MultiProtocolGateway',
         'docker://multiprotcol-gateway',
     ],
 )
