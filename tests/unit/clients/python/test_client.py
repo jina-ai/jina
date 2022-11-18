@@ -58,7 +58,7 @@ def test_gateway_ready(port, route, status_code):
     )
     with PodFactory.build_pod(p):
         time.sleep(0.5)
-        a = requests.get(f'http://localhost:{p.port}{route}')
+        a = requests.get(f'http://localhost:{port}{route}')
     assert a.status_code == status_code
 
 
@@ -95,6 +95,34 @@ def test_client_websocket(mocker, flow_with_websocket):
             '',
             random_docs(1),
             request_size=1,
+            on_always=on_always_mock,
+            on_error=on_error_mock,
+            on_done=on_done_mock,
+            return_responses=True,
+        )
+        on_always_mock.assert_called_once()
+        on_done_mock.assert_called_once()
+        on_error_mock.assert_not_called()
+
+
+# Timeout is necessary to fail in case of hanging client requests
+@pytest.mark.timeout(60)
+def test_client_max_attempts(mocker, flow):
+    with flow:
+        time.sleep(0.5)
+        client = Client(
+            host='localhost',
+            port=flow.port,
+        )
+        # Test that a regular index request triggers the correct callbacks
+        on_always_mock = mocker.Mock()
+        on_error_mock = mocker.Mock()
+        on_done_mock = mocker.Mock()
+        client.post(
+            '/',
+            random_docs(1),
+            request_size=1,
+            max_attempts=5,
             on_always=on_always_mock,
             on_error=on_error_mock,
             on_done=on_done_mock,

@@ -2,10 +2,8 @@ import asyncio
 import multiprocessing
 import os
 import time
-from copy import deepcopy
 from multiprocessing import Process
 from threading import Event
-from unittest import mock
 
 import pytest
 import yaml
@@ -19,8 +17,7 @@ from jina.serve.executors.metas import get_default_metas
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.worker import WorkerRuntime
-
-PORT = 12350
+from jina.helper import random_port
 
 
 class WorkspaceExec(Executor):
@@ -35,8 +32,14 @@ class MyServeExec(Executor):
         docs.texts = ['foo' for _ in docs]
 
 
+@pytest.fixture()
+def exposed_port():
+    port = random_port()
+    yield port
+
+
 @pytest.fixture(autouse=False)
-def served_exec():
+def served_exec(exposed_port):
     import threading
     import time
 
@@ -47,7 +50,7 @@ def served_exec():
     t = threading.Thread(
         name='serve-exec',
         target=serve_exec,
-        kwargs={'port_expose': PORT, 'stop_event': e},
+        kwargs={'port_expose': exposed_port, 'stop_event': e},
     )
     t.start()
     time.sleep(3)  # allow Flow to start
@@ -78,7 +81,7 @@ def test_executor_import_with_external_dependencies(capsys):
 
 def test_executor_with_pymodule_path():
     with pytest.raises(FileNotFoundError):
-        ex = Executor.load_config(
+        _ = Executor.load_config(
             '''
         jtype: BaseExecutor
         py_modules:
@@ -101,7 +104,7 @@ def test_executor_with_pymodule_path():
 
 def test_flow_uses_with_pymodule_path():
     with Flow.load_config(
-        '''
+            '''
     jtype: Flow
     executors:
         - uses: unit.serve.executors.dummy_executor.MyExecutor
@@ -112,13 +115,13 @@ def test_flow_uses_with_pymodule_path():
         pass
 
     with Flow().add(
-        uses='unit.serve.executors.dummy_executor.MyExecutor', uses_with={'bar': 123}
+            uses='unit.serve.executors.dummy_executor.MyExecutor', uses_with={'bar': 123}
     ):
         pass
 
     with pytest.raises(RuntimeFailToStart):
         with Flow.load_config(
-            '''
+                '''
             jtype: Flow
             executors:
                 - uses: jina.no_valide.executor
@@ -235,7 +238,7 @@ def test_executor_workspace(test_metas_workspace_replica_pods, shard_id):
 
 @pytest.mark.parametrize('shard_id', [None, -1], indirect=True)
 def test_executor_workspace_parent_replica_nopea(
-    test_metas_workspace_replica_pods, shard_id
+        test_metas_workspace_replica_pods, shard_id
 ):
     executor = Executor(
         metas={'name': test_metas_workspace_replica_pods['name']},
@@ -251,7 +254,7 @@ def test_executor_workspace_parent_replica_nopea(
 
 @pytest.mark.parametrize('shard_id', [0, 1, 2], indirect=True)
 def test_executor_workspace_parent_noreplica_pod(
-    test_metas_workspace_replica_pods, shard_id
+        test_metas_workspace_replica_pods, shard_id
 ):
     executor = Executor(
         metas={'name': test_metas_workspace_replica_pods['name']},
@@ -268,7 +271,7 @@ def test_executor_workspace_parent_noreplica_pod(
 
 @pytest.mark.parametrize('shard_id', [None, -1], indirect=True)
 def test_executor_workspace_parent_noreplica_nopea(
-    test_metas_workspace_replica_pods, shard_id
+        test_metas_workspace_replica_pods, shard_id
 ):
     executor = Executor(
         metas={'name': test_metas_workspace_replica_pods['name']},
@@ -385,8 +388,8 @@ async def test_async_apply():
     assert da1.texts == ['hello'] * N
 
 
-def test_serve(served_exec):
-    docs = Client(port=PORT).post(on='/foo', inputs=DocumentArray.empty(5))
+def test_serve(served_exec, exposed_port):
+    docs = Client(port=exposed_port).post(on='/foo', inputs=DocumentArray.empty(5))
 
     assert docs.texts == ['foo' for _ in docs]
 
@@ -403,7 +406,7 @@ def test_set_workspace(tmpdir):
         os.path.join(tmpdir, 'WorkspaceExec')
     )
     assert (
-        WorkspaceExec(workspace=str(tmpdir)).workspace == complete_workspace_no_replicas
+            WorkspaceExec(workspace=str(tmpdir)).workspace == complete_workspace_no_replicas
     )
 
 
@@ -448,10 +451,10 @@ def test_to_k8s_yaml(tmpdir, exec_type):
         with open(os.path.join(tmpdir, 'gateway', 'gateway.yml')) as f:
             gatewayyaml = list(yaml.safe_load_all(f))[-1]
             assert (
-                gatewayyaml['spec']['template']['spec']['containers'][0]['ports'][0][
-                    'containerPort'
-                ]
-                == 2020
+                    gatewayyaml['spec']['template']['spec']['containers'][0]['ports'][0][
+                        'containerPort'
+                    ]
+                    == 2020
             )
             gateway_args = gatewayyaml['spec']['template']['spec']['containers'][0][
                 'args'
@@ -544,3 +547,33 @@ async def test_blocking_sync_exec():
 
     cancel_event.set()
     runtime_thread.join()
+
+
+def test_executors_inheritance_binding():
+    class A(Executor):
+        @requests(on='/index')
+        def a(self, **kwargs):
+            pass
+
+        @requests
+        def default_a(self, **kwargs):
+            pass
+
+    class B(A):
+
+        @requests(on='/index')
+        def b(self, **kwargs):
+            pass
+
+    class C(B):
+        pass
+
+    assert set(A().requests.keys()) == {'/index', '/default', '_jina_dry_run_'}
+    assert A().requests['/index'] == A.a
+    assert A().requests['/default'] == A.default_a
+    assert set(B().requests.keys()) == {'/index', '/default', '_jina_dry_run_'}
+    assert B().requests['/index'] == B.b
+    assert B().requests['/default'] == A.default_a
+    assert set(C().requests.keys()) == {'/index', '/default', '_jina_dry_run_'}
+    assert C().requests['/index'] == B.b
+    assert C().requests['/default'] == A.default_a

@@ -1,4 +1,4 @@
-from jina.parsers.client import mixin_comm_protocol_parser
+from jina.helper import GATEWAY_NAME
 from jina.parsers.helper import _SHOW_ALL_ARGS
 from jina.parsers.orchestrate.runtimes.container import mixin_container_runtime_parser
 from jina.parsers.orchestrate.runtimes.head import mixin_head_parser
@@ -75,6 +75,7 @@ def set_gateway_parser(parser=None):
     from jina.parsers.orchestrate.pod import mixin_pod_parser
     from jina.parsers.orchestrate.runtimes.remote import (
         mixin_gateway_parser,
+        mixin_gateway_protocol_parser,
         mixin_graphql_parser,
         mixin_http_gateway_parser,
         mixin_prefetch_parser,
@@ -85,14 +86,14 @@ def set_gateway_parser(parser=None):
     mixin_prefetch_parser(parser)
     mixin_http_gateway_parser(parser)
     mixin_graphql_parser(parser)
-    mixin_comm_protocol_parser(parser)
+    mixin_gateway_protocol_parser(parser)
     mixin_gateway_parser(parser)
     mixin_pod_parser(parser, pod_type='gateway')
 
     from jina.enums import DeploymentRoleType
 
     parser.set_defaults(
-        name='gateway',
+        name=GATEWAY_NAME,
         runtime_cls='GatewayRuntime',
         deployment_role=DeploymentRoleType.GATEWAY,
     )
@@ -113,13 +114,13 @@ def set_client_cli_parser(parser=None):
 
     from jina.parsers.client import (
         mixin_client_features_parser,
-        mixin_comm_protocol_parser,
+        mixin_client_protocol_parser,
     )
     from jina.parsers.orchestrate.runtimes.remote import mixin_client_gateway_parser
 
     mixin_client_gateway_parser(parser)
     mixin_client_features_parser(parser)
-    mixin_comm_protocol_parser(parser)
+    mixin_client_protocol_parser(parser)
 
     return parser
 

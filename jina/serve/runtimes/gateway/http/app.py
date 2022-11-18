@@ -1,4 +1,3 @@
-import argparse
 import json
 from typing import TYPE_CHECKING, Dict, List, Optional
 
@@ -22,7 +21,7 @@ def get_fastapi_app(
     description: str,
     no_debug_endpoints: bool,
     no_crud_endpoints: bool,
-    expose_endpoints: bool,
+    expose_endpoints: Optional[str],
     expose_graphql_endpoint: bool,
     cors: bool,
     logger: 'JinaLogger',

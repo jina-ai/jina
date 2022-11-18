@@ -30,8 +30,7 @@ spec:
           imagePullPolicy: {pull_policy}
           command: {command}
           args: {args}
-          ports:
-            - containerPort: {port}
+          ports: {ports-section}
           envFrom:
             - configMapRef:
                 name: {name}-configmap

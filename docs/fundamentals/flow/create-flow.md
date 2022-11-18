@@ -121,7 +121,7 @@ A successful start of a Flow looks like this:
 
 Your addresses and entrypoints can be found in the output. When you enable more features such as monitoring, HTTP gateway, TLS encryption, this display expands to contain more information.
 
-
+(multiprocessing-spawn)
 ### Set multiprocessing `spawn` 
 
 Some corner cases require forcing a `spawn` start method for multiprocessing, for example if you encounter "Cannot re-initialize CUDA in forked subprocess". 
@@ -130,6 +130,11 @@ You can use `JINA_MP_START_METHOD=spawn` before starting the Python script to en
 
 ```bash
 JINA_MP_START_METHOD=spawn python app.py
+```
+
+```{caution}
+In case you set `JINA_MP_START_METHOD=spawn`, make sure to use Flow as a context manager inside `if __name__ == '__main__'`.
+The script entrypoint (starting the flow) [needs to be protected when using `spawn` start method](https://docs.python.org/3/library/multiprocessing.html#the-spawn-and-forkserver-start-methods). 
 ```
 
 ````{hint}

@@ -2,7 +2,7 @@ import functools
 from timeit import default_timer
 from typing import TYPE_CHECKING, Dict, Optional, Sequence
 
-if TYPE_CHECKING: # pragma: no cover
+if TYPE_CHECKING:  # pragma: no cover
     from grpc.aio._interceptor import ClientInterceptor, ServerInterceptor
     from opentelemetry.instrumentation.grpc._client import (
         OpenTelemetryClientInterceptor,
@@ -138,14 +138,18 @@ class MetricsTimer:
         self,
         summary_metric: Optional['Summary'],
         histogram: Optional['Histogram'],
-        histogram_metric_labels: Dict[str, str] = {},
+        histogram_metric_labels: Optional[Dict[str, str]] = None,
     ) -> None:
+        if histogram_metric_labels is None:
+            histogram_metric_labels = {}
         self._summary_metric = summary_metric
         self._histogram = histogram
         self._histogram_metric_labels = histogram_metric_labels
 
     def _new_timer(self):
-        return self.__class__(self._summary_metric, self._histogram)
+        return self.__class__(
+            self._summary_metric, self._histogram, self._histogram_metric_labels
+        )
 
     def __enter__(self):
         self._start = default_timer()

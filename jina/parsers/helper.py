@@ -1,9 +1,11 @@
 """Module for helper functions in the parser"""
+
 import argparse
 import os
 from typing import Tuple
 
 from jina.enums import GatewayProtocolType
+from jina.logging.predefined import default_logger
 
 _SHOW_ALL_ARGS = 'JINA_FULL_CLI' in os.environ
 
@@ -267,7 +269,43 @@ def _set_gateway_uses(args: 'argparse.Namespace'):
         GatewayProtocolType.HTTP: 'HTTPGateway',
     }
     if not args.uses:
-        args.uses = gateway_dict[args.protocol]
+        if len(args.protocol) == 1:
+            args.uses = gateway_dict[args.protocol[0]]
+        else:
+            raise ValueError(
+                'You need to specify exactly 1 protocol if you want to use a jina built-in gateway'
+            )
+
+
+class CastToIntAction(argparse.Action):
+    """argparse action to cast a list of values to int"""
+
+    def __call__(self, parser, args, values, option_string=None):
+        """
+        call the CastToIntAction
+
+
+        .. # noqa: DAR401
+        :param parser: the parser
+        :param args: args to initialize the values
+        :param values: the values to add to the parser
+        :param option_string: inherited, not used
+        """
+        if isinstance(values, list):
+            d = [_port_to_int(port) for port in values]
+        else:
+            d = _port_to_int(values)
+        setattr(args, self.dest, d)
+
+
+def _port_to_int(port):
+    try:
+        return int(port)
+    except ValueError:
+        default_logger.warning(
+            f'port {port} is not an integer and cannot be cast to one'
+        )
+        return port
 
 
 _chf = _ColoredHelpFormatter

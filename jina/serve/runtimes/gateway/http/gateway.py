@@ -13,7 +13,6 @@ class HTTPGateway(BaseGateway):
 
     def __init__(
         self,
-        port: Optional[int] = None,
         title: Optional[str] = None,
         description: Optional[str] = None,
         no_debug_endpoints: Optional[bool] = False,
@@ -29,7 +28,6 @@ class HTTPGateway(BaseGateway):
     ):
         """Initialize the gateway
             Get the app from FastAPI as the REST interface.
-        :param port: The port of the Gateway, which the client should connect to.
         :param title: The title of this HTTP server. It will be used in automatics docs such as Swagger UI.
         :param description: The description of this HTTP server. It will be used in automatics docs such as Swagger UI.
         :param no_debug_endpoints: If set, `/status` `/post` endpoints are removed from HTTP interface.
@@ -47,7 +45,7 @@ class HTTPGateway(BaseGateway):
         :param kwargs: keyword args
         """
         super().__init__(**kwargs)
-        self.port = port
+        self._set_single_port_protocol()
         self.title = title
         self.description = description
         self.no_debug_endpoints = no_debug_endpoints
@@ -101,7 +99,6 @@ class HTTPGateway(BaseGateway):
                 if not config.loaded:
                     config.load()
                 self.lifespan = config.lifespan_class(config)
-                self.install_signal_handlers()
                 await self.startup(sockets=sockets)
                 if self.should_exit:
                     return
@@ -144,27 +141,13 @@ class HTTPGateway(BaseGateway):
 
         await self.server.setup()
 
-    async def teardown(self):
+    async def shutdown(self):
         """
         Free resources allocated when setting up HTTP server
         """
-        await super().teardown()
-        await self.server.shutdown()
-
-    async def stop_server(self):
-        """
-        Stop HTTP server
-        """
         self.server.should_exit = True
+        await self.server.shutdown()
 
     async def run_server(self):
         """Run HTTP server forever"""
         await self.server.serve()
-
-    @property
-    def should_exit(self) -> bool:
-        """
-        Boolean flag that indicates whether the gateway server should exit or not
-        :return: boolean flag
-        """
-        return self.server.should_exit

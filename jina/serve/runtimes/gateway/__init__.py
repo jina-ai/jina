@@ -1,8 +1,6 @@
 import argparse
 import asyncio
-import os
 import urllib
-from abc import ABC
 from http import HTTPStatus
 from typing import TYPE_CHECKING, Optional, Union
 
@@ -14,10 +12,9 @@ from jina.parsers.helper import _set_gateway_uses
 from jina.serve.gateway import BaseGateway
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 
-if TYPE_CHECKING: # pragma: no cover
+if TYPE_CHECKING:  # pragma: no cover
     import multiprocessing
     import threading
-
 
 # Keep these imports even if not used, since YAML parser needs to find them in imported modules
 from jina.serve.runtimes.gateway.grpc import GRPCGateway
@@ -64,7 +61,6 @@ class GatewayRuntime(AsyncNewLoopRuntime):
             uses_with=dict(
                 name=self.name,
                 grpc_server_options=self.args.grpc_server_options,
-                port=self.args.port,
                 title=self.args.title,
                 description=self.args.description,
                 no_debug_endpoints=self.args.no_debug_endpoints,
@@ -81,6 +77,8 @@ class GatewayRuntime(AsyncNewLoopRuntime):
             uses_metas={},
             runtime_args={  # these are not parsed to the yaml config file but are pass directly during init
                 'name': self.args.name,
+                'port': self.args.port,
+                'protocol': self.args.protocol,
             },
             py_modules=self.args.py_modules,
             extra_search_paths=self.args.extra_search_paths,
@@ -103,23 +101,28 @@ class GatewayRuntime(AsyncNewLoopRuntime):
     async def _wait_for_cancel(self):
         """Do NOT override this method when inheriting from :class:`GatewayPod`"""
         # handle terminate signals
-        while not self.is_cancel.is_set() and not self.gateway.should_exit:
+        while not self.is_cancel.is_set() and not getattr(
+            self.gateway, '_should_exit', False
+        ):
             await asyncio.sleep(0.1)
 
         await self.async_cancel()
 
     async def async_teardown(self):
         """Shutdown the server."""
-        await self.gateway.teardown()
+        await self.gateway.streamer.close()
+        await self.gateway.shutdown()
         await self.async_cancel()
 
     async def async_cancel(self):
         """Stop the server."""
-        await self.gateway.stop_server()
+        await self.gateway.streamer.close()
+        await self.gateway.shutdown()
 
     async def async_run_forever(self):
         """Running method of the server."""
         await self.gateway.run_server()
+        self.is_cancel.set()
 
     @staticmethod
     def is_ready(ctrl_address: str, protocol: Optional[str] = 'grpc', **kwargs) -> bool:

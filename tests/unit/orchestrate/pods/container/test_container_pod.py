@@ -3,7 +3,7 @@ import time
 
 import pytest
 
-from jina import __cache_path__
+from jina import Flow, __cache_path__
 from jina.excepts import RuntimeFailToStart
 from jina.helper import random_port
 from jina.orchestrate.pods.container import ContainerPod
@@ -281,3 +281,13 @@ def test_container_pod_custom_gateway(dummy_custom_gateway_docker_image_built):
     client = docker.from_env()
     containers = client.containers.list()
     assert container.id not in containers
+
+
+def test_container_pod_with_flow_custom_gateway(
+    dummy_custom_gateway_docker_image_built,
+):
+    flow = Flow().config_gateway(uses='docker://custom-gateway', protocol='http')
+    with flow:
+        _validate_dummy_custom_gateway_response(
+            flow.port, {'arg1': 'hello', 'arg2': 'world', 'arg3': 'default-arg3'}
+        )

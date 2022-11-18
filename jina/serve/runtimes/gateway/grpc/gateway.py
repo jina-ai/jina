@@ -17,25 +17,23 @@ class GRPCGateway(BaseGateway):
 
     def __init__(
         self,
-        port: Optional[int] = None,
         grpc_server_options: Optional[dict] = None,
         ssl_keyfile: Optional[str] = None,
         ssl_certfile: Optional[str] = None,
         **kwargs,
     ):
         """Initialize the gateway
-        :param port: The port of the Gateway, which the client should connect to.
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
         :param ssl_keyfile: the path to the key file
         :param ssl_certfile: the path to the certificate file
         :param kwargs: keyword args
         """
         super().__init__(**kwargs)
-        self.port = port
+        self._set_single_port_protocol()
         self.grpc_server_options = grpc_server_options
         self.ssl_keyfile = ssl_keyfile
         self.ssl_certfile = ssl_certfile
-        self.health_servicer = health.HealthServicer(experimental_non_blocking=True)
+        self.health_servicer = health.aio.HealthServicer()
 
     async def setup_server(self):
         """
@@ -63,7 +61,9 @@ class GRPCGateway(BaseGateway):
         health_pb2_grpc.add_HealthServicer_to_server(self.health_servicer, self.server)
 
         for service in service_names:
-            self.health_servicer.set(service, health_pb2.HealthCheckResponse.SERVING)
+            await self.health_servicer.set(
+                service, health_pb2.HealthCheckResponse.SERVING
+            )
         reflection.enable_server_reflection(service_names, self.server)
 
         bind_addr = f'{__default_host__}:{self.port}'
@@ -94,16 +94,10 @@ class GRPCGateway(BaseGateway):
         self.logger.debug(f'start server bound to {bind_addr}')
         await self.server.start()
 
-    async def teardown(self):
+    async def shutdown(self):
         """Free other resources allocated with the server, e.g, gateway object, ..."""
-        await super().teardown()
-        self.health_servicer.enter_graceful_shutdown()
-
-    async def stop_server(self):
-        """
-        Stop GRPC server
-        """
         await self.server.stop(0)
+        await self.health_servicer.enter_graceful_shutdown()
 
     async def run_server(self):
         """Run GRPC server forever"""
@@ -118,6 +112,7 @@ class GRPCGateway(BaseGateway):
         :returns: the response request
         """
         from docarray import DocumentArray
+
         from jina.clients.request import request_generator
         from jina.enums import DataInputType
         from jina.serve.executors import __dry_run_endpoint__
@@ -148,10 +143,10 @@ class GRPCGateway(BaseGateway):
         :param context: grpc context
         :returns: the response request
         """
-        infoProto = jina_pb2.JinaInfoProto()
+        info_proto = jina_pb2.JinaInfoProto()
         version, env_info = get_full_version()
         for k, v in version.items():
-            infoProto.jina[k] = str(v)
+            info_proto.jina[k] = str(v)
         for k, v in env_info.items():
-            infoProto.envs[k] = str(v)
-        return infoProto
+            info_proto.envs[k] = str(v)
+        return info_proto

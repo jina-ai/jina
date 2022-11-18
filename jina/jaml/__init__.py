@@ -793,3 +793,9 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
         except yaml.error.YAMLError:
             return True
         return True
+
+    def _add_runtime_args(self, _runtime_args: Optional[Dict]):
+        if _runtime_args:
+            self.runtime_args = SimpleNamespace(**_runtime_args)
+        else:
+            self.runtime_args = SimpleNamespace()

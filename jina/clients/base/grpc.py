@@ -12,7 +12,7 @@ from jina.logging.profile import ProgressBar
 from jina.proto import jina_pb2, jina_pb2_grpc
 from jina.serve.networking import GrpcConnectionPool
 
-if TYPE_CHECKING: # pragma: no cover
+if TYPE_CHECKING:  # pragma: no cover
     from jina.clients.base import CallbackFnType, InputType
 
 
@@ -70,6 +70,7 @@ class GRPCBaseClient(BaseClient):
         initial_backoff: float = 0.5,
         max_backoff: float = 0.1,
         backoff_multiplier: float = 1.5,
+        results_in_order: bool = False,
         **kwargs,
     ):
         try:
@@ -95,7 +96,7 @@ class GRPCBaseClient(BaseClient):
                                     "maxAttempts": max_attempts,
                                     "initialBackoff": f"{initial_backoff}s",
                                     "maxBackoff": f"{max_backoff}s",
-                                    "backoffMultiplier": {backoff_multiplier},
+                                    "backoffMultiplier": backoff_multiplier,
                                     "retryableStatusCodes": [
                                         "UNAVAILABLE",
                                         "DEADLINE_EXCEEDED",
@@ -109,6 +110,11 @@ class GRPCBaseClient(BaseClient):
                 # NOTE: the retry feature will be enabled by default >=v1.40.0
                 options.append(("grpc.enable_retries", 1))
                 options.append(("grpc.service_config", service_config_json))
+
+            metadata = kwargs.get('metadata', None)
+            if results_in_order:
+                metadata = metadata or ()
+                metadata = metadata + (('__results_in_order__', 'true'),)
 
             async with GrpcConnectionPool.get_grpc_channel(
                 f'{self.args.host}:{self.args.port}',
@@ -127,7 +133,7 @@ class GRPCBaseClient(BaseClient):
                         async for resp in stub.Call(
                             req_iter,
                             compression=self.compression,
-                            metadata=kwargs.get('metadata', None),
+                            metadata=metadata,
                             credentials=kwargs.get('credentials', None),
                             timeout=kwargs.get('timeout', None),
                         ):
