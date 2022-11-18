@@ -72,7 +72,8 @@ class RequestStreamer:
                 if metadatum.key == '__results_in_order__':
                     results_in_order = (metadatum.value == 'true')
 
-        async_iter: AsyncIterator = self._stream_requests(request_iterator=request_iterator, results_in_order=results_in_order)
+        async_iter: AsyncIterator = self._stream_requests(request_iterator=request_iterator,
+                                                          results_in_order=results_in_order)
 
         try:
             async for response in async_iter:
@@ -104,9 +105,7 @@ class RequestStreamer:
         :yield: responses
         """
         result_queue = asyncio.Queue()
-        request_ids = []
-        responses_list = []
-        responses_ids = {}  # map from id to index in responses_list
+        future_queue = asyncio.Queue()
         floating_results_queue = asyncio.Queue()
         end_of_iter = asyncio.Event()
         all_requests_handled = asyncio.Event()
@@ -157,11 +156,10 @@ class RequestStreamer:
             ):
                 num_reqs += 1
                 requests_to_handle.count += 1
-                if results_in_order:
-                    request_ids.append(request.header.request_id)
                 future_responses, future_hanging = self._request_handler(
                     request=request
                 )
+                future_queue.put_nowait(future_responses)
                 future_responses.add_done_callback(callback)
                 if future_hanging is not None:
                     floating_tasks_to_handle.count += 1
@@ -221,7 +219,11 @@ class RequestStreamer:
 
         async def receive_responses():
             while not all_requests_handled.is_set():
-                future = await result_queue.get()
+                if not results_in_order:
+                    future = await result_queue.get()
+                else:
+                    future = await future_queue.get()
+                    await future
                 try:
                     response = self._result_handler(future.result())
                     yield response
@@ -231,31 +233,7 @@ class RequestStreamer:
                     pass
 
         async for response in receive_responses():
-            if not results_in_order:
-                # if is not needed to return_in_order, just yield responses as they come.
-                yield response
-            else:
-                # if return_in_order is needed, we have to check if the response is to be returned
-                response_request_id = await DataRequest.extract_id(response)
-                if response_request_id == request_ids[0]:
-                    # is the response's turn to be yielded
-                    yield response
-                    request_ids.pop(0)
-                else:
-                    # is not your turn, put to the end
-                    responses_ids[response_request_id] = len(responses_list)
-                    responses_list.append(response)
-
-                stop_yielding = False
-                while not stop_yielding and len(request_ids) > 0:
-                    next_request_id = request_ids[0]
-                    if next_request_id in responses_ids:
-                        response_index = responses_ids[next_request_id]
-                        del responses_ids[next_request_id]
-                        request_ids.pop(0)
-                        yield responses_list[response_index]
-                    else:
-                        stop_yielding = True
+            yield response
 
     async def wait_floating_requests_end(self):
         """

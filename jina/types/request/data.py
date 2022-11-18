@@ -128,21 +128,6 @@ class DataRequest(Request):
                 f'fail to construct a {self.__class__} object from {request}'
             ) from ex
 
-    @classmethod
-    async def extract_id(cls, response):
-        """
-        Returns the request_id from a client response.
-
-        :param response: the response to return
-        :return: the request_id of the Response
-        """
-        if type(response) == cls:
-            return response.header.request_id
-        else:
-            r_str = await response.json()
-            return r_str['header']['requestId']
-
-
     @property
     def is_decompressed(self) -> bool:
         """
