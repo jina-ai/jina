@@ -149,10 +149,10 @@ class GRPCGateway(BaseGateway):
         :param context: grpc context
         :returns: the response request
         """
-        infoProto = jina_pb2.JinaInfoProto()
+        info_proto = jina_pb2.JinaInfoProto()
         version, env_info = get_full_version()
         for k, v in version.items():
-            infoProto.jina[k] = str(v)
+            info_proto.jina[k] = str(v)
         for k, v in env_info.items():
-            infoProto.envs[k] = str(v)
-        return infoProto
+            info_proto.envs[k] = str(v)
+        return info_proto
