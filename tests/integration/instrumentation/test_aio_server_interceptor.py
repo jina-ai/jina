@@ -55,13 +55,13 @@ def test_default_health_servicer(jaeger_port, otlp_collector, otlp_receiver_port
     )
 
     def check_health(target):
-        assert AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+        AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
             timeout=5.0,
-            ctrl_address=f'{gateway_args.host}:{gateway_args.port}',
+            ctrl_address=target,
             ready_or_shutdown_event=Event(),
         )
 
-    gatway_thread.start()
+    # gatway_thread.start()
     worker_thread.start()
     try:
         target = f'{gateway_args.host}:{gateway_args.port}'
