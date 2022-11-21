@@ -138,6 +138,27 @@ class BaseGateway(JAMLCompatible, metaclass=GatewayType):
             tracing_client_interceptor=tracing_client_interceptor,
         )
 
+    @property
+    def port(self):
+        """Gets the first port of the port list argument. To be used in the regular case where a Gateway exposes a single port
+        :return: The first port to be exposed
+        """
+        return self.runtime_args.port[0]
+
+    @property
+    def ports(self):
+        """Gets all the list of ports from the runtime_args as a list.
+        :return: The lists of ports to be exposed
+        """
+        return self.runtime_args.port
+
+    @property
+    def host(self):
+        """Gets the host from the runtime_args
+        :return: The host where to bind the gateway
+        """
+        return self.runtime_args.host
+
     @abc.abstractmethod
     async def setup_server(self):
         """Setup server"""
@@ -158,8 +179,3 @@ class BaseGateway(JAMLCompatible, metaclass=GatewayType):
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         pass
-
-    def _set_single_port_protocol(self):
-        if len(self.runtime_args.port) < 1 or len(self.runtime_args.protocol) < 1:
-            raise ValueError(f'{self.__class__} expects at least 1 port and 1 protcol')
-        self.port = self.runtime_args.port[0]

@@ -24,8 +24,6 @@ class DummyGateway(Gateway):
         self, arg1: str = None, arg2: str = None, arg3: str = 'default-arg3', **kwargs
     ):
         super().__init__(**kwargs)
-        self.port = self.runtime_args.port[0]
-        self.host = self.runtime_args.host
         self.arg1 = arg1
         self.arg2 = arg2
         self.arg3 = arg3
