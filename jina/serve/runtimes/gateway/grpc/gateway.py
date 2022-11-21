@@ -65,7 +65,7 @@ class GRPCGateway(BaseGateway):
             )
         reflection.enable_server_reflection(service_names, self.server)
 
-        bind_addr = f'{__default_host__}:{self.port}'
+        bind_addr = f'{self.host}:{self.port}'
 
         if self.ssl_keyfile and self.ssl_certfile:
             with open(self.ssl_keyfile, 'rb') as f:

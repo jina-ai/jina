@@ -131,7 +131,7 @@ class HTTPGateway(BaseGateway):
         self.server = UviServer(
             config=Config(
                 app=self.app,
-                host=__default_host__,
+                host=self.host,
                 port=self.port,
                 log_level=os.getenv('JINA_LOG_LEVEL', 'error').lower(),
                 **uvicorn_kwargs,

@@ -58,7 +58,7 @@ class DummyGateway(Gateway):
                 doc = req.to_dict()['data'][0]
             return {'text': doc['text'], 'tags': doc['tags']}
 
-        self.server = Server(Config(app, host=__default_host__, port=self.port))
+        self.server = Server(Config(app, host=self.host, port=self.port))
 
     async def run_server(self):
         await self.server.serve()
@@ -66,4 +66,3 @@ class DummyGateway(Gateway):
     async def shutdown(self):
         self.server.should_exit = True
         await self.server.shutdown()
-

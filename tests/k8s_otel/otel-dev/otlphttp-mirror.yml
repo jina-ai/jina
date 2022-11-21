@@ -1,0 +1,51 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: otlphttp-mirror
+  labels:
+    app: otlphttp-mirror
+    component: otlphttp-mirror
+spec:
+  ports:
+  - name: metrics
+    port: 8000
+  selector:
+    component: otlphttp-mirror
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: otlphttp-mirror
+  labels:
+    app: otlphttp-mirror
+    component: otlphttp-mirror
+spec:
+  selector:
+    matchLabels:
+      app: otlphttp-mirror
+      component: otlphttp-mirror
+  minReadySeconds: 5
+  progressDeadlineSeconds: 120
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: otlphttp-mirror
+        component: otlphttp-mirror
+    spec:
+      containers:
+      - image: jackmin801/otlphttp-mirror
+        name: otlphttp-mirror
+        env:
+        - name: MEOW_PORT
+          value: "8000"
+        resources:
+          limits:
+            cpu: 1
+            memory: 2Gi
+          requests:
+            cpu: 200m
+            memory: 400Mi
+        ports:
+        - containerPort: 8000
