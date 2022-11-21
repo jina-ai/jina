@@ -1,0 +1,10 @@
+.git
+.venv
+.github
+.pytest_cache
+tests
+__pycache__
+scripts
+env
+executor-clip-deployment.yml
+gateway-deployment.yml
