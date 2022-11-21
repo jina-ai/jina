@@ -4,7 +4,7 @@ from pathlib import Path
 from pytest_kind import KindCluster, cluster
 
 from jina.logging.logger import JinaLogger
-from .kind_wrapper import KindClusterWrapperV2
+from tests.k8s_otel.kind_wrapper import KindClusterWrapperV2
 
 # The default version broke cni at some point. That's why we need to specify the version here.
 # This can and probably should be put in env variable actually.

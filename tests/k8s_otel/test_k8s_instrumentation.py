@@ -6,8 +6,8 @@ from typing import List, Dict
 from jina.logging.logger import JinaLogger
 
 from jina import Flow
-from . import KindClusterWrapperV2
-from .util import parse_string_jaeger_tags, get_last_health_check_data
+from tests.k8s_otel.kind_wrapper import KindClusterWrapperV2
+from tests.k8s_otel.util import parse_string_jaeger_tags, get_last_health_check_data
 
 
 @pytest.mark.asyncio
