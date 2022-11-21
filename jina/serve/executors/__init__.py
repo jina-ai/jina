@@ -7,6 +7,7 @@ import os
 import asyncio
 import threading
 import warnings
+import contextlib
 from types import SimpleNamespace
 from typing import TYPE_CHECKING, Any, Dict, Optional, Type, Union
 
@@ -155,7 +156,10 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         if type(self) == BaseExecutor:
             self.requests[__default_endpoint__] = self._dry_run_func
 
-        self._lock = asyncio.Lock()  # Lock to run in Executor non async methods in a way that does not block the event loop to do health checks without the fear of having race conditions or multithreading issues.
+        try:
+            self._lock = asyncio.Lock()  # Lock to run in Executor non async methods in a way that does not block the event loop to do health checks without the fear of having race conditions or multithreading issues.
+        except RuntimeError:
+            self._lock = contextlib.AsyncExitStack()
 
     def _dry_run_func(self, *args, **kwargs):
         pass
