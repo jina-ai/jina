@@ -66,6 +66,6 @@ spec:
                 - ping
                 - gateway
                 - {protocol}://127.0.0.1:{port}
-            initialDelaySeconds: 5
+            initialDelaySeconds: 30
             periodSeconds: 5
             timeoutSeconds: 10

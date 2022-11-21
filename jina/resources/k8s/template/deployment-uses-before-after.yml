@@ -68,7 +68,7 @@ spec:
               - ping
               - executor
               - 127.0.0.1:{port}
-          initialDelaySeconds: 5
+          initialDelaySeconds: 30
           periodSeconds: 5
           timeoutSeconds: 10
       - name: uses-before
@@ -114,7 +114,7 @@ spec:
               - ping
               - executor
               - 127.0.0.1:{port_uses_before}
-          initialDelaySeconds: 5
+          initialDelaySeconds: 30
           periodSeconds: 5
           timeoutSeconds: 10
       - name: uses-after
@@ -160,6 +160,6 @@ spec:
               - ping
               - executor
               - 127.0.0.1:{port_uses_after}
-          initialDelaySeconds: 5
+          initialDelaySeconds: 30
           periodSeconds: 5
           timeoutSeconds: 10
