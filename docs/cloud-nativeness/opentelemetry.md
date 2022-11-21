@@ -97,6 +97,8 @@ exporters:
   
   prometheus:
     endpoint: "0.0.0.0:8889"
+    resource_to_telemetry_conversion:
+      enabled: true
     # can be used to add additional labels
     const_labels:
       label1: value1
