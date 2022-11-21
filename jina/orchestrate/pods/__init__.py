@@ -136,6 +136,8 @@ class BasePod(ABC):
         self._timeout_ctrl = self.args.timeout_ctrl
 
     def _get_control_address(self):
+        if self.args.pod_role == PodRoleType.GATEWAY:
+            return f'{self.args.host}:{self.args.port[0]}'
         return f'{self.args.host}:{self.args.port}'
 
     def close(self) -> None:
@@ -196,7 +198,7 @@ class BasePod(ABC):
                 ready_or_shutdown_event=self.ready_or_shutdown.event,
                 ctrl_address=self.runtime_ctrl_address,
                 timeout_ctrl=self._timeout_ctrl,
-                protocol=self.args.protocol,
+                protocol=self.args.protocol[0],
             )
         else:
             return AsyncNewLoopRuntime.wait_for_ready_or_shutdown(

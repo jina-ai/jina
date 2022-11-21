@@ -13,8 +13,6 @@ class WebSocketGateway(BaseGateway):
 
     def __init__(
         self,
-        port: Optional[int] = None,
-        host: str = __default_host__,
         ssl_keyfile: Optional[str] = None,
         ssl_certfile: Optional[str] = None,
         uvicorn_kwargs: Optional[dict] = None,
@@ -22,8 +20,6 @@ class WebSocketGateway(BaseGateway):
         **kwargs
     ):
         """Initialize the gateway
-        :param port: The port of the Gateway, which the client should connect to.
-        :param host: The host of the Gateway, to which the server will bind to.
         :param ssl_keyfile: the path to the key file
         :param ssl_certfile: the path to the certificate file
         :param uvicorn_kwargs: Dictionary of kwargs arguments that will be passed to Uvicorn server when starting the server
@@ -32,8 +28,8 @@ class WebSocketGateway(BaseGateway):
         :param kwargs: keyword args
         """
         super().__init__(**kwargs)
-        self.port = port
-        self.host = host
+        self._set_single_port_protocol()
+        self.host = self.runtime_args.host
         self.ssl_keyfile = ssl_keyfile
         self.ssl_certfile = ssl_certfile
         self.uvicorn_kwargs = uvicorn_kwargs
@@ -73,7 +69,6 @@ class WebSocketGateway(BaseGateway):
                 if not config.loaded:
                     config.load()
                 self.lifespan = config.lifespan_class(config)
-                self.install_signal_handlers()
                 await self.startup(sockets=sockets)
                 if self.should_exit:
                     return
@@ -117,25 +112,11 @@ class WebSocketGateway(BaseGateway):
 
         await self.server.setup()
 
-    async def teardown(self):
+    async def shutdown(self):
         """Free other resources allocated with the server, e.g, gateway object, ..."""
-        await super().teardown()
-        await self.server.shutdown()
-
-    async def stop_server(self):
-        """
-        Stop WebSocket server
-        """
         self.server.should_exit = True
+        await self.server.shutdown()
 
     async def run_server(self):
         """Run WebSocket server forever"""
         await self.server.serve()
-
-    @property
-    def should_exit(self) -> bool:
-        """
-        Boolean flag that indicates whether the gateway server should exit or not
-        :return: boolean flag
-        """
-        return self.server.should_exit

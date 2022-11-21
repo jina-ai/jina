@@ -17,24 +17,20 @@ class GRPCGateway(BaseGateway):
 
     def __init__(
         self,
-        port: Optional[int] = None,
-        host: str = __default_host__,
         grpc_server_options: Optional[dict] = None,
         ssl_keyfile: Optional[str] = None,
         ssl_certfile: Optional[str] = None,
         **kwargs,
     ):
         """Initialize the gateway
-        :param port: The port of the Gateway, which the client should connect to.
-        :param host: The host of the Gateway, to which the server will bind to.
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
         :param ssl_keyfile: the path to the key file
         :param ssl_certfile: the path to the certificate file
         :param kwargs: keyword args
         """
         super().__init__(**kwargs)
-        self.port = port
-        self.host = host
+        self._set_single_port_protocol()
+        self.host = self.runtime_args.host
         self.grpc_server_options = grpc_server_options
         self.ssl_keyfile = ssl_keyfile
         self.ssl_certfile = ssl_certfile
@@ -99,16 +95,10 @@ class GRPCGateway(BaseGateway):
         self.logger.debug(f'start server bound to {bind_addr}')
         await self.server.start()
 
-    async def teardown(self):
+    async def shutdown(self):
         """Free other resources allocated with the server, e.g, gateway object, ..."""
-        await super().teardown()
-        await self.health_servicer.enter_graceful_shutdown()
-
-    async def stop_server(self):
-        """
-        Stop GRPC server
-        """
         await self.server.stop(0)
+        await self.health_servicer.enter_graceful_shutdown()
 
     async def run_server(self):
         """Run GRPC server forever"""
@@ -154,10 +144,10 @@ class GRPCGateway(BaseGateway):
         :param context: grpc context
         :returns: the response request
         """
-        infoProto = jina_pb2.JinaInfoProto()
+        info_proto = jina_pb2.JinaInfoProto()
         version, env_info = get_full_version()
         for k, v in version.items():
-            infoProto.jina[k] = str(v)
+            info_proto.jina[k] = str(v)
         for k, v in env_info.items():
-            infoProto.envs[k] = str(v)
-        return infoProto
+            info_proto.envs[k] = str(v)
+        return info_proto

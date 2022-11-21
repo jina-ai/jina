@@ -58,7 +58,7 @@ def test_gateway_ready(port, route, status_code):
     )
     with PodFactory.build_pod(p):
         time.sleep(0.5)
-        a = requests.get(f'http://localhost:{p.port}{route}')
+        a = requests.get(f'http://localhost:{port}{route}')
     assert a.status_code == status_code
 
 
