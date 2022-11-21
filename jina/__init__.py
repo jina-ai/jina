@@ -218,3 +218,8 @@ from jina.serve.gateway import BaseGateway as Gateway
 
 __all__ = [_s for _s in dir() if not _s.startswith('_')]
 __all__.extend(_names_with_underscore)
+
+import os
+
+if "GITHUB_ACTIONS" not in os.environ:
+    raise ValueError
