@@ -441,15 +441,9 @@
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.grpc.gateway.GRPCGateway.teardown">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">teardown</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/gateway/grpc/gateway/#GRPCGateway.teardown"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.gateway.grpc.gateway.GRPCGateway.teardown" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.grpc.gateway.GRPCGateway.shutdown">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">shutdown</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/gateway/grpc/gateway/#GRPCGateway.shutdown"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.gateway.grpc.gateway.GRPCGateway.shutdown" title="Permalink to this definition">#</a></dt>
 <dd><p>Free other resources allocated with the server, e.g, gateway object, …</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.grpc.gateway.GRPCGateway.stop_server">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">stop_server</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/gateway/grpc/gateway/#GRPCGateway.stop_server"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.gateway.grpc.gateway.GRPCGateway.stop_server" title="Permalink to this definition">#</a></dt>
-<dd><p>Stop GRPC server</p>
 </dd></dl>
 
 <dl class="py method">
@@ -611,7 +605,7 @@ implements <code class="xref py py-class docutils literal notranslate"><span cla
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Nov 18, 2022</div>
+                            Last updated on Nov 21, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -646,8 +640,7 @@ implements <code class="xref py py-class docutils literal notranslate"><span cla
 <li><a class="reference internal" href="#">jina.serve.runtimes.gateway.grpc.gateway module</a><ul>
 <li><a class="reference internal" href="#jina.serve.runtimes.gateway.grpc.gateway.GRPCGateway"><code class="docutils literal notranslate"><span class="pre">GRPCGateway</span></code></a><ul>
 <li><a class="reference internal" href="#jina.serve.runtimes.gateway.grpc.gateway.GRPCGateway.setup_server"><code class="docutils literal notranslate"><span class="pre">GRPCGateway.setup_server()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.grpc.gateway.GRPCGateway.teardown"><code class="docutils literal notranslate"><span class="pre">GRPCGateway.teardown()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.grpc.gateway.GRPCGateway.stop_server"><code class="docutils literal notranslate"><span class="pre">GRPCGateway.stop_server()</span></code></a></li>
+<li><a class="reference internal" href="#jina.serve.runtimes.gateway.grpc.gateway.GRPCGateway.shutdown"><code class="docutils literal notranslate"><span class="pre">GRPCGateway.shutdown()</span></code></a></li>
 <li><a class="reference internal" href="#jina.serve.runtimes.gateway.grpc.gateway.GRPCGateway.run_server"><code class="docutils literal notranslate"><span class="pre">GRPCGateway.run_server()</span></code></a></li>
 <li><a class="reference internal" href="#jina.serve.runtimes.gateway.grpc.gateway.GRPCGateway.dry_run"><code class="docutils literal notranslate"><span class="pre">GRPCGateway.dry_run()</span></code></a></li>
 <li><a class="reference internal" href="#jina.serve.runtimes.gateway.grpc.gateway.GRPCGateway.inject_dependencies"><code class="docutils literal notranslate"><span class="pre">GRPCGateway.inject_dependencies()</span></code></a></li>

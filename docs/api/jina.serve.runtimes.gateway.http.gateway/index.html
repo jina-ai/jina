@@ -458,15 +458,9 @@ these proxy variables before start. gRPC seems to prefer no proxy</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.gateway.HTTPGateway.teardown">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">teardown</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/gateway/http/gateway/#HTTPGateway.teardown"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.gateway.http.gateway.HTTPGateway.teardown" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.gateway.HTTPGateway.shutdown">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">shutdown</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/gateway/http/gateway/#HTTPGateway.shutdown"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.gateway.http.gateway.HTTPGateway.shutdown" title="Permalink to this definition">#</a></dt>
 <dd><p>Free resources allocated when setting up HTTP server</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.gateway.HTTPGateway.stop_server">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">stop_server</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/gateway/http/gateway/#HTTPGateway.stop_server"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.gateway.http.gateway.HTTPGateway.stop_server" title="Permalink to this definition">#</a></dt>
-<dd><p>Stop HTTP server</p>
 </dd></dl>
 
 <dl class="py method">
@@ -608,7 +602,7 @@ implements <code class="xref py py-class docutils literal notranslate"><span cla
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Nov 18, 2022</div>
+                            Last updated on Nov 21, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -643,8 +637,7 @@ implements <code class="xref py py-class docutils literal notranslate"><span cla
 <li><a class="reference internal" href="#">jina.serve.runtimes.gateway.http.gateway module</a><ul>
 <li><a class="reference internal" href="#jina.serve.runtimes.gateway.http.gateway.HTTPGateway"><code class="docutils literal notranslate"><span class="pre">HTTPGateway</span></code></a><ul>
 <li><a class="reference internal" href="#jina.serve.runtimes.gateway.http.gateway.HTTPGateway.setup_server"><code class="docutils literal notranslate"><span class="pre">HTTPGateway.setup_server()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.http.gateway.HTTPGateway.teardown"><code class="docutils literal notranslate"><span class="pre">HTTPGateway.teardown()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.http.gateway.HTTPGateway.stop_server"><code class="docutils literal notranslate"><span class="pre">HTTPGateway.stop_server()</span></code></a></li>
+<li><a class="reference internal" href="#jina.serve.runtimes.gateway.http.gateway.HTTPGateway.shutdown"><code class="docutils literal notranslate"><span class="pre">HTTPGateway.shutdown()</span></code></a></li>
 <li><a class="reference internal" href="#jina.serve.runtimes.gateway.http.gateway.HTTPGateway.run_server"><code class="docutils literal notranslate"><span class="pre">HTTPGateway.run_server()</span></code></a></li>
 <li><a class="reference internal" href="#jina.serve.runtimes.gateway.http.gateway.HTTPGateway.inject_dependencies"><code class="docutils literal notranslate"><span class="pre">HTTPGateway.inject_dependencies()</span></code></a></li>
 <li><a class="reference internal" href="#jina.serve.runtimes.gateway.http.gateway.HTTPGateway.is_valid_jaml"><code class="docutils literal notranslate"><span class="pre">HTTPGateway.is_valid_jaml()</span></code></a></li>

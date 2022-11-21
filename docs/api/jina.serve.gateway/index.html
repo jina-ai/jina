@@ -476,15 +476,9 @@ gateway logic</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.gateway.BaseGateway.teardown">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">teardown</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/gateway/#BaseGateway.teardown"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.gateway.BaseGateway.teardown" title="Permalink to this definition">#</a></dt>
-<dd><p>Free other resources allocated with the server, e.g, gateway object, …</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.gateway.BaseGateway.stop_server">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">stop_server</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/gateway/#BaseGateway.stop_server"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.gateway.BaseGateway.stop_server" title="Permalink to this definition">#</a></dt>
-<dd><p>Stop server</p>
+<dt class="sig sig-object py" id="jina.serve.gateway.BaseGateway.shutdown">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">shutdown</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/gateway/#BaseGateway.shutdown"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.gateway.BaseGateway.shutdown" title="Permalink to this definition">#</a></dt>
+<dd><p>Shutdown the server and free other allocated resources, e.g, streamer object, health check service, …</p>
 </dd></dl>
 
 <dl class="py method">
@@ -594,7 +588,7 @@ implements <code class="xref py py-class docutils literal notranslate"><span cla
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Nov 18, 2022</div>
+                            Last updated on Nov 21, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -631,8 +625,7 @@ implements <code class="xref py py-class docutils literal notranslate"><span cla
 <li><a class="reference internal" href="#jina.serve.gateway.BaseGateway.inject_dependencies"><code class="docutils literal notranslate"><span class="pre">BaseGateway.inject_dependencies()</span></code></a></li>
 <li><a class="reference internal" href="#jina.serve.gateway.BaseGateway.setup_server"><code class="docutils literal notranslate"><span class="pre">BaseGateway.setup_server()</span></code></a></li>
 <li><a class="reference internal" href="#jina.serve.gateway.BaseGateway.run_server"><code class="docutils literal notranslate"><span class="pre">BaseGateway.run_server()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.gateway.BaseGateway.teardown"><code class="docutils literal notranslate"><span class="pre">BaseGateway.teardown()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.gateway.BaseGateway.stop_server"><code class="docutils literal notranslate"><span class="pre">BaseGateway.stop_server()</span></code></a></li>
+<li><a class="reference internal" href="#jina.serve.gateway.BaseGateway.shutdown"><code class="docutils literal notranslate"><span class="pre">BaseGateway.shutdown()</span></code></a></li>
 <li><a class="reference internal" href="#jina.serve.gateway.BaseGateway.is_valid_jaml"><code class="docutils literal notranslate"><span class="pre">BaseGateway.is_valid_jaml()</span></code></a></li>
 <li><a class="reference internal" href="#jina.serve.gateway.BaseGateway.load_config"><code class="docutils literal notranslate"><span class="pre">BaseGateway.load_config()</span></code></a></li>
 <li><a class="reference internal" href="#jina.serve.gateway.BaseGateway.save_config"><code class="docutils literal notranslate"><span class="pre">BaseGateway.save_config()</span></code></a></li>

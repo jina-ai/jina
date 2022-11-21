@@ -545,13 +545,9 @@
         <span class="sd">&quot;&quot;&quot;Run server forever&quot;&quot;&quot;</span>
         <span class="o">...</span></div>
 
-<div class="viewcode-block" id="BaseGateway.teardown"><a class="viewcode-back" href="../../../../api/jina.serve.gateway/#jina.serve.gateway.BaseGateway.teardown">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">teardown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Free other resources allocated with the server, e.g, gateway object, ...&quot;&quot;&quot;</span>
-        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">streamer</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
-
-<div class="viewcode-block" id="BaseGateway.stop_server"><a class="viewcode-back" href="../../../../api/jina.serve.gateway/#jina.serve.gateway.BaseGateway.stop_server">[docs]</a>    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">stop_server</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Stop server&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="BaseGateway.shutdown"><a class="viewcode-back" href="../../../../api/jina.serve.gateway/#jina.serve.gateway.BaseGateway.shutdown">[docs]</a>    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Shutdown the server and free other allocated resources, e.g, streamer object, health check service, ...&quot;&quot;&quot;</span>
         <span class="o">...</span></div>
 
     <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -578,7 +574,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Nov 18, 2022</div>
+                            Last updated on Nov 21, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

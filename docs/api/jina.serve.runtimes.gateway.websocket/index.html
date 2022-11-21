@@ -7,10 +7,10 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/api/jina.serve.runtimes.gateway.websocket/" />
 <meta property="og:site_name" content="Jina 3.11.1 Documentation" />
-<meta property="og:description" content="Submodules: jina.serve.runtimes.gateway.websocket.app module- get_fastapi_app()., jina.serve.runtimes.gateway.websocket.gateway module- WebSocketGateway- WebSocketGateway.setup_server(), WebSocketGateway.teardown(), WebSocketGateway.stop_server(), WebSocketGateway.run_server(), WebSocketGateway.i..." />
+<meta property="og:description" content="Submodules: jina.serve.runtimes.gateway.websocket.app module- get_fastapi_app()., jina.serve.runtimes.gateway.websocket.gateway module- WebSocketGateway- WebSocketGateway.setup_server(), WebSocketGateway.shutdown(), WebSocketGateway.run_server(), WebSocketGateway.inject_dependencies(), WebSocketG..." />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
 <meta property="og:image:alt" content="Jina 3.11.1 Documentation" />
-<meta name="description" content="Submodules: jina.serve.runtimes.gateway.websocket.app module- get_fastapi_app()., jina.serve.runtimes.gateway.websocket.gateway module- WebSocketGateway- WebSocketGateway.setup_server(), WebSocketGateway.teardown(), WebSocketGateway.stop_server(), WebSocketGateway.run_server(), WebSocketGateway.i..." />
+<meta name="description" content="Submodules: jina.serve.runtimes.gateway.websocket.app module- get_fastapi_app()., jina.serve.runtimes.gateway.websocket.gateway module- WebSocketGateway- WebSocketGateway.setup_server(), WebSocketGateway.shutdown(), WebSocketGateway.run_server(), WebSocketGateway.inject_dependencies(), WebSocketG..." />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
@@ -434,8 +434,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../jina.serve.runtimes.gateway.websocket.gateway/">jina.serve.runtimes.gateway.websocket.gateway module</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../jina.serve.runtimes.gateway.websocket.gateway/#jina.serve.runtimes.gateway.websocket.gateway.WebSocketGateway"><code class="docutils literal notranslate"><span class="pre">WebSocketGateway</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.websocket.gateway/#jina.serve.runtimes.gateway.websocket.gateway.WebSocketGateway.setup_server"><code class="docutils literal notranslate"><span class="pre">WebSocketGateway.setup_server()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.websocket.gateway/#jina.serve.runtimes.gateway.websocket.gateway.WebSocketGateway.teardown"><code class="docutils literal notranslate"><span class="pre">WebSocketGateway.teardown()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.websocket.gateway/#jina.serve.runtimes.gateway.websocket.gateway.WebSocketGateway.stop_server"><code class="docutils literal notranslate"><span class="pre">WebSocketGateway.stop_server()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.websocket.gateway/#jina.serve.runtimes.gateway.websocket.gateway.WebSocketGateway.shutdown"><code class="docutils literal notranslate"><span class="pre">WebSocketGateway.shutdown()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.websocket.gateway/#jina.serve.runtimes.gateway.websocket.gateway.WebSocketGateway.run_server"><code class="docutils literal notranslate"><span class="pre">WebSocketGateway.run_server()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.websocket.gateway/#jina.serve.runtimes.gateway.websocket.gateway.WebSocketGateway.inject_dependencies"><code class="docutils literal notranslate"><span class="pre">WebSocketGateway.inject_dependencies()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.websocket.gateway/#jina.serve.runtimes.gateway.websocket.gateway.WebSocketGateway.is_valid_jaml"><code class="docutils literal notranslate"><span class="pre">WebSocketGateway.is_valid_jaml()</span></code></a></li>
@@ -479,15 +478,9 @@
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.websocket.WebSocketGateway.teardown">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">teardown</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/gateway/websocket/gateway/#WebSocketGateway.teardown"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.gateway.websocket.WebSocketGateway.teardown" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.websocket.WebSocketGateway.shutdown">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">shutdown</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/gateway/websocket/gateway/#WebSocketGateway.shutdown"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.gateway.websocket.WebSocketGateway.shutdown" title="Permalink to this definition">#</a></dt>
 <dd><p>Free other resources allocated with the server, e.g, gateway object, …</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.websocket.WebSocketGateway.stop_server">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">stop_server</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/gateway/websocket/gateway/#WebSocketGateway.stop_server"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.gateway.websocket.WebSocketGateway.stop_server" title="Permalink to this definition">#</a></dt>
-<dd><p>Stop WebSocket server</p>
 </dd></dl>
 
 <dl class="py method">
@@ -630,7 +623,7 @@ implements <code class="xref py py-class docutils literal notranslate"><span cla
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Nov 18, 2022</div>
+                            Last updated on Nov 21, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -667,8 +660,7 @@ implements <code class="xref py py-class docutils literal notranslate"><span cla
 <li><a class="reference internal" href="#module-jina.serve.runtimes.gateway.websocket">Module contents</a><ul>
 <li><a class="reference internal" href="#jina.serve.runtimes.gateway.websocket.WebSocketGateway"><code class="docutils literal notranslate"><span class="pre">WebSocketGateway</span></code></a><ul>
 <li><a class="reference internal" href="#jina.serve.runtimes.gateway.websocket.WebSocketGateway.setup_server"><code class="docutils literal notranslate"><span class="pre">WebSocketGateway.setup_server()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.websocket.WebSocketGateway.teardown"><code class="docutils literal notranslate"><span class="pre">WebSocketGateway.teardown()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.websocket.WebSocketGateway.stop_server"><code class="docutils literal notranslate"><span class="pre">WebSocketGateway.stop_server()</span></code></a></li>
+<li><a class="reference internal" href="#jina.serve.runtimes.gateway.websocket.WebSocketGateway.shutdown"><code class="docutils literal notranslate"><span class="pre">WebSocketGateway.shutdown()</span></code></a></li>
 <li><a class="reference internal" href="#jina.serve.runtimes.gateway.websocket.WebSocketGateway.run_server"><code class="docutils literal notranslate"><span class="pre">WebSocketGateway.run_server()</span></code></a></li>
 <li><a class="reference internal" href="#jina.serve.runtimes.gateway.websocket.WebSocketGateway.inject_dependencies"><code class="docutils literal notranslate"><span class="pre">WebSocketGateway.inject_dependencies()</span></code></a></li>
 <li><a class="reference internal" href="#jina.serve.runtimes.gateway.websocket.WebSocketGateway.is_valid_jaml"><code class="docutils literal notranslate"><span class="pre">WebSocketGateway.is_valid_jaml()</span></code></a></li>
