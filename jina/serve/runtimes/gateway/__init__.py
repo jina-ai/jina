@@ -52,7 +52,7 @@ class GatewayRuntime(AsyncNewLoopRuntime):
 
         Setup the uvicorn server.
         """
-        if not (is_port_free(__default_host__, self.args.port)):
+        if not (is_port_free(self.args.host, self.args.port)):
             raise PortAlreadyUsed(f'port:{self.args.port}')
 
         uses_with = self.args.uses_with or {}
@@ -79,6 +79,7 @@ class GatewayRuntime(AsyncNewLoopRuntime):
                 'name': self.args.name,
                 'port': self.args.port,
                 'protocol': self.args.protocol,
+                'host': self.args.host,
             },
             py_modules=self.args.py_modules,
             extra_search_paths=self.args.extra_search_paths,

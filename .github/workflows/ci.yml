@@ -253,6 +253,46 @@ jobs:
           flags: ${{ steps.test.outputs.codecov_flag }}
           fail_ci_if_error: false
 
+  k8s-otel-test:
+    needs: [lint-flake-8, code-injection]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2.5.0
+      - name: Set up Python 3.7
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.7
+      - name: Prepare enviroment
+        run: |
+          docker build -f Dockerfiles/test-pip.Dockerfile -t jinaai/jina:test-pip .
+          python -m pip install --upgrade pip
+          python -m pip install wheel
+          pip install ".[all]" --no-cache-dir
+          jina
+          export JINA_LOG_LEVEL="ERROR"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Test k8s
+        run: |
+          pytest -v -s --cov=jina --cov-report=xml ./tests/k8s_otel
+        timeout-minutes: 30
+        env:
+          JINA_K8S_USE_TEST_PIP: 1
+      - name: Check codecov file
+        id: check_files
+        uses: andstor/file-existence-action@v1
+        with:
+          files: "coverage.xml"
+      - name: Upload coverage from test to Codecov
+        uses: codecov/codecov-action@v3.1.1
+        if: steps.check_files.outputs.files_exists == 'true' && ${{ matrix.python-version }} == '3.7'
+        with:
+          file: coverage.xml
+          name: ${{ matrix.test-path }}-codecov
+          flags: ${{ steps.test.outputs.codecov_flag }}
+          fail_ci_if_error: false
+
+
   docker-compose-test:
     needs: [lint-flake-8, code-injection]
     runs-on: ubuntu-latest

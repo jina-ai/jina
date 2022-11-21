@@ -1,5 +1,6 @@
 import json
 import os
+import socket
 
 import pytest
 
@@ -13,12 +14,28 @@ from jina import (
 )
 from jina.clients.request import request_generator
 from jina.enums import PollingType
+from jina.excepts import RuntimeFailToStart
 from jina.orchestrate.deployments import Deployment
 from jina.parsers import set_deployment_parser, set_gateway_parser
 from jina.serve.networking import GrpcConnectionPool
 from tests.unit.test_helper import MyDummyExecutor
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
+
+
+def get_deployment_args_with_host(hostname, runtime_cls):
+    args = [
+        '--name',
+        'host_args',
+        '--host',
+        hostname,
+        '--runtime-cls',
+        runtime_cls,
+    ]
+    if runtime_cls != 'GatewayRuntime':
+        return set_deployment_parser().parse_args(args)
+    else:
+        return set_gateway_parser().parse_args(args)
 
 
 @pytest.fixture(scope='function')
@@ -59,10 +76,25 @@ def test_name(pod_args):
         assert pod.name == 'test'
 
 
-def test_host(pod_args):
-    with Deployment(pod_args) as pod:
-        assert pod.host == __default_host__
+@pytest.mark.parametrize(
+    'runtime_cls', ['GatewayRuntime', 'WorkerRuntime', 'HeadRuntime']
+)
+@pytest.mark.parametrize('hostname', ['localhost', '127.0.0.1', '0.0.0.0'])
+def test_host(hostname, runtime_cls):
+    with Deployment(get_deployment_args_with_host(hostname, runtime_cls)) as pod:
+        assert pod.host == hostname
         assert pod.head_host is None
+
+
+@pytest.mark.parametrize(
+    'runtime_cls', ['GatewayRuntime', 'WorkerRuntime', 'HeadRuntime']
+)
+def test_wrong_hostname(runtime_cls):
+    with pytest.raises(RuntimeFailToStart):
+        with Deployment(
+            get_deployment_args_with_host('inexisting.hostname.local', runtime_cls)
+        ) as pod:
+            pass
 
 
 def test_is_ready(pod_args):
