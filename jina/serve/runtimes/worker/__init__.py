@@ -1,6 +1,5 @@
 import argparse
 from abc import ABC
-from concurrent.futures import ThreadPoolExecutor
 from typing import TYPE_CHECKING, List, Optional
 
 import grpc
@@ -33,9 +32,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         :param args: args from CLI
         :param kwargs: keyword args
         """
-        self._health_servicer = health.HealthServicer(
-            experimental_thread_pool=ThreadPoolExecutor(1)
-        )
+        self._health_servicer = health.aio.HealthServicer()
         super().__init__(args, **kwargs)
 
     async def async_setup(self):
@@ -141,7 +138,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         health_pb2_grpc.add_HealthServicer_to_server(self._health_servicer, self._grpc_server)
 
         for service in service_names:
-            self._health_servicer.set(service, health_pb2.HealthCheckResponse.SERVING)
+            await self._health_servicer.set(service, health_pb2.HealthCheckResponse.SERVING)
         reflection.enable_server_reflection(service_names, self._grpc_server)
         bind_addr = f'0.0.0.0:{self.args.port}'
         self.logger.debug(f'start listening on {bind_addr}')
@@ -163,7 +160,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
 
     async def async_teardown(self):
         """Close the data request handler"""
-        self._health_servicer.enter_graceful_shutdown()
+        await self._health_servicer.enter_graceful_shutdown()
         await self.async_cancel()
         self._request_handler.close()
 
@@ -186,11 +183,11 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         :returns: the response request
         """
         self.logger.debug('got an endpoint discovery request')
-        endpointsProto = jina_pb2.EndpointsProto()
-        endpointsProto.endpoints.extend(
+        endpoints_proto = jina_pb2.EndpointsProto()
+        endpoints_proto.endpoints.extend(
             list(self._request_handler._executor.requests.keys())
         )
-        return endpointsProto
+        return endpoints_proto
 
     def _extract_tracing_context(
         self, metadata: grpc.aio.Metadata
@@ -267,31 +264,10 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         :param context: grpc context
         :returns: the response request
         """
-        infoProto = jina_pb2.JinaInfoProto()
+        info_proto = jina_pb2.JinaInfoProto()
         version, env_info = get_full_version()
         for k, v in version.items():
-            infoProto.jina[k] = str(v)
+            info_proto.jina[k] = str(v)
         for k, v in env_info.items():
-            infoProto.envs[k] = str(v)
-        return infoProto
-
-    # async def Check(
-    #     self, request: health_pb2.HealthCheckRequest, context
-    # ) -> health_pb2.HealthCheckResponse:
-    #     '''Calls the underlying HealthServicer.Check method with the same arguments
-    #     :param request: grpc request
-    #     :param context: grpc request context
-    #     :returns: the grpc HealthCheckResponse
-    #     '''
-    #     print(f' CHECK REQUEST')
-    #     return self._health_servicer.Check(request, context)
-    #
-    # async def Watch(
-    #     self, request: health_pb2.HealthCheckRequest, context
-    # ) -> health_pb2.HealthCheckResponse:
-    #     '''Calls the underlying HealthServicer.Watch method with the same arguments
-    #     :param request: grpc request
-    #     :param context: grpc request context
-    #     :returns: the grpc HealthCheckResponse
-    #     '''
-    #     return self._health_servicer.Watch(request, context)
+            info_proto.envs[k] = str(v)
+        return info_proto

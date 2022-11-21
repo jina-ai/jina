@@ -197,8 +197,7 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, InstrumentationMixin, AB
             response = GrpcConnectionPool.send_health_check_sync(
                 ctrl_address, timeout=1.0
             )
-            # TODO: Get the proper value of the ServingStatus SERVING KEY
-            return response.status == 1
+            return response.status == health_pb2.HealthCheckResponse.ServingStatus.SERVING
         except RpcError:
             return False
 

@@ -50,5 +50,15 @@ spec:
                 - executor
                 - 127.0.0.1:{port}
             initialDelaySeconds: 5
-            periodSeconds: 20
+            periodSeconds: 30
+            timeoutSeconds: 10
+          livenessProbe:
+            exec:
+              command:
+                - jina
+                - ping
+                - executor
+                - 127.0.0.1:{port}
+            initialDelaySeconds: 5
+            periodSeconds: 5
             timeoutSeconds: 10
