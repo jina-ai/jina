@@ -79,23 +79,28 @@ class GatewayRuntime(AsyncNewLoopRuntime):
                 'name': self.args.name,
                 'port': self.args.port,
                 'protocol': self.args.protocol,
+                'tracing': self.tracing,
+                'tracer_provider': self.tracer_provider,
+                'grpc_tracing_server_interceptors': self.aio_tracing_server_interceptors(),
+                'graph_description': self.args.graph_description,
+                'graph_conditions': self.args.graph_conditions,
+                'deployments_addresses': self.args.deployments_addresses,
+                'deployments_metadata': self.args.deployments_metadata,
+                'deployments_no_reduce': self.args.deployments_no_reduce,
+                'timeout_send': self.timeout_send,
+                'retries': self.args.retries,
+                'compression': self.args.compression,
+                'runtime_name': self.args.name,
+                'prefetch': self.args.prefetch,
+                'metrics_registry': self.metrics_registry,
+                'meter': self.meter,
+                'aio_tracing_client_interceptors': self.aio_tracing_client_interceptors(),
+                'tracing_client_interceptor': self.tracing_client_interceptor(),
             },
             py_modules=self.args.py_modules,
             extra_search_paths=self.args.extra_search_paths,
         )
 
-        self.gateway.inject_dependencies(
-            args=self.args,
-            timeout_send=self.timeout_send,
-            metrics_registry=self.metrics_registry,
-            meter=self.meter,
-            runtime_name=self.args.name,
-            tracing=self.tracing,
-            tracer_provider=self.tracer_provider,
-            grpc_tracing_server_interceptors=self.aio_tracing_server_interceptors(),
-            aio_tracing_client_interceptors=self.aio_tracing_client_interceptors(),
-            tracing_client_interceptor=self.tracing_client_interceptor(),
-        )
         await self.gateway.setup_server()
 
     async def _wait_for_cancel(self):

@@ -74,51 +74,24 @@ class BaseGateway(JAMLCompatible, metaclass=GatewayType):
         :param runtime_args: a dict of arguments injected from :class:`Runtime` during runtime
         :param kwargs: additional extra keyword arguments to avoid failing when extra params ara passed that are not expected
         """
-        self.streamer = None
         self._add_runtime_args(runtime_args)
         self.name = name
         self.logger = JinaLogger(self.name)
+        self.tracing = self.runtime_args.tracing
+        self.tracer_provider = self.runtime_args.tracer_provider
+        self.grpc_tracing_server_interceptors = (
+            self.runtime_args.grpc_tracing_server_interceptors
+        )
 
-    def inject_dependencies(
-        self,
-        args: 'argparse.Namespace' = None,
-        timeout_send: Optional[float] = None,
-        metrics_registry: Optional['CollectorRegistry'] = None,
-        meter: Optional['Meter'] = None,
-        runtime_name: Optional[str] = None,
-        tracing: Optional[bool] = False,
-        tracer_provider: Optional['trace.TracerProvider'] = None,
-        grpc_tracing_server_interceptors: Optional[
-            Sequence['ServerInterceptor']
-        ] = None,
-        aio_tracing_client_interceptors: Optional[Sequence['ClientInterceptor']] = None,
-        tracing_client_interceptor: Optional['OpenTelemetryClientInterceptor'] = None,
-    ):
-        """
-        Set additional dependencies by providing runtime parameters.
-        :param args: runtime args
-        :param timeout_send: grpc connection timeout
-        :param metrics_registry: metric registry when monitoring is enabled
-        :param meter: optional OpenTelemetry meter that can provide instruments for collecting metrics
-        :param runtime_name: name of the runtime providing the streamer
-        :param tracing: Enables tracing if set to True.
-        :param tracer_provider: If tracing is enabled the tracer_provider will be used to instrument the code.
-        :param grpc_tracing_server_interceptors: List of async io gprc server tracing interceptors for tracing requests.
-        :param aio_tracing_client_interceptors: List of async io gprc client tracing interceptors for tracing requests if asycnio is True.
-        :param tracing_client_interceptor: A gprc client tracing interceptor for tracing requests if asyncio is False.
-        """
-        self.tracing = tracing
-        self.tracer_provider = tracer_provider
-        self.grpc_tracing_server_interceptors = grpc_tracing_server_interceptors
         import json
 
         from jina.serve.streamer import GatewayStreamer
 
-        graph_description = json.loads(args.graph_description)
-        graph_conditions = json.loads(args.graph_conditions)
-        deployments_addresses = json.loads(args.deployments_addresses)
-        deployments_metadata = json.loads(args.deployments_metadata)
-        deployments_no_reduce = json.loads(args.deployments_no_reduce)
+        graph_description = json.loads(self.runtime_args.graph_description)
+        graph_conditions = json.loads(self.runtime_args.graph_conditions)
+        deployments_addresses = json.loads(self.runtime_args.deployments_addresses)
+        deployments_metadata = json.loads(self.runtime_args.deployments_metadata)
+        deployments_no_reduce = json.loads(self.runtime_args.deployments_no_reduce)
 
         self.streamer = GatewayStreamer(
             graph_representation=graph_description,
@@ -126,16 +99,16 @@ class BaseGateway(JAMLCompatible, metaclass=GatewayType):
             graph_conditions=graph_conditions,
             deployments_metadata=deployments_metadata,
             deployments_no_reduce=deployments_no_reduce,
-            timeout_send=timeout_send,
-            retries=args.retries,
-            compression=args.compression,
-            runtime_name=runtime_name,
-            prefetch=args.prefetch,
+            timeout_send=self.runtime_args.timeout_send,
+            retries=self.runtime_args.retries,
+            compression=self.runtime_args.compression,
+            runtime_name=self.runtime_args.runtime_name,
+            prefetch=self.runtime_args.prefetch,
             logger=self.logger,
-            metrics_registry=metrics_registry,
-            meter=meter,
-            aio_tracing_client_interceptors=aio_tracing_client_interceptors,
-            tracing_client_interceptor=tracing_client_interceptor,
+            metrics_registry=self.runtime_args.metrics_registry,
+            meter=self.runtime_args.meter,
+            aio_tracing_client_interceptors=self.runtime_args.aio_tracing_client_interceptors,
+            tracing_client_interceptor=self.runtime_args.tracing_client_interceptor,
         )
 
     @abc.abstractmethod
