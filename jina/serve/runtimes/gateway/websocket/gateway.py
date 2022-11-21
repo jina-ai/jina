@@ -29,6 +29,7 @@ class WebSocketGateway(BaseGateway):
         """
         super().__init__(**kwargs)
         self._set_single_port_protocol()
+        self.host = self.runtime_args.host
         self.ssl_keyfile = ssl_keyfile
         self.ssl_certfile = ssl_certfile
         self.uvicorn_kwargs = uvicorn_kwargs
@@ -101,7 +102,7 @@ class WebSocketGateway(BaseGateway):
         self.server = UviServer(
             config=Config(
                 app=self.app,
-                host=__default_host__,
+                host=self.host,
                 port=self.port,
                 ws_max_size=1024 * 1024 * 1024,
                 log_level=os.getenv('JINA_LOG_LEVEL', 'error').lower(),
