@@ -31,16 +31,16 @@ class NetworkChecker:
                 ) as tc:
                     if args.target == 'executor':
                         hostname, port, protocol, _ = parse_host_scheme(args.host)
-                        r = WorkerRuntime.is_ready(ctrl_address=f'{hostname}:{port}', timeout=args.timeout)
+                        r = WorkerRuntime.is_ready(ctrl_address=f'{hostname}:{port}', timeout=args.timeout / 1000)
                     elif args.target == 'gateway':
                         hostname, port, protocol, _ = parse_host_scheme(args.host)
                         r = GatewayRuntime.is_ready(
                             f'{hostname}:{port}',
                             protocol=GatewayProtocolType.from_string(protocol),
-                            timeout=args.timeout
+                            timeout=args.timeout / 1000
                         )
                     elif args.target == 'flow':
-                        r = Client(host=args.host).is_flow_ready(timeout=args.timeout)
+                        r = Client(host=args.host).is_flow_ready(timeout=args.timeout / 1000)
                     if not r:
                         default_logger.warning(
                             'not responding, attempt (%d/%d) in 1s'

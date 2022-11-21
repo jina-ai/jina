@@ -52,12 +52,8 @@ spec:
             periodSeconds: 20
             timeoutSeconds: 10
           livenessProbe:
-            exec:
-              command:
-                - jina
-                - ping
-                - gateway
-                - {protocol}://127.0.0.1:{port}
+            tcpSocket:
+              port: {port}
             initialDelaySeconds: 5
             periodSeconds: 5
             timeoutSeconds: 10

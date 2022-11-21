@@ -1239,10 +1239,7 @@ class GrpcConnectionPool:
                     stub = health_pb2_grpc.HealthStub(channel)
                     return stub.Check(health_check_req, timeout=timeout)
             except grpc.RpcError as e:
-                if e.code() == grpc.StatusCode.DEADLINE_EXCEEDED:
-                    # workaround, when datarequests block the event loop this is the exception raised. It should be equivalent to do TCP get as readiness Probe
-                    return health_pb2.HealthCheckResponse(status=health_pb2.HealthCheckResponse.ServingStatus.SERVING)
-                elif e.code() != grpc.StatusCode.UNAVAILABLE or i == 2:
+                if e.code() != grpc.StatusCode.UNAVAILABLE or i == 2:
                     raise
 
     @staticmethod

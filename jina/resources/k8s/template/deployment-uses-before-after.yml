@@ -44,10 +44,21 @@ spec:
           value: {jina_deployment_name}
 
         readinessProbe:
+          exec:
+            command:
+              - jina
+              - ping
+              - executor
+              - 127.0.0.1:{port}
+          initialDelaySeconds: 5
+          periodSeconds: 20
+          timeoutSeconds: 10
+        livenessProbe:
           tcpSocket:
             port: {port}
           initialDelaySeconds: 5
-          periodSeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 10
       - name: uses-before
         image: {image_uses_before}
         imagePullPolicy: {pull_policy}
@@ -75,6 +86,12 @@ spec:
               - 127.0.0.1:{port_uses_before}
           initialDelaySeconds: 5
           periodSeconds: 20
+          timeoutSeconds: 10
+        livenessProbe:
+          tcpSocket:
+            port: {port_uses_before}
+          initialDelaySeconds: 5
+          periodSeconds: 5
           timeoutSeconds: 10
       - name: uses-after
         image: {image_uses_after}
@@ -105,12 +122,8 @@ spec:
           periodSeconds: 20
           timeoutSeconds: 10
         livenessProbe:
-          exec:
-            command:
-              - jina
-              - ping
-              - executor
-              - 127.0.0.1:{port}
+          tcpSocket:
+            port: {port_uses_after}
           initialDelaySeconds: 5
           periodSeconds: 5
           timeoutSeconds: 10
