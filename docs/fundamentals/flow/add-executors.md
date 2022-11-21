@@ -61,9 +61,9 @@ An {class}`~jina.Executor`'s type is defined by the `uses` keyword. Note that so
 | ✅         | ❌      | `ExecutorClass`                               | Use `ExecutorClass` from the inline context.                                                              |
 | ✅         | ❌      | `'my.py_modules.ExecutorClass'`               | Use `ExecutorClass` from `my.py_modules`.                                                                 |
 | ✅         | ✅      | `'executor-config.yml'`                       | Use an Executor from a YAML file defined by {ref}`Executor YAML interface <executor-yaml-spec>`.          |
-| ✅         | ❌      | `'jinahub://TransformerTorchEncoder/'`        | Use an Executor as Python source from Executor Hub.                                                           |
-| ✅         | ✅      | `'jinahub+docker://TransformerTorchEncoder'`  | Use an Executor as a Docker container from Executor Hub.                                                      |
-| ✅         | ✅      | `'jinahub+sandbox://TransformerTorchEncoder'` | Use a {ref}`Sandbox Executor <sandbox>` hosted on Executor Hub. The Executor runs remotely on Executor Hub.       |
+| ✅         | ❌      | `'jinaai://jina-ai/TransformerTorchEncoder/'`        | Use an Executor as Python source from Executor Hub.                                                           |
+| ✅         | ✅      | `'jinaai+docker://jina-ai/TransformerTorchEncoder'`  | Use an Executor as a Docker container from Executor Hub.                                                      |
+| ✅         | ✅      | `'jinaai+sandbox://jina-ai/TransformerTorchEncoder'` | Use a {ref}`Sandbox Executor <sandbox>` hosted on Executor Hub. The Executor runs remotely on Executor Hub.       |
 | ✅         | ❌      | `'docker://sentence-encoder'`                 | Use a pre-built Executor as a Docker container.                                                           |
 
 

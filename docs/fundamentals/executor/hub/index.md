@@ -22,7 +22,7 @@ A Hub Executor is an Executor published on Executor Hub. You can use such an Exe
 ```python
 from jina import Flow
 
-f = Flow().add(uses='jinahub+docker://MyExecutor')
+f = Flow().add(uses='jinaai+docker://<username>/MyExecutor')
 
 with f:
     ...

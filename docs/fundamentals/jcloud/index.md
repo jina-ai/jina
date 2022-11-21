@@ -58,14 +58,14 @@ A Flow can have two types of file structure: a single YAML file or a project fol
 
 A self-contained YAML file, consisting of all configuration at the [Flow](https://docs.jina.ai/fundamentals/flow/)-level and [Executor](https://docs.jina.ai/fundamentals/executor/)-level.
 
-> All Executors' `uses` must follow the format `jinahub+docker://MyExecutor` (from [Executor Hub](https://cloud.jina.ai)) to avoid any local file dependencies:
+> All Executors' `uses` must follow the format `jinaai+docker://<username>/MyExecutor` (from [Executor Hub](https://cloud.jina.ai)) to avoid any local file dependencies:
 
 ```yaml
 # flow.yml
 jtype: Flow
 executors:
   - name: sentencizer
-    uses: jinahub+docker://Sentencizer
+    uses: jinaai+docker://jina-ai/Sentencizer
 ```
 
 To deploy:

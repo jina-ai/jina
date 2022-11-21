@@ -82,7 +82,7 @@ from jina import Executor
 Executor.to_kubernetes_yaml(
     output_base_path='/tmp/config_out_folder',
     port_expose=8080,
-    uses='jinahub+docker://DummyHubExecutor',
+    uses='jinaai+docker://jina-ai/DummyHubExecutor',
     executor_type=Executor.StandaloneExecutorType.EXTERNAL,
 )
 ```
@@ -115,7 +115,7 @@ from jina import Executor
 Executor.to_docker_compose_yaml(
     output_path='/tmp/docker-compose.yml',
     port_expose=8080,
-    uses='jinahub+docker://DummyHubExecutor',
+    uses='jinaai+docker://jina-ai/DummyHubExecutor',
 )
 ```
 ```shell
