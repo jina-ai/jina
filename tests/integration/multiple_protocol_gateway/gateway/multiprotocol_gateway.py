@@ -63,14 +63,11 @@ class MultiProtocolGateway(Gateway):
         await self.http_server.serve()
         await self.grpc_server.wait_for_termination()
 
-    async def teardown(self):
-        await super().teardown()
-        await self.http_server.shutdown()
-        self.health_servicer.enter_graceful_shutdown()
-
-    async def stop_server(self):
+    async def shutdown(self):
         self.http_server.should_exit = True
         await self.grpc_server.stop(0)
+        await self.http_server.shutdown()
+        self.health_servicer.enter_graceful_shutdown()
 
     @property
     def _should_exit(self) -> bool:
