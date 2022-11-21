@@ -29,7 +29,6 @@ class GRPCGateway(BaseGateway):
         :param kwargs: keyword args
         """
         super().__init__(**kwargs)
-        self._set_single_port_protocol()
         self.grpc_server_options = grpc_server_options
         self.ssl_keyfile = ssl_keyfile
         self.ssl_certfile = ssl_certfile

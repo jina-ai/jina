@@ -28,7 +28,6 @@ class WebSocketGateway(BaseGateway):
         :param kwargs: keyword args
         """
         super().__init__(**kwargs)
-        self._set_single_port_protocol()
         self.ssl_keyfile = ssl_keyfile
         self.ssl_certfile = ssl_certfile
         self.uvicorn_kwargs = uvicorn_kwargs
