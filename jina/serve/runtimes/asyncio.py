@@ -171,16 +171,6 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, InstrumentationMixin, AB
     # Static methods used by the Pod to communicate with the `Runtime` in the separate process
 
     @staticmethod
-    def activate(**kwargs):
-        """
-        Activate the runtime, does not apply to these runtimes
-
-        :param kwargs: extra keyword arguments
-        """
-        # does not apply to this types of runtimes
-        pass
-
-    @staticmethod
     def is_ready(ctrl_address: str, timeout: float = 1.0, **kwargs) -> bool:
         """
         Check if status is ready.

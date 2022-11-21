@@ -54,8 +54,12 @@ spec:
           periodSeconds: 20
           timeoutSeconds: 10
         livenessProbe:
-          tcpSocket:
-            port: {port}
+          exec:
+            command:
+              - jina
+              - ping
+              - executor
+              - 127.0.0.1:{port}
           initialDelaySeconds: 5
           periodSeconds: 5
           timeoutSeconds: 10
@@ -88,8 +92,12 @@ spec:
           periodSeconds: 20
           timeoutSeconds: 10
         livenessProbe:
-          tcpSocket:
-            port: {port_uses_before}
+          exec:
+            command:
+              - jina
+              - ping
+              - executor
+              - 127.0.0.1:{port_uses_before}
           initialDelaySeconds: 5
           periodSeconds: 5
           timeoutSeconds: 10
@@ -122,8 +130,12 @@ spec:
           periodSeconds: 20
           timeoutSeconds: 10
         livenessProbe:
-          tcpSocket:
-            port: {port_uses_after}
+          exec:
+            command:
+              - jina
+              - ping
+              - executor
+              - 127.0.0.1:{port_uses_after}
           initialDelaySeconds: 5
           periodSeconds: 5
           timeoutSeconds: 10
