@@ -32,7 +32,7 @@ jobs:
     with:
       actions: 'all'
     secrets:
-      jina_dev_bot: ${{ secrets.JINA_DEV_BOT }}
+      extended_github_token: ${{ secrets.JINA_DEV_BOT }}
       jina_auth_token: ${{ secrets.JINA_AUTH_TOKEN }}
 
   regular-release:
