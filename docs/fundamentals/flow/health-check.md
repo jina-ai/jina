@@ -151,10 +151,19 @@ DEBUG  Flow@19059 2 Deployments (i.e. 2 Pods) are running in this Flow
 
 When using grpc, use [grpcurl](https://github.com/fullstorydev/grpcurl) to access the Gateway's gRPC service that is responsible for reporting the Flow status.
 
+````{tab} Linux
 ```shell
 docker pull fullstorydev/grpcurl:latest
-docker run --network='host' fullstorydev/grpcurl -plaintext 127.0.0.1:12345 jina.JinaGatewayDryRunRPC/dry_run
+docker run --rm --network='host' fullstorydev/grpcurl -plaintext 127.0.0.1:12345 jina.JinaGatewayDryRunRPC/dry_run
 ```
+````
+````{tab} Mac
+```shell
+docker pull fullstorydev/grpcurl:latest
+docker run --rm fullstorydev/grpcurl -plaintext host.docker.internal:12345 jina.JinaGatewayDryRunRPC/dry_run
+```
+````
+
 The error-free output below signifies a correctly running Flow:
 ```json
 {}
