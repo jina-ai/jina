@@ -14,7 +14,7 @@ class HTTPGateway(BaseGateway):
     def __init__(
         self,
         port: Optional[int] = None,
-        host: Optional[str] = __default_host__,
+        host: str = __default_host__,
         title: Optional[str] = None,
         description: Optional[str] = None,
         no_debug_endpoints: Optional[bool] = False,

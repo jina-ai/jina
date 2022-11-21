@@ -18,7 +18,7 @@ class GRPCGateway(BaseGateway):
     def __init__(
         self,
         port: Optional[int] = None,
-        host: Optional[str] = __default_host__,
+        host: str = __default_host__,
         grpc_server_options: Optional[dict] = None,
         ssl_keyfile: Optional[str] = None,
         ssl_certfile: Optional[str] = None,
