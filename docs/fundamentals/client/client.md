@@ -760,6 +760,34 @@ None
 
 ````
 
+A Client connects to a Flow that processes Documents in an asynchronous and very distributed way. This means that the order of the Flow processing the requests may not be the same order as the Client sending the requests.
+However, you can force the order of the results to be deterministic and the same as when they enter the Flow by passing `results_in_order` parameter to {meth}`~jina.clients.mixin.PostMixin.post`.
+
+```python
+import random
+import time
+from jina import Flow, Executor, requests, Client, DocumentArray, Document
+
+
+class RandomSleepExecutor(Executor):
+
+    @requests
+    def foo(self, *args, **kwargs):
+        rand_sleep = random.uniform(0.1, 1.3)
+        time.sleep(rand_sleep)
+
+f = Flow().add(uses=RandomSleepExecutor, replicas=3)
+input_text = [f'ordinal-{i}' for i in range(180)]
+input_da = DocumentArray([Document(text=t) for t in input_text])
+with f:
+    c = Client(port=f.port, protocol=f.protocol)
+    output_da = c.post('/', inputs=input_da, request_size=10, results_in_order=True)
+    for input, output in zip(input_da, output_da):
+        assert input.text == output.text
+    
+```
+
+
 (client-compress)=
 ## Enable compression
 

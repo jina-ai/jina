@@ -179,7 +179,7 @@ Here's the deal. These features come out of the box with the above 15 lines of c
 - gRPC, Websockets, HTTP, GraphQL gateway support
 - Microservice from day one, seamless Docker containerization
 - Explicit version and dependency control
-- Reusable building blocks from [Hub marketplace](https://hub.jina.ai)
+- Reusable building blocks from [Hub marketplace](https://cloud.jina.ai)
 - Immediate observability via Prometheus and Grafana
 - Seamless Kubernetes integration.
 

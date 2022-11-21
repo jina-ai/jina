@@ -66,7 +66,6 @@ class DockerComposeConfig:
             from jina.parsers import set_gateway_parser
 
             taboo = {
-                'uses_with',
                 'uses_metas',
                 'volumes',
                 'uses_before',
@@ -92,9 +91,9 @@ class DockerComposeConfig:
 
             container_args = ['gateway'] + _args
 
-            protocol = str(non_defaults.get('protocol', 'grpc')).lower()
+            protocol = str(non_defaults.get('protocol', ['grpc'])[0]).lower()
 
-            ports = [f'{cargs.port}'] + (
+            ports = cargs.port + (
                 [f'{cargs.port_monitoring}'] if cargs.monitoring else []
             )
 
@@ -109,7 +108,7 @@ class DockerComposeConfig:
                 'expose': ports,
                 'ports': [f'{_port}:{_port}' for _port in ports],
                 'healthcheck': {
-                    'test': f'jina ping gateway {protocol}://127.0.0.1:{cargs.port}',
+                    'test': f'jina ping gateway {protocol}://127.0.0.1:{cargs.port[0]}',
                     'interval': '2s',
                 },
                 'environment': envs,

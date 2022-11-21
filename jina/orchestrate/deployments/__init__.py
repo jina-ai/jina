@@ -266,8 +266,9 @@ class Deployment(BaseDeployment):
             self.ext_repl_schemes,
             self.ext_repl_tls,
         ) = ([], [], [], [])
-        self._parse_external_replica_hosts_and_ports()
-        self._parse_addresses_into_host_and_port()
+        if self.args.pod_role != PodRoleType.GATEWAY:
+            self._parse_external_replica_hosts_and_ports()
+            self._parse_addresses_into_host_and_port()
         if len(self.ext_repl_ports) > 1:
             self.args.replicas = len(self.ext_repl_ports)
 
@@ -434,8 +435,14 @@ class Deployment(BaseDeployment):
         """
         :return: the protocol of this deployment
         """
-        protocol = getattr(self.args, 'protocol', 'grpc')
-        return str(protocol) + ('s' if self.tls_enabled else '')
+        protocol = getattr(self.args, 'protocol', ['grpc'])
+        if not isinstance(protocol, list):
+            protocol = [protocol]
+        protocol = [str(_p) + ('s' if self.tls_enabled else '') for _p in protocol]
+        if len(protocol) == 1:
+            return protocol[0]
+        else:
+            return protocol
 
     @property
     def first_pod_args(self) -> Namespace:
@@ -468,7 +475,7 @@ class Deployment(BaseDeployment):
         """Returns a list of ports exposed by this Deployment.
         Exposed means these are the ports a Client/Gateway is supposed to communicate with.
         For sharded deployments this will be the head_port.
-        For non sharded deployments it will be all replica ports
+        For non-sharded deployments it will be all replica ports
         .. # noqa: DAR201
         """
         if self.head_port:
@@ -476,7 +483,10 @@ class Deployment(BaseDeployment):
         else:
             ports = []
             for replica in self.pod_args['pods'][0]:
-                ports.append(replica.port)
+                if isinstance(replica.port, list):
+                    ports.extend(replica.port)
+                else:
+                    ports.append(replica.port)
             return ports
 
     @property
@@ -484,7 +494,7 @@ class Deployment(BaseDeployment):
         """Returns a list of host addresses exposed by this Deployment.
         Exposed means these are the host a Client/Gateway is supposed to communicate with.
         For sharded deployments this will be the head host.
-        For non sharded deployments it will be all replica hosts
+        For non-sharded deployments it will be all replica hosts
         .. # noqa: DAR201
         """
         if self.head_host:
@@ -732,7 +742,7 @@ class Deployment(BaseDeployment):
         :return: slice
         """
 
-        all_devices = range(num_devices)
+        use_uuids = False
         if re.match(WRAPPED_SLICE_BASE, value):
             value = value[1:-1]
 
@@ -742,13 +752,28 @@ class Deployment(BaseDeployment):
                 parts = value.split(':')
 
                 if len(parts) == 1:
-                    # slice(stop)
+                    try:
+                        int(parts[0])
+                    except:
+                        use_uuids = True
+                    if use_uuids:
+                        return parts
                     parts = [parts[0], str(int(parts[0]) + 1)]
-                # else: slice(start, stop[, step])
             else:
-                return [int(p) for p in parts]
+                # try to detect if parts are not numbers
+                try:
+                    int(parts[0])
+                except:
+                    use_uuids = True
+
+                if not use_uuids:
+                    return [int(p) for p in parts]
+                else:
+                    return parts
         else:
             parts = []
+
+        all_devices = range(num_devices)
         return all_devices[slice(*[int(p) if p else None for p in parts])]
 
     @staticmethod
@@ -776,10 +801,9 @@ class Deployment(BaseDeployment):
 
             selected_devices = []
             if device_str[2:]:
-                for device_num in Deployment._parse_devices(
-                    device_str[2:], num_devices
-                ):
-                    selected_devices.append(device_num)
+
+                for device in Deployment._parse_devices(device_str[2:], num_devices):
+                    selected_devices.append(device)
             else:
                 selected_devices = range(num_devices)
             _c = cycle(selected_devices)
@@ -788,20 +812,24 @@ class Deployment(BaseDeployment):
     @staticmethod
     def _set_pod_args(args: Namespace) -> Dict[int, List[Namespace]]:
         result = {}
-        sharding_enabled = args.shards and args.shards > 1
+        shards = getattr(args, 'shards', 1)
+        replicas = getattr(args, 'replicas', 1)
+        sharding_enabled = shards and shards > 1
 
         cuda_device_map = None
         if args.env:
             cuda_device_map = Deployment._roundrobin_cuda_device(
-                args.env.get('CUDA_VISIBLE_DEVICES'), args.replicas
+                args.env.get('CUDA_VISIBLE_DEVICES'), replicas
             )
 
-        for shard_id in range(args.shards):
+        for shard_id in range(shards):
             replica_args = []
-            for replica_id in range(args.replicas):
+            for replica_id in range(replicas):
                 _args = copy.deepcopy(args)
                 _args.shard_id = shard_id
-                _args.pod_role = PodRoleType.WORKER
+                # for gateway pods, the pod role shouldn't be changed
+                if _args.pod_role != PodRoleType.GATEWAY:
+                    _args.pod_role = PodRoleType.WORKER
 
                 if cuda_device_map:
                     _args.env['CUDA_VISIBLE_DEVICES'] = str(cuda_device_map[replica_id])
@@ -819,11 +847,11 @@ class Deployment(BaseDeployment):
                 # the gateway needs to respect the assigned port
                 if args.deployment_role == DeploymentRoleType.GATEWAY or args.external:
                     _args.port = args.port
-                elif args.shards == 1 and args.replicas == 1:
+                elif shards == 1 and replicas == 1:
                     _args.port = args.port
                     _args.port_monitoring = args.port_monitoring
 
-                elif args.shards == 1:
+                elif shards == 1:
                     _args.port_monitoring = (
                         helper.random_port()
                         if replica_id >= len(args.all_port_monitoring)
@@ -832,9 +860,9 @@ class Deployment(BaseDeployment):
                     # if there are no shards/replicas, we dont need to distribute ports randomly
                     # we should rather use the pre assigned one
                     _args.port = helper.random_port()
-                elif args.shards > 1:
+                elif shards > 1:
                     port_monitoring_index = (
-                        replica_id + args.replicas * shard_id + 1
+                        replica_id + replicas * shard_id + 1
                     )  # the first index is for the head
                     _args.port_monitoring = (
                         helper.random_port()

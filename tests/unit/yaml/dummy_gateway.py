@@ -21,15 +21,10 @@ class ProcessedResponseModel(BaseModel):
 
 class DummyGateway(Gateway):
     def __init__(
-        self,
-        port: int = None,
-        arg1: str = None,
-        arg2: str = None,
-        arg3: str = 'default-arg3',
-        **kwargs
+        self, arg1: str = None, arg2: str = None, arg3: str = 'default-arg3', **kwargs
     ):
         super().__init__(**kwargs)
-        self.port = port
+        self.port = self.runtime_args.port[0]
         self.arg1 = arg1
         self.arg2 = arg2
         self.arg3 = arg3
@@ -69,13 +64,7 @@ class DummyGateway(Gateway):
     async def run_server(self):
         await self.server.serve()
 
-    async def teardown(self):
-        await super().teardown()
+    async def shutdown(self):
+        self.server.should_exit = True
         await self.server.shutdown()
 
-    async def stop_server(self):
-        self.server.should_exit = True
-
-    @property
-    def should_exit(self) -> bool:
-        return self.server.should_exit

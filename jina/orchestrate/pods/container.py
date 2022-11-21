@@ -7,7 +7,7 @@ import re
 import signal
 import threading
 import time
-from typing import TYPE_CHECKING, Callable, Dict, Optional, Union
+from typing import TYPE_CHECKING, Dict, Optional, Union
 
 from jina import __docker_host__, __windows__
 from jina.enums import PodRoleType
@@ -24,7 +24,7 @@ from jina.orchestrate.pods.container_helper import (
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.gateway import GatewayRuntime
 
-if TYPE_CHECKING: # pragma: no cover
+if TYPE_CHECKING:  # pragma: no cover
     from docker.client import DockerClient
 
 
@@ -98,7 +98,9 @@ def _docker_run(
         raise BadImageNameError(f'image: {uses_img} can not be found local & remote.')
 
     _volumes = {}
-    if not args.disable_auto_volume and not args.volumes:
+    if not getattr(args, 'disable_auto_volume', None) and not getattr(
+        args, 'volumes', None
+    ):
         (
             generated_volumes,
             workspace_in_container,
@@ -108,7 +110,7 @@ def _docker_run(
             workspace_in_container if not args.workspace else args.workspace
         )
 
-    if args.volumes:
+    if getattr(args, 'volumes', None):
         for p in args.volumes:
             paths = p.split(':')
             local_path = paths[0]
@@ -123,7 +125,7 @@ def _docker_run(
             }
 
     device_requests = []
-    if args.gpus:
+    if getattr(args, 'gpus', None):
         device_requests = get_gpu_device_requests(args.gpus)
         del args.gpus
 
@@ -228,7 +230,7 @@ def run(
         def _is_ready():
             if args.pod_role == PodRoleType.GATEWAY:
                 return GatewayRuntime.is_ready(
-                    runtime_ctrl_address, protocol=args.protocol
+                    runtime_ctrl_address, protocol=args.protocol[0]
                 )
             else:
                 return AsyncNewLoopRuntime.is_ready(runtime_ctrl_address)
@@ -325,7 +327,10 @@ class ContainerPod(BasePod):
             else:
                 ctrl_host = self.args.host
 
-            ctrl_address = f'{ctrl_host}:{self.args.port}'
+            if self.args.pod_role == PodRoleType.GATEWAY:
+                ctrl_address = f'{ctrl_host}:{self.args.port[0]}'
+            else:
+                ctrl_address = f'{ctrl_host}:{self.args.port}'
 
             net_node, runtime_ctrl_address = self._get_network_for_dind_linux(
                 client, ctrl_address
@@ -348,7 +353,10 @@ class ContainerPod(BasePod):
             try:
                 bridge_network = client.networks.get('bridge')
                 if bridge_network:
-                    runtime_ctrl_address = f'{bridge_network.attrs["IPAM"]["Config"][0]["Gateway"]}:{self.args.port}'
+                    if self.args.pod_role == PodRoleType.GATEWAY:
+                        runtime_ctrl_address = f'{bridge_network.attrs["IPAM"]["Config"][0]["Gateway"]}:{self.args.port[0]}'
+                    else:
+                        runtime_ctrl_address = f'{bridge_network.attrs["IPAM"]["Config"][0]["Gateway"]}:{self.args.port}'
             except Exception as ex:
                 self.logger.warning(
                     f'Unable to set control address from "bridge" network: {ex!r}'

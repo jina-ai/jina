@@ -1,0 +1,14 @@
+!Flow
+with:
+  protocol: grpc
+  port: 12345
+gateway:
+  py_modules: dummy_gateway.py
+  uses: DummyGateway
+  with:
+    arg1: hello
+    arg2: world
+  protocol: http
+  port: 12344
+executors:
+  - name: exec

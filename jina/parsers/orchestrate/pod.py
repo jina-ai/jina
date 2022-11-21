@@ -1,11 +1,17 @@
 """Argparser module for Pod runtimes"""
+
 import argparse
 from dataclasses import dataclass
 from typing import Dict
 
 from jina import helper
 from jina.enums import PodRoleType
-from jina.parsers.helper import _SHOW_ALL_ARGS, KVAppendAction, add_arg_group
+from jina.parsers.helper import (
+    _SHOW_ALL_ARGS,
+    CastToIntAction,
+    KVAppendAction,
+    add_arg_group,
+)
 
 
 @dataclass
@@ -87,29 +93,33 @@ def mixin_pod_parser(parser, pod_type: str = 'worker'):
         else argparse.SUPPRESS,
     )
 
-    gp.add_argument(
-        '--shards',
-        type=int,
-        default=1,
-        help='The number of shards in the deployment running at the same time. For more details check '
-        'https://docs.jina.ai/fundamentals/flow/create-flow/#complex-flow-topologies',
+    port_description = (
+        'The port for input data to bind to, default is a random port between [49152, 65535]. '
+        'In the case of an external Executor (`--external` or `external=True`) this can be a list of ports, separated by commas. '
+        'Then, every resulting address will be considered as one replica of the Executor.'
     )
 
-    gp.add_argument(
-        '--replicas',
-        type=int,
-        default=1,
-        help='The number of replicas in the deployment',
-    )
-
-    gp.add_argument(
-        '--port',
-        type=str,
-        default=str(helper.random_port()),
-        help='The port for input data to bind to, default is a random port between [49152, 65535].'
-        ' In the case of an external Executor (`--external` or `external=True`) this can be a list of ports, separated by commas.'
-        ' Then, every resulting address will be considered as one replica of the Executor.',
-    )
+    if pod_type != 'gateway':
+        gp.add_argument(
+            '--port',
+            '--port-in',
+            type=str,
+            default=helper.random_port(),
+            action=CastToIntAction,
+            help=port_description,
+        )
+    else:
+        gp.add_argument(
+            '--port',
+            '--port-expose',
+            '--port-in',
+            '--ports',
+            action=CastToIntAction,
+            type=str,
+            nargs='+',
+            default=[helper.random_port()],
+            help=port_description,
+        )
 
     gp.add_argument(
         '--monitoring',

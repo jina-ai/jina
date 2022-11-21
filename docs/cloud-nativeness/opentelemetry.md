@@ -1,5 +1,12 @@
 (opentelemetry)=
-# Observability and Instrumentation with OpenTelemetry and Jina
+# {octicon}`telescope-fill` OpenTelemetry Support
+
+```{toctree}
+:hidden:
+
+opentelemetry-migration
+monitoring
+```
 
 ```{hint}
 Prometheus-only based metrics collection will soon be deprecated. Refer to {ref}`Monitor with Prometheus and Grafana <monitoring>` for the old setup.
@@ -90,6 +97,8 @@ exporters:
   
   prometheus:
     endpoint: "0.0.0.0:8889"
+    resource_to_telemetry_conversion:
+      enabled: true
     # can be used to add additional labels
     const_labels:
       label1: value1

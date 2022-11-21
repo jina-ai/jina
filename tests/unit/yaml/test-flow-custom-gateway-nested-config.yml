@@ -1,0 +1,5 @@
+!Flow
+gateway:
+  uses: test-custom-gateway.yml
+  protocol: http
+  port: 12344

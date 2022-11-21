@@ -6,10 +6,10 @@ from typing import TYPE_CHECKING
 from hubble.executor.helper import is_valid_huburi
 from hubble.executor.hubio import HubIO
 
-from jina.enums import GatewayProtocolType, PodRoleType
+from jina.enums import PodRoleType
 from jina.parsers.helper import _set_gateway_uses
 
-if TYPE_CHECKING: # pragma: no cover
+if TYPE_CHECKING:  # pragma: no cover
     from argparse import Namespace
 
 
@@ -82,7 +82,7 @@ def update_runtime_cls(args, copy=False) -> 'Namespace':
         _hub_args.no_usage = True
         _args.uses = HubIO(_hub_args).pull()
 
-    if hasattr(_args, 'protocol'):
+    if hasattr(_args, 'protocol') and _args.pod_role == PodRoleType.GATEWAY:
         _set_gateway_uses(_args)
     if _args.pod_role == PodRoleType.HEAD:
         _args.runtime_cls = 'HeadRuntime'

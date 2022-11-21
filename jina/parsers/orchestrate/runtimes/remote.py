@@ -89,14 +89,6 @@ which should be structured as a python package.
 
     mixin_base_runtime_parser(gp)
 
-    gp.add_argument(
-        '--port-expose',
-        type=int,
-        dest='port',
-        default=helper.random_port(),
-        help='The port that the gateway exposes for clients for GRPC connections.',
-    )
-
     parser.add_argument(
         '--graph-description',
         type=str,
@@ -126,6 +118,7 @@ which should be structured as a python package.
     )
 
     parser.add_argument(
+        '--deployments-no-reduce',
         '--deployments-disable-reduce',
         type=str,
         help='list JSON disabling the built-in merging mechanism for each Deployment listed',
@@ -147,9 +140,29 @@ which should be structured as a python package.
     )
 
 
+def mixin_gateway_protocol_parser(parser):
+    """Add the arguments for the protocol to the gateway parser
+
+    :param parser: the parser configure
+    """
+
+    from jina.enums import GatewayProtocolType
+
+    parser.add_argument(
+        '--protocol',
+        '--protocols',
+        nargs='+',
+        type=GatewayProtocolType.from_string,
+        choices=list(GatewayProtocolType),
+        default=[GatewayProtocolType.GRPC],
+        help=f'Possible communication protocols between server and client. Depending on your chosen gateway, choose the convenient protocols from: {[protocol.to_string() for protocol in list(GatewayProtocolType)]}.',
+    )
+
+
 def _add_host(arg_group):
     arg_group.add_argument(
         '--host',
+        '--host-in',
         type=str,
         default=__default_host__,
         help=f'The host address of the runtime, by default it is {__default_host__}.'
@@ -227,7 +240,7 @@ def mixin_http_gateway_parser(parser=None):
         help='''
         If set, `/index`, `/search`, `/update`, `/delete` endpoints are removed from HTTP interface.
 
-        Any executor that has `@requests(on=...)` bind with those values will receive data requests.
+        Any executor that has `@requests(on=...)` bound with those values will receive data requests.
         ''',
     )
 

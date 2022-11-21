@@ -1,6 +1,5 @@
 import asyncio
 import multiprocessing
-import os
 import socket
 import time
 from multiprocessing import Process
@@ -9,16 +8,16 @@ from threading import Event
 import grpc
 import pytest
 import requests as req
-from docarray import Document
 
+from docarray import Document
 from jina import DocumentArray, Executor, requests
 from jina.clients.request import request_generator
 from jina.parsers import set_pod_parser
 from jina.proto import jina_pb2, jina_pb2_grpc
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
-from jina.serve.runtimes.request_handlers.data_request_handler import DataRequestHandler
 from jina.serve.runtimes.worker import WorkerRuntime
+from jina.serve.runtimes.worker.request_handling import WorkerRequestHandler
 
 
 @pytest.mark.slow
@@ -154,7 +153,7 @@ def test_error_in_worker_runtime(monkeypatch):
     def fail(*args, **kwargs):
         raise RuntimeError('intentional error')
 
-    monkeypatch.setattr(DataRequestHandler, 'handle', fail)
+    monkeypatch.setattr(WorkerRequestHandler, 'handle', fail)
 
     def start_runtime(args, cancel_event):
         with WorkerRuntime(args, cancel_event=cancel_event) as runtime:
@@ -441,7 +440,7 @@ async def test_error_in_worker_runtime_with_exit_on_exceptions(monkeypatch):
     def fail(*args, **kwargs):
         raise RuntimeError('intentional error')
 
-    monkeypatch.setattr(DataRequestHandler, 'handle', fail)
+    monkeypatch.setattr(WorkerRequestHandler, 'handle', fail)
 
     def start_runtime(args, cancel_event):
         with WorkerRuntime(args, cancel_event=cancel_event) as runtime:
