@@ -40,7 +40,7 @@ async def test_flow_resource_labeling(tmpdir, otel_test_namespace: str, k8s_clus
     # Make client requests
     with k8s_cluster_v2.port_forward('svc/gateway', NAMESPACE, svc_port=8080) as gateway_port:
         from jina import Client
-        [i async for i in Client(port=gateway_port, asyncio=True).post("/")]
+        [docs async for docs in Client(port=gateway_port, asyncio=True).post("/")]
 
     # Give grace period for metrics and traces to be exported
     await asyncio.sleep(60)
