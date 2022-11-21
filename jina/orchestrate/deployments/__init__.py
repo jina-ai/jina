@@ -878,7 +878,7 @@ class Deployment(BaseDeployment):
 
         _args = copy.deepcopy(args)
         _args.pod_role = PodRoleType.WORKER
-        if not _args.host:
+_args.host = _args.host or __default_host__
             _args.host = __default_host__
         _args.port = helper.random_port()
 
