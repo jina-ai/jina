@@ -3,7 +3,7 @@ import os
 import pytest
 import yaml
 
-from jina import Gateway, __default_executor__
+from jina import Gateway, __default_executor__, __default_host__
 from jina.helper import expand_dict, expand_env_var
 from jina.jaml import JAML
 from jina.serve.executors import BaseExecutor
@@ -172,7 +172,8 @@ def test_load_from_dict():
 
 def test_load_gateway_external_success():
     with Gateway.load_config(
-        'yaml/test-custom-gateway.yml', runtime_args={'port': [12345]}
+        'yaml/test-custom-gateway.yml',
+        runtime_args={'port': [12345], 'host': __default_host__},
     ) as gateway:
         assert gateway.__class__.__name__ == 'DummyGateway'
         assert gateway.arg1 == 'hello'
@@ -184,7 +185,7 @@ def test_load_gateway_override_with():
     with Gateway.load_config(
         'yaml/test-custom-gateway.yml',
         uses_with={'arg1': 'arg1', 'arg2': 'arg2', 'arg3': 'arg3'},
-        runtime_args={'port': [12345]},
+        runtime_args={'port': [12345], 'host': __default_host__},
     ) as gateway:
         assert gateway.__class__.__name__ == 'DummyGateway'
         assert gateway.arg1 == 'arg1'
