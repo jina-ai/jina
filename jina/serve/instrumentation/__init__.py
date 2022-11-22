@@ -21,8 +21,9 @@ ENV_RESOURCE_ATTRIBUTES = [
 
 
 def _get_resource_attributes(service_name: str):
-    from opentelemetry.semconv.resource import ResourceAttributes
     import os
+
+    from opentelemetry.semconv.resource import ResourceAttributes
 
     attributes = {ResourceAttributes.SERVICE_NAME: service_name}
     for attribute in ENV_RESOURCE_ATTRIBUTES:
@@ -103,7 +104,7 @@ class InstrumentationMixin:
         :returns: A service-side aio interceptor object.
         '''
         if self.tracing:
-            from jina.serve.instrumentation._aio_server import (
+            from opentelemetry.instrumentation.grpc._aio_server import (
                 OpenTelemetryAioServerInterceptor,
             )
 
@@ -119,7 +120,7 @@ class InstrumentationMixin:
         '''
 
         if self.tracing:
-            from jina.serve.instrumentation._aio_client import (
+            from opentelemetry.instrumentation.grpc._aio_client import (
                 StreamStreamAioClientInterceptor,
                 StreamUnaryAioClientInterceptor,
                 UnaryStreamAioClientInterceptor,

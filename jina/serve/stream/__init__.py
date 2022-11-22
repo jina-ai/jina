@@ -92,7 +92,15 @@ class RequestStreamer:
                     r.header.request_id = err.request_id
                 yield r
             else:  # HTTP and WS need different treatment further up the stack
+                self.logger.error(
+                    f'Error while getting responses from deployments: {err.details()}'
+                )
                 raise
+        except Exception as err:  # HTTP and WS need different treatment further up the stack
+            self.logger.error(
+                f'Error while getting responses from deployments: {err}'
+            )
+            raise err
 
     async def _stream_requests(
             self,

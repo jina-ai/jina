@@ -68,6 +68,7 @@ class GatewayStreamer:
             deployments_no_reduce=deployments_no_reduce,
             timeout_send=timeout_send,
             retries=retries,
+            logger=logger,
         )
 
         self.runtime_name = runtime_name
