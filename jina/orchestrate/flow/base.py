@@ -589,7 +589,7 @@ class Flow(
     @allowed_levels([FlowBuildLevel.EMPTY])
     def _add_gateway(
         self,
-        needs: str,
+        needs: Union[str, Set[str]],
         graph_description: Dict[str, List[str]],
         deployments_addresses: Dict[str, List[str]],
         deployments_metadata: Dict[str, Dict[str, str]],
