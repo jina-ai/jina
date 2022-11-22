@@ -36,10 +36,6 @@ spec:
           - configMapRef:
               name: {name}-configmap
         env:
-        - name: POD_UID
-          valueFrom:
-            fieldRef:
-              fieldPath: metadata.uid
         - name: JINA_DEPLOYMENT_NAME
           value: {jina_deployment_name}
         - name: K8S_DEPLOYMENT_NAME
@@ -67,10 +63,6 @@ spec:
           - configMapRef:
               name: {name}-configmap
         env:
-        - name: POD_UID
-          valueFrom:
-            fieldRef:
-              fieldPath: metadata.uid
         - name: JINA_DEPLOYMENT_NAME
           value: {jina_deployment_name}
         - name: K8S_DEPLOYMENT_NAME

@@ -117,7 +117,6 @@ def test_flow_to_k8s_yaml(tmpdir, protocol, flow_port):
         'env'
     ]
     assert gateway_env == [
-        {'name': 'POD_UID', 'valueFrom': {'fieldRef': {'fieldPath': 'metadata.uid'}}},
         {'name': 'JINA_DEPLOYMENT_NAME', 'value': 'gateway'},
         {'name': 'K8S_DEPLOYMENT_NAME', 'value': 'gateway'},
         {'name': 'K8S_NAMESPACE_NAME', 'value': namespace},
@@ -158,7 +157,6 @@ def test_flow_to_k8s_yaml(tmpdir, protocol, flow_port):
         'env'
     ]
     assert executor0_env == [
-        {'name': 'POD_UID', 'valueFrom': {'fieldRef': {'fieldPath': 'metadata.uid'}}},
         {'name': 'JINA_DEPLOYMENT_NAME', 'value': 'executor0'},
         {'name': 'K8S_DEPLOYMENT_NAME', 'value': 'executor0'},
         {'name': 'K8S_NAMESPACE_NAME', 'value': namespace},
@@ -214,7 +212,6 @@ def test_flow_to_k8s_yaml(tmpdir, protocol, flow_port):
         'containers'
     ][0]['env']
     assert executor1_head0_env == [
-        {'name': 'POD_UID', 'valueFrom': {'fieldRef': {'fieldPath': 'metadata.uid'}}},
         {'name': 'JINA_DEPLOYMENT_NAME', 'value': 'executor1'},
         {'name': 'K8S_DEPLOYMENT_NAME', 'value': 'executor1-head'},
         {'name': 'K8S_NAMESPACE_NAME', 'value': namespace},
@@ -266,7 +263,6 @@ def test_flow_to_k8s_yaml(tmpdir, protocol, flow_port):
         'containers'
     ][0]['env']
     assert executor1_shard0_env == [
-        {'name': 'POD_UID', 'valueFrom': {'fieldRef': {'fieldPath': 'metadata.uid'}}},
         {'name': 'JINA_DEPLOYMENT_NAME', 'value': 'executor1'},
         {'name': 'K8S_DEPLOYMENT_NAME', 'value': 'executor1-0'},
         {'name': 'K8S_NAMESPACE_NAME', 'value': namespace},
@@ -317,7 +313,6 @@ def test_flow_to_k8s_yaml(tmpdir, protocol, flow_port):
         'containers'
     ][0]['env']
     assert executor1_shard1_env == [
-        {'name': 'POD_UID', 'valueFrom': {'fieldRef': {'fieldPath': 'metadata.uid'}}},
         {'name': 'JINA_DEPLOYMENT_NAME', 'value': 'executor1'},
         {'name': 'K8S_DEPLOYMENT_NAME', 'value': 'executor1-1'},
         {'name': 'K8S_NAMESPACE_NAME', 'value': namespace},
@@ -372,7 +367,6 @@ def test_flow_to_k8s_yaml(tmpdir, protocol, flow_port):
     assert '--uses-with' not in executor2_head0_args
     executor2_head0_env = executor2_head_containers[0]['env']
     assert executor2_head0_env == [
-        {'name': 'POD_UID', 'valueFrom': {'fieldRef': {'fieldPath': 'metadata.uid'}}},
         {'name': 'JINA_DEPLOYMENT_NAME', 'value': 'executor2'},
         {'name': 'K8S_DEPLOYMENT_NAME', 'value': 'executor2-head'},
         {'name': 'K8S_NAMESPACE_NAME', 'value': namespace},
@@ -406,7 +400,6 @@ def test_flow_to_k8s_yaml(tmpdir, protocol, flow_port):
     assert '--connection-list' not in executor2_uses_before_args
     executor2_uses_before_env = executor2_head_containers[1]['env']
     assert executor2_uses_before_env == [
-        {'name': 'POD_UID', 'valueFrom': {'fieldRef': {'fieldPath': 'metadata.uid'}}},
         {'name': 'JINA_DEPLOYMENT_NAME', 'value': 'executor2'},
         {'name': 'K8S_DEPLOYMENT_NAME', 'value': 'executor2-head'},
         {'name': 'K8S_NAMESPACE_NAME', 'value': namespace},
@@ -440,7 +433,6 @@ def test_flow_to_k8s_yaml(tmpdir, protocol, flow_port):
     assert '--connection-list' not in executor2_uses_after_args
     executor2_uses_after_env = executor2_head_containers[2]['env']
     assert executor2_uses_after_env == [
-        {'name': 'POD_UID', 'valueFrom': {'fieldRef': {'fieldPath': 'metadata.uid'}}},
         {'name': 'JINA_DEPLOYMENT_NAME', 'value': 'executor2'},
         {'name': 'K8S_DEPLOYMENT_NAME', 'value': 'executor2-head'},
         {'name': 'K8S_NAMESPACE_NAME', 'value': namespace},
@@ -482,7 +474,6 @@ def test_flow_to_k8s_yaml(tmpdir, protocol, flow_port):
         'env'
     ]
     assert executor2_env == [
-        {'name': 'POD_UID', 'valueFrom': {'fieldRef': {'fieldPath': 'metadata.uid'}}},
         {'name': 'JINA_DEPLOYMENT_NAME', 'value': 'executor2'},
         {'name': 'K8S_DEPLOYMENT_NAME', 'value': 'executor2-0'},
         {'name': 'K8S_NAMESPACE_NAME', 'value': namespace},
