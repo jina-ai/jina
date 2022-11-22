@@ -7,11 +7,11 @@ import pytest
 from grpc_health.v1 import health, health_pb2, health_pb2_grpc
 from grpc_reflection.v1alpha import reflection
 from opentelemetry.trace import NoOpTracer
+from opentelemetry.instrumentation.grpc._aio_server import OpenTelemetryAioServerInterceptor
 
 from jina.helper import random_port
 from jina.parsers import set_gateway_parser, set_pod_parser
 from jina.proto import jina_pb2, jina_pb2_grpc
-from jina.serve.instrumentation._aio_server import OpenTelemetryAioServerInterceptor
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.gateway import GatewayRuntime
