@@ -3,7 +3,6 @@ import datetime
 import functools
 import os
 import subprocess
-import time
 from typing import Set
 
 import pytest
@@ -85,7 +84,7 @@ async def delete_pod(deployment, core_client, k8s_namespace, logger):
         namespace=k8s_namespace,
         label_selector=f'app={deployment}',
     )
-    api_response = core_client.delete_namespaced_pod(
+    _ = core_client.delete_namespaced_pod(
         pods.items[0].metadata.name, k8s_namespace
     )
     while True:
@@ -239,6 +238,7 @@ async def test_failure_scenarios(logger, docker_images, tmpdir, k8s_cluster):
             sleep_time=None,
         )
     )
+    logger.info(f' Sending task has been scheduled')
     await asyncio.sleep(5.0)
     # Scale down the Executor to 2 replicas
     await scale(
@@ -249,6 +249,7 @@ async def test_failure_scenarios(logger, docker_images, tmpdir, k8s_cluster):
         k8s_namespace=namespace,
         logger=logger,
     )
+    logger.info(f' Scaling to 2 replicas has been done')
     # Scale back up to 3 replicas
     await scale(
         deployment_name='executor0',
@@ -258,6 +259,7 @@ async def test_failure_scenarios(logger, docker_images, tmpdir, k8s_cluster):
         k8s_namespace=namespace,
         logger=logger,
     )
+    logger.info(f' Scaling to 3 replicas has been done')
     await asyncio.sleep(5.0)
     # restart all pods in the deployment
     await restart_deployment(
@@ -267,6 +269,7 @@ async def test_failure_scenarios(logger, docker_images, tmpdir, k8s_cluster):
         k8s_namespace=namespace,
         logger=logger,
     )
+    logger.info(f' Restarting deployment has been done')
     await asyncio.sleep(5.0)
     await delete_pod(
         deployment='executor0',
@@ -274,39 +277,46 @@ async def test_failure_scenarios(logger, docker_images, tmpdir, k8s_cluster):
         k8s_namespace=namespace,
         logger=logger,
     )
+    logger.info(f'Deleting pod has been done')
     await asyncio.sleep(5.0)
 
     stop_event.set()
-    responses, sent_ids = await send_task
-    assert len(sent_ids) == len(responses)
-    doc_ids = set()
-    pod_ids = set()
-    for response in responses:
-        doc_id, pod_id = response.docs.texts[0].split('_')
-        doc_ids.add(doc_id)
-        pod_ids.add(pod_id)
-    assert len(sent_ids) == len(doc_ids)
-    assert len(pod_ids) == 8  # 3 original + 3 restarted + 1 scaled up + 1 deleted
+    try:
+        responses, sent_ids = await send_task
+        logger.info(f'Sending tag has finished')
+        logger.info(f'Sending tag has finished: {len(sent_ids)} vs {len(responses)}')
+        assert len(sent_ids) == len(responses)
+        doc_ids = set()
+        pod_ids = set()
+        for response in responses:
+            doc_id, pod_id = response.docs.texts[0].split('_')
+            doc_ids.add(doc_id)
+            pod_ids.add(pod_id)
+        assert len(sent_ids) == len(doc_ids)
+        assert len(pod_ids) == 8  # 3 original + 3 restarted + 1 scaled up + 1 deleted
 
-    # do the random failure test
-    # start sending again
-    logger.info('Start sending for random failure test')
-    stop_event.clear()
-    send_task = asyncio.create_task(
-        run_test_until_event(
-            flow=flow,
-            namespace=namespace,
-            core_client=core_client,
-            endpoint='/',
-            stop_event=stop_event,
-            logger=logger,
+        # do the random failure test
+        # start sending again
+        logger.info('Start sending for random failure test')
+        stop_event.clear()
+        send_task = asyncio.create_task(
+            run_test_until_event(
+                flow=flow,
+                namespace=namespace,
+                core_client=core_client,
+                endpoint='/',
+                stop_event=stop_event,
+                logger=logger,
+            )
         )
-    )
-    # inject failures
-    inject_failures(k8s_cluster, logger)
-    # wait a bit
-    await asyncio.sleep(3.0)
-    # check that no message was lost
-    stop_event.set()
-    responses, sent_ids = await send_task
-    assert len(sent_ids) == len(responses)
+        # inject failures
+        inject_failures(k8s_cluster, logger)
+        # wait a bit
+        await asyncio.sleep(3.0)
+        # check that no message was lost
+        stop_event.set()
+        responses, sent_ids = await send_task
+        assert len(sent_ids) == len(responses)
+    except Exception as exc:
+        logger.error(f' Exception raised {exc}')
+        raise exc
