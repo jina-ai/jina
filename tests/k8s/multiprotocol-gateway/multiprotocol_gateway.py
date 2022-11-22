@@ -15,8 +15,8 @@ class DummyResponseModel(BaseModel):
 class MultiProtocolGateway(Gateway):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.http_port = self.runtime_args.port[0]
-        self.grpc_port = self.runtime_args.port[1]
+        self.http_port = self.ports[0]
+        self.grpc_port = self.ports[1]
         self.health_servicer = health.HealthServicer(experimental_non_blocking=True)
 
     async def _setup_http_server(self):

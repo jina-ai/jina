@@ -45,7 +45,6 @@ class HTTPGateway(BaseGateway):
         :param kwargs: keyword args
         """
         super().__init__(**kwargs)
-        self._set_single_port_protocol()
         self.title = title
         self.description = description
         self.no_debug_endpoints = no_debug_endpoints
@@ -132,7 +131,7 @@ class HTTPGateway(BaseGateway):
         self.server = UviServer(
             config=Config(
                 app=self.app,
-                host=__default_host__,
+                host=self.host,
                 port=self.port,
                 log_level=os.getenv('JINA_LOG_LEVEL', 'error').lower(),
                 **uvicorn_kwargs,

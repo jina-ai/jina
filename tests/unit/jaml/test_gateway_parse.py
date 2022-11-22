@@ -24,6 +24,7 @@ def dummy_gateway_runtime_args():
     return {
         'name': None,
         'port': None,
+        'host': __default_host__,
         'protocol': None,
         'tracing': None,
         'tracer_provider': None,

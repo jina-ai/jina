@@ -3,7 +3,7 @@ import os
 import pytest
 import yaml
 
-from jina import Gateway, __default_executor__
+from jina import Gateway, __default_executor__, __default_host__
 from jina.helper import expand_dict, expand_env_var
 from jina.jaml import JAML
 from jina.serve.executors import BaseExecutor
@@ -175,6 +175,7 @@ def dummy_gateway_runtime_args():
     return {
         'name': None,
         'port': [12345],
+        'host': __default_host__,
         'protocol': None,
         'tracing': None,
         'tracer_provider': None,
