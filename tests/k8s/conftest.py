@@ -46,7 +46,6 @@ def build_and_load_images(k8s_cluster: KindClusterWrapper) -> None:
 def k8s_cluster(kind_cluster: KindCluster) -> KindClusterWrapper:
     return KindClusterWrapper(kind_cluster, JinaLogger('kubernetes-cluster-logger'))
 
-## END OF NEW
 
 @pytest.fixture
 def logger() -> JinaLogger:

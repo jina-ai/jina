@@ -9,7 +9,7 @@ from docker import DockerClient
 from pytest_kind import KindCluster
 from subprocess import CalledProcessError
 from contextlib import contextmanager
-from typing import Generator, List, Dict
+from typing import Generator, List, Dict, Optional
 
 from jina.logging.logger import JinaLogger
 
@@ -182,9 +182,7 @@ class KindClusterWrapper:
             return self._cluster.kubectl('get', 'pods', '-n', namespace, '-l', label_selector, '-o', 'jsonpath={.items[0].metadata.name}').strip()
         except CalledProcessError as e:
             self._log.error(f'Error while getting pod name: {e}')
-            self.log_node_summaries(namespace)
             self.log_pod_summaries(namespace)
-            self.log_failing_pods(namespace)
             raise e
 
     @contextmanager

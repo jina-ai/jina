@@ -128,41 +128,17 @@ async def test_flow_with_monitoring(tmpdir, k8s_cluster: KindClusterWrapper, por
     )
 
     flow.to_kubernetes_yaml(dump_path, k8s_namespace=namespace)
-
-    from kubernetes import client
-
-    api_client = client.ApiClient()
-    core_client = client.CoreV1Api(api_client=api_client)
-    app_client = client.AppsV1Api(api_client=api_client)
     
     k8s_cluster.deploy_from_dir(dump_path, namespace=namespace)
 
-    import portforward
-
-    config_path = os.environ['KUBECONFIG']
-    gateway_pod_name = (
-        core_client.list_namespaced_pod(
-            namespace=namespace, label_selector='app=gateway'
-        )
-        .items[0]
-        .metadata.name
-    )
-
-    executor_pod_name = (
-        core_client.list_namespaced_pod(
-            namespace=namespace, label_selector='app=segmenter'
-        )
-        .items[0]
-        .metadata.name
-    )
+    gateway_pod_name = k8s_cluster.get_pod_name(namespace=namespace, label_selector='app=gateway')
+    executor_pod_name = k8s_cluster.get_pod_name(namespace=namespace, label_selector='app=segmenter')
 
     port_monitoring = GrpcConnectionPool.K8S_PORT_MONITORING
     port = port_generator()
 
     for pod_name in [gateway_pod_name, executor_pod_name]:
-        with portforward.forward(
-            namespace, pod_name, port, port_monitoring, config_path
-        ):
+        with k8s_cluster.port_forward(pod_name, namespace=namespace, host_port=port, svc_port=port_monitoring):
             resp = req.get(f'http://localhost:{port}/')
             assert resp.status_code == 200
 
@@ -574,27 +550,12 @@ async def test_flow_with_custom_gateway(tmpdir, k8s_cluster: KindClusterWrapper)
     namespace = 'flow-custom-gateway'.lower()
     flow.to_kubernetes_yaml(dump_path, k8s_namespace=namespace)
 
-    from kubernetes import client
-
-    api_client = client.ApiClient()
-    core_client = client.CoreV1Api(api_client=api_client)
-    app_client = client.AppsV1Api(api_client=api_client)
-    
     k8s_cluster.deploy_from_dir(dump_path, namespace=namespace)
 
-    gateway_pod_name = (
-        core_client.list_namespaced_pod(
-            namespace=namespace, label_selector='app=gateway'
-        )
-        .items[0]
-        .metadata.name
-    )
-    config_path = os.environ['KUBECONFIG']
-    import portforward
+    gateway_pod_name = k8s_cluster.get_pod_name(namespace=namespace, label_selector='app=gateway')
 
-    with portforward.forward(
-        namespace, gateway_pod_name, flow.port, flow.port, config_path
-    ):
+    with k8s_cluster.port_forward(gateway_pod_name, namespace=namespace, svc_port=flow.port, host_port=flow.port):
+
         _validate_dummy_custom_gateway_response(
             flow.port,
             {'arg1': 'overridden-hello', 'arg2': 'world', 'arg3': 'default-arg3'},
@@ -629,21 +590,9 @@ async def test_flow_multiple_protocols_gateway(
     namespace = 'flow-multiprotocol-gateway'
     flow.to_kubernetes_yaml(dump_path, k8s_namespace=namespace)
 
-    from kubernetes import client
-
-    api_client = client.ApiClient()
-    core_client = client.CoreV1Api(api_client=api_client)
-    app_client = client.AppsV1Api(api_client=api_client)
     k8s_cluster.deploy_from_dir(dump_path, namespace=namespace)
 
-    gateway_pod_name = (
-        core_client.list_namespaced_pod(
-            namespace=namespace, label_selector='app=gateway'
-        )
-        .items[0]
-        .metadata.name
-    )
-    config_path = os.environ['KUBECONFIG']
+    gateway_pod_name = k8s_cluster.get_pod_name(namespace=namespace, label_selector='app=gateway')
 
     # test portforwarding the gateway pod and service using http
     forward_args = [
