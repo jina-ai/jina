@@ -60,6 +60,7 @@ spec:
               - 127.0.0.1:{port}
           initialDelaySeconds: 5
           periodSeconds: 10
+          timeoutSeconds: 10
         livenessProbe:
           exec:
             command:
