@@ -189,7 +189,7 @@ async def test_flow_with_monitoring(tmpdir, k8s_cluster: KindClusterWrapper, por
             resp = req.get(f'http://localhost:{port}/')
             assert resp.status_code == 200
 
-    core_client.delete_namespace(namespace)
+    k8s_cluster.delete_namespace(namespace)
 
 
 @pytest.mark.asyncio
@@ -199,11 +199,6 @@ async def test_flow_with_needs(k8s_flow_with_needs, tmpdir, k8s_cluster: KindClu
     dump_path = os.path.join(str(tmpdir), 'test-flow-with-needs')
     k8s_flow_with_needs.to_kubernetes_yaml(dump_path, k8s_namespace=NAMESPACE)
 
-    from kubernetes import client
-
-    api_client = client.ApiClient()
-    core_client = client.CoreV1Api(api_client=api_client)
-    app_client = client.AppsV1Api(api_client=api_client)
     k8s_cluster.deploy_from_dir(dump_path, namespace=NAMESPACE)
     resp = await run_test(
         flow=k8s_flow_with_needs,
@@ -221,7 +216,7 @@ async def test_flow_with_needs(k8s_flow_with_needs, tmpdir, k8s_cluster: KindClu
     assert len(docs) == 10
     for doc in docs:
         assert set(doc.tags['traversed-executors']) == expected_traversed_executors
-    core_client.delete_namespace(NAMESPACE)
+    k8s_cluster.delete_namespace(NAMESPACE)
 
 
 @pytest.mark.timeout(3600)
@@ -232,11 +227,6 @@ async def test_flow_with_sharding(k8s_flow_with_sharding, polling, tmpdir, k8s_c
     namespace = f'test-flow-with-sharding-{polling}'.lower()
     k8s_flow_with_sharding.to_kubernetes_yaml(dump_path, k8s_namespace=namespace)
 
-    from kubernetes import client
-
-    api_client = client.ApiClient()
-    core_client = client.CoreV1Api(api_client=api_client)
-    app_client = client.AppsV1Api(api_client=api_client)
     k8s_cluster.deploy_from_dir(dump_path, namespace=namespace)
     resp = await run_test(
         flow=k8s_flow_with_sharding,
@@ -245,7 +235,7 @@ async def test_flow_with_sharding(k8s_flow_with_sharding, polling, tmpdir, k8s_c
         endpoint='/debug',
     )
 
-    core_client.delete_namespace(namespace)
+    k8s_cluster.delete_namespace(namespace)
     docs = resp[0].docs
     assert len(docs) == 10
     for doc in docs:
@@ -275,11 +265,6 @@ async def test_flow_with_configmap(k8s_flow_configmap, tmpdir, k8s_cluster: Kind
     namespace = f'test-flow-with-configmap'.lower()
     k8s_flow_configmap.to_kubernetes_yaml(dump_path, k8s_namespace=namespace)
 
-    from kubernetes import client
-
-    api_client = client.ApiClient()
-    core_client = client.CoreV1Api(api_client=api_client)
-    app_client = client.AppsV1Api(api_client=api_client)
     k8s_cluster.deploy_from_dir(dump_path, namespace=namespace)
     resp = await run_test(
         flow=k8s_flow_configmap,
@@ -295,7 +280,7 @@ async def test_flow_with_configmap(k8s_flow_configmap, tmpdir, k8s_cluster: Kind
         assert doc.tags['k1'] == 'v1'
         assert doc.tags['k2'] == 'v2'
         assert doc.tags['env'] == {'k1': 'v1', 'k2': 'v2'}
-    core_client.delete_namespace(namespace)
+    k8s_cluster.delete_namespace(namespace)
 
 
 @pytest.mark.timeout(3600)
@@ -306,12 +291,6 @@ async def test_flow_with_gpu(k8s_flow_gpu, tmpdir, k8s_cluster: KindClusterWrapp
     namespace = f'test-flow-with-gpu'
     k8s_flow_gpu.to_kubernetes_yaml(dump_path, k8s_namespace=namespace)
 
-    from kubernetes import client
-
-    api_client = client.ApiClient()
-    core_client = client.CoreV1Api(api_client=api_client)
-    app_client = client.AppsV1Api(api_client=api_client)
-    
     k8s_cluster.deploy_from_dir(dump_path, namespace=namespace)
 
     resp = await run_test(
@@ -324,7 +303,7 @@ async def test_flow_with_gpu(k8s_flow_gpu, tmpdir, k8s_cluster: KindClusterWrapp
     assert len(docs) == 10
     for doc in docs:
         assert doc.tags['resources']['limits'] == {'nvidia.com/gpu:': 1}
-    core_client.delete_namespace(namespace)
+    k8s_cluster.delete_namespace(namespace)
 
 
 @pytest.mark.asyncio
@@ -340,12 +319,6 @@ async def test_flow_with_workspace(tmpdir, k8s_cluster: KindClusterWrapper):
     namespace = f'test-flow-with-workspace'.lower()
     flow.to_kubernetes_yaml(dump_path, k8s_namespace=namespace)
 
-    from kubernetes import client
-
-    api_client = client.ApiClient()
-    core_client = client.CoreV1Api(api_client=api_client)
-    app_client = client.AppsV1Api(api_client=api_client)
-    
     k8s_cluster.deploy_from_dir(dump_path, namespace=namespace)
 
     resp = await run_test(
@@ -358,7 +331,7 @@ async def test_flow_with_workspace(tmpdir, k8s_cluster: KindClusterWrapper):
     assert len(docs) == 10
     for doc in docs:
         assert doc.tags['workspace'] == '/shared/TestExecutor/0'
-    core_client.delete_namespace(namespace)
+    k8s_cluster.delete_namespace(namespace)
 
 
 @pytest.mark.asyncio
@@ -385,12 +358,6 @@ async def test_flow_with_external_native_deployment(tmpdir, k8s_cluster: KindClu
         dump_path = os.path.join(str(tmpdir), namespace)
         flow.to_kubernetes_yaml(dump_path, k8s_namespace=namespace)
 
-        from kubernetes import client
-
-        api_client = client.ApiClient()
-        core_client = client.CoreV1Api(api_client=api_client)
-        app_client = client.AppsV1Api(api_client=api_client)
-        
         k8s_cluster.deploy_from_dir(dump_path, namespace=namespace)
 
         resp = await run_test(
@@ -403,7 +370,7 @@ async def test_flow_with_external_native_deployment(tmpdir, k8s_cluster: KindClu
     assert len(docs) == 100
     for doc in docs:
         assert doc.text == 'executor was here'
-    core_client.delete_namespace(namespace)
+    k8s_cluster.delete_namespace(namespace)
 
 
 @pytest.mark.asyncio
@@ -603,7 +570,7 @@ async def test_flow_with_failing_executor(tmpdir, k8s_cluster: KindClusterWrappe
     pod_phases = [item.status.phase for item in pods]
     assert all([phase == 'Running' for phase in pod_phases])
 
-    core_client.delete_namespace(namespace)
+    k8s_cluster.delete_namespace(namespace)
 
 
 @pytest.mark.skip(reason='Fails')
@@ -664,7 +631,7 @@ async def test_flow_with_custom_gateway(tmpdir, k8s_cluster: KindClusterWrapper)
         assert tags['shards'] == 1
         assert tags['shard_id'] == 0
 
-    core_client.delete_namespace(namespace)
+    k8s_cluster.delete_namespace(namespace)
 
 
 @pytest.mark.skip(reason='Fails')
@@ -743,12 +710,6 @@ async def test_flow_with_stateful_executor(
     )
     flow.to_kubernetes_yaml(dump_path, k8s_namespace=namespace)
 
-    from kubernetes import client
-
-    api_client = client.ApiClient()
-    core_client = client.CoreV1Api(api_client=api_client)
-    app_client = client.AppsV1Api(api_client=api_client)
-    
     k8s_cluster.deploy_from_dir(dump_path, namespace=namespace, validate=False)
 
     await run_test(
