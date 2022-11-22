@@ -157,16 +157,17 @@ class KindClusterWrapper:
         self._log.info(f'Docker image {image_name} loaded')
         return image_name
     
-    def remove_docker_image(self, image_name: str, tag: str) -> None:
+    def remove_docker_image(self, image_repo_name: str, tag: str) -> None:
         """Remove docker image.
         
         Args:
-            image_name: name of the image
+            image_repo_name: name of the image repository
             tag: tag of the image
         """
-        self._log.info(f'Removing docker image {image_name}:{tag}')
-        self._docker_client.images.remove(f'{image_name}:{tag}')
-        self._log.info(f'Docker image {image_name}:{tag} removed')
+        image_name = f'{image_repo_name}:{tag}'
+        self._log.info(f'Removing docker image {image_name}')
+        self._docker_client.images.remove(f'{image_name}')
+        self._log.info(f'Docker image {image_name} removed')
 
     def get_pod_name(self, namespace: str, label_selector: str) -> str:
         """Get pod name by label selector.

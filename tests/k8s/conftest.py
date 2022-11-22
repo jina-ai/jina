@@ -3,6 +3,7 @@ import os
 import subprocess
 import time
 from pathlib import Path
+from typing import List
 
 import docker
 import pytest
@@ -15,37 +16,31 @@ client = docker.from_env()
 cur_dir = os.path.dirname(__file__)
 cluster.KIND_VERSION = 'v0.11.1'
 
+IMAGES: List[str] = [
+    'reload-executor',
+    'test-executor',
+    'slow-process-executor',
+    'executor-merger',
+    'set-text-executor',
+    'failing-executor',
+    'custom-gateway',
+    'test-stateful-executor',
+    'multiprotocol-gateway',
+]
 
 # TODO: Can we get jina image to build here as well?
 @pytest.fixture(scope='session' ,autouse=True)
 def build_and_load_images(k8s_cluster: KindClusterWrapper) -> None:
     CUR_DIR = Path(__file__).parent
-    k8s_cluster.build_and_load_docker_image(str(CUR_DIR / 'reload-executor'), 'reload-executor', 'test-pip')
-    k8s_cluster.build_and_load_docker_image(str(CUR_DIR / 'test-executor'), 'test-executor', 'test-pip')
-    k8s_cluster.build_and_load_docker_image(str(CUR_DIR / 'slow-process-executor'), 'slow-process-executor', 'test-pip')
-    k8s_cluster.build_and_load_docker_image(str(CUR_DIR / 'executor-merger'), 'executor-merger', 'test-pip')
-    k8s_cluster.build_and_load_docker_image(str(CUR_DIR / 'set-text-executor'), 'set-text-executor', 'test-pip')
-
-    k8s_cluster.build_and_load_docker_image(str(CUR_DIR / 'failing-executor'), 'failing-executor', 'test-pip')
-    k8s_cluster.build_and_load_docker_image(str(CUR_DIR / 'custom-gateway'), 'custom-gateway', 'test-pip')
-    k8s_cluster.build_and_load_docker_image(str(CUR_DIR / 'test-stateful-executor'), 'test-stateful-executor', 'test-pip')
-    k8s_cluster.build_and_load_docker_image(str(CUR_DIR / 'multiprotocol-gateway'), 'multiprotocol-gateway', 'test-pip')
+    for image in IMAGES:
+        k8s_cluster.build_and_load_docker_image(str(CUR_DIR / image), image, 'test-pip')
 
     k8s_cluster.load_docker_image(image_repo_name='jinaai/jina', tag='test-pip')
     os.environ['JINA_GATEWAY_IMAGE'] = 'jinaai/jina:test-pip'
     yield
     del os.environ['JINA_GATEWAY_IMAGE']
-    #k8s_cluster.remove_docker_image('reload-executor', 'test-pip')
-    #k8s_cluster.remove_docker_image('test-executor', 'test-pip')
-    #k8s_cluster.remove_docker_image('slow-process-executor', 'test-pip')
-    #k8s_cluster.remove_docker_image('executor-merger', 'test-pip')
-    #k8s_cluster.remove_docker_image('set-text-executor', 'test-pip')
-
-    #k8s_cluster.remove_docker_image('failing-executor', 'test-pip')
-    #k8s_cluster.remove_docker_image('custom-gateway', 'test-pip')
-    #k8s_cluster.remove_docker_image('test-stateful-executor', 'test-pip')
-    #k8s_cluster.remove_docker_image('multiprotocol-gateway', 'test-pip')
-
+    for image in IMAGES:
+        k8s_cluster.remove_docker_image(image, 'test-pip')
 
 @pytest.fixture(scope='session')
 def k8s_cluster(kind_cluster: KindCluster) -> KindClusterWrapper:
