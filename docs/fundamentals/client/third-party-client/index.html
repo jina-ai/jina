@@ -6,11 +6,11 @@
 <meta property="og:title" content="Third-party clients" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/fundamentals/client/third-party-client/" />
-<meta property="og:site_name" content="Jina 3.11.1 Documentation" />
-<meta property="og:description" content="This page is about accessing the Flow with other clients, e.g. curl, or programming languages other than Python. Golang: Our Go Client supports gRPC, HTTP and WebSocket protocols, allowing you to connect to Jina from your Go applications. PHP: A big thanks to our community member Jonathan Rowley ..." />
+<meta property="og:site_name" content="Jina 3.11.2 Documentation" />
+<meta property="og:description" content="This page is about accessing the Flow with other clients, e.g. curl, or programming languages other than python. HTTP: Apart from using the Jina Client, the most common way of interacting with your deployed Flow is via HTTP. You can always use post to interact with a Flow, using the/post HTTP end..." />
 <meta property="og:image" content="https://docs.jina.ai/_images/swagger-ui.png" />
-<meta property="og:image:alt" content="Jina 3.11.1 Documentation" />
-<meta name="description" content="This page is about accessing the Flow with other clients, e.g. curl, or programming languages other than Python. Golang: Our Go Client supports gRPC, HTTP and WebSocket protocols, allowing you to connect to Jina from your Go applications. PHP: A big thanks to our community member Jonathan Rowley ..." />
+<meta property="og:image:alt" content="Jina 3.11.2 Documentation" />
+<meta name="description" content="This page is about accessing the Flow with other clients, e.g. curl, or programming languages other than python. HTTP: Apart from using the Jina Client, the most common way of interacting with your deployed Flow is via HTTP. You can always use post to interact with a Flow, using the/post HTTP end..." />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
@@ -33,7 +33,7 @@
         <link rel="canonical" href="https://docs.jina.ai/fundamentals/client/third-party-client.html" />
 
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
-        <title>Third-party clients - Jina 3.11.1 documentation</title>
+        <title>Third-party clients - Jina 3.11.2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
@@ -42,7 +42,7 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     <link rel="stylesheet" type="text/css" href="../../../_static/main.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/docbot.css" />
-    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css" />
     
     
 
@@ -167,7 +167,7 @@
         </div>
         <div class="header-center">
             <a href="../../../">
-                <div class="brand">Jina 3.11.1 documentation</div>
+                <div class="brand">Jina 3.11.2 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -207,35 +207,9 @@
   
   
 </a>
-<script>
-  function setPrefix(prefix){
-    window.location.href = prefix
-  }
-</script>
-<script defer>
-  fetch(`https://${window.location.host}/_versions.json`)
-  .then((resp) => resp.json())
-  .then((data) => {
-    var versionSelector = document.getElementsByClassName("version-select")[0];
-    var currentPrefix = window.location.href.toString().split(window.location.host)[1].split('/')[1];
-
-    for(var i = 0; i < data.length; i++){
-      var option = document.createElement("option");
-      option.innerHTML = data[i].version;
-      option.value = "/" + data[i].version;
-      versionSelector.appendChild(option);
-      if(currentPrefix === data[i].version){
-        versionSelector.selectedIndex = i + 1;
-      }
-    }
-  })
-  .catch((err) => console.log(err));
-</script>
 <div class="sd-d-flex-row sd-align-major-spaced">
   <a class="github-button" href="https://github.com/jina-ai/jina" data-icon="octicon-star" data-show-count="true" aria-label="Star jina-ai/jina on GitHub" style="opacity: 0;">Star</a>
-  <select onChange="setPrefix(this.value)" class="version-select">
-    <option value="/">latest</option>
-  </select>
+  
 </div><form class="sidebar-search-container" method="get" action="../../../search/" role="search">
   <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -244,7 +218,7 @@
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
     <p class="caption" role="heading"><span class="caption-text">Introduction</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../get-started/what-is-cross-modal-multi-modal/">What is Multimodal?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../get-started/what-is-cross-modal-multi-modal/">What is Cross-Modal &amp; Multi-Modal?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../get-started/what-is-jina/">What is Jina?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../get-started/comparing-alternatives/">Comparing to Alternatives</a></li>
 </ul>
@@ -281,7 +255,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../../flow/health-check/">Readiness &amp; health check</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../flow/when-things-go-wrong/">Handle exceptions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../flow/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../flow/remarks/">Remarks</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../gateway/">Gateway</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -302,7 +275,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../executor/hub/use-hub-executor/">Use</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../jcloud/">Jina AI Cloud Hosting</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../jcloud/">JCloud Hosting</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../jcloud/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
 </ul>
 </li>
@@ -316,19 +289,10 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../how-to/google-colab/">Run on Google Colab with GPU/TPU</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../how-to/gpu-executor/">Build a GPU Executor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../how-to/external-executor/">Include external Executors in a Flow</a></li>
-</ul>
-</li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Cloud Native</span></p>
-<ul>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../cloud-nativeness/k8s/"><span class="fas fa-dharmachakra"></span> Kubernetes Support</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../cloud-nativeness/kubernetes/">Deploy on Kubernetes</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../../../cloud-nativeness/docker-compose/"><span class="fab fa-docker"></span> Docker Compose Support</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../cloud-nativeness/opentelemetry/"><svg aria-hidden="true" class="sd-octicon sd-octicon-telescope-fill" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M8.531 10.21a.75.75 0 01.944.253l2.644 3.864a.75.75 0 11-1.238.847L9 12.424v2.826a.75.75 0 01-1.5 0v-2.826l-1.881 2.75a.75.75 0 01-1.238-.848l2.048-2.992a.75.75 0 01.293-.252l1.81-.871zM11.905.42a1.5 1.5 0 012.144.49l1.692 2.93a1.5 1.5 0 01-.649 2.102L2.895 11.815a1.5 1.5 0 01-1.95-.602l-.68-1.176a1.5 1.5 0 01.455-1.99L11.905.422zM3.279 8.119l.835 1.445 1.355-.653-.947-1.64-1.243.848zm7.728-1.874L9.6 3.808l1.243-.848 1.52 2.631-1.356.653z" fill-rule="evenodd"></path></svg> OpenTelemetry Support</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../cloud-nativeness/opentelemetry-migration/">Migrate from Prometheus/Grafana to OpenTelemetry</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../cloud-nativeness/monitoring/">Prometheus/Grafana Support (Legacy)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../how-to/docker-compose/">Deploy with Docker Compose</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../how-to/kubernetes/">Deploy with Kubernetes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../how-to/opentelemetry/">Observability and Instrumentation with OpenTelemetry and Jina</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../how-to/opentelemetry-migration/">Migrate from Prometheus/Grafana to OpenTelemetry/Prometheus/Grafana</a></li>
 </ul>
 </li>
 </ul>
@@ -354,7 +318,7 @@
                 <img class="sidebar-ecosys-logo only-light-line" src="../../../_static/search-light.svg">
                 <img class="sidebar-ecosys-logo only-dark-line" src="../../../_static/search-dark.svg">
                 Jina</a></li>
-        <li class="toctree-l1"><a class="reference external" href="https://cloud.jina.ai">
+        <li class="toctree-l1"><a class="reference external" href="https://hub.jina.ai">
             <img class="sidebar-ecosys-logo only-light-line" src="../../../_static/hub-light.svg">
             <img class="sidebar-ecosys-logo only-dark-line" src="../../../_static/hub-dark.svg">
             Jina Hub</a></li>
@@ -423,19 +387,7 @@
                 <article role="main">
                     <section id="third-party-clients">
 <span id="third-party-client"></span><h1>Third-party clients<a class="headerlink" href="#third-party-clients" title="Permalink to this heading">#</a></h1>
-<p>This page is about accessing the Flow with other clients, e.g. <code class="docutils literal notranslate"><span class="pre">curl</span></code>, or programming languages other than Python.</p>
-<section id="golang">
-<h2>Golang<a class="headerlink" href="#golang" title="Permalink to this heading">#</a></h2>
-<p>Our <a class="reference external" href="https://github.com/jina-ai/client-go">Go Client</a> supports gRPC, HTTP and WebSocket protocols, allowing you to connect to Jina from your Go applications.</p>
-</section>
-<section id="php">
-<h2>PHP<a class="headerlink" href="#php" title="Permalink to this heading">#</a></h2>
-<p>A big thanks to our community member <a class="reference external" href="https://jina-ai.slack.com/team/U03973EA7BN">Jonathan Rowley</a> for developing a <a class="reference external" href="https://github.com/Dco-ai/php-jina">PHP client</a> for Jina!</p>
-</section>
-<section id="kotlin">
-<h2>Kotlin<a class="headerlink" href="#kotlin" title="Permalink to this heading">#</a></h2>
-<p>A big thanks to our community member <a class="reference external" href="https://jina-ai.slack.com/team/U03R0KNBK98">Peter Willemsen</a> for developing a <a class="reference external" href="https://github.com/peterwilli/JinaKotlin">Kotlin client</a> for Jina!</p>
-</section>
+<p>This page is about accessing the Flow with other clients, e.g. <code class="docutils literal notranslate"><span class="pre">curl</span></code>, or programming languages other than python.</p>
 <section id="http">
 <h2>HTTP<a class="headerlink" href="#http" title="Permalink to this heading">#</a></h2>
 <div class="caution admonition">
@@ -483,7 +435,7 @@ Only Flows that use HTTP can be accessed via the methods described below.</p>
 </table>
 </div>
 <p>Instead of using the generic <code class="docutils literal notranslate"><span class="pre">/post</span></code> endpoint, you can directly use endpoints like <code class="docutils literal notranslate"><span class="pre">/index</span></code> or <code class="docutils literal notranslate"><span class="pre">/search</span></code> to perform a specific operation.
-In this case your data request is sent to the corresponding Executor endpoint, so you don’t need to specify the parameter <code class="docutils literal notranslate"><span class="pre">execEndpoint</span></code>.</p>
+In this case your data request will be sent to the corresponding Executor endpoint, so the parameter <code class="docutils literal notranslate"><span class="pre">execEndpoint</span></code> does not need to be specified.</p>
 <details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
 <summary class="sd-summary-title sd-card-header">
 Example<div class="sd-summary-down docutils">
@@ -517,7 +469,7 @@ Example<div class="sd-summary-down docutils">
 </details><p>The response you receive includes <code class="docutils literal notranslate"><span class="pre">data</span></code> (an array of <a class="reference external" href="https://docarray.jina.ai/fundamentals/document/">Documents</a>), as well as the fields <code class="docutils literal notranslate"><span class="pre">routes</span></code>, <code class="docutils literal notranslate"><span class="pre">parameters</span></code>, and <code class="docutils literal notranslate"><span class="pre">header</span></code>.</p>
 <div class="seealso admonition">
 <p class="admonition-title">See also: Flow REST API</p>
-<p>For a more detailed descripton of the REST API of a generic Flow, including the complete request body schema and request samples, please check:</p>
+<p>For a more detailed descripton of the REST API of a generic Flow, including the complete request body schema and request samples, please check</p>
 <ol class="arabic simple">
 <li><p><a class="reference external" href="https://api.jina.ai/rest/latest.json">OpenAPI Schema</a></p></li>
 <li><p><a class="reference external" href="https://api.jina.ai/rest/">Redoc UI</a></p></li>
@@ -526,8 +478,8 @@ Example<div class="sd-summary-down docutils">
 </div>
 </section>
 <section id="use-curl">
-<span id="swagger-ui"></span><h3>Use cURL<a class="headerlink" href="#use-curl" title="Permalink to this heading">#</a></h3>
-<p>Here’s an example that uses <code class="docutils literal notranslate"><span class="pre">cURL</span></code>:</p>
+<span id="swagger-ui"></span><h3>Use curl<a class="headerlink" href="#use-curl" title="Permalink to this heading">#</a></h3>
+<p>Here’s an example that uses <code class="docutils literal notranslate"><span class="pre">cURL</span></code>.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl --request POST <span class="s1">&#39;http://localhost:12345/post&#39;</span> --header <span class="s1">&#39;Content-Type: application/json&#39;</span> -d <span class="s1">&#39;{&quot;data&quot;: [{&quot;text&quot;: &quot;hello world&quot;}],&quot;execEndpoint&quot;: &quot;/search&quot;}&#39;</span>
 </pre></div>
 </div>
@@ -592,8 +544,8 @@ Sample response<div class="sd-summary-down docutils">
 </div>
 </details></section>
 <section id="use-javascript">
-<h3>Use JavaScript<a class="headerlink" href="#use-javascript" title="Permalink to this heading">#</a></h3>
-<p>Sending a request from the front-end JavaScript code is a common use case too. Here’s how this looks:</p>
+<h3>Use Javascript<a class="headerlink" href="#use-javascript" title="Permalink to this heading">#</a></h3>
+<p>Sending a request from the front-end JavaScript code is a common use case too. Here’s how this would look like:</p>
 <div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">fetch</span><span class="p">(</span><span class="s1">&#39;http://localhost:12345/post&#39;</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">    </span><span class="nx">method</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;POST&#39;</span><span class="p">,</span><span class="w"></span>
 <span class="w">    </span><span class="nx">headers</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
@@ -642,53 +594,53 @@ Output<div class="sd-summary-down docutils">
 </details></section>
 <section id="use-swagger-ui">
 <h3>Use Swagger UI<a class="headerlink" href="#use-swagger-ui" title="Permalink to this heading">#</a></h3>
-<p>Flows provide a customized <a class="reference external" href="https://swagger.io/tools/swagger-ui/">Swagger UI</a> which you can use to visually interact with the Flow
-through a web browser.</p>
+<p>Flows provide a customized <a class="reference external" href="https://swagger.io/tools/swagger-ui/">Swagger UI</a> which can be used to interact with the Flow
+visually, through a web browser.</p>
 <div class="caution admonition">
 <p class="admonition-title">Available Protocols</p>
 <p>Only Flows that have enabled <a class="reference internal" href="../../gateway/#cors"><span class="std std-ref">CORS</span></a> expose the Swagger UI interface.</p>
 </div>
-<p>For a Flow that is exposed on port <code class="docutils literal notranslate"><span class="pre">PORT</span></code>, you can navigate to the Swagger UI at <code class="docutils literal notranslate"><span class="pre">http://localhost:PORT/docs</span></code>:</p>
+<p>For a Flow that is exposed on port <code class="docutils literal notranslate"><span class="pre">PORT</span></code>, you can navigate to the Swagger UI via <code class="docutils literal notranslate"><span class="pre">http://localhost:PORT/docs</span></code>:</p>
 <figure class="align-center">
 <img alt="../../../_images/swagger-ui.png" src="../../../_images/swagger-ui.png" />
 </figure>
 <p>Here you can see all the endpoints that are exposed by the Flow, such as <code class="docutils literal notranslate"><span class="pre">/search</span></code> and <code class="docutils literal notranslate"><span class="pre">/index</span></code>.</p>
-<p>To send a request, click on the endpoint you want to target, then <code class="docutils literal notranslate"><span class="pre">Try</span> <span class="pre">it</span> <span class="pre">out</span></code>.</p>
-<p>Now you can enter your HTTP request, and send it by clicking <code class="docutils literal notranslate"><span class="pre">Execute</span></code>.
+<p>To send a request, click on the endpoint you want to target, then on <code class="docutils literal notranslate"><span class="pre">Try</span> <span class="pre">it</span> <span class="pre">out</span></code>.</p>
+<p>Now you can enter your HTTP request, and send it by clicking on <code class="docutils literal notranslate"><span class="pre">Execute</span></code>.
 You can again use the <a class="reference external" href="https://api.jina.ai/rest/">REST HTTP request schema</a>, but do not need to specify <code class="docutils literal notranslate"><span class="pre">execEndpoint</span></code>.</p>
 <p>Below, in <code class="docutils literal notranslate"><span class="pre">Responses</span></code>, you can see the reply, together with a visual representation of the returned Documents.</p>
 </section>
 <section id="use-postman">
 <h3>Use Postman<a class="headerlink" href="#use-postman" title="Permalink to this heading">#</a></h3>
 <p><a class="reference external" href="https://www.postman.com/">Postman</a> is an application that allows the testing of web APIs from a graphical interface. You can store all the templates for your REST APIs in it, using Collections.</p>
-<p>We provide a <a class="reference external" href="https://github.com/jina-ai/jina/tree/master/.github/Jina.postman_collection.json">suite of templates for Jina Flow</a>. You can import it in Postman in <strong>Collections</strong>, with the <strong>Import</strong> button. It provides templates for the main operations. You need to create an Environment to define the <code class="docutils literal notranslate"><span class="pre">{{url}}</span></code> and <code class="docutils literal notranslate"><span class="pre">{{port}}</span></code> environment variables. These would be the hostname and the port where the Flow is listening.</p>
+<p>We provide a suite of templates for the Jina Flow, in this <a class="reference external" href="https://github.com/jina-ai/jina/tree/master/.github/Jina.postman_collection.json">collection</a>. You can import it in Postman in <strong>Collections</strong>, with the <strong>Import</strong> button. It provides templates for the main operations. You need to create an Environment to define the <code class="docutils literal notranslate"><span class="pre">{{url}}</span></code> and <code class="docutils literal notranslate"><span class="pre">{{port}}</span></code> environment variables. These would be the hostname and the port where the Flow is listening.</p>
 <p>This contribution was made by <a class="reference external" href="https://jina-ai.slack.com/archives/C0169V26ATY/p1649689443888779?thread_ts=1649428823.420879&amp;cid=C0169V26ATY">Jonathan Rowley</a>, in our <span class="xref myst">community Slack</span>.</p>
 </section>
 </section>
 <section id="grpc">
 <h2>gRPC<a class="headerlink" href="#grpc" title="Permalink to this heading">#</a></h2>
-<p>To use the gRPC protocol with a language other than Python you will need to:</p>
+<p>To use the gRPC protocol with a language other than Python you will need to :</p>
 <ul class="simple">
-<li><p>Download the two proto definition files: <code class="docutils literal notranslate"><span class="pre">jina.proto</span></code> and <code class="docutils literal notranslate"><span class="pre">docarray.proto</span></code> from <a class="reference external" href="https://github.com/jina-ai/jina/tree/master/jina/proto">GitHub</a> (be sure to use the latest release branch)</p></li>
-<li><p>Compile them with <a class="reference external" href="https://grpc.io/docs/protoc-installation/">protoc</a> and specify which programming language you want to compile them with.</p></li>
-<li><p>Add the generated files to your project and import them into your code.</p></li>
+<li><p>Download the two proto definition files: <code class="docutils literal notranslate"><span class="pre">jina.proto</span></code> and <code class="docutils literal notranslate"><span class="pre">docarray.proto</span></code> from <a class="reference external" href="https://github.com/jina-ai/jina/tree/master/jina/proto">github</a> (be sure to use the latest release branch)</p></li>
+<li><p>Compile them with <a class="reference external" href="https://grpc.io/docs/protoc-installation/">protoc</a> and precise to which programming language you want to compile them.</p></li>
+<li><p>Add the generated files to your project and import them in your code.</p></li>
 </ul>
 <p>You should finally be able to communicate with your Flow using the gRPC protocol. You can find more information on the gRPC
-<code class="docutils literal notranslate"><span class="pre">message</span></code> and <code class="docutils literal notranslate"><span class="pre">service</span></code> that you can use to communicate in the <a class="reference internal" href="../../../proto/docs/"><span class="doc std std-doc">Protobuf documentation</span></a>.</p>
+<code class="docutils literal notranslate"><span class="pre">message</span></code> and <code class="docutils literal notranslate"><span class="pre">service</span></code> that you can use to communicate in the  <a class="reference internal" href="../../../proto/docs/"><span class="doc std std-doc">Protobuf documentation</span></a>.</p>
 </section>
 <section id="graphql">
 <span id="flow-graphql"></span><h2>GraphQL<a class="headerlink" href="#graphql" title="Permalink to this heading">#</a></h2>
 <div class="seealso admonition">
 <p class="admonition-title">See Also</p>
 <p>This article does not serve as the introduction to GraphQL.
-If you are not already familiar with GraphQL, we recommend you learn more about GraphQL from the <a class="reference external" href="https://graphql.org/learn/">official documentation</a>.
+If you are not already familiar with GraphQL, we recommend you learn more about GraphQL from the official <a class="reference external" href="https://graphql.org/learn/">GraphQL documentation</a>.
 You may also want to learn about <a class="reference external" href="https://strawberry.rocks/">Strawberry</a>, the library that powers Jina’s GraphQL support.</p>
 </div>
 <p>Jina Flows that use the HTTP protocol can also provide a GraphQL API, which is located behind the <code class="docutils literal notranslate"><span class="pre">/graphql</span></code> endpoint.
-GraphQL has the advantage of letting you define your own response schema, which means that only the fields you require
-are sent over the wire.
-This is especially useful when you don’t need potentially large fields, like image tensors.</p>
-<p>You can access the Flow from any GraphQL client, like <code class="docutils literal notranslate"><span class="pre">sgqlc</span></code>.</p>
+GraphQL has the advantage of letting the user define their own response schema, which means that only the fields that are required
+will be sent over the wire.
+This is especially useful when the user does not need potentially large fields, like image tensors.</p>
+<p>You can access the Flow from any GraphQL client, like for example, <code class="docutils literal notranslate"><span class="pre">sgqlc</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sgqlc.endpoint.http</span> <span class="kn">import</span> <span class="n">HTTPEndpoint</span>
 
 <span class="n">HOSTNAME</span><span class="p">,</span> <span class="n">PORT</span> <span class="o">=</span> <span class="o">...</span>
@@ -710,12 +662,12 @@ This is especially useful when you don’t need potentially large fields, like i
 <h3>Mutations and arguments<a class="headerlink" href="#mutations-and-arguments" title="Permalink to this heading">#</a></h3>
 <p>The Flow GraphQL API exposes the mutation <code class="docutils literal notranslate"><span class="pre">docs</span></code>, which sends its inputs to the Flow’s Executors,
 just like HTTP <code class="docutils literal notranslate"><span class="pre">post</span></code> as described <span class="xref std std-ref">above</span>.</p>
-<p>A GraphQL mutation takes the same set of arguments used in <span class="xref myst">HTTP</span>.</p>
+<p>A GraphQL mutation takes same set of arguments used in <span class="xref myst">HTTP</span>.</p>
 <p>The response from GraphQL can include all fields available on a DocumentArray.</p>
 <div class="seealso admonition">
 <p class="admonition-title">See Also</p>
 <p>For more details on the GraphQL format of Document and DocumentArray, see the <a class="reference external" href="https://docarray.jina.ai/advanced/graphql-support/">documentation page</a>
-or <a class="reference external" href="https://docarray.jina.ai/api/docarray.document.mixins.strawberry/">developer reference</a>.</p>
+or the <a class="reference external" href="https://docarray.jina.ai/api/docarray.document.mixins.strawberry/">developer reference</a>.</p>
 </div>
 </section>
 <section id="fields">
@@ -726,31 +678,31 @@ and more.</p>
 </section>
 </section>
 <section id="websocket">
-<h2>WebSocket<a class="headerlink" href="#websocket" title="Permalink to this heading">#</a></h2>
-<p>WebSocket uses persistent connections between the client and Flow, hence allowing streaming use cases.
-While you can always use the Python client to stream requests like any other protocol, WebSocket allows streaming JSON from anywhere (CLI / Postman / any other programming language).
-You can use the same set of arguments as <span class="xref myst">HTTP</span> in the payload.</p>
+<h2>Websocket<a class="headerlink" href="#websocket" title="Permalink to this heading">#</a></h2>
+<p>Websocket uses persistent connections between the client &amp; Flow, hence allowing streaming use cases.
+While you can always use the Python client to stream requests like any other protocol, websocket allows streaming JSON from anywhere (CLI / Postman / any other programming language).
+The same set of arguments as <span class="xref myst">HTTP</span> can be used in the payload.</p>
 <p>We use <a class="reference external" href="https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API/Writing_WebSocket_servers#subprotocols">subprotocols</a> to separate streaming JSON vs bytes.
-The Flow defaults to <code class="docutils literal notranslate"><span class="pre">json</span></code> if you don’t specify a sub-protocol while establishing the connection (Our Python client uses <code class="docutils literal notranslate"><span class="pre">bytes</span></code> streaming by using <a class="reference internal" href="../../../proto/docs/"><span class="doc std std-doc">jina.proto</span></a> definition).</p>
+The Flow defaults to <code class="docutils literal notranslate"><span class="pre">json</span></code> when a subprotocol is not passed during connection establishment (Our Python client uses <code class="docutils literal notranslate"><span class="pre">bytes</span></code> streaming by using <a class="reference internal" href="../../../proto/docs/"><span class="doc std std-doc">jina.proto</span></a> definition).</p>
 <div class="admonition hint">
 <p class="admonition-title">Hint</p>
 <ul class="simple">
-<li><p>Choose WebSocket over HTTP if you want to stream requests.</p></li>
-<li><p>Choose WebSocket over gRPC if</p>
+<li><p>Choose Websocket over HTTP if you want to stream requests.</p></li>
+<li><p>Choose Websocket over gRPC if</p>
 <ul>
-<li><p>you want to stream using JSON, not bytes.</p></li>
-<li><p>your client language doesn’t support gRPC.</p></li>
-<li><p>you don’t want to compile the <a class="reference internal" href="../../../proto/docs/"><span class="doc std std-doc">Protobuf definitions</span></a> for your gRPC client.</p></li>
+<li><p>you want to stream using JSON, not bytes</p></li>
+<li><p>your client language doesn’t support gRPC</p></li>
+<li><p>you don’t want to compile the <a class="reference internal" href="../../../proto/docs/"><span class="doc std std-doc">Protobuf definitions</span></a> for your gRPC client</p></li>
 </ul>
 </li>
 </ul>
 </div>
 </section>
-<section id="see-also">
-<h2>See also<a class="headerlink" href="#see-also" title="Permalink to this heading">#</a></h2>
+<section id="see-further">
+<h2>See further<a class="headerlink" href="#see-further" title="Permalink to this heading">#</a></h2>
 <ul class="simple">
 <li><p><a class="reference internal" href="../client/#client"><span class="std std-ref">Access a Flow with the Client</span></a></p></li>
-<li><p><a class="reference internal" href="../../gateway/#flow"><span class="std std-ref">Configure a Flow</span></a></p></li>
+<li><p><a class="reference internal" href="../../gateway/#flow"><span class="std std-ref">Configure Flow</span></a></p></li>
 <li><p><a class="reference external" href="https://api.jina.ai/rest/">Flow REST API reference</a></p></li>
 </ul>
 </section>
@@ -787,7 +739,7 @@ The Flow defaults to <code class="docutils literal notranslate"><span class="pre
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Nov 21, 2022</div>
+                            Last updated on Nov 22, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -820,13 +772,10 @@ The Flow defaults to <code class="docutils literal notranslate"><span class="pre
                     <div class="toc-tree">
                         <ul>
 <li><a class="reference internal" href="#">Third-party clients</a><ul>
-<li><a class="reference internal" href="#golang">Golang</a></li>
-<li><a class="reference internal" href="#php">PHP</a></li>
-<li><a class="reference internal" href="#kotlin">Kotlin</a></li>
 <li><a class="reference internal" href="#http">HTTP</a><ul>
 <li><a class="reference internal" href="#arguments">Arguments</a></li>
-<li><a class="reference internal" href="#use-curl">Use cURL</a></li>
-<li><a class="reference internal" href="#use-javascript">Use JavaScript</a></li>
+<li><a class="reference internal" href="#use-curl">Use curl</a></li>
+<li><a class="reference internal" href="#use-javascript">Use Javascript</a></li>
 <li><a class="reference internal" href="#use-swagger-ui">Use Swagger UI</a></li>
 <li><a class="reference internal" href="#use-postman">Use Postman</a></li>
 </ul>
@@ -837,8 +786,8 @@ The Flow defaults to <code class="docutils literal notranslate"><span class="pre
 <li><a class="reference internal" href="#fields">Fields</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#websocket">WebSocket</a></li>
-<li><a class="reference internal" href="#see-also">See also</a></li>
+<li><a class="reference internal" href="#websocket">Websocket</a></li>
+<li><a class="reference internal" href="#see-further">See further</a></li>
 </ul>
 </li>
 </ul>

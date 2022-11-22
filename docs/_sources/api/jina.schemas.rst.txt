@@ -10,7 +10,6 @@ Submodules
    jina.schemas.deployment
    jina.schemas.executor
    jina.schemas.flow
-   jina.schemas.gateway
    jina.schemas.helper
    jina.schemas.meta
 

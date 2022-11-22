@@ -9,6 +9,7 @@ Subpackages
 
    jina.serve.runtimes.gateway
    jina.serve.runtimes.head
+   jina.serve.runtimes.request_handlers
    jina.serve.runtimes.worker
 
 Submodules

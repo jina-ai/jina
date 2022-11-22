@@ -1,5 +1,5 @@
 (jcloud)=
-# Jina AI Cloud Hosting
+# JCloud Hosting
 
 
 ```{toctree}
@@ -18,15 +18,15 @@ yaml-spec
 :width: 0 %
 ```
 
-After building a Jina project, the next step is to deploy and host it on the cloud. [Jina AI Cloud](https://cloud.jina.ai/) is Jina's reliable, scalable and production-ready cloud-hosting solution that manages your project lifecycle without surprises or hidden development costs.
+After building a Jina project, the next step is to deploy and host it on the cloud. JCloud is Jina's reliable, scalable and production-ready cloud-hosting solution that manages your project lifecycle without surprises or hidden development costs.
 
 ```{tip}
-At present, Jina AI Cloud hosts all your Jina projects and offers computational/storage resources **for free**!
+At present, JCloud hosts all your Jina projects and offers computational/storage resources **for free**!
 ```
 
 ## Basics
 
-Jina AI Cloud provides a CLI that you can use via `jina cloud` from the terminal (or `jcloud` or simply `jc` for minimalists.)
+JCloud provides a CLI that you can use via `jina cloud` from the terminal (or `jcloud` or simply `jc` for minimalists.)
 
 ````{hint}
 You can also install just the JCloud CLI without installing the Jina package.
@@ -58,7 +58,7 @@ A Flow can have two types of file structure: a single YAML file or a project fol
 
 A self-contained YAML file, consisting of all configuration at the [Flow](https://docs.jina.ai/fundamentals/flow/)-level and [Executor](https://docs.jina.ai/fundamentals/executor/)-level.
 
-> All Executors' `uses` must follow the format `jinahub+docker://MyExecutor` (from [Executor Hub](https://cloud.jina.ai)) to avoid any local file dependencies:
+> All Executors' `uses` must follow the format `jinahub+docker://MyExecutor` (from [Executor Hub](https://hub.jina.ai)) to avoid any local file dependencies:
 
 ```yaml
 # flow.yml
@@ -195,7 +195,7 @@ jc status 15937a10bd
 
 ### Monitoring
 
-Basic monitoring is provided to Flows deployed on Jina AI Cloud.
+Basic monitoring is provided to Flows deployed on JCloud.
 
 To access the [Grafana](https://grafana.com/)-powered dashboard, first get {ref}`the status of the Flow<jcloud-flow-status>`. The `dashboards` link is displayed at the bottom of the pane. Visit the URL to find basic metrics like 'Number of Request Gateway Received' and 'Time elapsed between receiving a request and sending back the response':
 
@@ -246,7 +246,7 @@ jc deploy flow.yml --env-file flow.env
 
 #### Project folder
 
-- You can include your environment variables in the `.env` file in the local project and Jina AI Cloud manages them.
+- You can include your environment variables in the `.env` file in the local project and JCloud manages them.
 - You can optionally pass a `custom.env`.
   ```bash
   jc deploy ./hello --env-file ./hello/custom.env
