@@ -3,7 +3,6 @@ import os
 import subprocess
 import time
 from pathlib import Path
-from typing import List, Dict
 
 import docker
 import pytest
@@ -54,11 +53,6 @@ def k8s_cluster(kind_cluster: KindCluster) -> KindClusterWrapper:
 
 ## END OF NEW
 
-@pytest.fixture()
-def test_dir() -> str:
-    return cur_dir
-
-
 @pytest.fixture
 def logger() -> JinaLogger:
     return JinaLogger('kubernetes-testing')
@@ -67,22 +61,6 @@ def logger() -> JinaLogger:
 @pytest.fixture(scope='session')
 def k8s_cluster(kind_cluster: KindCluster) -> KindClusterWrapper:
     return KindClusterWrapper(kind_cluster, JinaLogger('kubernetes-cluster-logger'))
-
-
-@pytest.fixture
-def image_name_tag_map() -> Dict[str, str]:
-    return {
-        'reload-executor': 'test-pip',
-        'test-executor': 'test-pip',
-        'slow-process-executor': 'test-pip',
-        'executor-merger': 'test-pip',
-        'set-text-executor': 'test-pip',
-        'failing-executor': 'test-pip',
-        'jinaai/jina': 'test-pip',
-        'custom-gateway': 'test-pip',
-        'test-stateful-executor': 'test-pip',
-        'multiprotocol-gateway': 'test-pip',
-    }
 
 
 @pytest.fixture(autouse=True)
