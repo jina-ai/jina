@@ -45,8 +45,6 @@ class HTTPGateway(BaseGateway):
         :param kwargs: keyword args
         """
         super().__init__(**kwargs)
-        self._set_single_port_protocol()
-        self.host = self.runtime_args.host
         self.title = title
         self.description = description
         self.no_debug_endpoints = no_debug_endpoints
