@@ -115,7 +115,7 @@ def k8s_flow_with_needs():
     return flow
 
 
-@pytest.mark.skip(reason='no matches for kind "ServiceMonitor" in version "monitoring.coreos.com/v1"')
+#@pytest.mark.skip(reason='no matches for kind "ServiceMonitor" in version "monitoring.coreos.com/v1"')
 @pytest.mark.asyncio
 @pytest.mark.timeout(3600)
 async def test_flow_with_monitoring(tmpdir, k8s_cluster: KindClusterWrapper, port_generator):
