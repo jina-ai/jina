@@ -100,7 +100,7 @@ def mixin_pod_parser(parser, pod_type: str = 'worker'):
         help='If set, the current Pod/Deployment can not be further chained, '
         'and the next `.add()` will chain after the last Pod/Deployment not this current one.',
     )
-    mixin_pod_runtime_args_parser(gp)
+    mixin_pod_runtime_args_parser(gp, pod_type=pod_type)
 
 
 def mixin_pod_runtime_args_parser(arg_group, pod_type='worker'):
