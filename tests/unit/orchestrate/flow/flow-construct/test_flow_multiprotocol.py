@@ -33,12 +33,24 @@ class MyExecutor(Executor):
         ],
     ],
 )
-def test_flow_multiprotocl(ports, protocols):
+def test_flow_multiprotocol(ports, protocols):
     flow = Flow().config_gateway(port=ports, protocol=protocols).add(uses=MyExecutor)
 
-    with flow as f:
+    with flow:
         for port, protocol in zip(ports, protocols):
             client = Client(port=port, protocol=protocol)
             docs = client.post('/', inputs=[Document()])
             for doc in docs:
                 assert doc.text == 'processed'
+
+
+def test_flow_multiprotocol_ports_protocols_mismatch():
+    flow = Flow().config_gateway(port=[random_port()], protocol=['grpc', 'http'])
+    with pytest.raises(ValueError) as err_info:
+        with flow:
+            pass
+
+    assert (
+        'You need to specify as much protocols as ports if you want to use a jina built-in gateway'
+        in err_info.value.args[0]
+    )
