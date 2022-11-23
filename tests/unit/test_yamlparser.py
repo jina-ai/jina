@@ -170,36 +170,9 @@ def test_load_from_dict():
     assert b1.metas.name == 'hello123'
 
 
-@pytest.fixture
-def dummy_gateway_runtime_args():
-    return {
-        'name': None,
-        'port': [12345],
-        'host': __default_host__,
-        'protocol': None,
-        'tracing': None,
-        'tracer_provider': None,
-        'grpc_tracing_server_interceptors': None,
-        'graph_description': '{}',
-        'graph_conditions': '{}',
-        'deployments_addresses': '{}',
-        'deployments_metadata': '{}',
-        'deployments_no_reduce': '{}',
-        'timeout_send': -1,
-        'retries': 2,
-        'compression': None,
-        'runtime_name': 'test',
-        'prefetch': None,
-        'metrics_registry': None,
-        'meter': None,
-        'aio_tracing_client_interceptors': None,
-        'tracing_client_interceptor': None,
-    }
-
-
-def test_load_gateway_external_success(dummy_gateway_runtime_args):
+def test_load_gateway_external_success():
     with Gateway.load_config(
-        'yaml/test-custom-gateway.yml', runtime_args=dummy_gateway_runtime_args
+        'yaml/test-custom-gateway.yml', runtime_args={'port': [12345]}
     ) as gateway:
         assert gateway.__class__.__name__ == 'DummyGateway'
         assert gateway.arg1 == 'hello'
@@ -207,11 +180,11 @@ def test_load_gateway_external_success(dummy_gateway_runtime_args):
         assert gateway.arg3 == 'default-arg3'
 
 
-def test_load_gateway_override_with(dummy_gateway_runtime_args):
+def test_load_gateway_override_with():
     with Gateway.load_config(
         'yaml/test-custom-gateway.yml',
         uses_with={'arg1': 'arg1', 'arg2': 'arg2', 'arg3': 'arg3'},
-        runtime_args=dummy_gateway_runtime_args,
+        runtime_args={'port': [12345]},
     ) as gateway:
         assert gateway.__class__.__name__ == 'DummyGateway'
         assert gateway.arg1 == 'arg1'
