@@ -1085,3 +1085,49 @@ async def test_flow_with_stateful_executor(
 
     assert len(resp) == 1
     assert resp[0].parameters == {'__results__': {'statefulexecutor': {'length': 10.0}}}
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    'docker_images', [['slow-process-executor', 'jinaai/jina']], indirect=True
+)
+async def test_slow_executor_readiness_probe_works(docker_images, tmpdir, logger):
+    dump_path = os.path.join(str(tmpdir), 'test-flow-slow-process-executor')
+    namespace = f'test-flow-slow-process-executor'.lower()
+    flow = Flow(name='test-flow-slow-process-executor',).add(
+        name='slow_process_executor',
+        uses=f'docker://{docker_images[0]}',
+        uses_with={'time_sleep': 20},
+        replicas=2,
+    )
+
+    flow.to_kubernetes_yaml(dump_path, k8s_namespace=namespace)
+
+    from kubernetes import client
+
+    api_client = client.ApiClient()
+    core_client = client.CoreV1Api(api_client=api_client)
+    app_client = client.AppsV1Api(api_client=api_client)
+    await create_all_flow_deployments_and_wait_ready(
+        dump_path,
+        namespace=namespace,
+        api_client=api_client,
+        app_client=app_client,
+        core_client=core_client,
+        deployment_replicas_expected={
+            'gateway': 1,
+            'slow-process-executor': 2,
+        },
+        logger=logger
+    )
+
+    resp = await run_test(
+        flow=flow,
+        namespace=namespace,
+        core_client=core_client,
+        n_docs=10,
+        request_size=1,
+        endpoint='/',
+    )
+
+    assert len(resp) == 10
