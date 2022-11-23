@@ -1120,6 +1120,7 @@ async def test_flow_with_stateful_executor(
         )
 
         core_client.delete_namespace(namespace)
+        await asyncio.sleep(60) # Should be enough time for it to delete
 
         await create_all_flow_deployments_and_wait_ready(
             dump_path,
