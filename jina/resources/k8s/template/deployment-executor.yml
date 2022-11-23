@@ -57,8 +57,9 @@ spec:
                 - ping
                 - executor
                 - 127.0.0.1:{port}
-            failureThreshold: 300
-            periodSeconds: 1
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 10
           livenessProbe:
             exec:
               command:

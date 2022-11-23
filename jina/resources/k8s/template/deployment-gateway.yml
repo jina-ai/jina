@@ -54,10 +54,11 @@ spec:
               command:
                 - jina
                 - ping
-                - executor
-                - 127.0.0.1:{port}
-            failureThreshold: 300
-            periodSeconds: 1
+                - gateway
+                - {protocol}://127.0.0.1:{port}
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 10
           livenessProbe:
             exec:
               command:
