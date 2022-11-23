@@ -315,7 +315,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Test k8s
         run: |
-          pytest -v -s --cov=jina --cov-report=xml ./tests/k8s_otel
+          pytest -v -s --cov=jina --cov-report=xml ./tests/k8s/otel
         timeout-minutes: 30
         env:
           JINA_K8S_USE_TEST_PIP: 1

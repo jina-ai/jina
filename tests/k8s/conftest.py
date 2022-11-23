@@ -27,6 +27,7 @@ IMAGES: List[str] = [
     'custom-gateway',
     'test-stateful-executor',
     'multiprotocol-gateway',
+    'test-instrumentation',
 ]
 
 # TODO: Can we get jina image to build here as well?
