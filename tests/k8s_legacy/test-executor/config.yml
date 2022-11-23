@@ -1,0 +1,3 @@
+jtype: TestExecutor
+py_modules:
+  - debug_executor.py

@@ -140,44 +140,6 @@ def k8s_flow_with_needs():
     return flow
 
 
-# @pytest.mark.skip(reason='no matches for kind "ServiceMonitor" in version "monitoring.coreos.com/v1"')
-@pytest.mark.asyncio
-@pytest.mark.timeout(3600)
-async def test_flow_with_monitoring(
-    tmpdir, k8s_cluster: KindClusterWrapper, port_generator
-):
-    dump_path = os.path.join(str(tmpdir), 'test-flow-with-monitoring')
-    namespace = f'test-flow-monitoring'.lower()
-
-    flow = Flow(name='test-flow-monitoring', monitoring=True).add(
-        name='segmenter',
-        uses=f'docker://test-executor:test-pip',
-    )
-
-    flow.to_kubernetes_yaml(dump_path, k8s_namespace=namespace)
-
-    k8s_cluster.deploy_from_dir(dump_path, namespace=namespace)
-
-    gateway_pod_name = k8s_cluster.get_pod_name(
-        namespace=namespace, label_selector='app=gateway'
-    )
-    executor_pod_name = k8s_cluster.get_pod_name(
-        namespace=namespace, label_selector='app=segmenter'
-    )
-
-    port_monitoring = GrpcConnectionPool.K8S_PORT_MONITORING
-    port = port_generator()
-
-    for pod_name in [gateway_pod_name, executor_pod_name]:
-        with k8s_cluster.port_forward(
-            pod_name, namespace=namespace, host_port=port, svc_port=port_monitoring
-        ):
-            resp = req.get(f'http://localhost:{port}/')
-            assert resp.status_code == 200
-
-    k8s_cluster.delete_namespace(namespace)
-
-
 @pytest.mark.asyncio
 @pytest.mark.timeout(3600)
 async def test_flow_with_needs(
