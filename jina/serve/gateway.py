@@ -1,5 +1,6 @@
 import abc
 import argparse
+from types import SimpleNamespace
 from typing import TYPE_CHECKING, Dict, Optional, Sequence
 
 from jina.jaml import JAMLCompatible
@@ -110,6 +111,25 @@ class BaseGateway(JAMLCompatible, metaclass=GatewayType):
             aio_tracing_client_interceptors=self.runtime_args.aio_tracing_client_interceptors,
             tracing_client_interceptor=self.runtime_args.tracing_client_interceptor,
         )
+
+    def _add_runtime_args(self, _runtime_args: Optional[Dict]):
+        from jina.parsers import set_gateway_runtime_args_parser
+
+        parser = set_gateway_runtime_args_parser()
+        default_args = parser.parse_args([])
+        default_args_dict = dict(vars(default_args))
+        _runtime_args = _runtime_args or {}
+        runtime_set_args = {
+            'tracer_provider': None,
+            'grpc_tracing_server_interceptors': None,
+            'runtime_name': 'test',
+            'metrics_registry': None,
+            'meter': None,
+            'aio_tracing_client_interceptors': None,
+            'tracing_client_interceptor': None,
+        }
+        runtime_args_dict = {**runtime_set_args, **default_args_dict, **_runtime_args}
+        self.runtime_args = SimpleNamespace(**runtime_args_dict)
 
     @property
     def port(self):
