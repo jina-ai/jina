@@ -262,15 +262,23 @@ class _ColoredHelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
         return lines
 
 
-def _set_gateway_uses(args: 'argparse.Namespace'):
+def _get_gateway_class(protocol):
+    from jina.serve.runtimes.gateway.grpc import GRPCGateway
+    from jina.serve.runtimes.gateway.http import HTTPGateway
+    from jina.serve.runtimes.gateway.websocket import WebSocketGateway
+
     gateway_dict = {
-        GatewayProtocolType.GRPC: 'GRPCGateway',
-        GatewayProtocolType.WEBSOCKET: 'WebSocketGateway',
-        GatewayProtocolType.HTTP: 'HTTPGateway',
+        GatewayProtocolType.GRPC: GRPCGateway,
+        GatewayProtocolType.WEBSOCKET: WebSocketGateway,
+        GatewayProtocolType.HTTP: HTTPGateway,
     }
+    return gateway_dict[protocol]
+
+
+def _set_gateway_uses(args: 'argparse.Namespace'):
     if not args.uses:
         if len(args.protocol) == 1:
-            args.uses = gateway_dict[args.protocol[0]]
+            args.uses = _get_gateway_class(args.protocol[0]).__name__
         else:
             raise ValueError(
                 'You need to specify exactly 1 protocol if you want to use a jina built-in gateway'
