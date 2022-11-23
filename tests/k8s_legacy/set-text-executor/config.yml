@@ -1,0 +1,3 @@
+jtype: TagTextExecutor
+py_modules:
+  - debug_executor.py
