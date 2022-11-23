@@ -144,7 +144,7 @@ to several ports:
 ````{tab} Python
 ```{code-block} python
 ---
-emphasize-lines: 11, 13
+emphasize-lines: 2
 ---
 from jina import Flow
 flow = Flow(port=[12345, 12345, 12345], protocol=['http', 'grpc', 'websocket'])
