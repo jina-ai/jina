@@ -15,12 +15,12 @@ cluster.KIND_VERSION = 'v0.11.1'
 
 
 async def scale(
-    deployment_name: str,
-    desired_replicas: int,
-    app_client,
-    k8s_namespace,
-    core_client,
-    logger,
+        deployment_name: str,
+        desired_replicas: int,
+        app_client,
+        k8s_namespace,
+        core_client,
+        logger,
 ):
     app_client.patch_namespaced_deployment_scale(
         deployment_name,
@@ -45,7 +45,7 @@ async def scale(
 
 
 async def restart_deployment(
-    deployment, app_client, core_client, k8s_namespace, logger
+        deployment, app_client, core_client, k8s_namespace, logger
 ):
     now = datetime.datetime.utcnow()
     now = str(now.isoformat("T") + "Z")
@@ -118,7 +118,7 @@ async def delete_pod(deployment, core_client, k8s_namespace, logger):
 
 
 async def run_test_until_event(
-    flow, core_client, namespace, endpoint, stop_event, logger, sleep_time=0.05
+        flow, core_client, namespace, endpoint, stop_event, logger, sleep_time=0.05
 ):
     # start port forwarding
     from jina.clients import Client
@@ -127,14 +127,14 @@ async def run_test_until_event(
         core_client.list_namespaced_pod(
             namespace=namespace, label_selector='app=gateway'
         )
-        .items[0]
-        .metadata.name
+            .items[0]
+            .metadata.name
     )
     config_path = os.environ['KUBECONFIG']
     import portforward
 
     with portforward.forward(
-        namespace, gateway_pod_name, flow.port, flow.port, config_path
+            namespace, gateway_pod_name, flow.port, flow.port, config_path
     ):
         client_kwargs = dict(
             host='localhost',
@@ -161,10 +161,10 @@ async def run_test_until_event(
         responses = []
         sent_ids = set()
         async for resp in client.post(
-            endpoint,
-            inputs=functools.partial(async_inputs, sent_ids, sleep_time),
-            request_size=1,
-            return_responses=True
+                endpoint,
+                inputs=functools.partial(async_inputs, sent_ids, sleep_time),
+                request_size=1,
+                return_responses=True
         ):
             responses.append(resp)
 
@@ -202,86 +202,86 @@ def inject_failures(k8s_cluster, logger):
     indirect=True,
 )
 async def test_failure_scenarios(logger, docker_images, tmpdir, k8s_cluster):
-    namespace = 'test-failure-scenarios'
-    from kubernetes import client
-
-    api_client = client.ApiClient()
-    core_client = client.CoreV1Api(api_client=api_client)
-    app_client = client.AppsV1Api(api_client=api_client)
-
-    flow = Flow(prefetch=100).add(replicas=3, uses=f'docker://{docker_images[0]}')
-
-    dump_path = os.path.join(str(tmpdir), namespace)
-    flow.to_kubernetes_yaml(dump_path, k8s_namespace=namespace)
-
-    await create_all_flow_deployments_and_wait_ready(
-        dump_path,
-        namespace=namespace,
-        api_client=api_client,
-        app_client=app_client,
-        core_client=core_client,
-        deployment_replicas_expected={
-            'gateway': 1,
-            'executor0': 3,
-        },
-        logger=logger,
-    )
-    stop_event = asyncio.Event()
-    send_task = asyncio.create_task(
-        run_test_until_event(
-            flow=flow,
-            namespace=namespace,
-            core_client=core_client,
-            endpoint='/',
-            stop_event=stop_event,
-            logger=logger,
-            sleep_time=None,
-        )
-    )
-    logger.info(f' Sending task has been scheduled')
-    await asyncio.sleep(5.0)
-    # Scale down the Executor to 2 replicas
-    await scale(
-        deployment_name='executor0',
-        desired_replicas=2,
-        core_client=core_client,
-        app_client=app_client,
-        k8s_namespace=namespace,
-        logger=logger,
-    )
-    logger.info(f' Scaling to 2 replicas has been done')
-    # Scale back up to 3 replicas
-    await scale(
-        deployment_name='executor0',
-        desired_replicas=3,
-        core_client=core_client,
-        app_client=app_client,
-        k8s_namespace=namespace,
-        logger=logger,
-    )
-    logger.info(f' Scaling to 3 replicas has been done')
-    await asyncio.sleep(5.0)
-    # restart all pods in the deployment
-    await restart_deployment(
-        deployment='executor0',
-        app_client=app_client,
-        core_client=core_client,
-        k8s_namespace=namespace,
-        logger=logger,
-    )
-    logger.info(f' Restarting deployment has been done')
-    await asyncio.sleep(5.0)
-    await delete_pod(
-        deployment='executor0',
-        core_client=core_client,
-        k8s_namespace=namespace,
-        logger=logger,
-    )
-    logger.info(f'Deleting pod has been done')
-    await asyncio.sleep(5.0)
-
-    stop_event.set()
     try:
+        namespace = 'test-failure-scenarios'
+        from kubernetes import client
+
+        api_client = client.ApiClient()
+        core_client = client.CoreV1Api(api_client=api_client)
+        app_client = client.AppsV1Api(api_client=api_client)
+
+        flow = Flow(prefetch=100).add(replicas=3, uses=f'docker://{docker_images[0]}')
+
+        dump_path = os.path.join(str(tmpdir), namespace)
+        flow.to_kubernetes_yaml(dump_path, k8s_namespace=namespace)
+
+        await create_all_flow_deployments_and_wait_ready(
+            dump_path,
+            namespace=namespace,
+            api_client=api_client,
+            app_client=app_client,
+            core_client=core_client,
+            deployment_replicas_expected={
+                'gateway': 1,
+                'executor0': 3,
+            },
+            logger=logger,
+        )
+        stop_event = asyncio.Event()
+        send_task = asyncio.create_task(
+            run_test_until_event(
+                flow=flow,
+                namespace=namespace,
+                core_client=core_client,
+                endpoint='/',
+                stop_event=stop_event,
+                logger=logger,
+                sleep_time=None,
+            )
+        )
+        logger.info(f' Sending task has been scheduled')
+        await asyncio.sleep(5.0)
+        # Scale down the Executor to 2 replicas
+        await scale(
+            deployment_name='executor0',
+            desired_replicas=2,
+            core_client=core_client,
+            app_client=app_client,
+            k8s_namespace=namespace,
+            logger=logger,
+        )
+        logger.info(f' Scaling to 2 replicas has been done')
+        # Scale back up to 3 replicas
+        await scale(
+            deployment_name='executor0',
+            desired_replicas=3,
+            core_client=core_client,
+            app_client=app_client,
+            k8s_namespace=namespace,
+            logger=logger,
+        )
+        logger.info(f' Scaling to 3 replicas has been done')
+        await asyncio.sleep(5.0)
+        # restart all pods in the deployment
+        await restart_deployment(
+            deployment='executor0',
+            app_client=app_client,
+            core_client=core_client,
+            k8s_namespace=namespace,
+            logger=logger,
+        )
+        logger.info(f' Restarting deployment has been done')
+        await asyncio.sleep(5.0)
+        await delete_pod(
+            deployment='executor0',
+            core_client=core_client,
+            k8s_namespace=namespace,
+            logger=logger,
+        )
+        logger.info(f'Deleting pod has been done')
+        await asyncio.sleep(5.0)
+
+        stop_event.set()
         responses, sent_ids = await send_task
         logger.info(f'Sending tag has finished')
         logger.info(f'Sending tag has finished: {len(sent_ids)} vs {len(responses)}')
