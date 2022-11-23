@@ -20,15 +20,26 @@ from tests.k8s.conftest import shell_portforward
 from tests.k8s.kind_wrapper import KindClusterWrapper
 
 
-async def run_test(flow, k8s_cluster: KindClusterWrapper,namespace, endpoint, n_docs=10, request_size=100):
+async def run_test(
+    flow,
+    k8s_cluster: KindClusterWrapper,
+    namespace,
+    endpoint,
+    n_docs=10,
+    request_size=100,
+):
     from jina.clients import Client
 
     # TODO: This is probably bad practice but it's how the function used to work.
     # Port forwards should be to services not pods
-    gateway_pod_name = k8s_cluster.get_pod_name(namespace=namespace, label_selector='app=gateway')
-    
+    gateway_pod_name = k8s_cluster.get_pod_name(
+        namespace=namespace, label_selector='app=gateway'
+    )
+
     # start port forwarding
-    with k8s_cluster.port_forward(gateway_pod_name, namespace=namespace, svc_port=flow.port, host_port=flow.port):
+    with k8s_cluster.port_forward(
+        gateway_pod_name, namespace=namespace, svc_port=flow.port, host_port=flow.port
+    ):
         client_kwargs = dict(
             host='localhost',
             port=flow.port,
@@ -78,6 +89,15 @@ def k8s_flow_configmap():
     return flow
 
 
+@pytest.fixture()
+def jina_k3_env():
+    import os
+
+    os.environ['JINA_K3'] = '1'
+    yield
+    del os.environ['JINA_K3']
+
+
 @pytest.fixture
 def k8s_flow_gpu():
     flow = Flow(name='k8s-flow-gpu', port=9090, protocol='http').add(
@@ -120,10 +140,12 @@ def k8s_flow_with_needs():
     return flow
 
 
-#@pytest.mark.skip(reason='no matches for kind "ServiceMonitor" in version "monitoring.coreos.com/v1"')
+# @pytest.mark.skip(reason='no matches for kind "ServiceMonitor" in version "monitoring.coreos.com/v1"')
 @pytest.mark.asyncio
 @pytest.mark.timeout(3600)
-async def test_flow_with_monitoring(tmpdir, k8s_cluster: KindClusterWrapper, port_generator):
+async def test_flow_with_monitoring(
+    tmpdir, k8s_cluster: KindClusterWrapper, port_generator
+):
     dump_path = os.path.join(str(tmpdir), 'test-flow-with-monitoring')
     namespace = f'test-flow-monitoring'.lower()
 
@@ -133,17 +155,23 @@ async def test_flow_with_monitoring(tmpdir, k8s_cluster: KindClusterWrapper, por
     )
 
     flow.to_kubernetes_yaml(dump_path, k8s_namespace=namespace)
-    
+
     k8s_cluster.deploy_from_dir(dump_path, namespace=namespace)
 
-    gateway_pod_name = k8s_cluster.get_pod_name(namespace=namespace, label_selector='app=gateway')
-    executor_pod_name = k8s_cluster.get_pod_name(namespace=namespace, label_selector='app=segmenter')
+    gateway_pod_name = k8s_cluster.get_pod_name(
+        namespace=namespace, label_selector='app=gateway'
+    )
+    executor_pod_name = k8s_cluster.get_pod_name(
+        namespace=namespace, label_selector='app=segmenter'
+    )
 
     port_monitoring = GrpcConnectionPool.K8S_PORT_MONITORING
     port = port_generator()
 
     for pod_name in [gateway_pod_name, executor_pod_name]:
-        with k8s_cluster.port_forward(pod_name, namespace=namespace, host_port=port, svc_port=port_monitoring):
+        with k8s_cluster.port_forward(
+            pod_name, namespace=namespace, host_port=port, svc_port=port_monitoring
+        ):
             resp = req.get(f'http://localhost:{port}/')
             assert resp.status_code == 200
 
@@ -152,7 +180,9 @@ async def test_flow_with_monitoring(tmpdir, k8s_cluster: KindClusterWrapper, por
 
 @pytest.mark.asyncio
 @pytest.mark.timeout(3600)
-async def test_flow_with_needs(k8s_flow_with_needs, tmpdir, k8s_cluster: KindClusterWrapper):
+async def test_flow_with_needs(
+    k8s_flow_with_needs, tmpdir, k8s_cluster: KindClusterWrapper
+):
     NAMESPACE = 'test-flow-with-needs'
     dump_path = os.path.join(str(tmpdir), 'test-flow-with-needs')
     k8s_flow_with_needs.to_kubernetes_yaml(dump_path, k8s_namespace=NAMESPACE)
@@ -180,7 +210,9 @@ async def test_flow_with_needs(k8s_flow_with_needs, tmpdir, k8s_cluster: KindClu
 @pytest.mark.timeout(3600)
 @pytest.mark.asyncio
 @pytest.mark.parametrize('polling', ['ANY', 'ALL'])
-async def test_flow_with_sharding(k8s_flow_with_sharding, polling, tmpdir, k8s_cluster: KindClusterWrapper):
+async def test_flow_with_sharding(
+    k8s_flow_with_sharding, polling, tmpdir, k8s_cluster: KindClusterWrapper
+):
     dump_path = os.path.join(str(tmpdir), 'test-flow-with-sharding')
     namespace = f'test-flow-with-sharding-{polling}'.lower()
     k8s_flow_with_sharding.to_kubernetes_yaml(dump_path, k8s_namespace=namespace)
@@ -218,7 +250,9 @@ async def test_flow_with_sharding(k8s_flow_with_sharding, polling, tmpdir, k8s_c
 
 @pytest.mark.timeout(3600)
 @pytest.mark.asyncio
-async def test_flow_with_configmap(k8s_flow_configmap, tmpdir, k8s_cluster: KindClusterWrapper):
+async def test_flow_with_configmap(
+    k8s_flow_configmap, tmpdir, k8s_cluster: KindClusterWrapper
+):
     dump_path = os.path.join(str(tmpdir), 'test-flow-with-configmap')
     namespace = f'test-flow-with-configmap'.lower()
     k8s_flow_configmap.to_kubernetes_yaml(dump_path, k8s_namespace=namespace)
@@ -294,7 +328,9 @@ async def test_flow_with_workspace(tmpdir, k8s_cluster: KindClusterWrapper):
 
 @pytest.mark.asyncio
 @pytest.mark.timeout(3600)
-async def test_flow_with_external_native_deployment(tmpdir, k8s_cluster: KindClusterWrapper):
+async def test_flow_with_external_native_deployment(
+    tmpdir, k8s_cluster: KindClusterWrapper
+):
     class DocReplaceExecutor(Executor):
         @requests
         def add(self, **kwargs):
@@ -333,7 +369,9 @@ async def test_flow_with_external_native_deployment(tmpdir, k8s_cluster: KindClu
 
 @pytest.mark.asyncio
 @pytest.mark.timeout(3600)
-async def test_flow_with_external_k8s_deployment(tmpdir, k8s_cluster: KindClusterWrapper):
+async def test_flow_with_external_k8s_deployment(
+    tmpdir, k8s_cluster: KindClusterWrapper
+):
     namespace = 'test-flow-with-external-k8s-deployment'
     from kubernetes import client
 
@@ -341,11 +379,11 @@ async def test_flow_with_external_k8s_deployment(tmpdir, k8s_cluster: KindCluste
     core_client = client.CoreV1Api(api_client=api_client)
     app_client = client.AppsV1Api(api_client=api_client)
 
-    await _create_external_deployment(api_client, app_client, 'test-executor:test-pip', tmpdir)
+    await _create_external_deployment(
+        api_client, app_client, 'test-executor:test-pip', tmpdir
+    )
 
-    flow = Flow(
-        name='k8s_flow-with_external_deployment', port=9090
-    ).add(
+    flow = Flow(name='k8s_flow-with_external_deployment', port=9090).add(
         name='external_executor',
         external=True,
         host='external-deployment.external-deployment-ns.svc',
@@ -371,7 +409,9 @@ async def test_flow_with_external_k8s_deployment(tmpdir, k8s_cluster: KindCluste
 @pytest.mark.asyncio
 @pytest.mark.timeout(3600)
 @pytest.mark.parametrize('grpc_metadata', [{}, {"key1": "value1"}])
-async def test_flow_with_metadata_k8s_deployment(k8s_cluster: KindClusterWrapper, grpc_metadata, tmpdir):
+async def test_flow_with_metadata_k8s_deployment(
+    k8s_cluster: KindClusterWrapper, grpc_metadata, tmpdir
+):
     namespace = 'test-flow-with-metadata-k8s-deployment'
     from kubernetes import client
 
@@ -380,7 +420,9 @@ async def test_flow_with_metadata_k8s_deployment(k8s_cluster: KindClusterWrapper
     app_client = client.AppsV1Api(api_client=api_client)
 
     # TODO: This should not be necessary and tangles the above test with this one
-    await _create_external_deployment(api_client, app_client, 'test-executor:test-pip', tmpdir)
+    await _create_external_deployment(
+        api_client, app_client, 'test-executor:test-pip', tmpdir
+    )
 
     flow = Flow(name='k8s_flow-with_metadata_deployment', port=9090).add(
         name='external_executor',
@@ -519,9 +561,13 @@ async def test_flow_with_custom_gateway(tmpdir, k8s_cluster: KindClusterWrapper)
 
     k8s_cluster.deploy_from_dir(dump_path, namespace=namespace)
 
-    gateway_pod_name = k8s_cluster.get_pod_name(namespace=namespace, label_selector='app=gateway')
+    gateway_pod_name = k8s_cluster.get_pod_name(
+        namespace=namespace, label_selector='app=gateway'
+    )
 
-    with k8s_cluster.port_forward(gateway_pod_name, namespace=namespace, svc_port=flow.port, host_port=flow.port):
+    with k8s_cluster.port_forward(
+        gateway_pod_name, namespace=namespace, svc_port=flow.port, host_port=flow.port
+    ):
 
         _validate_dummy_custom_gateway_response(
             flow.port,
@@ -541,9 +587,7 @@ async def test_flow_with_custom_gateway(tmpdir, k8s_cluster: KindClusterWrapper)
 
 @pytest.mark.asyncio
 @pytest.mark.timeout(3600)
-async def test_flow_multiple_protocols_gateway(
-    tmpdir, k8s_cluster: KindClusterWrapper
-):
+async def test_flow_multiple_protocols_gateway(tmpdir, k8s_cluster: KindClusterWrapper):
     http_port = random_port()
     grpc_port = random_port()
     flow = Flow().config_gateway(
@@ -558,7 +602,9 @@ async def test_flow_multiple_protocols_gateway(
 
     k8s_cluster.deploy_from_dir(dump_path, namespace=namespace)
 
-    gateway_pod_name = k8s_cluster.get_pod_name(namespace=namespace, label_selector='app=gateway')
+    gateway_pod_name = k8s_cluster.get_pod_name(
+        namespace=namespace, label_selector='app=gateway'
+    )
 
     # test portforwarding the gateway pod and service using http
     forward_args = [
@@ -585,7 +631,9 @@ async def test_flow_multiple_protocols_gateway(
             assert AsyncNewLoopRuntime.is_ready(f'localhost:{grpc_port}')
 
 
-@pytest.mark.skip(reason='This test does not work. If you take the old test and slow down the namespace deletion, it will fail the assert. Ask Joan about this')
+@pytest.mark.skip(
+    reason='This test does not work. If you take the old test and slow down the namespace deletion, it will fail the assert. Ask Joan about this'
+)
 @pytest.mark.timeout(3600)
 @pytest.mark.asyncio
 @pytest.mark.parametrize('workspace_path', ['workspace_path'])
@@ -594,9 +642,7 @@ async def test_flow_with_stateful_executor(
 ):
     dump_path = os.path.join(str(tmpdir), 'test-flow-with-volumes')
     namespace = f'test-flow-with-volumes'.lower()
-    flow = Flow(
-        name='test-flow-with-volumes', port=9090, protocol='http',
-    ).add(
+    flow = Flow(name='test-flow-with-volumes', port=9090, protocol='http').add(
         name='statefulexecutor',
         uses=f'docker://test-stateful-executor:test-pip',
         workspace=f'{str(tmpdir)}/workspace_path',
