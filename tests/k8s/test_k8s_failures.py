@@ -122,51 +122,59 @@ async def run_test_until_event(
 ):
     # start port forwarding
     from jina.clients import Client
-
-    gateway_pod_name = (
-        core_client.list_namespaced_pod(
-            namespace=namespace, label_selector='app=gateway'
+    responses = []
+    sent_ids = set()
+    try:
+        gateway_pod_name = (
+            core_client.list_namespaced_pod(
+                namespace=namespace, label_selector='app=gateway'
+            )
+                .items[0]
+                .metadata.name
         )
-            .items[0]
-            .metadata.name
-    )
-    config_path = os.environ['KUBECONFIG']
-    import portforward
+        config_path = os.environ['KUBECONFIG']
+        import portforward
 
-    with portforward.forward(
-            namespace, gateway_pod_name, flow.port, flow.port, config_path
-    ):
-        client_kwargs = dict(
-            host='localhost',
-            port=flow.port,
-            asyncio=True,
-        )
-        client_kwargs.update(flow._common_kwargs)
-
-        client = Client(**client_kwargs)
-        client.show_progress = True
-
-        async def async_inputs(sent_ids: Set[int], sleep_time: float = 0.05):
-            i = 0
-            while True:
-                sent_ids.add(i)
-                yield Document(text=f'{i}')
-                if stop_event.is_set():
-                    logger.info(f'stop yielding new requests after {i} requests')
-                    return
-                elif sleep_time:
-                    await asyncio.sleep(sleep_time)
-                i += 1
-
-        responses = []
-        sent_ids = set()
-        async for resp in client.post(
-                endpoint,
-                inputs=functools.partial(async_inputs, sent_ids, sleep_time),
-                request_size=1,
-                return_responses=True
+        with portforward.forward(
+                namespace, gateway_pod_name, flow.port, flow.port, config_path
         ):
-            responses.append(resp)
+            client_kwargs = dict(
+                host='localhost',
+                port=flow.port,
+                asyncio=True,
+            )
+            client_kwargs.update(flow._common_kwargs)
+
+            client = Client(**client_kwargs)
+            client.show_progress = True
+
+            async def async_inputs(sent_ids: Set[int], sleep_time: float = 0.05):
+                i = 0
+                while True:
+                    sent_ids.add(i)
+                    yield Document(text=f'{i}')
+                    if stop_event.is_set():
+                        logger.info(f'stop yielding new requests after {i} requests')
+                        return
+                    elif sleep_time:
+                        await asyncio.sleep(sleep_time)
+                    i += 1
+
+            num_resps = 0
+            async for resp in client.post(
+                    endpoint,
+                    inputs=functools.partial(async_inputs, sent_ids, sleep_time),
+                    request_size=1,
+                    return_responses=True
+            ):
+                num_resps += 1
+                logger.info(
+                    f'Client received a response {num_resps}'
+                )
+                responses.append(resp)
+    except Exception as exc:
+        logger.error(f' Exception raised {exc}')
+        pass
 
     logger.info(
         f'Client sent {len(sent_ids)} and received {(len(responses))} responses'
