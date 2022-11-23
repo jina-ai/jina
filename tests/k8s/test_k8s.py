@@ -399,45 +399,6 @@ async def test_flow_with_metadata_k8s_deployment(k8s_cluster: KindClusterWrapper
         assert 'workspace' in doc.tags
 
 
-# TODO: Is this a duplicate?
-@pytest.mark.skip(reason='Fails on gateway connection error')
-@pytest.mark.asyncio
-@pytest.mark.timeout(3600)
-@pytest.mark.parametrize('grpc_metadata', [{}, {"key1": "value1"}])
-async def test_flow_with_metadata_k8s_deployment(logger, grpc_metadata, tmpdir, k8s_cluster: KindClusterWrapper):
-    namespace = 'test-flow-with-metadata-k8s-deployment'
-    from kubernetes import client
-
-    api_client = client.ApiClient()
-    core_client = client.CoreV1Api(api_client=api_client)
-    app_client = client.AppsV1Api(api_client=api_client)
-
-    await _create_external_deployment(api_client, app_client, 'test-executor:test-pip', tmpdir)
-
-    flow = Flow(name='k8s_flow-with_metadata_deployment', port=9090).add(
-        name='external_executor',
-        external=True,
-        host='external-deployment.external-deployment-ns.svc',
-        port=GrpcConnectionPool.K8S_PORT,
-        grpc_metadata=grpc_metadata,
-    )
-
-    dump_path = os.path.join(str(tmpdir), namespace)
-    flow.to_kubernetes_yaml(dump_path, k8s_namespace=namespace)
-
-    k8s_cluster.deploy_from_dir(dump_path, namespace=namespace)
-
-    resp = await run_test(
-        flow=flow,
-        namespace=namespace,
-        k8s_cluster=k8s_cluster,
-        endpoint='/workspace',
-    )
-    docs = resp[0].docs
-    for doc in docs:
-        assert 'workspace' in doc.tags
-
-
 async def _create_external_deployment(api_client, app_client, image_name, tmpdir):
     namespace = 'external-deployment-ns'
     args = set_deployment_parser().parse_args(
