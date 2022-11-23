@@ -9,13 +9,15 @@ from pytest import FixtureRequest
 
 import docker
 import pytest
-from pytest_kind import KindCluster
+from pytest_kind import KindCluster, cluster
 
 from jina.logging.logger import JinaLogger
 
 client = docker.from_env()
 cur_dir = os.path.dirname(__file__)
 
+
+cluster.KIND_VERSION = 'v0.11.1'
 
 class KindClusterWrapper:
     def __init__(self, kind_cluster: KindCluster, logger: JinaLogger) -> None:
