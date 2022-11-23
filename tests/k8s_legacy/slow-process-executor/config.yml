@@ -1,0 +1,3 @@
+jtype: SlowProcessExecutor
+py_modules:
+  - debug_executor.py
