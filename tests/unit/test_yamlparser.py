@@ -172,8 +172,7 @@ def test_load_from_dict():
 
 def test_load_gateway_external_success():
     with Gateway.load_config(
-        'yaml/test-custom-gateway.yml',
-        runtime_args={'port': [12345], 'host': __default_host__},
+        'yaml/test-custom-gateway.yml', runtime_args={'port': [12345]}
     ) as gateway:
         assert gateway.__class__.__name__ == 'DummyGateway'
         assert gateway.arg1 == 'hello'
@@ -185,7 +184,7 @@ def test_load_gateway_override_with():
     with Gateway.load_config(
         'yaml/test-custom-gateway.yml',
         uses_with={'arg1': 'arg1', 'arg2': 'arg2', 'arg3': 'arg3'},
-        runtime_args={'port': [12345], 'host': __default_host__},
+        runtime_args={'port': [12345]},
     ) as gateway:
         assert gateway.__class__.__name__ == 'DummyGateway'
         assert gateway.arg1 == 'arg1'
