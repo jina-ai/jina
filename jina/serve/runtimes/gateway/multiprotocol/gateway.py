@@ -24,7 +24,9 @@ class MultiProtocolGateway(BaseGateway):
             runtime_args = copy.deepcopy(self.runtime_args)
             runtime_args.port = [port]
             runtime_args.protocol = [protocol]
-            gateway = gateway_cls(runtime_args=runtime_args, **kwargs)
+            gateway_kwargs = copy.deepcopy(kwargs)
+            gateway_kwargs['runtime_args'] = dict(vars(runtime_args))
+            gateway = gateway_cls(**gateway_kwargs)
             self.gateways.append(gateway)
 
     async def setup_server(self):

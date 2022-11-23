@@ -277,11 +277,15 @@ def _get_gateway_class(protocol):
 
 def _set_gateway_uses(args: 'argparse.Namespace'):
     if not args.uses:
-        if len(args.protocol) == 1:
+        if len(args.protocol) == 1 and len(args.port) == 1:
             args.uses = _get_gateway_class(args.protocol[0]).__name__
+        elif len(args.protocol) == len(args.port):
+            from jina.serve.runtimes.gateway.multiprotocol import MultiProtocolGateway
+
+            args.uses = MultiProtocolGateway.__name__
         else:
             raise ValueError(
-                'You need to specify exactly 1 protocol if you want to use a jina built-in gateway'
+                'You need to specify as much protocols as ports if you want to use a jina built-in gateway'
             )
 
 

@@ -19,6 +19,7 @@ if TYPE_CHECKING:  # pragma: no cover
 # Keep these imports even if not used, since YAML parser needs to find them in imported modules
 from jina.serve.runtimes.gateway.grpc import GRPCGateway
 from jina.serve.runtimes.gateway.http import HTTPGateway
+from jina.serve.runtimes.gateway.multiprotocol import MultiProtocolGateway
 from jina.serve.runtimes.gateway.websocket import WebSocketGateway
 
 
