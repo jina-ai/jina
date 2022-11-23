@@ -73,9 +73,6 @@ class KindClusterWrapper:
         # linkerd < 2.12: only linkerd install is needed
         # in later versions, linkerd install --crds will be needed
         self._linkerd_install_cmd(
-            kind_cluster, [f'{Path.home()}/.linkerd2/bin/linkerd', 'install', '--crds'], 'Linkerd'
-        )
-        self._linkerd_install_cmd(
             kind_cluster, [f'{Path.home()}/.linkerd2/bin/linkerd', 'install'], 'Linkerd'
         )
 
