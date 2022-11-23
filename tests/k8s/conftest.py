@@ -33,7 +33,7 @@ IMAGES: List[str] = [
 def build_and_load_images(k8s_cluster: KindClusterWrapper) -> None:
     CUR_DIR = Path(__file__).parent
     for image in IMAGES:
-        k8s_cluster.build_and_load_docker_image(str(CUR_DIR / image), image, 'test-pip')
+        k8s_cluster.build_and_load_docker_image(str(CUR_DIR / 'images' / image), image, 'test-pip')
 
     k8s_cluster.load_docker_image(image_repo_name='jinaai/jina', tag='test-pip')
     os.environ['JINA_GATEWAY_IMAGE'] = 'jinaai/jina:test-pip'
