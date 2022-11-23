@@ -36,6 +36,61 @@ def mixin_client_gateway_parser(parser):
     )
 
 
+def mixin_gateway_streamer_parser(arg_group):
+    """Mixin for gateway stream arguments.
+    :param arg_group: args group
+    """
+    arg_group.add_argument(
+        '--graph-description',
+        type=str,
+        help='Routing graph for the gateway',
+        default='{}',
+    )
+
+    arg_group.add_argument(
+        '--graph-conditions',
+        type=str,
+        help='Dictionary stating which filtering conditions each Executor in the graph requires to receive Documents.',
+        default='{}',
+    )
+
+    arg_group.add_argument(
+        '--deployments-addresses',
+        type=str,
+        help='JSON dictionary with the input addresses of each Deployment',
+        default='{}',
+    )
+
+    arg_group.add_argument(
+        '--deployments-metadata',
+        type=str,
+        help='JSON dictionary with the request metadata for each Deployment',
+        default='{}',
+    )
+
+    arg_group.add_argument(
+        '--deployments-no-reduce',
+        '--deployments-disable-reduce',
+        type=str,
+        help='list JSON disabling the built-in merging mechanism for each Deployment listed',
+        default='[]',
+    )
+
+    arg_group.add_argument(
+        '--compression',
+        choices=['NoCompression', 'Deflate', 'Gzip'],
+        help='The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, '
+        'check https://grpc.github.io/grpc/python/grpc.html#compression.',
+    )
+
+    arg_group.add_argument(
+        '--timeout-send',
+        type=int,
+        default=None,
+        help='The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default',
+    )
+
+
 def mixin_gateway_parser(parser):
     """Add the options for remote expose at the Gateway
     :param parser: the parser
@@ -88,56 +143,7 @@ which should be structured as a python package.
     )
 
     mixin_base_runtime_parser(gp)
-
-    parser.add_argument(
-        '--graph-description',
-        type=str,
-        help='Routing graph for the gateway',
-        default='{}',
-    )
-
-    parser.add_argument(
-        '--graph-conditions',
-        type=str,
-        help='Dictionary stating which filtering conditions each Executor in the graph requires to receive Documents.',
-        default='{}',
-    )
-
-    parser.add_argument(
-        '--deployments-addresses',
-        type=str,
-        help='JSON dictionary with the input addresses of each Deployment',
-        default='{}',
-    )
-
-    parser.add_argument(
-        '--deployments-metadata',
-        type=str,
-        help='JSON dictionary with the request metadata for each Deployment',
-        default='{}',
-    )
-
-    parser.add_argument(
-        '--deployments-no-reduce',
-        '--deployments-disable-reduce',
-        type=str,
-        help='list JSON disabling the built-in merging mechanism for each Deployment listed',
-        default='[]',
-    )
-
-    gp.add_argument(
-        '--compression',
-        choices=['NoCompression', 'Deflate', 'Gzip'],
-        help='The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, '
-        'check https://grpc.github.io/grpc/python/grpc.html#compression.',
-    )
-
-    gp.add_argument(
-        '--timeout-send',
-        type=int,
-        default=None,
-        help='The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default',
-    )
+    mixin_gateway_streamer_parser(gp)
 
 
 def mixin_gateway_protocol_parser(parser):
