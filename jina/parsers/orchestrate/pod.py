@@ -93,6 +93,21 @@ def mixin_pod_parser(parser, pod_type: str = 'worker'):
         else argparse.SUPPRESS,
     )
 
+    gp.add_argument(
+        '--floating',
+        action='store_true',
+        default=False,
+        help='If set, the current Pod/Deployment can not be further chained, '
+        'and the next `.add()` will chain after the last Pod/Deployment not this current one.',
+    )
+    mixin_pod_runtime_args_parser(gp, pod_type=pod_type)
+
+
+def mixin_pod_runtime_args_parser(arg_group, pod_type='worker'):
+    """Mixin for runtime arguments of pods
+    :param arg_group: the parser instance or args group to which we add arguments
+    :param pod_type: the pod_type configured by the parser. Can be either 'worker' for WorkerRuntime or 'gateway' for GatewayRuntime
+    """
     port_description = (
         'The port for input data to bind to, default is a random port between [49152, 65535]. '
         'In the case of an external Executor (`--external` or `external=True`) this can be a list of ports, separated by commas. '
@@ -100,7 +115,7 @@ def mixin_pod_parser(parser, pod_type: str = 'worker'):
     )
 
     if pod_type != 'gateway':
-        gp.add_argument(
+        arg_group.add_argument(
             '--port',
             '--port-in',
             type=str,
@@ -109,7 +124,7 @@ def mixin_pod_parser(parser, pod_type: str = 'worker'):
             help=port_description,
         )
     else:
-        gp.add_argument(
+        arg_group.add_argument(
             '--port',
             '--port-expose',
             '--port-in',
@@ -121,14 +136,14 @@ def mixin_pod_parser(parser, pod_type: str = 'worker'):
             help=port_description,
         )
 
-    gp.add_argument(
+    arg_group.add_argument(
         '--monitoring',
         action='store_true',
         default=False,
         help='If set, spawn an http server with a prometheus endpoint to expose metrics',
     )
 
-    gp.add_argument(
+    arg_group.add_argument(
         '--port-monitoring',
         type=str,
         default=str(helper.random_port()),
@@ -136,7 +151,7 @@ def mixin_pod_parser(parser, pod_type: str = 'worker'):
         help=f'The port on which the prometheus server is exposed, default is a random port between [49152, 65535]',
     )
 
-    gp.add_argument(
+    arg_group.add_argument(
         '--retries',
         type=int,
         default=-1,
@@ -144,15 +159,7 @@ def mixin_pod_parser(parser, pod_type: str = 'worker'):
         help=f'Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)',
     )
 
-    gp.add_argument(
-        '--floating',
-        action='store_true',
-        default=False,
-        help='If set, the current Pod/Deployment can not be further chained, '
-        'and the next `.add()` will chain after the last Pod/Deployment not this current one.',
-    )
-
-    gp.add_argument(
+    arg_group.add_argument(
         '--tracing',
         action='store_true',
         default=False,
@@ -160,21 +167,21 @@ def mixin_pod_parser(parser, pod_type: str = 'worker'):
         'Otherwise a no-op implementation will be provided.',
     )
 
-    parser.add_argument(
+    arg_group.add_argument(
         '--traces-exporter-host',
         type=str,
         default=None,
         help='If tracing is enabled, this hostname will be used to configure the trace exporter agent.',
     )
 
-    parser.add_argument(
+    arg_group.add_argument(
         '--traces-exporter-port',
         type=int,
         default=None,
         help='If tracing is enabled, this port will be used to configure the trace exporter agent.',
     )
 
-    parser.add_argument(
+    arg_group.add_argument(
         '--metrics',
         action='store_true',
         default=False,
@@ -182,14 +189,14 @@ def mixin_pod_parser(parser, pod_type: str = 'worker'):
         'Otherwise a no-op implementation will be provided.',
     )
 
-    parser.add_argument(
+    arg_group.add_argument(
         '--metrics-exporter-host',
         type=str,
         default=None,
         help='If tracing is enabled, this hostname will be used to configure the metrics exporter agent.',
     )
 
-    parser.add_argument(
+    arg_group.add_argument(
         '--metrics-exporter-port',
         type=int,
         default=None,
