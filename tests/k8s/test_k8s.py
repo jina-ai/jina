@@ -38,14 +38,19 @@ async def run_test(flow, k8s_cluster: KindClusterWrapper,namespace, endpoint, n_
 
         client = Client(**client_kwargs)
         client.show_progress = True
-        responses = []
-        async for resp in client.post(
-            endpoint,
-            inputs=[Document() for _ in range(n_docs)],
-            request_size=request_size,
-            return_responses=True,
-        ):
-            responses.append(resp)
+        try:
+            responses = []
+            async for resp in client.post(
+                endpoint,
+                inputs=[Document() for _ in range(n_docs)],
+                request_size=request_size,
+                return_responses=True,
+            ):
+                responses.append(resp)
+        except Exception as e:
+            # TODO: Remove this debug line or make it optional
+            # breakpoint()
+            raise e
 
     return responses
 
@@ -336,9 +341,11 @@ async def test_flow_with_external_k8s_deployment(tmpdir, k8s_cluster: KindCluste
     core_client = client.CoreV1Api(api_client=api_client)
     app_client = client.AppsV1Api(api_client=api_client)
 
-    await _create_external_deployment(api_client, app_client, 'test-executor', tmpdir)
+    await _create_external_deployment(api_client, app_client, 'test-executor:test-pip', tmpdir)
 
-    flow = Flow(name='k8s_flow-with_external_deployment', port=9090).add(
+    flow = Flow(
+        name='k8s_flow-with_external_deployment', port=9090
+    ).add(
         name='external_executor',
         external=True,
         host='external-deployment.external-deployment-ns.svc',
@@ -361,7 +368,6 @@ async def test_flow_with_external_k8s_deployment(tmpdir, k8s_cluster: KindCluste
         assert 'workspace' in doc.tags
 
 
-@pytest.mark.skip(reason='Fails on gateway connection error')
 @pytest.mark.asyncio
 @pytest.mark.timeout(3600)
 @pytest.mark.parametrize('grpc_metadata', [{}, {"key1": "value1"}])
@@ -373,7 +379,8 @@ async def test_flow_with_metadata_k8s_deployment(k8s_cluster: KindClusterWrapper
     core_client = client.CoreV1Api(api_client=api_client)
     app_client = client.AppsV1Api(api_client=api_client)
 
-    await _create_external_deployment(api_client, app_client, 'test-executor', tmpdir)
+    # TODO: This should not be necessary and tangles the above test with this one
+    await _create_external_deployment(api_client, app_client, 'test-executor:test-pip', tmpdir)
 
     flow = Flow(name='k8s_flow-with_metadata_deployment', port=9090).add(
         name='external_executor',
@@ -487,7 +494,6 @@ async def test_flow_with_failing_executor(tmpdir, k8s_cluster: KindClusterWrappe
     k8s_cluster.delete_namespace(namespace)
 
 
-@pytest.mark.skip(reason='Fails')
 @pytest.mark.asyncio
 @pytest.mark.timeout(3600)
 async def test_flow_with_custom_gateway(tmpdir, k8s_cluster: KindClusterWrapper):
@@ -533,7 +539,6 @@ async def test_flow_with_custom_gateway(tmpdir, k8s_cluster: KindClusterWrapper)
     k8s_cluster.delete_namespace(namespace)
 
 
-@pytest.mark.skip(reason='Fails')
 @pytest.mark.asyncio
 @pytest.mark.timeout(3600)
 async def test_flow_multiple_protocols_gateway(
@@ -580,7 +585,7 @@ async def test_flow_multiple_protocols_gateway(
             assert AsyncNewLoopRuntime.is_ready(f'localhost:{grpc_port}')
 
 
-@pytest.mark.skip(reason='Fails on some gateway connection error')
+@pytest.mark.skip(reason='This test does not work. If you take the old test and slow down the namespace deletion, it will fail the assert. Ask Joan about this')
 @pytest.mark.timeout(3600)
 @pytest.mark.asyncio
 @pytest.mark.parametrize('workspace_path', ['workspace_path'])
@@ -589,7 +594,9 @@ async def test_flow_with_stateful_executor(
 ):
     dump_path = os.path.join(str(tmpdir), 'test-flow-with-volumes')
     namespace = f'test-flow-with-volumes'.lower()
-    flow = Flow(name='test-flow-with-volumes', port=9090, protocol='http',).add(
+    flow = Flow(
+        name='test-flow-with-volumes', port=9090, protocol='http',
+    ).add(
         name='statefulexecutor',
         uses=f'docker://test-stateful-executor:test-pip',
         workspace=f'{str(tmpdir)}/workspace_path',
