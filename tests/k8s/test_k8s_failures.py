@@ -165,15 +165,19 @@ async def run_test_until_event(
                     endpoint,
                     inputs=functools.partial(async_inputs, sent_ids, sleep_time),
                     request_size=1,
-                    return_responses=True
+                    return_responses=True,
+                    continue_on_error=True
             ):
                 num_resps += 1
                 logger.info(
                     f'Client received a response {num_resps}'
                 )
                 responses.append(resp)
+            logger.info(
+                f'Stop sending requests after sending {len(sent_ids)} Documents and getting {num_resps} Responses'
+            )
     except Exception as exc:
-        logger.error(f' Exception raised {exc}')
+        logger.error(f' Exception raised in sending requests task: {exc}')
         pass
 
     logger.info(
@@ -291,8 +295,8 @@ async def test_failure_scenarios(logger, docker_images, tmpdir, k8s_cluster):
 
         stop_event.set()
         responses, sent_ids = await send_task
-        logger.info(f'Sending tag has finished')
-        logger.info(f'Sending tag has finished: {len(sent_ids)} vs {len(responses)}')
+        logger.info(f'Sending task has finished')
+        logger.info(f'Sending task has finished: {len(sent_ids)} vs {len(responses)}')
         assert len(sent_ids) == len(responses)
         doc_ids = set()
         pod_ids = set()
