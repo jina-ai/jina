@@ -39,7 +39,7 @@ class NetworkChecker:
                             protocol=GatewayProtocolType.from_string(protocol)
                         )
                     elif args.target == 'flow':
-                        r = Client(host=args.host).is_flow_ready(timeout=args.timeout / 1000)
+                        r = Client(host=args.host).is_flow_ready(timeout=args.timeout)
                     if not r:
                         default_logger.warning(
                             'not responding, attempt (%d/%d) in 1s'

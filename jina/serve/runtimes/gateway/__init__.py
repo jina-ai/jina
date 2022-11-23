@@ -126,7 +126,7 @@ class GatewayRuntime(AsyncNewLoopRuntime):
         self.is_cancel.set()
 
     @staticmethod
-    def is_ready(ctrl_address: str, protocol: Optional[str] = 'grpc', timeout: float = 1.0, **kwargs) -> bool:
+    def is_ready(ctrl_address: str, protocol: Optional[str] = 'grpc', **kwargs) -> bool:
         """
         Check if status is ready.
 
@@ -146,7 +146,7 @@ class GatewayRuntime(AsyncNewLoopRuntime):
             res = AsyncNewLoopRuntime.is_ready(ctrl_address)
         else:
             try:
-                conn = urllib.request.urlopen(url=f'http://{ctrl_address}', timeout=timeout)
+                conn = urllib.request.urlopen(url=f'http://{ctrl_address}')
                 res = conn.code == HTTPStatus.OK
             except:
                 res = False

@@ -171,7 +171,7 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, InstrumentationMixin, AB
     # Static methods used by the Pod to communicate with the `Runtime` in the separate process
 
     @staticmethod
-    def is_ready(ctrl_address: str, timeout: float = 1.0, **kwargs) -> bool:
+    def is_ready(ctrl_address: str, **kwargs) -> bool:
         """
         Check if status is ready.
 
@@ -185,7 +185,7 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, InstrumentationMixin, AB
             from grpc_health.v1 import health_pb2, health_pb2_grpc
 
             response = GrpcConnectionPool.send_health_check_sync(
-                ctrl_address, timeout=timeout
+                ctrl_address, timeout=1.0
             )
             return response.status == health_pb2.HealthCheckResponse.ServingStatus.SERVING
         except RpcError:
