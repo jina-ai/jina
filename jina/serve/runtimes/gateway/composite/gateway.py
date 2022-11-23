@@ -4,7 +4,7 @@ from typing import List, Optional
 from jina.serve.gateway import BaseGateway
 
 
-class MultiProtocolGateway(BaseGateway):
+class CompositeGateway(BaseGateway):
     """GRPC Gateway implementation"""
 
     def __init__(
