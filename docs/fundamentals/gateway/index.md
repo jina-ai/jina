@@ -137,8 +137,8 @@ with:
 ```
 
 ````
-
-You can even combine multiple protocols into the same gateway and serve your Flow using multiple protocols and bind it 
+## Serve multiple protocols at the same time:
+You can use multiple protocols in the same gateway, serve your Flow using multiple protocols and bind it 
 to several ports:
 
 ````{tab} Python
@@ -147,7 +147,7 @@ to several ports:
 emphasize-lines: 2
 ---
 from jina import Flow
-flow = Flow(port=[12345, 12345, 12345], protocol=['http', 'grpc', 'websocket'])
+flow = Flow(port=[12345, 12344, 12343], protocol=['grpc', 'http', 'websocket'])
 with flow:
     flow.block()
 ```
@@ -170,6 +170,12 @@ with:
 
 ```{figure} multi-protocol-flow.png
 :width: 70%
+```
+
+```
+:class: important
+
+In case you want to serve a Flow using multiple protocols, make sure to specify as much ports as protocols used. 
 ```
 
 (custom-http)=
