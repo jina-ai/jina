@@ -9,7 +9,8 @@ from docker import DockerClient
 from pytest_kind import KindCluster
 from subprocess import CalledProcessError
 from contextlib import contextmanager
-from typing import Generator, List, Dict, Optional
+from typing import Generator, List, Dict, Set
+from pathlib import Path
 
 from jina.logging.logger import JinaLogger
 
@@ -22,6 +23,7 @@ class KindClusterWrapper:
         self._cluster.ensure_kind()
         os.environ['KUBECONFIG'] = str(self._cluster.kubeconfig_path)
         self._docker_client: DockerClient = docker.from_env()
+        self._loaded_images: Set[str] = set()
 
     def create_namespace(self, namespace: str) -> bool:
         """Create a namespace in the kind cluster.
@@ -136,6 +138,11 @@ class KindClusterWrapper:
             image_name (str): image name with (image_repo_name:tag)
         """
         image_name = f'{image_repo_name}:{tag}'
+
+        if image_name in self._loaded_images:
+            self._log.info(f'Image {image_name} already loaded. Skipping build.')
+            return image_name
+
         self._log.info(f'Building docker image {image_name}')
         self._docker_client.images.build(path=dir, tag=f'{image_name}')
         self._log.info(f'Docker image {image_name} built')
@@ -152,8 +159,14 @@ class KindClusterWrapper:
             image_name (str): image name with (image_repo_name:tag)
         """
         image_name = f'{image_repo_name}:{tag}'
+
+        if image_name in self._loaded_images:
+            self._log.info(f'Image {image_name} already loaded. Skipping load.')
+            return image_name
+
         self._log.info(f'Loading docker image {image_name}')
         self._cluster.load_docker_image(f'{image_name}')
+        self._loaded_images.add(image_name)
         self._log.info(f'Docker image {image_name} loaded')
         return image_name
     

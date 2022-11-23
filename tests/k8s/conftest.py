@@ -3,7 +3,7 @@ import os
 import subprocess
 import time
 from pathlib import Path
-from typing import List
+from typing import List, Dict
 
 import docker
 import pytest
@@ -16,6 +16,7 @@ client = docker.from_env()
 cur_dir = os.path.dirname(__file__)
 cluster.KIND_VERSION = 'v0.11.1'
 
+IMAGE_DIR = Path(__file__).parent / 'images'
 IMAGES: List[str] = [
     'reload-executor',
     'test-executor',
@@ -31,9 +32,8 @@ IMAGES: List[str] = [
 # TODO: Can we get jina image to build here as well?
 @pytest.fixture(scope='session' ,autouse=True)
 def build_and_load_images(k8s_cluster: KindClusterWrapper) -> None:
-    CUR_DIR = Path(__file__).parent
     for image in IMAGES:
-        k8s_cluster.build_and_load_docker_image(str(CUR_DIR / 'images' / image), image, 'test-pip')
+        k8s_cluster.build_and_load_docker_image(str(IMAGE_DIR / image), image, 'test-pip')
 
     k8s_cluster.load_docker_image(image_repo_name='jinaai/jina', tag='test-pip')
     os.environ['JINA_GATEWAY_IMAGE'] = 'jinaai/jina:test-pip'
@@ -97,3 +97,11 @@ def shell_portforward(
 
     finally:
         proc.kill()
+
+@pytest.fixture
+def docker_images(
+    request: pytest.FixtureRequest,
+    k8s_cluster: KindClusterWrapper,
+) -> List[str]:
+    image_repos: List[str] = request.param
+    return [k8s_cluster.build_and_load_docker_image(str(IMAGE_DIR / image_repo), image_repo,'test-pip') for image_repo in image_repos]
