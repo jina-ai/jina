@@ -1,4 +1,5 @@
 import itertools
+import os.path
 
 import pytest
 from docarray import Document, DocumentArray
@@ -7,6 +8,7 @@ from jina import Client, Executor, Flow, requests
 from jina.helper import random_port
 
 PROTOCOLS = ['grpc', 'http', 'websocket']
+cur_dir = os.path.dirname(__file__)
 
 
 class MyExecutor(Executor):
@@ -42,6 +44,15 @@ def test_flow_multiprotocol(ports, protocols):
             docs = client.post('/', inputs=[Document()])
             for doc in docs:
                 assert doc.text == 'processed'
+
+
+def test_flow_multiprotocol_yaml():
+    flow = Flow(uses=os.path.join(cur_dir, 'yaml/multi-protocol.yml'))
+
+    with flow:
+        for port, protocol in zip([12345, 12344, 12343], ['grpc', 'http', 'websocket']):
+            client = Client(port=port, protocol=protocol)
+            client.post('/', inputs=[Document()])
 
 
 def test_flow_multiprotocol_ports_protocols_mismatch():
