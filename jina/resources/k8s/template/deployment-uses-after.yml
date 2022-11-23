@@ -51,16 +51,15 @@ spec:
             fieldRef:
               fieldPath: metadata.name
 
-        readinessProbe:
+        startupProbe:
           exec:
             command:
               - jina
               - ping
               - executor
               - 127.0.0.1:{port}
-          initialDelaySeconds: 5
-          periodSeconds: 10
-          timeoutSeconds: 10
+          failureThreshold: 300
+          periodSeconds: 1
         livenessProbe:
           exec:
             command:
@@ -97,16 +96,15 @@ spec:
             fieldRef:
               fieldPath: metadata.name
 
-        readinessProbe:
+        startupProbe:
           exec:
             command:
               - jina
               - ping
               - executor
               - 127.0.0.1:{port_uses_after}
-          initialDelaySeconds: 5
-          periodSeconds: 20
-          timeoutSeconds: 10
+          failureThreshold: 300
+          periodSeconds: 1
         livenessProbe:
           exec:
             command:

@@ -1148,7 +1148,7 @@ async def test_flow_with_stateful_executor(
 @pytest.mark.parametrize(
     'docker_images', [['slow-process-executor', 'jinaai/jina']], indirect=True
 )
-async def test_slow_executor_readiness_probe_works(docker_images, tmpdir, logger):
+async def test_really_slow_executor_liveness_probe_works(docker_images, tmpdir, logger):
     try:
         dump_path = os.path.join(str(tmpdir), 'test-flow-slow-process-executor')
         namespace = f'test-flow-slow-process-executor'.lower()

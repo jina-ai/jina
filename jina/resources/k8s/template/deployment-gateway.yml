@@ -49,16 +49,15 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.name
-          readinessProbe:
+          startupProbe:
             exec:
               command:
                 - jina
                 - ping
-                - gateway
-                - {protocol}://127.0.0.1:{port}
-            initialDelaySeconds: 5
-            periodSeconds: 20
-            timeoutSeconds: 10
+                - executor
+                - 127.0.0.1:{port}
+            failureThreshold: 300
+            periodSeconds: 1
           livenessProbe:
             exec:
               command:
