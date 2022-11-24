@@ -23,15 +23,15 @@ class MyExecutor(Executor):
     [
         *[
             ([random_port(), random_port(), random_port()], list(protocols))
-            for protocols in itertools.permutations(PROTOCOLS, r=3)
+            for protocols in itertools.combinations(PROTOCOLS, r=3)
         ],
         *[
             ([random_port(), random_port()], list(protocols))
-            for protocols in itertools.permutations(PROTOCOLS, r=2)
+            for protocols in itertools.combinations(PROTOCOLS, r=2)
         ],
         *[
             ([random_port()], list(protocols))
-            for protocols in itertools.permutations(PROTOCOLS, r=1)
+            for protocols in itertools.combinations(PROTOCOLS, r=1)
         ],
     ],
 )
