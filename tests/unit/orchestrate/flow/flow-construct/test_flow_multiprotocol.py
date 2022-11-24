@@ -46,6 +46,19 @@ def test_flow_multiprotocol(ports, protocols):
                 assert doc.text == 'processed'
 
 
+def test_flow_multiprotocol_aliases():
+    ports = [random_port(), random_port(), random_port()]
+    protocols = PROTOCOLS
+    flow = Flow().config_gateway(ports=ports, protocols=protocols).add(uses=MyExecutor)
+
+    with flow:
+        for port, protocol in zip(ports, protocols):
+            client = Client(port=port, protocol=protocol)
+            docs = client.post('/', inputs=[Document()])
+            for doc in docs:
+                assert doc.text == 'processed'
+
+
 def test_flow_multiprotocol_yaml():
     flow = Flow.load_config(os.path.join(cur_dir, 'yaml/multi-protocol.yml'))
 
