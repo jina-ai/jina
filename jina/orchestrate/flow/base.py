@@ -2113,7 +2113,9 @@ class Flow(
         if GATEWAY_NAME in self._deployment_nodes:
             res = self._deployment_nodes[GATEWAY_NAME].port
         else:
-            res = self._gateway_kwargs.get('port', None)
+            res = self._gateway_kwargs.get('port', None) or self._gateway_kwargs.get(
+                'ports', None
+            )
         if not isinstance(res, list):
             return res
         elif len(res) == 1:
@@ -2399,7 +2401,11 @@ class Flow(
 
         :return: the protocol of this Flow, if only 1 protocol is supported otherwise returns the list of protocols
         """
-        v = self._gateway_kwargs.get('protocol', [GatewayProtocolType.GRPC])
+        v = (
+            self._gateway_kwargs.get('protocol', None)
+            or self._gateway_kwargs.get('protocols', None)
+            or [GatewayProtocolType.GRPC]
+        )
         if not isinstance(v, list):
             v = [v]
         v = GatewayProtocolType.from_string_list(v)
