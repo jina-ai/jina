@@ -17,6 +17,7 @@ if TYPE_CHECKING:  # pragma: no cover
     import threading
 
 # Keep these imports even if not used, since YAML parser needs to find them in imported modules
+from jina.serve.runtimes.gateway.composite import CompositeGateway
 from jina.serve.runtimes.gateway.grpc import GRPCGateway
 from jina.serve.runtimes.gateway.http import HTTPGateway
 from jina.serve.runtimes.gateway.websocket import WebSocketGateway
