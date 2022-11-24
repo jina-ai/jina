@@ -188,7 +188,7 @@ async def run_test_until_event(
             )
     except Exception as exc:
         logger.error(f' Exception raised in sending requests task: {exc}')
-        pass
+        raise exc
 
     logger.info(
         f'Client sent {len(sent_ids)} and received {(len(responses))} responses'
@@ -224,7 +224,7 @@ def inject_failures(k8s_cluster, logger):
     indirect=True,
 )
 async def test_failure_scenarios(logger, docker_images, tmpdir, k8s_cluster):
-    namespace = 'test-failure-scenarios'
+    namespace = 'test-failure-scenarios'.lower()
     from kubernetes import client
 
     api_client = client.ApiClient()
