@@ -443,9 +443,9 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install wheel
         
-          HUBBLE_VERSION = $(curl -L -s "https://pypi.org/pypi/jina-hubble-sdk/json" |  jq  -r '.releases | keys | .[]| select(startswith("0."))'  | sort -V | tail -1)
-          DOCARRAY_VERSION = $(curl -L -s "https://pypi.org/pypi/docarray/json" |  jq  -r '.releases | keys | .[]| select(startswith("0."))'  | sort -V | tail -1)
-          JCLOUD_VERSION = $(curl -L -s "https://pypi.org/pypi/jcloud/json" |  jq  -r '.releases | keys | .[]| select(startswith("0."))'  | sort -V | tail -1)
+          HUBBLE_VERSION=$(curl -L -s "https://pypi.org/pypi/jina-hubble-sdk/json" |  jq  -r '.releases | keys | .[]| select(startswith("0."))'  | sort -V | tail -1)
+          DOCARRAY_VERSION=$(curl -L -s "https://pypi.org/pypi/docarray/json" |  jq  -r '.releases | keys | .[]| select(startswith("0."))'  | sort -V | tail -1)
+          JCLOUD_VERSION=$(curl -L -s "https://pypi.org/pypi/jcloud/json" |  jq  -r '.releases | keys | .[]| select(startswith("0."))'  | sort -V | tail -1)
 
           pip install . jcloud==$JCLOUD_VERSION docarray==$DOCARRAY_VERSION jina-hubble-sdk==$HUBBLE_VERSION
 
