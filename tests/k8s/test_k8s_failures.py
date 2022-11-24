@@ -87,12 +87,14 @@ async def delete_pod(deployment, core_client, k8s_namespace, logger):
     _ = core_client.delete_namespaced_pod(
         pods.items[0].metadata.name, k8s_namespace
     )
+
     while True:
         current_pods = core_client.list_namespaced_pod(
             namespace=k8s_namespace,
             label_selector=f'app={deployment}',
         )
         current_pod_names = [p.metadata.name for p in current_pods.items]
+        logger.info(f'Deleted pod {pods.items[0].metadata.name} vs current pods {current_pod_names}')
         if pods.items[0].metadata.name not in current_pod_names:
             logger.info(
                 f'Pod {pods.items[0].metadata.name} in deployment {deployment} has been deleted'
@@ -106,6 +108,7 @@ async def delete_pod(deployment, core_client, k8s_namespace, logger):
                     logger.info(
                         f'All pods in deployment {deployment} are ready after deleting a Pod'
                     )
+                    logger.info(f'Pods {[item.metadata.name for item in pods.items]} vs Current pods {[item.metadata.name for item in current_pods.items]}')
                     return
                 logger.info(
                     f'Waiting for {len(current_pods.items)} pods in deployment {deployment} to be ready after deleting a Pod'
@@ -122,51 +125,70 @@ async def run_test_until_event(
 ):
     # start port forwarding
     from jina.clients import Client
-
-    gateway_pod_name = (
-        core_client.list_namespaced_pod(
-            namespace=namespace, label_selector='app=gateway'
+    responses = []
+    sent_ids = set()
+    pod_ids = set()
+    try:
+        gateway_pod_name = (
+            core_client.list_namespaced_pod(
+                namespace=namespace, label_selector='app=gateway'
+            )
+                .items[0]
+                .metadata.name
         )
-            .items[0]
-            .metadata.name
-    )
-    config_path = os.environ['KUBECONFIG']
-    import portforward
+        config_path = os.environ['KUBECONFIG']
+        import portforward
 
-    with portforward.forward(
-            namespace, gateway_pod_name, flow.port, flow.port, config_path
-    ):
-        client_kwargs = dict(
-            host='localhost',
-            port=flow.port,
-            asyncio=True,
-        )
-        client_kwargs.update(flow._common_kwargs)
-
-        client = Client(**client_kwargs)
-        client.show_progress = True
-
-        async def async_inputs(sent_ids: Set[int], sleep_time: float = 0.05):
-            i = 0
-            while True:
-                sent_ids.add(i)
-                yield Document(text=f'{i}')
-                if stop_event.is_set():
-                    logger.info(f'stop yielding new requests after {i} requests')
-                    return
-                elif sleep_time:
-                    await asyncio.sleep(sleep_time)
-                i += 1
-
-        responses = []
-        sent_ids = set()
-        async for resp in client.post(
-                endpoint,
-                inputs=functools.partial(async_inputs, sent_ids, sleep_time),
-                request_size=1,
-                return_responses=True
+        with portforward.forward(
+                namespace, gateway_pod_name, flow.port, flow.port, config_path
         ):
-            responses.append(resp)
+            client_kwargs = dict(
+                host='localhost',
+                port=flow.port,
+                asyncio=True,
+            )
+            client_kwargs.update(flow._common_kwargs)
+
+            client = Client(**client_kwargs)
+            client.show_progress = True
+
+            async def async_inputs(sent_ids: Set[int], sleep_time: float = 0.05):
+                i = 0
+                while True:
+                    sent_ids.add(i)
+                    if i % 100 == 0:
+                        logger.info(f'Inputing Document {i}')
+                    yield Document(text=f'{i}')
+                    if stop_event.is_set():
+                        logger.info(f'stop yielding new requests after {i} requests')
+                        return
+                    elif sleep_time:
+                        await asyncio.sleep(sleep_time)
+                    i += 1
+
+            num_resps = 0
+            async for resp in client.post(
+                    endpoint,
+                    inputs=functools.partial(async_inputs, sent_ids, sleep_time),
+                    request_size=1,
+                    return_responses=True,
+                    continue_on_error=True
+            ):
+                num_resps += 1
+                if num_resps % 100 == 0:
+                    logger.info(
+                        f'Client received a response {num_resps}'
+                    )
+                if resp.docs[0].tags['replica_uid'] not in pod_ids:
+                    pod_ids.add(resp.docs[0].tags['replica_uid'])
+                    logger.info(f' Received response from a new POD UID {resp.docs[0].tags["replica_uid"]} => Now {len(pod_ids)} different `replicas` hit')
+                responses.append(resp)
+            logger.info(
+                f'Stop sending requests after sending {len(sent_ids)} Documents and getting {num_resps} Responses'
+            )
+    except Exception as exc:
+        logger.error(f' Exception raised in sending requests task: {exc}')
+        pass
 
     logger.info(
         f'Client sent {len(sent_ids)} and received {(len(responses))} responses'
@@ -251,6 +273,7 @@ async def test_failure_scenarios(logger, docker_images, tmpdir, k8s_cluster):
             logger=logger,
         )
         logger.info(f' Scaling to 2 replicas has been done')
+        await asyncio.sleep(5.0)
         # Scale back up to 3 replicas
         await scale(
             deployment_name='executor0',
@@ -279,20 +302,22 @@ async def test_failure_scenarios(logger, docker_images, tmpdir, k8s_cluster):
             logger=logger,
         )
         logger.info(f'Deleting pod has been done')
-        await asyncio.sleep(5.0)
+        await asyncio.sleep(20.0)
 
         stop_event.set()
         responses, sent_ids = await send_task
-        logger.info(f'Sending tag has finished')
-        logger.info(f'Sending tag has finished: {len(sent_ids)} vs {len(responses)}')
+        logger.info(f'Sending task has finished')
+        logger.info(f'Sending task has finished: {len(sent_ids)} vs {len(responses)}')
         assert len(sent_ids) == len(responses)
         doc_ids = set()
         pod_ids = set()
         for response in responses:
-            doc_id, pod_id = response.docs.texts[0].split('_')
+            doc = response.docs[0]
+            doc_id, pod_id = doc.id, doc.tags['replica_uid']
             doc_ids.add(doc_id)
             pod_ids.add(pod_id)
         assert len(sent_ids) == len(doc_ids)
+        logger.info(f'pod_ids {pod_ids}')
         assert len(pod_ids) == 8  # 3 original + 3 restarted + 1 scaled up + 1 deleted
 
         # do the random failure test
@@ -312,7 +337,7 @@ async def test_failure_scenarios(logger, docker_images, tmpdir, k8s_cluster):
         # inject failures
         inject_failures(k8s_cluster, logger)
         # wait a bit
-        await asyncio.sleep(3.0)
+        await asyncio.sleep(10.0)
         # check that no message was lost
         stop_event.set()
         responses, sent_ids = await send_task
