@@ -1238,6 +1238,8 @@ async def test_flow_with_stateful_executor(
             core_client=core_client,
             endpoint='/len',
         )
+        assert len(resp) == 1
+        assert resp[0].parameters == {'__results__': {'statefulexecutor': {'length': 10.0}}}
     except Exception as exc:
         logger.error(f' Exception raised {exc}')
         print(f' ############## GATEWAY LOGS #########################')

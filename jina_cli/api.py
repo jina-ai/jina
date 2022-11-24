@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING
 
 from jina.parsers.helper import _update_gateway_args
+from jina.logging.predefined import default_logger
 
 if TYPE_CHECKING:
     from argparse import Namespace
@@ -43,6 +44,7 @@ def executor_native(args: 'Namespace'):
     :param args: arguments coming from the CLI.
     """
 
+    default_logger.debug('Start Executor natively')
     if args.runtime_cls == 'WorkerRuntime':
         from jina.serve.runtimes.worker import WorkerRuntime
 
