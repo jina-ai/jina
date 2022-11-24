@@ -1,0 +1,10 @@
+jtype: Flow
+with:
+  protocol:
+    - 'grpc'
+    - 'http'
+    - 'websocket'
+  port:
+    - 12345
+    - 12344
+    - 12343

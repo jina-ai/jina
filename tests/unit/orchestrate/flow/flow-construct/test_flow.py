@@ -620,6 +620,17 @@ def test_load_flow_with_custom_gateway(tmpdir):
         _validate_flow(f)
 
 
+@pytest.mark.slow
+def test_flow_multi_protocol_aliases():
+    f = Flow(ports=[12345, 12345, 12345], protocols=['http', 'grpc', 'websocket'])
+    assert f.port == [12345, 12345, 12345]
+    assert f.protocol == [
+        GatewayProtocolType.HTTP,
+        GatewayProtocolType.GRPC,
+        GatewayProtocolType.WEBSOCKET,
+    ]
+
+
 def _validate_flow(f):
     graph_dict = f._get_graph_representation()
     addresses = f._get_deployments_addresses()
