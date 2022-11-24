@@ -172,7 +172,7 @@ with:
 :width: 70%
 ```
 
-```
+```{admonition} Important
 :class: important
 
 In case you want to serve a Flow using multiple protocols, make sure to specify as much ports as protocols used. 
