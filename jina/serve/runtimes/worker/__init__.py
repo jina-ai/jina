@@ -137,13 +137,13 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         # Mark all services as healthy.
         health_pb2_grpc.add_HealthServicer_to_server(self, self._grpc_server)
 
-        for service in service_names:
-            await self._health_servicer.set(service, health_pb2.HealthCheckResponse.SERVING)
         reflection.enable_server_reflection(service_names, self._grpc_server)
         bind_addr = f'{self.args.host}:{self.args.port}'
         self.logger.debug(f'start listening on {bind_addr}')
         self._grpc_server.add_insecure_port(bind_addr)
         await self._grpc_server.start()
+        for service in service_names:
+            await self._health_servicer.set(service, health_pb2.HealthCheckResponse.SERVING)
 
     async def async_run_forever(self):
         """Block until the GRPC server is terminated"""
