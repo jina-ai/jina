@@ -3,7 +3,6 @@ import datetime
 import functools
 import os
 import subprocess
-import time
 from typing import Set
 
 import pytest
@@ -16,12 +15,12 @@ cluster.KIND_VERSION = 'v0.11.1'
 
 
 async def scale(
-    deployment_name: str,
-    desired_replicas: int,
-    app_client,
-    k8s_namespace,
-    core_client,
-    logger,
+        deployment_name: str,
+        desired_replicas: int,
+        app_client,
+        k8s_namespace,
+        core_client,
+        logger,
 ):
     app_client.patch_namespaced_deployment_scale(
         deployment_name,
@@ -46,7 +45,7 @@ async def scale(
 
 
 async def restart_deployment(
-    deployment, app_client, core_client, k8s_namespace, logger
+        deployment, app_client, core_client, k8s_namespace, logger
 ):
     now = datetime.datetime.utcnow()
     now = str(now.isoformat("T") + "Z")
@@ -85,7 +84,7 @@ async def delete_pod(deployment, core_client, k8s_namespace, logger):
         namespace=k8s_namespace,
         label_selector=f'app={deployment}',
     )
-    api_response = core_client.delete_namespaced_pod(
+    _ = core_client.delete_namespaced_pod(
         pods.items[0].metadata.name, k8s_namespace
     )
     while True:
@@ -119,7 +118,7 @@ async def delete_pod(deployment, core_client, k8s_namespace, logger):
 
 
 async def run_test_until_event(
-    flow, core_client, namespace, endpoint, stop_event, logger, sleep_time=0.05
+        flow, core_client, namespace, endpoint, stop_event, logger, sleep_time=0.05
 ):
     # start port forwarding
     from jina.clients import Client
@@ -128,14 +127,14 @@ async def run_test_until_event(
         core_client.list_namespaced_pod(
             namespace=namespace, label_selector='app=gateway'
         )
-        .items[0]
-        .metadata.name
+            .items[0]
+            .metadata.name
     )
     config_path = os.environ['KUBECONFIG']
     import portforward
 
     with portforward.forward(
-        namespace, gateway_pod_name, flow.port, flow.port, config_path
+            namespace, gateway_pod_name, flow.port, flow.port, config_path
     ):
         client_kwargs = dict(
             host='localhost',
@@ -162,10 +161,10 @@ async def run_test_until_event(
         responses = []
         sent_ids = set()
         async for resp in client.post(
-            endpoint,
-            inputs=functools.partial(async_inputs, sent_ids, sleep_time),
-            request_size=1,
-            return_responses=True
+                endpoint,
+                inputs=functools.partial(async_inputs, sent_ids, sleep_time),
+                request_size=1,
+                return_responses=True
         ):
             responses.append(resp)
 
@@ -240,6 +239,7 @@ async def test_failure_scenarios(logger, docker_images, tmpdir, k8s_cluster):
                 sleep_time=None,
             )
         )
+        logger.info(f' Sending task has been scheduled')
         await asyncio.sleep(5.0)
         # Scale down the Executor to 2 replicas
         await scale(
@@ -250,6 +250,7 @@ async def test_failure_scenarios(logger, docker_images, tmpdir, k8s_cluster):
             k8s_namespace=namespace,
             logger=logger,
         )
+        logger.info(f' Scaling to 2 replicas has been done')
         # Scale back up to 3 replicas
         await scale(
             deployment_name='executor0',
@@ -259,6 +260,7 @@ async def test_failure_scenarios(logger, docker_images, tmpdir, k8s_cluster):
             k8s_namespace=namespace,
             logger=logger,
         )
+        logger.info(f' Scaling to 3 replicas has been done')
         await asyncio.sleep(5.0)
         # restart all pods in the deployment
         await restart_deployment(
@@ -268,6 +270,7 @@ async def test_failure_scenarios(logger, docker_images, tmpdir, k8s_cluster):
             k8s_namespace=namespace,
             logger=logger,
         )
+        logger.info(f' Restarting deployment has been done')
         await asyncio.sleep(5.0)
         await delete_pod(
             deployment='executor0',
@@ -275,10 +278,13 @@ async def test_failure_scenarios(logger, docker_images, tmpdir, k8s_cluster):
             k8s_namespace=namespace,
             logger=logger,
         )
+        logger.info(f'Deleting pod has been done')
         await asyncio.sleep(5.0)
 
         stop_event.set()
         responses, sent_ids = await send_task
+        logger.info(f'Sending tag has finished')
+        logger.info(f'Sending tag has finished: {len(sent_ids)} vs {len(responses)}')
         assert len(sent_ids) == len(responses)
         doc_ids = set()
         pod_ids = set()
