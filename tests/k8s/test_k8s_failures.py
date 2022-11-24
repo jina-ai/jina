@@ -224,14 +224,13 @@ def inject_failures(k8s_cluster, logger):
     indirect=True,
 )
 async def test_failure_scenarios(logger, docker_images, tmpdir, k8s_cluster):
+    namespace = 'test-failure-scenarios'
+    from kubernetes import client
+
+    api_client = client.ApiClient()
+    core_client = client.CoreV1Api(api_client=api_client)
+    app_client = client.AppsV1Api(api_client=api_client)
     try:
-        namespace = 'test-failure-scenarios'
-        from kubernetes import client
-
-        api_client = client.ApiClient()
-        core_client = client.CoreV1Api(api_client=api_client)
-        app_client = client.AppsV1Api(api_client=api_client)
-
         flow = Flow(prefetch=100).add(replicas=3, uses=f'docker://{docker_images[0]}')
 
         dump_path = os.path.join(str(tmpdir), namespace)
@@ -249,6 +248,7 @@ async def test_failure_scenarios(logger, docker_images, tmpdir, k8s_cluster):
             },
             logger=logger,
         )
+
         stop_event = asyncio.Event()
         send_task = asyncio.create_task(
             run_test_until_event(
@@ -344,4 +344,23 @@ async def test_failure_scenarios(logger, docker_images, tmpdir, k8s_cluster):
         assert len(sent_ids) == len(responses)
     except Exception as exc:
         logger.error(f' Exception raised {exc}')
+        print(f' ############## GATEWAY LOGS #########################')
+        import subprocess
+        gateway_pods = core_client.list_namespaced_pod(
+            namespace=namespace,
+            label_selector=f'app=gateway',
+        )
+        for gateway_pod in gateway_pods.items:
+            out = subprocess.run(f'kubectl logs {gateway_pod.metadata.name} -n {namespace} gateway', shell=True, capture_output=True, text=True).stdout.strip("\n")
+            print(out)
+
+        for deployment in ['executor0']:
+            print(f' ############## EXECUTOR LOGS in {deployment} #########################')
+            executor_pods = core_client.list_namespaced_pod(
+                namespace=namespace,
+                label_selector=f'app={deployment}',
+            )
+            for executor_pod in executor_pods.items:
+                out = subprocess.run(f'kubectl logs {executor_pod.metadata.name} -n {namespace} executor', shell=True, capture_output=True, text=True).stdout.strip("\n")
+                print(out)
         raise exc
