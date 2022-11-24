@@ -50,7 +50,6 @@ fastapi>=0.76.0:            standard,devel
 uvicorn[standard]:          standard,devel
 docker:                     standard,devel
 pathspec:                   standard,devel
-cryptography:               standard,devel
 filelock:                   standard,devel
 requests:                   standard,devel
 websockets:                 standard,devel
