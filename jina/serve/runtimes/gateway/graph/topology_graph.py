@@ -147,7 +147,7 @@ class TopologyGraph:
 
                     # avoid sending to executor which does not bind to this endpoint
                     if endpoint is not None and executor_endpoint_mapping is not None:
-                        if (
+                        if (self.name in executor_endpoint_mapping and
                             endpoint not in executor_endpoint_mapping[self.name]
                             and __default_endpoint__
                             not in executor_endpoint_mapping[self.name]
