@@ -45,7 +45,8 @@ class BatchQueue():
         self._flush_trigger: Event = Event()
         asyncio.create_task(self.flush(self._flush_trigger))
         self._timer_started = False
-        self._after_flush_event = Event()
+        self._after_flush_event: Event = Event()
+        print(type(self._after_flush_event))
     
     def _start_timer(self):
         asyncio.create_task(sleep_then_set(self._timeout / 1000, self._flush_trigger))
@@ -54,9 +55,9 @@ class BatchQueue():
     def _reset_timeout(self) -> None:
         """Reset the timeout event."""
         self._timeout_event.set()
-        self._timeout_event = Event()
+        self._timeout_event: Event = Event()
     
-    async def push(self, request: DataRequest) -> Event:
+    def push(self, request: DataRequest) -> Event:
         """Append request to the queue. Once the request has been processed, the event will be set.
         
         :param request: The request to append to the queue.
@@ -83,32 +84,39 @@ class BatchQueue():
         return self._after_flush_event
     
     async def flush(self, trigger_event: Event) -> None:
-        """Process all requests in the queue once event is set."""
+        """Process all requests in the queue once event is set.
+        
+        :param trigger_event: The event that will trigger the flush.
+        """
         await trigger_event.wait()
-        # We need to get the executor to process the big doc
-        return_data = await self._executor.__acall__(
-            req_endpoint=self._exec_endpoint,
-            docs=self._big_doc,
-            parameters={},
-            docs_matrix=None,
-            tracing_context=None, # TODO: Tracing?
-        )
+        # TODO: At the moment this fails silently. It just returns the input in the case of a failure
+        try:
+            # We need to get the executor to process the big doc
+            return_data = await self._executor.__acall__(
+                req_endpoint=self._exec_endpoint,
+                docs=self._big_doc,
+                parameters={},
+                docs_matrix=None,
+                tracing_context=None, # TODO: Tracing?
+            )
 
-        # We need to reslice the big doc array into the original requests
-        consumed_count: int = 0
-        for request, request_len in zip(self._requests, self._request_lens):
-            left = consumed_count
-            right = consumed_count + request_len
-            self._set_result([request], return_data[left: right], self._big_doc[left: right])
-            consumed_count += request_len
+            # We need to reslice the big doc array into the original requests
+            print(return_data)
+            consumed_count: int = 0
+            for request, request_len in zip(self._requests, self._request_lens):
+                left = consumed_count
+                right = consumed_count + request_len
+                self._set_result([request], return_data[left: right], self._big_doc[left: right])
+                consumed_count += request_len
 
-        # TODO: Metrics?
-        #self._record_docs_processed_monitoring(requests, docs)
-        #self._record_response_size_monitoring(requests)
-
-        # We need to set the after flush event and reset the batch queue
-        self._after_flush_event.set()
-        self._reset()
+            # TODO: Metrics?
+            #self._record_docs_processed_monitoring(requests, docs)
+            #self._record_response_size_monitoring(requests)
+        finally:
+            # We need to set the after flush event and reset the batch queue
+            # This needs to occur even if the executor fails otherwise it will block forever
+            self._after_flush_event.set()
+            self._reset()
 
     # TODO: Duplicate from WorkerRequestHandler
     # TODO: This is only ever called with field='docs'

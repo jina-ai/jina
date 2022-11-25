@@ -6,6 +6,7 @@ from jina.excepts import BadConfigSource
 from jina.importer import ImportExtensions
 from jina.serve.executors import BaseExecutor
 from jina.types.request.data import DataRequest
+from jina.serve.runtimes.worker.batch_queue import BatchQueue
 
 if TYPE_CHECKING:  # pragma: no cover
     import argparse
@@ -58,6 +59,26 @@ class WorkerRequestHandler:
         )
         self._init_monitoring(metrics_registry, meter)
         self.deployment_name = deployment_name
+        self._batchqueue: Dict[str, BatchQueue] = {}
+
+        if getattr(self._executor, 'dynamic_batching', None) is not None:
+            # TODO: Should we splitting by endpoint or by function?
+            func_endpoints: Dict[str, List[str]] = {func.__name__: [] for func in self._executor.requests.values()}
+            for endpoint, func in self._executor.requests.items():
+                func_endpoints[func.__name__].append(endpoint)
+            
+            for func_name, dbatch_config in self._executor.dynamic_batching.items():
+                for endpoint in func_endpoints[func_name]:
+                    self._batchqueue[endpoint] = BatchQueue(
+                        executor=self._executor,
+                        exec_endpoint=endpoint,
+                        args=self.args,
+                        preferred_batch_size=dbatch_config['preferred_batch_size'],
+                        timeout=dbatch_config['timeout'],
+                    )
+
+            self.logger.debug(f"Dynamic Batching configs: {self._executor.dynamic_batching}")
+            self.logger.debug(f"Instantiated Batch Queues: {self._batchqueue}")
 
     def _init_monitoring(
             self,
@@ -267,55 +288,50 @@ class WorkerRequestHandler:
         :param tracing_context: Optional OpenTelemetry tracing context from the originating request.
         :returns: the processed message
         """
-        # JOAN: This true? Why list?
-        # TODO: Just leave this then run all the tests
+        # This is not always true. How does it work when we have multiple requests?
         # assert len(requests) == 1, "There are places where the handler is called with more than one request __apparently__"
 
         # skip executor if endpoints mismatch
-        if (requests[0].header.exec_endpoint not in self._executor.requests
+        exec_endpoint: str = requests[0].header.exec_endpoint
+        if (exec_endpoint not in self._executor.requests
                 and __default_endpoint__ not in self._executor.requests
         ):
             self.logger.debug(
-                f'skip executor: mismatch request, exec_endpoint: {requests[0].header.exec_endpoint}, requests: {self._executor.requests}'
+                f'skip executor: mismatch request, exec_endpoint: {exec_endpoint}, requests: {self._executor.requests}'
             )
             return requests[0]
 
         self._record_request_size_monitoring(requests)
 
-        params = self._parse_params(requests[0].parameters, self._executor.metas.name)
-        docs = WorkerRequestHandler.get_docs_from_request(
-            requests,
-            field='docs',
-        )
+        # TODO: This does not account for requests to "/"
+        if exec_endpoint in self._batchqueue:
+            await self._batchqueue[exec_endpoint].push(requests[0]).wait()
+        else:
+            params = self._parse_params(requests[0].parameters, self._executor.metas.name)
+            docs = WorkerRequestHandler.get_docs_from_request(
+                requests,
+                field='docs',
+            )
 
-        # TODO: Multiple batch queues. One for each endpoint
+            docs_matrix, docs_map = WorkerRequestHandler._get_docs_matrix_from_request(
+                requests
+            )
+            return_data = await self._executor.__acall__(
+                req_endpoint=requests[0].header.exec_endpoint,
+                docs=docs,
+                parameters=params,
+                docs_matrix=docs_matrix,
+                docs_map=docs_map,
+                tracing_context=tracing_context,
+            )
 
-        # CONSTRAINT: input.size == output.size - Otherwise we cant know whos requests are whos
-        # Enqueue
-        # Wait
-        # Timeout?
-            # Yes: queue.flush
-            # No: Continue
+            docs = self._set_result(requests, return_data, docs)
+            self._record_docs_processed_monitoring(requests, docs)
 
-        # executor logic
-        docs_matrix, docs_map = WorkerRequestHandler._get_docs_matrix_from_request(
-            requests
-        )
-        return_data = await self._executor.__acall__(
-            req_endpoint=requests[0].header.exec_endpoint,
-            docs=docs,
-            parameters=params,
-            docs_matrix=docs_matrix,
-            docs_map=docs_map,
-            tracing_context=tracing_context,
-        )
-
-        docs = self._set_result(requests, return_data, docs)
 
         for req in requests:
             req.add_executor(self.deployment_name)
 
-        self._record_docs_processed_monitoring(requests, docs)
         self._record_response_size_monitoring(requests)
 
         # Await then return? Or do nothing and assume someone else returns?
