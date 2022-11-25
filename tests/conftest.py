@@ -80,6 +80,14 @@ def tmpfile(tmpdir):
     return tmpdir / tmpfile
 
 
+@pytest.fixture(autouse=True)
+def tmpmodule(tmpdir):
+    tmpfile = f'package.py'
+    with open(tmpdir / tmpfile, 'w') as f:
+        f.write("raise ImportError")
+    return tmpdir / tmpfile
+
+
 @pytest.fixture(scope='session')
 def event_loop(request):
     """

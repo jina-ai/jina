@@ -50,7 +50,7 @@ def test_no_suppress_other_exception():
             raise Exception
 
 
-def test_path_importer():
+def test_path_importer(tmpmodule):
     from jina.importer import PathImporter
     with pytest.raises(ImportError):
-        PathImporter.add_modules('unit.error_package')
+        PathImporter.add_modules(tmpmodule)
