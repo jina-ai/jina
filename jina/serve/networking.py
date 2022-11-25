@@ -949,6 +949,7 @@ class GrpcConnectionPool:
         # timed out requests have the code grpc.StatusCode.DEADLINE_EXCEEDED
         # requests usually gets cancelled when the server shuts down
         # retries for cancelled requests will hit another replica in K8s
+        self._logger.debug(f'GRPC call errored, getting error {error} for the {retry_i + 1}thd time')
         if (
             error.code() != grpc.StatusCode.UNAVAILABLE
             and error.code() != grpc.StatusCode.CANCELLED
