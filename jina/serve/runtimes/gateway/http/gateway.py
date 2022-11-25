@@ -2,7 +2,6 @@ import logging
 import os
 from typing import Optional
 
-from jina import __default_host__
 from jina.importer import ImportExtensions
 from jina.serve.gateway import BaseGateway
 from jina.serve.runtimes.gateway.http.app import get_fastapi_app
@@ -12,19 +11,19 @@ class HTTPGateway(BaseGateway):
     """HTTP Gateway implementation"""
 
     def __init__(
-        self,
-        title: Optional[str] = None,
-        description: Optional[str] = None,
-        no_debug_endpoints: Optional[bool] = False,
-        no_crud_endpoints: Optional[bool] = False,
-        expose_endpoints: Optional[str] = None,
-        expose_graphql_endpoint: Optional[bool] = False,
-        cors: Optional[bool] = False,
-        ssl_keyfile: Optional[str] = None,
-        ssl_certfile: Optional[str] = None,
-        uvicorn_kwargs: Optional[dict] = None,
-        proxy: Optional[bool] = None,
-        **kwargs
+            self,
+            title: Optional[str] = None,
+            description: Optional[str] = None,
+            no_debug_endpoints: Optional[bool] = False,
+            no_crud_endpoints: Optional[bool] = False,
+            expose_endpoints: Optional[str] = None,
+            expose_graphql_endpoint: Optional[bool] = False,
+            cors: Optional[bool] = False,
+            ssl_keyfile: Optional[str] = None,
+            ssl_certfile: Optional[str] = None,
+            uvicorn_kwargs: Optional[dict] = None,
+            proxy: Optional[bool] = None,
+            **kwargs
     ):
         """Initialize the gateway
             Get the app from FastAPI as the REST interface.
@@ -85,33 +84,7 @@ class HTTPGateway(BaseGateway):
         with ImportExtensions(required=True):
             from uvicorn import Config, Server
 
-        # class UviServer(Server):
-        #     """The uvicorn server."""
-        #
-        #     async def setup(self, sockets=None):
-        #         """
-        #         Setup uvicorn server.
-        #
-        #         :param sockets: sockets of server.
-        #         """
-        #         config = self.config
-        #         if not config.loaded:
-        #             config.load()
-        #         self.lifespan = config.lifespan_class(config)
-        #         await self.startup(sockets=sockets)
-        #         if self.should_exit:
-        #             return
-        #
-        #     async def serve(self, **kwargs):
-        #         """
-        #         Start the server.
-        #
-        #         :param kwargs: keyword arguments
-        #         """
-        #         await self.main_loop()
-
         if 'CICD_JINA_DISABLE_HEALTHCHECK_LOGS' in os.environ:
-
             class _EndpointFilter(logging.Filter):
                 def filter(self, record: logging.LogRecord) -> bool:
                     # NOTE: space is important after `GET /`, else all logs will be disabled.
@@ -138,8 +111,6 @@ class HTTPGateway(BaseGateway):
             )
         )
 
-        await self.server.serve()
-
     async def shutdown(self):
         """
         Free resources allocated when setting up HTTP server
@@ -150,3 +121,8 @@ class HTTPGateway(BaseGateway):
     async def run_server(self):
         """Run HTTP server forever"""
         await self.server.serve()
+
+    def _should_exit(self):
+        """Determines if it should exit. This can be removed after https://github.com/encode/uvicorn/pull/1600/files
+        is merged and released in uvicorn """
+        return self.server.should_exit

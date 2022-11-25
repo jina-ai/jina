@@ -2,7 +2,6 @@ import logging
 import os
 from typing import Optional
 
-from jina import __default_host__
 from jina.importer import ImportExtensions
 from jina.serve.gateway import BaseGateway
 from jina.serve.runtimes.gateway.websocket.app import get_fastapi_app
@@ -54,31 +53,6 @@ class WebSocketGateway(BaseGateway):
         with ImportExtensions(required=True):
             from uvicorn import Config, Server
 
-        class UviServer(Server):
-            """The uvicorn server."""
-
-            async def setup(self, sockets=None):
-                """
-                Setup uvicorn server.
-
-                :param sockets: sockets of server.
-                """
-                config = self.config
-                if not config.loaded:
-                    config.load()
-                self.lifespan = config.lifespan_class(config)
-                await self.startup(sockets=sockets)
-                if self.should_exit:
-                    return
-
-            async def serve(self, **kwargs):
-                """
-                Start the server.
-
-                :param kwargs: keyword arguments
-                """
-                await self.main_loop()
-
         if 'CICD_JINA_DISABLE_HEALTHCHECK_LOGS' in os.environ:
 
             class _EndpointFilter(logging.Filter):
@@ -97,7 +71,7 @@ class WebSocketGateway(BaseGateway):
         if self.ssl_certfile and 'ssl_certfile' not in uvicorn_kwargs.keys():
             uvicorn_kwargs['ssl_certfile'] = self.ssl_certfile
 
-        self.server = UviServer(
+        self.server = Server(
             config=Config(
                 app=self.app,
                 host=self.host,
@@ -108,8 +82,6 @@ class WebSocketGateway(BaseGateway):
             )
         )
 
-        await self.server.setup()
-
     async def shutdown(self):
         """Free other resources allocated with the server, e.g, gateway object, ..."""
         self.server.should_exit = True
@@ -118,3 +90,8 @@ class WebSocketGateway(BaseGateway):
     async def run_server(self):
         """Run WebSocket server forever"""
         await self.server.serve()
+
+    def _should_exit(self):
+        """Determines if it should exit. This can be removed after https://github.com/encode/uvicorn/pull/1600/files
+        is merged and released in uvicorn """
+        return self.server.should_exit
