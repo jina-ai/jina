@@ -80,7 +80,7 @@ def tmpfile(tmpdir):
     return tmpdir / tmpfile
 
 
-@pytest.fixture(autouse=True)
+@pytest.fixture()
 def tmpmodule(tmpdir):
     tmpfile = f'package.py'
     with open(tmpdir / tmpfile, 'w') as f:
