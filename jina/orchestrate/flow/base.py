@@ -589,7 +589,7 @@ class Flow(
     @allowed_levels([FlowBuildLevel.EMPTY])
     def _add_gateway(
         self,
-        needs: str,
+        needs: Union[str, Set[str]],
         graph_description: Dict[str, List[str]],
         deployments_addresses: Dict[str, List[str]],
         deployments_metadata: Dict[str, Dict[str, str]],
@@ -1764,9 +1764,10 @@ class Flow(
             self.build(copy_flow=False)
 
         port_gateway = self._deployment_nodes[GATEWAY_NAME].args.port
+        host_gateway = self._deployment_nodes[GATEWAY_NAME].args.host
 
         if not (
-            is_port_free(__default_host__, port_gateway)
+            is_port_free(host_gateway, port_gateway)
         ):  # we check if the port is not used at parsing time as well for robustness
             raise PortAlreadyUsed(f'port:{port_gateway}')
 
@@ -2112,7 +2113,9 @@ class Flow(
         if GATEWAY_NAME in self._deployment_nodes:
             res = self._deployment_nodes[GATEWAY_NAME].port
         else:
-            res = self._gateway_kwargs.get('port', None)
+            res = self._gateway_kwargs.get('port', None) or self._gateway_kwargs.get(
+                'ports', None
+            )
         if not isinstance(res, list):
             return res
         elif len(res) == 1:
@@ -2398,7 +2401,11 @@ class Flow(
 
         :return: the protocol of this Flow, if only 1 protocol is supported otherwise returns the list of protocols
         """
-        v = self._gateway_kwargs.get('protocol', [GatewayProtocolType.GRPC])
+        v = (
+            self._gateway_kwargs.get('protocol', None)
+            or self._gateway_kwargs.get('protocols', None)
+            or [GatewayProtocolType.GRPC]
+        )
         if not isinstance(v, list):
             v = [v]
         v = GatewayProtocolType.from_string_list(v)

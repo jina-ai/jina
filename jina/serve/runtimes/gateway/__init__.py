@@ -17,6 +17,7 @@ if TYPE_CHECKING:  # pragma: no cover
     import threading
 
 # Keep these imports even if not used, since YAML parser needs to find them in imported modules
+from jina.serve.runtimes.gateway.composite import CompositeGateway
 from jina.serve.runtimes.gateway.grpc import GRPCGateway
 from jina.serve.runtimes.gateway.http import HTTPGateway
 from jina.serve.runtimes.gateway.websocket import WebSocketGateway
@@ -52,7 +53,7 @@ class GatewayRuntime(AsyncNewLoopRuntime):
 
         Setup the uvicorn server.
         """
-        if not (is_port_free(__default_host__, self.args.port)):
+        if not (is_port_free(self.args.host, self.args.port)):
             raise PortAlreadyUsed(f'port:{self.args.port}')
 
         uses_with = self.args.uses_with or {}
@@ -79,23 +80,29 @@ class GatewayRuntime(AsyncNewLoopRuntime):
                 'name': self.args.name,
                 'port': self.args.port,
                 'protocol': self.args.protocol,
+                'host': self.args.host,
+                'tracing': self.tracing,
+                'tracer_provider': self.tracer_provider,
+                'grpc_tracing_server_interceptors': self.aio_tracing_server_interceptors(),
+                'graph_description': self.args.graph_description,
+                'graph_conditions': self.args.graph_conditions,
+                'deployments_addresses': self.args.deployments_addresses,
+                'deployments_metadata': self.args.deployments_metadata,
+                'deployments_no_reduce': self.args.deployments_no_reduce,
+                'timeout_send': self.timeout_send,
+                'retries': self.args.retries,
+                'compression': self.args.compression,
+                'runtime_name': self.args.name,
+                'prefetch': self.args.prefetch,
+                'metrics_registry': self.metrics_registry,
+                'meter': self.meter,
+                'aio_tracing_client_interceptors': self.aio_tracing_client_interceptors(),
+                'tracing_client_interceptor': self.tracing_client_interceptor(),
             },
             py_modules=self.args.py_modules,
             extra_search_paths=self.args.extra_search_paths,
         )
 
-        self.gateway.inject_dependencies(
-            args=self.args,
-            timeout_send=self.timeout_send,
-            metrics_registry=self.metrics_registry,
-            meter=self.meter,
-            runtime_name=self.args.name,
-            tracing=self.tracing,
-            tracer_provider=self.tracer_provider,
-            grpc_tracing_server_interceptors=self.aio_tracing_server_interceptors(),
-            aio_tracing_client_interceptors=self.aio_tracing_client_interceptors(),
-            tracing_client_interceptor=self.tracing_client_interceptor(),
-        )
         await self.gateway.setup_server()
 
     async def _wait_for_cancel(self):

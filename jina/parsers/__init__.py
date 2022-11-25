@@ -101,6 +101,34 @@ def set_gateway_parser(parser=None):
     return parser
 
 
+def set_gateway_runtime_args_parser(parser=None):
+    """Set the parser for the gateway runtime arguments
+
+    :param parser: an optional existing parser to build upon
+    :return: the parser
+    """
+    if not parser:
+        from jina.parsers.base import set_base_parser
+
+        parser = set_base_parser()
+
+    from jina.parsers.orchestrate.pod import mixin_pod_runtime_args_parser
+    from jina.parsers.orchestrate.runtimes.remote import (
+        _add_host,
+        mixin_gateway_protocol_parser,
+        mixin_gateway_streamer_parser,
+        mixin_prefetch_parser,
+    )
+
+    mixin_gateway_protocol_parser(parser)
+    mixin_gateway_streamer_parser(parser)
+    mixin_pod_runtime_args_parser(parser, pod_type='gateway')
+    mixin_prefetch_parser(parser)
+    _add_host(parser)
+
+    return parser
+
+
 def set_client_cli_parser(parser=None):
     """Set the parser for the cli client
 

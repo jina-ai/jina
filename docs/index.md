@@ -116,14 +116,6 @@ Check out more in-depth tutorials on the advanced usages of Jina.
 :end-before: <!-- end support-pitch -->
 ```
 
-```{toctree}
-:caption: Introduction
-:hidden:
-
-get-started/what-is-cross-modal-multi-modal
-get-started/what-is-jina
-get-started/comparing-alternatives
-```
 
 ```{toctree}
 :caption: Get Started
@@ -144,15 +136,14 @@ fundamentals/gateway/index
 fundamentals/client/client
 fundamentals/k8s
 fundamentals/docaray-dependency/index
-jina-ai-cloud/index
 how-to/index
-
 ```
 
 ```{toctree}
 :caption: Cloud Native
 :hidden:
 
+jina-ai-cloud/index
 cloud-nativeness/k8s
 cloud-nativeness/docker-compose
 cloud-nativeness/opentelemetry

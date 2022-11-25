@@ -1,0 +1,56 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jaeger
+  labels:
+    app: jaeger
+spec:
+  ports:
+  - name: api-and-ui
+    port: 16686
+  - name: otlp-grpc
+    port: 4317
+  - name: otlp-http
+    port: 4318
+  selector:
+    component: jaeger-aio
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jaeger
+  labels:
+    app: jaeger
+    component: jaeger-aio
+spec:
+  selector:
+    matchLabels:
+      app: jaeger
+      component: jaeger-aio
+  minReadySeconds: 5
+  progressDeadlineSeconds: 120
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: jaeger
+        component: jaeger-aio
+    spec:
+      containers:
+      - image: jaegertracing/all-in-one:1.35
+        name: jaeger
+        env:
+        - name: COLLECTOR_OTLP_ENABLED
+          value: "true"
+        resources:
+          limits:
+            cpu: 1
+            memory: 2Gi
+          requests:
+            cpu: 200m
+            memory: 400Mi
+        ports:
+        - containerPort: 16686
+        - containerPort: 4317
+        - containerPort: 4318
