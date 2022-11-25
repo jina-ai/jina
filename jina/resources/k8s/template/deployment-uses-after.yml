@@ -71,6 +71,10 @@ spec:
           initialDelaySeconds: 30
           periodSeconds: 5
           timeoutSeconds: 10
+        lifecycle:
+          preStop:
+            exec:
+              command: ["/bin/sh", "-c", "sleep 2"]
       - name: uses-after
         image: {image_uses_after}
         imagePullPolicy: {pull_policy}
@@ -117,3 +121,7 @@ spec:
           initialDelaySeconds: 30
           periodSeconds: 5
           timeoutSeconds: 10
+        lifecycle:
+          preStop:
+            exec:
+              command: ["/bin/sh", "-c", "sleep 2"]

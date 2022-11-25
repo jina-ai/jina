@@ -50,7 +50,6 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.name
-
         startupProbe:
           exec:
             command:
@@ -71,6 +70,10 @@ spec:
           initialDelaySeconds: 30
           periodSeconds: 5
           timeoutSeconds: 10
+        lifecycle:
+          preStop:
+            exec:
+              command: ["/bin/sh", "-c", "sleep 2"]
       - name: uses-before
         image: {image_uses_before}
         imagePullPolicy: {pull_policy}
@@ -96,7 +99,6 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.name
-
         startupProbe:
           exec:
             command:
@@ -117,6 +119,10 @@ spec:
           initialDelaySeconds: 30
           periodSeconds: 5
           timeoutSeconds: 10
+        lifecycle:
+          preStop:
+            exec:
+              command: ["/bin/sh", "-c", "sleep 2"]
       - name: uses-after
         image: {image_uses_after}
         imagePullPolicy: {pull_policy}
@@ -142,7 +148,6 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.name
-
         startupProbe:
           exec:
             command:
@@ -163,3 +168,7 @@ spec:
           initialDelaySeconds: 30
           periodSeconds: 5
           timeoutSeconds: 10
+        lifecycle:
+          preStop:
+            exec:
+              command: ["/bin/sh", "-c", "sleep 2"]
