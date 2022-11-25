@@ -170,23 +170,37 @@ def test_load_from_dict():
     assert b1.metas.name == 'hello123'
 
 
-def test_load_gateway_external_success():
+@pytest.mark.parametrize(
+    'yaml_file,gateway_name',
+    [
+        ('test-custom-gateway.yml', 'DummyGateway'),
+        ('test-fastapi-gateway.yml', 'DummyFastAPIGateway'),
+    ],
+)
+def test_load_gateway_external_success(yaml_file, gateway_name):
     with Gateway.load_config(
-        'yaml/test-custom-gateway.yml', runtime_args={'port': [12345]}
+        f'yaml/{yaml_file}', runtime_args={'port': [12345]}
     ) as gateway:
-        assert gateway.__class__.__name__ == 'DummyGateway'
+        assert gateway.__class__.__name__ == gateway_name
         assert gateway.arg1 == 'hello'
         assert gateway.arg2 == 'world'
         assert gateway.arg3 == 'default-arg3'
 
 
-def test_load_gateway_override_with():
+@pytest.mark.parametrize(
+    'yaml_file,gateway_name',
+    [
+        ('test-custom-gateway.yml', 'DummyGateway'),
+        ('test-fastapi-gateway.yml', 'DummyFastAPIGateway'),
+    ],
+)
+def test_load_gateway_override_with(yaml_file, gateway_name):
     with Gateway.load_config(
-        'yaml/test-custom-gateway.yml',
+        f'yaml/{yaml_file}',
         uses_with={'arg1': 'arg1', 'arg2': 'arg2', 'arg3': 'arg3'},
         runtime_args={'port': [12345]},
     ) as gateway:
-        assert gateway.__class__.__name__ == 'DummyGateway'
+        assert gateway.__class__.__name__ == gateway_name
         assert gateway.arg1 == 'arg1'
         assert gateway.arg2 == 'arg2'
         assert gateway.arg3 == 'arg3'
