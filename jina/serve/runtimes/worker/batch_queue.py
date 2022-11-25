@@ -43,10 +43,9 @@ class BatchQueue():
         self._big_doc: DocumentArray = DocumentArray.empty()
 
         self._flush_trigger: Event = Event()
-        asyncio.create_task(self.flush(self._flush_trigger))
-        self._timer_started = False
+        asyncio.create_task(self.await_then_flush(self._flush_trigger))
+        self._timer_started: bool = False
         self._after_flush_event: Event = Event()
-        print(type(self._after_flush_event))
     
     def _start_timer(self):
         asyncio.create_task(sleep_then_set(self._timeout / 1000, self._flush_trigger))
@@ -83,7 +82,7 @@ class BatchQueue():
         
         return self._after_flush_event
     
-    async def flush(self, trigger_event: Event) -> None:
+    async def await_then_flush(self, trigger_event: Event) -> None:
         """Process all requests in the queue once event is set.
         
         :param trigger_event: The event that will trigger the flush.
@@ -101,7 +100,6 @@ class BatchQueue():
             )
 
             # We need to reslice the big doc array into the original requests
-            print(return_data)
             consumed_count: int = 0
             for request, request_len in zip(self._requests, self._request_lens):
                 left = consumed_count
