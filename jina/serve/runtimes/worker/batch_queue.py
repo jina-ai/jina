@@ -10,7 +10,11 @@ from jina.types.request.data import DataRequest
 # TODO: SIGINT/SIGTEM: Flush
 
 async def sleep_then_set(time_seconds: int, event: Event):
-    """Sleep for time_seconds and then set the event"""
+    """Sleep for time_seconds and then set the event
+    
+    :param time_seconds: time to sleep
+    :param event: event to set
+    """
     await asyncio.sleep(time_seconds)
     event.set()
 
@@ -56,7 +60,8 @@ class BatchQueue():
         """Append request to the queue. Once the request has been processed, the event will be set.
         
         :param request: The request to append to the queue.
-        :param event: The event that will be set once the request has been processed.
+
+        :return: The event that will be set once the request has been processed.
         """
         # TODO: What if timer ends and triggers the flush in the middle of this function? Is that possible?
         # This function is blocking and thus should be atomic right?
