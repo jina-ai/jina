@@ -54,3 +54,5 @@ def test_path_importer(tmpmodule):
     from jina.importer import PathImporter
     with pytest.raises(ImportError):
         PathImporter.add_modules(tmpmodule)
+    with pytest.raises(FileNotFoundError):
+        PathImporter.add_modules('some_package.py')
