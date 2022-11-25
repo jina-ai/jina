@@ -418,9 +418,6 @@ jobs:
     needs: [lint-flake-8, code-injection ]
     strategy:
       fail-fast: false
-      matrix:
-        core: ['', 'true']
-        perf: ['', 'true']
     steps:
       - uses: actions/checkout@v2.5.0
       - name: Set up Python 3.7
