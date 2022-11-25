@@ -85,30 +85,30 @@ class HTTPGateway(BaseGateway):
         with ImportExtensions(required=True):
             from uvicorn import Config, Server
 
-        class UviServer(Server):
-            """The uvicorn server."""
-
-            async def setup(self, sockets=None):
-                """
-                Setup uvicorn server.
-
-                :param sockets: sockets of server.
-                """
-                config = self.config
-                if not config.loaded:
-                    config.load()
-                self.lifespan = config.lifespan_class(config)
-                await self.startup(sockets=sockets)
-                if self.should_exit:
-                    return
-
-            async def serve(self, **kwargs):
-                """
-                Start the server.
-
-                :param kwargs: keyword arguments
-                """
-                await self.main_loop()
+        # class UviServer(Server):
+        #     """The uvicorn server."""
+        #
+        #     async def setup(self, sockets=None):
+        #         """
+        #         Setup uvicorn server.
+        #
+        #         :param sockets: sockets of server.
+        #         """
+        #         config = self.config
+        #         if not config.loaded:
+        #             config.load()
+        #         self.lifespan = config.lifespan_class(config)
+        #         await self.startup(sockets=sockets)
+        #         if self.should_exit:
+        #             return
+        #
+        #     async def serve(self, **kwargs):
+        #         """
+        #         Start the server.
+        #
+        #         :param kwargs: keyword arguments
+        #         """
+        #         await self.main_loop()
 
         if 'CICD_JINA_DISABLE_HEALTHCHECK_LOGS' in os.environ:
 
@@ -128,7 +128,7 @@ class HTTPGateway(BaseGateway):
         if self.ssl_certfile and 'ssl_certfile' not in uvicorn_kwargs.keys():
             uvicorn_kwargs['ssl_certfile'] = self.ssl_certfile
 
-        self.server = UviServer(
+        self.server = Server(
             config=Config(
                 app=self.app,
                 host=self.host,
@@ -138,7 +138,7 @@ class HTTPGateway(BaseGateway):
             )
         )
 
-        await self.server.setup()
+        await self.server.serve()
 
     async def shutdown(self):
         """
