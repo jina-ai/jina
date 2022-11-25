@@ -1,7 +1,6 @@
 from typing import TYPE_CHECKING
 
-from jina.helper import random_ports
-from jina.parsers.helper import _set_gateway_uses
+from jina.parsers.helper import _update_gateway_args
 
 if TYPE_CHECKING:
     from argparse import Namespace
@@ -104,10 +103,7 @@ def gateway(args: 'Namespace'):
     """
     from jina.serve.runtimes import get_runtime
 
-    if not args.port:
-        args.port = random_ports(len(args.protocol))
-
-    _set_gateway_uses(args)
+    _update_gateway_args(args)
 
     runtime_cls = get_runtime('GatewayRuntime')
 
