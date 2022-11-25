@@ -247,7 +247,7 @@ class Flow(
         :param prefetch: Number of requests fetched from the client before feeding into the first Executor.
 
               Used to control the speed of data input into a Flow. 0 disables prefetch (1000 requests is the default)
-        :param protocol: Possible communication protocols between server and client. Depending on your chosen gateway, choose the convenient protocols from: ['GRPC', 'HTTP', 'WEBSOCKET'].
+        :param protocol: Communication protocol of the server exposed by the Gateway. Depending on your chosen Gateway, choose the convenient protocols from: ['GRPC', 'HTTP', 'WEBSOCKET'].
         :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
         :param py_modules: The customized python modules need to be imported before loading the gateway
 
@@ -417,7 +417,7 @@ class Flow(
         :param prefetch: Number of requests fetched from the client before feeding into the first Executor.
 
               Used to control the speed of data input into a Flow. 0 disables prefetch (1000 requests is the default)
-        :param protocol: Possible communication protocols between server and client. Depending on your chosen gateway, choose the convenient protocols from: ['GRPC', 'HTTP', 'WEBSOCKET'].
+        :param protocol: Communication protocol of the server exposed by the Gateway. Depending on your chosen Gateway, choose the convenient protocols from: ['GRPC', 'HTTP', 'WEBSOCKET'].
         :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
         :param py_modules: The customized python modules need to be imported before loading the gateway
 
@@ -1332,7 +1332,7 @@ class Flow(
         :param prefetch: Number of requests fetched from the client before feeding into the first Executor.
 
               Used to control the speed of data input into a Flow. 0 disables prefetch (1000 requests is the default)
-        :param protocol: Possible communication protocols between server and client. Depending on your chosen gateway, choose the convenient protocols from: ['GRPC', 'HTTP', 'WEBSOCKET'].
+        :param protocol: Communication protocol of the server exposed by the Gateway. Depending on your chosen Gateway, choose the convenient protocols from: ['GRPC', 'HTTP', 'WEBSOCKET'].
         :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
         :param py_modules: The customized python modules need to be imported before loading the gateway
 
@@ -1426,7 +1426,7 @@ class Flow(
         :param prefetch: Number of requests fetched from the client before feeding into the first Executor.
 
               Used to control the speed of data input into a Flow. 0 disables prefetch (1000 requests is the default)
-        :param protocol: Possible communication protocols between server and client. Depending on your chosen gateway, choose the convenient protocols from: ['GRPC', 'HTTP', 'WEBSOCKET'].
+        :param protocol: Communication protocol of the server exposed by the Gateway. Depending on your chosen Gateway, choose the convenient protocols from: ['GRPC', 'HTTP', 'WEBSOCKET'].
         :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
         :param py_modules: The customized python modules need to be imported before loading the gateway
 
