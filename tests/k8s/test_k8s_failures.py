@@ -3,6 +3,7 @@ import datetime
 import functools
 import os
 import subprocess
+from contextlib import suppress
 from typing import Set
 
 import pytest
@@ -15,12 +16,12 @@ cluster.KIND_VERSION = 'v0.11.1'
 
 
 async def scale(
-        deployment_name: str,
-        desired_replicas: int,
-        app_client,
-        k8s_namespace,
-        core_client,
-        logger,
+    deployment_name: str,
+    desired_replicas: int,
+    app_client,
+    k8s_namespace,
+    core_client,
+    logger,
 ):
     app_client.patch_namespaced_deployment_scale(
         deployment_name,
@@ -45,7 +46,7 @@ async def scale(
 
 
 async def restart_deployment(
-        deployment, app_client, core_client, k8s_namespace, logger
+    deployment, app_client, core_client, k8s_namespace, logger
 ):
     now = datetime.datetime.utcnow()
     now = str(now.isoformat("T") + "Z")
@@ -84,9 +85,7 @@ async def delete_pod(deployment, core_client, k8s_namespace, logger):
         namespace=k8s_namespace,
         label_selector=f'app={deployment}',
     )
-    _ = core_client.delete_namespaced_pod(
-        pods.items[0].metadata.name, k8s_namespace
-    )
+    _ = core_client.delete_namespaced_pod(pods.items[0].metadata.name, k8s_namespace)
 
     while True:
         current_pods = core_client.list_namespaced_pod(
@@ -94,7 +93,9 @@ async def delete_pod(deployment, core_client, k8s_namespace, logger):
             label_selector=f'app={deployment}',
         )
         current_pod_names = [p.metadata.name for p in current_pods.items]
-        logger.info(f'Deleted pod {pods.items[0].metadata.name} vs current pods {current_pod_names}')
+        logger.info(
+            f'Deleted pod {pods.items[0].metadata.name} vs current pods {current_pod_names}'
+        )
         if pods.items[0].metadata.name not in current_pod_names:
             logger.info(
                 f'Pod {pods.items[0].metadata.name} in deployment {deployment} has been deleted'
@@ -108,7 +109,9 @@ async def delete_pod(deployment, core_client, k8s_namespace, logger):
                     logger.info(
                         f'All pods in deployment {deployment} are ready after deleting a Pod'
                     )
-                    logger.info(f'Pods {[item.metadata.name for item in pods.items]} vs Current pods {[item.metadata.name for item in current_pods.items]}')
+                    logger.info(
+                        f'Pods {[item.metadata.name for item in pods.items]} vs Current pods {[item.metadata.name for item in current_pods.items]}'
+                    )
                     return
                 logger.info(
                     f'Waiting for {len(current_pods.items)} pods in deployment {deployment} to be ready after deleting a Pod'
@@ -121,10 +124,11 @@ async def delete_pod(deployment, core_client, k8s_namespace, logger):
 
 
 async def run_test_until_event(
-        flow, core_client, namespace, endpoint, stop_event, logger, sleep_time=0.05
+    flow, core_client, namespace, endpoint, stop_event, logger, sleep_time=0.05
 ):
     # start port forwarding
     from jina.clients import Client
+
     responses = []
     sent_ids = set()
     pod_ids = set()
@@ -133,14 +137,14 @@ async def run_test_until_event(
             core_client.list_namespaced_pod(
                 namespace=namespace, label_selector='app=gateway'
             )
-                .items[0]
-                .metadata.name
+            .items[0]
+            .metadata.name
         )
         config_path = os.environ['KUBECONFIG']
         import portforward
 
         with portforward.forward(
-                namespace, gateway_pod_name, flow.port, flow.port, config_path
+            namespace, gateway_pod_name, flow.port, flow.port, config_path
         ):
             client_kwargs = dict(
                 host='localhost',
@@ -156,8 +160,8 @@ async def run_test_until_event(
                 i = 0
                 while True:
                     sent_ids.add(i)
-                    if i % 100 == 0:
-                        logger.info(f'Inputing Document {i}')
+                    # if i % 100 == 0:
+                    #     logger.info(f'Inputing Document {i}')
                     yield Document(text=f'{i}')
                     if stop_event.is_set():
                         logger.info(f'stop yielding new requests after {i} requests')
@@ -168,27 +172,40 @@ async def run_test_until_event(
 
             num_resps = 0
             async for resp in client.post(
-                    endpoint,
-                    inputs=functools.partial(async_inputs, sent_ids, sleep_time),
-                    request_size=1,
-                    return_responses=True,
-                    continue_on_error=True
+                endpoint,
+                inputs=functools.partial(async_inputs, sent_ids, sleep_time),
+                request_size=1,
+                return_responses=True,
+                continue_on_error=True,
             ):
                 num_resps += 1
-                if num_resps % 100 == 0:
-                    logger.info(
-                        f'Client received a response {num_resps}'
-                    )
+                # if num_resps % 100 == 0:
+                # logger.info(f'Client received a response {num_resps}')
                 if resp.docs[0].tags['replica_uid'] not in pod_ids:
                     pod_ids.add(resp.docs[0].tags['replica_uid'])
-                    logger.info(f' Received response from a new POD UID {resp.docs[0].tags["replica_uid"]} => Now {len(pod_ids)} different `replicas` hit')
+                    logger.info(
+                        f' Received response from a new POD UID {resp.docs[0].tags["replica_uid"]} => Now {len(pod_ids)} different `replicas` hit'
+                    )
                 responses.append(resp)
             logger.info(
                 f'Stop sending requests after sending {len(sent_ids)} Documents and getting {num_resps} Responses'
             )
     except Exception as exc:
         logger.error(f' Exception raised in sending requests task: {exc}')
-        raise exc
+        # raise exc
+        # Let's also cancel all running tasks:
+        logger.warning(f'Cancelling pending tasks and stopping the event loop.')
+        loop = asyncio.get_event_loop()
+        pending = asyncio.all_tasks()
+        for task in pending:
+            task.cancel()
+            # Now we should await task to execute it's cancellation.
+            # Cancelled task raises asyncio.CancelledError that we can suppress:
+            with suppress(asyncio.CancelledError):
+                loop.run_until_complete(task)
+
+        logger.info(f'closing asycio event loop!')
+        loop.close()
 
     logger.info(
         f'Client sent {len(sent_ids)} and received {(len(responses))} responses'
@@ -346,21 +363,34 @@ async def test_failure_scenarios(logger, docker_images, tmpdir, k8s_cluster):
         logger.error(f' Exception raised {exc}')
         print(f' ############## GATEWAY LOGS #########################')
         import subprocess
+
         gateway_pods = core_client.list_namespaced_pod(
             namespace=namespace,
             label_selector=f'app=gateway',
         )
         for gateway_pod in gateway_pods.items:
-            out = subprocess.run(f'kubectl logs {gateway_pod.metadata.name} -n {namespace} gateway', shell=True, capture_output=True, text=True).stdout.strip("\n")
+            out = subprocess.run(
+                f'kubectl logs {gateway_pod.metadata.name} -n {namespace} gateway',
+                shell=True,
+                capture_output=True,
+                text=True,
+            ).stdout.strip("\n")
             print(out)
 
         for deployment in ['executor0']:
-            print(f' ############## EXECUTOR LOGS in {deployment} #########################')
+            print(
+                f' ############## EXECUTOR LOGS in {deployment} #########################'
+            )
             executor_pods = core_client.list_namespaced_pod(
                 namespace=namespace,
                 label_selector=f'app={deployment}',
             )
             for executor_pod in executor_pods.items:
-                out = subprocess.run(f'kubectl logs {executor_pod.metadata.name} -n {namespace} executor', shell=True, capture_output=True, text=True).stdout.strip("\n")
+                out = subprocess.run(
+                    f'kubectl logs {executor_pod.metadata.name} -n {namespace} executor',
+                    shell=True,
+                    capture_output=True,
+                    text=True,
+                ).stdout.strip("\n")
                 print(out)
         raise exc
