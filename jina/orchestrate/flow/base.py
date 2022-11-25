@@ -617,6 +617,9 @@ class Flow(
         args.default_port = (
             kwargs.get('port', None) is None and kwargs.get('port_expose', None) is None
         )
+
+        if not args.port:
+            args.port = helper.random_ports(len(args.protocol))
         args.noblock_on_start = True
         args.graph_description = json.dumps(graph_description)
         args.graph_conditions = json.dumps(graph_conditions)

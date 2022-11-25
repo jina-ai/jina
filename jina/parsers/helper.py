@@ -305,7 +305,7 @@ class CastToIntAction(argparse.Action):
         """
         if isinstance(values, list):
             d = [_port_to_int(port) for port in values]
-        else:
+        elif isinstance(values, str):
             d = _port_to_int(values)
         setattr(args, self.dest, d)
 
