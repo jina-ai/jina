@@ -7,7 +7,7 @@ from jina.clients.request import request_generator
 from jina.serve.runtimes.gateway.http.fastapi import FastAPIBaseGateway
 
 
-class DummyResponseModel(FastAPIBaseGateway):
+class DummyResponseModel(BaseModel):
     arg1: Optional[str]
     arg2: Optional[str]
     arg3: Optional[str]
