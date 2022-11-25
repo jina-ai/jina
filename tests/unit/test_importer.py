@@ -48,3 +48,9 @@ def test_no_suppress_other_exception():
     with pytest.raises(Exception):
         with ImportExtensions(required=True, logger=default_logger):
             raise Exception
+
+
+def test_path_importer():
+    from jina.importer import PathImporter
+    with pytest.raises(ImportError):
+        PathImporter.add_modules('unit.error_package')
