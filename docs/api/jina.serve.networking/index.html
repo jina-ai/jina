@@ -6,9 +6,9 @@
 <meta property="og:title" content="jina.serve.networking module" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/api/jina.serve.networking/" />
-<meta property="og:site_name" content="Jina 3.11.2 Documentation" />
+<meta property="og:site_name" content="Jina 3.12.0 Documentation" />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
-<meta property="og:image:alt" content="Jina 3.11.2 Documentation" />
+<meta property="og:image:alt" content="Jina 3.12.0 Documentation" />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
@@ -31,7 +31,7 @@
         <link rel="canonical" href="https://docs.jina.ai/api/jina.serve.networking.html" />
 
     <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
-        <title>jina.serve.networking module - Jina 3.11.2 documentation</title>
+        <title>jina.serve.networking module - Jina 3.12.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -40,7 +40,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     <link rel="stylesheet" type="text/css" href="../../_static/main.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/docbot.css" />
-    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" />
     
     
 
@@ -165,7 +165,7 @@
         </div>
         <div class="header-center">
             <a href="../../">
-                <div class="brand">Jina 3.11.2 documentation</div>
+                <div class="brand">Jina 3.12.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -205,22 +205,42 @@
   
   
 </a>
+<script>
+  function setPrefix(prefix){
+    window.location.href = prefix
+  }
+</script>
+<script defer>
+  fetch(`https://${window.location.host}/_versions.json`)
+  .then((resp) => resp.json())
+  .then((data) => {
+    var versionSelector = document.getElementsByClassName("version-select")[0];
+    var currentPrefix = window.location.href.toString().split(window.location.host)[1].split('/')[1];
+
+    for(var i = 0; i < data.length; i++){
+      var option = document.createElement("option");
+      option.innerHTML = data[i].version;
+      option.value = "/" + data[i].version;
+      versionSelector.appendChild(option);
+      if(currentPrefix === data[i].version){
+        versionSelector.selectedIndex = i + 1;
+      }
+    }
+  })
+  .catch((err) => console.log(err));
+</script>
 <div class="sd-d-flex-row sd-align-major-spaced">
   <a class="github-button" href="https://github.com/jina-ai/jina" data-icon="octicon-star" data-show-count="true" aria-label="Star jina-ai/jina on GitHub" style="opacity: 0;">Star</a>
-  
+  <select onChange="setPrefix(this.value)" class="version-select">
+    <option value="/">latest</option>
+  </select>
 </div><form class="sidebar-search-container" method="get" action="../../search/" role="search">
   <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
-    <p class="caption" role="heading"><span class="caption-text">Introduction</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../get-started/what-is-cross-modal-multi-modal/">What is Cross-Modal &amp; Multi-Modal?</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../get-started/what-is-jina/">What is Jina?</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../get-started/comparing-alternatives/">Comparing to Alternatives</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+    <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../get-started/install/">Install</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../get-started/install/docker/">Docker image</a></li>
@@ -253,6 +273,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/health-check/">Readiness &amp; health check</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/when-things-go-wrong/">Handle exceptions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/remarks/">Remarks</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/gateway/">Gateway</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -264,22 +285,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/client/instrumenting-client/">Instrumentation</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../jina-ai-cloud/"><svg aria-hidden="true" class="sd-octicon sd-octicon-flame" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M7.998 14.5c2.832 0 5-1.98 5-4.5 0-1.463-.68-2.19-1.879-3.383l-.036-.037c-1.013-1.008-2.3-2.29-2.834-4.434-.322.256-.63.579-.864.953-.432.696-.621 1.58-.046 2.73.473.947.67 2.284-.278 3.232-.61.61-1.545.84-2.403.633a2.788 2.788 0 01-1.436-.874A3.21 3.21 0 003 10c0 2.53 2.164 4.5 4.998 4.5zM9.533.753C9.496.34 9.16.009 8.77.146 7.035.75 4.34 3.187 5.997 6.5c.344.689.285 1.218.003 1.5-.419.419-1.54.487-2.04-.832-.173-.454-.659-.762-1.035-.454C2.036 7.44 1.5 8.702 1.5 10c0 3.512 2.998 6 6.498 6s6.5-2.5 6.5-6c0-2.137-1.128-3.26-2.312-4.438-1.19-1.184-2.436-2.425-2.653-4.81z" fill-rule="evenodd"></path></svg> Jina AI Cloud</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../jina-ai-cloud/login/">Login &amp; Token Management</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../fundamentals/executor/hub/">Executor Hub</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../fundamentals/executor/hub/hub-portal/">Portal</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../fundamentals/executor/hub/create-hub-executor/">Create</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../fundamentals/executor/hub/push-executor/">Publish</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../fundamentals/executor/hub/use-hub-executor/">Use</a></li>
-</ul>
-</li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../fundamentals/jcloud/">JCloud Hosting</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../fundamentals/jcloud/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../how-to/"><svg aria-hidden="true" class="sd-octicon sd-octicon-book" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M0 1.75A.75.75 0 01.75 1h4.253c1.227 0 2.317.59 3 1.501A3.744 3.744 0 0111.006 1h4.245a.75.75 0 01.75.75v10.5a.75.75 0 01-.75.75h-4.507a2.25 2.25 0 00-1.591.659l-.622.621a.75.75 0 01-1.06 0l-.622-.621A2.25 2.25 0 005.258 13H.75a.75.75 0 01-.75-.75V1.75zm8.755 3a2.25 2.25 0 012.25-2.25H14.5v9h-3.757c-.71 0-1.4.201-1.992.572l.004-7.322zm-1.504 7.324l.004-5.073-.002-2.253A2.25 2.25 0 005.003 2.5H1.5v9h3.757a3.75 3.75 0 011.994.574z" fill-rule="evenodd"></path></svg> How-To</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../how-to/"><svg aria-hidden="true" class="sd-octicon sd-octicon-book" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M0 1.75A.75.75 0 01.75 1h4.253c1.227 0 2.317.59 3 1.501A3.744 3.744 0 0111.006 1h4.245a.75.75 0 01.75.75v10.5a.75.75 0 01-.75.75h-4.507a2.25 2.25 0 00-1.591.659l-.622.621a.75.75 0 01-1.06 0l-.622-.621A2.25 2.25 0 005.258 13H.75a.75.75 0 01-.75-.75V1.75zm8.755 3a2.25 2.25 0 012.25-2.25H14.5v9h-3.757c-.71 0-1.4.201-1.992.572l.004-7.322zm-1.504 7.324l.004-5.073-.002-2.253A2.25 2.25 0 005.003 2.5H1.5v9h3.757a3.75 3.75 0 011.994.574z" fill-rule="evenodd"></path></svg> How-To</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../how-to/realtime-streaming/">Build real-time streaming service</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../how-to/flow-switch/">Conditional route request inside a Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../how-to/scale-out/">Scale out with replicas and shards</a></li>
@@ -287,10 +293,34 @@
 <li class="toctree-l2"><a class="reference internal" href="../../how-to/google-colab/">Run on Google Colab with GPU/TPU</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../how-to/gpu-executor/">Build a GPU Executor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../how-to/external-executor/">Include external Executors in a Flow</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../how-to/docker-compose/">Deploy with Docker Compose</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../how-to/kubernetes/">Deploy with Kubernetes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../how-to/opentelemetry/">Observability and Instrumentation with OpenTelemetry and Jina</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../how-to/opentelemetry-migration/">Migrate from Prometheus/Grafana to OpenTelemetry/Prometheus/Grafana</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Cloud Native</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../jina-ai-cloud/"><svg aria-hidden="true" class="sd-octicon sd-octicon-flame" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M7.998 14.5c2.832 0 5-1.98 5-4.5 0-1.463-.68-2.19-1.879-3.383l-.036-.037c-1.013-1.008-2.3-2.29-2.834-4.434-.322.256-.63.579-.864.953-.432.696-.621 1.58-.046 2.73.473.947.67 2.284-.278 3.232-.61.61-1.545.84-2.403.633a2.788 2.788 0 01-1.436-.874A3.21 3.21 0 003 10c0 2.53 2.164 4.5 4.998 4.5zM9.533.753C9.496.34 9.16.009 8.77.146 7.035.75 4.34 3.187 5.997 6.5c.344.689.285 1.218.003 1.5-.419.419-1.54.487-2.04-.832-.173-.454-.659-.762-1.035-.454C2.036 7.44 1.5 8.702 1.5 10c0 3.512 2.998 6 6.498 6s6.5-2.5 6.5-6c0-2.137-1.128-3.26-2.312-4.438-1.19-1.184-2.436-2.425-2.653-4.81z" fill-rule="evenodd"></path></svg> Jina AI Cloud</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../jina-ai-cloud/login/">Login &amp; Token Management</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../fundamentals/executor/hub/">Executor Hub</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../fundamentals/executor/hub/hub-portal/">Portal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../fundamentals/executor/hub/create-hub-executor/">Create</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../fundamentals/executor/hub/push-executor/">Publish</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../fundamentals/executor/hub/use-hub-executor/">Use</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../fundamentals/jcloud/">Jina AI Cloud Hosting</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../fundamentals/jcloud/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../cloud-nativeness/k8s/"><span class="fas fa-dharmachakra"></span> Kubernetes Support</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../cloud-nativeness/kubernetes/">Deploy on Kubernetes</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../cloud-nativeness/docker-compose/"><span class="fab fa-docker"></span> Docker Compose Support</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../cloud-nativeness/opentelemetry/"><svg aria-hidden="true" class="sd-octicon sd-octicon-telescope-fill" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M8.531 10.21a.75.75 0 01.944.253l2.644 3.864a.75.75 0 11-1.238.847L9 12.424v2.826a.75.75 0 01-1.5 0v-2.826l-1.881 2.75a.75.75 0 01-1.238-.848l2.048-2.992a.75.75 0 01.293-.252l1.81-.871zM11.905.42a1.5 1.5 0 012.144.49l1.692 2.93a1.5 1.5 0 01-.649 2.102L2.895 11.815a1.5 1.5 0 01-1.95-.602l-.68-1.176a1.5 1.5 0 01.455-1.99L11.905.422zM3.279 8.119l.835 1.445 1.355-.653-.947-1.64-1.243.848zm7.728-1.874L9.6 3.808l1.243-.848 1.52 2.631-1.356.653z" fill-rule="evenodd"></path></svg> OpenTelemetry Support</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../cloud-nativeness/opentelemetry-migration/">Migrate from Prometheus/Grafana to OpenTelemetry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../cloud-nativeness/monitoring/">Prometheus/Grafana Support (Legacy)</a></li>
 </ul>
 </li>
 </ul>
@@ -316,7 +346,7 @@
                 <img class="sidebar-ecosys-logo only-light-line" src="../../_static/search-light.svg">
                 <img class="sidebar-ecosys-logo only-dark-line" src="../../_static/search-dark.svg">
                 Jina</a></li>
-        <li class="toctree-l1"><a class="reference external" href="https://hub.jina.ai">
+        <li class="toctree-l1"><a class="reference external" href="https://cloud.jina.ai">
             <img class="sidebar-ecosys-logo only-light-line" src="../../_static/hub-light.svg">
             <img class="sidebar-ecosys-logo only-dark-line" src="../../_static/hub-dark.svg">
             Jina Hub</a></li>
@@ -392,13 +422,16 @@
 <p>Maintains a list of connections to replicas and uses round robin for selecting a replica</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.serve.networking.ReplicaList.reset_connection">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">reset_connection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/networking/#ReplicaList.reset_connection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.networking.ReplicaList.reset_connection" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">reset_connection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deployment_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/networking/#ReplicaList.reset_connection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.networking.ReplicaList.reset_connection" title="Permalink to this definition">#</a></dt>
 <dd><p>Removes and then re-adds a connection.
 Result is the same as calling <a class="reference internal" href="#jina.serve.networking.ReplicaList.remove_connection" title="jina.serve.networking.ReplicaList.remove_connection"><code class="xref py py-meth docutils literal notranslate"><span class="pre">remove_connection()</span></code></a> and then <a class="reference internal" href="#jina.serve.networking.ReplicaList.add_connection" title="jina.serve.networking.ReplicaList.add_connection"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add_connection()</span></code></a>, but this allows for
 handling of race condition if multiple callers reset a connection at the same time.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>address</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Target address of this connection</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>address</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Target address of this connection</p></li>
+<li><p><strong>deployment_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Target deployment of this connection</p></li>
+</ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Channel</span></code>]</p>
@@ -411,10 +444,12 @@ handling of race condition if multiple callers reset a connection at the same ti
 
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.serve.networking.ReplicaList.add_connection">
-<span class="sig-name descname"><span class="pre">add_connection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/networking/#ReplicaList.add_connection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.networking.ReplicaList.add_connection" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">add_connection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deployment_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/networking/#ReplicaList.add_connection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.networking.ReplicaList.add_connection" title="Permalink to this definition">#</a></dt>
 <dd><p>Add connection with address to the connection list
 :type address: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
-:param address: Target address of this connection</p>
+:param address: Target address of this connection
+:type deployment_name: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
+:param deployment_name: Target deployment of this connection</p>
 </dd></dl>
 
 <dl class="py method">
@@ -517,7 +552,7 @@ which is safe to use in this scenario.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="jina.serve.networking.GrpcConnectionPool.ConnectionStubs">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ConnectionStubs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metrics</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">histograms</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/networking/#GrpcConnectionPool.ConnectionStubs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.networking.GrpcConnectionPool.ConnectionStubs" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ConnectionStubs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deployment_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metrics</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">histograms</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/networking/#GrpcConnectionPool.ConnectionStubs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.networking.GrpcConnectionPool.ConnectionStubs" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Maintains a list of grpc stubs available for a particular connection</p>
 <dl class="py attribute">
@@ -568,32 +603,6 @@ Stub is chosen based on availability and type of requests</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.networking.GrpcConnectionPool.send_request">
-<span class="sig-name descname"><span class="pre">send_request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deployment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">head</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shard_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">polling_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">PollingType.ANY</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">endpoint</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">retries</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/networking/#GrpcConnectionPool.send_request"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.networking.GrpcConnectionPool.send_request" title="Permalink to this definition">#</a></dt>
-<dd><p>Send a single message to target via one or all of the pooled connections, depending on polling_type. Convenience function wrapper around send_request.
-:type request: <a class="reference internal" href="../jina.types.request/#jina.types.request.Request" title="jina.types.request.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></a>
-:param request: a single request to send
-:type deployment: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
-:param deployment: name of the Jina deployment to send the message to
-:type head: <code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>
-:param head: If True it is send to the head, otherwise to the worker pods
-:type shard_id: <code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]
-:param shard_id: Send to a specific shard of the deployment, ignored for polling ALL
-:type polling_type: <a class="reference internal" href="../jina.enums/#jina.enums.PollingType" title="jina.enums.PollingType"><code class="xref py py-class docutils literal notranslate"><span class="pre">PollingType</span></code></a>
-:param polling_type: defines if the message should be send to any or all pooled connections for the target
-:type endpoint: <code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]
-:param endpoint: endpoint to target with the request
-:type metadata: <code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]]
-:param metadata: metadata to send with the request
-:type timeout: <code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]
-:param timeout: timeout for sending the requests
-:type retries: <code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]
-:param retries: number of retries per gRPC call. If &lt;0 it defaults to max(3, num_replicas)
-:rtype: <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code>]
-:return: list of asyncio.Task items for each send call</p>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="jina.serve.networking.GrpcConnectionPool.send_requests">
 <span class="sig-name descname"><span class="pre">send_requests</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">requests</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deployment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">head</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shard_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">polling_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">PollingType.ANY</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">endpoint</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">retries</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/networking/#GrpcConnectionPool.send_requests"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.networking.GrpcConnectionPool.send_requests" title="Permalink to this definition">#</a></dt>
 <dd><p>Send a request to target via one or all of the pooled connections, depending on polling_type</p>
@@ -641,28 +650,6 @@ Stub is chosen based on availability and type of requests</p>
 <dd class="field-odd"><p>asyncio.Task items to send call</p>
 </dd>
 </dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.networking.GrpcConnectionPool.send_request_once">
-<span class="sig-name descname"><span class="pre">send_request_once</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deployment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">head</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shard_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">retries</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/networking/#GrpcConnectionPool.send_request_once"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.networking.GrpcConnectionPool.send_request_once" title="Permalink to this definition">#</a></dt>
-<dd><p>Send msg to target via only one of the pooled connections
-:type request: <a class="reference internal" href="../jina.types.request/#jina.types.request.Request" title="jina.types.request.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></a>
-:param request: request to send
-:type deployment: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
-:param deployment: name of the Jina deployment to send the message to
-:type metadata: <code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]]
-:param metadata: metadata to send with the request
-:type head: <code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>
-:param head: If True it is send to the head, otherwise to the worker pods
-:type shard_id: <code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]
-:param shard_id: Send to a specific shard of the deployment, ignored for polling ALL
-:type timeout: <code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]
-:param timeout: timeout for sending the requests
-:type retries: <code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]
-:param retries: number of retries per gRPC call. If &lt;0 it defaults to max(3, num_replicas)
-:rtype: <code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code>
-:return: asyncio.Task representing the send call</p>
 </dd></dl>
 
 <dl class="py method">
@@ -860,12 +847,13 @@ Documentation is here <a class="reference external" href="https://github.com/grp
 
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.serve.networking.GrpcConnectionPool.create_async_channel_stub">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_async_channel_stub</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metrics</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">histograms</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tls</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root_certificates</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aio_tracing_client_interceptors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/networking/#GrpcConnectionPool.create_async_channel_stub"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.networking.GrpcConnectionPool.create_async_channel_stub" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_async_channel_stub</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deployment_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metrics</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">histograms</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tls</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root_certificates</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aio_tracing_client_interceptors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/networking/#GrpcConnectionPool.create_async_channel_stub"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.networking.GrpcConnectionPool.create_async_channel_stub" title="Permalink to this definition">#</a></dt>
 <dd><p>Creates an async GRPC Channel. This channel has to be closed eventually!</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>address</strong> – the address to create the connection to, like 127.0.0.0.1:8080</p></li>
+<li><p><strong>deployment_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the name of the deployment (e.g. executor0)</p></li>
 <li><p><strong>tls</strong> – if True, use tls for the grpc channel</p></li>
 <li><p><strong>root_certificates</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – the path to the root certificates for tls, only u</p></li>
 <li><p><strong>metrics</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">_NetworkingMetrics</span></code>) – NetworkingMetrics object that contain optional metrics</p></li>
@@ -931,7 +919,7 @@ Documentation is here <a class="reference external" href="https://github.com/grp
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Nov 22, 2022</div>
+                            Last updated on Nov 25, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -986,10 +974,8 @@ Documentation is here <a class="reference external" href="https://github.com/grp
 <li><a class="reference internal" href="#jina.serve.networking.GrpcConnectionPool.ConnectionStubs.send_requests"><code class="docutils literal notranslate"><span class="pre">GrpcConnectionPool.ConnectionStubs.send_requests()</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#jina.serve.networking.GrpcConnectionPool.send_request"><code class="docutils literal notranslate"><span class="pre">GrpcConnectionPool.send_request()</span></code></a></li>
 <li><a class="reference internal" href="#jina.serve.networking.GrpcConnectionPool.send_requests"><code class="docutils literal notranslate"><span class="pre">GrpcConnectionPool.send_requests()</span></code></a></li>
 <li><a class="reference internal" href="#jina.serve.networking.GrpcConnectionPool.send_discover_endpoint"><code class="docutils literal notranslate"><span class="pre">GrpcConnectionPool.send_discover_endpoint()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.networking.GrpcConnectionPool.send_request_once"><code class="docutils literal notranslate"><span class="pre">GrpcConnectionPool.send_request_once()</span></code></a></li>
 <li><a class="reference internal" href="#jina.serve.networking.GrpcConnectionPool.send_requests_once"><code class="docutils literal notranslate"><span class="pre">GrpcConnectionPool.send_requests_once()</span></code></a></li>
 <li><a class="reference internal" href="#jina.serve.networking.GrpcConnectionPool.add_connection"><code class="docutils literal notranslate"><span class="pre">GrpcConnectionPool.add_connection()</span></code></a></li>
 <li><a class="reference internal" href="#jina.serve.networking.GrpcConnectionPool.remove_connection"><code class="docutils literal notranslate"><span class="pre">GrpcConnectionPool.remove_connection()</span></code></a></li>

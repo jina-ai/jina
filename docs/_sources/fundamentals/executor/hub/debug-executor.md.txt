@@ -6,7 +6,7 @@
 This does not work for containerized Executors.
 ````
 
-In this tutorial you will learn how to debug [Hello Executor](https://hub.jina.ai/executor/9o9yjq1q) step by step.
+In this tutorial you will learn how to debug [Hello Executor](https://cloud.jina.ai/executor/9o9yjq1q) step by step.
 
 ## Pull the Executor
 

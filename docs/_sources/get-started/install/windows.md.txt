@@ -19,7 +19,9 @@ Once done, you can install Jina as on a native *nix platform.
 
 ### `multiprocessing spawn`
 
-Jina relies heavily on `multiprocessing` to enable scaling & distribution. Windows only supports [spawn start method for multiprocessing](https://docs.python.org/3/library/multiprocessing.html#the-spawn-and-forkserver-start-methods), which has a few caveats. [Please follow the guidelines here.](../../../fundamentals/flow/remarks#multiprocessing-spawn)
+Jina relies heavily on `multiprocessing` to enable scaling and distribution. Windows only supports [spawn start method for multiprocessing](https://docs.python.org/3/library/multiprocessing.html#the-spawn-and-forkserver-start-methods), which has a several caveats.
+
+{ref}`Please follow the guidelines here.<multiprocessing-spawn>`
 
 ### Compatibility of Executors in the Hub
 

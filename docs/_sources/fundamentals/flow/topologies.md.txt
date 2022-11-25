@@ -55,7 +55,7 @@ This gives the output:
 ```
 
 Both `BarExecutor` and `BazExecutor` only received a single `Document` from `FooExecutor` because they are run in parallel. The last Executor `executor3` receives both DocumentArrays and merges them automatically.
-This automated merging can be disabled with `disable_reduce=True`. This is useful for providing custom merge logic in a separate Executor. In this case the last `.add()` call would look like `.add(needs=['barExecutor', 'bazExecutor'], uses=CustomMergeExecutor, disable_reduce=True)`. This feature requires Jina >= 3.0.2.
+This automated merging can be disabled with `no_reduce=True`. This is useful for providing custom merge logic in a separate Executor. In this case the last `.add()` call would look like `.add(needs=['barExecutor', 'bazExecutor'], uses=CustomMergeExecutor, no_reduce=True)`. This feature requires Jina >= 3.0.2.
 
 (replicate-executors)=
 ## Replicate Executors
@@ -147,7 +147,7 @@ You can restrict the visible devices in round-robin assignment using `CUDA_VISIB
 | 0          | 4          |
 
 
-You can restrict the visible devices in round-robin assignment by assigning a list of devices ids `CUDA_VISIBLE_DEVICES=RR1,3`. This creates the following assignment:
+You can restrict the visible devices in round-robin assignment by assigning the list of device IDs to `CUDA_VISIBLE_DEVICES=RR1,3`. This creates the following assignment:
 
 | GPU device | Replica ID |
 |------------|------------|
@@ -157,6 +157,16 @@ You can restrict the visible devices in round-robin assignment by assigning a li
 | 3          | 3          |
 | 1          | 4          |
 
+You can also refer to GPUs by their UUID. For instance, you could assign a list of device UUIDs `CUDA_VISIBLE_DEVICES=RRGPU-0aaaaaaa-74d2-7297-d557-12771b6a79d5,GPU-0bbbbbbb-74d2-7297-d557-12771b6a79d5,GPU-0ccccccc-74d2-7297-d557-12771b6a79d5,GPU-0ddddddd-74d2-7297-d557-12771b6a79d5`.
+Check [CUDA Documentation](https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#env-vars) to see the accepted formats to assign CUDA devices by UUID.
+
+| GPU device | Replica ID |
+|------------|------------|
+| GPU-0aaaaaaa-74d2-7297-d557-12771b6a79d5          | 0          |
+| GPU-0bbbbbbb-74d2-7297-d557-12771b6a79d5          | 1          |
+| GPU-0ccccccc-74d2-7297-d557-12771b6a79d5          | 2          |
+| GPU-0ddddddd-74d2-7297-d557-12771b6a79d5          | 3          |
+| GPU-0aaaaaaa-74d2-7297-d557-12771b6a79d5          | 4          |
 
 ## Distributed replicas
 

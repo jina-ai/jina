@@ -63,7 +63,7 @@ This connects to `grpc://localhost:12345` and `grpc://91.198.174.192:12346` as t
 
 ````{admonition} Reducing
 :class: hint
-If an external Executor needs multiple predecessors, reducing needs to be enabled. So setting disable_reduce=True is not allowed for these cases. 
+If an external Executor needs multiple predecessors, reducing needs to be enabled. So setting no_reduce=True is not allowed for these cases. 
 ````
 
 

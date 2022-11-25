@@ -1,6 +1,14 @@
 jina.serve.runtimes.head package
 ================================
 
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   jina.serve.runtimes.head.request_handling
+
 Module contents
 ---------------
 

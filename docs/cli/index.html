@@ -6,10 +6,10 @@
 <meta property="og:title" content=" Command-Line Interface" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/cli/" />
-<meta property="og:site_name" content="Jina 3.11.2 Documentation" />
+<meta property="og:site_name" content="Jina 3.12.0 Documentation" />
 <meta property="og:description" content="Command-Line Interface: Positional Arguments: cli,, Possible choices: executor, flow, ping, export, new, gateway, auth, hub, cloud, help, pod, deployment, client,. Named Arguments:-v, --version,, Show Jina version,,-vf, --version-full,, Show Jina and all dependencies’ versions,. Sub-commands:: ex..." />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
-<meta property="og:image:alt" content="Jina 3.11.2 Documentation" />
+<meta property="og:image:alt" content="Jina 3.12.0 Documentation" />
 <meta name="description" content="Command-Line Interface: Positional Arguments: cli,, Possible choices: executor, flow, ping, export, new, gateway, auth, hub, cloud, help, pod, deployment, client,. Named Arguments:-v, --version,, Show Jina version,,-vf, --version-full,, Show Jina and all dependencies’ versions,. Sub-commands:: ex..." />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -33,7 +33,7 @@
         <link rel="canonical" href="https://docs.jina.ai/cli/index.html" />
 
     <link rel="shortcut icon" href="../_static/favicon.ico"/><meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
-        <title>Command-Line Interface - Jina 3.11.2 documentation</title>
+        <title>Command-Line Interface - Jina 3.12.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
@@ -42,7 +42,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     <link rel="stylesheet" type="text/css" href="../_static/main.css" />
     <link rel="stylesheet" type="text/css" href="../_static/docbot.css" />
-    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" />
     
     
 
@@ -167,7 +167,7 @@
         </div>
         <div class="header-center">
             <a href="../">
-                <div class="brand">Jina 3.11.2 documentation</div>
+                <div class="brand">Jina 3.12.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -207,22 +207,42 @@
   
   
 </a>
+<script>
+  function setPrefix(prefix){
+    window.location.href = prefix
+  }
+</script>
+<script defer>
+  fetch(`https://${window.location.host}/_versions.json`)
+  .then((resp) => resp.json())
+  .then((data) => {
+    var versionSelector = document.getElementsByClassName("version-select")[0];
+    var currentPrefix = window.location.href.toString().split(window.location.host)[1].split('/')[1];
+
+    for(var i = 0; i < data.length; i++){
+      var option = document.createElement("option");
+      option.innerHTML = data[i].version;
+      option.value = "/" + data[i].version;
+      versionSelector.appendChild(option);
+      if(currentPrefix === data[i].version){
+        versionSelector.selectedIndex = i + 1;
+      }
+    }
+  })
+  .catch((err) => console.log(err));
+</script>
 <div class="sd-d-flex-row sd-align-major-spaced">
   <a class="github-button" href="https://github.com/jina-ai/jina" data-icon="octicon-star" data-show-count="true" aria-label="Star jina-ai/jina on GitHub" style="opacity: 0;">Star</a>
-  
+  <select onChange="setPrefix(this.value)" class="version-select">
+    <option value="/">latest</option>
+  </select>
 </div><form class="sidebar-search-container" method="get" action="../search/" role="search">
   <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
-    <p class="caption" role="heading"><span class="caption-text">Introduction</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../get-started/what-is-cross-modal-multi-modal/">What is Cross-Modal &amp; Multi-Modal?</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../get-started/what-is-jina/">What is Jina?</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../get-started/comparing-alternatives/">Comparing to Alternatives</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+    <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../get-started/install/">Install</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../get-started/install/docker/">Docker image</a></li>
@@ -255,6 +275,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../fundamentals/flow/health-check/">Readiness &amp; health check</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../fundamentals/flow/when-things-go-wrong/">Handle exceptions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../fundamentals/flow/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../fundamentals/flow/remarks/">Remarks</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../fundamentals/gateway/">Gateway</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -266,22 +287,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../fundamentals/client/instrumenting-client/">Instrumentation</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../jina-ai-cloud/"><svg aria-hidden="true" class="sd-octicon sd-octicon-flame" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M7.998 14.5c2.832 0 5-1.98 5-4.5 0-1.463-.68-2.19-1.879-3.383l-.036-.037c-1.013-1.008-2.3-2.29-2.834-4.434-.322.256-.63.579-.864.953-.432.696-.621 1.58-.046 2.73.473.947.67 2.284-.278 3.232-.61.61-1.545.84-2.403.633a2.788 2.788 0 01-1.436-.874A3.21 3.21 0 003 10c0 2.53 2.164 4.5 4.998 4.5zM9.533.753C9.496.34 9.16.009 8.77.146 7.035.75 4.34 3.187 5.997 6.5c.344.689.285 1.218.003 1.5-.419.419-1.54.487-2.04-.832-.173-.454-.659-.762-1.035-.454C2.036 7.44 1.5 8.702 1.5 10c0 3.512 2.998 6 6.498 6s6.5-2.5 6.5-6c0-2.137-1.128-3.26-2.312-4.438-1.19-1.184-2.436-2.425-2.653-4.81z" fill-rule="evenodd"></path></svg> Jina AI Cloud</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../jina-ai-cloud/login/">Login &amp; Token Management</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../fundamentals/executor/hub/">Executor Hub</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../fundamentals/executor/hub/hub-portal/">Portal</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../fundamentals/executor/hub/create-hub-executor/">Create</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../fundamentals/executor/hub/push-executor/">Publish</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../fundamentals/executor/hub/use-hub-executor/">Use</a></li>
-</ul>
-</li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../fundamentals/jcloud/">JCloud Hosting</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../fundamentals/jcloud/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../how-to/"><svg aria-hidden="true" class="sd-octicon sd-octicon-book" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M0 1.75A.75.75 0 01.75 1h4.253c1.227 0 2.317.59 3 1.501A3.744 3.744 0 0111.006 1h4.245a.75.75 0 01.75.75v10.5a.75.75 0 01-.75.75h-4.507a2.25 2.25 0 00-1.591.659l-.622.621a.75.75 0 01-1.06 0l-.622-.621A2.25 2.25 0 005.258 13H.75a.75.75 0 01-.75-.75V1.75zm8.755 3a2.25 2.25 0 012.25-2.25H14.5v9h-3.757c-.71 0-1.4.201-1.992.572l.004-7.322zm-1.504 7.324l.004-5.073-.002-2.253A2.25 2.25 0 005.003 2.5H1.5v9h3.757a3.75 3.75 0 011.994.574z" fill-rule="evenodd"></path></svg> How-To</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../how-to/"><svg aria-hidden="true" class="sd-octicon sd-octicon-book" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M0 1.75A.75.75 0 01.75 1h4.253c1.227 0 2.317.59 3 1.501A3.744 3.744 0 0111.006 1h4.245a.75.75 0 01.75.75v10.5a.75.75 0 01-.75.75h-4.507a2.25 2.25 0 00-1.591.659l-.622.621a.75.75 0 01-1.06 0l-.622-.621A2.25 2.25 0 005.258 13H.75a.75.75 0 01-.75-.75V1.75zm8.755 3a2.25 2.25 0 012.25-2.25H14.5v9h-3.757c-.71 0-1.4.201-1.992.572l.004-7.322zm-1.504 7.324l.004-5.073-.002-2.253A2.25 2.25 0 005.003 2.5H1.5v9h3.757a3.75 3.75 0 011.994.574z" fill-rule="evenodd"></path></svg> How-To</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../how-to/realtime-streaming/">Build real-time streaming service</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../how-to/flow-switch/">Conditional route request inside a Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../how-to/scale-out/">Scale out with replicas and shards</a></li>
@@ -289,10 +295,34 @@
 <li class="toctree-l2"><a class="reference internal" href="../how-to/google-colab/">Run on Google Colab with GPU/TPU</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../how-to/gpu-executor/">Build a GPU Executor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../how-to/external-executor/">Include external Executors in a Flow</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../how-to/docker-compose/">Deploy with Docker Compose</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../how-to/kubernetes/">Deploy with Kubernetes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../how-to/opentelemetry/">Observability and Instrumentation with OpenTelemetry and Jina</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../how-to/opentelemetry-migration/">Migrate from Prometheus/Grafana to OpenTelemetry/Prometheus/Grafana</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Cloud Native</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../jina-ai-cloud/"><svg aria-hidden="true" class="sd-octicon sd-octicon-flame" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M7.998 14.5c2.832 0 5-1.98 5-4.5 0-1.463-.68-2.19-1.879-3.383l-.036-.037c-1.013-1.008-2.3-2.29-2.834-4.434-.322.256-.63.579-.864.953-.432.696-.621 1.58-.046 2.73.473.947.67 2.284-.278 3.232-.61.61-1.545.84-2.403.633a2.788 2.788 0 01-1.436-.874A3.21 3.21 0 003 10c0 2.53 2.164 4.5 4.998 4.5zM9.533.753C9.496.34 9.16.009 8.77.146 7.035.75 4.34 3.187 5.997 6.5c.344.689.285 1.218.003 1.5-.419.419-1.54.487-2.04-.832-.173-.454-.659-.762-1.035-.454C2.036 7.44 1.5 8.702 1.5 10c0 3.512 2.998 6 6.498 6s6.5-2.5 6.5-6c0-2.137-1.128-3.26-2.312-4.438-1.19-1.184-2.436-2.425-2.653-4.81z" fill-rule="evenodd"></path></svg> Jina AI Cloud</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../jina-ai-cloud/login/">Login &amp; Token Management</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../fundamentals/executor/hub/">Executor Hub</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../fundamentals/executor/hub/hub-portal/">Portal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../fundamentals/executor/hub/create-hub-executor/">Create</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../fundamentals/executor/hub/push-executor/">Publish</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../fundamentals/executor/hub/use-hub-executor/">Use</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../fundamentals/jcloud/">Jina AI Cloud Hosting</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../fundamentals/jcloud/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../cloud-nativeness/k8s/"><span class="fas fa-dharmachakra"></span> Kubernetes Support</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../cloud-nativeness/kubernetes/">Deploy on Kubernetes</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../cloud-nativeness/docker-compose/"><span class="fab fa-docker"></span> Docker Compose Support</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../cloud-nativeness/opentelemetry/"><svg aria-hidden="true" class="sd-octicon sd-octicon-telescope-fill" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M8.531 10.21a.75.75 0 01.944.253l2.644 3.864a.75.75 0 11-1.238.847L9 12.424v2.826a.75.75 0 01-1.5 0v-2.826l-1.881 2.75a.75.75 0 01-1.238-.848l2.048-2.992a.75.75 0 01.293-.252l1.81-.871zM11.905.42a1.5 1.5 0 012.144.49l1.692 2.93a1.5 1.5 0 01-.649 2.102L2.895 11.815a1.5 1.5 0 01-1.95-.602l-.68-1.176a1.5 1.5 0 01.455-1.99L11.905.422zM3.279 8.119l.835 1.445 1.355-.653-.947-1.64-1.243.848zm7.728-1.874L9.6 3.808l1.243-.848 1.52 2.631-1.356.653z" fill-rule="evenodd"></path></svg> OpenTelemetry Support</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../cloud-nativeness/opentelemetry-migration/">Migrate from Prometheus/Grafana to OpenTelemetry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cloud-nativeness/monitoring/">Prometheus/Grafana Support (Legacy)</a></li>
 </ul>
 </li>
 </ul>
@@ -318,7 +348,7 @@
                 <img class="sidebar-ecosys-logo only-light-line" src="../_static/search-light.svg">
                 <img class="sidebar-ecosys-logo only-dark-line" src="../_static/search-dark.svg">
                 Jina</a></li>
-        <li class="toctree-l1"><a class="reference external" href="https://hub.jina.ai">
+        <li class="toctree-l1"><a class="reference external" href="https://cloud.jina.ai">
             <img class="sidebar-ecosys-logo only-light-line" src="../_static/hub-light.svg">
             <img class="sidebar-ecosys-logo only-dark-line" src="../_static/hub-dark.svg">
             Jina Hub</a></li>
@@ -416,50 +446,28 @@
 <h3>executor<a class="headerlink" href="#executor" title="Permalink to this heading">#</a></h3>
 <p>Start an Executor. Executor is how Jina processes Document.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">executor</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">name</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">workspace</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">config</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="p">]</span>
-              <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="o">-</span><span class="n">error</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ctrl</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">polling</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="p">]</span>
+              <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="o">-</span><span class="n">error</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ctrl</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">polling</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">shards</span><span class="p">]</span>
+              <span class="p">[</span><span class="o">--</span><span class="n">replicas</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">native</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="p">]</span>
               <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="k">with</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
               <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">metas</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
               <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">requests</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
-              <span class="p">[</span><span class="o">--</span><span class="n">py</span><span class="o">-</span><span class="n">modules</span> <span class="p">[</span><span class="n">PATH</span> <span class="p">[</span><span class="n">PATH</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="ow">in</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">host</span><span class="o">-</span><span class="ow">in</span><span class="p">]</span>
-              <span class="p">[</span><span class="o">--</span><span class="n">native</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">output</span><span class="o">-</span><span class="n">array</span><span class="o">-</span><span class="nb">type</span><span class="p">]</span>
+              <span class="p">[</span><span class="o">--</span><span class="n">py</span><span class="o">-</span><span class="n">modules</span> <span class="p">[</span><span class="n">PATH</span> <span class="p">[</span><span class="n">PATH</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">output</span><span class="o">-</span><span class="n">array</span><span class="o">-</span><span class="nb">type</span><span class="p">]</span>
+              <span class="p">[</span><span class="o">--</span><span class="n">exit</span><span class="o">-</span><span class="n">on</span><span class="o">-</span><span class="n">exceptions</span> <span class="p">[[</span><span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">reduce</span><span class="p">]</span>
               <span class="p">[</span><span class="o">--</span><span class="n">grpc</span><span class="o">-</span><span class="n">server</span><span class="o">-</span><span class="n">options</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
-              <span class="p">[</span><span class="o">--</span><span class="n">exit</span><span class="o">-</span><span class="n">on</span><span class="o">-</span><span class="n">exceptions</span> <span class="p">[[</span><span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">entrypoint</span><span class="p">]</span>
-              <span class="p">[</span><span class="o">--</span><span class="n">docker</span><span class="o">-</span><span class="n">kwargs</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
+              <span class="p">[</span><span class="o">--</span><span class="n">entrypoint</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">docker</span><span class="o">-</span><span class="n">kwargs</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
               <span class="p">[</span><span class="o">--</span><span class="n">volumes</span> <span class="p">[</span><span class="n">DIR</span> <span class="p">[</span><span class="n">DIR</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">gpus</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">disable</span><span class="o">-</span><span class="n">auto</span><span class="o">-</span><span class="n">volume</span><span class="p">]</span>
               <span class="p">[</span><span class="o">--</span><span class="n">host</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="o">-</span><span class="n">remote</span><span class="o">-</span><span class="n">logs</span><span class="p">]</span>
               <span class="p">[</span><span class="o">--</span><span class="n">upload</span><span class="o">-</span><span class="n">files</span> <span class="p">[</span><span class="n">FILE</span> <span class="p">[</span><span class="n">FILE</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">runtime</span><span class="o">-</span><span class="bp">cls</span><span class="p">]</span>
               <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ready</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">env</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
-              <span class="p">[</span><span class="o">--</span><span class="n">shards</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">replicas</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">monitoring</span><span class="p">]</span>
-              <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">monitoring</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">retries</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">floating</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">tracing</span><span class="p">]</span>
-              <span class="p">[</span><span class="o">--</span><span class="n">traces</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">host</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">traces</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">port</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">metrics</span><span class="p">]</span>
-              <span class="p">[</span><span class="o">--</span><span class="n">metrics</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">host</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">metrics</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">port</span><span class="p">]</span>
-              <span class="p">[</span><span class="o">--</span><span class="n">install</span><span class="o">-</span><span class="n">requirements</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">force</span><span class="o">-</span><span class="n">update</span><span class="p">]</span>
-              <span class="p">[</span><span class="o">--</span><span class="n">compression</span> <span class="p">{</span><span class="n">NoCompression</span><span class="p">,</span> <span class="n">Deflate</span><span class="p">,</span> <span class="n">Gzip</span><span class="p">}]</span>
+              <span class="p">[</span><span class="o">--</span><span class="n">floating</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">monitoring</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">monitoring</span><span class="p">]</span>
+              <span class="p">[</span><span class="o">--</span><span class="n">retries</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">tracing</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">traces</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">host</span><span class="p">]</span>
+              <span class="p">[</span><span class="o">--</span><span class="n">traces</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">port</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">metrics</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">metrics</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">host</span><span class="p">]</span>
+              <span class="p">[</span><span class="o">--</span><span class="n">metrics</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">port</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">install</span><span class="o">-</span><span class="n">requirements</span><span class="p">]</span>
+              <span class="p">[</span><span class="o">--</span><span class="n">force</span><span class="o">-</span><span class="n">update</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">compression</span> <span class="p">{</span><span class="n">NoCompression</span><span class="p">,</span> <span class="n">Deflate</span><span class="p">,</span> <span class="n">Gzip</span><span class="p">}]</span>
               <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">before</span><span class="o">-</span><span class="n">address</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">after</span><span class="o">-</span><span class="n">address</span><span class="p">]</span>
-              <span class="p">[</span><span class="o">--</span><span class="n">connection</span><span class="o">-</span><span class="nb">list</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">disable</span><span class="o">-</span><span class="n">reduce</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">send</span><span class="p">]</span>
+              <span class="p">[</span><span class="o">--</span><span class="n">connection</span><span class="o">-</span><span class="nb">list</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">send</span><span class="p">]</span>
 </pre></div>
 </div>
-<section id="Named Arguments_repeat1">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat1" title="Permalink to this heading">#</a></h4>
-<dl class="option-list">
-<dt><kbd>--traces-exporter-host</kbd></dt>
-<dd><p>If tracing is enabled, this hostname will be used to configure the trace exporter agent.</p>
-</dd>
-<dt><kbd>--traces-exporter-port</kbd></dt>
-<dd><p>If tracing is enabled, this port will be used to configure the trace exporter agent.</p>
-</dd>
-<dt><kbd>--metrics</kbd></dt>
-<dd><p>If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.</p>
-<p>Default: False</p>
-</dd>
-<dt><kbd>--metrics-exporter-host</kbd></dt>
-<dd><p>If tracing is enabled, this hostname will be used to configure the metrics exporter agent.</p>
-</dd>
-<dt><kbd>--metrics-exporter-port</kbd></dt>
-<dd><p>If tracing is enabled, this port will be used to configure the metrics exporter agent.</p>
-</dd>
-</dl>
-</section>
 <section id="Essential arguments">
 <h4>Essential arguments<a class="headerlink" href="#Essential arguments" title="Permalink to this heading">#</a></h4>
 <dl class="option-list">
@@ -491,8 +499,8 @@
 </dd>
 </dl>
 </section>
-<section id="Base Deployment arguments">
-<h4>Base Deployment arguments<a class="headerlink" href="#Base Deployment arguments" title="Permalink to this heading">#</a></h4>
+<section id="Scalable Deployment arguments">
+<h4>Scalable Deployment arguments<a class="headerlink" href="#Scalable Deployment arguments" title="Permalink to this heading">#</a></h4>
 <dl class="option-list">
 <dt><kbd>--timeout-ctrl</kbd></dt>
 <dd><p>The timeout in milliseconds of the control request, -1 for waiting forever</p>
@@ -510,6 +518,18 @@ JSON dict, {endpoint: PollingType}
 {‘/custom’: ‘ALL’, ‘/search’: ‘ANY’, ‘*’: ‘ANY’}</p>
 </div></blockquote>
 <p>Default: “ANY”</p>
+</dd>
+<dt><kbd>--shards</kbd></dt>
+<dd><p>The number of shards in the deployment running at the same time. For more details check <a class="reference external" href="https://docs.jina.ai/fundamentals/flow/create-flow/#complex-flow-topologies">https://docs.jina.ai/fundamentals/flow/create-flow/#complex-flow-topologies</a></p>
+<p>Default: 1</p>
+</dd>
+<dt><kbd>--replicas</kbd></dt>
+<dd><p>The number of replicas in the deployment</p>
+<p>Default: 1</p>
+</dd>
+<dt><kbd>--native</kbd></dt>
+<dd><p>If set, only native Executors is allowed, and the Executor is always run inside WorkerRuntime.</p>
+<p>Default: False</p>
 </dd>
 </dl>
 </section>
@@ -553,30 +573,22 @@ executor can be defined in a single file, or an <code class="docutils literal no
 which should be structured as a python package. For more details, please see the
 <a class="reference external" href="https://docs.jina.ai/fundamentals/executor/executor-files/">Executor cookbook</a></p>
 </dd>
-<dt><kbd>--port-in</kbd></dt>
-<dd><p>The port for input data to bind to, default a random port between [49152, 65535]</p>
-<p>Default: 52316</p>
-</dd>
-<dt><kbd>--host-in</kbd></dt>
-<dd><p>The host address for binding to, by default it is 0.0.0.0</p>
-<p>Default: “0.0.0.0”</p>
-</dd>
-<dt><kbd>--native</kbd></dt>
-<dd><p>If set, only native Executors is allowed, and the Executor is always run inside WorkerRuntime.</p>
-<p>Default: False</p>
-</dd>
 <dt><kbd>--output-array-type</kbd></dt>
 <dd><p>The type of array <cite>tensor</cite> and <cite>embedding</cite> will be serialized to.</p>
 <p>Supports the same types as <cite>docarray.to_protobuf(.., ndarray_type=…)</cite>, which can be found
 <cite>here &lt;https://docarray.jina.ai/fundamentals/document/serialization/#from-to-protobuf&gt;</cite>.
 Defaults to retaining whatever type is returned by the Executor.</p>
 </dd>
-<dt><kbd>--grpc-server-options</kbd></dt>
-<dd><p>Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {‘grpc.max_send_message_length’: -1}</p>
-</dd>
 <dt><kbd>--exit-on-exceptions</kbd></dt>
 <dd><p>List of exceptions that will cause the Executor to shut down.</p>
 <p>Default: []</p>
+</dd>
+<dt><kbd>--no-reduce, --disable-reduce</kbd></dt>
+<dd><p>Disable the built-in reduction mechanism. Set this if the reduction is to be handled by the Executor itself by operating on a <cite>docs_matrix</cite> or <cite>docs_map</cite></p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--grpc-server-options</kbd></dt>
+<dd><p>Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {‘grpc.max_send_message_length’: -1}</p>
 </dd>
 </dl>
 </section>
@@ -600,7 +612,7 @@ container.</p>
 </dd>
 <dt><kbd>--gpus</kbd></dt>
 <dd><blockquote>
-<div><p>This argument allows dockerized Jina executor discover local gpu devices.</p>
+<div><p>This argument allows dockerized Jina Executors to discover local gpu devices.</p>
 <p>Note,
 - To access all gpus, use <cite>–gpus all</cite>.
 - To access multiple gpus, e.g. make use of 2 gpus, use <cite>–gpus 2</cite>.
@@ -618,7 +630,7 @@ container.</p>
 <section id="RemoteRuntime arguments">
 <h4>RemoteRuntime arguments<a class="headerlink" href="#RemoteRuntime arguments" title="Permalink to this heading">#</a></h4>
 <dl class="option-list">
-<dt><kbd>--host</kbd></dt>
+<dt><kbd>--host, --host-in</kbd></dt>
 <dd><p>The host address of the runtime, by default it is 0.0.0.0. In the case of an external Executor (<cite>–external</cite> or <cite>external=True</cite>) this can be a list of hosts, separated by commas. Then, every resulting address will be considered as one replica of the Executor.</p>
 <p>Default: “0.0.0.0”</p>
 </dd>
@@ -657,17 +669,13 @@ Python files, data files.</p>
 <dt><kbd>--env</kbd></dt>
 <dd><p>The map of environment variables that are available inside runtime</p>
 </dd>
-<dt><kbd>--shards</kbd></dt>
-<dd><p>The number of shards in the deployment running at the same time. For more details check <a class="reference external" href="https://docs.jina.ai/fundamentals/flow/create-flow/#complex-flow-topologies">https://docs.jina.ai/fundamentals/flow/create-flow/#complex-flow-topologies</a></p>
-<p>Default: 1</p>
+<dt><kbd>--floating</kbd></dt>
+<dd><p>If set, the current Pod/Deployment can not be further chained, and the next <cite>.add()</cite> will chain after the last Pod/Deployment not this current one.</p>
+<p>Default: False</p>
 </dd>
-<dt><kbd>--replicas</kbd></dt>
-<dd><p>The number of replicas in the deployment</p>
-<p>Default: 1</p>
-</dd>
-<dt><kbd>--port</kbd></dt>
+<dt><kbd>--port, --port-in</kbd></dt>
 <dd><p>The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (<cite>–external</cite> or <cite>external=True</cite>) this can be a list of ports, separated by commas. Then, every resulting address will be considered as one replica of the Executor.</p>
-<p>Default: “59620”</p>
+<p>Default: 60495</p>
 </dd>
 <dt><kbd>--monitoring</kbd></dt>
 <dd><p>If set, spawn an http server with a prometheus endpoint to expose metrics</p>
@@ -675,19 +683,31 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--port-monitoring</kbd></dt>
 <dd><p>The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</p>
-<p>Default: “53211”</p>
+<p>Default: “55391”</p>
 </dd>
 <dt><kbd>--retries</kbd></dt>
 <dd><p>Number of retries per gRPC call. If &lt;0 it defaults to max(3, num_replicas)</p>
 <p>Default: -1</p>
 </dd>
-<dt><kbd>--floating</kbd></dt>
-<dd><p>If set, the current Pod/Deployment can not be further chained, and the next <cite>.add()</cite> will chain after the last Pod/Deployment not this current one.</p>
-<p>Default: False</p>
-</dd>
 <dt><kbd>--tracing</kbd></dt>
 <dd><p>If set, the sdk implementation of the OpenTelemetry tracer will be available and will be enabled for automatic tracing of requests and customer span creation. Otherwise a no-op implementation will be provided.</p>
 <p>Default: False</p>
+</dd>
+<dt><kbd>--traces-exporter-host</kbd></dt>
+<dd><p>If tracing is enabled, this hostname will be used to configure the trace exporter agent.</p>
+</dd>
+<dt><kbd>--traces-exporter-port</kbd></dt>
+<dd><p>If tracing is enabled, this port will be used to configure the trace exporter agent.</p>
+</dd>
+<dt><kbd>--metrics</kbd></dt>
+<dd><p>If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--metrics-exporter-host</kbd></dt>
+<dd><p>If tracing is enabled, this hostname will be used to configure the metrics exporter agent.</p>
+</dd>
+<dt><kbd>--metrics-exporter-port</kbd></dt>
+<dd><p>If tracing is enabled, this port will be used to configure the metrics exporter agent.</p>
 </dd>
 </dl>
 </section>
@@ -719,10 +739,6 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--connection-list</kbd></dt>
 <dd><p>dictionary JSON with a list of connections to configure</p>
-</dd>
-<dt><kbd>--disable-reduce</kbd></dt>
-<dd><p>Disable the built-in reduce mechanism, set this if the reduction is to be handled by the Executor connected to this Head</p>
-<p>Default: False</p>
 </dd>
 <dt><kbd>--timeout-send</kbd></dt>
 <dd><p>The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default</p>
@@ -809,8 +825,8 @@ Python files, data files.</p>
 </dd>
 </dl>
 </section>
-<section id="Named Arguments_repeat2">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat2" title="Permalink to this heading">#</a></h4>
+<section id="Named Arguments_repeat1">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat1" title="Permalink to this heading">#</a></h4>
 <dl class="option-list">
 <dt><kbd>--timeout</kbd></dt>
 <dd><p>Timeout in millisecond of one check
@@ -862,8 +878,8 @@ Python files, data files.</p>
 </dd>
 </dl>
 </section>
-<section id="Named Arguments_repeat3">
-<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat3" title="Permalink to this heading">#</a></h6>
+<section id="Named Arguments_repeat2">
+<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat2" title="Permalink to this heading">#</a></h6>
 <dl class="option-list">
 <dt><kbd>--vertical-layout</kbd></dt>
 <dd><p>If set, then the flowchart is rendered vertically from top to down.</p>
@@ -889,8 +905,8 @@ Python files, data files.</p>
 </dd>
 </dl>
 </section>
-<section id="Named Arguments_repeat4">
-<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat4" title="Permalink to this heading">#</a></h6>
+<section id="Named Arguments_repeat3">
+<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat3" title="Permalink to this heading">#</a></h6>
 <dl class="option-list">
 <dt><kbd>--k8s-namespace</kbd></dt>
 <dd><p>The name of the k8s namespace to set for the configurations. If None, the name of the Flow will be used.</p>
@@ -915,8 +931,8 @@ Python files, data files.</p>
 </dd>
 </dl>
 </section>
-<section id="Named Arguments_repeat5">
-<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat5" title="Permalink to this heading">#</a></h6>
+<section id="Named Arguments_repeat4">
+<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat4" title="Permalink to this heading">#</a></h6>
 <dl class="option-list">
 <dt><kbd>--network_name</kbd></dt>
 <dd><p>The name of the network that will be used by the deployment name.</p>
@@ -932,8 +948,8 @@ Python files, data files.</p>
                    <span class="p">[</span><span class="o">--</span><span class="n">schema</span><span class="o">-</span><span class="n">path</span> <span class="p">[</span><span class="n">PATH</span> <span class="p">[</span><span class="n">PATH</span> <span class="o">...</span><span class="p">]]]</span>
 </pre></div>
 </div>
-<section id="Named Arguments_repeat6">
-<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat6" title="Permalink to this heading">#</a></h6>
+<section id="Named Arguments_repeat5">
+<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat5" title="Permalink to this heading">#</a></h6>
 <dl class="option-list">
 <dt><kbd>--yaml-path</kbd></dt>
 <dd><p>The YAML file path for storing the exported API</p>
@@ -969,74 +985,35 @@ Python files, data files.</p>
 <h3>gateway<a class="headerlink" href="#gateway" title="Permalink to this heading">#</a></h3>
 <p>Start a Gateway that receives client Requests via gRPC/REST interface</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">gateway</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">name</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">workspace</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">config</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="p">]</span>
-             <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="o">-</span><span class="n">error</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ctrl</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">polling</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">entrypoint</span><span class="p">]</span>
-             <span class="p">[</span><span class="o">--</span><span class="n">docker</span><span class="o">-</span><span class="n">kwargs</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
-             <span class="p">[</span><span class="o">--</span><span class="n">volumes</span> <span class="p">[</span><span class="n">DIR</span> <span class="p">[</span><span class="n">DIR</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">gpus</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">disable</span><span class="o">-</span><span class="n">auto</span><span class="o">-</span><span class="n">volume</span><span class="p">]</span>
-             <span class="p">[</span><span class="o">--</span><span class="n">prefetch</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">title</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">description</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">cors</span><span class="p">]</span>
-             <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">debug</span><span class="o">-</span><span class="n">endpoints</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">crud</span><span class="o">-</span><span class="n">endpoints</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">expose</span><span class="o">-</span><span class="n">endpoints</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="o">-</span><span class="n">error</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ctrl</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">entrypoint</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">docker</span><span class="o">-</span><span class="n">kwargs</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">prefetch</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">title</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">description</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">cors</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">debug</span><span class="o">-</span><span class="n">endpoints</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">crud</span><span class="o">-</span><span class="n">endpoints</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">expose</span><span class="o">-</span><span class="n">endpoints</span><span class="p">]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">uvicorn</span><span class="o">-</span><span class="n">kwargs</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">ssl</span><span class="o">-</span><span class="n">certfile</span><span class="p">]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">ssl</span><span class="o">-</span><span class="n">keyfile</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">expose</span><span class="o">-</span><span class="n">graphql</span><span class="o">-</span><span class="n">endpoint</span><span class="p">]</span>
-             <span class="p">[</span><span class="o">--</span><span class="n">protocol</span> <span class="p">{</span><span class="n">GRPC</span><span class="p">,</span> <span class="n">HTTP</span><span class="p">,</span> <span class="n">WEBSOCKET</span><span class="p">}]</span> <span class="p">[</span><span class="o">--</span><span class="n">host</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">proxy</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">protocol</span> <span class="p">{</span><span class="n">GRPC</span><span class="p">,</span> <span class="n">HTTP</span><span class="p">,</span> <span class="n">WEBSOCKET</span><span class="p">}</span> <span class="p">[{</span><span class="n">GRPC</span><span class="p">,</span> <span class="n">HTTP</span><span class="p">,</span> <span class="n">WEBSOCKET</span><span class="p">}</span> <span class="o">...</span><span class="p">]]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">host</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">proxy</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="p">]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="k">with</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
-             <span class="p">[</span><span class="o">--</span><span class="n">py</span><span class="o">-</span><span class="n">modules</span> <span class="p">[</span><span class="n">PATH</span> <span class="p">[</span><span class="n">PATH</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="ow">in</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">host</span><span class="o">-</span><span class="ow">in</span><span class="p">]</span>
-             <span class="p">[</span><span class="o">--</span><span class="n">native</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">output</span><span class="o">-</span><span class="n">array</span><span class="o">-</span><span class="nb">type</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">py</span><span class="o">-</span><span class="n">modules</span> <span class="p">[</span><span class="n">PATH</span> <span class="p">[</span><span class="n">PATH</span> <span class="o">...</span><span class="p">]]]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">grpc</span><span class="o">-</span><span class="n">server</span><span class="o">-</span><span class="n">options</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
-             <span class="p">[</span><span class="o">--</span><span class="n">exit</span><span class="o">-</span><span class="n">on</span><span class="o">-</span><span class="n">exceptions</span> <span class="p">[[</span><span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">expose</span><span class="p">]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">graph</span><span class="o">-</span><span class="n">description</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">graph</span><span class="o">-</span><span class="n">conditions</span><span class="p">]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">deployments</span><span class="o">-</span><span class="n">addresses</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">deployments</span><span class="o">-</span><span class="n">metadata</span><span class="p">]</span>
-             <span class="p">[</span><span class="o">--</span><span class="n">deployments</span><span class="o">-</span><span class="n">disable</span><span class="o">-</span><span class="n">reduce</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">deployments</span><span class="o">-</span><span class="n">no</span><span class="o">-</span><span class="n">reduce</span><span class="p">]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">compression</span> <span class="p">{</span><span class="n">NoCompression</span><span class="p">,</span> <span class="n">Deflate</span><span class="p">,</span> <span class="n">Gzip</span><span class="p">}]</span> <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">send</span><span class="p">]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">runtime</span><span class="o">-</span><span class="bp">cls</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ready</span><span class="p">]</span>
-             <span class="p">[</span><span class="o">--</span><span class="n">env</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">shards</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">replicas</span><span class="p">]</span>
-             <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">monitoring</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">monitoring</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">retries</span><span class="p">]</span>
-             <span class="p">[</span><span class="o">--</span><span class="n">floating</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">tracing</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">traces</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">host</span><span class="p">]</span>
-             <span class="p">[</span><span class="o">--</span><span class="n">traces</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">port</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">metrics</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">metrics</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">host</span><span class="p">]</span>
-             <span class="p">[</span><span class="o">--</span><span class="n">metrics</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">port</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">env</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">floating</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">port</span>  <span class="p">[</span><span class="o">...</span><span class="p">]]</span> <span class="p">[</span><span class="o">--</span><span class="n">monitoring</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">monitoring</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">retries</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">tracing</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">traces</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">host</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">traces</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">port</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">metrics</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">metrics</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">host</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">metrics</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">port</span><span class="p">]</span>
 </pre></div>
 </div>
-<section id="Named Arguments_repeat7">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat7" title="Permalink to this heading">#</a></h4>
+<section id="Named Arguments_repeat6">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat6" title="Permalink to this heading">#</a></h4>
 <dl class="option-list">
-<dt><kbd>--protocol</kbd></dt>
+<dt><kbd>--protocol, --protocols</kbd></dt>
 <dd><p>Possible choices: GRPC, HTTP, WEBSOCKET</p>
-<p>Communication protocol between server and client.</p>
-<p>Default: GRPC</p>
-</dd>
-<dt><kbd>--graph-description</kbd></dt>
-<dd><p>Routing graph for the gateway</p>
-<p>Default: “{}”</p>
-</dd>
-<dt><kbd>--graph-conditions</kbd></dt>
-<dd><p>Dictionary stating which filtering conditions each Executor in the graph requires to receive Documents.</p>
-<p>Default: “{}”</p>
-</dd>
-<dt><kbd>--deployments-addresses</kbd></dt>
-<dd><p>JSON dictionary with the input addresses of each Deployment</p>
-<p>Default: “{}”</p>
-</dd>
-<dt><kbd>--deployments-metadata</kbd></dt>
-<dd><p>JSON dictionary with the request metadata for each Deployment</p>
-<p>Default: “{}”</p>
-</dd>
-<dt><kbd>--deployments-disable-reduce</kbd></dt>
-<dd><p>list JSON disabling the built-in merging mechanism for each Deployment listed</p>
-<p>Default: “[]”</p>
-</dd>
-<dt><kbd>--traces-exporter-host</kbd></dt>
-<dd><p>If tracing is enabled, this hostname will be used to configure the trace exporter agent.</p>
-</dd>
-<dt><kbd>--traces-exporter-port</kbd></dt>
-<dd><p>If tracing is enabled, this port will be used to configure the trace exporter agent.</p>
-</dd>
-<dt><kbd>--metrics</kbd></dt>
-<dd><p>If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.</p>
-<p>Default: False</p>
-</dd>
-<dt><kbd>--metrics-exporter-host</kbd></dt>
-<dd><p>If tracing is enabled, this hostname will be used to configure the metrics exporter agent.</p>
-</dd>
-<dt><kbd>--metrics-exporter-port</kbd></dt>
-<dd><p>If tracing is enabled, this port will be used to configure the metrics exporter agent.</p>
+<p>Possible communication protocols between server and client. Depending on your chosen gateway, choose the convenient protocols from: [‘GRPC’, ‘HTTP’, ‘WEBSOCKET’].</p>
+<p>Default: [&lt;GatewayProtocolType.GRPC: 0&gt;]</p>
 </dd>
 </dl>
 </section>
@@ -1072,25 +1049,12 @@ Python files, data files.</p>
 </dd>
 </dl>
 </section>
-<section id="Base Deployment arguments_repeat1">
-<h4>Base Deployment arguments<a class="headerlink" href="#Base Deployment arguments_repeat1" title="Permalink to this heading">#</a></h4>
+<section id="Base Deployment arguments">
+<h4>Base Deployment arguments<a class="headerlink" href="#Base Deployment arguments" title="Permalink to this heading">#</a></h4>
 <dl class="option-list">
 <dt><kbd>--timeout-ctrl</kbd></dt>
 <dd><p>The timeout in milliseconds of the control request, -1 for waiting forever</p>
 <p>Default: 60</p>
-</dd>
-<dt><kbd>--polling</kbd></dt>
-<dd><blockquote>
-<div><p>The polling strategy of the Deployment and its endpoints (when <cite>shards&gt;1</cite>).
-Can be defined for all endpoints of a Deployment or by endpoint.
-Define per Deployment:
-- ANY: only one (whoever is idle) Pod polls the message
-- ALL: all Pods poll the message (like a broadcast)
-Define per Endpoint:
-JSON dict, {endpoint: PollingType}
-{‘/custom’: ‘ALL’, ‘/search’: ‘ANY’, ‘*’: ‘ANY’}</p>
-</div></blockquote>
-<p>Default: “ANY”</p>
 </dd>
 </dl>
 </section>
@@ -1104,28 +1068,6 @@ JSON dict, {endpoint: PollingType}
 <dd><p>Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker ‘
 container.</p>
 <p>More details can be found in the Docker SDK docs:  <a class="reference external" href="https://docker-py.readthedocs.io/en/stable/">https://docker-py.readthedocs.io/en/stable/</a></p>
-</dd>
-<dt><kbd>--volumes</kbd></dt>
-<dd><p>The path on the host to be mounted inside the container.</p>
-<p>Note,
-- If separated by <cite>:</cite>, then the first part will be considered as the local host path and the second part is the path in the container system.
-- If no split provided, then the basename of that directory will be mounted into container’s root path, e.g. <cite>–volumes=”/user/test/my-workspace”</cite> will be mounted into <cite>/my-workspace</cite> inside the container.
-- All volumes are mounted with read-write mode.</p>
-</dd>
-<dt><kbd>--gpus</kbd></dt>
-<dd><blockquote>
-<div><p>This argument allows dockerized Jina executor discover local gpu devices.</p>
-<p>Note,
-- To access all gpus, use <cite>–gpus all</cite>.
-- To access multiple gpus, e.g. make use of 2 gpus, use <cite>–gpus 2</cite>.
-- To access specified gpus based on device id, use <cite>–gpus device=[YOUR-GPU-DEVICE-ID]</cite>
-- To access specified gpus based on multiple device id, use <cite>–gpus device=[YOUR-GPU-DEVICE-ID1],device=[YOUR-GPU-DEVICE-ID2]</cite>
-- To specify more parameters, use <a href="#id1"><span class="problematic" id="id2">`</span></a>–gpus device=[YOUR-GPU-DEVICE-ID],runtime=nvidia,capabilities=display</p>
-</div></blockquote>
-</dd>
-<dt><kbd>--disable-auto-volume</kbd></dt>
-<dd><p>Do not automatically mount a volume for dockerized Executors.</p>
-<p>Default: False</p>
 </dd>
 </dl>
 </section>
@@ -1163,7 +1105,7 @@ container.</p>
 <dt><kbd>--no-crud-endpoints</kbd></dt>
 <dd><blockquote>
 <div><p>If set, <cite>/index</cite>, <cite>/search</cite>, <cite>/update</cite>, <cite>/delete</cite> endpoints are removed from HTTP interface.</p>
-<p>Any executor that has <cite>&#64;requests(on=…)</cite> bind with those values will receive data requests.</p>
+<p>Any executor that has <cite>&#64;requests(on=…)</cite> bound with those values will receive data requests.</p>
 </div></blockquote>
 <p>Default: False</p>
 </dd>
@@ -1200,7 +1142,7 @@ container.</p>
 <section id="Gateway arguments">
 <h4>Gateway arguments<a class="headerlink" href="#Gateway arguments" title="Permalink to this heading">#</a></h4>
 <dl class="option-list">
-<dt><kbd>--host</kbd></dt>
+<dt><kbd>--host, --host-in</kbd></dt>
 <dd><p>The host address of the runtime, by default it is 0.0.0.0. In the case of an external Executor (<cite>–external</cite> or <cite>external=True</cite>) this can be a list of hosts, separated by commas. Then, every resulting address will be considered as one replica of the Executor.</p>
 <p>Default: “0.0.0.0”</p>
 </dd>
@@ -1232,34 +1174,28 @@ container.</p>
 gateway can be defined in a single file, or an <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> file if you have multiple files,
 which should be structured as a python package.</p>
 </dd>
-<dt><kbd>--port-in</kbd></dt>
-<dd><p>The port for input data to bind to, default a random port between [49152, 65535]</p>
-<p>Default: 58034</p>
-</dd>
-<dt><kbd>--host-in</kbd></dt>
-<dd><p>The host address for binding to, by default it is 0.0.0.0</p>
-<p>Default: “0.0.0.0”</p>
-</dd>
-<dt><kbd>--native</kbd></dt>
-<dd><p>If set, only native Executors is allowed, and the Executor is always run inside WorkerRuntime.</p>
-<p>Default: False</p>
-</dd>
-<dt><kbd>--output-array-type</kbd></dt>
-<dd><p>The type of array <cite>tensor</cite> and <cite>embedding</cite> will be serialized to.</p>
-<p>Supports the same types as <cite>docarray.to_protobuf(.., ndarray_type=…)</cite>, which can be found
-<cite>here &lt;https://docarray.jina.ai/fundamentals/document/serialization/#from-to-protobuf&gt;</cite>.
-Defaults to retaining whatever type is returned by the Executor.</p>
-</dd>
 <dt><kbd>--grpc-server-options</kbd></dt>
 <dd><p>Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {‘grpc.max_send_message_length’: -1}</p>
 </dd>
-<dt><kbd>--exit-on-exceptions</kbd></dt>
-<dd><p>List of exceptions that will cause the Executor to shut down.</p>
-<p>Default: []</p>
+<dt><kbd>--graph-description</kbd></dt>
+<dd><p>Routing graph for the gateway</p>
+<p>Default: “{}”</p>
 </dd>
-<dt><kbd>--port-expose</kbd></dt>
-<dd><p>The port that the gateway exposes for clients for GRPC connections.</p>
-<p>Default: 50550</p>
+<dt><kbd>--graph-conditions</kbd></dt>
+<dd><p>Dictionary stating which filtering conditions each Executor in the graph requires to receive Documents.</p>
+<p>Default: “{}”</p>
+</dd>
+<dt><kbd>--deployments-addresses</kbd></dt>
+<dd><p>JSON dictionary with the input addresses of each Deployment</p>
+<p>Default: “{}”</p>
+</dd>
+<dt><kbd>--deployments-metadata</kbd></dt>
+<dd><p>JSON dictionary with the request metadata for each Deployment</p>
+<p>Default: “{}”</p>
+</dd>
+<dt><kbd>--deployments-no-reduce, --deployments-disable-reduce</kbd></dt>
+<dd><p>list JSON disabling the built-in merging mechanism for each Deployment listed</p>
+<p>Default: “[]”</p>
 </dd>
 <dt><kbd>--compression</kbd></dt>
 <dd><p>Possible choices: NoCompression, Deflate, Gzip</p>
@@ -1284,17 +1220,13 @@ Defaults to retaining whatever type is returned by the Executor.</p>
 <dt><kbd>--env</kbd></dt>
 <dd><p>The map of environment variables that are available inside runtime</p>
 </dd>
-<dt><kbd>--shards</kbd></dt>
-<dd><p>The number of shards in the deployment running at the same time. For more details check <a class="reference external" href="https://docs.jina.ai/fundamentals/flow/create-flow/#complex-flow-topologies">https://docs.jina.ai/fundamentals/flow/create-flow/#complex-flow-topologies</a></p>
-<p>Default: 1</p>
+<dt><kbd>--floating</kbd></dt>
+<dd><p>If set, the current Pod/Deployment can not be further chained, and the next <cite>.add()</cite> will chain after the last Pod/Deployment not this current one.</p>
+<p>Default: False</p>
 </dd>
-<dt><kbd>--replicas</kbd></dt>
-<dd><p>The number of replicas in the deployment</p>
-<p>Default: 1</p>
-</dd>
-<dt><kbd>--port</kbd></dt>
+<dt><kbd>--port, --port-expose, --port-in, --ports</kbd></dt>
 <dd><p>The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (<cite>–external</cite> or <cite>external=True</cite>) this can be a list of ports, separated by commas. Then, every resulting address will be considered as one replica of the Executor.</p>
-<p>Default: “60381”</p>
+<p>Default: [49251]</p>
 </dd>
 <dt><kbd>--monitoring</kbd></dt>
 <dd><p>If set, spawn an http server with a prometheus endpoint to expose metrics</p>
@@ -1302,19 +1234,31 @@ Defaults to retaining whatever type is returned by the Executor.</p>
 </dd>
 <dt><kbd>--port-monitoring</kbd></dt>
 <dd><p>The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</p>
-<p>Default: “62710”</p>
+<p>Default: “61735”</p>
 </dd>
 <dt><kbd>--retries</kbd></dt>
 <dd><p>Number of retries per gRPC call. If &lt;0 it defaults to max(3, num_replicas)</p>
 <p>Default: -1</p>
 </dd>
-<dt><kbd>--floating</kbd></dt>
-<dd><p>If set, the current Pod/Deployment can not be further chained, and the next <cite>.add()</cite> will chain after the last Pod/Deployment not this current one.</p>
-<p>Default: False</p>
-</dd>
 <dt><kbd>--tracing</kbd></dt>
 <dd><p>If set, the sdk implementation of the OpenTelemetry tracer will be available and will be enabled for automatic tracing of requests and customer span creation. Otherwise a no-op implementation will be provided.</p>
 <p>Default: False</p>
+</dd>
+<dt><kbd>--traces-exporter-host</kbd></dt>
+<dd><p>If tracing is enabled, this hostname will be used to configure the trace exporter agent.</p>
+</dd>
+<dt><kbd>--traces-exporter-port</kbd></dt>
+<dd><p>If tracing is enabled, this port will be used to configure the trace exporter agent.</p>
+</dd>
+<dt><kbd>--metrics</kbd></dt>
+<dd><p>If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--metrics-exporter-host</kbd></dt>
+<dd><p>If tracing is enabled, this hostname will be used to configure the metrics exporter agent.</p>
+</dd>
+<dt><kbd>--metrics-exporter-port</kbd></dt>
+<dd><p>If tracing is enabled, this port will be used to configure the metrics exporter agent.</p>
 </dd>
 </dl>
 </section>
@@ -1341,8 +1285,8 @@ Defaults to retaining whatever type is returned by the Executor.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">auth</span> <span class="n">login</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">f</span><span class="p">]</span>
 </pre></div>
 </div>
-<section id="Named Arguments_repeat8">
-<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat8" title="Permalink to this heading">#</a></h6>
+<section id="Named Arguments_repeat7">
+<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat7" title="Permalink to this heading">#</a></h6>
 <dl class="option-list">
 <dt><kbd>-f, --force</kbd></dt>
 <dd><p>Force to login</p>
@@ -1388,8 +1332,8 @@ Defaults to retaining whatever type is returned by the Executor.</p>
 </dd>
 </dl>
 </section>
-<section id="Named Arguments_repeat9">
-<h6 aria-level="8">Named Arguments<a class="headerlink" href="#Named Arguments_repeat9" title="Permalink to this heading">#</a></h6>
+<section id="Named Arguments_repeat8">
+<h6 aria-level="8">Named Arguments<a class="headerlink" href="#Named Arguments_repeat8" title="Permalink to this heading">#</a></h6>
 <dl class="option-list">
 <dt><kbd>-e, --expire</kbd></dt>
 <dd><p>Validity period (days)</p>
@@ -1488,8 +1432,8 @@ Defaults to retaining whatever type is returned by the Executor.</p>
               <span class="n">path</span>
 </pre></div>
 </div>
-<section id="Named Arguments_repeat10">
-<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat10" title="Permalink to this heading">#</a></h6>
+<section id="Named Arguments_repeat9">
+<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat9" title="Permalink to this heading">#</a></h6>
 <dl class="option-list">
 <dt><kbd>--no-usage</kbd></dt>
 <dd><p>If set, Hub executor usage will not be printed.</p>
@@ -1558,8 +1502,8 @@ Defaults to retaining whatever type is returned by the Executor.</p>
 </dd>
 </dl>
 </section>
-<section id="Named Arguments_repeat11">
-<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat11" title="Permalink to this heading">#</a></h6>
+<section id="Named Arguments_repeat10">
+<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat10" title="Permalink to this heading">#</a></h6>
 <dl class="option-list">
 <dt><kbd>--no-usage</kbd></dt>
 <dd><p>If set, Hub executor usage will not be printed.</p>
@@ -1632,8 +1576,8 @@ Defaults to retaining whatever type is returned by the Executor.</p>
 </dd>
 </dl>
 </section>
-<section id="Named Arguments_repeat12">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat12" title="Permalink to this heading">#</a></h4>
+<section id="Named Arguments_repeat11">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat11" title="Permalink to this heading">#</a></h4>
 <dl class="option-list">
 <dt><kbd>-v, --version</kbd></dt>
 <dd><p>Show version.</p>
@@ -1684,8 +1628,8 @@ Defaults to retaining whatever type is returned by the Executor.</p>
                 <span class="p">[</span><span class="o">--</span><span class="n">name</span><span class="p">]</span>
 </pre></div>
 </div>
-<section id="Named Arguments_repeat13">
-<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat13" title="Permalink to this heading">#</a></h6>
+<section id="Named Arguments_repeat12">
+<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat12" title="Permalink to this heading">#</a></h6>
 <dl class="option-list">
 <dt><kbd>--phase</kbd></dt>
 <dd><p>Possible choices: , Pending, Starting, Serving, Failed, Updating, Deleted, All</p>
@@ -1712,8 +1656,8 @@ Defaults to retaining whatever type is returned by the Executor.</p>
 </dd>
 </dl>
 </section>
-<section id="Named Arguments_repeat14">
-<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat14" title="Permalink to this heading">#</a></h6>
+<section id="Named Arguments_repeat13">
+<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat13" title="Permalink to this heading">#</a></h6>
 <dl class="option-list">
 <dt><kbd>--verbose</kbd></dt>
 <dd><p>Pass if you want to see the full details of the Flow.</p>
@@ -1781,49 +1725,27 @@ Defaults to retaining whatever type is returned by the Executor.</p>
 <h3>pod<a class="headerlink" href="#pod" title="Permalink to this heading">#</a></h3>
 <p>Start a Pod. You should rarely use this directly unless you are doing low-level orchestration</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">pod</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">name</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">workspace</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">config</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="o">-</span><span class="n">error</span><span class="p">]</span>
-         <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ctrl</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">polling</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="p">]</span>
-         <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="k">with</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ctrl</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">polling</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">shards</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">replicas</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">native</span><span class="p">]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="k">with</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
          <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">metas</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
          <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">requests</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
-         <span class="p">[</span><span class="o">--</span><span class="n">py</span><span class="o">-</span><span class="n">modules</span> <span class="p">[</span><span class="n">PATH</span> <span class="p">[</span><span class="n">PATH</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="ow">in</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">host</span><span class="o">-</span><span class="ow">in</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">native</span><span class="p">]</span>
-         <span class="p">[</span><span class="o">--</span><span class="n">output</span><span class="o">-</span><span class="n">array</span><span class="o">-</span><span class="nb">type</span><span class="p">]</span>
-         <span class="p">[</span><span class="o">--</span><span class="n">grpc</span><span class="o">-</span><span class="n">server</span><span class="o">-</span><span class="n">options</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
-         <span class="p">[</span><span class="o">--</span><span class="n">exit</span><span class="o">-</span><span class="n">on</span><span class="o">-</span><span class="n">exceptions</span> <span class="p">[[</span><span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">entrypoint</span><span class="p">]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">py</span><span class="o">-</span><span class="n">modules</span> <span class="p">[</span><span class="n">PATH</span> <span class="p">[</span><span class="n">PATH</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">output</span><span class="o">-</span><span class="n">array</span><span class="o">-</span><span class="nb">type</span><span class="p">]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">exit</span><span class="o">-</span><span class="n">on</span><span class="o">-</span><span class="n">exceptions</span> <span class="p">[[</span><span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">reduce</span><span class="p">]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">grpc</span><span class="o">-</span><span class="n">server</span><span class="o">-</span><span class="n">options</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">entrypoint</span><span class="p">]</span>
          <span class="p">[</span><span class="o">--</span><span class="n">docker</span><span class="o">-</span><span class="n">kwargs</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
          <span class="p">[</span><span class="o">--</span><span class="n">volumes</span> <span class="p">[</span><span class="n">DIR</span> <span class="p">[</span><span class="n">DIR</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">gpus</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">disable</span><span class="o">-</span><span class="n">auto</span><span class="o">-</span><span class="n">volume</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">host</span><span class="p">]</span>
          <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="o">-</span><span class="n">remote</span><span class="o">-</span><span class="n">logs</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">upload</span><span class="o">-</span><span class="n">files</span> <span class="p">[</span><span class="n">FILE</span> <span class="p">[</span><span class="n">FILE</span> <span class="o">...</span><span class="p">]]]</span>
          <span class="p">[</span><span class="o">--</span><span class="n">runtime</span><span class="o">-</span><span class="bp">cls</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ready</span><span class="p">]</span>
-         <span class="p">[</span><span class="o">--</span><span class="n">env</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">shards</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">replicas</span><span class="p">]</span>
-         <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">monitoring</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">monitoring</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">retries</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">floating</span><span class="p">]</span>
-         <span class="p">[</span><span class="o">--</span><span class="n">tracing</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">traces</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">host</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">traces</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">port</span><span class="p">]</span>
-         <span class="p">[</span><span class="o">--</span><span class="n">metrics</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">metrics</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">host</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">metrics</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">port</span><span class="p">]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">env</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">floating</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="p">]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">monitoring</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">monitoring</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">retries</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">tracing</span><span class="p">]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">traces</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">host</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">traces</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">port</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">metrics</span><span class="p">]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">metrics</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">host</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">metrics</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">port</span><span class="p">]</span>
          <span class="p">[</span><span class="o">--</span><span class="n">install</span><span class="o">-</span><span class="n">requirements</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">force</span><span class="o">-</span><span class="n">update</span><span class="p">]</span>
          <span class="p">[</span><span class="o">--</span><span class="n">compression</span> <span class="p">{</span><span class="n">NoCompression</span><span class="p">,</span> <span class="n">Deflate</span><span class="p">,</span> <span class="n">Gzip</span><span class="p">}]</span>
          <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">before</span><span class="o">-</span><span class="n">address</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">after</span><span class="o">-</span><span class="n">address</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">connection</span><span class="o">-</span><span class="nb">list</span><span class="p">]</span>
-         <span class="p">[</span><span class="o">--</span><span class="n">disable</span><span class="o">-</span><span class="n">reduce</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">send</span><span class="p">]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">send</span><span class="p">]</span>
 </pre></div>
 </div>
-<section id="Named Arguments_repeat15">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat15" title="Permalink to this heading">#</a></h4>
-<dl class="option-list">
-<dt><kbd>--traces-exporter-host</kbd></dt>
-<dd><p>If tracing is enabled, this hostname will be used to configure the trace exporter agent.</p>
-</dd>
-<dt><kbd>--traces-exporter-port</kbd></dt>
-<dd><p>If tracing is enabled, this port will be used to configure the trace exporter agent.</p>
-</dd>
-<dt><kbd>--metrics</kbd></dt>
-<dd><p>If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.</p>
-<p>Default: False</p>
-</dd>
-<dt><kbd>--metrics-exporter-host</kbd></dt>
-<dd><p>If tracing is enabled, this hostname will be used to configure the metrics exporter agent.</p>
-</dd>
-<dt><kbd>--metrics-exporter-port</kbd></dt>
-<dd><p>If tracing is enabled, this port will be used to configure the metrics exporter agent.</p>
-</dd>
-</dl>
-</section>
 <section id="Essential arguments_repeat3">
 <h4>Essential arguments<a class="headerlink" href="#Essential arguments_repeat3" title="Permalink to this heading">#</a></h4>
 <dl class="option-list">
@@ -1855,8 +1777,8 @@ Defaults to retaining whatever type is returned by the Executor.</p>
 </dd>
 </dl>
 </section>
-<section id="Base Deployment arguments_repeat2">
-<h4>Base Deployment arguments<a class="headerlink" href="#Base Deployment arguments_repeat2" title="Permalink to this heading">#</a></h4>
+<section id="Scalable Deployment arguments_repeat1">
+<h4>Scalable Deployment arguments<a class="headerlink" href="#Scalable Deployment arguments_repeat1" title="Permalink to this heading">#</a></h4>
 <dl class="option-list">
 <dt><kbd>--timeout-ctrl</kbd></dt>
 <dd><p>The timeout in milliseconds of the control request, -1 for waiting forever</p>
@@ -1874,6 +1796,18 @@ JSON dict, {endpoint: PollingType}
 {‘/custom’: ‘ALL’, ‘/search’: ‘ANY’, ‘*’: ‘ANY’}</p>
 </div></blockquote>
 <p>Default: “ANY”</p>
+</dd>
+<dt><kbd>--shards</kbd></dt>
+<dd><p>The number of shards in the deployment running at the same time. For more details check <a class="reference external" href="https://docs.jina.ai/fundamentals/flow/create-flow/#complex-flow-topologies">https://docs.jina.ai/fundamentals/flow/create-flow/#complex-flow-topologies</a></p>
+<p>Default: 1</p>
+</dd>
+<dt><kbd>--replicas</kbd></dt>
+<dd><p>The number of replicas in the deployment</p>
+<p>Default: 1</p>
+</dd>
+<dt><kbd>--native</kbd></dt>
+<dd><p>If set, only native Executors is allowed, and the Executor is always run inside WorkerRuntime.</p>
+<p>Default: False</p>
 </dd>
 </dl>
 </section>
@@ -1917,30 +1851,22 @@ executor can be defined in a single file, or an <code class="docutils literal no
 which should be structured as a python package. For more details, please see the
 <a class="reference external" href="https://docs.jina.ai/fundamentals/executor/executor-files/">Executor cookbook</a></p>
 </dd>
-<dt><kbd>--port-in</kbd></dt>
-<dd><p>The port for input data to bind to, default a random port between [49152, 65535]</p>
-<p>Default: 51020</p>
-</dd>
-<dt><kbd>--host-in</kbd></dt>
-<dd><p>The host address for binding to, by default it is 0.0.0.0</p>
-<p>Default: “0.0.0.0”</p>
-</dd>
-<dt><kbd>--native</kbd></dt>
-<dd><p>If set, only native Executors is allowed, and the Executor is always run inside WorkerRuntime.</p>
-<p>Default: False</p>
-</dd>
 <dt><kbd>--output-array-type</kbd></dt>
 <dd><p>The type of array <cite>tensor</cite> and <cite>embedding</cite> will be serialized to.</p>
 <p>Supports the same types as <cite>docarray.to_protobuf(.., ndarray_type=…)</cite>, which can be found
 <cite>here &lt;https://docarray.jina.ai/fundamentals/document/serialization/#from-to-protobuf&gt;</cite>.
 Defaults to retaining whatever type is returned by the Executor.</p>
 </dd>
-<dt><kbd>--grpc-server-options</kbd></dt>
-<dd><p>Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {‘grpc.max_send_message_length’: -1}</p>
-</dd>
 <dt><kbd>--exit-on-exceptions</kbd></dt>
 <dd><p>List of exceptions that will cause the Executor to shut down.</p>
 <p>Default: []</p>
+</dd>
+<dt><kbd>--no-reduce, --disable-reduce</kbd></dt>
+<dd><p>Disable the built-in reduction mechanism. Set this if the reduction is to be handled by the Executor itself by operating on a <cite>docs_matrix</cite> or <cite>docs_map</cite></p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--grpc-server-options</kbd></dt>
+<dd><p>Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {‘grpc.max_send_message_length’: -1}</p>
 </dd>
 </dl>
 </section>
@@ -1964,7 +1890,7 @@ container.</p>
 </dd>
 <dt><kbd>--gpus</kbd></dt>
 <dd><blockquote>
-<div><p>This argument allows dockerized Jina executor discover local gpu devices.</p>
+<div><p>This argument allows dockerized Jina Executors to discover local gpu devices.</p>
 <p>Note,
 - To access all gpus, use <cite>–gpus all</cite>.
 - To access multiple gpus, e.g. make use of 2 gpus, use <cite>–gpus 2</cite>.
@@ -1982,7 +1908,7 @@ container.</p>
 <section id="RemoteRuntime arguments_repeat1">
 <h4>RemoteRuntime arguments<a class="headerlink" href="#RemoteRuntime arguments_repeat1" title="Permalink to this heading">#</a></h4>
 <dl class="option-list">
-<dt><kbd>--host</kbd></dt>
+<dt><kbd>--host, --host-in</kbd></dt>
 <dd><p>The host address of the runtime, by default it is 0.0.0.0. In the case of an external Executor (<cite>–external</cite> or <cite>external=True</cite>) this can be a list of hosts, separated by commas. Then, every resulting address will be considered as one replica of the Executor.</p>
 <p>Default: “0.0.0.0”</p>
 </dd>
@@ -2021,17 +1947,13 @@ Python files, data files.</p>
 <dt><kbd>--env</kbd></dt>
 <dd><p>The map of environment variables that are available inside runtime</p>
 </dd>
-<dt><kbd>--shards</kbd></dt>
-<dd><p>The number of shards in the deployment running at the same time. For more details check <a class="reference external" href="https://docs.jina.ai/fundamentals/flow/create-flow/#complex-flow-topologies">https://docs.jina.ai/fundamentals/flow/create-flow/#complex-flow-topologies</a></p>
-<p>Default: 1</p>
+<dt><kbd>--floating</kbd></dt>
+<dd><p>If set, the current Pod/Deployment can not be further chained, and the next <cite>.add()</cite> will chain after the last Pod/Deployment not this current one.</p>
+<p>Default: False</p>
 </dd>
-<dt><kbd>--replicas</kbd></dt>
-<dd><p>The number of replicas in the deployment</p>
-<p>Default: 1</p>
-</dd>
-<dt><kbd>--port</kbd></dt>
+<dt><kbd>--port, --port-in</kbd></dt>
 <dd><p>The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (<cite>–external</cite> or <cite>external=True</cite>) this can be a list of ports, separated by commas. Then, every resulting address will be considered as one replica of the Executor.</p>
-<p>Default: “64491”</p>
+<p>Default: 63303</p>
 </dd>
 <dt><kbd>--monitoring</kbd></dt>
 <dd><p>If set, spawn an http server with a prometheus endpoint to expose metrics</p>
@@ -2039,19 +1961,31 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--port-monitoring</kbd></dt>
 <dd><p>The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</p>
-<p>Default: “58150”</p>
+<p>Default: “51155”</p>
 </dd>
 <dt><kbd>--retries</kbd></dt>
 <dd><p>Number of retries per gRPC call. If &lt;0 it defaults to max(3, num_replicas)</p>
 <p>Default: -1</p>
 </dd>
-<dt><kbd>--floating</kbd></dt>
-<dd><p>If set, the current Pod/Deployment can not be further chained, and the next <cite>.add()</cite> will chain after the last Pod/Deployment not this current one.</p>
-<p>Default: False</p>
-</dd>
 <dt><kbd>--tracing</kbd></dt>
 <dd><p>If set, the sdk implementation of the OpenTelemetry tracer will be available and will be enabled for automatic tracing of requests and customer span creation. Otherwise a no-op implementation will be provided.</p>
 <p>Default: False</p>
+</dd>
+<dt><kbd>--traces-exporter-host</kbd></dt>
+<dd><p>If tracing is enabled, this hostname will be used to configure the trace exporter agent.</p>
+</dd>
+<dt><kbd>--traces-exporter-port</kbd></dt>
+<dd><p>If tracing is enabled, this port will be used to configure the trace exporter agent.</p>
+</dd>
+<dt><kbd>--metrics</kbd></dt>
+<dd><p>If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--metrics-exporter-host</kbd></dt>
+<dd><p>If tracing is enabled, this hostname will be used to configure the metrics exporter agent.</p>
+</dd>
+<dt><kbd>--metrics-exporter-port</kbd></dt>
+<dd><p>If tracing is enabled, this port will be used to configure the metrics exporter agent.</p>
 </dd>
 </dl>
 </section>
@@ -2084,10 +2018,6 @@ Python files, data files.</p>
 <dt><kbd>--connection-list</kbd></dt>
 <dd><p>dictionary JSON with a list of connections to configure</p>
 </dd>
-<dt><kbd>--disable-reduce</kbd></dt>
-<dd><p>Disable the built-in reduce mechanism, set this if the reduction is to be handled by the Executor connected to this Head</p>
-<p>Default: False</p>
-</dd>
 <dt><kbd>--timeout-send</kbd></dt>
 <dd><p>The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default</p>
 </dd>
@@ -2098,53 +2028,32 @@ Python files, data files.</p>
 <h3>deployment<a class="headerlink" href="#deployment" title="Permalink to this heading">#</a></h3>
 <p>Start a Deployment. You should rarely use this directly unless you are doing low-level orchestration</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">deployment</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">name</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">workspace</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">config</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="p">]</span>
-                <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="o">-</span><span class="n">error</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ctrl</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">polling</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="p">]</span>
+                <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="o">-</span><span class="n">error</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ctrl</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">polling</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">shards</span><span class="p">]</span>
+                <span class="p">[</span><span class="o">--</span><span class="n">replicas</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">native</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="p">]</span>
                 <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="k">with</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
                 <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">metas</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
                 <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">requests</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
-                <span class="p">[</span><span class="o">--</span><span class="n">py</span><span class="o">-</span><span class="n">modules</span> <span class="p">[</span><span class="n">PATH</span> <span class="p">[</span><span class="n">PATH</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="ow">in</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">host</span><span class="o">-</span><span class="ow">in</span><span class="p">]</span>
-                <span class="p">[</span><span class="o">--</span><span class="n">native</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">output</span><span class="o">-</span><span class="n">array</span><span class="o">-</span><span class="nb">type</span><span class="p">]</span>
+                <span class="p">[</span><span class="o">--</span><span class="n">py</span><span class="o">-</span><span class="n">modules</span> <span class="p">[</span><span class="n">PATH</span> <span class="p">[</span><span class="n">PATH</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">output</span><span class="o">-</span><span class="n">array</span><span class="o">-</span><span class="nb">type</span><span class="p">]</span>
+                <span class="p">[</span><span class="o">--</span><span class="n">exit</span><span class="o">-</span><span class="n">on</span><span class="o">-</span><span class="n">exceptions</span> <span class="p">[[</span><span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">reduce</span><span class="p">]</span>
                 <span class="p">[</span><span class="o">--</span><span class="n">grpc</span><span class="o">-</span><span class="n">server</span><span class="o">-</span><span class="n">options</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
-                <span class="p">[</span><span class="o">--</span><span class="n">exit</span><span class="o">-</span><span class="n">on</span><span class="o">-</span><span class="n">exceptions</span> <span class="p">[[</span><span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">entrypoint</span><span class="p">]</span>
-                <span class="p">[</span><span class="o">--</span><span class="n">docker</span><span class="o">-</span><span class="n">kwargs</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
+                <span class="p">[</span><span class="o">--</span><span class="n">entrypoint</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">docker</span><span class="o">-</span><span class="n">kwargs</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
                 <span class="p">[</span><span class="o">--</span><span class="n">volumes</span> <span class="p">[</span><span class="n">DIR</span> <span class="p">[</span><span class="n">DIR</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">gpus</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">disable</span><span class="o">-</span><span class="n">auto</span><span class="o">-</span><span class="n">volume</span><span class="p">]</span>
                 <span class="p">[</span><span class="o">--</span><span class="n">host</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="o">-</span><span class="n">remote</span><span class="o">-</span><span class="n">logs</span><span class="p">]</span>
                 <span class="p">[</span><span class="o">--</span><span class="n">upload</span><span class="o">-</span><span class="n">files</span> <span class="p">[</span><span class="n">FILE</span> <span class="p">[</span><span class="n">FILE</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">runtime</span><span class="o">-</span><span class="bp">cls</span><span class="p">]</span>
                 <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ready</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">env</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
-                <span class="p">[</span><span class="o">--</span><span class="n">shards</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">replicas</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">monitoring</span><span class="p">]</span>
-                <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">monitoring</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">retries</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">floating</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">tracing</span><span class="p">]</span>
-                <span class="p">[</span><span class="o">--</span><span class="n">traces</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">host</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">traces</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">port</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">metrics</span><span class="p">]</span>
-                <span class="p">[</span><span class="o">--</span><span class="n">metrics</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">host</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">metrics</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">port</span><span class="p">]</span>
-                <span class="p">[</span><span class="o">--</span><span class="n">install</span><span class="o">-</span><span class="n">requirements</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">force</span><span class="o">-</span><span class="n">update</span><span class="p">]</span>
+                <span class="p">[</span><span class="o">--</span><span class="n">floating</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">monitoring</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">monitoring</span><span class="p">]</span>
+                <span class="p">[</span><span class="o">--</span><span class="n">retries</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">tracing</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">traces</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">host</span><span class="p">]</span>
+                <span class="p">[</span><span class="o">--</span><span class="n">traces</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">port</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">metrics</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">metrics</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">host</span><span class="p">]</span>
+                <span class="p">[</span><span class="o">--</span><span class="n">metrics</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">port</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">install</span><span class="o">-</span><span class="n">requirements</span><span class="p">]</span>
+                <span class="p">[</span><span class="o">--</span><span class="n">force</span><span class="o">-</span><span class="n">update</span><span class="p">]</span>
                 <span class="p">[</span><span class="o">--</span><span class="n">compression</span> <span class="p">{</span><span class="n">NoCompression</span><span class="p">,</span> <span class="n">Deflate</span><span class="p">,</span> <span class="n">Gzip</span><span class="p">}]</span>
                 <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">before</span><span class="o">-</span><span class="n">address</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">after</span><span class="o">-</span><span class="n">address</span><span class="p">]</span>
-                <span class="p">[</span><span class="o">--</span><span class="n">connection</span><span class="o">-</span><span class="nb">list</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">disable</span><span class="o">-</span><span class="n">reduce</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">send</span><span class="p">]</span>
-                <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">before</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">after</span><span class="p">]</span>
-                <span class="p">[</span><span class="o">--</span><span class="n">when</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">external</span><span class="p">]</span>
-                <span class="p">[</span><span class="o">--</span><span class="n">grpc</span><span class="o">-</span><span class="n">metadata</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">tls</span><span class="p">]</span>
+                <span class="p">[</span><span class="o">--</span><span class="n">connection</span><span class="o">-</span><span class="nb">list</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">send</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">before</span><span class="p">]</span>
+                <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">after</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">when</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
+                <span class="p">[</span><span class="o">--</span><span class="n">external</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">grpc</span><span class="o">-</span><span class="n">metadata</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
+                <span class="p">[</span><span class="o">--</span><span class="n">tls</span><span class="p">]</span>
 </pre></div>
 </div>
-<section id="Named Arguments_repeat16">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat16" title="Permalink to this heading">#</a></h4>
-<dl class="option-list">
-<dt><kbd>--traces-exporter-host</kbd></dt>
-<dd><p>If tracing is enabled, this hostname will be used to configure the trace exporter agent.</p>
-</dd>
-<dt><kbd>--traces-exporter-port</kbd></dt>
-<dd><p>If tracing is enabled, this port will be used to configure the trace exporter agent.</p>
-</dd>
-<dt><kbd>--metrics</kbd></dt>
-<dd><p>If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.</p>
-<p>Default: False</p>
-</dd>
-<dt><kbd>--metrics-exporter-host</kbd></dt>
-<dd><p>If tracing is enabled, this hostname will be used to configure the metrics exporter agent.</p>
-</dd>
-<dt><kbd>--metrics-exporter-port</kbd></dt>
-<dd><p>If tracing is enabled, this port will be used to configure the metrics exporter agent.</p>
-</dd>
-</dl>
-</section>
 <section id="Essential arguments_repeat4">
 <h4>Essential arguments<a class="headerlink" href="#Essential arguments_repeat4" title="Permalink to this heading">#</a></h4>
 <dl class="option-list">
@@ -2176,8 +2085,8 @@ Python files, data files.</p>
 </dd>
 </dl>
 </section>
-<section id="Base Deployment arguments_repeat3">
-<h4>Base Deployment arguments<a class="headerlink" href="#Base Deployment arguments_repeat3" title="Permalink to this heading">#</a></h4>
+<section id="Scalable Deployment arguments_repeat2">
+<h4>Scalable Deployment arguments<a class="headerlink" href="#Scalable Deployment arguments_repeat2" title="Permalink to this heading">#</a></h4>
 <dl class="option-list">
 <dt><kbd>--timeout-ctrl</kbd></dt>
 <dd><p>The timeout in milliseconds of the control request, -1 for waiting forever</p>
@@ -2195,6 +2104,18 @@ JSON dict, {endpoint: PollingType}
 {‘/custom’: ‘ALL’, ‘/search’: ‘ANY’, ‘*’: ‘ANY’}</p>
 </div></blockquote>
 <p>Default: “ANY”</p>
+</dd>
+<dt><kbd>--shards</kbd></dt>
+<dd><p>The number of shards in the deployment running at the same time. For more details check <a class="reference external" href="https://docs.jina.ai/fundamentals/flow/create-flow/#complex-flow-topologies">https://docs.jina.ai/fundamentals/flow/create-flow/#complex-flow-topologies</a></p>
+<p>Default: 1</p>
+</dd>
+<dt><kbd>--replicas</kbd></dt>
+<dd><p>The number of replicas in the deployment</p>
+<p>Default: 1</p>
+</dd>
+<dt><kbd>--native</kbd></dt>
+<dd><p>If set, only native Executors is allowed, and the Executor is always run inside WorkerRuntime.</p>
+<p>Default: False</p>
 </dd>
 </dl>
 </section>
@@ -2238,30 +2159,22 @@ executor can be defined in a single file, or an <code class="docutils literal no
 which should be structured as a python package. For more details, please see the
 <a class="reference external" href="https://docs.jina.ai/fundamentals/executor/executor-files/">Executor cookbook</a></p>
 </dd>
-<dt><kbd>--port-in</kbd></dt>
-<dd><p>The port for input data to bind to, default a random port between [49152, 65535]</p>
-<p>Default: 64080</p>
-</dd>
-<dt><kbd>--host-in</kbd></dt>
-<dd><p>The host address for binding to, by default it is 0.0.0.0</p>
-<p>Default: “0.0.0.0”</p>
-</dd>
-<dt><kbd>--native</kbd></dt>
-<dd><p>If set, only native Executors is allowed, and the Executor is always run inside WorkerRuntime.</p>
-<p>Default: False</p>
-</dd>
 <dt><kbd>--output-array-type</kbd></dt>
 <dd><p>The type of array <cite>tensor</cite> and <cite>embedding</cite> will be serialized to.</p>
 <p>Supports the same types as <cite>docarray.to_protobuf(.., ndarray_type=…)</cite>, which can be found
 <cite>here &lt;https://docarray.jina.ai/fundamentals/document/serialization/#from-to-protobuf&gt;</cite>.
 Defaults to retaining whatever type is returned by the Executor.</p>
 </dd>
-<dt><kbd>--grpc-server-options</kbd></dt>
-<dd><p>Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {‘grpc.max_send_message_length’: -1}</p>
-</dd>
 <dt><kbd>--exit-on-exceptions</kbd></dt>
 <dd><p>List of exceptions that will cause the Executor to shut down.</p>
 <p>Default: []</p>
+</dd>
+<dt><kbd>--no-reduce, --disable-reduce</kbd></dt>
+<dd><p>Disable the built-in reduction mechanism. Set this if the reduction is to be handled by the Executor itself by operating on a <cite>docs_matrix</cite> or <cite>docs_map</cite></p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--grpc-server-options</kbd></dt>
+<dd><p>Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {‘grpc.max_send_message_length’: -1}</p>
 </dd>
 </dl>
 </section>
@@ -2285,7 +2198,7 @@ container.</p>
 </dd>
 <dt><kbd>--gpus</kbd></dt>
 <dd><blockquote>
-<div><p>This argument allows dockerized Jina executor discover local gpu devices.</p>
+<div><p>This argument allows dockerized Jina Executors to discover local gpu devices.</p>
 <p>Note,
 - To access all gpus, use <cite>–gpus all</cite>.
 - To access multiple gpus, e.g. make use of 2 gpus, use <cite>–gpus 2</cite>.
@@ -2303,7 +2216,7 @@ container.</p>
 <section id="RemoteRuntime arguments_repeat2">
 <h4>RemoteRuntime arguments<a class="headerlink" href="#RemoteRuntime arguments_repeat2" title="Permalink to this heading">#</a></h4>
 <dl class="option-list">
-<dt><kbd>--host</kbd></dt>
+<dt><kbd>--host, --host-in</kbd></dt>
 <dd><p>The host address of the runtime, by default it is 0.0.0.0. In the case of an external Executor (<cite>–external</cite> or <cite>external=True</cite>) this can be a list of hosts, separated by commas. Then, every resulting address will be considered as one replica of the Executor.</p>
 <p>Default: “0.0.0.0”</p>
 </dd>
@@ -2342,17 +2255,13 @@ Python files, data files.</p>
 <dt><kbd>--env</kbd></dt>
 <dd><p>The map of environment variables that are available inside runtime</p>
 </dd>
-<dt><kbd>--shards</kbd></dt>
-<dd><p>The number of shards in the deployment running at the same time. For more details check <a class="reference external" href="https://docs.jina.ai/fundamentals/flow/create-flow/#complex-flow-topologies">https://docs.jina.ai/fundamentals/flow/create-flow/#complex-flow-topologies</a></p>
-<p>Default: 1</p>
+<dt><kbd>--floating</kbd></dt>
+<dd><p>If set, the current Pod/Deployment can not be further chained, and the next <cite>.add()</cite> will chain after the last Pod/Deployment not this current one.</p>
+<p>Default: False</p>
 </dd>
-<dt><kbd>--replicas</kbd></dt>
-<dd><p>The number of replicas in the deployment</p>
-<p>Default: 1</p>
-</dd>
-<dt><kbd>--port</kbd></dt>
+<dt><kbd>--port, --port-in</kbd></dt>
 <dd><p>The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (<cite>–external</cite> or <cite>external=True</cite>) this can be a list of ports, separated by commas. Then, every resulting address will be considered as one replica of the Executor.</p>
-<p>Default: “63229”</p>
+<p>Default: 63610</p>
 </dd>
 <dt><kbd>--monitoring</kbd></dt>
 <dd><p>If set, spawn an http server with a prometheus endpoint to expose metrics</p>
@@ -2360,19 +2269,31 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--port-monitoring</kbd></dt>
 <dd><p>The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</p>
-<p>Default: “60313”</p>
+<p>Default: “64063”</p>
 </dd>
 <dt><kbd>--retries</kbd></dt>
 <dd><p>Number of retries per gRPC call. If &lt;0 it defaults to max(3, num_replicas)</p>
 <p>Default: -1</p>
 </dd>
-<dt><kbd>--floating</kbd></dt>
-<dd><p>If set, the current Pod/Deployment can not be further chained, and the next <cite>.add()</cite> will chain after the last Pod/Deployment not this current one.</p>
-<p>Default: False</p>
-</dd>
 <dt><kbd>--tracing</kbd></dt>
 <dd><p>If set, the sdk implementation of the OpenTelemetry tracer will be available and will be enabled for automatic tracing of requests and customer span creation. Otherwise a no-op implementation will be provided.</p>
 <p>Default: False</p>
+</dd>
+<dt><kbd>--traces-exporter-host</kbd></dt>
+<dd><p>If tracing is enabled, this hostname will be used to configure the trace exporter agent.</p>
+</dd>
+<dt><kbd>--traces-exporter-port</kbd></dt>
+<dd><p>If tracing is enabled, this port will be used to configure the trace exporter agent.</p>
+</dd>
+<dt><kbd>--metrics</kbd></dt>
+<dd><p>If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--metrics-exporter-host</kbd></dt>
+<dd><p>If tracing is enabled, this hostname will be used to configure the metrics exporter agent.</p>
+</dd>
+<dt><kbd>--metrics-exporter-port</kbd></dt>
+<dd><p>If tracing is enabled, this port will be used to configure the metrics exporter agent.</p>
 </dd>
 </dl>
 </section>
@@ -2404,10 +2325,6 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--connection-list</kbd></dt>
 <dd><p>dictionary JSON with a list of connections to configure</p>
-</dd>
-<dt><kbd>--disable-reduce</kbd></dt>
-<dd><p>Disable the built-in reduce mechanism, set this if the reduction is to be handled by the Executor connected to this Head</p>
-<p>Default: False</p>
 </dd>
 <dt><kbd>--timeout-send</kbd></dt>
 <dd><p>The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default</p>
@@ -2449,8 +2366,8 @@ Python files, data files.</p>
             <span class="p">[</span><span class="o">--</span><span class="n">protocol</span> <span class="p">{</span><span class="n">GRPC</span><span class="p">,</span> <span class="n">HTTP</span><span class="p">,</span> <span class="n">WEBSOCKET</span><span class="p">}]</span>
 </pre></div>
 </div>
-<section id="Named Arguments_repeat17">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat17" title="Permalink to this heading">#</a></h4>
+<section id="Named Arguments_repeat14">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat14" title="Permalink to this heading">#</a></h4>
 <dl class="option-list">
 <dt><kbd>--asyncio</kbd></dt>
 <dd><p>If set, then the input and output of this Client work in an asynchronous manner.</p>
@@ -2486,7 +2403,7 @@ Python files, data files.</p>
 <section id="ClientGateway arguments">
 <h4>ClientGateway arguments<a class="headerlink" href="#ClientGateway arguments" title="Permalink to this heading">#</a></h4>
 <dl class="option-list">
-<dt><kbd>--host</kbd></dt>
+<dt><kbd>--host, --host-in</kbd></dt>
 <dd><p>The host address of the runtime, by default it is 0.0.0.0. In the case of an external Executor (<cite>–external</cite> or <cite>external=True</cite>) this can be a list of hosts, separated by commas. Then, every resulting address will be considered as one replica of the Executor.</p>
 <p>Default: “0.0.0.0”</p>
 </dd>
@@ -2538,7 +2455,7 @@ Python files, data files.</p>
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Nov 22, 2022</div>
+                            Last updated on Nov 25, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -2575,9 +2492,8 @@ Python files, data files.</p>
 <li><a class="reference internal" href="#Named Arguments">Named Arguments</a></li>
 <li><a class="reference internal" href="#Sub-commands:">Sub-commands:</a><ul>
 <li><a class="reference internal" href="#executor">executor</a><ul>
-<li><a class="reference internal" href="#Named Arguments_repeat1">Named Arguments</a></li>
 <li><a class="reference internal" href="#Essential arguments">Essential arguments</a></li>
-<li><a class="reference internal" href="#Base Deployment arguments">Base Deployment arguments</a></li>
+<li><a class="reference internal" href="#Scalable Deployment arguments">Scalable Deployment arguments</a></li>
 <li><a class="reference internal" href="#WorkerRuntime arguments">WorkerRuntime arguments</a></li>
 <li><a class="reference internal" href="#ContainerRuntime arguments">ContainerRuntime arguments</a></li>
 <li><a class="reference internal" href="#RemoteRuntime arguments">RemoteRuntime arguments</a></li>
@@ -2594,7 +2510,7 @@ Python files, data files.</p>
 </li>
 <li><a class="reference internal" href="#ping">ping</a><ul>
 <li><a class="reference internal" href="#Positional Arguments_repeat1">Positional Arguments</a></li>
-<li><a class="reference internal" href="#Named Arguments_repeat2">Named Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat1">Named Arguments</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#export">export</a><ul>
@@ -2602,21 +2518,21 @@ Python files, data files.</p>
 <li><a class="reference internal" href="#Sub-commands:_repeat1">Sub-commands:</a><ul>
 <li><a class="reference internal" href="#flowchart">flowchart</a><ul>
 <li><a class="reference internal" href="#Positional Arguments_repeat2">Positional Arguments</a></li>
-<li><a class="reference internal" href="#Named Arguments_repeat3">Named Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat2">Named Arguments</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#kubernetes">kubernetes</a><ul>
 <li><a class="reference internal" href="#Positional Arguments_repeat3">Positional Arguments</a></li>
-<li><a class="reference internal" href="#Named Arguments_repeat4">Named Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat3">Named Arguments</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#docker-compose">docker-compose</a><ul>
 <li><a class="reference internal" href="#Positional Arguments_repeat4">Positional Arguments</a></li>
-<li><a class="reference internal" href="#Named Arguments_repeat5">Named Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat4">Named Arguments</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#schema">schema</a><ul>
-<li><a class="reference internal" href="#Named Arguments_repeat6">Named Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat5">Named Arguments</a></li>
 </ul>
 </li>
 </ul>
@@ -2628,9 +2544,9 @@ Python files, data files.</p>
 </ul>
 </li>
 <li><a class="reference internal" href="#gateway">gateway</a><ul>
-<li><a class="reference internal" href="#Named Arguments_repeat7">Named Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat6">Named Arguments</a></li>
 <li><a class="reference internal" href="#Essential arguments_repeat2">Essential arguments</a></li>
-<li><a class="reference internal" href="#Base Deployment arguments_repeat1">Base Deployment arguments</a></li>
+<li><a class="reference internal" href="#Base Deployment arguments">Base Deployment arguments</a></li>
 <li><a class="reference internal" href="#ContainerRuntime arguments_repeat1">ContainerRuntime arguments</a></li>
 <li><a class="reference internal" href="#Prefetch arguments">Prefetch arguments</a></li>
 <li><a class="reference internal" href="#HTTP Gateway arguments">HTTP Gateway arguments</a></li>
@@ -2643,7 +2559,7 @@ Python files, data files.</p>
 <li><a class="reference internal" href="#Positional Arguments_repeat6">Positional Arguments</a></li>
 <li><a class="reference internal" href="#Sub-commands:_repeat2">Sub-commands:</a><ul>
 <li><a class="reference internal" href="#login">login</a><ul>
-<li><a class="reference internal" href="#Named Arguments_repeat8">Named Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat7">Named Arguments</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#logout">logout</a></li>
@@ -2652,7 +2568,7 @@ Python files, data files.</p>
 <li><a class="reference internal" href="#Sub-commands:_repeat3">Sub-commands:</a><ul>
 <li><a class="reference internal" href="#create">create</a><ul>
 <li><a class="reference internal" href="#Positional Arguments_repeat8">Positional Arguments</a></li>
-<li><a class="reference internal" href="#Named Arguments_repeat9">Named Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat8">Named Arguments</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#delete">delete</a><ul>
@@ -2676,14 +2592,14 @@ Python files, data files.</p>
 </ul>
 </li>
 <li><a class="reference internal" href="#push">push</a><ul>
-<li><a class="reference internal" href="#Named Arguments_repeat10">Named Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat9">Named Arguments</a></li>
 <li><a class="reference internal" href="#Push arguments">Push arguments</a></li>
 <li><a class="reference internal" href="#Visibility arguments">Visibility arguments</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#pull">pull</a><ul>
 <li><a class="reference internal" href="#Positional Arguments_repeat10">Positional Arguments</a></li>
-<li><a class="reference internal" href="#Named Arguments_repeat11">Named Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat10">Named Arguments</a></li>
 <li><a class="reference internal" href="#Pull arguments_repeat1">Pull arguments</a></li>
 </ul>
 </li>
@@ -2698,7 +2614,7 @@ Python files, data files.</p>
 </li>
 <li><a class="reference internal" href="#cloud">cloud</a><ul>
 <li><a class="reference internal" href="#Positional Arguments_repeat11">Positional Arguments</a></li>
-<li><a class="reference internal" href="#Named Arguments_repeat12">Named Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat11">Named Arguments</a></li>
 <li><a class="reference internal" href="#Sub-commands:_repeat5">Sub-commands:</a><ul>
 <li><a class="reference internal" href="#login_repeat1">login</a></li>
 <li><a class="reference internal" href="#logout_repeat1">logout</a></li>
@@ -2707,12 +2623,12 @@ Python files, data files.</p>
 </ul>
 </li>
 <li><a class="reference internal" href="#list_repeat2">list</a><ul>
-<li><a class="reference internal" href="#Named Arguments_repeat13">Named Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat12">Named Arguments</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#status_repeat1">status</a><ul>
 <li><a class="reference internal" href="#Positional Arguments_repeat13">Positional Arguments</a></li>
-<li><a class="reference internal" href="#Named Arguments_repeat14">Named Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat13">Named Arguments</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#remove">remove</a><ul>
@@ -2733,9 +2649,8 @@ Python files, data files.</p>
 </ul>
 </li>
 <li><a class="reference internal" href="#pod">pod</a><ul>
-<li><a class="reference internal" href="#Named Arguments_repeat15">Named Arguments</a></li>
 <li><a class="reference internal" href="#Essential arguments_repeat3">Essential arguments</a></li>
-<li><a class="reference internal" href="#Base Deployment arguments_repeat2">Base Deployment arguments</a></li>
+<li><a class="reference internal" href="#Scalable Deployment arguments_repeat1">Scalable Deployment arguments</a></li>
 <li><a class="reference internal" href="#WorkerRuntime arguments_repeat1">WorkerRuntime arguments</a></li>
 <li><a class="reference internal" href="#ContainerRuntime arguments_repeat2">ContainerRuntime arguments</a></li>
 <li><a class="reference internal" href="#RemoteRuntime arguments_repeat1">RemoteRuntime arguments</a></li>
@@ -2746,9 +2661,8 @@ Python files, data files.</p>
 </ul>
 </li>
 <li><a class="reference internal" href="#deployment">deployment</a><ul>
-<li><a class="reference internal" href="#Named Arguments_repeat16">Named Arguments</a></li>
 <li><a class="reference internal" href="#Essential arguments_repeat4">Essential arguments</a></li>
-<li><a class="reference internal" href="#Base Deployment arguments_repeat3">Base Deployment arguments</a></li>
+<li><a class="reference internal" href="#Scalable Deployment arguments_repeat2">Scalable Deployment arguments</a></li>
 <li><a class="reference internal" href="#WorkerRuntime arguments_repeat2">WorkerRuntime arguments</a></li>
 <li><a class="reference internal" href="#ContainerRuntime arguments_repeat3">ContainerRuntime arguments</a></li>
 <li><a class="reference internal" href="#RemoteRuntime arguments_repeat2">RemoteRuntime arguments</a></li>
@@ -2760,7 +2674,7 @@ Python files, data files.</p>
 </ul>
 </li>
 <li><a class="reference internal" href="#client">client</a><ul>
-<li><a class="reference internal" href="#Named Arguments_repeat17">Named Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat14">Named Arguments</a></li>
 <li><a class="reference internal" href="#ClientGateway arguments">ClientGateway arguments</a></li>
 </ul>
 </li>

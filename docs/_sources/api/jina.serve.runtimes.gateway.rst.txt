@@ -7,6 +7,7 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
+   jina.serve.runtimes.gateway.composite
    jina.serve.runtimes.gateway.graph
    jina.serve.runtimes.gateway.grpc
    jina.serve.runtimes.gateway.http

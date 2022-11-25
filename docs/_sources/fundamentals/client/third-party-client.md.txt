@@ -1,7 +1,19 @@
 (third-party-client)=
 # Third-party clients
 
-This page is about accessing the Flow with other clients, e.g. `curl`, or programming languages other than python.
+This page is about accessing the Flow with other clients, e.g. `curl`, or programming languages other than Python.
+
+## Golang
+
+Our [Go Client](https://github.com/jina-ai/client-go) supports gRPC, HTTP and WebSocket protocols, allowing you to connect to Jina from your Go applications.
+
+## PHP
+
+A big thanks to our community member [Jonathan Rowley](https://jina-ai.slack.com/team/U03973EA7BN) for developing a [PHP client](https://github.com/Dco-ai/php-jina) for Jina!
+
+## Kotlin
+
+A big thanks to our community member [Peter Willemsen](https://jina-ai.slack.com/team/U03R0KNBK98) for developing a [Kotlin client](https://github.com/peterwilli/JinaKotlin) for Jina!
 
 ## HTTP
 
@@ -14,7 +26,6 @@ Only Flows that use HTTP can be accessed via the methods described below.
 Apart from using the {ref}`Jina Client <client>`, the most common way of interacting with your deployed Flow is via HTTP.
 
 You can always use `post` to interact with a Flow, using the `/post` HTTP endpoint.
-
 
 With the help of [OpenAPI schema](https://swagger.io/specification/), one can send data requests to a Flow via `cURL`, JavaScript, [Postman](https://www.postman.com/), or any other HTTP client or programming library. 
 
@@ -31,7 +42,7 @@ Your HTTP request can include the following parameters:
 
 
 Instead of using the generic `/post` endpoint, you can directly use endpoints like `/index` or `/search` to perform a specific operation.
-In this case your data request will be sent to the corresponding Executor endpoint, so the parameter `execEndpoint` does not need to be specified.
+In this case your data request is sent to the corresponding Executor endpoint, so you don't need to specify the parameter `execEndpoint`.
 
 `````{dropdown} Example
 
@@ -74,7 +85,7 @@ The response you receive includes `data` (an array of [Documents](https://docarr
 
 ```{admonition} See also: Flow REST API
 :class: seealso
-For a more detailed descripton of the REST API of a generic Flow, including the complete request body schema and request samples, please check
+For a more detailed descripton of the REST API of a generic Flow, including the complete request body schema and request samples, please check:
 
 1. [OpenAPI Schema](https://api.jina.ai/rest/latest.json)
 2. [Redoc UI](https://api.jina.ai/rest/)
@@ -84,9 +95,9 @@ For a specific deployed Flow, you can get the same overview by accessing the `/r
 
 (swagger-ui)=
 
-### Use curl
+### Use cURL
 
-Here's an example that uses `cURL`.
+Here's an example that uses `cURL`:
 
 ```bash
 curl --request POST 'http://localhost:12345/post' --header 'Content-Type: application/json' -d '{"data": [{"text": "hello world"}],"execEndpoint": "/search"}'
@@ -150,9 +161,9 @@ curl --request POST 'http://localhost:12345/post' --header 'Content-Type: applic
 
 
 
-### Use Javascript
+### Use JavaScript
 
-Sending a request from the front-end JavaScript code is a common use case too. Here's how this would look like:
+Sending a request from the front-end JavaScript code is a common use case too. Here's how this looks:
 
 ```javascript
 fetch('http://localhost:12345/post', {
@@ -200,24 +211,24 @@ fetch('http://localhost:12345/post', {
 
 ### Use Swagger UI
 
-Flows provide a customized [Swagger UI](https://swagger.io/tools/swagger-ui/) which can be used to interact with the Flow
-visually, through a web browser.
+Flows provide a customized [Swagger UI](https://swagger.io/tools/swagger-ui/) which you can use to visually interact with the Flow
+through a web browser.
 
 ```{admonition} Available Protocols
 :class: caution
 Only Flows that have enabled {ref}`CORS <cors>` expose the Swagger UI interface.
 ```
 
-For a Flow that is exposed on port `PORT`, you can navigate to the Swagger UI via `http://localhost:PORT/docs`:
+For a Flow that is exposed on port `PORT`, you can navigate to the Swagger UI at `http://localhost:PORT/docs`:
 
 ```{figure} ../../../.github/2.0/swagger-ui.png
 :align: center
 ```
 Here you can see all the endpoints that are exposed by the Flow, such as `/search` and `/index`.
 
-To send a request, click on the endpoint you want to target, then on `Try it out`.
+To send a request, click on the endpoint you want to target, then `Try it out`.
 
-Now you can enter your HTTP request, and send it by clicking on `Execute`.
+Now you can enter your HTTP request, and send it by clicking `Execute`.
 You can again use the [REST HTTP request schema](https://api.jina.ai/rest/), but do not need to specify `execEndpoint`.
 
 Below, in `Responses`, you can see the reply, together with a visual representation of the returned Documents.
@@ -226,20 +237,20 @@ Below, in `Responses`, you can see the reply, together with a visual representat
 
 [Postman](https://www.postman.com/) is an application that allows the testing of web APIs from a graphical interface. You can store all the templates for your REST APIs in it, using Collections. 
 
-We provide a suite of templates for the Jina Flow, in this [collection](https://github.com/jina-ai/jina/tree/master/.github/Jina.postman_collection.json). You can import it in Postman in **Collections**, with the **Import** button. It provides templates for the main operations. You need to create an Environment to define the `{{url}}` and `{{port}}` environment variables. These would be the hostname and the port where the Flow is listening. 
+We provide a [suite of templates for Jina Flow](https://github.com/jina-ai/jina/tree/master/.github/Jina.postman_collection.json). You can import it in Postman in **Collections**, with the **Import** button. It provides templates for the main operations. You need to create an Environment to define the `{{url}}` and `{{port}}` environment variables. These would be the hostname and the port where the Flow is listening. 
 
-This contribution was made by [Jonathan Rowley](https://jina-ai.slack.com/archives/C0169V26ATY/p1649689443888779?thread_ts=1649428823.420879&cid=C0169V26ATY), in our [community Slack](slack.jina.ai). 
+This contribution was made by [Jonathan Rowley](https://jina-ai.slack.com/archives/C0169V26ATY/p1649689443888779?thread_ts=1649428823.420879&cid=C0169V26ATY), in our [community Slack](slack.jina.ai).
 
 ## gRPC
 
-To use the gRPC protocol with a language other than Python you will need to :
+To use the gRPC protocol with a language other than Python you will need to:
 
-* Download the two proto definition files: `jina.proto` and `docarray.proto` from [github](https://github.com/jina-ai/jina/tree/master/jina/proto) (be sure to use the latest release branch)
-* Compile them with [protoc](https://grpc.io/docs/protoc-installation/) and precise to which programming language you want to compile them.
-* Add the generated files to your project and import them in your code. 
+* Download the two proto definition files: `jina.proto` and `docarray.proto` from [GitHub](https://github.com/jina-ai/jina/tree/master/jina/proto) (be sure to use the latest release branch)
+* Compile them with [protoc](https://grpc.io/docs/protoc-installation/) and specify which programming language you want to compile them with.
+* Add the generated files to your project and import them into your code.
 
 You should finally be able to communicate with your Flow using the gRPC protocol. You can find more information on the gRPC
-`message` and `service` that you can use to communicate in the  [Protobuf documentation](../../proto/docs.md).
+`message` and `service` that you can use to communicate in the [Protobuf documentation](../../proto/docs.md).
 
 (flow-graphql)=
 ## GraphQL
@@ -248,15 +259,15 @@ You should finally be able to communicate with your Flow using the gRPC protocol
 :class: seealso
 
 This article does not serve as the introduction to GraphQL.
-If you are not already familiar with GraphQL, we recommend you learn more about GraphQL from the official [GraphQL documentation](https://graphql.org/learn/).
+If you are not already familiar with GraphQL, we recommend you learn more about GraphQL from the [official documentation](https://graphql.org/learn/).
 You may also want to learn about [Strawberry](https://strawberry.rocks/), the library that powers Jina's GraphQL support.
 ````
 Jina Flows that use the HTTP protocol can also provide a GraphQL API, which is located behind the `/graphql` endpoint.
-GraphQL has the advantage of letting the user define their own response schema, which means that only the fields that are required
-will be sent over the wire.
-This is especially useful when the user does not need potentially large fields, like image tensors.
+GraphQL has the advantage of letting you define your own response schema, which means that only the fields you require
+are sent over the wire.
+This is especially useful when you don't need potentially large fields, like image tensors.
 
-You can access the Flow from any GraphQL client, like for example, `sgqlc`.
+You can access the Flow from any GraphQL client, like `sgqlc`.
 
 ```python
 from sgqlc.endpoint.http import HTTPEndpoint
@@ -281,7 +292,7 @@ response = endpoint(mut)
 The Flow GraphQL API exposes the mutation `docs`, which sends its inputs to the Flow's Executors,
 just like HTTP `post` as described {ref}`above <http-interface>`.
 
-A GraphQL mutation takes same set of arguments used in [HTTP](#arguments). 
+A GraphQL mutation takes the same set of arguments used in [HTTP](#arguments). 
 
 The response from GraphQL can include all fields available on a DocumentArray.
 
@@ -289,7 +300,7 @@ The response from GraphQL can include all fields available on a DocumentArray.
 :class: seealso
 
 For more details on the GraphQL format of Document and DocumentArray, see the [documentation page](https://docarray.jina.ai/advanced/graphql-support/)
-or the [developer reference](https://docarray.jina.ai/api/docarray.document.mixins.strawberry/).
+or [developer reference](https://docarray.jina.ai/api/docarray.document.mixins.strawberry/).
 ````
 
 
@@ -300,29 +311,28 @@ The available fields in the GraphQL API are defined by the [Document Strawberry 
 Essentially, you can ask for any property of a Document, including `embedding`, `text`, `tensor`, `id`, `matches`, `tags`,
 and more.
 
-## Websocket
+## WebSocket
 
-Websocket uses persistent connections between the client & Flow, hence allowing streaming use cases. 
-While you can always use the Python client to stream requests like any other protocol, websocket allows streaming JSON from anywhere (CLI / Postman / any other programming language). 
-The same set of arguments as [HTTP](#arguments) can be used in the payload.
+WebSocket uses persistent connections between the client and Flow, hence allowing streaming use cases. 
+While you can always use the Python client to stream requests like any other protocol, WebSocket allows streaming JSON from anywhere (CLI / Postman / any other programming language). 
+You can use the same set of arguments as [HTTP](#arguments) in the payload.
 
 We use [subprotocols](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API/Writing_WebSocket_servers#subprotocols) to separate streaming JSON vs bytes. 
-The Flow defaults to `json` when a subprotocol is not passed during connection establishment (Our Python client uses `bytes` streaming by using [jina.proto](../../proto/docs.md) definition).
+The Flow defaults to `json` if you don't specify a sub-protocol while establishing the connection (Our Python client uses `bytes` streaming by using [jina.proto](../../proto/docs.md) definition).
 
 
 ````{Hint}
 
-- Choose Websocket over HTTP if you want to stream requests. 
-- Choose Websocket over gRPC if
-  - you want to stream using JSON, not bytes
-  - your client language doesn't support gRPC
-  - you don't want to compile the [Protobuf definitions](../../proto/docs.md) for your gRPC client
+- Choose WebSocket over HTTP if you want to stream requests. 
+- Choose WebSocket over gRPC if
+  - you want to stream using JSON, not bytes.
+  - your client language doesn't support gRPC.
+  - you don't want to compile the [Protobuf definitions](../../proto/docs.md) for your gRPC client.
 
 ````
 
-
-## See further
+## See also
 
 - {ref}`Access a Flow with the Client <client>`
-- {ref}`Configure Flow <flow>`
+- {ref}`Configure a Flow <flow>`
 - [Flow REST API reference](https://api.jina.ai/rest/)

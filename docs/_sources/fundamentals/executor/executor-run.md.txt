@@ -32,7 +32,7 @@ Text: hello world
 
 
 ````{tab} From Executor Hub
-You can pull an Executor from Executor Hub and use it directly as a Python object. [Executor Hub](https://hub.jina.ai/) is our marketplace for Executors.
+You can pull an Executor from Executor Hub and use it directly as a Python object. [Executor Hub](https://cloud.jina.ai/) is our marketplace for Executors.
 
 ```python
 from docarray import Document, DocumentArray
