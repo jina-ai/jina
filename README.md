@@ -61,16 +61,14 @@ Applications built with Jina enjoy the following features out of the box:
 </thead>
 <tbody>
   <tr>
-    <td><a href="https://docs.jina.ai/get-started/what-is-jina/" target="_blank" rel="noopener noreferrer">📗 What is Jina?</a></td>
-    <td><a href="https://docs.jina.ai/get-started/what-is-jina/#relation-to-mlops" target="_blank" rel="noopener noreferrer">🔍 Is Jina MLOps for search?</a></td>
-    <td><a href="https://docs.jina.ai/get-started/comparing-alternatives/" target="_blank" rel="noopener noreferrer">🆚 How Jina compares to alternatives?</a></td>
-    <td><a href="https://docs.jina.ai/get-started/what-is-jina/#why-cloud-native" target="_blank" rel="noopener noreferrer">☁️ What is Cloud-Native?</a></td>
+    <td><a href="https://jina.ai/" target="_blank" rel="noopener noreferrer">📗 What is Jina?</a></td>
+    <td><a href="https://jina.ai/news/five-most-trending-open-source-mlops-tools-of-2022/" target="_blank" rel="noopener noreferrer">🔍 Is Jina MLOps for search?</a></td>
+    <td><a href="https://jina.ai/news/cloud-native-helps-you-build-multimodal-ai-in-production-here-is-how/" target="_blank" rel="noopener noreferrer">☁️ What is Cloud-Native?</a></td>
   </tr>
   <tr>
-    <td><a href="https://docs.jina.ai/get-started/what-is-cross-modal-multi-modal/" target="_blank" rel="noopener noreferrer">🔮 What is cross-modal and multimodal？</a></td>
-    <td><a href="https://docs.jina.ai/get-started/what-is-cross-modal-multi-modal/#neural-search" target="_blank" rel="noopener noreferrer">🧬 What is neural search?</a></td>
-    <td><a href="https://docs.jina.ai/get-started/what-is-cross-modal-multi-modal/#creative-ai" target="_blank" rel="noopener noreferrer">🎨 What is creative AI?</a></td>
-    <td></td>
+    <td><a href="https://jina.ai/news/what-is-multimodal-deep-learning-and-what-are-the-applications/" target="_blank" rel="noopener noreferrer">🔮 What is cross-modal and multimodal？</a></td>
+    <td><a href="https://jina.ai/news/what-is-neural-search-and-learn-to-build-a-neural-search-engine/" target="_blank" rel="noopener noreferrer">🧬 What is neural search?</a></td>
+    <td><a href="https://jina.ai/news/paradigm-shift-towards-multimodal-ai/" target="_blank" rel="noopener noreferrer">🎨 What is creative AI?</a></td>
   </tr>
 </tbody>
 </table>
