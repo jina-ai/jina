@@ -110,9 +110,6 @@ class BasePod(ABC):
     def __init__(self, args: 'argparse.Namespace'):
         self.args = args
 
-        if hasattr(self.args, 'port'):
-            self.args.port = self.args.port
-
         if self.args.pod_role == PodRoleType.GATEWAY:
             _update_gateway_args(self.args)
         self.args.parallel = getattr(self.args, 'shards', 1)
