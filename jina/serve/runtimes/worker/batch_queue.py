@@ -11,7 +11,7 @@ from jina.types.request.data import DataRequest
 
 async def sleep_then_set(time_seconds: int, event: Event):
     """Sleep for time_seconds and then set the event"""
-    asyncio.sleep(time_seconds)
+    await asyncio.sleep(time_seconds)
     event.set()
 
 class BatchQueue():
@@ -34,9 +34,6 @@ class BatchQueue():
     
     def _reset(self) -> None:
         """Set all events and reset the batch queue."""
-        if getattr(self, '_events', None) is not None:
-            [i.set() for i in self._events]
-        self._events: List[Event] = []
         self._requests: List[DataRequest] = []
         self._request_lens: List[int] = []
         self._big_doc: DocumentArray = DocumentArray.empty()
@@ -44,9 +41,10 @@ class BatchQueue():
         self._flush_trigger: Event = Event()
         asyncio.create_task(self.flush(self._flush_trigger))
         self._timer_started = False
+        self._after_flush_event = Event()
     
     def _start_timer(self):
-        asyncio.create_task(sleep_then_set(self._timeout, self._flush_trigger))
+        asyncio.create_task(sleep_then_set(self._timeout / 1000, self._flush_trigger))
         self._timer_started = True
     
     def _reset_timeout(self) -> None:
@@ -54,7 +52,7 @@ class BatchQueue():
         self._timeout_event.set()
         self._timeout_event = Event()
     
-    async def push(self, request: DataRequest, event: Event) -> None:
+    async def push(self, request: DataRequest) -> Event:
         """Append request to the queue. Once the request has been processed, the event will be set.
         
         :param request: The request to append to the queue.
@@ -73,10 +71,11 @@ class BatchQueue():
         self._big_doc.extend(docs)
         self._requests.append(request)
         self._request_lens.append(len(docs))
-        self._events.append(event)
 
-        if len(self._big_doc) > self._preferred_batch_size:
+        if len(self._big_doc) >= self._preferred_batch_size:
             self._flush_trigger.set()
+        
+        return self._after_flush_event
     
     async def flush(self, trigger_event: Event) -> None:
         """Process all requests in the queue once event is set."""
@@ -102,7 +101,8 @@ class BatchQueue():
         #self._record_docs_processed_monitoring(requests, docs)
         #self._record_response_size_monitoring(requests)
 
-        # We need to set all events and reset the batch queue
+        # We need to set the after flush event and reset the batch queue
+        self._after_flush_event.set()
         self._reset()
 
     # TODO: Duplicate from WorkerRequestHandler
@@ -176,7 +176,7 @@ class BatchQueue():
     # TODO: Duplicate from WorkerRequestHandler
     @staticmethod
     def replace_docs(
-            request: List['DataRequest'], docs: 'DocumentArray', ndarrray_type: str = None
+            request: DataRequest, docs: 'DocumentArray', ndarrray_type: str = None
     ) -> None:
         """Replaces the docs in a message with new Documents.
 
