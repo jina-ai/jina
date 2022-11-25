@@ -397,7 +397,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-    steps:
+        core: ['', 'true']
+        perf: ['', 'true']
+        exclude:
+          - core: 'true'
+            perf: 'true'
+      steps:
       - uses: actions/checkout@v2.5.0
       - name: Set up Python 3.7
         uses: actions/setup-python@v4
