@@ -14,12 +14,12 @@ IMPORTED.schema_executors = {}
 
 class ImportExtensions:
     """
-    A context manager for wrapping extension import and fallback. It guides the user to pip install correct error_package.py by looking up extra-requirements.txt.
+    A context manager for wrapping extension import and fallback. It guides the user to pip install correct package by looking up extra-requirements.txt.
 
     :param required: set to True if you want to raise the ModuleNotFound error
     :param logger: when not given, built-in warnings.warn will be used
     :param help_text: the help text followed after
-    :param pkg_name: the error_package.py name to find in extra_requirements.txt, when not given the ModuleNotFound exec_val will be used as the best guess
+    :param pkg_name: the package name to find in extra_requirements.txt, when not given the ModuleNotFound exec_val will be used as the best guess
     """
 
     def __init__(
@@ -62,7 +62,7 @@ class ImportExtensions:
                 req_msg = colored('fallback to default behavior', color='yellow')
                 if self._required:
                     req_msg = colored('and it is required', color='red')
-                err_msg = f'''Python error_package.py "{colored(missing_module, attrs='bold')}" is not installed, {req_msg}.
+                err_msg = f'''Python package "{colored(missing_module, attrs='bold')}" is not installed, {req_msg}.
                     You are trying to use a feature not enabled by your current Jina installation.'''
 
                 avail_tags = ' '.join(
