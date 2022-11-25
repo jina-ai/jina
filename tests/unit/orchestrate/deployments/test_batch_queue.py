@@ -61,11 +61,11 @@ async def test_batch_queue():
         assert req.data.docs[0].text == ''
     
     # Test preferred batch size
-    events = [await bq.push(req) for req in data_requests[:-1]]
+    events = [bq.push(req) for req in data_requests[:-1]]
     assert len(bq._requests) == 3
     assert all(not event.is_set() for event in events)
 
-    events.append(await bq.push(data_requests[-1]))
+    events.append(bq.push(data_requests[-1]))
     assert len(bq._requests) == 4
     assert all(not event.is_set() for event in events)
 
@@ -86,7 +86,7 @@ async def test_batch_queue():
     for req in data_requests:
         req.data.docs[0].text = 'Not Done'
     
-    single_event = await bq.push(data_requests[0])
+    single_event = bq.push(data_requests[0])
     assert not single_event.is_set()
     assert data_requests[0].data.docs[0].text == 'Not Done'
     
