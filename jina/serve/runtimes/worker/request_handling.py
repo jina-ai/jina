@@ -269,7 +269,7 @@ class WorkerRequestHandler:
         """
         # JOAN: This true? Why list?
         # TODO: Just leave this then run all the tests
-        assert len(requests) == 1, "There are places where the handler is called with more than one request __apparently__"
+        # assert len(requests) == 1, "There are places where the handler is called with more than one request __apparently__"
 
         # skip executor if endpoints mismatch
         if (requests[0].header.exec_endpoint not in self._executor.requests
