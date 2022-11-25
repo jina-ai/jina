@@ -69,7 +69,6 @@ Applications built with Jina enjoy the following features out of the box:
     <td><a href="https://jina.ai/news/what-is-multimodal-deep-learning-and-what-are-the-applications/" target="_blank" rel="noopener noreferrer">🔮 What is cross-modal and multimodal？</a></td>
     <td><a href="https://jina.ai/news/what-is-neural-search-and-learn-to-build-a-neural-search-engine/" target="_blank" rel="noopener noreferrer">🧬 What is neural search?</a></td>
     <td><a href="https://jina.ai/news/paradigm-shift-towards-multimodal-ai/" target="_blank" rel="noopener noreferrer">🎨 What is creative AI?</a></td>
-    <td></td>
   </tr>
 </tbody>
 </table>
