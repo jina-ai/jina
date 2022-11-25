@@ -51,8 +51,10 @@ def test_no_suppress_other_exception():
 
 
 def test_path_importer(tmpmodule):
+    from pathlib import Path
     from jina.importer import PathImporter
     with pytest.raises(ImportError):
         PathImporter.add_modules(tmpmodule)
+    Path(tmpmodule).unlink()
     with pytest.raises(FileNotFoundError):
         PathImporter.add_modules('some_package.py')
