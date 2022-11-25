@@ -60,3 +60,7 @@ spec:
             initialDelaySeconds: 5
             periodSeconds: 20
             timeoutSeconds: 10
+          lifecycle:
+            preStop:
+              exec:
+                command: ["/bin/sh", "-c", "sleep 2"]

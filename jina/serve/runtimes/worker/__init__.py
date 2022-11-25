@@ -155,13 +155,13 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         self.logger.debug('cancel WorkerRuntime')
         # 0.5 gives the runtime some time to complete outstanding responses
         # this should be handled better, 1.0 is a rather random number
+        await self._health_servicer.enter_graceful_shutdown()
         await self._grpc_server.stop(1.0)
         self.logger.debug('stopped GRPC Server')
 
     async def async_teardown(self):
         """Close the data request handler"""
         self.logger.debug('tearing down WorkerRuntime')
-        await self._health_servicer.enter_graceful_shutdown()
         await self.async_cancel()
         self._request_handler.close()
 
