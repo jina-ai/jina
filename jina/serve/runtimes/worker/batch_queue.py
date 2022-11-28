@@ -58,8 +58,6 @@ class BatchQueue():
 
         :return: The event that will be set once the request has been processed.
         """
-        # TODO: What if timer ends and triggers the flush in the middle of this function? Is that possible?
-        # This function is blocking and thus should be atomic right?
         if not self._timer_started:
             self._start_timer()
 
@@ -85,8 +83,8 @@ class BatchQueue():
             return_data = await self._executor.__acall__(
                 req_endpoint=self._exec_endpoint,
                 docs=self._big_doc,
-                parameters={},
-                docs_matrix=None,
+                parameters={}, # TODO: What should we do with parameters?
+                docs_matrix=None, # TODO: Merge?
                 tracing_context=None, # TODO: Tracing?
             )
 
@@ -95,7 +93,7 @@ class BatchQueue():
             for request, request_len in zip(self._requests, self._request_lens):
                 left = consumed_count
                 right = consumed_count + request_len
-                self._set_result([request], return_data[left: right], self._big_doc[left: right])
+                self._set_result(request, return_data[left: right], self._big_doc[left: right])
                 consumed_count += request_len
 
             # TODO: Metrics?
@@ -107,24 +105,12 @@ class BatchQueue():
             self._after_flush_event.set()
             self._reset()
 
-    # TODO: Duplicate from WorkerRequestHandler
-    @staticmethod
-    def _parse_params(parameters: Dict, executor_name: str):
-        parsed_params = parameters
-        specific_parameters = parameters.get(executor_name, None)
-        if specific_parameters:
-            parsed_params.update(**specific_parameters)
-
-        return parsed_params
-
-    # TODO: Duplicate from WorkerRequestHandler
-    # TODO: Missing some self stuff
-    def _set_result(self, requests, return_data, docs):
+    def _set_result(self, request: DataRequest, return_data: DocumentArray, docs: DocumentArray) -> None:
         # assigning result back to request
         if return_data is not None:
             if isinstance(return_data, DocumentArray):
                 docs = return_data
-            # TODO: We will handle this later
+            # TODO: We will handle this later or not support it?
             #elif isinstance(return_data, dict):
                 #params = requests[0].parameters
                 #results_key = self._KEY_RESULT
@@ -141,20 +127,4 @@ class BatchQueue():
                     f'but getting {return_data!r}'
                 )
 
-        BatchQueue.replace_docs(
-            requests[0], docs, self.args.output_array_type
-        )
-        return docs
-
-    # TODO: Duplicate from WorkerRequestHandler
-    @staticmethod
-    def replace_docs(
-            request: DataRequest, docs: 'DocumentArray', ndarrray_type: str = None
-    ) -> None:
-        """Replaces the docs in a message with new Documents.
-
-        :param request: The request object
-        :param docs: the new docs to be used
-        :param ndarrray_type: type tensor and embedding will be converted to
-        """
-        request.data.set_docs_convert_arrays(docs, ndarray_type=ndarrray_type)
+        request.data.set_docs_convert_arrays(docs, ndarray_type=self.args.output_array_type)
