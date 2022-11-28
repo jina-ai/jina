@@ -34,7 +34,7 @@ class BatchQueue():
         return f'{self.__class__.__name__}({self._executor}, {self._exec_endpoint}, preferred_batch_size={self._preferred_batch_size}, timeout={self._timeout})'
     
     def __str__(self) -> str:
-        self.__repr__()
+        return self.__repr__()
     
     def _reset(self) -> None:
         """Set all events and reset the batch queue."""
@@ -51,11 +51,6 @@ class BatchQueue():
         asyncio.create_task(sleep_then_set(self._timeout / 1000, self._flush_trigger))
         self._timer_started = True
     
-    def _reset_timeout(self) -> None:
-        """Reset the timeout event."""
-        self._timeout_event.set()
-        self._timeout_event: Event = Event()
-    
     def push(self, request: DataRequest) -> Event:
         """Append request to the queue. Once the request has been processed, the event will be set.
         
@@ -68,11 +63,7 @@ class BatchQueue():
         if not self._timer_started:
             self._start_timer()
 
-        docs = BatchQueue.get_docs_from_request(
-            [request],
-            field='docs',
-        )
-
+        docs = request.docs
         self._big_doc.extend(docs)
         self._requests.append(request)
         self._request_lens.append(len(docs))
@@ -115,35 +106,6 @@ class BatchQueue():
             # This needs to occur even if the executor fails otherwise it will block forever
             self._after_flush_event.set()
             self._reset()
-
-    # TODO: Duplicate from WorkerRequestHandler
-    # TODO: This is only ever called with field='docs'
-    # TODO: This is a convoluted method that should be simplified
-    @staticmethod
-    def get_docs_from_request(
-        requests: List['DataRequest'],
-        field: str,
-    ) -> 'DocumentArray':
-        """
-        Gets a field from the message
-
-        :param requests: requests to get the field from
-        :param field: field name to access
-
-        :returns: DocumentArray extracted from the field from all messages
-        """
-        if len(requests) > 1:
-            result = DocumentArray(
-                [
-                    d
-                    for r in reversed([request for request in requests])
-                    for d in getattr(r, field)
-                ]
-            )
-        else:
-            result = getattr(requests[0], field)
-
-        return result
 
     # TODO: Duplicate from WorkerRequestHandler
     @staticmethod
