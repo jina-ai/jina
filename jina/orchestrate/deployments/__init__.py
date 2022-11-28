@@ -24,7 +24,7 @@ from jina.helper import (
 )
 from jina.jaml.helper import complete_path
 from jina.orchestrate.pods.factory import PodFactory
-from jina.parsers.helper import _set_gateway_uses
+from jina.parsers.helper import _update_gateway_args
 from jina.serve.networking import host_is_local, in_docker
 
 WRAPPED_SLICE_BASE = r'\[[-\d:]+\]'
@@ -344,7 +344,7 @@ class Deployment(BaseDeployment):
     def update_pod_args(self):
         """Update args of all its pods based on Deployment args. Including head/tail"""
         if self.args.runtime_cls == 'GatewayRuntime':
-            _set_gateway_uses(self.args)
+            _update_gateway_args(self.args)
         if isinstance(self.args, Dict):
             # This is used when a Deployment is created in a remote context, where pods & their connections are already given.
             self.pod_args = self.args

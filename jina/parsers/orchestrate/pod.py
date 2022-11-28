@@ -137,7 +137,7 @@ def mixin_pod_runtime_args_parser(arg_group, pod_type='worker'):
             action=CastToIntAction,
             type=str,
             nargs='+',
-            default=[helper.random_port()],
+            default=None,
             help=port_description,
         )
 
