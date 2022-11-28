@@ -325,7 +325,7 @@ class WorkerRequestHandler:
             )
 
             docs = self._set_result(requests, return_data, docs)
-            self._record_docs_processed_monitoring(requests, docs)
+        self._record_docs_processed_monitoring(requests, requests[0].docs)
 
 
         for req in requests:
