@@ -13,6 +13,7 @@ from jina.helper import typename
 from jina.jaml import JAML
 from jina.logging.logger import JinaLogger
 from jina.orchestrate.pods.helper import ConditionalEvent, _get_event
+from jina.parsers.helper import _update_gateway_args
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 
 __all__ = ['BasePod', 'Pod']
@@ -109,8 +110,8 @@ class BasePod(ABC):
     def __init__(self, args: 'argparse.Namespace'):
         self.args = args
 
-        if hasattr(self.args, 'port'):
-            self.args.port = self.args.port
+        if self.args.pod_role == PodRoleType.GATEWAY:
+            _update_gateway_args(self.args)
         self.args.parallel = getattr(self.args, 'shards', 1)
         self.name = self.args.name or self.__class__.__name__
         self.is_forked = False
