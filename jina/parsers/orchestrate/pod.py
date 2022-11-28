@@ -124,6 +124,11 @@ def mixin_pod_runtime_args_parser(arg_group, pod_type='worker'):
             help=port_description,
         )
     else:
+        port_description = (
+            'The port for input data to bind the gateway server to, by default, random ports between range [49152, 65535] will be assigned. '
+            'The port argument can be either 1 single value in case only 1 protocol is used or multiple values when '
+            'many protocols are used.'
+        )
         arg_group.add_argument(
             '--port',
             '--port-expose',
