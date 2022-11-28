@@ -89,7 +89,6 @@ def construct_runtime_container_args(cargs, uses_metas, uses_with, pod_type):
         'uses_before',
         'uses_after',
         'workspace_id',
-        'upload_files',
         'noblock_on_start',
         'env',
     }
