@@ -29,9 +29,13 @@ class FastAPIBaseGateway(BaseGateway):
         :param kwargs: keyword args
         """
         super().__init__(**kwargs)
-        self._ssl_keyfile = ssl_keyfile
-        self._ssl_certfile = ssl_certfile
-        self.uvicorn_kwargs = uvicorn_kwargs
+        self.uvicorn_kwargs = uvicorn_kwargs or {}
+
+        if ssl_keyfile and 'ssl_keyfile' not in self.uvicorn_kwargs.keys():
+            self.uvicorn_kwargs['ssl_keyfile'] = ssl_keyfile
+
+        if ssl_certfile and 'ssl_certfile' not in self.uvicorn_kwargs.keys():
+            self.uvicorn_kwargs['ssl_certfile'] = ssl_certfile
 
         if not proxy and os.name != 'nt':
             os.unsetenv('http_proxy')
@@ -85,21 +89,13 @@ class FastAPIBaseGateway(BaseGateway):
             # Filter out healthcheck endpoint `GET /`
             logging.getLogger("uvicorn.access").addFilter(_EndpointFilter())
 
-        uvicorn_kwargs = self.uvicorn_kwargs or {}
-
-        if self._ssl_keyfile and 'ssl_keyfile' not in uvicorn_kwargs.keys():
-            uvicorn_kwargs['ssl_keyfile'] = self._ssl_keyfile
-
-        if self._ssl_certfile and 'ssl_certfile' not in uvicorn_kwargs.keys():
-            uvicorn_kwargs['ssl_certfile'] = self._ssl_certfile
-
         self.server = UviServer(
             config=Config(
                 app=self.app,
                 host=self.host,
                 port=self.port,
                 log_level=os.getenv('JINA_LOG_LEVEL', 'error').lower(),
-                **uvicorn_kwargs,
+                **self.uvicorn_kwargs,
             )
         )
 
