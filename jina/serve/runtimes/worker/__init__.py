@@ -15,7 +15,6 @@ from jina.serve.instrumentation import MetricsTimer
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.helper import _get_grpc_server_options
 from jina.serve.runtimes.worker.request_handling import WorkerRequestHandler
-from jina.serve.runtimes.worker.hot_reload_watcher import hot_reload_watch
 from jina.types.request.data import DataRequest
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -26,9 +25,9 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
     """Runtime procedure leveraging :class:`Grpclet` for sending DataRequests"""
 
     def __init__(
-            self,
-            args: argparse.Namespace,
-            **kwargs,
+        self,
+        args: argparse.Namespace,
+        **kwargs,
     ):
         """Initialize grpc and data request handling.
         :param args: args from CLI
@@ -36,13 +35,6 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         """
         self._health_servicer = health.aio.HealthServicer()
         super().__init__(args, **kwargs)
-        self._watcher = None
-        if self.args.hot_reload:
-            print(f' self.args {self.args}')
-            self._watcher = threading.Thread(target=hot_reload_watch,
-                                             kwargs={'executor': self._request_handler._executor, 'py_modules': self.args.py_modules},
-                                             daemon=True)
-            self._watcher.start()
 
     async def async_setup(self):
         """
@@ -50,8 +42,8 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         """
         if self.metrics_registry:
             with ImportExtensions(
-                    required=True,
-                    help_text='You need to install the `prometheus_client` to use the montitoring functionality of jina',
+                required=True,
+                help_text='You need to install the `prometheus_client` to use the montitoring functionality of jina',
             ):
                 from prometheus_client import Counter, Summary
 
@@ -144,10 +136,14 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
             reflection.SERVICE_NAME,
         )
         # Mark all services as healthy.
-        health_pb2_grpc.add_HealthServicer_to_server(self._health_servicer, self._grpc_server)
+        health_pb2_grpc.add_HealthServicer_to_server(
+            self._health_servicer, self._grpc_server
+        )
 
         for service in service_names:
-            await self._health_servicer.set(service, health_pb2.HealthCheckResponse.SERVING)
+            await self._health_servicer.set(
+                service, health_pb2.HealthCheckResponse.SERVING
+            )
         reflection.enable_server_reflection(service_names, self._grpc_server)
         bind_addr = f'{self.args.host}:{self.args.port}'
         self.logger.debug(f'start listening on {bind_addr}')
@@ -156,6 +152,24 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
 
     async def async_run_forever(self):
         """Block until the GRPC server is terminated"""
+        if self.args.hot_reload:
+            import inspect
+
+            watched_files = [
+                inspect.getfile(self._request_handler._executor.__class__)
+            ] + (self.args.py_modules or [])
+            with ImportExtensions(
+                required=True,
+                logger=self.logger,
+                help_text='''hot reload requires jina in development mode, you can do: `pip install jina[devel]''',
+            ):
+                from watchfiles import awatch
+
+            async for changes in awatch(*watched_files):
+                self.logger.info(
+                    f'detected changes in: {[changed_file for _, changed_file in changes]}'
+                )
+                self._request_handler._reload_executor()
         await self._grpc_server.wait_for_termination()
 
     async def async_cancel(self):
@@ -199,7 +213,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         return endpoints_proto
 
     def _extract_tracing_context(
-            self, metadata: grpc.aio.Metadata
+        self, metadata: grpc.aio.Metadata
     ) -> Optional['Context']:
         if self.tracer:
             from opentelemetry.propagate import extract
@@ -219,7 +233,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         """
 
         with MetricsTimer(
-                self._summary, self._receiving_request_seconds, self._metric_attributes
+            self._summary, self._receiving_request_seconds, self._metric_attributes
         ):
             try:
                 if self.logger.debug_enabled:
@@ -257,8 +271,8 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
                     )
 
                 if (
-                        self.args.exit_on_exceptions
-                        and type(ex).__name__ in self.args.exit_on_exceptions
+                    self.args.exit_on_exceptions
+                    and type(ex).__name__ in self.args.exit_on_exceptions
                 ):
                     self.logger.info('Exiting because of "--exit-on-exceptions".')
                     raise RuntimeTerminated

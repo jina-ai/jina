@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING, Dict, List, Optional, Tuple
 
 from docarray import DocumentArray
+
 from jina import __default_endpoint__
 from jina.excepts import BadConfigSource
 from jina.importer import ImportExtensions
@@ -23,14 +24,14 @@ class WorkerRequestHandler:
     _KEY_RESULT = '__results__'
 
     def __init__(
-            self,
-            args: 'argparse.Namespace',
-            logger: 'JinaLogger',
-            metrics_registry: Optional['CollectorRegistry'] = None,
-            tracer_provider: Optional['trace.TracerProvider'] = None,
-            meter_provider: Optional['metrics.MeterProvider'] = None,
-            deployment_name: str = '',
-            **kwargs,
+        self,
+        args: 'argparse.Namespace',
+        logger: 'JinaLogger',
+        metrics_registry: Optional['CollectorRegistry'] = None,
+        tracer_provider: Optional['trace.TracerProvider'] = None,
+        meter_provider: Optional['metrics.MeterProvider'] = None,
+        deployment_name: str = '',
+        **kwargs,
     ):
         """Initialize private parameters and execute private loading functions.
 
@@ -60,16 +61,16 @@ class WorkerRequestHandler:
         self.deployment_name = deployment_name
 
     def _init_monitoring(
-            self,
-            metrics_registry: Optional['CollectorRegistry'] = None,
-            meter: Optional['metrics.Meter'] = None,
+        self,
+        metrics_registry: Optional['CollectorRegistry'] = None,
+        meter: Optional['metrics.Meter'] = None,
     ):
 
         if metrics_registry:
 
             with ImportExtensions(
-                    required=True,
-                    help_text='You need to install the `prometheus_client` to use the montitoring functionality of jina',
+                required=True,
+                help_text='You need to install the `prometheus_client` to use the montitoring functionality of jina',
             ):
                 from prometheus_client import Counter, Summary
 
@@ -125,10 +126,10 @@ class WorkerRequestHandler:
             self._sent_response_size_histogram = None
 
     def _load_executor(
-            self,
-            metrics_registry: Optional['CollectorRegistry'] = None,
-            tracer_provider: Optional['trace.TracerProvider'] = None,
-            meter_provider: Optional['metrics.MeterProvider'] = None,
+        self,
+        metrics_registry: Optional['CollectorRegistry'] = None,
+        tracer_provider: Optional['trace.TracerProvider'] = None,
+        meter_provider: Optional['metrics.MeterProvider'] = None,
     ):
         """
         Load the executor to this runtime, specified by ``uses`` CLI argument.
@@ -166,6 +167,17 @@ class WorkerRequestHandler:
         except Exception:
             self.logger.critical(f'can not load the executor from {self.args.uses}')
             raise
+
+    def _reload_executor(self):
+        import importlib
+        import inspect
+
+        importlib.reload(inspect.getmodule(self._executor.__class__))
+        old_cls = self._executor.__class__
+        new_cls = getattr(importlib.import_module(old_cls.__module__), old_cls.__name__)
+        new_executor = new_cls.__new__(new_cls)
+        new_executor.__dict__ = self._executor.__dict__
+        self._executor = new_executor
 
     @staticmethod
     def _parse_params(parameters: Dict, executor_name: str):
@@ -259,7 +271,7 @@ class WorkerRequestHandler:
         return docs
 
     async def handle(
-            self, requests: List['DataRequest'], tracing_context: Optional['Context'] = None
+        self, requests: List['DataRequest'], tracing_context: Optional['Context'] = None
     ) -> DataRequest:
         """Initialize private parameters and execute private loading functions.
 
@@ -268,8 +280,9 @@ class WorkerRequestHandler:
         :returns: the processed message
         """
         # skip executor if endpoints mismatch
-        if (requests[0].header.exec_endpoint not in self._executor.requests
-                and __default_endpoint__ not in self._executor.requests
+        if (
+            requests[0].header.exec_endpoint not in self._executor.requests
+            and __default_endpoint__ not in self._executor.requests
         ):
             self.logger.debug(
                 f'skip executor: mismatch request, exec_endpoint: {requests[0].header.exec_endpoint}, requests: {self._executor.requests}'
@@ -309,7 +322,7 @@ class WorkerRequestHandler:
 
     @staticmethod
     def replace_docs(
-            request: List['DataRequest'], docs: 'DocumentArray', ndarrray_type: str = None
+        request: List['DataRequest'], docs: 'DocumentArray', ndarrray_type: str = None
     ) -> None:
         """Replaces the docs in a message with new Documents.
 
@@ -351,7 +364,7 @@ class WorkerRequestHandler:
 
     @staticmethod
     def _get_docs_matrix_from_request(
-            requests: List['DataRequest'],
+        requests: List['DataRequest'],
     ) -> Tuple[Optional[List['DocumentArray']], Optional[Dict[str, 'DocumentArray']]]:
         """
         Returns a docs matrix from a list of DataRequest objects.
@@ -375,7 +388,7 @@ class WorkerRequestHandler:
 
     @staticmethod
     def get_parameters_dict_from_request(
-            requests: List['DataRequest'],
+        requests: List['DataRequest'],
     ) -> 'Dict':
         """
         Returns a parameters dict from a list of DataRequest objects.
@@ -395,8 +408,8 @@ class WorkerRequestHandler:
 
     @staticmethod
     def get_docs_from_request(
-            requests: List['DataRequest'],
-            field: str,
+        requests: List['DataRequest'],
+        field: str,
     ) -> 'DocumentArray':
         """
         Gets a field from the message
