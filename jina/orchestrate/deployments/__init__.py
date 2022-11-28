@@ -46,38 +46,6 @@ class BaseDeployment(ExitStack):
         """
         ...
 
-    @staticmethod
-    def _set_upload_files(args):
-        # sets args.upload_files at the deployment level so that pods inherit from it.
-        # all pods work under one remote workspace, hence important to have upload_files set for all
-
-        def valid_path(path):
-            try:
-                complete_path(path)
-                return True
-            except FileNotFoundError:
-                return False
-
-        _upload_files = set()
-        for param in ['uses', 'uses_before', 'uses_after']:
-            param_value = getattr(args, param, None)
-            if param_value and valid_path(param_value):
-                _upload_files.add(param_value)
-
-        if getattr(args, 'py_modules', None):
-            _upload_files.update(
-                {py_module for py_module in args.py_modules if valid_path(py_module)}
-            )
-        if getattr(args, 'upload_files', None):
-            _upload_files.update(
-                {
-                    upload_file
-                    for upload_file in args.upload_files
-                    if valid_path(upload_file)
-                }
-            )
-        return list(_upload_files)
-
     @property
     def role(self) -> 'DeploymentRoleType':
         """Return the role of this :class:`BaseDeployment`.
@@ -247,7 +215,6 @@ class Deployment(BaseDeployment):
         self, args: Union['Namespace', Dict], needs: Optional[Set[str]] = None
     ):
         super().__init__()
-        args.upload_files = BaseDeployment._set_upload_files(args)
         self.args = args
         self.args.polling = (
             args.polling if hasattr(args, 'polling') else PollingType.ANY
