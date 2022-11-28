@@ -1,4 +1,5 @@
 import argparse
+import threading
 from abc import ABC
 from typing import TYPE_CHECKING, List, Optional
 
@@ -14,6 +15,7 @@ from jina.serve.instrumentation import MetricsTimer
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.helper import _get_grpc_server_options
 from jina.serve.runtimes.worker.request_handling import WorkerRequestHandler
+from jina.serve.runtimes.worker.hot_reload_watcher import hot_reload_watch
 from jina.types.request.data import DataRequest
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -24,9 +26,9 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
     """Runtime procedure leveraging :class:`Grpclet` for sending DataRequests"""
 
     def __init__(
-        self,
-        args: argparse.Namespace,
-        **kwargs,
+            self,
+            args: argparse.Namespace,
+            **kwargs,
     ):
         """Initialize grpc and data request handling.
         :param args: args from CLI
@@ -34,6 +36,13 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         """
         self._health_servicer = health.aio.HealthServicer()
         super().__init__(args, **kwargs)
+        self._watcher = None
+        if self.args.hot_reload:
+            print(f' self.args {self.args}')
+            self._watcher = threading.Thread(target=hot_reload_watch,
+                                             kwargs={'executor': self._request_handler._executor, 'py_modules': self.args.py_modules},
+                                             daemon=True)
+            self._watcher.start()
 
     async def async_setup(self):
         """
@@ -41,8 +50,8 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         """
         if self.metrics_registry:
             with ImportExtensions(
-                required=True,
-                help_text='You need to install the `prometheus_client` to use the montitoring functionality of jina',
+                    required=True,
+                    help_text='You need to install the `prometheus_client` to use the montitoring functionality of jina',
             ):
                 from prometheus_client import Counter, Summary
 
@@ -190,7 +199,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         return endpoints_proto
 
     def _extract_tracing_context(
-        self, metadata: grpc.aio.Metadata
+            self, metadata: grpc.aio.Metadata
     ) -> Optional['Context']:
         if self.tracer:
             from opentelemetry.propagate import extract
@@ -210,7 +219,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         """
 
         with MetricsTimer(
-            self._summary, self._receiving_request_seconds, self._metric_attributes
+                self._summary, self._receiving_request_seconds, self._metric_attributes
         ):
             try:
                 if self.logger.debug_enabled:
@@ -248,8 +257,8 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
                     )
 
                 if (
-                    self.args.exit_on_exceptions
-                    and type(ex).__name__ in self.args.exit_on_exceptions
+                        self.args.exit_on_exceptions
+                        and type(ex).__name__ in self.args.exit_on_exceptions
                 ):
                     self.logger.info('Exiting because of "--exit-on-exceptions".')
                     raise RuntimeTerminated

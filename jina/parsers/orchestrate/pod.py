@@ -123,6 +123,12 @@ def mixin_pod_runtime_args_parser(arg_group, pod_type='worker'):
             action=CastToIntAction,
             help=port_description,
         )
+        arg_group.add_argument(
+            '--hot-reload',
+            action='store_true',
+            default=False,
+            help='If set, the Executor will reload the modules as they change'
+        )
     else:
         arg_group.add_argument(
             '--port',
