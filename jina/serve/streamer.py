@@ -170,7 +170,7 @@ class GatewayStreamer:
                     req.parameters = parameters
                 yield req
 
-        async for resp in self._streamer.stream(request_iterator=_req_generator(), results_in_order=results_in_order):
+        async for resp in self.stream(request_iterator=_req_generator(), results_in_order=results_in_order):
             if return_results:
                 yield resp
             else:
