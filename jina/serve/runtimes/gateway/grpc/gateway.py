@@ -4,7 +4,6 @@ import grpc
 from grpc_health.v1 import health, health_pb2, health_pb2_grpc
 from grpc_reflection.v1alpha import reflection
 
-from jina import __default_host__
 from jina.helper import get_full_version
 from jina.proto import jina_pb2, jina_pb2_grpc
 from jina.serve.gateway import BaseGateway
@@ -110,17 +109,14 @@ class GRPCGateway(BaseGateway):
         :param context: grpc context
         :returns: the response request
         """
-        from docarray import DocumentArray
+        from docarray import DocumentArray, Document
 
-        from jina.clients.request import request_generator
-        from jina.enums import DataInputType
         from jina.serve.executors import __dry_run_endpoint__
 
-        da = DocumentArray()
-
+        da = DocumentArray([Document()])
         try:
             async for _ in self.streamer.stream_docs(
-                docs=da, exec_endpoint=__dry_run_endpoint__
+                docs=da, exec_endpoint=__dry_run_endpoint__, request_size=1
             ):
                 pass
             status_message = StatusMessage()

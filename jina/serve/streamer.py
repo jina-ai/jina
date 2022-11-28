@@ -137,7 +137,7 @@ class GatewayStreamer:
     async def stream_docs(
             self,
             docs: DocumentArray,
-            request_size: int,
+            request_size: int = 100,
             return_results: bool = False,
             exec_endpoint: Optional[str] = None,
             target_executor: Optional[str] = None,
