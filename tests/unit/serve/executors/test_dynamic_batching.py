@@ -10,7 +10,7 @@ BAR_SUCCESS_MSG = "Done through bar"
 class PlaceholderExecutor(Executor):
     @requests
     @dynamic_batching(preferred_batch_size=4)
-    def foo(self, docs, **kwargs):
+    def foo_fun(self, docs, **kwargs):
         for doc in docs:
             doc.text = 'Done through foo'
         return docs
@@ -21,6 +21,11 @@ class PlaceholderExecutor(Executor):
         for doc in docs:
             doc.text = BAR_SUCCESS_MSG
         return docs
+
+    @requests(on=['/wrongtype'])
+    @dynamic_batching(preferred_batch_size=4, timeout=2000)
+    def wrong_return_type_fun(self, docs, **kwargs):
+        return "Fail me!"
 
 def is_processed(da: DocumentArray, success_msg: str) -> bool:
     return all([doc.text == success_msg for doc in da])
@@ -112,3 +117,16 @@ def test_correctness():
             ]))
             assert all([len(result) == 1 for result in results])
             assert all([is_processed(result, BAR_SUCCESS_MSG) for result in results])
+
+# The errors are not propagated to the main process or the client
+# This is true even without dynamic batching
+# So this test is not very useful, just helps with codecov
+def test_fail_on_wrong_type():
+    f = Flow().add(uses=PlaceholderExecutor)
+    with f:
+        with mp.Pool(2) as p:
+            results = list(p.map(call_api, [
+                RequestStruct(f.port, "/wrongtype", 2),
+                RequestStruct(f.port, "/wrongtype", 2),
+            ]))
+            assert all([len(result) == 2 for result in results])
