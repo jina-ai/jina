@@ -146,6 +146,13 @@ class BaseGateway(JAMLCompatible, metaclass=GatewayType):
         return self.runtime_args.port
 
     @property
+    def protocols(self):
+        """Gets all the list of protocols from the runtime_args as a list.
+        :return: The lists of protocols to be exposed
+        """
+        return self.runtime_args.protocol
+
+    @property
     def host(self):
         """Gets the host from the runtime_args
         :return: The host where to bind the gateway

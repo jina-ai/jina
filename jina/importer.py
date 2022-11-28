@@ -147,8 +147,10 @@ class PathImporter:
             if not os.path.isfile(path):
                 try:
                     importlib.import_module(path)
-                except:
+                except ModuleNotFoundError:
                     not_python_module_paths.append(path)
+                except:
+                    raise
             else:
                 not_python_module_paths.append(path)
 
