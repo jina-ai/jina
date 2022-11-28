@@ -168,7 +168,7 @@ class WorkerRequestHandler:
             self.logger.critical(f'can not load the executor from {self.args.uses}')
             raise
 
-    def _reload_executor(self):
+    def _refresh_executor(self):
         import importlib
         import inspect
 

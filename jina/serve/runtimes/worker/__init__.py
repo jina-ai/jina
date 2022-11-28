@@ -1,5 +1,5 @@
 import argparse
-import threading
+import asyncio
 from abc import ABC
 from typing import TYPE_CHECKING, List, Optional
 
@@ -25,14 +25,15 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
     """Runtime procedure leveraging :class:`Grpclet` for sending DataRequests"""
 
     def __init__(
-        self,
-        args: argparse.Namespace,
-        **kwargs,
+            self,
+            args: argparse.Namespace,
+            **kwargs,
     ):
         """Initialize grpc and data request handling.
         :param args: args from CLI
         :param kwargs: keyword args
         """
+        self._hot_reload_task = None
         self._health_servicer = health.aio.HealthServicer()
         super().__init__(args, **kwargs)
 
@@ -42,8 +43,8 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         """
         if self.metrics_registry:
             with ImportExtensions(
-                required=True,
-                help_text='You need to install the `prometheus_client` to use the montitoring functionality of jina',
+                    required=True,
+                    help_text='You need to install the `prometheus_client` to use the montitoring functionality of jina',
             ):
                 from prometheus_client import Counter, Summary
 
@@ -150,32 +151,36 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         self._grpc_server.add_insecure_port(bind_addr)
         await self._grpc_server.start()
 
+    async def _hot_reload(self):
+        import inspect
+
+        watched_files = [
+                            inspect.getfile(self._request_handler._executor.__class__)
+                        ] + (self.args.py_modules or [])
+        with ImportExtensions(
+                required=True,
+                logger=self.logger,
+                help_text='''hot reload requires watchfiles dependency to be installed. You can do `pip install watchfiles''',
+        ):
+            from watchfiles import awatch
+
+        async for changes in awatch(*watched_files):
+            self.logger.info(
+                f'detected changes in: {[changed_file for _, changed_file in changes]}. Refreshing the Executor'
+            )
+            self._request_handler._refresh_executor()
+
     async def async_run_forever(self):
         """Block until the GRPC server is terminated"""
         if self.args.hot_reload:
-            import inspect
-
-            watched_files = [
-                inspect.getfile(self._request_handler._executor.__class__)
-            ] + (self.args.py_modules or [])
-            with ImportExtensions(
-                required=True,
-                logger=self.logger,
-                help_text='''hot reload requires jina in development mode, you can do: `pip install jina[devel]''',
-            ):
-                from watchfiles import awatch
-
-            async for changes in awatch(*watched_files):
-                self.logger.info(
-                    f'detected changes in: {[changed_file for _, changed_file in changes]}'
-                )
-                self._request_handler._reload_executor()
+            self._hot_reload_task = asyncio.create_task(self._hot_reload())
         await self._grpc_server.wait_for_termination()
 
     async def async_cancel(self):
         """Stop the GRPC server"""
         self.logger.debug('cancel WorkerRuntime')
-
+        if self._hot_reload_task is not None:
+            self._hot_reload_task.cancel()
         # 0.5 gives the runtime some time to complete outstanding responses
         # this should be handled better, 1.0 is a rather random number
         await self._grpc_server.stop(1.0)
@@ -213,7 +218,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         return endpoints_proto
 
     def _extract_tracing_context(
-        self, metadata: grpc.aio.Metadata
+            self, metadata: grpc.aio.Metadata
     ) -> Optional['Context']:
         if self.tracer:
             from opentelemetry.propagate import extract
@@ -233,7 +238,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         """
 
         with MetricsTimer(
-            self._summary, self._receiving_request_seconds, self._metric_attributes
+                self._summary, self._receiving_request_seconds, self._metric_attributes
         ):
             try:
                 if self.logger.debug_enabled:
@@ -271,8 +276,8 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
                     )
 
                 if (
-                    self.args.exit_on_exceptions
-                    and type(ex).__name__ in self.args.exit_on_exceptions
+                        self.args.exit_on_exceptions
+                        and type(ex).__name__ in self.args.exit_on_exceptions
                 ):
                     self.logger.info('Exiting because of "--exit-on-exceptions".')
                     raise RuntimeTerminated
