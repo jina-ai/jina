@@ -8,14 +8,16 @@ from jina.serve.gateway import BaseGateway
 
 
 class FastAPIBaseGateway(BaseGateway):
-    """HTTP Gateway implementation"""
+    """Base FastAPI gateway. Implement this abstract class in-case you want to build a fastapi-based Gateway by
+    implementing the `app` property. This property should return a fastapi app. The base Gateway will handle starting
+    a server and serving the application using that server."""
 
     def __init__(
         self,
         ssl_keyfile: Optional[str] = None,
         ssl_certfile: Optional[str] = None,
         uvicorn_kwargs: Optional[dict] = None,
-        proxy: Optional[bool] = None,
+        proxy: bool = False,
         **kwargs
     ):
         """Initialize the FastAPIBaseGateway
@@ -27,8 +29,8 @@ class FastAPIBaseGateway(BaseGateway):
         :param kwargs: keyword args
         """
         super().__init__(**kwargs)
-        self.ssl_keyfile = ssl_keyfile
-        self.ssl_certfile = ssl_certfile
+        self._ssl_keyfile = ssl_keyfile
+        self._ssl_certfile = ssl_certfile
         self.uvicorn_kwargs = uvicorn_kwargs
 
         if not proxy and os.name != 'nt':
@@ -85,11 +87,11 @@ class FastAPIBaseGateway(BaseGateway):
 
         uvicorn_kwargs = self.uvicorn_kwargs or {}
 
-        if self.ssl_keyfile and 'ssl_keyfile' not in uvicorn_kwargs.keys():
-            uvicorn_kwargs['ssl_keyfile'] = self.ssl_keyfile
+        if self._ssl_keyfile and 'ssl_keyfile' not in uvicorn_kwargs.keys():
+            uvicorn_kwargs['ssl_keyfile'] = self._ssl_keyfile
 
-        if self.ssl_certfile and 'ssl_certfile' not in uvicorn_kwargs.keys():
-            uvicorn_kwargs['ssl_certfile'] = self.ssl_certfile
+        if self._ssl_certfile and 'ssl_certfile' not in uvicorn_kwargs.keys():
+            uvicorn_kwargs['ssl_certfile'] = self._ssl_certfile
 
         self.server = UviServer(
             config=Config(
