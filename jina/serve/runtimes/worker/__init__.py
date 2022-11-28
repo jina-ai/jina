@@ -154,13 +154,14 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
     async def _hot_reload(self):
         import inspect
 
-        watched_files = [
+        watched_files = set([
                             inspect.getfile(self._request_handler._executor.__class__)
-                        ] + (self.args.py_modules or [])
+                        ] + (self.args.py_modules or []))
         with ImportExtensions(
                 required=True,
                 logger=self.logger,
-                help_text='''hot reload requires watchfiles dependency to be installed. You can do `pip install watchfiles''',
+                help_text='''hot reload requires watchfiles dependency to be installed. You can do `pip install 
+                watchfiles''',
         ):
             from watchfiles import awatch
 
