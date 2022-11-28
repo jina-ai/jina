@@ -288,8 +288,6 @@ class WorkerRequestHandler:
         :param tracing_context: Optional OpenTelemetry tracing context from the originating request.
         :returns: the processed message
         """
-        # This is not always true. How does it work when we have multiple requests?
-        # assert len(requests) == 1, "There are places where the handler is called with more than one request __apparently__"
 
         # skip executor if endpoints mismatch
         exec_endpoint: str = requests[0].header.exec_endpoint
@@ -305,6 +303,7 @@ class WorkerRequestHandler:
 
         # TODO: This does not account for requests to "/"
         if exec_endpoint in self._batchqueue:
+            assert len(requests) == 1, "dynamic batching does not support no_reduce"
             await self._batchqueue[exec_endpoint].push(requests[0]).wait()
         else:
             params = self._parse_params(requests[0].parameters, self._executor.metas.name)
@@ -334,7 +333,6 @@ class WorkerRequestHandler:
 
         self._record_response_size_monitoring(requests)
 
-        # Await then return? Or do nothing and assume someone else returns?
         return requests[0]
 
     @staticmethod
