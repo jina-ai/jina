@@ -262,19 +262,39 @@ class _ColoredHelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
         return lines
 
 
-def _set_gateway_uses(args: 'argparse.Namespace'):
+def _get_gateway_class(protocol):
+    from jina.serve.runtimes.gateway.grpc import GRPCGateway
+    from jina.serve.runtimes.gateway.http import HTTPGateway
+    from jina.serve.runtimes.gateway.websocket import WebSocketGateway
+
     gateway_dict = {
-        GatewayProtocolType.GRPC: 'GRPCGateway',
-        GatewayProtocolType.WEBSOCKET: 'WebSocketGateway',
-        GatewayProtocolType.HTTP: 'HTTPGateway',
+        GatewayProtocolType.GRPC: GRPCGateway,
+        GatewayProtocolType.WEBSOCKET: WebSocketGateway,
+        GatewayProtocolType.HTTP: HTTPGateway,
     }
+    return gateway_dict[protocol]
+
+
+def _set_gateway_uses(args: 'argparse.Namespace'):
     if not args.uses:
-        if len(args.protocol) == 1:
-            args.uses = gateway_dict[args.protocol[0]]
+        if len(args.protocol) == 1 and len(args.port) == 1:
+            args.uses = _get_gateway_class(args.protocol[0]).__name__
+        elif len(args.protocol) == len(args.port):
+            from jina.serve.runtimes.gateway.composite import CompositeGateway
+
+            args.uses = CompositeGateway.__name__
         else:
             raise ValueError(
-                'You need to specify exactly 1 protocol if you want to use a jina built-in gateway'
+                'You need to specify as much protocols as ports if you want to use a jina built-in gateway'
             )
+
+
+def _update_gateway_args(args: 'argparse.Namespace'):
+    from jina.helper import random_ports
+
+    if not args.port:
+        args.port = random_ports(len(args.protocol))
+    _set_gateway_uses(args)
 
 
 class CastToIntAction(argparse.Action):
@@ -293,7 +313,7 @@ class CastToIntAction(argparse.Action):
         """
         if isinstance(values, list):
             d = [_port_to_int(port) for port in values]
-        else:
+        elif isinstance(values, str):
             d = _port_to_int(values)
         setattr(args, self.dest, d)
 

@@ -135,14 +135,10 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
             reflection.SERVICE_NAME,
         )
         # Mark all services as healthy.
-        health_pb2_grpc.add_HealthServicer_to_server(
-            self._health_servicer, self._grpc_server
-        )
+        health_pb2_grpc.add_HealthServicer_to_server(self._health_servicer, self._grpc_server)
 
         for service in service_names:
-            await self._health_servicer.set(
-                service, health_pb2.HealthCheckResponse.SERVING
-            )
+            await self._health_servicer.set(service, health_pb2.HealthCheckResponse.SERVING)
         reflection.enable_server_reflection(service_names, self._grpc_server)
         bind_addr = f'{self.args.host}:{self.args.port}'
         self.logger.debug(f'start listening on {bind_addr}')
@@ -187,11 +183,11 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         :returns: the response request
         """
         self.logger.debug('got an endpoint discovery request')
-        endpointsProto = jina_pb2.EndpointsProto()
-        endpointsProto.endpoints.extend(
+        endpoints_proto = jina_pb2.EndpointsProto()
+        endpoints_proto.endpoints.extend(
             list(self._request_handler._executor.requests.keys())
         )
-        return endpointsProto
+        return endpoints_proto
 
     def _extract_tracing_context(
         self, metadata: grpc.aio.Metadata
@@ -268,10 +264,10 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         :param context: grpc context
         :returns: the response request
         """
-        infoProto = jina_pb2.JinaInfoProto()
+        info_proto = jina_pb2.JinaInfoProto()
         version, env_info = get_full_version()
         for k, v in version.items():
-            infoProto.jina[k] = str(v)
+            info_proto.jina[k] = str(v)
         for k, v in env_info.items():
-            infoProto.envs[k] = str(v)
-        return infoProto
+            info_proto.envs[k] = str(v)
+        return info_proto
