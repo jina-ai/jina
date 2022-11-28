@@ -171,13 +171,21 @@ class WorkerRequestHandler:
     def _refresh_executor(self):
         import importlib
         import inspect
+        import copy
 
         importlib.reload(inspect.getmodule(self._executor.__class__))
+        requests = copy.copy(self._executor.requests)
         old_cls = self._executor.__class__
         new_cls = getattr(importlib.import_module(old_cls.__module__), old_cls.__name__)
         new_executor = new_cls.__new__(new_cls)
         new_executor.__dict__ = self._executor.__dict__
+        for k, v in requests.items():
+            old_func = requests[k]
+            if old_func.__name__ in new_executor.__dict__.keys():
+                requests[k] = new_executor.__dict__[k]
+
         self._executor = new_executor
+        self._executor.requests = requests
 
     @staticmethod
     def _parse_params(parameters: Dict, executor_name: str):
