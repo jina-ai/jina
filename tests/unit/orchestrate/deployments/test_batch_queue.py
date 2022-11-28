@@ -101,3 +101,24 @@ async def test_batch_queue():
     await asyncio.sleep(0.5)
     assert single_event.is_set()
     assert data_requests[0].data.docs[0].text == 'Done'
+
+
+@pytest.mark.asyncio
+async def test_repr_and_str():
+    class MockExecutor(Executor):
+        @requests
+        def foo(self, docs, **kwargs):
+            return DocumentArray([Document(text='Done') for _ in docs])
+
+    executor = MockExecutor()
+    args = executor.runtime_args
+    args.output_array_type = None
+    bq: BatchQueue = BatchQueue(
+        executor=executor,
+        exec_endpoint="/",
+        args=args,
+        preferred_batch_size=4,
+        timeout=500,
+    )
+
+    assert repr(bq) == str(bq)
