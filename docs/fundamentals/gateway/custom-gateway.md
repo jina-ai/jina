@@ -194,3 +194,36 @@ port: 12345
 ```
 
 For more information, please refer to the {ref}`Gateway YAML Specifications <gateway-yaml-spec>`
+## Containerize the Custom Gateway
+You may want to dockerize your Custom Gateway so you can isolate its dependencies and make it ready to run in the cloud 
+or Kubernetes.
+
+This assumes that you've already implemented a Custom Gateway class and have defined a `config.yml` for it.
+In this case, dockerizing the gateway should be straighforward:
+* If you need dependencies other than Jina, make sure to add a `requirements.txt` file (for instance, you use a server library).
+* Create a `Dockerfile` which should have the following components:
+1. Use a [Jina based image](https://hub.docker.com/r/jinaai/jina) as the base image in your Dockerfile.
+This ensures that everything needed for Jina to run the Gateway is installed. Make sure the Jina Version used supports 
+Custom Gateways:
+```dockerfile
+FROM jinaai/jina:3.12.0-py37-perf
+```
+Alternatively, you can just install jina using `pip`:
+```dockerfile
+RUN pip install jina
+```
+
+2. Install `requirements.txt`
+3. Use the `jina gateway --uses config.yml` command as your image's entrypoint:
+```dockerfile
+ENTRYPOINT ["jina", "gateway", "--uses", "config.yml"]
+```
+
+Once you finish the `Dockerfile` you should end up with the following file structure:
+```
+.
+├── my_gateway.py
+└── requirements.txt
+└── config.yml
+└── Dockerfile
+```
