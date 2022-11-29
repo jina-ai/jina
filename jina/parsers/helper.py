@@ -311,10 +311,10 @@ class CastToIntAction(argparse.Action):
         :param values: the values to add to the parser
         :param option_string: inherited, not used
         """
-        if isinstance(values, list):
-            d = [_port_to_int(port) for port in values]
-        elif isinstance(values, str):
-            d = _port_to_int(values)
+        d = []
+        for value in values:
+            value = value.split(',')
+            d.extend([_port_to_int(port) for port in value])
         setattr(args, self.dest, d)
 
 

@@ -36,6 +36,7 @@ def test_multiple_port_protocol_gateway_kwargs(
     [
         (['12345'], [12345]),
         (['12345', '12344'], [12345, 12344]),
+        (['12345, 12344'], [12345, 12344])
     ],
 )
 @pytest.mark.parametrize(
@@ -56,9 +57,17 @@ def test_multiple_port_protocol_gateway_args_list(
     assert args.protocol == expected_protocol
 
 
-def test_pod_port_cast():
-    args = set_pod_parser().parse_args(['--port', '12345'])
-    assert args.port == 12345
+@pytest.mark.parametrize(
+    'port,expected_port',
+    [
+        (['12345'], [12345]),
+        (['12345', '12344'], [12345, 12344]),
+        (['12345, 12344'], [12345, 12344])
+    ],
+)
+def test_pod_port_cast(port, expected_port):
+    args = set_pod_parser().parse_args(['--port'] + port)
+    assert args.port == expected_port
 
 
 def test_default_port_protocol_gateway():

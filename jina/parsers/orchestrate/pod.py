@@ -108,17 +108,18 @@ def mixin_pod_runtime_args_parser(arg_group, pod_type='worker'):
     :param arg_group: the parser instance or args group to which we add arguments
     :param pod_type: the pod_type configured by the parser. Can be either 'worker' for WorkerRuntime or 'gateway' for GatewayRuntime
     """
-    port_description = (
-        'The port for input data to bind to, default is a random port between [49152, 65535]. '
-        'In the case of an external Executor (`--external` or `external=True`) this can be a list of ports, separated by commas. '
-        'Then, every resulting address will be considered as one replica of the Executor.'
-    )
 
     if pod_type != 'gateway':
+        port_description = (
+            'The port for input data to bind to, default is a random port between [49152, 65535]. '
+            'In the case of an external Executor (`--external` or `external=True`) this can be a list of ports. '
+            'Then, every resulting address will be considered as one replica of the Executor.'
+        )
         arg_group.add_argument(
             '--port',
             '--port-in',
             type=str,
+            nargs='+',
             default=helper.random_port(),
             action=CastToIntAction,
             help=port_description,
@@ -151,7 +152,9 @@ def mixin_pod_runtime_args_parser(arg_group, pod_type='worker'):
     arg_group.add_argument(
         '--port-monitoring',
         type=str,
+        nargs='+',
         default=str(helper.random_port()),
+        action=CastToIntAction,
         dest='port_monitoring',
         help=f'The port on which the prometheus server is exposed, default is a random port between [49152, 65535]',
     )
