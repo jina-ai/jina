@@ -250,7 +250,7 @@ def watch_k8s_endpoints(namespace):
                 '-l',
                 'app=executor0',
                 '-o',
-                'jsonpath="{$.items[*].subsets[*].addresses[*].ip}"',
+                "jsonpath=\"{$.items[*].subsets[*].addresses[*]['targetRef.name', 'ip']}\"",
             ),
             env=os.environ,
         )
@@ -266,7 +266,7 @@ def watch_k8s_endpoints(namespace):
                 '-l',
                 'app=executor0',
                 '-o',
-                'jsonpath="{$.items[*].status.phase}"',
+                "jsonpath=\"{$.items[*]['metadata.name', 'status.phase']}\"",
             ),
             env=os.environ,
         )
@@ -274,6 +274,21 @@ def watch_k8s_endpoints(namespace):
         print(pod_statuses.decode())
         print()
         time.sleep(5)
+
+
+def print_services(namespace):
+    services = subprocess.check_output(
+        (
+            'kubectl',
+            '-n',
+            namespace,
+            'get',
+            'service',
+        ),
+        env=os.environ,
+    )
+    print('services:')
+    print(services.decode())
 
 
 @pytest.mark.asyncio
@@ -312,6 +327,7 @@ async def test_failure_scenarios(logger, docker_images, tmpdir, k8s_cluster):
             },
             logger=logger,
         )
+        print_services(namespace)
 
         stop_event = asyncio.Event()
         send_task = asyncio.create_task(
