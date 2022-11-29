@@ -122,7 +122,7 @@ The runtime injects some attributes into the Gateway classes. You can use the to
 * logger: Jina logger object.
 * tracing: whether runtime tracing is enabled or not.
 * tracer_provider: OpenTelemetry `TraceProvider` object.
-* streamer: {class}`~jina.serve.streamer.GatewayStreamer`. Use this object to send Documents from the Gateway to Executors. # todo link to the next section here
+* streamer: {class}`~jina.serve.streamer.GatewayStreamer`. Use this object to send Documents from the Gateway to Executors. Refer to {ref}`this section <gateway-streamer>` for more information.
 * runtime_args: `argparse.Namespace` object containing runtime arguments.
 * port: main port exposed by the Gateway.
 * ports: list all ports exposed by the Gateway.
@@ -137,10 +137,11 @@ multiple ports and protocols.
 ```
 
 ### User-defined parameters
-# TODO: link to the next section here
 Users can add other parameters by implementing a constructor `__init__`. Parameters of the constructor can be set and 
-overridden in the Flow Python API (using `uses_with` parameter) or in the YAML configuration.
+overridden in the Flow Python API (using `uses_with` parameter) or in the YAML configuration when including the gateway.
+Refer to the {ref}`Use Custom Gateway section <use-custom-gateway>` for more information.
 
+(gateway-streamer)=
 ## Calling Executors with {class}`~jina.serve.streamer.GatewayStreamer`
 {class}`~jina.serve.streamer.GatewayStreamer` allows you to interface with Executors within the gateway. An instance of 
 this class knows about the Flow structure and contains a connection pool to connect to each executor. You can get this 
@@ -240,10 +241,11 @@ Once you finish the `Dockerfile` you should end up with the following file struc
 └── config.yml
 └── Dockerfile
 ```
-
+(use-custom-gateway)=
 ## Use the Custom Gateway
-You can use the Custom Gateway in a jina Flow in different formats: Python class, configuration YAML and docker image:
+You can include the Custom Gateway in a jina Flow in different formats: Python class, configuration YAML and docker image:
 
+`````{tab} Flow python API
 ````{tab} Python Class
 ```python
 from jina import Gateway, Flow
@@ -281,7 +283,42 @@ flow = Flow().config_gateway(
 )
 ```
 ````
+`````
 
+`````{tab} Flow YAML configuration
+````{tab} Python Class
+```yaml
+!Flow
+gateway:
+  py_modules: gateway.py
+  uses: MyHTTPGateway
+  with:
+    arg: value
+  protocol: http
+  port: 12344
+```
+````
+
+````{tab} YAML configuration
+```yaml
+!Flow
+gateway:
+  uses: gateway-config.yml
+  protocol: http
+  port: 12344
+```
+````
+
+````{tab} Docker Image
+```yaml
+!Flow
+gateway:
+  uses: docker://gateway-image
+  protocol: http
+  port: 12344
+```
+````
+`````
 
 ```{admonition} Important
 :class: important
