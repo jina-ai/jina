@@ -289,6 +289,14 @@ def _set_gateway_uses(args: 'argparse.Namespace'):
             )
 
 
+def _update_gateway_args(args: 'argparse.Namespace'):
+    from jina.helper import random_ports
+
+    if not args.port:
+        args.port = random_ports(len(args.protocol))
+    _set_gateway_uses(args)
+
+
 class CastToIntAction(argparse.Action):
     """argparse action to cast a list of values to int"""
 
@@ -305,7 +313,7 @@ class CastToIntAction(argparse.Action):
         """
         if isinstance(values, list):
             d = [_port_to_int(port) for port in values]
-        else:
+        elif isinstance(values, str):
             d = _port_to_int(values)
         setattr(args, self.dest, d)
 
