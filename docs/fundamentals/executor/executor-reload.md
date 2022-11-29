@@ -14,7 +14,7 @@ This feature is thought to let the developer iterate faster while developing or 
 
 ````{admonition} Note
 :class: note
-This feature requires watchfiles>0.18 package to be installed.
+This feature requires watchfiles>=0.18 package to be installed.
 ````
 
 To see how this would work, let's define an Executor in the file `my_executor.py`
