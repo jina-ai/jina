@@ -64,7 +64,9 @@ class _NetworkingHistograms:
     send_requests_bytes_metrics: Optional['Histogram'] = None
     histogram_metric_labels: Dict[str, str] = None
 
-    def _get_labels(self, additional_labels: Optional[Dict[str, str]] = None) -> Optional[Dict[str, str]]:
+    def _get_labels(
+        self, additional_labels: Optional[Dict[str, str]] = None
+    ) -> Optional[Dict[str, str]]:
 
         if self.histogram_metric_labels is None:
             return None
@@ -72,19 +74,25 @@ class _NetworkingHistograms:
             return self.histogram_metric_labels
         return {**self.histogram_metric_labels, **additional_labels}
 
-    def record_sending_requests_time_metrics(self, value: int, additional_labels: Optional[Dict[str, str]] = None):
+    def record_sending_requests_time_metrics(
+        self, value: int, additional_labels: Optional[Dict[str, str]] = None
+    ):
         labels = self._get_labels(additional_labels)
-            
+
         if self.sending_requests_time_metrics:
             self.sending_requests_time_metrics.record(value, labels)
 
-    def record_received_response_bytes(self, value: int, additional_labels: Optional[Dict[str, str]] = None):
+    def record_received_response_bytes(
+        self, value: int, additional_labels: Optional[Dict[str, str]] = None
+    ):
         labels = self._get_labels(additional_labels)
 
         if self.received_response_bytes:
             self.received_response_bytes.record(value, labels)
 
-    def record_send_requests_bytes_metrics(self, value: int, additional_labels: Optional[Dict[str, str]] = None):
+    def record_send_requests_bytes_metrics(
+        self, value: int, additional_labels: Optional[Dict[str, str]] = None
+    ):
         labels = self._get_labels(additional_labels)
 
         if self.send_requests_bytes_metrics:
@@ -117,7 +125,9 @@ class ReplicaList:
         self.aio_tracing_client_interceptors = aio_tracing_client_interceptors
         self.tracing_client_interceptors = tracing_client_interceptor
 
-    async def reset_connection(self, address: str, deployment_name: str) -> Union[grpc.aio.Channel, None]:
+    async def reset_connection(
+        self, address: str, deployment_name: str
+    ) -> Union[grpc.aio.Channel, None]:
         """
         Removes and then re-adds a connection.
         Result is the same as calling :meth:`remove_connection` and then :meth:`add_connection`, but this allows for
@@ -404,12 +414,16 @@ class GrpcConnectionPool:
         def _record_request_bytes_metric(self, nbytes: int):
             if self._metrics.send_requests_bytes_metrics:
                 self._metrics.send_requests_bytes_metrics.observe(nbytes)
-            self._histograms.record_send_requests_bytes_metrics(nbytes, self.stub_specific_labels)
+            self._histograms.record_send_requests_bytes_metrics(
+                nbytes, self.stub_specific_labels
+            )
 
         def _record_received_bytes_metric(self, nbytes: int):
             if self._metrics.received_response_bytes:
                 self._metrics.received_response_bytes.observe(nbytes)
-            self._histograms.record_received_response_bytes(nbytes, self.stub_specific_labels)
+            self._histograms.record_received_response_bytes(
+                nbytes, self.stub_specific_labels
+            )
 
         async def send_requests(
             self,
@@ -631,7 +645,9 @@ class GrpcConnectionPool:
                 self._logger.debug(
                     f'adding connection for deployment {deployment}/{type}/{entity_id} to {address}'
                 )
-                self._deployments[deployment][type][entity_id].add_connection(address, deployment_name=deployment)
+                self._deployments[deployment][type][entity_id].add_connection(
+                    address, deployment_name=deployment
+                )
             else:
                 self._logger.debug(
                     f'ignoring activation of pod, {address} already known'
@@ -949,7 +965,11 @@ class GrpcConnectionPool:
         # timed out requests have the code grpc.StatusCode.DEADLINE_EXCEEDED
         # requests usually gets cancelled when the server shuts down
         # retries for cancelled requests will hit another replica in K8s
-        self._logger.debug(f'GRPC call errored, getting error {error} for the {retry_i + 1}thd time')
+        self._logger.debug(
+            f'GRPC call errored, getting error {error} for the {retry_i + 1}thd time.'
+        )
+        self._logger.debug(f'Initial metadata: {error.initial_metadata()}')
+        self._logger.debug(f'Trailing metadata: {error.trailing_metadata()}')
         if (
             error.code() != grpc.StatusCode.UNAVAILABLE
             and error.code() != grpc.StatusCode.CANCELLED
@@ -966,7 +986,9 @@ class GrpcConnectionPool:
             # after connection failure the gRPC `channel` gets stuck in a failure state for a few seconds
             # removing and re-adding the connection (stub) is faster & more reliable than just waiting
             if connection_list:
-                await connection_list.reset_connection(current_address, current_deployment)
+                await connection_list.reset_connection(
+                    current_address, current_deployment
+                )
 
             return InternalNetworkError(
                 og_exception=error,
@@ -1370,7 +1392,9 @@ class GrpcConnectionPool:
         )
 
         return (
-            GrpcConnectionPool.ConnectionStubs(address, channel, deployment_name, metrics, histograms),
+            GrpcConnectionPool.ConnectionStubs(
+                address, channel, deployment_name, metrics, histograms
+            ),
             channel,
         )
 
