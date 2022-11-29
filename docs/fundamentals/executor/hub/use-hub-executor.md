@@ -36,17 +36,22 @@ Use prebuilt images from Hub in your Python code:
 ```python
 from jina import Flow
 
-# SECRET must be provided for private Executor
+# You have to login for private Executor
+# import hubble
+# hubble.login()
+
 f = Flow().add(uses='jinaai+docker://<USERNAME>/<NAME>[:<TAG>]')
 ```
 
 If you do not provide a `:<TAG>`, it defaults to `/latest`.
 
 ````{important}
-To use a private Executor, you must provide the `SECRET` which is generated after `jina hub push`.
+To use a private Executor, you have to login.
 
-```{figure} screenshots/secret.png
-:align: center
+```python
+import hubble
+
+hubble.login()
 ```
 
 ````
