@@ -178,7 +178,10 @@ class WorkerRequestHandler:
             sys_mod_files_modules = {getattr(module, '__file__', ''): module for module in sys.modules.values()}
 
             for file in changed_files:
-                importlib.reload(sys_mod_files_modules[file])
+                if file in sys_mod_files_modules:
+                    importlib.reload(sys_mod_files_modules[file])
+                else:
+                    self.logger.debug(f'Changed file {file} was not previously imported.')
         except Exception as exc:
             self.logger.error(f' Exception when refreshing Executor when changes detected in {changed_files}')
             raise exc
