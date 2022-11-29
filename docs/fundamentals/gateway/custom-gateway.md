@@ -133,3 +133,40 @@ The runtime injects some attributes into the Gateway classes. You can use the to
 # TODO: link to the next section here
 Users can add other parameters by implementing a constructor `__init__`. Parameters of the constructor can be set and 
 overridden in the Flow Python API (using `uses_with` parameter) or in the YAML configuration.
+
+## Calling Executors with {class}`~jina.serve.streamer.GatewayStreamer`
+{class}`~jina.serve.streamer.GatewayStreamer` allows you to interface with Executors within the gateway. An instance of 
+this class knows about the Flow structure and contains a connection pool to connect to each executor. You can get this 
+object in 2 different ways:
+* A `streamer` object (instance of {class}`~jina.serve.streamer.GatewayStreamer`) is injected by the runtime to your gateway class.
+* In case your server logic cannot access the Gateway class (for instance separate script), you can still get a stream 
+object using {meth}`~jina.serve.streamer.get_streamer()`.
+
+After transforming requests that arrive to the gateway server into Documents, you can send them to Executors in the Flow 
+using {meth}`~jina.serve.streamer.GatewayStreamer.stream_docs` :
+```python
+from jina.serve.runtimes.gateway.http.fastapi import FastAPIBaseGateway
+from jina import Document, DocumentArray
+from fastapi import FastAPI
+
+
+class MyGateway(FastAPIBaseGateway):
+    @property
+    def app(self):
+        app = FastAPI()
+
+        @app.get("/")
+        def get(text: str):
+            result = None
+            async for docs in self.streamer.stream_docs(
+                docs=DocumentArray([Document(text=text)]),
+                exec_endpoint='/',
+            ):
+                result = docs[0].text
+            return {'result': result}
+```
+
+
+## Required health-checks
+## Containerize the Custom Gateway
+## Use the Custom Gateway
