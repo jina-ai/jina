@@ -137,8 +137,8 @@ For this you can use the `reload` argument for the Executor so that it watches c
 
 The Executor will keep track in changes inside the Executor source file, every file passed in `py_modules` argument from {meth}`~jina.Flow.add` and all the Python files inside the folder where the Executor class is defined and its subfolders.
 
-````{admonition} Note
-:class: note
+````{admonition} Caution
+:class: caution
 This feature is thought to let the developer iterate faster while developing or improving the Executor, but is not intended to be used in production environment.
 ````
 
