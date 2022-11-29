@@ -247,6 +247,8 @@ def watch_k8s_endpoints(namespace):
                 namespace,
                 'get',
                 'endpoints',
+                '-l',
+                'app=executor0',
                 '-o',
                 'jsonpath="{$.items[*].subsets[*].addresses[*].ip}"',
             ),
@@ -261,6 +263,8 @@ def watch_k8s_endpoints(namespace):
                 namespace,
                 'get',
                 'pods',
+                '-l',
+                'app=executor0',
                 '-o',
                 'jsonpath="{$.items[*].status.phase}"',
             ),
@@ -295,9 +299,6 @@ async def test_failure_scenarios(logger, docker_images, tmpdir, k8s_cluster):
 
         dump_path = os.path.join(str(tmpdir), namespace)
         flow.to_kubernetes_yaml(dump_path, k8s_namespace=namespace)
-        flow.to_kubernetes_yaml(
-            '/home/girishc13/Documents/Code/jina-ai/jina', k8s_namespace=namespace
-        )
 
         await create_all_flow_deployments_and_wait_ready(
             dump_path,
