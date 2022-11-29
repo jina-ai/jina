@@ -1,7 +1,7 @@
 """Argparser module for remote runtime"""
 
 from jina import __default_host__, helper
-from jina.parsers.helper import KVAppendAction, add_arg_group
+from jina.parsers.helper import KVAppendAction, add_arg_group, CastHostAction
 from jina.parsers.orchestrate.runtimes.runtime import mixin_base_runtime_parser
 
 
@@ -170,7 +170,9 @@ def _add_host(arg_group):
         '--host',
         '--host-in',
         type=str,
+        nargs='+',
         default=__default_host__,
+        action=CastHostAction,
         help=f'The host address of the runtime, by default it is {__default_host__}.'
         ' In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts, separated by commas.'
         ' Then, every resulting address will be considered as one replica of the Executor.',
