@@ -159,7 +159,7 @@ class MyExecutor(Executor):
             doc.text = 'I am coming from the first version of MyExecutor'
 ```
 
-Then we build a Flow and expose it:
+We build a Flow and expose it:
 
 ```python
 import os
@@ -175,7 +175,7 @@ with f:
     f.block()
 ```
 
-Then we can see that the Executor is successfuly serving:
+We can see that the Executor is successfuly serving:
 
 ```python
 from jina import Client, DocumentArray
@@ -189,7 +189,7 @@ print(c.post(on='/', inputs=DocumentArray.empty(1))[0].text)
 I am coming from the first version of MyExecutor
 ```
 
-Then we can edit the executor file and save the changes:
+We can edit the executor file and save the changes:
 
 ```python
 from jina import Executor, requests
