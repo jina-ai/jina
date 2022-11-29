@@ -42,7 +42,6 @@ instrumenting-executor
 executor-run
 executor-serve
 executor-files
-executor-reload
 containerize-executor
 yaml-spec
 ```
