@@ -1,5 +1,6 @@
 import argparse
 import asyncio
+import os
 from abc import ABC
 from typing import TYPE_CHECKING, List, Optional
 
@@ -153,10 +154,14 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
 
     async def _hot_reload(self):
         import inspect
+        executor_file = inspect.getfile(self._request_handler._executor.__class__)
+        watched_files = set([executor_file] + (self.args.py_modules or []))
+        executor_base_path = os.path.dirname(os.path.abspath(executor_file))
+        extra_paths = [os.path.join(path, name) for path, subdirs, files in os.walk(executor_base_path) for name in files]
+        extra_python_paths = list(filter(lambda x: x.endswith('.py'), extra_paths))
+        for extra_python_file in extra_python_paths:
+            watched_files.add(extra_python_file)
 
-        watched_files = set([
-                            inspect.getfile(self._request_handler._executor.__class__)
-                        ] + (self.args.py_modules or []))
         with ImportExtensions(
                 required=True,
                 logger=self.logger,
@@ -166,10 +171,11 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
             from watchfiles import awatch
 
         async for changes in awatch(*watched_files):
+            changed_files = [changed_file for _, changed_file in changes]
             self.logger.info(
-                f'detected changes in: {[changed_file for _, changed_file in changes]}. Refreshing the Executor'
+                f'detected changes in: {changed_files}. Refreshing the Executor'
             )
-            self._request_handler._refresh_executor()
+            self._request_handler._refresh_executor(changed_files)
 
     async def async_run_forever(self):
         """Block until the GRPC server is terminated"""

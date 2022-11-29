@@ -168,10 +168,20 @@ class WorkerRequestHandler:
             self.logger.critical(f'can not load the executor from {self.args.uses}')
             raise
 
-    def _refresh_executor(self):
+    def _refresh_executor(self, changed_files):
         import importlib
         import inspect
         import copy
+        import sys
+
+        try:
+            sys_mod_files_modules = {getattr(module, '__file__', ''): module for module in sys.modules.values()}
+
+            for file in changed_files:
+                importlib.reload(sys_mod_files_modules[file])
+        except Exception as exc:
+            self.logger.error(f' Exception when refreshing Executor when changes detected in {changed_files}')
+            raise exc
 
         importlib.reload(inspect.getmodule(self._executor.__class__))
         requests = copy.copy(self._executor.requests)
@@ -182,7 +192,7 @@ class WorkerRequestHandler:
         for k, v in requests.items():
             requests[k] = getattr(new_executor.__class__, requests[k].__name__)
         self._executor = new_executor
-        del self._executor.requests
+        self._executor.requests.clear()
         requests = {k: v.__name__ for k, v in requests.items()}
         self._executor._add_requests(requests)
 
