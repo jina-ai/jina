@@ -62,7 +62,7 @@ class WorkerRequestHandler:
         self._batchqueue: Dict[str, BatchQueue] = {}
 
         if getattr(self._executor, 'dynamic_batching', None) is not None:
-            # TODO: Should we splitting by endpoint or by function?
+            # TODO: We should split by function
             func_endpoints: Dict[str, List[str]] = {func.__name__: [] for func in self._executor.requests.values()}
             for endpoint, func in self._executor.requests.items():
                 func_endpoints[func.__name__].append(endpoint)
@@ -163,6 +163,7 @@ class WorkerRequestHandler:
                 uses_with=self.args.uses_with,
                 uses_metas=self.args.uses_metas,
                 uses_requests=self.args.uses_requests,
+                #uses_dynamic_batching=self.args.uses_dynamic_batching,
                 runtime_args={  # these are not parsed to the yaml config file but are pass directly during init
                     'workspace': self.args.workspace,
                     'shard_id': self.args.shard_id,
@@ -304,7 +305,7 @@ class WorkerRequestHandler:
         # TODO: This does not account for requests to "/"
         if exec_endpoint in self._batchqueue:
             assert len(requests) == 1, "dynamic batching does not support no_reduce"
-            await self._batchqueue[exec_endpoint].push(requests[0]).wait()
+            await self._batchqueue[exec_endpoint].push(requests[0])
         else:
             params = self._parse_params(requests[0].parameters, self._executor.metas.name)
             docs = WorkerRequestHandler.get_docs_from_request(

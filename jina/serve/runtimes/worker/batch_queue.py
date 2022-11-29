@@ -1,5 +1,5 @@
 import asyncio
-from asyncio import Event
+from asyncio import Event, Task
 from typing import List, Dict, Any
 
 from jina import DocumentArray
@@ -43,20 +43,19 @@ class BatchQueue():
         self._big_doc: DocumentArray = DocumentArray.empty()
 
         self._flush_trigger: Event = Event()
-        asyncio.create_task(self.await_then_flush(self._flush_trigger))
+        self._flush_task: Task = asyncio.create_task(self.await_then_flush(self._flush_trigger))
         self._timer_started: bool = False
-        self._after_flush_event: Event = Event()
     
     def _start_timer(self):
         asyncio.create_task(sleep_then_set(self._timeout / 1000, self._flush_trigger))
         self._timer_started = True
     
-    def push(self, request: DataRequest) -> Event:
-        """Append request to the queue. Once the request has been processed, the event will be set.
+    def push(self, request: DataRequest) -> Task:
+        """Append request to the queue. Once the request has been processed, the task will be set.
         
         :param request: The request to append to the queue.
 
-        :return: The event that will be set once the request has been processed.
+        :return: The task that will be set once the request has been processed.
         """
         if not self._timer_started:
             self._start_timer()
@@ -69,7 +68,7 @@ class BatchQueue():
         if len(self._big_doc) >= self._preferred_batch_size:
             self._flush_trigger.set()
         
-        return self._after_flush_event
+        return self._flush_task
     
     async def await_then_flush(self, trigger_event: Event) -> None:
         """Process all requests in the queue once event is set.
@@ -83,8 +82,8 @@ class BatchQueue():
             return_data = await self._executor.__acall__(
                 req_endpoint=self._exec_endpoint,
                 docs=self._big_doc,
-                parameters={}, # TODO: What should we do with parameters?
-                docs_matrix=None, # TODO: Merge?
+                parameters={},
+                docs_matrix=None,
                 tracing_context=None, # TODO: Tracing?
             )
 
@@ -99,11 +98,14 @@ class BatchQueue():
             # TODO: Metrics?
             #self._record_docs_processed_monitoring(requests, docs)
             #self._record_response_size_monitoring(requests)
-        finally:
-            # We need to set the after flush event and reset the batch queue
-            # This needs to occur even if the executor fails otherwise it will block forever
-            self._after_flush_event.set()
+
             self._reset()
+
+        except Exception as e:
+            # We need to reset the batch queue
+            # This needs to occur even if the executor fails otherwise it will block forever
+            self._reset()
+            raise e
 
     def _set_result(self, request: DataRequest, return_data: DocumentArray, docs: DocumentArray) -> None:
         # assigning result back to request
