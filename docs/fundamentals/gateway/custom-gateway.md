@@ -168,5 +168,29 @@ class MyGateway(FastAPIBaseGateway):
 
 
 ## Required health-checks
-## Containerize the Custom Gateway
-## Use the Custom Gateway
+Jina relies on performing health-checks to determine the health of the gateway. In environments like kubernetes, 
+docker-compose and Jina Cloud, this information is crucial to restart the gateway in case of failure.
+Since the user has the full power over custom gateways, he always has the responsibility of implementing health-check 
+endpoints:
+* If the protocol used is GRPC, a health servicer (for instance `health.aio.HealthServicer()`) from `grpcio-health-checking` 
+is expected to be added to the gRPC server. Refer to {class}`~jina.serve.runtimes.gateway.grpc.gateway.GRPCGateway` as 
+an example.
+* Otherwise, an HTTP GET request to the root path is expected to return a 200 status code.
+
+To test whether your server properly implements health-checks, you can use the command `jina ping <protocol>://host:port`
+
+## Gateway YAML file
+Like Executor `config` files, a Custom Gateway implementation can be associated with a YAML configuration file.
+Such a configuration can override user-defined parameters and define other runtime arguments (port, protocol, py_modules,...).
+
+For instance, you can define such a configuration in `config.yml`:
+```yaml
+!MyCustomGateway
+py_modules: custom_gateway.py
+with:
+  arg1: hello
+  arg2: world
+port: 12345
+```
+
+For more information, please refer to the {ref}`Gateway YAML Specifications <gateway-yaml-spec>`
