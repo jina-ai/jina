@@ -129,6 +129,13 @@ The runtime injects some attributes into the Gateway classes. You can use the to
 * protocols: list all protocols supported by the Gateway.
 * host: host address to which the Gateway server should be bound.
 
+```{admonition} Nonte
+:class: note
+
+The runtime provides the Gateway with a list of ports and protocols to expose. Therefore, a Custom Gateway can serve on 
+multiple ports and protocols.
+```
+
 ### User-defined parameters
 # TODO: link to the next section here
 Users can add other parameters by implementing a constructor `__init__`. Parameters of the constructor can be set and 
@@ -179,6 +186,12 @@ an example.
 
 To test whether your server properly implements health-checks, you can use the command `jina ping <protocol>://host:port`
 
+```{admonition} Important
+:class: important
+
+Although a Jina Gateway can expose multiple ports and protocols, the runtime only cares about the first exposed port 
+and protocol. Health checks will be sent only to the first port.
+```
 ## Gateway YAML file
 Like Executor `config` files, a Custom Gateway implementation can be associated with a YAML configuration file.
 Such a configuration can override user-defined parameters and define other runtime arguments (port, protocol, py_modules,...).
@@ -226,4 +239,53 @@ Once you finish the `Dockerfile` you should end up with the following file struc
 └── requirements.txt
 └── config.yml
 └── Dockerfile
+```
+
+## Use the Custom Gateway
+You can use the Custom Gateway in a jina Flow in different formats: Python class, configuration YAML and docker image:
+
+````{tab} Python Class
+```python
+from jina import Gateway, Flow
+
+
+class MyHTTPGateway(Gateway):
+    def __init__(self, arg: str = None, **kwargs):
+        super().__init__(**kwargs)
+        self.arg = arg
+
+    ...
+
+
+flow = Flow().config_gateway(
+    uses=MyHTTPGateway, port=12345, protocol='http', uses_with={'arg': 'value'}
+)
+```
+````
+
+````{tab} YAML configuration
+```python
+flow = Flow().config_gateway(
+    uses='config.yml', port=12345, protocol='http', uses_with={'arg': 'value'}
+)
+```
+````
+
+````{tab} Docker Image
+```python
+flow = Flow().config_gateway(
+    uses='docker://gateway-image',
+    port=12345,
+    protocol='http',
+    uses_with={'arg': 'value'},
+)
+```
+````
+
+
+```{admonition} Important
+:class: important
+
+When you include a custom gateway in a Jina Flow, since the runtime needs to know about the port and protocol to which 
+health checks will be sent, it is important to specify them when including the gateway.
 ```
