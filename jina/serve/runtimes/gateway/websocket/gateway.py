@@ -2,7 +2,6 @@ import logging
 import os
 from typing import Optional
 
-from jina import __default_host__
 from jina.importer import ImportExtensions
 from jina.serve.gateway import BaseGateway
 from jina.serve.runtimes.gateway.websocket.app import get_fastapi_app
