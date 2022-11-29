@@ -61,3 +61,24 @@ def test_reload_helper(tmpdir):
         assert len(res) == 10
         for doc in res:
             assert doc.text == 'MyExecutorBeforeReload'
+
+
+def test_reload_with_inheritance(tmpdir):
+    from tests.integration.hot_reload.exec3.my_executor3 import A, EnhancedExecutor
+
+    f = Flow().add(uses=A, hot_reload=True)
+    with f:
+        res = f.post(on='/', inputs=DocumentArray.empty(10))
+        assert len(res) == 10
+        for doc in res:
+            assert doc.text == 'ABeforeReload'
+        with _update_file(os.path.join(cur_dir, 'my_executor_3_new.py'), os.path.join(cur_dir, 'exec3/my_executor3.py'),
+                          str(tmpdir)):
+            res = f.post(on='/', inputs=DocumentArray.empty(10))
+            assert len(res) == 10
+            for doc in res:
+                assert doc.text == 'AAfterReload'
+        res = f.post(on='/', inputs=DocumentArray.empty(10))
+        assert len(res) == 10
+        for doc in res:
+            assert doc.text == 'ABeforeReload'
