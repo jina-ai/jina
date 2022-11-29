@@ -28,7 +28,7 @@ _flow_with_dummy_gateway_yaml_path = os.path.join(
 @pytest.mark.parametrize(
     'uses,uses_with,expected',
     [
-        ('DummyGateway', {}, {'arg1': None, 'arg2': None, 'arg3': 'default-arg3'}),
+        (DummyGateway, {}, {'arg1': None, 'arg2': None, 'arg3': 'default-arg3'}),
         (
             _dummy_gateway_yaml_path,
             {},
@@ -40,7 +40,7 @@ _flow_with_dummy_gateway_yaml_path = os.path.join(
             {'arg1': 'hello', 'arg2': 'world', 'arg3': 'default-arg3'},
         ),
         (
-            'DummyGateway',
+            DummyGateway,
             {'arg1': 'arg1', 'arg2': 'arg2', 'arg3': 'arg3'},
             {'arg1': 'arg1', 'arg2': 'arg2', 'arg3': 'arg3'},
         ),
@@ -55,7 +55,7 @@ _flow_with_dummy_gateway_yaml_path = os.path.join(
             {'arg1': 'arg1', 'arg2': 'arg2', 'arg3': 'arg3'},
         ),
         (
-            'DummyGateway',
+            DummyGateway,
             {'arg1': 'arg1'},
             {'arg1': 'arg1', 'arg2': None, 'arg3': 'default-arg3'},
         ),
