@@ -17,7 +17,7 @@ This feature is thought to let the developer iterate faster while developing or 
 This feature requires watchfiles>0.18 package to be installed.
 ````
 
-To see how this would work, let's have an Executor defined in a file `my_executor.py`
+To see how this would work, let's define an Executor in the file `my_executor.py`
 ```python
 from jina import Executor, requests
 
@@ -59,7 +59,7 @@ print(c.post(on='/', inputs=DocumentArray.empty(1))[0].text)
 I am coming from the first version of MyExecutor
 ```
 
-Then we can edit the executor file and save the changes:
+Then we can edit `my_executor.py` and save the changes:
 
 ```python
 from jina import Executor, requests
@@ -72,13 +72,13 @@ class MyExecutor(Executor):
             doc.text = 'I am coming from a new version of MyExecutor'
 ```
 
-You should see in the logs of the serving Executor 
+You should see in the logs of the serving Executor:
 
 ```text
 INFO   executor0/rep-0@11606 detected changes in: ['XXX/XXX/XXX/my_executor.py']. Refreshing the Executor                                                             
 ```
 
-And after this, Executor will start serving with the renewed code.
+After this, Executor will start serving with the renewed code.
 
 ```python
 from jina import Client, DocumentArray
