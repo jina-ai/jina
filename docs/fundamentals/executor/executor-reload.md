@@ -5,7 +5,7 @@ While developing your Executor, it can be useful to have the Executor be refresh
 
 For this you can use the `reload` argument for the Executor so that it watches changes in the source code and makes sure that the changes are applied live to the served Executor.
 
-The Executor will keep track in changes inside the Executor source file, every file passed in `py_modules` argument from {meth}~jina.Flow.add and all the Python files inside the folder where the Executor class is defined and its subfolders.
+The Executor will keep track in changes inside the Executor source file, every file passed in `py_modules` argument from {meth}`~jina.Flow.add` and all the Python files inside the folder where the Executor class is defined and its subfolders.
 
 ````{admonition} Note
 :class: note
