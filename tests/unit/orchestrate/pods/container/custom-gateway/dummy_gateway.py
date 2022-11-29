@@ -49,14 +49,12 @@ class DummyGateway(Gateway):
         )
         async def _process(text: str):
             doc = None
-            async for req in self.streamer.stream(
-                request_generator(
-                    exec_endpoint='/',
-                    data=DocumentArray([Document(text=text)]),
-                )
+            async for docs in self.streamer.stream_docs(
+                docs=DocumentArray([Document(text=text)]),
+                exec_endpoint='/',
             ):
-                doc = req.to_dict()['data'][0]
-            return {'text': doc['text'], 'tags': doc['tags']}
+                doc = docs[0]
+            return {'text': doc.text, 'tags': doc.tags}
 
         self.server = Server(Config(app, host=self.host, port=self.port))
 

@@ -22,9 +22,6 @@ def set_pod_parser(parser=None):
     from jina.parsers.orchestrate.runtimes.container import (
         mixin_container_runtime_parser,
     )
-    from jina.parsers.orchestrate.runtimes.distributed import (
-        mixin_distributed_feature_parser,
-    )
     from jina.parsers.orchestrate.runtimes.remote import mixin_remote_runtime_parser
     from jina.parsers.orchestrate.runtimes.worker import mixin_worker_runtime_parser
 
@@ -32,7 +29,6 @@ def set_pod_parser(parser=None):
     mixin_worker_runtime_parser(parser)
     mixin_container_runtime_parser(parser)
     mixin_remote_runtime_parser(parser)
-    mixin_distributed_feature_parser(parser)
     mixin_pod_parser(parser)
     mixin_hub_pull_options_parser(parser)
     mixin_head_parser(parser)
