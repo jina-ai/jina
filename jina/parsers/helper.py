@@ -328,4 +328,23 @@ def _port_to_int(port):
         return port
 
 
+class CastHostAction(argparse.Action):
+    """argparse action to cast a list of values to int"""
+
+    def __call__(self, parser, args, values, option_string=None):
+        """
+        call the CastHostAction
+
+
+        .. # noqa: DAR401
+        :param parser: the parser
+        :param args: args to initialize the values
+        :param values: the values to add to the parser
+        :param option_string: inherited, not used
+        """
+        d = []
+        for value in values:
+            d.extend(value.split(','))
+        setattr(args, self.dest, d)
+
 _chf = _ColoredHelpFormatter
