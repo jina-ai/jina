@@ -1,0 +1,5 @@
+!StreamlitGateway
+py_modules: streamlit_gateway.py
+with:
+  streamlit_script: app.py
+  port: 8501
