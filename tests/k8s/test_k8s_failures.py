@@ -240,12 +240,34 @@ def watch_k8s_endpoints(namespace):
     import time
 
     while True:
-        out = subprocess.check_output(
-            ('kubectl', '-n', namespace, 'get', 'endpoints'),
+        endpoints = subprocess.check_output(
+            (
+                'kubectl',
+                '-n',
+                namespace,
+                'get',
+                'endpoints',
+                '-o',
+                'jsonpath="{$.items[*].subsets[*].addresses[*].ip}"',
+            ),
             env=os.environ,
         )
         print('endpoints:')
-        print(str(out))
+        print(endpoints.decode())
+        pod_statuses = subprocess.check_output(
+            (
+                'kubectl',
+                '-n',
+                namespace,
+                'get',
+                'pods',
+                '-o',
+                'jsonpath="{$.items[*].status.phase}"',
+            ),
+            env=os.environ,
+        )
+        print('pod statuses:')
+        print(pod_statuses.decode())
         print()
         time.sleep(5)
 
