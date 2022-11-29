@@ -130,7 +130,11 @@ def _docker_run(
         del args.gpus
 
     _args = ArgNamespace.kwargs2list(non_defaults)
-    ports = {f'{args.port}/tcp': args.port} if not net_mode else None
+
+    if args.pod_role == PodRoleType.GATEWAY:
+        ports = {f'{_port}/tcp': _port for _port in args.port} if not net_mode else None
+    else:
+        ports = {f'{args.port}/tcp': args.port} if not net_mode else None
 
     docker_kwargs = args.docker_kwargs or {}
     container = client.containers.run(
