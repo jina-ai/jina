@@ -161,8 +161,6 @@ async def run_test_until_event(
                 i = 0
                 while True:
                     sent_ids.add(i)
-                    # if i % 100 == 0:
-                    #     logger.info(f'Inputing Document {i}')
                     yield Document(text=f'{i}')
                     if stop_event.is_set():
                         logger.info(f'stop yielding new requests after {i} requests')
@@ -180,8 +178,6 @@ async def run_test_until_event(
                 continue_on_error=True,
             ):
                 num_resps += 1
-                # if num_resps % 100 == 0:
-                # logger.info(f'Client received a response {num_resps}')
                 if resp.docs[0].tags['replica_uid'] not in pod_ids:
                     pod_ids.add(resp.docs[0].tags['replica_uid'])
                     logger.info(
@@ -233,7 +229,7 @@ def inject_failures(k8s_cluster, logger):
         raise Exception(f"Injecting failures failed with {returncode}")
 
 
-def watch_k8s_endpoints(namespace):
+def watch_k8s_resources(namespace):
     import os
     import subprocess
     import time
@@ -321,7 +317,7 @@ async def test_failure_scenarios(logger, docker_images, tmpdir, k8s_cluster):
     core_client = client.CoreV1Api(api_client=api_client)
     app_client = client.AppsV1Api(api_client=api_client)
     k8s_endpoints_watcher = multiprocessing.Process(
-        target=watch_k8s_endpoints, args=(namespace,), daemon=True
+        target=watch_k8s_resources, args=(namespace,), daemon=True
     )
     k8s_endpoints_watcher.start()
     try:
