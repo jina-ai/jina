@@ -457,7 +457,7 @@ def test_k8s_yaml_regular_deployment(
             'executor-head',
             {
                 'ENV_VAR': 'ENV_VALUE',
-                'JINA_LOG_LEVEL': 'INFO',
+                'JINA_LOG_LEVEL': 'DEBUG',
                 'pythonunbuffered': '1',
                 'worker_class': 'uvicorn.workers.UvicornH11Worker',
             },
@@ -654,7 +654,7 @@ def test_k8s_yaml_regular_deployment(
             name,
             {
                 'ENV_VAR': 'ENV_VALUE',
-                'JINA_LOG_LEVEL': 'INFO',
+                'JINA_LOG_LEVEL': 'DEBUG',
                 'pythonunbuffered': '1',
                 'worker_class': 'uvicorn.workers.UvicornH11Worker',
             },
