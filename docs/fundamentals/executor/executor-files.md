@@ -18,8 +18,6 @@ py_modules:
 
 ## Multiple Python files + YAML
 
-
-
 When you are working with multiple Python files, you should organize them as a **Python package** and put them in a special folder inside
 your repository (as you would normally do with Python packages). Specifically, you should do the following:
 

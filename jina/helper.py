@@ -520,6 +520,10 @@ def random_port() -> Optional[int]:
         return _random_port()
 
 
+def random_ports(n_ports):
+    return [random_port() for _ in range(n_ports)]
+
+
 def random_identity(use_uuid1: bool = False) -> str:
     """
     Generate random UUID.

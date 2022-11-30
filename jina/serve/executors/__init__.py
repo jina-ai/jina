@@ -1,4 +1,3 @@
-import contextlib
 import copy
 import inspect
 import multiprocessing
@@ -13,7 +12,7 @@ from typing import TYPE_CHECKING, Any, Dict, Optional, Type, Union
 
 from jina import __args_executor_init__, __cache_path__, __default_endpoint__
 from jina.enums import BetterEnum
-from jina.helper import ArgNamespace, T, iscoroutinefunction, typename
+from jina.helper import ArgNamespace, T, iscoroutinefunction, typename, get_or_reuse_loop
 from jina.importer import ImportExtensions
 from jina.jaml import JAML, JAMLCompatible, env_var_regex, internal_var_regex
 from jina.logging.logger import JinaLogger
@@ -24,7 +23,6 @@ from jina.serve.executors.decorators import (
 from jina.serve.executors.metas import get_executor_taboo
 from jina.serve.helper import store_init_kwargs, wrap_func
 from jina.serve.instrumentation import MetricsTimer
-from jina.helper import get_or_reuse_loop
 
 if TYPE_CHECKING:  # pragma: no cover
     from opentelemetry.context.context import Context

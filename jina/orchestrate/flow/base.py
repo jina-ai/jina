@@ -247,7 +247,7 @@ class Flow(
         :param prefetch: Number of requests fetched from the client before feeding into the first Executor.
 
               Used to control the speed of data input into a Flow. 0 disables prefetch (1000 requests is the default)
-        :param protocol: Possible communication protocols between server and client. Depending on your chosen gateway, choose the convenient protocols from: ['GRPC', 'HTTP', 'WEBSOCKET'].
+        :param protocol: Communication protocol of the server exposed by the Gateway. This can be a single value or a list of protocols, depending on your chosen Gateway. Choose the convenient protocols from: ['GRPC', 'HTTP', 'WEBSOCKET'].
         :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
         :param py_modules: The customized python modules need to be imported before loading the gateway
 
@@ -417,7 +417,7 @@ class Flow(
         :param prefetch: Number of requests fetched from the client before feeding into the first Executor.
 
               Used to control the speed of data input into a Flow. 0 disables prefetch (1000 requests is the default)
-        :param protocol: Possible communication protocols between server and client. Depending on your chosen gateway, choose the convenient protocols from: ['GRPC', 'HTTP', 'WEBSOCKET'].
+        :param protocol: Communication protocol of the server exposed by the Gateway. This can be a single value or a list of protocols, depending on your chosen Gateway. Choose the convenient protocols from: ['GRPC', 'HTTP', 'WEBSOCKET'].
         :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
         :param py_modules: The customized python modules need to be imported before loading the gateway
 
@@ -617,6 +617,9 @@ class Flow(
         args.default_port = (
             kwargs.get('port', None) is None and kwargs.get('port_expose', None) is None
         )
+
+        if not args.port:
+            args.port = helper.random_ports(len(args.protocol))
         args.noblock_on_start = True
         args.graph_description = json.dumps(graph_description)
         args.graph_conditions = json.dumps(graph_conditions)
@@ -853,7 +856,7 @@ class Flow(
         py_modules: Optional[List[str]] = None,
         quiet: Optional[bool] = False,
         quiet_error: Optional[bool] = False,
-        quiet_remote_logs: Optional[bool] = False,
+        reload: Optional[bool] = False,
         replicas: Optional[int] = 1,
         retries: Optional[int] = -1,
         runtime_cls: Optional[str] = 'WorkerRuntime',
@@ -865,7 +868,6 @@ class Flow(
         traces_exporter_host: Optional[str] = None,
         traces_exporter_port: Optional[int] = None,
         tracing: Optional[bool] = False,
-        upload_files: Optional[List[str]] = None,
         uses: Optional[Union[str, Type['BaseExecutor'], dict]] = 'BaseExecutor',
         uses_after: Optional[Union[str, Type['BaseExecutor'], dict]] = None,
         uses_after_address: Optional[str] = None,
@@ -944,7 +946,7 @@ class Flow(
           `Executor cookbook <https://docs.jina.ai/fundamentals/executor/executor-files/>`__
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
-        :param quiet_remote_logs: Do not display the streaming of remote logs on local console
+        :param reload: If set, the Executor reloads the modules as they change
         :param replicas: The number of replicas in the deployment
         :param retries: Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
         :param runtime_cls: The runtime class to run inside the Pod
@@ -956,15 +958,6 @@ class Flow(
         :param traces_exporter_host: If tracing is enabled, this hostname will be used to configure the trace exporter agent.
         :param traces_exporter_port: If tracing is enabled, this port will be used to configure the trace exporter agent.
         :param tracing: If set, the sdk implementation of the OpenTelemetry tracer will be available and will be enabled for automatic tracing of requests and customer span creation. Otherwise a no-op implementation will be provided.
-        :param upload_files: The files on the host to be uploaded to the remote
-          workspace. This can be useful when your Deployment has more
-          file dependencies beyond a single YAML file, e.g.
-          Python files, data files.
-
-          Note,
-          - currently only flatten structure is supported, which means if you upload `[./foo/a.py, ./foo/b.pp, ./bar/c.yml]`, then they will be put under the _same_ workspace on the remote, losing all hierarchies.
-          - by default, `--uses` YAML file is always uploaded.
-          - uploaded files are by default isolated across the runs. To ensure files are submitted to the same workspace across different runs, use `--workspace-id` to specify the workspace.
         :param uses: The config of the executor, it could be one of the followings:
                   * the string literal of an Executor class name
                   * an Executor YAML file (.yml, .yaml, .jaml)
@@ -1098,7 +1091,7 @@ class Flow(
           `Executor cookbook <https://docs.jina.ai/fundamentals/executor/executor-files/>`__
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
-        :param quiet_remote_logs: Do not display the streaming of remote logs on local console
+        :param reload: If set, the Executor reloads the modules as they change
         :param replicas: The number of replicas in the deployment
         :param retries: Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
         :param runtime_cls: The runtime class to run inside the Pod
@@ -1110,15 +1103,6 @@ class Flow(
         :param traces_exporter_host: If tracing is enabled, this hostname will be used to configure the trace exporter agent.
         :param traces_exporter_port: If tracing is enabled, this port will be used to configure the trace exporter agent.
         :param tracing: If set, the sdk implementation of the OpenTelemetry tracer will be available and will be enabled for automatic tracing of requests and customer span creation. Otherwise a no-op implementation will be provided.
-        :param upload_files: The files on the host to be uploaded to the remote
-          workspace. This can be useful when your Deployment has more
-          file dependencies beyond a single YAML file, e.g.
-          Python files, data files.
-
-          Note,
-          - currently only flatten structure is supported, which means if you upload `[./foo/a.py, ./foo/b.pp, ./bar/c.yml]`, then they will be put under the _same_ workspace on the remote, losing all hierarchies.
-          - by default, `--uses` YAML file is always uploaded.
-          - uploaded files are by default isolated across the runs. To ensure files are submitted to the same workspace across different runs, use `--workspace-id` to specify the workspace.
         :param uses: The config of the executor, it could be one of the followings:
                   * the string literal of an Executor class name
                   * an Executor YAML file (.yml, .yaml, .jaml)
@@ -1332,7 +1316,7 @@ class Flow(
         :param prefetch: Number of requests fetched from the client before feeding into the first Executor.
 
               Used to control the speed of data input into a Flow. 0 disables prefetch (1000 requests is the default)
-        :param protocol: Possible communication protocols between server and client. Depending on your chosen gateway, choose the convenient protocols from: ['GRPC', 'HTTP', 'WEBSOCKET'].
+        :param protocol: Communication protocol of the server exposed by the Gateway. This can be a single value or a list of protocols, depending on your chosen Gateway. Choose the convenient protocols from: ['GRPC', 'HTTP', 'WEBSOCKET'].
         :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
         :param py_modules: The customized python modules need to be imported before loading the gateway
 
@@ -1426,7 +1410,7 @@ class Flow(
         :param prefetch: Number of requests fetched from the client before feeding into the first Executor.
 
               Used to control the speed of data input into a Flow. 0 disables prefetch (1000 requests is the default)
-        :param protocol: Possible communication protocols between server and client. Depending on your chosen gateway, choose the convenient protocols from: ['GRPC', 'HTTP', 'WEBSOCKET'].
+        :param protocol: Communication protocol of the server exposed by the Gateway. This can be a single value or a list of protocols, depending on your chosen Gateway. Choose the convenient protocols from: ['GRPC', 'HTTP', 'WEBSOCKET'].
         :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
         :param py_modules: The customized python modules need to be imported before loading the gateway
 

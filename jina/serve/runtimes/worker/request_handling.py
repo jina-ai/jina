@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING, Dict, List, Optional, Tuple
 
 from docarray import DocumentArray
+
 from jina import __default_endpoint__
 from jina.excepts import BadConfigSource
 from jina.importer import ImportExtensions
@@ -24,14 +25,14 @@ class WorkerRequestHandler:
     _KEY_RESULT = '__results__'
 
     def __init__(
-            self,
-            args: 'argparse.Namespace',
-            logger: 'JinaLogger',
-            metrics_registry: Optional['CollectorRegistry'] = None,
-            tracer_provider: Optional['trace.TracerProvider'] = None,
-            meter_provider: Optional['metrics.MeterProvider'] = None,
-            deployment_name: str = '',
-            **kwargs,
+        self,
+        args: 'argparse.Namespace',
+        logger: 'JinaLogger',
+        metrics_registry: Optional['CollectorRegistry'] = None,
+        tracer_provider: Optional['trace.TracerProvider'] = None,
+        meter_provider: Optional['metrics.MeterProvider'] = None,
+        deployment_name: str = '',
+        **kwargs,
     ):
         """Initialize private parameters and execute private loading functions.
 
@@ -81,16 +82,16 @@ class WorkerRequestHandler:
             self.logger.debug(f'Instantiated Batch Queues: {self._batchqueue}')
 
     def _init_monitoring(
-            self,
-            metrics_registry: Optional['CollectorRegistry'] = None,
-            meter: Optional['metrics.Meter'] = None,
+        self,
+        metrics_registry: Optional['CollectorRegistry'] = None,
+        meter: Optional['metrics.Meter'] = None,
     ):
 
         if metrics_registry:
 
             with ImportExtensions(
-                    required=True,
-                    help_text='You need to install the `prometheus_client` to use the montitoring functionality of jina',
+                required=True,
+                help_text='You need to install the `prometheus_client` to use the montitoring functionality of jina',
             ):
                 from prometheus_client import Counter, Summary
 
@@ -146,10 +147,10 @@ class WorkerRequestHandler:
             self._sent_response_size_histogram = None
 
     def _load_executor(
-            self,
-            metrics_registry: Optional['CollectorRegistry'] = None,
-            tracer_provider: Optional['trace.TracerProvider'] = None,
-            meter_provider: Optional['metrics.MeterProvider'] = None,
+        self,
+        metrics_registry: Optional['CollectorRegistry'] = None,
+        tracer_provider: Optional['trace.TracerProvider'] = None,
+        meter_provider: Optional['metrics.MeterProvider'] = None,
     ):
         """
         Load the executor to this runtime, specified by ``uses`` CLI argument.
@@ -188,6 +189,37 @@ class WorkerRequestHandler:
         except Exception:
             self.logger.critical(f'can not load the executor from {self.args.uses}')
             raise
+
+    def _refresh_executor(self, changed_files):
+        import importlib
+        import inspect
+        import copy
+        import sys
+
+        try:
+            sys_mod_files_modules = {getattr(module, '__file__', ''): module for module in sys.modules.values()}
+
+            for file in changed_files:
+                if file in sys_mod_files_modules:
+                    importlib.reload(sys_mod_files_modules[file])
+                else:
+                    self.logger.debug(f'Changed file {file} was not previously imported.')
+        except Exception as exc:
+            self.logger.error(f' Exception when refreshing Executor when changes detected in {changed_files}')
+            raise exc
+
+        importlib.reload(inspect.getmodule(self._executor.__class__))
+        requests = copy.copy(self._executor.requests)
+        old_cls = self._executor.__class__
+        new_cls = getattr(importlib.import_module(old_cls.__module__), old_cls.__name__)
+        new_executor = new_cls.__new__(new_cls)
+        new_executor.__dict__ = self._executor.__dict__
+        for k, v in requests.items():
+            requests[k] = getattr(new_executor.__class__, requests[k].__name__)
+        self._executor = new_executor
+        self._executor.requests.clear()
+        requests = {k: v.__name__ for k, v in requests.items()}
+        self._executor._add_requests(requests)
 
     @staticmethod
     def _parse_params(parameters: Dict, executor_name: str):
@@ -281,7 +313,7 @@ class WorkerRequestHandler:
         return docs
 
     async def handle(
-            self, requests: List['DataRequest'], tracing_context: Optional['Context'] = None
+        self, requests: List['DataRequest'], tracing_context: Optional['Context'] = None
     ) -> DataRequest:
         """Initialize private parameters and execute private loading functions.
 
@@ -338,7 +370,7 @@ class WorkerRequestHandler:
 
     @staticmethod
     def replace_docs(
-            request: List['DataRequest'], docs: 'DocumentArray', ndarrray_type: str = None
+        request: List['DataRequest'], docs: 'DocumentArray', ndarrray_type: str = None
     ) -> None:
         """Replaces the docs in a message with new Documents.
 
@@ -380,7 +412,7 @@ class WorkerRequestHandler:
 
     @staticmethod
     def _get_docs_matrix_from_request(
-            requests: List['DataRequest'],
+        requests: List['DataRequest'],
     ) -> Tuple[Optional[List['DocumentArray']], Optional[Dict[str, 'DocumentArray']]]:
         """
         Returns a docs matrix from a list of DataRequest objects.
@@ -404,7 +436,7 @@ class WorkerRequestHandler:
 
     @staticmethod
     def get_parameters_dict_from_request(
-            requests: List['DataRequest'],
+        requests: List['DataRequest'],
     ) -> 'Dict':
         """
         Returns a parameters dict from a list of DataRequest objects.
@@ -424,8 +456,8 @@ class WorkerRequestHandler:
 
     @staticmethod
     def get_docs_from_request(
-            requests: List['DataRequest'],
-            field: str,
+        requests: List['DataRequest'],
+        field: str,
     ) -> 'DocumentArray':
         """
         Gets a field from the message

@@ -63,7 +63,7 @@ def test_pod_port_cast():
 
 def test_default_port_protocol_gateway():
     args = set_gateway_parser().parse_args([])
-    assert len(args.port) == 1
+    assert args.port is None
     assert args.protocol == [GatewayProtocolType.GRPC]
 
 
