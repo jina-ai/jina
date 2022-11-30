@@ -366,7 +366,7 @@ def test_run_async():
 
 @pytest.mark.parametrize(
     'port, output',
-    [('8080', 8080), ('1,2,6', [1, 2, 6])],
+    [('8080', 8080), ('1,2,6', [1, 2, 6]), (['1','2','6'], [1, 2, 6])],
 )
 def test_parse_port(port, output):
     assert _parse_ports(port) == output
@@ -374,7 +374,7 @@ def test_parse_port(port, output):
 
 @pytest.mark.parametrize(
     'host, output',
-    [('1234', '1234'), ('1,2,6', ['1', '2', '6'])],
+    [('1234', '1234'), ('1,2,6', ['1', '2', '6']), (['1','2','6'], ['1', '2', '6'])],
 )
 def test_parse_host(host, output):
     assert _parse_hosts(host) == output

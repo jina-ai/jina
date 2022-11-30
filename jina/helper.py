@@ -1643,14 +1643,20 @@ def _single_port_free(host: str, port: int) -> bool:
             return True
 
 
-def is_port_free(host: str, port: Union[int, List[int]]) -> bool:
+def is_port_free(host: Union[str, List[str]], port: Union[int, List[int]]) -> bool:
     if isinstance(port, list):
-        return all([_single_port_free(host, _p) for _p in port])
+        if isinstance(host, str):
+            return all([_single_port_free(host, _p) for _p in port])
+        else:
+            return all([all([_single_port_free(_h, _p) for _p in port]) for _h in host])
     else:
-        return _single_port_free(host, port)
+        if isinstance(host, str):
+            return _single_port_free(host, port)
+        else:
+            return all([_single_port_free(_h, port) for _h in host])
 
 
-def _parse_ports(port: str) -> Union[int, List]:
+def _parse_ports(port: Union[str, List[str]]) -> Union[int, List[int]]:
     """Parse port
 
     EXAMPLE USAGE
@@ -1663,21 +1669,24 @@ def _parse_ports(port: str) -> Union[int, List]:
 
         _parse_port('8001,8002,8005')
         [80001, 8002, 8005]
+        
+        _parse_port(['80001', '8002', '8005'])
+        [80001, 8002, 8005]
 
     :param port: the string to parse
     :return: the port or the iterable ports
     """
-    try:
-        port = int(port)
-    except ValueError as e:
+    if isinstance(port, list):
+        port = [int(port_) for port_ in port]
+    elif isinstance(port, str):
         if ',' in port:
             port = [int(port_) for port_ in port.split(',')]
-        elif not isinstance(port, list):
-            raise e
+        else:
+            port = int(port)
     return port
 
 
-def _parse_hosts(host: str) -> Union[str, List[str]]:
+def _parse_hosts(host: Union[str, List[str]]) -> Union[str, List[str]]:
     """Parse port
 
     EXAMPLE USAGE
@@ -1690,13 +1699,19 @@ def _parse_hosts(host: str) -> Union[str, List[str]]:
 
         _parse_port('localhost,91.198.174.192')
         ['localhost', '91.198.174.192']
+        
+        _parse_port(['localhost', '91.198.174.192'])
+        ['localhost', '91.198.174.192']
 
     :param host: the string to parse
     :return: the host or the iterable of hosts
     """
-    hosts = host.split(',')
-    return hosts[0] if len(hosts) == 1 else hosts
-
+    if isinstance(host, List):
+        return host
+    else:
+        hosts = host.split(',')
+        return hosts[0] if len(hosts) == 1 else hosts
+    
 
 def send_telemetry_event(event: str, obj: Any, **kwargs) -> None:
     """Sends in a thread a request with telemetry for a given event
