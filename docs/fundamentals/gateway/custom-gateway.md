@@ -1,22 +1,22 @@
 (custom-gateway)=
 # Customize the Gateway
-A Jina Gateway is customizable and can be implemented in the same way Executors are implemented.
+A Jina Gateway is customizable and can be implemented in a similar way Executors are implemented.
 With Custom Gateways, Jina gives power back to the users, by allowing to implement any server, protocol and interface on
 the gateway level. This means you have more freedom in:
+* Defining and exposing your own API Gateway interface to clients. You can define your JSON schema or protos,...
 * Choosing your favourite server framework.
 * Choosing the protocol used to serve your app.
-* Defining your API Gateway interface. You can define your JSON schema or protos,...
 
 Customization is allowed different components:
 * Implementing the custom gateway using a `base` gateway class: {class}`~jina.Gateway` or {class}`~jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway`.
 * Using the {class}`~jina.serve.streamer.GatewayStreamer` to send data to Executors in the Flow.
-* Implementing the needed health-checks for the runtime.
+* Implementing the needed health-checks for jina.
 * Optionally, define a `config.yml` for it.
 * Optionally, bootstrapping the gateway using a `Dockerfile` and re-using the docker image.
 
 ## Implementing the custom gateway
 Similarly to how you would implement an Executor, you can implement a custom gateway by inheriting from a base gateway class.
-Jina Gateway Runtime will instantiate your implemented class, inject runtime arguments and user-defined arguments to it, 
+Jina will instantiate your implemented class, inject runtime arguments and user-defined arguments to it, 
 run it, send health-checks to it and orchestrate it.
 
 Two Base Gateway classes are provided to allow implementing a custom gateway:
@@ -117,7 +117,7 @@ shares its attributes.
 
 ## Gateway arguments
 ### Runtime attributes
-The runtime injects some attributes into the Gateway classes. You can use the to setup your custom gateway:
+Jina injects some attributes into the Gateway classes. You can use them to set up your custom gateway:
 * name: gateway pod name.
 * logger: Jina logger object.
 * tracing: whether runtime tracing is enabled or not.
@@ -132,7 +132,7 @@ The runtime injects some attributes into the Gateway classes. You can use the to
 ```{admonition} Nonte
 :class: note
 
-The runtime provides the Gateway with a list of ports and protocols to expose. Therefore, a Custom Gateway can serve on 
+Jina provides the Gateway with a list of ports and protocols to expose. Therefore, a Custom Gateway can serve on 
 multiple ports and protocols.
 ```
 
@@ -146,8 +146,8 @@ Refer to the {ref}`Use Custom Gateway section <use-custom-gateway>` for more inf
 {class}`~jina.serve.streamer.GatewayStreamer` allows you to interface with Executors within the gateway. An instance of 
 this class knows about the Flow structure and contains a connection pool to connect to each executor. You can get this 
 object in 2 different ways:
-* A `streamer` object (instance of {class}`~jina.serve.streamer.GatewayStreamer`) is injected by the runtime to your gateway class.
-* In case your server logic cannot access the Gateway class (for instance separate script), you can still get a stream 
+* A `streamer` object (instance of {class}`~jina.serve.streamer.GatewayStreamer`) is injected by Jina to your gateway class.
+* In case your server logic cannot access the Gateway class (for instance separate script), you can still get a streamer 
 object using {meth}`~jina.serve.streamer.get_streamer()`.
 
 After transforming requests that arrive to the gateway server into Documents, you can send them to Executors in the Flow 
@@ -245,7 +245,7 @@ Once you finish the `Dockerfile` you should end up with the following file struc
 ## Use the Custom Gateway
 You can include the Custom Gateway in a jina Flow in different formats: Python class, configuration YAML and docker image:
 
-`````{tab} Flow python API
+### Flow python API
 ````{tab} Python Class
 ```python
 from jina import Gateway, Flow
@@ -283,9 +283,8 @@ flow = Flow().config_gateway(
 )
 ```
 ````
-`````
 
-`````{tab} Flow YAML configuration
+### Flow YAML configuration
 ````{tab} Python Class
 ```yaml
 !Flow
@@ -318,11 +317,10 @@ gateway:
   port: 12344
 ```
 ````
-`````
 
 ```{admonition} Important
 :class: important
 
-When you include a custom gateway in a Jina Flow, since the runtime needs to know about the port and protocol to which 
+When you include a custom gateway in a Jina Flow, since Jina needs to know about the port and protocol to which 
 health checks will be sent, it is important to specify them when including the gateway.
 ```
