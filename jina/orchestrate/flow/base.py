@@ -675,6 +675,7 @@ class Flow(
             if node == GATEWAY_NAME:
                 continue
 
+            # TODO: check this
             if v.external:
                 deployment_k8s_address = f'{v.host}'
             elif v.head_args:
@@ -711,6 +712,7 @@ class Flow(
             if node == GATEWAY_NAME:
                 continue
 
+            # TODO: check this
             if v.external:
                 deployment_docker_compose_address = [
                     f'{v.protocol}://{v.host}:{v.port}'
@@ -1193,11 +1195,6 @@ class Flow(
             args.workspace = self.workspace
 
         args.noblock_on_start = True
-
-        port = kwargs.get('port', None)
-        if not port:
-            port = helper.random_port()
-            args.port = port
 
         if len(needs) > 1 and args.external and args.no_reduce:
             raise ValueError(
@@ -2207,11 +2204,6 @@ class Flow(
             _ports = [self.port]
         else:
             _ports = [str(_p) for _p in self.port]
-
-        # if not isinstance(self.host, list):
-        #     _hosts = [self.host]
-        # else:
-        #     _hosts = self.host
 
         for _port, _protocol in zip(_ports, _protocols):
             if self.gateway_args.ssl_certfile and self.gateway_args.ssl_keyfile:
