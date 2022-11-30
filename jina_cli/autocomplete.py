@@ -364,6 +364,7 @@ ac_table = {
             '--help',
             '--proxy',
             '--host',
+            '--host-in',
             '--port',
             '--tls',
             '--asyncio',
