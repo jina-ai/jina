@@ -137,6 +137,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         :param runtime_args: a dict of arguments injected from :class:`Runtime` during runtime
         :param kwargs: additional extra keyword arguments to avoid failing when extra params ara passed that are not expected
         :param workspace: the workspace of the executor. Only used if a workspace is not already provided in `metas` or `runtime_args`
+        :param dynamic_batching: a dict of endpoint-dynamic_batching config mapping
         """
         self._add_metas(metas)
         self._add_requests(requests)
