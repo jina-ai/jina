@@ -116,11 +116,10 @@ class Flow(
         self,
         *,
         asyncio: Optional[bool] = False,
-        host: Union[List[str], Optional[str]] = '0.0.0.0',
         metrics: Optional[bool] = False,
         metrics_exporter_host: Optional[str] = None,
         metrics_exporter_port: Optional[int] = None,
-        port: Union[List[str], Optional[str]] = None,
+        port: Optional[int] = None,
         protocol: Optional[str] = 'GRPC',
         proxy: Optional[bool] = False,
         tls: Optional[bool] = False,
@@ -132,8 +131,6 @@ class Flow(
         """Create a Flow. Flow is how Jina streamlines and scales Executors. This overloaded method provides arguments from `jina client` CLI.
 
         :param asyncio: If set, then the input and output of this Client work in an asynchronous manner.
-        TODO change :param host and :param port
-        :param host: The host address of the runtime, by default it is 0.0.0.0. In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts, separated by commas. Then, every resulting address will be considered as one replica of the Executor.
         :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.
         :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.
         :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.
@@ -172,8 +169,6 @@ class Flow(
         graph_conditions: Optional[str] = '{}',
         graph_description: Optional[str] = '{}',
         grpc_server_options: Optional[dict] = None,
-        # host: Optional[str] = '0.0.0.0',
-        host: Union[List[str], Optional[str]] = '0.0.0.0',
         log_config: Optional[str] = None,
         metrics: Optional[bool] = False,
         metrics_exporter_host: Optional[str] = None,
@@ -836,7 +831,6 @@ class Flow(
         gpus: Optional[str] = None,
         grpc_metadata: Optional[dict] = None,
         grpc_server_options: Optional[dict] = None,
-        host: Union[List[str], Optional[str]] = '0.0.0.0',
         install_requirements: Optional[bool] = False,
         log_config: Optional[str] = None,
         metrics: Optional[bool] = False,
@@ -1228,7 +1222,6 @@ class Flow(
         graph_conditions: Optional[str] = '{}',
         graph_description: Optional[str] = '{}',
         grpc_server_options: Optional[dict] = None,
-        host: Union[List[str], Optional[str]] = '0.0.0.0',
         log_config: Optional[str] = None,
         metrics: Optional[bool] = False,
         metrics_exporter_host: Optional[str] = None,
@@ -2202,7 +2195,7 @@ class Flow(
             _ports = [self.port]
         else:
             _ports = [str(_p) for _p in self.port]
-            
+
         if not isinstance(self.host, list):
             _hosts = [self.host]
         else:
