@@ -124,6 +124,12 @@ def mixin_pod_runtime_args_parser(arg_group, pod_type='worker'):
             action=CastToIntAction,
             help=port_description,
         )
+        arg_group.add_argument(
+            '--reload',
+            action='store_true',
+            default=False,
+            help='If set, the Executor reloads the modules as they change'
+        )
     else:
         port_description = (
             'The port for input data to bind the gateway server to, by default, random ports between range [49152, 65535] will be assigned. '
