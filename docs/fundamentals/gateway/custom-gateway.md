@@ -96,7 +96,7 @@ simply implement the {meth}`~jina.jina.serve.runtimes.gateway.http.fastapi.FastA
 from jina.serve.runtimes.gateway.http.fastapi import FastAPIBaseGateway
 
 
-class DummyFastAPIGateway(FastAPIBaseGateway):
+class MyGateway(FastAPIBaseGateway):
     @property
     def app(self):
         from fastapi import FastAPI
@@ -201,8 +201,8 @@ Such a configuration can override user-defined parameters and define other runti
 
 For instance, you can define such a configuration in `config.yml`:
 ```yaml
-!MyCustomGateway
-py_modules: custom_gateway.py
+!MyGateway
+py_modules: my_gateway.py
 with:
   arg1: hello
   arg2: world
@@ -253,7 +253,7 @@ You can include the Custom Gateway in a jina Flow in different formats: Python c
 from jina import Gateway, Flow
 
 
-class MyHTTPGateway(Gateway):
+class MyGateway(Gateway):
     def __init__(self, arg: str = None, **kwargs):
         super().__init__(**kwargs)
         self.arg = arg
@@ -262,7 +262,7 @@ class MyHTTPGateway(Gateway):
 
 
 flow = Flow().config_gateway(
-    uses=MyHTTPGateway, port=12345, protocol='http', uses_with={'arg': 'value'}
+    uses=MyGateway, port=12345, protocol='http', uses_with={'arg': 'value'}
 )
 ```
 ````
@@ -292,7 +292,7 @@ flow = Flow().config_gateway(
 !Flow
 gateway:
   py_modules: gateway.py
-  uses: MyHTTPGateway
+  uses: MyGateway
   with:
     arg: value
   protocol: http
