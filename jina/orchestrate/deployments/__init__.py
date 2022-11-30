@@ -99,10 +99,14 @@ class BaseDeployment(ExitStack):
 
         _head_args = copy.deepcopy(args)
         _head_args.polling = args.polling
-        if not hasattr(args, 'port') or not args.port:
-            _head_args.port = helper.random_port()
-        else:
-            _head_args.port = args.port
+
+        # TODO: check if this is needed
+        # if not hasattr(args, 'port') or not args.port:
+        #     _head_args.port = helper.random_port()
+        # else:
+        #     _head_args.port = args.port
+        _head_args.port = args.port[0]
+        _head_args.host = args.host[0]
         _head_args.uses = args.uses
         _head_args.pod_role = PodRoleType.HEAD
         _head_args.runtime_cls = 'HeadRuntime'
@@ -243,7 +247,7 @@ class Deployment(BaseDeployment):
         self.uses_after_pod = None
         self.head_pod = None
         self.shards = {}
-        self._update_port_args()
+        self._update_port_monitoring_args()
         self.update_pod_args()
         self._sandbox_deployed = False
 
@@ -253,12 +257,14 @@ class Deployment(BaseDeployment):
 
     def _parse_addresses_into_host_and_port(self):
         # splits addresses passed to `host` into separate `host` and `port`
-        _hostname, port, scheme, tls = parse_host_scheme(self.args.host)
-        if _hostname != self.args.host:  # more than just hostname was passed to `host`
-            self.args.host = _hostname
-            self.args.port = port
-            self.args.scheme = scheme
-            self.args.tls = tls
+
+        # TODO: verify if this is needed actually ?
+        for i, _host in enumerate(self.args.host):
+            _hostname, port, scheme, tls = parse_host_scheme(_host)
+            if _hostname != _host:  # more than just hostname was passed to `host`
+                self.args.host[i] = _hostname
+                self.args.port[i] = port
+                self.args.tls = tls
         for i, repl_host in enumerate(self.ext_repl_hosts):
             _hostname, port, scheme, tls = parse_host_scheme(repl_host)
             if (
@@ -271,8 +277,8 @@ class Deployment(BaseDeployment):
 
     def _parse_external_replica_hosts_and_ports(self):
         # splits user provided lists of hosts and ports into a host and port for every distributed replica
-        ext_repl_ports = make_iterable(_parse_ports(self.args.port))
-        ext_repl_hosts = make_iterable(_parse_hosts(self.args.host))
+        ext_repl_ports: List = self.args.port
+        ext_repl_hosts: List = self.args.host
         if len(ext_repl_hosts) < len(ext_repl_ports):
             if (
                 len(ext_repl_hosts) == 1
@@ -287,7 +293,9 @@ class Deployment(BaseDeployment):
             raise ValueError(
                 f'Number of hosts ({len(ext_repl_hosts)}) does not match the number of ports ({len(ext_repl_ports)})'
             )
-        self.args.port, self.args.host = int(ext_repl_ports[0]), ext_repl_hosts[0]
+
+        # TODO: check if this is needed somewhere else
+        # self.args.port, self.args.host = int(ext_repl_ports[0]), ext_repl_hosts[0]
         self.ext_repl_hosts, self.ext_repl_ports = ext_repl_hosts, ext_repl_ports
         # varying tls and schemes other than 'grpc' only implemented if the entire address is passed to `host`
         self.ext_repl_schemes = [
@@ -297,7 +305,8 @@ class Deployment(BaseDeployment):
             getattr(self.args, 'tls', None) for _ in self.ext_repl_ports
         ]
 
-    def _update_port_args(self):
+    def _update_port_monitoring_args(self):
+        # TODO: update this when port_monitoring is changed
         _all_port_monitoring = _parse_ports(self.args.port_monitoring)
         self.args.all_port_monitoring = (
             [_all_port_monitoring]
@@ -318,9 +327,9 @@ class Deployment(BaseDeployment):
         else:
             self.pod_args = self._parse_args(self.args)
 
-        if self.external:
+        for shard_id in self.pod_args['pods']:
             for pod, port, host, scheme, tls in zip(
-                self.pod_args['pods'][0],
+                self.pod_args['pods'][shard_id],
                 self.ext_repl_ports,
                 self.ext_repl_hosts,
                 self.ext_repl_schemes,
@@ -328,8 +337,9 @@ class Deployment(BaseDeployment):
             ):
                 pod.port = port
                 pod.host = host
-                pod.scheme = scheme
-                pod.tls = tls
+                if self.external:  # TODO: is this really needed ?
+                    pod.scheme = scheme
+                    pod.tls = tls
 
     def update_sandbox_args(self):
         """Update args of all its pods based on the host and port returned by Hubble"""
@@ -354,7 +364,9 @@ class Deployment(BaseDeployment):
         :return: True if this deployment is provided as a sandbox, False otherwise
         """
         uses = getattr(self.args, 'uses') or ''
-        is_sandbox = uses.startswith('jinahub+sandbox://') or uses.startswith('jinaai+sandbox://')
+        is_sandbox = uses.startswith('jinahub+sandbox://') or uses.startswith(
+            'jinaai+sandbox://'
+        )
         return is_sandbox
 
     @property
@@ -365,7 +377,11 @@ class Deployment(BaseDeployment):
         :return: True if this deployment is to be run in docker
         """
         uses = getattr(self.args, 'uses', '')
-        is_docker = uses.startswith('jinahub+docker://') or uses.startswith('docker://') or uses.startswith('jinaai+docker://')
+        is_docker = (
+            uses.startswith('jinahub+docker://')
+            or uses.startswith('docker://')
+            or uses.startswith('jinaai+docker://')
+        )
         return is_docker
 
     @property
