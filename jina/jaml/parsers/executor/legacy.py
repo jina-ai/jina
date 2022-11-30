@@ -115,6 +115,9 @@ class ExecutorLegacyParser(BaseLegacyParser):
         if hasattr(data, 'requests'):
             r['requests'] = {k: v.__name__ for k, v in data.requests.items()}
 
+        if hasattr(data, 'dynamic_batching'):
+            r['dynamic_batching'] = data.dynamic_batching
+
         if hasattr(data, 'components'):
             r['components'] = data.components
         return r
