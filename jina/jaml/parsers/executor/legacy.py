@@ -39,6 +39,7 @@ class ExecutorLegacyParser(BaseLegacyParser):
                 **data.get('with', {}),
                 metas=data.get('metas', {}),
                 requests=data.get('requests', {}),
+                dynamic_batching=data.get('dynamic_batching', {}),
                 runtime_args=runtime_args,
             )
         else:
@@ -46,6 +47,7 @@ class ExecutorLegacyParser(BaseLegacyParser):
                 **data.get('with', {}),
                 metas=data.get('metas', {}),
                 requests=data.get('requests', {}),
+                dynamic_batching=data.get('dynamic_batching', {}),
                 runtime_args=runtime_args,
             )
         cls._init_from_yaml = False
