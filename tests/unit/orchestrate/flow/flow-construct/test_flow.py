@@ -359,9 +359,9 @@ def test_return_results_sync_flow(protocol, on_done):
 )
 def test_flow_host_expose_shortcut(input, expected_host, expected_port):
     f = Flow().add(host=input).build()
-    assert f['executor0'].args.host == expected_host
+    assert f['executor0'].args.host == [expected_host]
     if expected_port:
-        assert f['executor0'].args.port == expected_port
+        assert f['executor0'].args.port == [expected_port]
 
 
 def test_flow_workspace_id():
