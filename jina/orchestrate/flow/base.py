@@ -171,6 +171,7 @@ class Flow(
         graph_conditions: Optional[str] = '{}',
         graph_description: Optional[str] = '{}',
         grpc_server_options: Optional[dict] = None,
+        host: Optional[str] = '0.0.0.0',
         log_config: Optional[str] = None,
         metrics: Optional[bool] = False,
         metrics_exporter_host: Optional[str] = None,
@@ -222,6 +223,7 @@ class Flow(
         :param graph_conditions: Dictionary stating which filtering conditions each Executor in the graph requires to receive Documents.
         :param graph_description: Routing graph for the gateway
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
+        :param host: The host address of the runtime, by default it is 0.0.0.0.
         :param log_config: The YAML config of the logger used in this object.
         :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.
         :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.
@@ -390,6 +392,7 @@ class Flow(
         :param graph_conditions: Dictionary stating which filtering conditions each Executor in the graph requires to receive Documents.
         :param graph_description: Routing graph for the gateway
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
+        :param host: The host address of the runtime, by default it is 0.0.0.0.
         :param log_config: The YAML config of the logger used in this object.
         :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.
         :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.
@@ -1228,6 +1231,7 @@ class Flow(
         graph_conditions: Optional[str] = '{}',
         graph_description: Optional[str] = '{}',
         grpc_server_options: Optional[dict] = None,
+        host: Optional[str] = '0.0.0.0',
         log_config: Optional[str] = None,
         metrics: Optional[bool] = False,
         metrics_exporter_host: Optional[str] = None,
@@ -1279,6 +1283,7 @@ class Flow(
         :param graph_conditions: Dictionary stating which filtering conditions each Executor in the graph requires to receive Documents.
         :param graph_description: Routing graph for the gateway
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
+        :param host: The host address of the runtime, by default it is 0.0.0.0.
         :param log_config: The YAML config of the logger used in this object.
         :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.
         :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.
@@ -1371,6 +1376,7 @@ class Flow(
         :param graph_conditions: Dictionary stating which filtering conditions each Executor in the graph requires to receive Documents.
         :param graph_description: Routing graph for the gateway
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
+        :param host: The host address of the runtime, by default it is 0.0.0.0.
         :param log_config: The YAML config of the logger used in this object.
         :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.
         :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.
