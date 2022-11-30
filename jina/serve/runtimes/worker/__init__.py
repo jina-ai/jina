@@ -135,7 +135,9 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
             reflection.SERVICE_NAME,
         )
         # Mark all services as healthy.
-        health_pb2_grpc.add_HealthServicer_to_server(self, self._grpc_server)
+        health_pb2_grpc.add_HealthServicer_to_server(
+            self._health_servicer, self._grpc_server
+        )
 
         reflection.enable_server_reflection(service_names, self._grpc_server)
         bind_addr = f'{self.args.host}:{self.args.port}'
@@ -143,7 +145,9 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         self._grpc_server.add_insecure_port(bind_addr)
         await self._grpc_server.start()
         for service in service_names:
-            await self._health_servicer.set(service, health_pb2.HealthCheckResponse.SERVING)
+            await self._health_servicer.set(
+                service, health_pb2.HealthCheckResponse.SERVING
+            )
 
     async def async_run_forever(self):
         """Block until the GRPC server is terminated"""
@@ -272,25 +276,3 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         for k, v in env_info.items():
             info_proto.envs[k] = str(v)
         return info_proto
-
-    async def Check(
-            self, request: health_pb2.HealthCheckRequest, context
-    ) -> health_pb2.HealthCheckResponse:
-        """Calls the underlying HealthServicer.Check method with the same arguments
-        :param request: grpc request
-        :param context: grpc request context
-        :returns: the grpc HealthCheckResponse
-        """
-        self.logger.debug(f'Receive Check request')
-        return await self._health_servicer.Check(request, context)
-
-    async def Watch(
-            self, request: health_pb2.HealthCheckRequest, context
-    ) -> health_pb2.HealthCheckResponse:
-        """Calls the underlying HealthServicer.Watch method with the same arguments
-        :param request: grpc request
-        :param context: grpc request context
-        :returns: the grpc HealthCheckResponse
-        """
-        self.logger.debug(f'Receive Watch request')
-        return await self._health_servicer.Watch(request, context)

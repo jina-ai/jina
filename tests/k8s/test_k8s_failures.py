@@ -193,7 +193,6 @@ async def run_test_until_event(
             )
     except Exception as exc:
         logger.error(f' Exception raised in sending requests task: {exc}')
-        # raise exc
         # Let's also cancel all running tasks:
         logger.warning(f'Cancelling pending tasks and stopping the event loop.')
         loop = asyncio.get_event_loop()
@@ -398,7 +397,7 @@ async def test_failure_scenarios(logger, docker_images, tmpdir, k8s_cluster):
             logger=logger,
         )
         logger.info(f'Deleting pod has been done')
-        await asyncio.sleep(10.0)
+        await asyncio.sleep(5.0)
 
         stop_event.set()
         responses, sent_ids = await send_task
@@ -416,9 +415,7 @@ async def test_failure_scenarios(logger, docker_images, tmpdir, k8s_cluster):
             pod_ids.add(pod_id)
         assert len(sent_ids) == len(doc_ids)
         logger.info(f'pod_ids {pod_ids}')
-        assert (
-            len(pod_ids) >= 2
-        )  # 8  # 3 original + 3 restarted + 1 scaled up + 1 deleted
+        assert len(pod_ids) >= 2  # 2 original + 2 restarted + 1 scaled up + 1 deleted
 
         # do the random failure test
         # start sending again
@@ -437,45 +434,12 @@ async def test_failure_scenarios(logger, docker_images, tmpdir, k8s_cluster):
         # inject failures
         inject_failures(k8s_cluster, logger)
         # wait a bit
-        await asyncio.sleep(10.0)
+        await asyncio.sleep(5.0)
         # check that no message was lost
         stop_event.set()
         responses, sent_ids = await send_task
         assert len(sent_ids) == len(responses)
     except Exception as exc:
-        logger.error(f' Exception raised {exc}')
-        print(f' ############## GATEWAY LOGS #########################')
-        import subprocess
-
-        gateway_pods = core_client.list_namespaced_pod(
-            namespace=namespace,
-            label_selector=f'app=gateway',
-        )
-        for gateway_pod in gateway_pods.items:
-            out = subprocess.run(
-                f'kubectl logs {gateway_pod.metadata.name} -n {namespace} gateway',
-                shell=True,
-                capture_output=True,
-                text=True,
-            ).stdout.strip("\n")
-            print(out)
-
-        # for deployment in ['executor0']:
-        #     print(
-        #         f' ############## EXECUTOR LOGS in {deployment} #########################'
-        #     )
-        #     executor_pods = core_client.list_namespaced_pod(
-        #         namespace=namespace,
-        #         label_selector=f'app={deployment}',
-        #     )
-        #     for executor_pod in executor_pods.items:
-        #         out = subprocess.run(
-        #             f'kubectl logs {executor_pod.metadata.name} -n {namespace} executor',
-        #             shell=True,
-        #             capture_output=True,
-        #             text=True,
-        #         ).stdout.strip("\n")
-        #         print(out)
         raise exc
     finally:
         k8s_endpoints_watcher.terminate()
