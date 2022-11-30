@@ -113,14 +113,14 @@ def mixin_pod_runtime_args_parser(arg_group, pod_type='worker'):
         'In the case of an external Executor (`--external` or `external=True`) this can be a list of ports. '
         'Then, every resulting address will be considered as one replica of the Executor.'
     )
-    
+
     if pod_type != 'gateway':
         arg_group.add_argument(
             '--port',
             '--port-in',
             type=str,
             nargs='+',
-            default=helper.random_port(), # TODO check
+            default=[helper.random_port()],
             action=CastToIntAction,
             help=port_description,
         )
@@ -128,7 +128,7 @@ def mixin_pod_runtime_args_parser(arg_group, pod_type='worker'):
             '--reload',
             action='store_true',
             default=False,
-            help='If set, the Executor reloads the modules as they change'
+            help='If set, the Executor reloads the modules as they change',
         )
     else:
         port_description = (

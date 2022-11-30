@@ -1,7 +1,7 @@
 """Argparser module for remote runtime"""
 
 from jina import __default_host__, helper
-from jina.parsers.helper import KVAppendAction, add_arg_group, CastHostAction
+from jina.parsers.helper import CastHostAction, KVAppendAction, add_arg_group
 from jina.parsers.orchestrate.runtimes.runtime import mixin_base_runtime_parser
 
 
@@ -10,13 +10,13 @@ def mixin_remote_runtime_parser(parser):
     :param parser: the parser
     """
     gp = add_arg_group(parser, title='RemoteRuntime')
-    
+
     gp.add_argument(
         '--host',
         '--host-in',
         # type=str,
-        nargs = '+',
-        default=__default_host__,
+        nargs='+',
+        default=[__default_host__],
         action=CastHostAction,
         help=f'The host of the Gateway, which the client should connect to, by default it is {__default_host__}.'
         ' In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts, separated by commas.'
@@ -189,7 +189,7 @@ def _add_host(arg_group):
         '--host-in',
         type=str,
         default=__default_host__,
-        help=f'The host address of the runtime, by default it is {__default_host__}.'
+        help=f'The host address of the runtime, by default it is {__default_host__}.',
     )
 
 
