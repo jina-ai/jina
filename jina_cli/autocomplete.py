@@ -359,9 +359,8 @@ ac_table = {
         ],
         'client': [
             '--help',
-            '--host',
-            '--host-in',
             '--proxy',
+            '--host',
             '--port',
             '--tls',
             '--asyncio',
