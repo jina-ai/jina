@@ -28,7 +28,7 @@ Two Base Gateway classes are provided to allow implementing a custom gateway:
 To implement a custom gateway class using {class}`~jina.Gateway` do the following:
 * Create a class that inherits from {class}`~jina.Gateway`
 * Implement a constructor `__init__`:
-This step is optional. You don't need a constructor if your Gateway doesn’t contain initial states. 
+This step is optional. You don't need a constructor if your Gateway does not need user-defined attributes. 
 If your Gateway has `__init__`, it needs to carry `**kwargs` in the signature and call `super().__init__(**kwargs)` in the body:
 ```python
 from jina import Gateway
@@ -52,7 +52,7 @@ class MyGateway(Gateway):
     async def setup_server(self):
         app = FastAPI(title='My Custom Gateway')
 
-        @app.get(path='/')
+        @app.get(path='/endpoint')
         def custom_endpoint():
             return {'message': 'custom-gateway'}
 
@@ -103,7 +103,7 @@ class DummyFastAPIGateway(FastAPIBaseGateway):
 
         app = FastAPI(title='Custom FastAPI Gateway')
 
-        @app.get(path='/')
+        @app.get(path='/endpoint')
         def custom_endpoint():
             return {'message': 'custom-fastapi-gateway'}
 
@@ -144,7 +144,7 @@ Refer to the {ref}`Use Custom Gateway section <use-custom-gateway>` for more inf
 (gateway-streamer)=
 ## Calling Executors with {class}`~jina.serve.streamer.GatewayStreamer`
 {class}`~jina.serve.streamer.GatewayStreamer` allows you to interface with Executors within the gateway. An instance of 
-this class knows about the Flow structure and contains a connection pool to connect to each executor. You can get this 
+this class knows about the Flow structure and where each Executor lives. You can get this 
 object in 2 different ways:
 * A `streamer` object (instance of {class}`~jina.serve.streamer.GatewayStreamer`) is injected by Jina to your gateway class.
 * In case your server logic cannot access the Gateway class (for instance separate script), you can still get a streamer 
@@ -177,7 +177,7 @@ class MyGateway(FastAPIBaseGateway):
 
 ## Required health-checks
 Jina relies on performing health-checks to determine the health of the gateway. In environments like kubernetes, 
-docker-compose and Jina Cloud, this information is crucial to restart the gateway in case of failure.
+docker-compose and Jina Cloud, this information is crucial to orchestrate the Gateway.
 Since the user has the full power over custom gateways, he always has the responsibility of implementing health-check 
 endpoints:
 * If the protocol used is GRPC, a health servicer (for instance `health.aio.HealthServicer()`) from `grpcio-health-checking` 
