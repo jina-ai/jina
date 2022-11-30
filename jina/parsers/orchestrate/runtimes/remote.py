@@ -18,8 +18,14 @@ def mixin_client_gateway_parser(parser):
     :param parser: the parser
     """
     gp = add_arg_group(parser, title='ClientGateway')
-    _add_host(gp)
     _add_proxy(gp)
+
+    gp.add_argument(
+        '--host',
+        type=str,
+        default=__default_host__,
+        help=f'The host of the Gateway, which the client should connect to, by default it is {__default_host__}.',
+    )
 
     gp.add_argument(
         '--port',
