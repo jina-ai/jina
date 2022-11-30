@@ -22,6 +22,7 @@ def mixin_client_gateway_parser(parser):
 
     gp.add_argument(
         '--host',
+        '--host-in',
         type=str,
         default=__default_host__,
         help=f'The host of the Gateway, which the client should connect to, by default it is {__default_host__}.',
