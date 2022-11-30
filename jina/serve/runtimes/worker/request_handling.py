@@ -163,7 +163,7 @@ class WorkerRequestHandler:
                 uses_with=self.args.uses_with,
                 uses_metas=self.args.uses_metas,
                 uses_requests=self.args.uses_requests,
-                #uses_dynamic_batching=self.args.uses_dynamic_batching,
+                uses_dynamic_batching=self.args.uses_dynamic_batching,
                 runtime_args={  # these are not parsed to the yaml config file but are pass directly during init
                     'workspace': self.args.workspace,
                     'shard_id': self.args.shard_id,
