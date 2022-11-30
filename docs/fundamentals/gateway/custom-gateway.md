@@ -89,7 +89,7 @@ As an example, you can refer to {class}`~jina.serve.runtimes.gateway.grpc.GRPCGa
 {class}`~jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway` offers a simpler API to implement custom 
 gateways but is restricted to FastAPI apps.
 
-In order to implement a custom gateway using {class}`~jina.jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway`, 
+In order to implement a custom gateway using {class}`~jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway`, 
 simply implement the {meth}`~jina.jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway.app` property:
 
 ```python
@@ -163,8 +163,8 @@ class MyGateway(FastAPIBaseGateway):
     def app(self):
         app = FastAPI()
 
-        @app.get("/")
-        def get(text: str):
+        @app.get("/endpoint")
+        async def get(text: str):
             result = None
             async for docs in self.streamer.stream_docs(
                 docs=DocumentArray([Document(text=text)]),
@@ -172,6 +172,8 @@ class MyGateway(FastAPIBaseGateway):
             ):
                 result = docs[0].text
             return {'result': result}
+
+        return app
 ```
 
 
