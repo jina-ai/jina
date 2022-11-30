@@ -387,9 +387,10 @@ async def test_decorator_monitoring(port_generator):
         def process_2(self, docs):
             ...
 
-    port = port_generator()
+    port1 = port_generator()
+    port2 = port_generator()
     args = set_pod_parser().parse_args(
-        ['--monitoring', '--port-monitoring', str(port), '--uses', 'DummyExecutor']
+        ['--monitoring', '--port-monitoring', str(port1), str(port2), '--uses', 'DummyExecutor']
     )
 
     cancel_event = multiprocessing.Event()
