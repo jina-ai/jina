@@ -77,8 +77,8 @@ class WorkerRequestHandler:
                         timeout=dbatch_config['timeout'],
                     )
 
-            self.logger.debug(f"Dynamic Batching configs: {self._executor.dynamic_batching}")
-            self.logger.debug(f"Instantiated Batch Queues: {self._batchqueue}")
+            self.logger.debug(f'Dynamic Batching configs: {self._executor.dynamic_batching}')
+            self.logger.debug(f'Instantiated Batch Queues: {self._batchqueue}')
 
     def _init_monitoring(
             self,
@@ -304,7 +304,7 @@ class WorkerRequestHandler:
 
         # TODO: This does not account for requests to "/"
         if exec_endpoint in self._batchqueue:
-            assert len(requests) == 1, "dynamic batching does not support no_reduce"
+            assert len(requests) == 1, 'dynamic batching does not support no_reduce'
             await self._batchqueue[exec_endpoint].push(requests[0])
         else:
             params = self._parse_params(requests[0].parameters, self._executor.metas.name)
