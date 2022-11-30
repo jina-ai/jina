@@ -291,7 +291,7 @@ def test_k8s_yaml_gateway(deployments_addresses, custom_gateway):
         'gateway',
         {
             'ENV_VAR': 'ENV_VALUE',
-            'JINA_LOG_LEVEL': 'INFO',
+            'JINA_LOG_LEVEL': 'DEBUG',
             'pythonunbuffered': '1',
             'worker_class': 'uvicorn.workers.UvicornH11Worker',
         },
