@@ -1,4 +1,6 @@
 import argparse
+import asyncio
+import os
 from abc import ABC
 from typing import TYPE_CHECKING, List, Optional
 
@@ -32,6 +34,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         :param args: args from CLI
         :param kwargs: keyword args
         """
+        self._hot_reload_task = None
         self._health_servicer = health.aio.HealthServicer()
         super().__init__(args, **kwargs)
 
@@ -149,14 +152,48 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
                 service, health_pb2.HealthCheckResponse.SERVING
             )
 
+    async def _hot_reload(self):
+        import inspect
+
+        executor_file = inspect.getfile(self._request_handler._executor.__class__)
+        watched_files = set([executor_file] + (self.args.py_modules or []))
+        executor_base_path = os.path.dirname(os.path.abspath(executor_file))
+        extra_paths = [
+            os.path.join(path, name)
+            for path, subdirs, files in os.walk(executor_base_path)
+            for name in files
+        ]
+        extra_python_paths = list(filter(lambda x: x.endswith('.py'), extra_paths))
+        for extra_python_file in extra_python_paths:
+            watched_files.add(extra_python_file)
+
+        with ImportExtensions(
+            required=True,
+            logger=self.logger,
+            help_text='''hot reload requires watchfiles dependency to be installed. You can do `pip install 
+                watchfiles''',
+        ):
+            from watchfiles import awatch
+
+        async for changes in awatch(*watched_files):
+            changed_files = [changed_file for _, changed_file in changes]
+            self.logger.info(
+                f'detected changes in: {changed_files}. Refreshing the Executor'
+            )
+            self._request_handler._refresh_executor(changed_files)
+
     async def async_run_forever(self):
         """Block until the GRPC server is terminated"""
         self.logger.debug(f'run grpc server forever')
+        if self.args.reload:
+            self._hot_reload_task = asyncio.create_task(self._hot_reload())
         await self._grpc_server.wait_for_termination()
 
     async def async_cancel(self):
         """Stop the GRPC server"""
         self.logger.debug('cancel WorkerRuntime')
+        if self._hot_reload_task is not None:
+            self._hot_reload_task.cancel()
         # 0.5 gives the runtime some time to complete outstanding responses
         # this should be handled better, 1.0 is a rather random number
         await self._health_servicer.enter_graceful_shutdown()
