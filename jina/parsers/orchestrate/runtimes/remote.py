@@ -10,7 +10,18 @@ def mixin_remote_runtime_parser(parser):
     :param parser: the parser
     """
     gp = add_arg_group(parser, title='RemoteRuntime')
-    _add_host(gp)
+    
+    gp.add_argument(
+        '--host',
+        '--host-in',
+        # type=str,
+        nargs = '+',
+        default=__default_host__,
+        action=CastHostAction,
+        help=f'The host of the Gateway, which the client should connect to, by default it is {__default_host__}.'
+        ' In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts, separated by commas.'
+        ' Then, every resulting address will be considered as one replica of the Executor.',
+    )
 
 
 def mixin_client_gateway_parser(parser):
@@ -177,12 +188,8 @@ def _add_host(arg_group):
         '--host',
         '--host-in',
         type=str,
-        nargs='+',
         default=__default_host__,
-        action=CastHostAction,
         help=f'The host address of the runtime, by default it is {__default_host__}.'
-        ' In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts, separated by commas.'
-        ' Then, every resulting address will be considered as one replica of the Executor.',
     )
 
 

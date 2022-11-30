@@ -2202,12 +2202,12 @@ class Flow(
         else:
             _ports = [str(_p) for _p in self.port]
 
-        if not isinstance(self.host, list):
-            _hosts = [self.host]
-        else:
-            _hosts = self.host
+        # if not isinstance(self.host, list):
+        #     _hosts = [self.host]
+        # else:
+        #     _hosts = self.host
 
-        for _host, _port, _protocol in zip(_hosts, _ports, _protocols):
+        for _port, _protocol in zip(_ports, _protocols):
             if self.gateway_args.ssl_certfile and self.gateway_args.ssl_keyfile:
                 _protocol = f'{_protocol}S'
                 address_table.add_row(
@@ -2221,7 +2221,7 @@ class Flow(
             address_table.add_row(
                 ':house:',
                 'Local',
-                f'[link={_protocol}://{_host}:{_port}]{_host}:{_port}[/]',
+                f'[link={_protocol}://{self.host}:{_port}]{self.host}:{_port}[/]',
             )
             address_table.add_row(
                 ':lock:',

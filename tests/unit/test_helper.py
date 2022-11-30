@@ -363,6 +363,7 @@ def test_run_async():
     end_fd_count = p.num_fds()
     assert first_fd_count == end_fd_count
 
+# TODO remove the following test when we remove _parse_ports/hosts
 
 @pytest.mark.parametrize(
     'port, output',
