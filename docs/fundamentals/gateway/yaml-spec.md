@@ -3,7 +3,7 @@
 
 This page outlines the specification for Gateway.
 
-Gateway config is nested under `gateway` section of a Flow YAML. For example,
+Gateway config is nested under the `gateway` section of a Flow YAML. For example,
 
 ```{code-block} yaml
 ---
@@ -16,10 +16,10 @@ gateway:
 ```
 
 Defines a Gateway that uses HTTP protocol.
-It is also possible to define Gateway configuration under the Flow `with` key.
+It is also possible to define a Gateway configuration under the Flow `with` key.
 ## Fields
 
-The following fields are defined for Gateway and can be set under `gateway` section (or the `with` section) of a Flow YAML.
+The following fields are defined for Gateway and can be set under the `gateway` section (or the `with` section) of a Flow YAML.
 
 ```{include} ../flow/gateway-args.md
 ```

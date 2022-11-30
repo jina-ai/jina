@@ -1,25 +1,25 @@
 (custom-gateway)=
 # Customize the Gateway
-A Jina Gateway is customizable and can be implemented in a similar way Executors are implemented.
-With Custom Gateways, Jina gives power back to the users, by allowing to implement any server, protocol and interface on
-the gateway level. This means you have more freedom in:
-* Defining and exposing your own API Gateway interface to clients. You can define your JSON schema or protos,...
-* Choosing your favourite server framework.
-* Choosing the protocol used to serve your app.
+A Jina Gateway is customizable and can be implemented in a similar way to how Executors are implemented.
+With Custom Gateways, Jina gives power back to the users, by allowing them to implement any server, protocol and 
+interface at the gateway level. This means you have more freedom to:
+* Define and expose your own API Gateway interface to clients. You can define your JSON schema or protos,...
+* Choose your favourite server framework.
+* Choose the protocol used to serve your app.
 
 Customization is allowed different components:
-* Implementing the custom gateway using a `base` gateway class: {class}`~jina.Gateway` or {class}`~jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway`.
-* Using the {class}`~jina.serve.streamer.GatewayStreamer` to send data to Executors in the Flow.
-* Implementing the needed health-checks for jina.
+* Implement the custom gateway using a `base` gateway class: {class}`~jina.Gateway` or {class}`~jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway`.
+* Use the {class}`~jina.serve.streamer.GatewayStreamer` to send data to Executors in the Flow.
+* Implement the needed health-checks for jina.
 * Optionally, define a `config.yml` for it.
-* Optionally, bootstrapping the gateway using a `Dockerfile` and re-using the docker image.
+* Optionally, bootstrap the gateway using a `Dockerfile` and re-using the docker image.
 
 ## Implementing the custom gateway
-Similarly to how you would implement an Executor, you can implement a custom gateway by inheriting from a base gateway class.
-Jina will instantiate your implemented class, inject runtime arguments and user-defined arguments to it, 
-run it, send health-checks to it and orchestrate it.
+Just like for Executors, you can implement a custom gateway by inheriting from a base gateway class.
+Jina will instantiate your implemented class, inject runtime arguments and user-defined arguments into it, 
+run it, orchestrate it, and send it health-checks.
 
-Two Base Gateway classes are provided to allow implementing a custom gateway:
+There are two Gateway base classes to allow implementing a custom gateway:
 * {class}`~jina.Gateway`: Use this abstract class to implement a custom gateway of any type.
 * {class}`~jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway`: Use this abstract class to implement a custom gateway using FastAPI.
 
@@ -58,7 +58,7 @@ class MyGateway(Gateway):
 
         self.server = Server(Config(app, host=self.host, port=self.port))
 ```
-* Implement `async def run_server():`. This should run the server and await for it while serving:
+* Implement `async def run_server():`. This should run the server and `await` for it while serving:
 ```python
 from jina import Gateway
 
@@ -69,7 +69,7 @@ class MyGateway(Gateway):
     async def run_server(self):
         await self.server.serve()
 ```
-* Implement `async def shutdown():`. This should run the server and await for it while serving:
+* Implement `async def shutdown():`. This should stop the server and free all resources associated with it:
 ```python
 from jina import Gateway
 
@@ -118,10 +118,7 @@ shares its attributes.
 ## Gateway arguments
 ### Runtime attributes
 Jina injects some attributes into the Gateway classes. You can use them to set up your custom gateway:
-* name: gateway pod name.
 * logger: Jina logger object.
-* tracing: whether runtime tracing is enabled or not.
-* tracer_provider: OpenTelemetry `TraceProvider` object.
 * streamer: {class}`~jina.serve.streamer.GatewayStreamer`. Use this object to send Documents from the Gateway to Executors. Refer to {ref}`this section <gateway-streamer>` for more information.
 * runtime_args: `argparse.Namespace` object containing runtime arguments.
 * port: main port exposed by the Gateway.
@@ -132,13 +129,13 @@ Jina injects some attributes into the Gateway classes. You can use them to set u
 ```{admonition} Nonte
 :class: note
 
-Jina provides the Gateway with a list of ports and protocols to expose. Therefore, a Custom Gateway can serve on 
-multiple ports and protocols.
+Jina provides the Gateway with a list of ports and protocols to expose. Therefore, a custom Gateway can handle requests 
+on multiple ports using different protocols.
 ```
 
 ### User-defined parameters
-Users can add other parameters by implementing a constructor `__init__`. Parameters of the constructor can be set and 
-overridden in the Flow Python API (using `uses_with` parameter) or in the YAML configuration when including the gateway.
+You can also set other parameters by implementing a custom constructor `__init__`.You can also override constructor 
+parameters in the Flow Python API (using `uses_with` parameter) or in the YAML configuration when including the gateway.
 Refer to the {ref}`Use Custom Gateway section <use-custom-gateway>` for more information.
 
 (gateway-streamer)=
@@ -178,11 +175,10 @@ class MyGateway(FastAPIBaseGateway):
 
 
 ## Required health-checks
-Jina relies on performing health-checks to determine the health of the gateway. In environments like kubernetes, 
-docker-compose and Jina Cloud, this information is crucial to orchestrate the Gateway.
-Since the user has the full power over custom gateways, he always has the responsibility of implementing health-check 
-endpoints:
-* If the protocol used is GRPC, a health servicer (for instance `health.aio.HealthServicer()`) from `grpcio-health-checking` 
+Jina relies on health-checks to determine the health of the gateway. In environments like kubernetes, 
+docker-compose and Jina Cloud, this information is crucial for orchestrating the Gateway.
+Since you have full control over your custom gateways, you are always responsible for implementing health-check endpoints:
+* If the protocol used is gRPC, a health servicer (for instance `health.aio.HealthServicer()`) from `grpcio-health-checking` 
 is expected to be added to the gRPC server. Refer to {class}`~jina.serve.runtimes.gateway.grpc.gateway.GRPCGateway` as 
 an example.
 * Otherwise, an HTTP GET request to the root path is expected to return a 200 status code.
@@ -196,7 +192,7 @@ Although a Jina Gateway can expose multiple ports and protocols, the runtime onl
 and protocol. Health checks will be sent only to the first port.
 ```
 ## Gateway YAML file
-Like Executor `config` files, a Custom Gateway implementation can be associated with a YAML configuration file.
+Like Executor `config` files, a custom Gateway implementation can be associated with a YAML configuration file.
 Such a configuration can override user-defined parameters and define other runtime arguments (port, protocol, py_modules,...).
 
 For instance, you can define such a configuration in `config.yml`:
@@ -211,16 +207,16 @@ port: 12345
 
 For more information, please refer to the {ref}`Gateway YAML Specifications <gateway-yaml-spec>`
 ## Containerize the Custom Gateway
-You may want to dockerize your Custom Gateway so you can isolate its dependencies and make it ready to run in the cloud 
+You may want to dockerize your custom Gateway so you can isolate its dependencies and make it ready to run in the cloud 
 or Kubernetes.
 
-This assumes that you've already implemented a Custom Gateway class and have defined a `config.yml` for it.
+This assumes that you've already implemented a custom Gateway class and have defined a `config.yml` for it.
 In this case, dockerizing the gateway should be straighforward:
 * If you need dependencies other than Jina, make sure to add a `requirements.txt` file (for instance, you use a server library).
 * Create a `Dockerfile` which should have the following components:
 1. Use a [Jina based image](https://hub.docker.com/r/jinaai/jina) as the base image in your Dockerfile.
 This ensures that everything needed for Jina to run the Gateway is installed. Make sure the Jina Version used supports 
-Custom Gateways:
+custom Gateways:
 ```dockerfile
 FROM jinaai/jina:3.12.0-py37-perf
 ```
