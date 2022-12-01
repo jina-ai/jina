@@ -86,6 +86,8 @@ class BatchQueue():
                 tracing_context=None, # TODO: Tracing?
             )
 
+            assert len(return_data) == len(self._big_doc), f'Dynamic Batching requires input size to equal output size. Expected output size {len(self._big_doc)}, but got {len(return_data)}'
+
             # We need to reslice the big doc array into the original requests
             consumed_count: int = 0
             for request, request_len in zip(self._requests, self._request_lens):

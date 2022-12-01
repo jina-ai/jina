@@ -27,6 +27,11 @@ class PlaceholderExecutor(Executor):
     def wrong_return_type_fun(self, docs, **kwargs):
         return "Fail me!"
 
+    @requests(on=['/wronglen'])
+    @dynamic_batching(preferred_batch_size=4, timeout=2000)
+    def wrong_return_len_fun(self, docs, **kwargs):
+        return DocumentArray.empty(len(docs) + 1)
+
 RequestStruct = namedtuple('RequestStruct', ['port', 'endpoint', 'iterator'])
 def call_api(req: RequestStruct):
     c = Client(port=req.port)
@@ -129,3 +134,5 @@ def test_failure_propagation():
             Client(port=f.port).post("/wrongtype", inputs=DocumentArray([Document(text=str(i)) for i in range(2)]))
         with pytest.raises(BadServer):
             Client(port=f.port).post("/wrongtype", inputs=DocumentArray([Document(text=str(i)) for i in range(8)]))
+        with pytest.raises(BadServer):
+            Client(port=f.port).post("/wronglen", inputs=DocumentArray([Document(text=str(i)) for i in range(8)]))
