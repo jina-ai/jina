@@ -1,10 +1,13 @@
 import logging
 import os
 from abc import abstractmethod
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 from jina.importer import ImportExtensions
 from jina.serve.gateway import BaseGateway
+
+if TYPE_CHECKING:
+    from fastapi import FastAPI
 
 
 class FastAPIBaseGateway(BaseGateway):
@@ -89,6 +92,7 @@ class FastAPIBaseGateway(BaseGateway):
             # Filter out healthcheck endpoint `GET /`
             logging.getLogger("uvicorn.access").addFilter(_EndpointFilter())
 
+        _install_health_check(self.app)
         self.server = UviServer(
             config=Config(
                 app=self.app,
@@ -111,3 +115,16 @@ class FastAPIBaseGateway(BaseGateway):
     async def run_server(self):
         """Run HTTP server forever"""
         await self.server.serve()
+
+
+def _install_health_check(app: 'FastAPI'):
+    health_check_exists = False
+    for route in app.routes:
+        if route.path == '/' and 'GET' in route.methods:
+            health_check_exists = True
+
+    if not health_check_exists:
+
+        @app.get('/')
+        def health_check():
+            return {'message': 'OK'}
