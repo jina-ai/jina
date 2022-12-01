@@ -107,24 +107,12 @@ class BatchQueue():
             raise e
 
     def _set_result(self, request: DataRequest, return_data: DocumentArray, docs: DocumentArray) -> None:
-        # assigning result back to request
         if return_data is not None:
             if isinstance(return_data, DocumentArray):
                 docs = return_data
-            # TODO: We will handle this later or not support it?
-            #elif isinstance(return_data, dict):
-                #params = requests[0].parameters
-                #results_key = self._KEY_RESULT
-
-                #if not results_key in params.keys():
-                    #params[results_key] = dict()
-
-                #params[results_key].update({self.args.name: return_data})
-                #requests[0].parameters = params
-
             else:
                 raise TypeError(
-                    f'The return type must be DocumentArray / Dict / `None`, '
+                    f'The return type must be DocumentArray / `None` when using dynamic batching, '
                     f'but getting {return_data!r}'
                 )
 
