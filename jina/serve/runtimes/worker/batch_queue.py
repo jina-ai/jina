@@ -1,6 +1,6 @@
 import asyncio
 from asyncio import Event, Task
-from typing import List, Dict, Any
+from typing import List, Any, Optional
 
 from jina import DocumentArray
 from jina.serve.executors import BaseExecutor
@@ -77,6 +77,9 @@ class BatchQueue():
         """
         await trigger_event.wait()
         try:
+            # The executor might accidentally change the size
+            input_len_before_call: int = len(self._big_doc)
+
             # We need to get the executor to process the big doc
             return_data = await self._executor.__acall__(
                 req_endpoint=self._exec_endpoint,
@@ -87,20 +90,18 @@ class BatchQueue():
             )
             
             # Output validation
-            if not (isinstance(return_data, DocumentArray) or return_data is None):
+            if isinstance(return_data, DocumentArray):
+                assert len(return_data) == input_len_before_call, f'Dynamic Batching requires input size to equal output size. Expected output size {input_len_before_call}, but got {len(return_data)}'
+            elif return_data is None:
+                assert len(self._big_doc) == input_len_before_call, f'Dynamic Batching requires input size to equal output size. Expected output size {input_len_before_call}, but got {len(self._big_doc)}'
+            else:
                 raise TypeError(
                     f'The return type must be DocumentArray / `None` when using dynamic batching, '
                     f'but getting {return_data!r}'
                 )
-            assert len(return_data) == len(self._big_doc), f'Dynamic Batching requires input size to equal output size. Expected output size {len(self._big_doc)}, but got {len(return_data)}'
 
             # We need to reslice the big doc array into the original requests
-            consumed_count: int = 0
-            for request, request_len in zip(self._requests, self._request_lens):
-                left = consumed_count
-                right = consumed_count + request_len
-                self._set_result(request, return_data[left: right], self._big_doc[left: right])
-                consumed_count += request_len
+            self._fan_out_return_data(return_data)
 
             # TODO: Metrics?
             #self._record_docs_processed_monitoring(requests, docs)
@@ -114,8 +115,14 @@ class BatchQueue():
             self._reset()
             raise e
 
-    def _set_result(self, request: DataRequest, return_data: DocumentArray, docs: DocumentArray) -> None:
-        if return_data is not None:
-            docs = return_data
 
-        request.data.set_docs_convert_arrays(docs, ndarray_type=self.args.output_array_type)
+    def _fan_out_return_data(self, return_data: Optional[DocumentArray]):
+        consumed_count: int = 0
+        for request, request_len in zip(self._requests, self._request_lens):
+            left = consumed_count
+            right = consumed_count + request_len
+            if return_data:
+                request.data.set_docs_convert_arrays(return_data[left:right], ndarray_type=self.args.output_array_type)
+            else:
+                request.data.set_docs_convert_arrays(self._big_doc[left:right], ndarray_type=self.args.output_array_type)
+            consumed_count += request_len
