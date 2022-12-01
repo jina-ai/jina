@@ -740,7 +740,7 @@ def _test_custom_retry(gateway_port, error_ports, protocol, retries, capfd):
         for i in range(retries):
             assert f'attempt {i+1}/{retries}' in out
     elif retries == 0:  # do no retries
-        assert 'retry attempt' not in out
+        assert 'attempt' not in out
     elif retries < 0:  # use default retry policy, doing at least 3 retries
         for i in range(3):
             assert f'attempt {i+1}' in out
