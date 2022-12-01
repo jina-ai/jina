@@ -120,7 +120,7 @@ f = (
     .add(name='slow_executor', uses=MyVectorizer)
     .add(
         name='pqlite_executor',
-        uses='jinahub://ANNLiteIndexer/v0.2.3-rc',
+        uses='jinaai://jina-ai/ANNLiteIndexer:v0.2.3-rc',
         uses_with={
             'dim': 130107,  # the dimension is fitted on the corpus in news dataset
             'metric': 'cosine',
@@ -151,7 +151,7 @@ f = (
     .add(name='slow_executor', uses=MyVectorizer)
     .add(
         name='pqlite_executor',
-        uses='jinahub://ANNLiteIndexer',
+        uses='jinaai://jina-ai/ANNLiteIndexer',
         uses_with={'dim': 130107, 'metric': 'cosine'},
         workspace='CHANGE-TO-YOUR-PATH/workspace',
         install_requirements=True,
@@ -190,7 +190,7 @@ f = (
     .add(name='slow_executor', uses=MyVectorizer)
     .add(
         name='pqlite_executor',
-        uses='jinahub://ANNLiteIndexer/v0.2.3-rc',
+        uses='jinaai://jina-ai/ANNLiteIndexer:v0.2.3-rc',
         uses_with={'dim': 130107, 'metric': 'cosine'},
         workspace='CHANGE-TO-YOUR-PATH/workspace',
         install_requirements=True,
