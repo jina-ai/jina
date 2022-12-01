@@ -3,6 +3,7 @@ import asyncio
 import streamlit as st
 from docarray import Document, DocumentArray
 
+from jina.helper import get_or_reuse_loop
 from jina.serve.streamer import GatewayStreamer
 
 streamer = GatewayStreamer.get_streamer()
@@ -20,4 +21,4 @@ async def send_docs():
     st.text('results:\n' + '\n'.join(res))
 
 
-asyncio.run(send_docs())
+get_or_reuse_loop().run_until_complete(send_docs())
