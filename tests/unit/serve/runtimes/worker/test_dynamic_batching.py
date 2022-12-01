@@ -9,7 +9,7 @@ FOO_SUCCESS_MSG = 'Done through foo'
 BAR_SUCCESS_MSG = 'Done through bar'
 
 class PlaceholderExecutor(Executor):
-    @requests('/foo')
+    @requests(on=['/foo'])
     @dynamic_batching(preferred_batch_size=4)
     def foo_fun(self, docs, **kwargs):
         for doc in docs:
@@ -27,10 +27,15 @@ class PlaceholderExecutor(Executor):
     def wrong_return_type_fun(self, docs, **kwargs):
         return 'Fail me!'
 
-    @requests(on=['/wronglen'])
+    @requests(on=['/wronglenda'])
     @dynamic_batching(preferred_batch_size=4, timeout=2000)
-    def wrong_return_len_fun(self, docs, **kwargs):
+    def wrong_return_lenda_fun(self, docs, **kwargs):
         return DocumentArray.empty(len(docs) + 1)
+
+    @requests(on=['/wronglennone'])
+    @dynamic_batching(preferred_batch_size=4, timeout=2000)
+    def wrong_return_lennone_fun(self, docs, **kwargs):
+        docs.append(Document())
 
 RequestStruct = namedtuple('RequestStruct', ['port', 'endpoint', 'iterator'])
 def call_api(req: RequestStruct):
@@ -104,12 +109,12 @@ def test_correctness():
 
         with mp.Pool(2) as p:
             results = list(p.map(call_api, [
-                RequestStruct(f.port, '/bar', 'ABC'),
-                RequestStruct(f.port, '/bar', 'AB'),
+                RequestStruct(f.port, '/foo', 'ABC'),
+                RequestStruct(f.port, '/foo', 'AB'),
             ]))
             assert [len(r) for r in results] == [3, 2]
-            assert [doc.text for doc in results[0]] == [f'A{BAR_SUCCESS_MSG}', f'B{BAR_SUCCESS_MSG}', f'C{BAR_SUCCESS_MSG}']
-            assert [doc.text for doc in results[1]] == [f'A{BAR_SUCCESS_MSG}', f'B{BAR_SUCCESS_MSG}']
+            assert [doc.text for doc in results[0]] == [f'A{FOO_SUCCESS_MSG}', f'B{FOO_SUCCESS_MSG}', f'C{FOO_SUCCESS_MSG}']
+            assert [doc.text for doc in results[1]] == [f'A{FOO_SUCCESS_MSG}', f'B{FOO_SUCCESS_MSG}']
 
         # This is the only one that waits for timeout because its slow
         # But we should still test it at least once
@@ -135,4 +140,6 @@ def test_failure_propagation():
         with pytest.raises(BadServer):
             Client(port=f.port).post('/wrongtype', inputs=DocumentArray([Document(text=str(i)) for i in range(8)]))
         with pytest.raises(BadServer):
-            Client(port=f.port).post('/wronglen', inputs=DocumentArray([Document(text=str(i)) for i in range(8)]))
+            Client(port=f.port).post('/wronglenda', inputs=DocumentArray([Document(text=str(i)) for i in range(8)]))
+        with pytest.raises(BadServer):
+            Client(port=f.port).post('/wronglennone', inputs=DocumentArray([Document(text=str(i)) for i in range(8)]))
