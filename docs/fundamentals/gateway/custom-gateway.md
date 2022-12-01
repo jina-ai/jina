@@ -145,7 +145,7 @@ this class knows about the Flow structure and where each Executor lives. You can
 object in 2 different ways:
 * A `streamer` object (instance of {class}`~jina.serve.streamer.GatewayStreamer`) is injected by Jina to your gateway class.
 * In case your server logic cannot access the Gateway class (for instance separate script), you can still get a streamer 
-object using {meth}`~jina.serve.streamer.get_streamer()`.
+object using {meth}`~jina.serve.streamer.GatewayStreamer.get_streamer()`.
 
 After transforming requests that arrive to the gateway server into Documents, you can send them to Executors in the Flow 
 using {meth}`~jina.serve.streamer.GatewayStreamer.stream_docs` :
