@@ -63,20 +63,40 @@ class WorkerRequestHandler:
         self._batchqueue: Dict[str, BatchQueue] = {}
 
         if getattr(self._executor, 'dynamic_batching', None) is not None:
-            # TODO: We should split by function
+            # We need to sort the keys into endpoints and functions
+            # Endpoints allow specific configurations while functions allow configs to be applied to all endpoints of the function
+            dbatch_endpoints = []
+            dbatch_functions = []
+            for key, dbatch_config in self._executor.dynamic_batching.items():
+                if key.startswith('/'):
+                    dbatch_endpoints.append((key, dbatch_config))
+                else:
+                    dbatch_functions.append((key, dbatch_config))
+            
+            # Specific endpoint configs take precedence over function configs
+            for endpoint, dbatch_config in dbatch_endpoints:
+                self._batchqueue[endpoint] = BatchQueue(
+                    executor=self._executor,
+                    exec_endpoint=endpoint,
+                    args=self.args,
+                    preferred_batch_size=dbatch_config['preferred_batch_size'],
+                    timeout=dbatch_config['timeout'],
+                )
+
+            # Process function configs
             func_endpoints: Dict[str, List[str]] = {func.__name__: [] for func in self._executor.requests.values()}
             for endpoint, func in self._executor.requests.items():
                 func_endpoints[func.__name__].append(endpoint)
-            
-            for func_name, dbatch_config in self._executor.dynamic_batching.items():
+            for func_name, dbatch_config in dbatch_functions:
                 for endpoint in func_endpoints[func_name]:
-                    self._batchqueue[endpoint] = BatchQueue(
-                        executor=self._executor,
-                        exec_endpoint=endpoint,
-                        args=self.args,
-                        preferred_batch_size=dbatch_config['preferred_batch_size'],
-                        timeout=dbatch_config['timeout'],
-                    )
+                    if endpoint not in self._batchqueue:
+                        self._batchqueue[endpoint] = BatchQueue(
+                            executor=self._executor,
+                            exec_endpoint=endpoint,
+                            args=self.args,
+                            preferred_batch_size=dbatch_config['preferred_batch_size'],
+                            timeout=dbatch_config['timeout'],
+                        )
 
             self.logger.debug(f'Dynamic Batching configs: {self._executor.dynamic_batching}')
             self.logger.debug(f'Instantiated Batch Queues: {self._batchqueue}')
