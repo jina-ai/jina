@@ -1,6 +1,6 @@
 (custom-gateway)=
 # Customize the Gateway
-A Jina Gateway is customizable and can be implemented in a similar way to how Executors are implemented.
+Jina Gateways are customizable, and you can implement them in much the same way as an Executor.
 With Custom Gateways, Jina gives power back to the users, by allowing them to implement any server, protocol and 
 interface at the gateway level. This means you have more freedom to:
 * Define and expose your own API Gateway interface to clients. You can define your JSON schema or protos,...
@@ -10,7 +10,7 @@ interface at the gateway level. This means you have more freedom to:
 Customization is allowed different components:
 * Implement the custom gateway using a `base` gateway class: {class}`~jina.Gateway` or {class}`~jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway`.
 * Use the {class}`~jina.serve.streamer.GatewayStreamer` to send data to Executors in the Flow.
-* Implement the needed health-checks for jina.
+* Implement the needed health-checks for Jina.
 * Optionally, define a `config.yml` for it.
 * Optionally, bootstrap the gateway using a `Dockerfile` and re-using the docker image.
 
@@ -175,7 +175,7 @@ class MyGateway(FastAPIBaseGateway):
 
 
 ## Required health-checks
-Jina relies on health-checks to determine the health of the gateway. In environments like kubernetes, 
+Jina relies on health-checks to determine the health of the gateway. In environments like Kubernetes, 
 docker-compose and Jina Cloud, this information is crucial for orchestrating the Gateway.
 Since you have full control over your custom gateways, you are always responsible for implementing health-check endpoints:
 * If the protocol used is gRPC, a health servicer (for instance `health.aio.HealthServicer()`) from `grpcio-health-checking` 
