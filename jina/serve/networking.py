@@ -15,6 +15,7 @@ from grpc_reflection.v1alpha.reflection_pb2_grpc import ServerReflectionStub
 from jina import __default_endpoint__
 from jina.enums import PollingType
 from jina.excepts import EstablishGrpcConnectionError, InternalNetworkError
+from jina.helper import get_or_reuse_loop
 from jina.importer import ImportExtensions
 from jina.logging.logger import JinaLogger
 from jina.proto import jina_pb2, jina_pb2_grpc
@@ -121,7 +122,7 @@ class ReplicaList:
         self._metrics = metrics
         self._histograms = histograms
         self._logger = logger
-        self._destroyed_event = asyncio.Event()
+        self._destroyed_event = asyncio.Event(loop=get_or_reuse_loop())
         self.aio_tracing_client_interceptors = aio_tracing_client_interceptors
         self.tracing_client_interceptors = tracing_client_interceptor
 
