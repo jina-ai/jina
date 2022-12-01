@@ -103,27 +103,21 @@ class GRPCGateway(BaseGateway):
 
     async def dry_run(self, empty, context) -> jina_pb2.StatusProto:
         """
-        Process the the call requested by having a dry run call to every Executor in the graph
+        Process the call requested by having a dry run call to every Executor in the graph
 
         :param empty: The service expects an empty protobuf message
         :param context: grpc context
         :returns: the response request
         """
-        from docarray import DocumentArray
+        from docarray import DocumentArray, Document
 
-        from jina.clients.request import request_generator
-        from jina.enums import DataInputType
         from jina.serve.executors import __dry_run_endpoint__
 
-        da = DocumentArray()
-
+        da = DocumentArray([Document()])
         try:
-            req_iterator = request_generator(
-                exec_endpoint=__dry_run_endpoint__,
-                data=da,
-                data_type=DataInputType.DOCUMENT,
-            )
-            async for _ in self.streamer.stream(request_iterator=req_iterator):
+            async for _ in self.streamer.stream_docs(
+                docs=da, exec_endpoint=__dry_run_endpoint__, request_size=1
+            ):
                 pass
             status_message = StatusMessage()
             status_message.set_code(jina_pb2.StatusProto.SUCCESS)

@@ -1,7 +1,6 @@
 from typing import TYPE_CHECKING
 
-from jina.parsers.helper import _set_gateway_uses
-from jina.logging.predefined import default_logger
+from jina.parsers.helper import _update_gateway_args
 
 if TYPE_CHECKING:
     from argparse import Namespace
@@ -44,7 +43,6 @@ def executor_native(args: 'Namespace'):
     :param args: arguments coming from the CLI.
     """
 
-    default_logger.debug('Start Executor natively')
     if args.runtime_cls == 'WorkerRuntime':
         from jina.serve.runtimes.worker import WorkerRuntime
 
@@ -105,7 +103,7 @@ def gateway(args: 'Namespace'):
     """
     from jina.serve.runtimes import get_runtime
 
-    _set_gateway_uses(args)
+    _update_gateway_args(args)
 
     runtime_cls = get_runtime('GatewayRuntime')
 
