@@ -115,3 +115,24 @@ def test_ping():
             NetworkChecker(a3)
 
     assert cm.value.code == 1
+
+
+@pytest.mark.parametrize(
+    'cmd',
+    [
+        ['jina', 'ping', 'flow', '127.0.0.1:8080'],
+        ['jina', 'help', 'port'],
+        ['jina', 'hub'],
+    ],
+)
+def test_logo_silence(cmd):
+    from jina import __resources_path__
+
+    with open(os.path.join(__resources_path__, 'jina.logo')) as fp:
+        logo_str = fp.read()
+
+    s = subprocess.run(
+        cmd,
+        stdout=subprocess.PIPE,
+    )
+    assert logo_str not in s.stdout.decode()
