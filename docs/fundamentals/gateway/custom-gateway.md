@@ -7,24 +7,49 @@ interface at the gateway level. This means you have more freedom to:
 * Choose your favourite server framework.
 * Choose the protocol used to serve your app.
 
-Customization is allowed different components:
-* Implement the custom gateway using a `base` gateway class: {class}`~jina.Gateway` or {class}`~jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway`.
-* Use the {class}`~jina.serve.streamer.GatewayStreamer` to send data to Executors in the Flow.
-* Implement the needed health-checks for Jina.
-* Optionally, define a `config.yml` for it.
-* Optionally, bootstrap the gateway using a `Dockerfile` and re-using the docker image.
+The next sections will detail the steps to implement and use a custom Gateway.
 
-## Implementing the custom gateway
-Just like for Executors, you can implement a custom gateway by inheriting from a base gateway class.
+## Implementing the custom Gateway
+Just like for Executors, you can implement a custom Gateway by inheriting from a base gateway class.
 Jina will instantiate your implemented class, inject runtime arguments and user-defined arguments into it, 
 run it, orchestrate it, and send it health-checks.
 
 There are two Gateway base classes to allow implementing a custom gateway:
-* {class}`~jina.Gateway`: Use this abstract class to implement a custom gateway of any type.
 * {class}`~jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway`: Use this abstract class to implement a custom gateway using FastAPI.
+* {class}`~jina.Gateway`: Use this abstract class to implement a custom gateway of any type.
 
+### Using {class}`~jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway`:
+{class}`~jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway` offers a simple API to implement custom 
+gateways but is restricted to FastAPI apps.
+
+In order to implement a custom gateway using {class}`~jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway`, 
+simply implement the {meth}`~jina.jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway.app` property:
+
+```python
+from jina.serve.runtimes.gateway.http.fastapi import FastAPIBaseGateway
+
+
+class MyGateway(FastAPIBaseGateway):
+    @property
+    def app(self):
+        from fastapi import FastAPI
+
+        app = FastAPI(title='Custom FastAPI Gateway')
+
+        @app.get(path='/endpoint')
+        def custom_endpoint():
+            return {'message': 'custom-fastapi-gateway'}
+
+        return app
+```
+
+As an example, you can refer to {class}`~jina.serve.runtimes.gateway.http.HTTPGateway`.
+
+{class}`~jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway` is a subclass of {class}`~jina.Gateway`.
 
 ### Using {class}`~jina.Gateway`:
+{class}`~jina.Gateway` allows implementing more general cases of Gateways. You can use this class as long as your gateway 
+server is runnable in an `asyncio` loop.
 To implement a custom gateway class using {class}`~jina.Gateway` do the following:
 * Create a class that inherits from {class}`~jina.Gateway`
 * Implement a constructor `__init__`:
@@ -85,71 +110,39 @@ class MyGateway(Gateway):
 As an example, you can refer to {class}`~jina.serve.runtimes.gateway.grpc.GRPCGateway` and 
 {class}`~jina.serve.runtimes.gateway.websocket.WebSocketGateway`.
 
-### Using {class}`~jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway`:
-{class}`~jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway` offers a simpler API to implement custom 
-gateways but is restricted to FastAPI apps.
 
-In order to implement a custom gateway using {class}`~jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway`, 
-simply implement the {meth}`~jina.jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway.app` property:
-
-```python
-from jina.serve.runtimes.gateway.http.fastapi import FastAPIBaseGateway
-
-
-class MyGateway(FastAPIBaseGateway):
-    @property
-    def app(self):
-        from fastapi import FastAPI
-
-        app = FastAPI(title='Custom FastAPI Gateway')
-
-        @app.get(path='/endpoint')
-        def custom_endpoint():
-            return {'message': 'custom-fastapi-gateway'}
-
-        return app
-```
-
-As an example, you can refer to {class}`~jina.serve.runtimes.gateway.http.HTTPGateway`.
-
-{class}`~jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway` is a subclass of {class}`~jina.Gateway` and therefore 
-shares its attributes.
-
-## Gateway arguments
-### Runtime attributes
-Jina injects some attributes into the Gateway classes. You can use them to set up your custom gateway:
-* logger: Jina logger object.
-* streamer: {class}`~jina.serve.streamer.GatewayStreamer`. Use this object to send Documents from the Gateway to Executors. Refer to {ref}`this section <gateway-streamer>` for more information.
-* runtime_args: `argparse.Namespace` object containing runtime arguments.
-* port: main port exposed by the Gateway.
-* ports: list all ports exposed by the Gateway.
-* protocols: list all protocols supported by the Gateway.
-* host: host address to which the Gateway server should be bound.
-
-```{admonition} Nonte
-:class: note
-
-Jina provides the Gateway with a list of ports and protocols to expose. Therefore, a custom Gateway can handle requests 
-on multiple ports using different protocols.
-```
-
-### User-defined parameters
-You can also set other parameters by implementing a custom constructor `__init__`.You can also override constructor 
-parameters in the Flow Python API (using `uses_with` parameter) or in the YAML configuration when including the gateway.
-Refer to the {ref}`Use Custom Gateway section <use-custom-gateway>` for more information.
+When implementing a custom Gateway, you need to care about the following items:
+* Bind your gateway server to {ref}`parameters injected by the runtime <gateway-runtime-arguments>`, i.e, `self.port`, `self.host`,...
+* Make requests to Executors in the Flow using {ref}`a GatewayStreamer object <gateway-streamer>`.
+* Implement the needed health-checks (only required for {class}`~jina.Gateway`)
 
 (gateway-streamer)=
 ## Calling Executors with {class}`~jina.serve.streamer.GatewayStreamer`
 {class}`~jina.serve.streamer.GatewayStreamer` allows you to interface with Executors within the gateway. An instance of 
-this class knows about the Flow structure and where each Executor lives. You can get this 
-object in 2 different ways:
+this class knows about the Flow topology and where each Executor lives. 
+Use this object to send Documents to Executors in the Flow. A {class}`~jina.serve.streamer.GatewayStreamer` object 
+connects the custom Gateway with the rest of the Flow.
+
+You can get this object in 2 different ways:
 * A `streamer` object (instance of {class}`~jina.serve.streamer.GatewayStreamer`) is injected by Jina to your gateway class.
 * In case your server logic cannot access the Gateway class (for instance separate script), you can still get a streamer 
-object using {meth}`~jina.serve.streamer.GatewayStreamer.get_streamer()`.
+object using {meth}`~jina.serve.streamer.GatewayStreamer.get_streamer()`:
+
+```python
+from jina.serve.streamer import GatewayStreamer
+
+streamer = GatewayStreamer.get_streamer()
+```
 
 After transforming requests that arrive to the gateway server into Documents, you can send them to Executors in the Flow 
-using {meth}`~jina.serve.streamer.GatewayStreamer.stream_docs` :
-```python
+using {meth}`~jina.serve.streamer.GatewayStreamer.stream_docs()`. 
+
+This method expects a DocumentArray object and an endpoint exposed by the Flow Executors (similar to Jina Client). 
+It returns an `AsyncGenerator` of DocumentArrays:
+```{code-block} python
+---
+emphasize-lines: 14, 15, 16, 17, 18
+---
 from jina.serve.runtimes.gateway.http.fastapi import FastAPIBaseGateway
 from jina import Document, DocumentArray
 from fastapi import FastAPI
@@ -172,6 +165,48 @@ class MyGateway(FastAPIBaseGateway):
 
         return app
 ```
+
+## Gateway arguments
+(gateway-runtime-arguments)=
+### Runtime attributes
+Jina injects runtime attributes into the Gateway classes. You can use them to set up your custom gateway:
+* logger: Jina logger object.
+* streamer: {class}`~jina.serve.streamer.GatewayStreamer`. Use this object to send Documents from the Gateway to Executors. Refer to {ref}`this section <gateway-streamer>` for more information.
+* runtime_args: `argparse.Namespace` object containing runtime arguments.
+* port: main port exposed by the Gateway.
+* ports: list all ports exposed by the Gateway.
+* protocols: list all protocols supported by the Gateway.
+* host: host address to which the Gateway server should be bound.
+
+Use these attributes to implement your Gateway logic. For instance, binding the server to the runtime provided `port` and 
+`host`:
+
+```{code-block} python
+---
+emphasize-lines: 7
+---
+from jina import Gateway
+
+class MyGateway(Gateway):
+    ...
+    async def setup_server(self):
+        ...
+        self.server = Server(Config(app, host=self.host, port=self.port))
+```
+
+```{admonition} Nonte
+:class: note
+
+Jina provides the Gateway with a list of ports and protocols to expose. Therefore, a custom Gateway can handle requests 
+on multiple ports using different protocols.
+```
+
+(user-defined-arguments)=
+### User-defined parameters
+You can also set other parameters by implementing a custom constructor `__init__`.You can also override constructor 
+parameters in the Flow Python API (using `uses_with` parameter) or in the YAML configuration when including the gateway.
+Refer to the {ref}`Use Custom Gateway section <use-custom-gateway>` for more information.
+
 
 
 ## Required health-checks
