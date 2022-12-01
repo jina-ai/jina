@@ -85,7 +85,13 @@ class BatchQueue():
                 docs_matrix=None,
                 tracing_context=None, # TODO: Tracing?
             )
-
+            
+            # Output validation
+            if not (isinstance(return_data, DocumentArray) or return_data is None):
+                raise TypeError(
+                    f'The return type must be DocumentArray / `None` when using dynamic batching, '
+                    f'but getting {return_data!r}'
+                )
             assert len(return_data) == len(self._big_doc), f'Dynamic Batching requires input size to equal output size. Expected output size {len(self._big_doc)}, but got {len(return_data)}'
 
             # We need to reslice the big doc array into the original requests
@@ -110,12 +116,6 @@ class BatchQueue():
 
     def _set_result(self, request: DataRequest, return_data: DocumentArray, docs: DocumentArray) -> None:
         if return_data is not None:
-            if isinstance(return_data, DocumentArray):
-                docs = return_data
-            else:
-                raise TypeError(
-                    f'The return type must be DocumentArray / `None` when using dynamic batching, '
-                    f'but getting {return_data!r}'
-                )
+            docs = return_data
 
         request.data.set_docs_convert_arrays(docs, ndarray_type=self.args.output_array_type)
