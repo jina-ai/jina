@@ -354,10 +354,12 @@ class WorkerRequestHandler:
 
         self._record_request_size_monitoring(requests)
 
-        # TODO: This does not account for requests to "/"
         if exec_endpoint in self._batchqueue:
             assert len(requests) == 1, 'dynamic batching does not support no_reduce'
             await self._batchqueue[exec_endpoint].push(requests[0])
+        elif exec_endpoint not in self._executor.requests and __default_endpoint__ in self._batchqueue:
+            assert len(requests) == 1, 'dynamic batching does not support no_reduce'
+            await self._batchqueue[__default_endpoint__].push(requests[0])
         else:
             params = self._parse_params(requests[0].parameters, self._executor.metas.name)
             docs = WorkerRequestHandler.get_docs_from_request(
