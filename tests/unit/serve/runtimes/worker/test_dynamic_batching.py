@@ -119,16 +119,13 @@ def test_correctness():
             assert [doc.text for doc in results[1]] == [f"b{BAR_SUCCESS_MSG}"]
             assert [doc.text for doc in results[2]] == [f"c{BAR_SUCCESS_MSG}"]
 
-# The errors are not propagated to the main process or the client
-# This is true even without dynamic batching
-# So this test is not very useful, just helps with codecov
-@pytest.mark.skip(reason="Johannes: Eh its fine")
-def test_fail_on_wrong_type():
+def test_failure_propagation():
+    from jina.excepts import BadServer
     f = Flow().add(uses=PlaceholderExecutor)
     with f:
-        with mp.Pool(2) as p:
-            results = list(p.map(call_api, [
-                RequestStruct(f.port, "/wrongtype", 2),
-                RequestStruct(f.port, "/wrongtype", 2),
-            ]))
-            assert all([len(result) == 2 for result in results])
+        with pytest.raises(BadServer):
+            Client(port=f.port).post("/wrongtype", inputs=DocumentArray([Document(text=str(i)) for i in range(4)]))
+        with pytest.raises(BadServer):
+            Client(port=f.port).post("/wrongtype", inputs=DocumentArray([Document(text=str(i)) for i in range(2)]))
+        with pytest.raises(BadServer):
+            Client(port=f.port).post("/wrongtype", inputs=DocumentArray([Document(text=str(i)) for i in range(8)]))

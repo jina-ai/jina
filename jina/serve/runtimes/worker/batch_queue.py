@@ -76,7 +76,6 @@ class BatchQueue():
         :param trigger_event: The event that will trigger the flush.
         """
         await trigger_event.wait()
-        # TODO: At the moment this fails silently. It just returns the input in the case of a failure
         try:
             # We need to get the executor to process the big doc
             return_data = await self._executor.__acall__(
