@@ -5,15 +5,15 @@ import multiprocessing as mp
 from collections import namedtuple
 
 TIMEOUT_TOLERANCE = 1
-BAR_SUCCESS_MSG = "Done through bar"
+FOO_SUCCESS_MSG = 'Done through foo'
+BAR_SUCCESS_MSG = 'Done through bar'
 
 class PlaceholderExecutor(Executor):
-    @requests
+    @requests('/foo')
     @dynamic_batching(preferred_batch_size=4)
     def foo_fun(self, docs, **kwargs):
         for doc in docs:
-            doc.text = 'Done through foo'
-        return docs
+            doc.text += FOO_SUCCESS_MSG
 
     @requests(on=['/bar', '/baz'])
     @dynamic_batching(preferred_batch_size=4, timeout=2000)
@@ -25,7 +25,7 @@ class PlaceholderExecutor(Executor):
     @requests(on=['/wrongtype'])
     @dynamic_batching(preferred_batch_size=4, timeout=2000)
     def wrong_return_type_fun(self, docs, **kwargs):
-        return "Fail me!"
+        return 'Fail me!'
 
     @requests(on=['/wronglen'])
     @dynamic_batching(preferred_batch_size=4, timeout=2000)
@@ -41,21 +41,21 @@ def test_timeout():
     f = Flow().add(uses=PlaceholderExecutor)
     with f:
         start_time = time.time()
-        f.post("/bar", inputs=DocumentArray.empty(2))
+        f.post('/bar', inputs=DocumentArray.empty(2))
         time_taken = time.time() - start_time
-        assert time_taken > 2, "Timeout ended too fast"
-        assert time_taken < 2 + TIMEOUT_TOLERANCE, "Timeout ended too slowly"
+        assert time_taken > 2, 'Timeout ended too fast'
+        assert time_taken < 2 + TIMEOUT_TOLERANCE, 'Timeout ended too slowly'
         
         with mp.Pool(3) as p:
             start_time = time.time()
             list(p.map(call_api, [
-                RequestStruct(f.port, "/bar", range(1)),
-                RequestStruct(f.port, "/bar", range(1)),
-                RequestStruct(f.port, "/bar", range(1)),
+                RequestStruct(f.port, '/bar', range(1)),
+                RequestStruct(f.port, '/bar', range(1)),
+                RequestStruct(f.port, '/bar', range(1)),
             ]))
             time_taken = time.time() - start_time
-            assert time_taken > 2, "Timeout ended too fast"
-            assert time_taken < 2 + TIMEOUT_TOLERANCE, "Timeout ended too slowly"
+            assert time_taken > 2, 'Timeout ended too fast'
+            assert time_taken < 2 + TIMEOUT_TOLERANCE, 'Timeout ended too slowly'
 
 
 def test_preferred_batch_size():
@@ -64,8 +64,8 @@ def test_preferred_batch_size():
         with mp.Pool(2) as p:
             start_time = time.time()
             list(p.map(call_api, [
-                RequestStruct(f.port, "/bar", range(2)),
-                RequestStruct(f.port, "/bar", range(2)),
+                RequestStruct(f.port, '/bar', range(2)),
+                RequestStruct(f.port, '/bar', range(2)),
             ]))
             time_taken = time.time() - start_time
             assert time_taken < TIMEOUT_TOLERANCE
@@ -73,8 +73,8 @@ def test_preferred_batch_size():
         with mp.Pool(2) as p:
             start_time = time.time()
             list(p.map(call_api, [
-                RequestStruct(f.port, "/bar", range(3)),
-                RequestStruct(f.port, "/bar", range(2)),
+                RequestStruct(f.port, '/bar', range(3)),
+                RequestStruct(f.port, '/bar', range(2)),
             ]))
             time_taken = time.time() - start_time
             assert time_taken < TIMEOUT_TOLERANCE
@@ -82,10 +82,10 @@ def test_preferred_batch_size():
         with mp.Pool(4) as p:
             start_time = time.time()
             list(p.map(call_api, [
-                RequestStruct(f.port, "/bar", range(1)),
-                RequestStruct(f.port, "/bar", range(1)),
-                RequestStruct(f.port, "/bar", range(1)),
-                RequestStruct(f.port, "/bar", range(1)),
+                RequestStruct(f.port, '/bar', range(1)),
+                RequestStruct(f.port, '/bar', range(1)),
+                RequestStruct(f.port, '/bar', range(1)),
+                RequestStruct(f.port, '/bar', range(1)),
             ]))
             time_taken = time.time() - start_time
             assert time_taken < TIMEOUT_TOLERANCE
@@ -95,44 +95,44 @@ def test_correctness():
     with f:
         with mp.Pool(2) as p:
             results = list(p.map(call_api, [
-                RequestStruct(f.port, "/bar", 'ab'),
-                RequestStruct(f.port, "/bar", 'cd'),
+                RequestStruct(f.port, '/bar', 'ab'),
+                RequestStruct(f.port, '/bar', 'cd'),
             ]))
             assert all([len(result) == 2 for result in results])
-            assert [doc.text for doc in results[0]] == [f"a{BAR_SUCCESS_MSG}", f"b{BAR_SUCCESS_MSG}"]
-            assert [doc.text for doc in results[1]] == [f"c{BAR_SUCCESS_MSG}", f"d{BAR_SUCCESS_MSG}"]
+            assert [doc.text for doc in results[0]] == [f'a{BAR_SUCCESS_MSG}', f'b{BAR_SUCCESS_MSG}']
+            assert [doc.text for doc in results[1]] == [f'c{BAR_SUCCESS_MSG}', f'd{BAR_SUCCESS_MSG}']
 
         with mp.Pool(2) as p:
             results = list(p.map(call_api, [
-                RequestStruct(f.port, "/bar", 'ABC'),
-                RequestStruct(f.port, "/bar", 'AB'),
+                RequestStruct(f.port, '/bar', 'ABC'),
+                RequestStruct(f.port, '/bar', 'AB'),
             ]))
             assert [len(r) for r in results] == [3, 2]
-            assert [doc.text for doc in results[0]] == [f"A{BAR_SUCCESS_MSG}", f"B{BAR_SUCCESS_MSG}", f"C{BAR_SUCCESS_MSG}"]
-            assert [doc.text for doc in results[1]] == [f"A{BAR_SUCCESS_MSG}", f"B{BAR_SUCCESS_MSG}"]
+            assert [doc.text for doc in results[0]] == [f'A{BAR_SUCCESS_MSG}', f'B{BAR_SUCCESS_MSG}', f'C{BAR_SUCCESS_MSG}']
+            assert [doc.text for doc in results[1]] == [f'A{BAR_SUCCESS_MSG}', f'B{BAR_SUCCESS_MSG}']
 
         # This is the only one that waits for timeout because its slow
         # But we should still test it at least once
         with mp.Pool(3) as p:
             results = list(p.map(call_api, [
-                RequestStruct(f.port, "/bar", 'a'),
-                RequestStruct(f.port, "/bar", 'b'),
-                RequestStruct(f.port, "/bar", 'c'),
+                RequestStruct(f.port, '/bar', 'a'),
+                RequestStruct(f.port, '/bar', 'b'),
+                RequestStruct(f.port, '/bar', 'c'),
             ]))
             assert all([len(result) == 1 for result in results])
-            assert [doc.text for doc in results[0]] == [f"a{BAR_SUCCESS_MSG}"]
-            assert [doc.text for doc in results[1]] == [f"b{BAR_SUCCESS_MSG}"]
-            assert [doc.text for doc in results[2]] == [f"c{BAR_SUCCESS_MSG}"]
+            assert [doc.text for doc in results[0]] == [f'a{BAR_SUCCESS_MSG}']
+            assert [doc.text for doc in results[1]] == [f'b{BAR_SUCCESS_MSG}']
+            assert [doc.text for doc in results[2]] == [f'c{BAR_SUCCESS_MSG}']
 
 def test_failure_propagation():
     from jina.excepts import BadServer
     f = Flow().add(uses=PlaceholderExecutor)
     with f:
         with pytest.raises(BadServer):
-            Client(port=f.port).post("/wrongtype", inputs=DocumentArray([Document(text=str(i)) for i in range(4)]))
+            Client(port=f.port).post('/wrongtype', inputs=DocumentArray([Document(text=str(i)) for i in range(4)]))
         with pytest.raises(BadServer):
-            Client(port=f.port).post("/wrongtype", inputs=DocumentArray([Document(text=str(i)) for i in range(2)]))
+            Client(port=f.port).post('/wrongtype', inputs=DocumentArray([Document(text=str(i)) for i in range(2)]))
         with pytest.raises(BadServer):
-            Client(port=f.port).post("/wrongtype", inputs=DocumentArray([Document(text=str(i)) for i in range(8)]))
+            Client(port=f.port).post('/wrongtype', inputs=DocumentArray([Document(text=str(i)) for i in range(8)]))
         with pytest.raises(BadServer):
-            Client(port=f.port).post("/wronglen", inputs=DocumentArray([Document(text=str(i)) for i in range(8)]))
+            Client(port=f.port).post('/wronglen', inputs=DocumentArray([Document(text=str(i)) for i in range(8)]))
