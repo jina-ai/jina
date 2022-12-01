@@ -194,6 +194,7 @@ class GatewayStreamer:
     def get_streamer():
         """
         Return a streamer object based on the current environment context.
+        The streamer object is contructed using runtime arguments stored in the `JINA_STREAMER_ARGS` environment variable.
         If this method is used outside a Jina context (process not controlled/orchestrated by jina), this method will
         raise an error.
         The streamer object does not have tracing/instrumentation capabilities.
