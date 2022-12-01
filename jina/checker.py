@@ -51,7 +51,7 @@ class NetworkChecker:
                 if args.attempts > 0:
                     time.sleep(1)
             if total_success < args.attempts:
-                default_logger.warning(
+                default_logger.debug(
                     'message lost %.0f%% (%d/%d) '
                     % (
                         (1 - total_success / args.attempts) * 100,
@@ -60,17 +60,17 @@ class NetworkChecker:
                     )
                 )
             if total_success > 0:
-                default_logger.info(
+                default_logger.debug(
                     'avg. latency: %.0f ms' % (total_time / total_success * 1000)
                 )
 
             if total_success >= args.min_successful_attempts:
-                default_logger.info(
+                default_logger.debug(
                     f'readiness check succeeded {total_success} times!!!'
                 )
                 exit(0)
             else:
-                default_logger.info(
+                default_logger.debug(
                     f'readiness check succeeded {total_success} times, less than {args.min_successful_attempts}'
                 )
         except KeyboardInterrupt:
