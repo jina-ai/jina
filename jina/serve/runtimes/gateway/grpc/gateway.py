@@ -4,7 +4,6 @@ import grpc
 from grpc_health.v1 import health, health_pb2, health_pb2_grpc
 from grpc_reflection.v1alpha import reflection
 
-from jina import __default_host__
 from jina.helper import get_full_version
 from jina.proto import jina_pb2, jina_pb2_grpc
 from jina.serve.gateway import BaseGateway
@@ -59,10 +58,6 @@ class GRPCGateway(BaseGateway):
         # Mark all services as healthy.
         health_pb2_grpc.add_HealthServicer_to_server(self.health_servicer, self.server)
 
-        for service in service_names:
-            await self.health_servicer.set(
-                service, health_pb2.HealthCheckResponse.SERVING
-            )
         reflection.enable_server_reflection(service_names, self.server)
 
         bind_addr = f'{self.host}:{self.port}'
@@ -92,6 +87,10 @@ class GRPCGateway(BaseGateway):
             self.server.add_insecure_port(bind_addr)
         self.logger.debug(f'start server bound to {bind_addr}')
         await self.server.start()
+        for service in service_names:
+            await self.health_servicer.set(
+                service, health_pb2.HealthCheckResponse.SERVING
+            )
 
     async def shutdown(self):
         """Free other resources allocated with the server, e.g, gateway object, ..."""
@@ -104,27 +103,21 @@ class GRPCGateway(BaseGateway):
 
     async def dry_run(self, empty, context) -> jina_pb2.StatusProto:
         """
-        Process the the call requested by having a dry run call to every Executor in the graph
+        Process the call requested by having a dry run call to every Executor in the graph
 
         :param empty: The service expects an empty protobuf message
         :param context: grpc context
         :returns: the response request
         """
-        from docarray import DocumentArray
+        from docarray import DocumentArray, Document
 
-        from jina.clients.request import request_generator
-        from jina.enums import DataInputType
         from jina.serve.executors import __dry_run_endpoint__
 
-        da = DocumentArray()
-
+        da = DocumentArray([Document()])
         try:
-            req_iterator = request_generator(
-                exec_endpoint=__dry_run_endpoint__,
-                data=da,
-                data_type=DataInputType.DOCUMENT,
-            )
-            async for _ in self.streamer.stream(request_iterator=req_iterator):
+            async for _ in self.streamer.stream_docs(
+                docs=da, exec_endpoint=__dry_run_endpoint__, request_size=1
+            ):
                 pass
             status_message = StatusMessage()
             status_message.set_code(jina_pb2.StatusProto.SUCCESS)

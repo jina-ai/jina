@@ -72,7 +72,6 @@ class DockerComposeConfig:
                 'uses_after',
                 'workspace',
                 'workspace_id',
-                'upload_files',
                 'noblock_on_start',
                 'env',
             }

@@ -1,0 +1,5 @@
+!DummyFastAPIGateway
+py_modules: dummy_fastapi_gateway.py
+with:
+  arg1: hello
+  arg2: world

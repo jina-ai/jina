@@ -24,7 +24,7 @@ from jina.helper import (
 )
 from jina.jaml.helper import complete_path
 from jina.orchestrate.pods.factory import PodFactory
-from jina.parsers.helper import _set_gateway_uses
+from jina.parsers.helper import _update_gateway_args
 from jina.serve.networking import host_is_local, in_docker
 
 WRAPPED_SLICE_BASE = r'\[[-\d:]+\]'
@@ -45,38 +45,6 @@ class BaseDeployment(ExitStack):
             are properly closed.
         """
         ...
-
-    @staticmethod
-    def _set_upload_files(args):
-        # sets args.upload_files at the deployment level so that pods inherit from it.
-        # all pods work under one remote workspace, hence important to have upload_files set for all
-
-        def valid_path(path):
-            try:
-                complete_path(path)
-                return True
-            except FileNotFoundError:
-                return False
-
-        _upload_files = set()
-        for param in ['uses', 'uses_before', 'uses_after']:
-            param_value = getattr(args, param, None)
-            if param_value and valid_path(param_value):
-                _upload_files.add(param_value)
-
-        if getattr(args, 'py_modules', None):
-            _upload_files.update(
-                {py_module for py_module in args.py_modules if valid_path(py_module)}
-            )
-        if getattr(args, 'upload_files', None):
-            _upload_files.update(
-                {
-                    upload_file
-                    for upload_file in args.upload_files
-                    if valid_path(upload_file)
-                }
-            )
-        return list(_upload_files)
 
     @property
     def role(self) -> 'DeploymentRoleType':
@@ -247,7 +215,6 @@ class Deployment(BaseDeployment):
         self, args: Union['Namespace', Dict], needs: Optional[Set[str]] = None
     ):
         super().__init__()
-        args.upload_files = BaseDeployment._set_upload_files(args)
         self.args = args
         self.args.polling = (
             args.polling if hasattr(args, 'polling') else PollingType.ANY
@@ -344,7 +311,7 @@ class Deployment(BaseDeployment):
     def update_pod_args(self):
         """Update args of all its pods based on Deployment args. Including head/tail"""
         if self.args.runtime_cls == 'GatewayRuntime':
-            _set_gateway_uses(self.args)
+            _update_gateway_args(self.args)
         if isinstance(self.args, Dict):
             # This is used when a Deployment is created in a remote context, where pods & their connections are already given.
             self.pod_args = self.args
@@ -386,9 +353,9 @@ class Deployment(BaseDeployment):
 
         :return: True if this deployment is provided as a sandbox, False otherwise
         """
+        from hubble.executor.helper import is_valid_sandbox_uri
         uses = getattr(self.args, 'uses') or ''
-        is_sandbox = uses.startswith('jinahub+sandbox://')
-        return is_sandbox
+        return is_valid_sandbox_uri(uses)
 
     @property
     def _is_docker(self) -> bool:
@@ -397,9 +364,9 @@ class Deployment(BaseDeployment):
 
         :return: True if this deployment is to be run in docker
         """
+        from hubble.executor.helper import is_valid_docker_uri
         uses = getattr(self.args, 'uses', '')
-        is_docker = uses.startswith('jinahub+docker://') or uses.startswith('docker://')
-        return is_docker
+        return is_valid_docker_uri(uses)
 
     @property
     def tls_enabled(self):
