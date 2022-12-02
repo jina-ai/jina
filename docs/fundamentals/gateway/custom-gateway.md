@@ -339,12 +339,12 @@ flow = Flow().config_gateway(
 ```yaml
 !Flow
 gateway:
-  py_modules: gateway.py
+  py_modules: my_gateway/my_gateway.py
   uses: MyGateway
   with:
     arg: value
   protocol: http
-  port: 12344
+  port: 12345
 ```
 ````
 
@@ -352,9 +352,9 @@ gateway:
 ```yaml
 !Flow
 gateway:
-  uses: gateway-config.yml
+  uses: my_gateway/config.yml
   protocol: http
-  port: 12344
+  port: 12345
 ```
 ````
 
@@ -364,7 +364,7 @@ gateway:
 gateway:
   uses: docker://gateway-image
   protocol: http
-  port: 12344
+  port: 12345
 ```
 ````
 
