@@ -316,7 +316,7 @@ To control Jina's version while deploying a Flow to `jcloud`, you can pass the `
 ```yaml
 jtype: Flow
 jcloud:
-  version: 3.4.11
+  version: 3.10.0
 executors:
   - name: executor1
     uses: jinaai+docker://<username>/Executor1

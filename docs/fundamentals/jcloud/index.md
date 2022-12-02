@@ -48,14 +48,13 @@ For the rest of this section, we use `jc` or `jcloud`. But again they are interc
 
 In Jina's idiom, a project is a [Flow](https://docs.jina.ai/fundamentals/flow/), which represents an end-to-end task such as indexing, searching or recommending. In this document, we use "project" and "Flow" interchangeably.
 
-````{tip}
-To deploy Flows on JCloud, all Executors need to be pushed to Jina Hub. If you haven't done so, please refer to [this guide](https://docs.jina.ai/chapters/hub/build-your-first-executor.html).
-````
-
-
 ```{caution}
 Flows have a maximum {ref}`lifetime<jcloud-lifetime>` after which they are automatically deleted.
 ```
+
+A Flow can have two types of file structure: a single YAML file or a project folder.
+
+#### Single YAML file
 
 A self-contained YAML file, consisting of all configuration at the [Flow](https://docs.jina.ai/fundamentals/flow/)-level and [Executor](https://docs.jina.ai/fundamentals/executor/)-level.
 
@@ -83,12 +82,72 @@ jina flow --uses flow.yml
 ```
 ````
 
+#### Project folder
+
+````{tip}
+The best practice of creating a JCloud project is to use:
+
+```bash
+jc new
+```
+This ensures the correct project structure accepted by JCloud.
+
+````
+
+Just like a regular Python project, you can have sub-folders of Executor implementations and a `flow.yml` on the top-level to connect all Executors together.
+
+You can create an example local project using `jc new hello`. The default structure looks like:
+
+```
+hello/
+├── .env
+├── executor1
+│   ├── config.yml
+│   ├── executor.py
+│   └── requirements.txt
+└── flow.yml
+```
+
+Where:
+
+- `hello/` is your top-level project folder.
+- `executor1` directory has all Executor related code/configuration. You can read the best practices for [file structures](https://docs.jina.ai/fundamentals/executor/executor-files/). Multiple Executor directories can be created.
+- `flow.yml` Your Flow YAML.
+- `.env` All environment variables used during deployment.
+
+To deploy:
+
+```bash
+jc deploy hello
+```
+
+The Flow is successfully deployed when you see:
+
+```{figure} img/deploy.png
+:width: 70%
+```
+---
+
+You will get a Flow ID, say `merry-magpie-82b9c0897f`. This ID is required to manage, view logs and remove the Flow.
+
+As this Flow is deployed with the default gRPC gateway (feel free to change it to `http` or `websocket`), you can use `jina.Client` to access it:
+
+```python
+from jina import Client, Document
+
+print(
+    Client(host='grpcs://merry-magpie-82b9c0897f.wolf.jina.ai').post(
+        on='/', inputs=Document(text='hello')
+    )
+)
+```
+
 (jcloud-flow-status)=
 ### Get status
 
 To get the status of a Flow:
 ```bash
-jc status 15937a10bd
+jc status merry-magpie-82b9c0897f
 ```
 
 ```{figure} img/status.png
@@ -101,13 +160,13 @@ Basic monitoring is provided to Flows deployed on Jina AI Cloud.
 
 To access the [Grafana](https://grafana.com/)-powered dashboard, first get {ref}`the status of the Flow<jcloud-flow-status>`. The `dashboards` link is displayed at the bottom of the pane. Visit the URL to find basic metrics like 'Number of Request Gateway Received' and 'Time elapsed between receiving a request and sending back the response':
 
-```{figure} monitoring.png
+```{figure} img/monitoring.png
 :width: 70%
 ```
 
 ### List Flows
 
-To list all of your "ALIVE" Flows:
+To list all of your "Serving" Flows:
 
 ```bash
 jc list
@@ -131,7 +190,7 @@ jc list --phase Deleted
 Or see all Flows:
 
 ```bash
-jc list --status ALL
+jc list --phase all
 ```
 
 ```{figure} img/list_all.png
@@ -145,13 +204,13 @@ You can remove a single Flow, multiple Flows or even all Flows by passing differ
 To remove a single Flow:
 
 ```bash
-jc remove 173503c192
+jc remove merry-magpie-82b9c0897f
 ```
 
 To remove multiple Flows:
 
 ```bash
-jc remove 173503c192 887f6313e5 ddb8a2c4ef
+jc remove merry-magpie-82b9c0897f wondrous-kiwi-b02db6a066
 ```
 
 To remove all Flows:
