@@ -44,7 +44,10 @@ JCloud offers the general Intel Xeon processor (Skylake 8175M or Cascade Lake 82
 Maximum of 16 cores is allowed per Executor.
 ```
 
-```yaml
+```{code-block} yaml
+---
+emphasize-lines: 5-7
+---
 jtype: Flow
 executors:
   - name: executor1
@@ -71,7 +74,10 @@ When using GPU resources, it may take a few extra minutes before all Executors a
 An Executor using a `shared` GPU shares this GPU with up to four other Executors.
 This enables time-slicing, which allows workloads that land on oversubscribed GPUs to interleave with one another.
 
-```yaml
+```{code-block} yaml
+---
+emphasize-lines: 5-7
+---
 jtype: Flow
 executors:
   - name: executor1
@@ -89,7 +95,10 @@ The tradeoffs with a `shared` GPU are increased latency, jitter, and potential o
 
 Using a dedicated GPU is the default way to provision GPU for an Executor. This automatically creates nodes or assigns the Executor to land on a GPU node. In this case, the Executor owns the whole GPU. You can assign between 1 and 4 GPUs.
 
-```yaml
+```{code-block} yaml
+---
+emphasize-lines: 5-7
+---
 jtype: Flow
 executors:
   - name: executor1
@@ -103,7 +112,10 @@ executors:
 
 For cost optimization, JCloud tries to deploy all Executors on `spot` capacity. This is ideal for stateless Executors, which can withstand interruptions and restarts. It is recommended to use `on-demand` capacity for stateful Executors (e.g. indexers) however.
 
-```yaml
+```{code-block} yaml
+---
+emphasize-lines: 5-7
+---
 jtype: Flow
 executors:
   - name: executor1
@@ -121,7 +133,10 @@ By default, `100M` of RAM is allocated to each Executor. You can use the `memory
 Maximum of 16G RAM is allowed per Executor.
 ```
 
-```yaml
+```{code-block} yaml
+---
+emphasize-lines: 5-7
+---
 jtype: Flow
 executors:
   - name: executor1
@@ -147,7 +162,10 @@ If your Executor needs high IO, you can use `ebs` instead. Please note that:
 
 ````
 
-```yaml
+```{code-block} yaml
+---
+emphasize-lines: 5-9,12,15
+---
 jtype: Flow
 executors:
   - name: executor1
@@ -191,7 +209,7 @@ For more information about the Knative autoscaling configurations, please visit 
 ```
 
 
-### Scale-out manually
+### Autoscaling with custom args
 
 If `jinaai+serverless://` doesn't meet your requirements, you can further customize autoscaling configurations by using the `autoscale` argument on a per-Executor basis in the Flow YAML, such as:
 
@@ -237,7 +255,10 @@ The JCloud gateway is different from Jina's gateway. In JCloud, a gateway works 
 
 By default, the JCloud gateway will close connections that have been idle for over 600 seconds. If you want longer a connection timeout threshold, you can change the `timeout` parameter under `gateway`.
 
-```yaml
+```{code-block} yaml
+---
+emphasize-lines: 2-4
+---
 jtype: Flow
 jcloud:
   gateway:
@@ -253,7 +274,7 @@ If you'd like to customize the gateway's CPU or memory, you can specify the `mem
 
 ```{code-block} yaml
 ---
-emphasize-lines: 3-7
+emphasize-lines: 2-6
 ---
 jtype: Flow
 jcloud:
@@ -272,11 +293,12 @@ A Flow deployment without a gateway is often used for {ref}`external-executors`,
 
 ```{code-block} yaml
 ---
-emphasize-lines: 3
+emphasize-lines: 2-4, 8-9
 ---
 jtype: Flow
 jcloud:
-  expose: false       # don't expose the Gateway
+  gateway:
+    expose: false       # don't expose the Gateway
 executors:
   - name: custom
     uses: jinaai+docker://<username>/CustomExecutor
@@ -290,7 +312,10 @@ executors:
 
 You can expose the Gateway along with Executors:
 
-```yaml
+```{code-block} yaml
+---
+emphasize-lines: 2-4,8-9
+---
 jtype: Flow
 jcloud:
   gateway:
@@ -312,7 +337,10 @@ executors:
 
 To control Jina's version while deploying a Flow to `jcloud`, you can pass the `version` argument in the Flow YAML:
 
-```yaml
+```{code-block} yaml
+---
+emphasize-lines: 2-3
+---
 jtype: Flow
 jcloud:
   version: 3.10.0
@@ -325,7 +353,10 @@ executors:
 
 You can use `labels` (as key-value pairs) to attach metadata to your Flows:
 
-```yaml
+```{code-block} yaml
+---
+emphasize-lines: 2-5
+---
 jtype: Flow
 jcloud:
   labels: 

@@ -161,7 +161,7 @@ Basic monitoring is provided to Flows deployed on Jina AI Cloud.
 To access the [Grafana](https://grafana.com/)-powered dashboard, first get {ref}`the status of the Flow<jcloud-flow-status>`. The `dashboards` link is displayed at the bottom of the pane. Visit the URL to find basic metrics like 'Number of Request Gateway Received' and 'Time elapsed between receiving a request and sending back the response':
 
 ```{figure} img/monitoring.png
-:width: 70%
+:width: 80%
 ```
 
 ### List Flows
@@ -173,7 +173,7 @@ jc list
 ```
 
 ```{figure} img/list.png
-:width: 70%
+:width: 90%
 ```
 
 You can also filter your Flows by passing a phase:
@@ -184,7 +184,7 @@ jc list --phase Deleted
 
 
 ```{figure} img/list_deleted.png
-:width: 70%
+:width: 90%
 ```
 
 Or see all Flows:
@@ -194,7 +194,7 @@ jc list --phase all
 ```
 
 ```{figure} img/list_all.png
-:width: 70%
+:width: 90%
 ```
 
 ### Remove Flows
