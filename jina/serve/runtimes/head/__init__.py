@@ -36,7 +36,7 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
         :param args: args from CLI
         :param kwargs: keyword args
         """
-        self._health_servicer = health.HealthServicer(experimental_non_blocking=True)
+        self._health_servicer = health.aio.HealthServicer()
 
         super().__init__(args, **kwargs)
         if args.name is None:
@@ -154,10 +154,12 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
         )
 
         for service in service_names:
-            self._health_servicer.set(service, health_pb2.HealthCheckResponse.SERVING)
+            await self._health_servicer.set(
+                service, health_pb2.HealthCheckResponse.SERVING
+            )
         reflection.enable_server_reflection(service_names, self._grpc_server)
 
-        bind_addr = f'0.0.0.0:{self.args.port}'
+        bind_addr = f'{self.args.host}:{self.args.port}'
         self._grpc_server.add_insecure_port(bind_addr)
         self.logger.debug(f'start listening on {bind_addr}')
         await self._grpc_server.start()
@@ -174,7 +176,7 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
 
     async def async_teardown(self):
         """Close the connection pool"""
-        self._health_servicer.enter_graceful_shutdown()
+        await self._health_servicer.enter_graceful_shutdown()
         await self.async_cancel()
         await self.connection_pool.close()
 

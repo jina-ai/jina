@@ -30,8 +30,7 @@ spec:
           imagePullPolicy: {pull_policy}
           command: {command}
           args: {args}
-          ports:
-            - containerPort: {port}
+          ports: {ports-section}
           envFrom:
             - configMapRef:
                 name: {name}-configmap
@@ -42,6 +41,14 @@ spec:
                   fieldPath: metadata.uid
             - name: JINA_DEPLOYMENT_NAME
               value: {jina_deployment_name}
+            - name: K8S_DEPLOYMENT_NAME
+              value: {name}
+            - name: K8S_NAMESPACE_NAME
+              value: {namespace}
+            - name: K8S_POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
           readinessProbe:
             exec:
               command:
@@ -52,3 +59,7 @@ spec:
             initialDelaySeconds: 5
             periodSeconds: 20
             timeoutSeconds: 10
+          lifecycle:
+            preStop:
+              exec:
+                command: ["/bin/sh", "-c", "sleep 2"]

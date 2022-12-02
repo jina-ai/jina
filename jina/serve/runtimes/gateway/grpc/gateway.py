@@ -4,7 +4,6 @@ import grpc
 from grpc_health.v1 import health, health_pb2, health_pb2_grpc
 from grpc_reflection.v1alpha import reflection
 
-from jina import __default_host__
 from jina.helper import get_full_version
 from jina.proto import jina_pb2, jina_pb2_grpc
 from jina.serve.gateway import BaseGateway
@@ -17,25 +16,22 @@ class GRPCGateway(BaseGateway):
 
     def __init__(
         self,
-        port: Optional[int] = None,
         grpc_server_options: Optional[dict] = None,
         ssl_keyfile: Optional[str] = None,
         ssl_certfile: Optional[str] = None,
         **kwargs,
     ):
         """Initialize the gateway
-        :param port: The port of the Gateway, which the client should connect to.
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
         :param ssl_keyfile: the path to the key file
         :param ssl_certfile: the path to the certificate file
         :param kwargs: keyword args
         """
         super().__init__(**kwargs)
-        self.port = port
         self.grpc_server_options = grpc_server_options
         self.ssl_keyfile = ssl_keyfile
         self.ssl_certfile = ssl_certfile
-        self.health_servicer = health.HealthServicer(experimental_non_blocking=True)
+        self.health_servicer = health.aio.HealthServicer()
 
     async def setup_server(self):
         """
@@ -62,11 +58,9 @@ class GRPCGateway(BaseGateway):
         # Mark all services as healthy.
         health_pb2_grpc.add_HealthServicer_to_server(self.health_servicer, self.server)
 
-        for service in service_names:
-            self.health_servicer.set(service, health_pb2.HealthCheckResponse.SERVING)
         reflection.enable_server_reflection(service_names, self.server)
 
-        bind_addr = f'{__default_host__}:{self.port}'
+        bind_addr = f'{self.host}:{self.port}'
 
         if self.ssl_keyfile and self.ssl_certfile:
             with open(self.ssl_keyfile, 'rb') as f:
@@ -93,17 +87,15 @@ class GRPCGateway(BaseGateway):
             self.server.add_insecure_port(bind_addr)
         self.logger.debug(f'start server bound to {bind_addr}')
         await self.server.start()
+        for service in service_names:
+            await self.health_servicer.set(
+                service, health_pb2.HealthCheckResponse.SERVING
+            )
 
-    async def teardown(self):
+    async def shutdown(self):
         """Free other resources allocated with the server, e.g, gateway object, ..."""
-        await super().teardown()
-        self.health_servicer.enter_graceful_shutdown()
-
-    async def stop_server(self):
-        """
-        Stop GRPC server
-        """
         await self.server.stop(0)
+        await self.health_servicer.enter_graceful_shutdown()
 
     async def run_server(self):
         """Run GRPC server forever"""
@@ -111,26 +103,21 @@ class GRPCGateway(BaseGateway):
 
     async def dry_run(self, empty, context) -> jina_pb2.StatusProto:
         """
-        Process the the call requested by having a dry run call to every Executor in the graph
+        Process the call requested by having a dry run call to every Executor in the graph
 
         :param empty: The service expects an empty protobuf message
         :param context: grpc context
         :returns: the response request
         """
-        from docarray import DocumentArray
-        from jina.clients.request import request_generator
-        from jina.enums import DataInputType
+        from docarray import DocumentArray, Document
+
         from jina.serve.executors import __dry_run_endpoint__
 
-        da = DocumentArray()
-
+        da = DocumentArray([Document()])
         try:
-            req_iterator = request_generator(
-                exec_endpoint=__dry_run_endpoint__,
-                data=da,
-                data_type=DataInputType.DOCUMENT,
-            )
-            async for _ in self.streamer.stream(request_iterator=req_iterator):
+            async for _ in self.streamer.stream_docs(
+                docs=da, exec_endpoint=__dry_run_endpoint__, request_size=1
+            ):
                 pass
             status_message = StatusMessage()
             status_message.set_code(jina_pb2.StatusProto.SUCCESS)
@@ -148,10 +135,10 @@ class GRPCGateway(BaseGateway):
         :param context: grpc context
         :returns: the response request
         """
-        infoProto = jina_pb2.JinaInfoProto()
+        info_proto = jina_pb2.JinaInfoProto()
         version, env_info = get_full_version()
         for k, v in version.items():
-            infoProto.jina[k] = str(v)
+            info_proto.jina[k] = str(v)
         for k, v in env_info.items():
-            infoProto.envs[k] = str(v)
-        return infoProto
+            info_proto.envs[k] = str(v)
+        return info_proto

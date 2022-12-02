@@ -16,9 +16,14 @@ from jina.serve.runtimes.base import BaseRuntime
 from jina.serve.runtimes.monitoring import MonitoringMixin
 from jina.types.request.data import DataRequest
 
-if TYPE_CHECKING: # pragma: no cover
+if TYPE_CHECKING:  # pragma: no cover
     import multiprocessing
     import threading
+
+HANDLED_SIGNALS = (
+    signal.SIGINT,  # Unix signal 2. Sent by Ctrl+C.
+    signal.SIGTERM,  # Unix signal 15. Sent by `kill <pid>`.
+)
 
 
 class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, InstrumentationMixin, ABC):
@@ -27,25 +32,29 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, InstrumentationMixin, AB
     """
 
     def __init__(
-        self,
-        args: 'argparse.Namespace',
-        cancel_event: Optional[
-            Union['asyncio.Event', 'multiprocessing.Event', 'threading.Event']
-        ] = None,
-        **kwargs,
+            self,
+            args: 'argparse.Namespace',
+            cancel_event: Optional[
+                Union['asyncio.Event', 'multiprocessing.Event', 'threading.Event']
+            ] = None,
+            **kwargs,
     ):
         super().__init__(args, **kwargs)
         self._loop = asyncio.new_event_loop()
         asyncio.set_event_loop(self._loop)
         self.is_cancel = cancel_event or asyncio.Event()
+
+        def _cancel(sig):
+            def _inner_cancel(*args, **kwargs):
+                self.logger.debug(f'Received signal {sig.name}')
+                self.is_cancel.set(),
+
+            return _inner_cancel
+
         if not __windows__:
-            # TODO: windows event loops don't support signal handlers
             try:
-                for signame in {'SIGINT', 'SIGTERM'}:
-                    self._loop.add_signal_handler(
-                        getattr(signal, signame),
-                        lambda *args, **kwargs: self.is_cancel.set(),
-                    )
+                for sig in HANDLED_SIGNALS:
+                    self._loop.add_signal_handler(sig, _cancel(sig), sig, None)
             except (ValueError, RuntimeError) as exc:
                 self.logger.warning(
                     f' The runtime {self.__class__.__name__} will not be able to handle termination signals. '
@@ -53,10 +62,10 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, InstrumentationMixin, AB
                 )
         else:
             with ImportExtensions(
-                required=True,
-                logger=self.logger,
-                help_text='''If you see a 'DLL load failed' error, please reinstall `pywin32`.
-                If you're using conda, please use the command `conda install -c anaconda pywin32`''',
+                    required=True,
+                    logger=self.logger,
+                    help_text='''If you see a 'DLL load failed' error, please reinstall `pywin32`.
+                    If you're using conda, please use the command `conda install -c anaconda pywin32`''',
             ):
                 import win32api
 
@@ -195,11 +204,11 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, InstrumentationMixin, AB
 
     @classmethod
     def wait_for_ready_or_shutdown(
-        cls,
-        timeout: Optional[float],
-        ready_or_shutdown_event: Union['multiprocessing.Event', 'threading.Event'],
-        ctrl_address: str,
-        **kwargs,
+            cls,
+            timeout: Optional[float],
+            ready_or_shutdown_event: Union['multiprocessing.Event', 'threading.Event'],
+            ctrl_address: str,
+            **kwargs,
     ):
         """
         Check if the runtime has successfully started

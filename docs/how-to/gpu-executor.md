@@ -457,7 +457,7 @@ Nope! Not only that, many Executors on Executor Hub already come with a GPU-enab
 ```diff
 f = Flow().add(
 -   uses='docker://sentence-encoder',
-+   uses='jinahub+docker://TransformerTorchEncoder/latest-gpu',
++   uses='jinaai+docker://jina-ai/TransformerTorchEncoder:latest-gpu',
     uses_with={'device': 'cuda'},
     gpus='all',
     # This has to be an absolute path, replace /home/ubuntu with your home directory
@@ -470,7 +470,7 @@ The first time you run the script, downloading the Docker image takes some time 
 ```{admonition} Important
 :class: caution
 
-When using GPU encoders from Executor Hub, always use `jinahub+docker://`, and not `jinahub://`. As discussed above, these encoders may need CUDA installed (or other system dependencies), and installing that properly can be tricky. For that reason, use Docker images, which already come with all these dependencies pre-installed.
+When using GPU encoders from Executor Hub, always use `jinaai+docker://`, and not `jinaai://`. As discussed above, these encoders may need CUDA installed (or other system dependencies), and installing that properly can be tricky. For that reason, use Docker images, which already come with all these dependencies pre-installed.
 ```
 
 

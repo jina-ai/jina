@@ -42,12 +42,23 @@ spec:
               fieldPath: metadata.uid
         - name: JINA_DEPLOYMENT_NAME
           value: {jina_deployment_name}
-
+        - name: K8S_DEPLOYMENT_NAME
+          value: {name}
+        - name: K8S_NAMESPACE_NAME
+          value: {namespace}
+        - name: K8S_POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
         readinessProbe:
           tcpSocket:
             port: {port}
           initialDelaySeconds: 5
           periodSeconds: 10
+        lifecycle:
+          preStop:
+            exec:
+              command: ["/bin/sh", "-c", "sleep 2"]
       - name: uses-before
         image: {image_uses_before}
         imagePullPolicy: {pull_policy}
@@ -65,6 +76,14 @@ spec:
               fieldPath: metadata.uid
         - name: JINA_DEPLOYMENT_NAME
           value: {jina_deployment_name}
+        - name: K8S_DEPLOYMENT_NAME
+          value: {name}
+        - name: K8S_NAMESPACE_NAME
+          value: {namespace}
+        - name: K8S_POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
 
         readinessProbe:
           exec:
@@ -76,3 +95,7 @@ spec:
           initialDelaySeconds: 5
           periodSeconds: 20
           timeoutSeconds: 10
+        lifecycle:
+          preStop:
+            exec:
+              command: ["/bin/sh", "-c", "sleep 2"]

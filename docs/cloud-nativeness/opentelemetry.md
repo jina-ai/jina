@@ -97,6 +97,8 @@ exporters:
   
   prometheus:
     endpoint: "0.0.0.0:8889"
+    resource_to_telemetry_conversion:
+      enabled: true
     # can be used to add additional labels
     const_labels:
       label1: value1
@@ -146,7 +148,7 @@ with Flow(
     metrics=True,
     metrics_exporter_host='localhost',
     metrics_exporter_port=4317,
-).add(uses='jinahub://SimpleIndexer') as f:
+).add(uses='jinaai://jina-ai/SimpleIndexer') as f:
     f.post('/', DocumentArray([Document(text='hello')]))
 ```
 

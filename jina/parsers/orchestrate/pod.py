@@ -6,7 +6,12 @@ from typing import Dict
 
 from jina import helper
 from jina.enums import PodRoleType
-from jina.parsers.helper import _SHOW_ALL_ARGS, KVAppendAction, add_arg_group
+from jina.parsers.helper import (
+    _SHOW_ALL_ARGS,
+    CastToIntAction,
+    KVAppendAction,
+    add_arg_group,
+)
 
 
 @dataclass
@@ -89,24 +94,67 @@ def mixin_pod_parser(parser, pod_type: str = 'worker'):
     )
 
     gp.add_argument(
-        '--port',
-        '--port-in',
-        type=str,
-        default=str(helper.random_port()),
-        help='The port for input data to bind to, default is a random port between [49152, 65535].'
-        'In the case of an external Executor (`--external` or `external=True`) this can be a list of ports, '
-             'separated by commas. '
-        ' Then, every resulting address will be considered as one replica of the Executor.',
+        '--floating',
+        action='store_true',
+        default=False,
+        help='If set, the current Pod/Deployment can not be further chained, '
+        'and the next `.add()` will chain after the last Pod/Deployment not this current one.',
+    )
+    mixin_pod_runtime_args_parser(gp, pod_type=pod_type)
+
+
+def mixin_pod_runtime_args_parser(arg_group, pod_type='worker'):
+    """Mixin for runtime arguments of pods
+    :param arg_group: the parser instance or args group to which we add arguments
+    :param pod_type: the pod_type configured by the parser. Can be either 'worker' for WorkerRuntime or 'gateway' for GatewayRuntime
+    """
+    port_description = (
+        'The port for input data to bind to, default is a random port between [49152, 65535]. '
+        'In the case of an external Executor (`--external` or `external=True`) this can be a list of ports, separated by commas. '
+        'Then, every resulting address will be considered as one replica of the Executor.'
     )
 
-    gp.add_argument(
+    if pod_type != 'gateway':
+        arg_group.add_argument(
+            '--port',
+            '--port-in',
+            type=str,
+            default=helper.random_port(),
+            action=CastToIntAction,
+            help=port_description,
+        )
+        arg_group.add_argument(
+            '--reload',
+            action='store_true',
+            default=False,
+            help='If set, the Executor reloads the modules as they change'
+        )
+    else:
+        port_description = (
+            'The port for input data to bind the gateway server to, by default, random ports between range [49152, 65535] will be assigned. '
+            'The port argument can be either 1 single value in case only 1 protocol is used or multiple values when '
+            'many protocols are used.'
+        )
+        arg_group.add_argument(
+            '--port',
+            '--port-expose',
+            '--port-in',
+            '--ports',
+            action=CastToIntAction,
+            type=str,
+            nargs='+',
+            default=None,
+            help=port_description,
+        )
+
+    arg_group.add_argument(
         '--monitoring',
         action='store_true',
         default=False,
         help='If set, spawn an http server with a prometheus endpoint to expose metrics',
     )
 
-    gp.add_argument(
+    arg_group.add_argument(
         '--port-monitoring',
         type=str,
         default=str(helper.random_port()),
@@ -114,7 +162,7 @@ def mixin_pod_parser(parser, pod_type: str = 'worker'):
         help=f'The port on which the prometheus server is exposed, default is a random port between [49152, 65535]',
     )
 
-    gp.add_argument(
+    arg_group.add_argument(
         '--retries',
         type=int,
         default=-1,
@@ -122,15 +170,7 @@ def mixin_pod_parser(parser, pod_type: str = 'worker'):
         help=f'Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)',
     )
 
-    gp.add_argument(
-        '--floating',
-        action='store_true',
-        default=False,
-        help='If set, the current Pod/Deployment can not be further chained, '
-        'and the next `.add()` will chain after the last Pod/Deployment not this current one.',
-    )
-
-    gp.add_argument(
+    arg_group.add_argument(
         '--tracing',
         action='store_true',
         default=False,
@@ -138,21 +178,21 @@ def mixin_pod_parser(parser, pod_type: str = 'worker'):
         'Otherwise a no-op implementation will be provided.',
     )
 
-    parser.add_argument(
+    arg_group.add_argument(
         '--traces-exporter-host',
         type=str,
         default=None,
         help='If tracing is enabled, this hostname will be used to configure the trace exporter agent.',
     )
 
-    parser.add_argument(
+    arg_group.add_argument(
         '--traces-exporter-port',
         type=int,
         default=None,
         help='If tracing is enabled, this port will be used to configure the trace exporter agent.',
     )
 
-    parser.add_argument(
+    arg_group.add_argument(
         '--metrics',
         action='store_true',
         default=False,
@@ -160,14 +200,14 @@ def mixin_pod_parser(parser, pod_type: str = 'worker'):
         'Otherwise a no-op implementation will be provided.',
     )
 
-    parser.add_argument(
+    arg_group.add_argument(
         '--metrics-exporter-host',
         type=str,
         default=None,
         help='If tracing is enabled, this hostname will be used to configure the metrics exporter agent.',
     )
 
-    parser.add_argument(
+    arg_group.add_argument(
         '--metrics-exporter-port',
         type=int,
         default=None,

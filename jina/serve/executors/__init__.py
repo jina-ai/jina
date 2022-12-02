@@ -1,20 +1,25 @@
-import contextlib
+import copy
 import inspect
 import multiprocessing
+import functools
 import os
+import asyncio
 import threading
-import copy
 import warnings
+import contextlib
 from types import SimpleNamespace
 from typing import TYPE_CHECKING, Any, Dict, Optional, Type, Union
 
 from jina import __args_executor_init__, __cache_path__, __default_endpoint__
 from jina.enums import BetterEnum
-from jina.helper import ArgNamespace, T, iscoroutinefunction, typename
+from jina.helper import ArgNamespace, T, iscoroutinefunction, typename, get_or_reuse_loop
 from jina.importer import ImportExtensions
 from jina.jaml import JAML, JAMLCompatible, env_var_regex, internal_var_regex
 from jina.logging.logger import JinaLogger
-from jina.serve.executors.decorators import avoid_concurrent_lock_cls, _init_requests_by_class
+from jina.serve.executors.decorators import (
+    _init_requests_by_class,
+    avoid_concurrent_lock_cls,
+)
 from jina.serve.executors.metas import get_executor_taboo
 from jina.serve.helper import store_init_kwargs, wrap_func
 from jina.serve.instrumentation import MetricsTimer
@@ -149,14 +154,13 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         if type(self) == BaseExecutor:
             self.requests[__default_endpoint__] = self._dry_run_func
 
+        try:
+            self._lock = asyncio.Lock()  # Lock to run in Executor non async methods in a way that does not block the event loop to do health checks without the fear of having race conditions or multithreading issues.
+        except RuntimeError:
+            self._lock = contextlib.AsyncExitStack()
+
     def _dry_run_func(self, *args, **kwargs):
         pass
-
-    def _add_runtime_args(self, _runtime_args: Optional[Dict]):
-        if _runtime_args:
-            self.runtime_args = SimpleNamespace(**_runtime_args)
-        else:
-            self.runtime_args = SimpleNamespace()
 
     def _init_monitoring(self):
         if (
@@ -350,6 +354,8 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
     async def __acall_endpoint__(
             self, req_endpoint, tracing_context: Optional['Context'], **kwargs
     ):
+        func = self.requests[req_endpoint]
+
         async def exec_func(
                 summary, histogram, histogram_metric_labels, tracing_context
         ):
@@ -357,9 +363,10 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                 if iscoroutinefunction(func):
                     return await func(self, tracing_context=tracing_context, **kwargs)
                 else:
-                    return func(self, tracing_context=tracing_context, **kwargs)
-
-        func = self.requests[req_endpoint]
+                    async with self._lock:
+                        return await get_or_reuse_loop().run_in_executor(None, functools.partial(func, self,
+                                                                                                 tracing_context=tracing_context,
+                                                                                                 **kwargs))
 
         runtime_name = (
             self.runtime_args.name if hasattr(self.runtime_args, 'name') else None
@@ -379,7 +386,9 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         }
 
         if self.tracer:
-            with self.tracer.start_span(req_endpoint, context=tracing_context) as _:
+            with self.tracer.start_as_current_span(
+                    req_endpoint, context=tracing_context
+            ):
                 from opentelemetry.propagate import extract
                 from opentelemetry.trace.propagation.tracecontext import (
                     TraceContextTextMapPropagator,

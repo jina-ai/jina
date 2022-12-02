@@ -1,5 +1,6 @@
 import os
 
+import pytest
 import yaml
 
 from jina import Gateway
@@ -14,11 +15,8 @@ class MyDummyGateway(Gateway):
     async def run_server(self):
         self.logger.info(self.server)
 
-    async def teardown(self):
+    async def shutdown(self):
         pass
-
-    async def stop_server(self):
-        self.server = None
 
 
 def test_cls_from_tag():
@@ -30,25 +28,32 @@ def test_cls_from_tag():
 
 def test_base_jtype(tmpdir):
     gateway_path = os.path.join(tmpdir, 'gateway.yml')
+    from jina.serve.runtimes.gateway import BaseGateway
 
-    g = Gateway()
+    g = BaseGateway.load_config('BaseGateway', runtime_args={'port': [12345]})
     g.save_config(gateway_path)
     with open(gateway_path, 'r') as file:
         conf = yaml.safe_load(file)
         assert 'jtype' in conf
         assert conf['jtype'] == 'BaseGateway'
 
-    assert type(Gateway.load_config(gateway_path)) == Gateway
+    assert (
+        type(Gateway.load_config(gateway_path, runtime_args={'port': [12345]}))
+        == Gateway
+    )
 
 
 def test_custom_jtype(tmpdir):
     gateway_path = os.path.join(tmpdir, 'gateway.yml')
 
-    e = MyDummyGateway()
+    e = Gateway.load_config('MyDummyGateway', runtime_args={'port': [12345]})
     e.save_config(gateway_path)
     with open(gateway_path, 'r') as file:
         conf = yaml.safe_load(file)
         assert 'jtype' in conf
         assert conf['jtype'] == 'MyDummyGateway'
 
-    assert type(Gateway.load_config(gateway_path)) == MyDummyGateway
+    assert (
+        type(Gateway.load_config(gateway_path, runtime_args={'port': [12345]}))
+        == MyDummyGateway
+    )

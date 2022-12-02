@@ -12,14 +12,14 @@ emphasize-lines: 5-9,12-16
 jtype: Flow
 executors:
   - name: encoder
-    uses: jinahub+docker://Encoder
+    uses: jinaai+docker://<username>/Encoder
     jcloud:
       resources:
         cpu: 2
         memory: 8G
         gpu: 2
   - name: indexer
-    uses: jinahub+docker://Indexer
+    uses: jinaai+docker://<username>/Indexer
     jcloud:
       resources:
         storage: 
@@ -48,7 +48,7 @@ Maximum of 16 cores is allowed per Executor.
 jtype: Flow
 executors:
   - name: executor1
-    uses: jinahub+docker://Executor1
+    uses: jinaai+docker://<username>/Executor1
     jcloud:
       resources:
         cpu: 0.5
@@ -75,7 +75,7 @@ This enables time-slicing, which allows workloads that land on oversubscribed GP
 jtype: Flow
 executors:
   - name: executor1
-    uses: jinahub+docker://Executor1
+    uses: jinaai+docker://<username>/Executor1
     jcloud:
       resources:
         gpu: shared
@@ -93,7 +93,7 @@ Using a dedicated GPU is the default way to provision GPU for an Executor. This 
 jtype: Flow
 executors:
   - name: executor1
-    uses: jinahub+docker://Executor1
+    uses: jinaai+docker://<username>/Executor1
     jcloud:
       resources:
         gpu: 2
@@ -107,7 +107,7 @@ For cost optimization, JCloud tries to deploy all Executors on `spot` capacity. 
 jtype: Flow
 executors:
   - name: executor1
-    uses: jinahub+docker://Executor1
+    uses: jinaai+docker://<username>/Executor1
     jcloud:
       resources:
         capacity: on-demand
@@ -125,7 +125,7 @@ Maximum of 16G RAM is allowed per Executor.
 jtype: Flow
 executors:
   - name: executor1
-    uses: jinahub+docker://Executor1
+    uses: jinaai+docker://<username>/Executor1
     jcloud:
       resources:
         memory: 8G
@@ -151,14 +151,14 @@ If your Executor needs high IO, you can use `ebs` instead. Please note that:
 jtype: Flow
 executors:
   - name: executor1
-    uses: jinahub+docker://Executor1
+    uses: jinaai+docker://<username>/Executor1
     jcloud:
       resources:
         storage:
           type: ebs
           size: 10G
   - name: executor2
-    uses: jinahub+docker://Executor2
+    uses: jinaai+docker://<username>/Executor2
     jcloud:
       resources:
         storage:
@@ -172,7 +172,7 @@ On JCloud, demand-based autoscaling functionality is naturally offered thanks to
 
 ### Autoscaling with `jinahub+serveless://` 
 
-The easiest way to scale out your Executor is to use a Serverless Executor. This can be enabled by using `jinahub+serverless://` instead of `jinahub+docker://` in Executor's `uses`, such as:
+The easiest way to scale out your Executor is to use a Serverless Executor. This can be enabled by using `jinaai+serverless://` instead of `jinaai+docker://` in Executor's `uses`, such as:
 
 ```{code-block} yaml
 ---
@@ -181,7 +181,7 @@ emphasize-lines: 4
 jtype: Flow
 executors:
   - name: executor1
-    uses: jinahub+serverless://Executor1
+    uses: jinaai+serverless://<username>/Executor1
 ```
 
 JCloud autoscaling leverages [Knative](https://knative.dev/docs/) behind the scenes, and `jinahub+serverless` uses a set of Knative configurations as defaults.
@@ -193,7 +193,7 @@ For more information about the Knative autoscaling configurations, please visit 
 
 ### Scale-out manually
 
-If `jinahub+serverless://` doesn't meet your requirements, you can further customize autoscaling configurations by using the `autoscale` argument on a per-Executor basis in the Flow YAML, such as:
+If `jinaai+serverless://` doesn't meet your requirements, you can further customize autoscaling configurations by using the `autoscale` argument on a per-Executor basis in the Flow YAML, such as:
 
 ```{code-block} yaml
 ---
@@ -202,7 +202,7 @@ emphasize-lines: 5-10
 jtype: Flow
 executors:
   - name: executor1
-    uses: jinahub+docker://Executor1
+    uses: jinaai+docker://<username>/Executor1
     jcloud:
       autoscale:
         min: 1
@@ -244,7 +244,7 @@ jcloud:
     timeout: 600
 executors:
   - name: executor1
-    uses: jinahub+docker://Executor1
+    uses: jinaai+docker://<username>/Executor1
 ```
 
 ### Control gateway resources
@@ -263,7 +263,7 @@ jcloud:
       cpu: 0.4
 executors:
   - name: encoder
-    uses: jinahub+docker://Encoder
+    uses: jinaai+docker://<username>/Encoder
 ```
 
 ## Expose Executors
@@ -279,7 +279,7 @@ jcloud:
   expose: false       # don't expose the Gateway
 executors:
   - name: custom
-    uses: jinahub+docker://CustomExecutor
+    uses: jinaai+docker://<username>/CustomExecutor
     jcloud:
       expose: true    # expose the Executor
 ```
@@ -294,11 +294,11 @@ You can deploy the Gateway along with multiple Executors:
 jtype: Flow
 executors:
   - name: custom1
-    uses: jinahub+docker://CustomExecutor1
+    uses: jinaai+docker://<username>/CustomExecutor1
     jcloud:
       expose: true    # expose the Executor
   - name: custom2
-    uses: jinahub+docker://CustomExecutor2
+    uses: jinaai+docker://<username>/CustomExecutor2
     jcloud:
       expose: true    # expose the Executor
 ```
@@ -319,7 +319,7 @@ jcloud:
   version: 3.4.11
 executors:
   - name: executor1
-    uses: jinahub+docker://Executor1
+    uses: jinaai+docker://<username>/Executor1
 ```
 
 ### Add Labels
@@ -334,7 +334,7 @@ jcloud:
     app: fashion-search
 executors:
   - name: executor1
-    uses: jinahub+docker://Executor1
+    uses: jinaai+docker://<username>/Executor1
 ```
 
 ```{hint}
