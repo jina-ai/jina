@@ -284,26 +284,25 @@ executors:
       expose: true    # expose the Executor
 ```
 
-```{figure} external-executor.png
+```{figure} img/expose-executor.png
 :width: 70%
 ```
 
-You can deploy the Gateway along with multiple Executors:
+You can expose the Gateway along with Executors:
 
 ```yaml
 jtype: Flow
+jcloud:
+  gateway:
+    expose: true
 executors:
   - name: custom1
     uses: jinaai+docker://<username>/CustomExecutor1
     jcloud:
       expose: true    # expose the Executor
-  - name: custom2
-    uses: jinaai+docker://<username>/CustomExecutor2
-    jcloud:
-      expose: true    # expose the Executor
 ```
 
-```{figure} external-executors-multiple.png
+```{figure} img/gateway-and-executors.png
 :width: 70%
 ```
 
