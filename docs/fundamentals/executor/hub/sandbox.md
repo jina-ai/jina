@@ -14,7 +14,7 @@ This graph shows the difference between using and not using Sandbox.
 ```python
 from jina import Flow, Document
 
-f = Flow().add(uses='jinahub+sandbox://Hello')
+f = Flow().add(uses='jinaai+sandbox://jina-ai/Hello')
 
 with f:
     r = f.post('/', inputs=Document(text='world'))
@@ -37,7 +37,7 @@ class MyExecutor(Executor):
             doc.text = '(first hello, from MyExecutor)' + doc.text
 
 
-f = Flow().add(uses=MyExecutor).add(uses='jinahub+sandbox://Hello')
+f = Flow().add(uses=MyExecutor).add(uses='jinaai+sandbox://jina-ai/Hello')
 
 with f:
     r = f.post('/', inputs=Document(text='world'))
