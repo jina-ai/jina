@@ -227,6 +227,7 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install wheel
           pip install ".[all]" --no-cache-dir
+          pip install git+https://github.com/aabmass/opentelemetry-python.git@protoc-for-protobuf3-and-4
           jina
           export JINA_LOG_LEVEL="ERROR"
         env:
@@ -269,6 +270,7 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install wheel
           pip install ".[all]" --no-cache-dir
+          pip install git+https://github.com/aabmass/opentelemetry-python.git@protoc-for-protobuf3-and-4
           jina
           export JINA_LOG_LEVEL="ERROR"
         env:
@@ -309,6 +311,7 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install wheel
           pip install ".[all]" --no-cache-dir
+          pip install git+https://github.com/aabmass/opentelemetry-python.git@protoc-for-protobuf3-and-4
           jina
           export JINA_LOG_LEVEL="ERROR"
         env:
@@ -414,6 +417,7 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install wheel
           pip install --no-cache-dir .
+          pip install git+https://github.com/aabmass/opentelemetry-python.git@protoc-for-protobuf3-and-4
         env:
           JINA_PIP_INSTALL_CORE: ${{ matrix.core }}
           JINA_PIP_INSTALL_PERF: ${{ matrix.perf }}
@@ -443,6 +447,7 @@ jobs:
           JCLOUD_VERSION=$(curl -L -s "https://pypi.org/pypi/jcloud/json" |  jq  -r '.releases | keys | .[]| select(startswith("0."))'  | sort -V | tail -1)
 
           pip install . jcloud==$JCLOUD_VERSION docarray==$DOCARRAY_VERSION jina-hubble-sdk==$HUBBLE_VERSION
+          pip install git+https://github.com/aabmass/opentelemetry-python.git@protoc-for-protobuf3-and-4
         env:
           JINA_PIP_INSTALL_CORE: ${{ matrix.core }}
           JINA_PIP_INSTALL_PERF: ${{ matrix.perf }}
