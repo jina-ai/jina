@@ -92,10 +92,12 @@ class FastAPIBaseGateway(BaseGateway):
             # Filter out healthcheck endpoint `GET /`
             logging.getLogger("uvicorn.access").addFilter(_EndpointFilter())
 
-        _install_health_check(self.app)
+        # app property will generate a new fastapi app each time called
+        app = self.app
+        _install_health_check(app)
         self.server = UviServer(
             config=Config(
-                app=self.app,
+                app=app,
                 host=self.host,
                 port=self.port,
                 log_level=os.getenv('JINA_LOG_LEVEL', 'error').lower(),
