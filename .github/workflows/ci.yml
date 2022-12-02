@@ -185,6 +185,7 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install wheel
           pip install ".[all]" --no-cache-dir
+          pip install git+https://github.com/aabmass/opentelemetry-python.git@protoc-for-protobuf3-and-4
           jina
           export JINA_LOG_LEVEL="ERROR"
         env:
