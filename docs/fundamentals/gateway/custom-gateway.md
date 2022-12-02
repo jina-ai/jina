@@ -260,8 +260,19 @@ Alternatively, you can just install jina using `pip`:
 RUN pip install jina
 ```
 
-2. Install `requirements.txt`
-3. Use the `jina gateway --uses config.yml` command as your image's entrypoint:
+2. Install `requirements.txt` if you included this file:
+
+```dockerfile
+RUN pip install -r requirements.txt
+```
+
+3. Copy source code under the workdir folder:
+```dockerfile
+COPY . /workdir/
+WORKDIR /workdir
+```
+
+4. Use the `jina gateway --uses config.yml` command as your image's entrypoint:
 ```dockerfile
 ENTRYPOINT ["jina", "gateway", "--uses", "config.yml"]
 ```
@@ -273,6 +284,12 @@ Once you finish the `Dockerfile` you should end up with the following file struc
 └── requirements.txt
 └── config.yml
 └── Dockerfile
+```
+
+You can now build the docker image:
+```shell
+cd my_gateway
+docker build -t gateway-image
 ```
 (use-custom-gateway)=
 ## Use the Custom Gateway
