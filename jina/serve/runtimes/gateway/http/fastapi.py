@@ -94,7 +94,7 @@ class FastAPIBaseGateway(BaseGateway):
 
         # app property will generate a new fastapi app each time called
         app = self.app
-        _install_health_check(app)
+        _install_health_check(app, self.logger)
         self.server = UviServer(
             config=Config(
                 app=app,
@@ -119,14 +119,19 @@ class FastAPIBaseGateway(BaseGateway):
         await self.server.serve()
 
 
-def _install_health_check(app: 'FastAPI'):
+def _install_health_check(app: 'FastAPI', logger):
     health_check_exists = False
     for route in app.routes:
-        if route.path == '/' and 'GET' in route.methods:
+        if getattr(route, 'path', None) == '/' and 'GET' in getattr(
+            route, 'methods', None
+        ):
             health_check_exists = True
+            logger.warning(
+                'endpoint GET on "/" is used for health checks, make sure it\'s still accessible'
+            )
 
     if not health_check_exists:
 
         @app.get('/')
         def health_check():
-            return {'message': 'OK'}
+            return {}
