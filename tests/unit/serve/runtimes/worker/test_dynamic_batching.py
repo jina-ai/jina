@@ -36,11 +36,22 @@ class PlaceholderExecutor(Executor):
     @dynamic_batching(preferred_batch_size=4, timeout=2000)
     def wrong_return_lennone_fun(self, docs, **kwargs):
         docs.append(Document())
+    
+    @requests(on=['/param'])
+    @dynamic_batching(preferred_batch_size=4, timeout=2000)
+    def param_fun(self, docs, parameters, **kwargs):
+        for doc in docs:
+            doc.text += str(parameters)
 
 RequestStruct = namedtuple('RequestStruct', ['port', 'endpoint', 'iterator'])
 def call_api(req: RequestStruct):
     c = Client(port=req.port)
     return c.post(req.endpoint, inputs=DocumentArray([Document(text=str(i)) for i in req.iterator]))
+
+RequestStructParams = namedtuple('RequestStructParams', ['port', 'endpoint', 'iterator', 'params'])
+def call_api_with_params(req: RequestStructParams):
+    c = Client(port=req.port)
+    return c.post(req.endpoint, inputs=DocumentArray([Document(text=str(i)) for i in req.iterator]), parameters=req.params)
 
 def test_timeout():
     f = Flow().add(uses=PlaceholderExecutor)
@@ -95,6 +106,7 @@ def test_preferred_batch_size():
             time_taken = time.time() - start_time
             assert time_taken < TIMEOUT_TOLERANCE
 
+
 def test_correctness():
     f = Flow().add(uses=PlaceholderExecutor)
     with f:
@@ -128,6 +140,45 @@ def test_correctness():
             assert [doc.text for doc in results[0]] == [f'a{BAR_SUCCESS_MSG}']
             assert [doc.text for doc in results[1]] == [f'b{BAR_SUCCESS_MSG}']
             assert [doc.text for doc in results[2]] == [f'c{BAR_SUCCESS_MSG}']
+
+
+def test_param_correctness():
+    f = Flow().add(uses=PlaceholderExecutor)
+    with f:
+        with mp.Pool(2) as p:
+            PARAM = {'key': 'value'}
+            results = list(p.map(call_api_with_params, [
+                RequestStructParams(f.port, '/param', 'ab', PARAM),
+                RequestStructParams(f.port, '/param', 'cd', PARAM),
+            ]))
+            assert all([len(result) == 2 for result in results])
+            assert [doc.text for doc in results[0]] == [f'a{str(PARAM)}', f'b{str(PARAM)}']
+            assert [doc.text for doc in results[1]] == [f'c{str(PARAM)}', f'd{str(PARAM)}']
+
+        with mp.Pool(2) as p:
+            PARAM1 = {'key1': 'value1'}
+            PARAM2 = {'key2': 'value2'}
+            results = list(p.map(call_api_with_params, [
+                RequestStructParams(f.port, '/param', 'ABCD', PARAM1),
+                RequestStructParams(f.port, '/param', 'ABCD', PARAM2),
+            ]))
+            assert [len(r) for r in results] == [4, 4]
+            assert [doc.text for doc in results[0]] == [f'A{str(PARAM1)}', f'B{str(PARAM1)}', f'C{str(PARAM1)}', f'D{str(PARAM1)}']
+            assert [doc.text for doc in results[1]] == [f'A{str(PARAM2)}', f'B{str(PARAM2)}', f'C{str(PARAM2)}', f'D{str(PARAM2)}']
+
+        with mp.Pool(3) as p:
+            PARAM1 = {'key1': 'value1'}
+            PARAM2 = {'key2': 'value2'}
+            results = list(p.map(call_api_with_params, [
+                RequestStructParams(f.port, '/param', 'ABC', PARAM1),
+                RequestStructParams(f.port, '/param', 'ABCD', PARAM2),
+                RequestStructParams(f.port, '/param', 'D', PARAM1),
+            ]))
+            assert [len(r) for r in results] == [3, 4, 1]
+            assert [doc.text for doc in results[0]] == [f'A{str(PARAM1)}', f'B{str(PARAM1)}', f'C{str(PARAM1)}']
+            assert [doc.text for doc in results[1]] == [f'A{str(PARAM2)}', f'B{str(PARAM2)}', f'C{str(PARAM2)}', f'D{str(PARAM2)}']
+            assert [doc.text for doc in results[2]] == [f'D{str(PARAM1)}']
+
 
 def test_failure_propagation():
     from jina.excepts import BadServer
