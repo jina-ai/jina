@@ -115,10 +115,6 @@ class BatchQueue():
             # We need to reslice the big doc array into the original requests
             self._fan_out_return_data(return_data)
 
-            # TODO: Metrics?
-            #self._record_docs_processed_monitoring(requests, docs)
-            #self._record_response_size_monitoring(requests)
-
             self._reset()
 
         except Exception as e:
