@@ -98,7 +98,10 @@ class BatchQueue():
                 docs=self._big_doc,
                 parameters=self.params,
                 docs_matrix=None,
-                tracing_context=None, # TODO: Tracing?
+                # TO GIRISH: The tracing seems to work already.
+                # Do we need to pass this?
+                # The only difference I can see is that the nesting level is different.
+                tracing_context=None, 
             )
             
             # Output validation
