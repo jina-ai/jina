@@ -1,6 +1,6 @@
 import asyncio
 from asyncio import Event, Task
-from typing import List, Any, Optional
+from typing import List, Any, Optional, Dict
 
 from jina import DocumentArray
 from jina.serve.executors import BaseExecutor
@@ -21,12 +21,24 @@ async def sleep_then_set(time_seconds: int, event: Event):
 class BatchQueue():
     """A batch queue that holds the data request and the executor."""
 
-    def __init__(self, executor: BaseExecutor, exec_endpoint: str, args: Any, preferred_batch_size: int=4, timeout: int=10_000) -> None:
-        self._preferred_batch_size: int = preferred_batch_size
-        self._timeout: int = timeout
+    # TODO: Remove max batch size
+    def __init__(
+        self,
+        executor: BaseExecutor,
+        exec_endpoint: str,
+        args: Any,
+        params: Dict={},
+        preferred_batch_size: int=4,
+        timeout: int=10_000,
+        max_batch_size: int=16,
+    ) -> None:
         self._executor: BaseExecutor = executor
         self._exec_endpoint: str = exec_endpoint
         self.args = args
+        self.params = params
+
+        self._preferred_batch_size: int = preferred_batch_size
+        self._timeout: int = timeout
 
         self._reset()
     
@@ -84,7 +96,7 @@ class BatchQueue():
             return_data = await self._executor.__acall__(
                 req_endpoint=self._exec_endpoint,
                 docs=self._big_doc,
-                parameters={},
+                parameters=self.params,
                 docs_matrix=None,
                 tracing_context=None, # TODO: Tracing?
             )

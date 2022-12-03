@@ -60,7 +60,10 @@ class WorkerRequestHandler:
         )
         self._init_monitoring(metrics_registry, meter)
         self.deployment_name = deployment_name
-        self._batchqueue: Dict[str, BatchQueue] = {}
+        
+        # In order to support batching parameters separately, we have to lazily create batch queues
+        # So we store the config for each endpoint in the initialization
+        self._batchqueue_config: Dict[str, Dict] = {}
 
         if getattr(self._executor, 'dynamic_batching', None) is not None:
             # We need to sort the keys into endpoints and functions
@@ -75,13 +78,7 @@ class WorkerRequestHandler:
             
             # Specific endpoint configs take precedence over function configs
             for endpoint, dbatch_config in dbatch_endpoints:
-                self._batchqueue[endpoint] = BatchQueue(
-                    executor=self._executor,
-                    exec_endpoint=endpoint,
-                    args=self.args,
-                    preferred_batch_size=dbatch_config['preferred_batch_size'],
-                    timeout=dbatch_config['timeout'],
-                )
+                self._batchqueue_config[endpoint] = dbatch_config
 
             # Process function configs
             func_endpoints: Dict[str, List[str]] = {func.__name__: [] for func in self._executor.requests.values()}
@@ -89,17 +86,13 @@ class WorkerRequestHandler:
                 func_endpoints[func.__name__].append(endpoint)
             for func_name, dbatch_config in dbatch_functions:
                 for endpoint in func_endpoints[func_name]:
-                    if endpoint not in self._batchqueue:
-                        self._batchqueue[endpoint] = BatchQueue(
-                            executor=self._executor,
-                            exec_endpoint=endpoint,
-                            args=self.args,
-                            preferred_batch_size=dbatch_config['preferred_batch_size'],
-                            timeout=dbatch_config['timeout'],
-                        )
+                    if endpoint not in self._batchqueue_config:
+                        self._batchqueue_config[endpoint] = dbatch_config
 
-            self.logger.debug(f'Dynamic Batching configs: {self._executor.dynamic_batching}')
-            self.logger.debug(f'Instantiated Batch Queues: {self._batchqueue}')
+            self.logger.debug(f'Executor Dynamic Batching configs: {self._executor.dynamic_batching}')
+            self.logger.debug(f'Endpoint Batch Queue Configs: {self._batchqueue_config}')
+
+            self._batchqueue_instances: Dict[str, Dict[str, BatchQueue]] = {endpoint: {} for endpoint in self._batchqueue_config.keys()}
 
     def _init_monitoring(
         self,
@@ -344,24 +337,33 @@ class WorkerRequestHandler:
 
         # skip executor if endpoints mismatch
         exec_endpoint: str = requests[0].header.exec_endpoint
-        if (exec_endpoint not in self._executor.requests
-                and __default_endpoint__ not in self._executor.requests
-        ):
-            self.logger.debug(
-                f'skip executor: mismatch request, exec_endpoint: {exec_endpoint}, requests: {self._executor.requests}'
-            )
-            return requests[0]
+        if exec_endpoint not in self._executor.requests:
+            if __default_endpoint__ in self._executor.requests:
+                exec_endpoint = __default_endpoint__
+            else:
+                self.logger.debug(
+                    f'skip executor: mismatch request, exec_endpoint: {exec_endpoint}, requests: {self._executor.requests}'
+                )
+                return requests[0]
 
         self._record_request_size_monitoring(requests)
 
-        if exec_endpoint in self._batchqueue:
+        params = self._parse_params(requests[0].parameters, self._executor.metas.name)
+
+        if exec_endpoint in self._batchqueue_config:
             assert len(requests) == 1, 'dynamic batching does not support no_reduce'
-            await self._batchqueue[exec_endpoint].push(requests[0])
-        elif exec_endpoint not in self._executor.requests and __default_endpoint__ in self._batchqueue:
-            assert len(requests) == 1, 'dynamic batching does not support no_reduce'
-            await self._batchqueue[__default_endpoint__].push(requests[0])
+
+            param_key = str(params)
+            if param_key not in self._batchqueue_instances[exec_endpoint]:
+                self._batchqueue_instances[exec_endpoint][param_key] = BatchQueue(
+                    executor=self._executor,
+                    exec_endpoint=exec_endpoint,
+                    args=self.args,
+                    params=params,
+                    **self._batchqueue_config[exec_endpoint],
+                )
+            await self._batchqueue_instances[exec_endpoint][param_key].push(requests[0])
         else:
-            params = self._parse_params(requests[0].parameters, self._executor.metas.name)
             docs = WorkerRequestHandler.get_docs_from_request(
                 requests,
                 field='docs',
