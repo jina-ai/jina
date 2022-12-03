@@ -380,12 +380,11 @@ class WorkerRequestHandler:
             )
 
             docs = self._set_result(requests, return_data, docs)
-        self._record_docs_processed_monitoring(requests, requests[0].docs)
-
 
         for req in requests:
             req.add_executor(self.deployment_name)
 
+        self._record_docs_processed_monitoring(requests, requests[0].docs)
         self._record_response_size_monitoring(requests)
 
         return requests[0]
