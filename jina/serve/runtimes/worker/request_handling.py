@@ -362,7 +362,9 @@ class WorkerRequestHandler:
                     params=params,
                     **self._batchqueue_config[exec_endpoint],
                 )
-            await self._batchqueue_instances[exec_endpoint][param_key].push(requests[0])
+            # This is necessary because push might need to await for the queue to be emptied
+            task = await self._batchqueue_instances[exec_endpoint][param_key].push(requests[0])
+            await task
         else:
             docs = WorkerRequestHandler.get_docs_from_request(
                 requests,

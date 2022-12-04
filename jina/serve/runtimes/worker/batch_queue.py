@@ -19,7 +19,6 @@ async def sleep_then_set(time_seconds: int, event: Event):
 class BatchQueue():
     """A batch queue that holds the data request and the executor."""
 
-    # TODO: Remove max batch size
     def __init__(
         self,
         executor: BaseExecutor,
@@ -28,7 +27,7 @@ class BatchQueue():
         params: Dict={},
         preferred_batch_size: int=4,
         timeout: int=10_000,
-        max_batch_size: int=16,
+        max_batch_size: Optional[int]=None,
     ) -> None:
         self._executor: BaseExecutor = executor
         self._exec_endpoint: str = exec_endpoint
@@ -37,6 +36,10 @@ class BatchQueue():
 
         self._preferred_batch_size: int = preferred_batch_size
         self._timeout: int = timeout
+        self._max_batch_size: Optional[int] = max_batch_size
+        if self._max_batch_size:
+            if self._max_batch_size < self._preferred_batch_size:
+                raise ValueError(f'Max batch size must be greater than or equal to preferred batch size. Got max batch size {self._max_batch_size} and preferred batch size {self._preferred_batch_size}')
 
         self._reset()
     
@@ -60,13 +63,18 @@ class BatchQueue():
         asyncio.create_task(sleep_then_set(self._timeout / 1000, self._flush_trigger))
         self._timer_started = True
     
-    def push(self, request: DataRequest) -> Task:
+    async def push(self, request: DataRequest) -> Task:
         """Append request to the queue. Once the request has been processed, the task will be set.
         
         :param request: The request to append to the queue.
 
         :return: The task that will be set once the request has been processed.
         """
+        if self._max_batch_size:
+            if len(self._big_doc) + len(request.docs) > self._max_batch_size:
+                self._flush_trigger.set()
+                await self._flush_task
+
         if not self._timer_started:
             self._start_timer()
 
@@ -89,6 +97,11 @@ class BatchQueue():
         try:
             # The executor might accidentally change the size
             input_len_before_call: int = len(self._big_doc)
+
+            if self._max_batch_size:
+                if input_len_before_call > self._max_batch_size:
+                    # TODO: We might want to have the batch queue split the request up instead
+                    raise ValueError(f'Input length {input_len_before_call} is greater than max batch size {self._max_batch_size}')
 
             # We need to get the executor to process the big doc
             return_data = await self._executor.__acall__(
