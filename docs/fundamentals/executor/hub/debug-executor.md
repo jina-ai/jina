@@ -14,14 +14,14 @@ Pull the source code of the Executor you want to debug:
 
 ````{tab} via Command Line Interface
 ```shell
-jina hub pull jinahub://Hello
+jina hub pull jinaai://jina-ai/Hello
 ```
 ````
 ````{tab} via Python code
 ```python
 from jina import Executor
 
-Executor.from_hub('jinahub://Hello')
+Executor.from_hub('jinaai://jina-ai/Hello')
 ```
 ````
 
@@ -39,7 +39,7 @@ You can debug your Executor like any Python code. You can either use the Executo
 ```python
 from jina import Executor
 
-exec = Executor.from_hub('jinahub://Hello')
+exec = Executor.from_hub('jinaai://jina-ai/Hello')
 
 # Set breakpoint as needed
 exec.foo()
@@ -50,7 +50,7 @@ exec.foo()
 from docarray import Document
 from jina import Flow
 
-f = Flow().add(uses='jinahub://Hello')
+f = Flow().add(uses='jinaai://jina-ai/Hello')
 
 with f:
     res = f.post('/', inputs=Document(text='hello'), return_results=True)

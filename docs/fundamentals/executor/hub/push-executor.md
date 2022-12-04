@@ -110,20 +110,20 @@ There are restrictions when naming environment variables:
 
 There are limitations if you push Executors via `--build-env` and pull/use it as source code (this doesn't matter if you use a Docker image): 
 
-- When you use `jina hub pull jinahub://YOUR_EXECUTOR`, you must set the corresponding environment variable according to the prompt:
+- When you use `jina hub pull jinaai://<username>/YOUR_EXECUTOR`, you must set the corresponding environment variable according to the prompt:
 
   ```bash
   export YOUR_TOKEN=foo
   ```
 
-- When you use `.add(uses='jinahub://YOUR_EXECUTOR')` in a Flow, you must set the corresponding environment variable:
+- When you use `.add(uses='jinaai://<username>/YOUR_EXECUTOR')` in a Flow, you must set the corresponding environment variable:
 
     ```python
     from jina import Flow, Executor, requests, Document
     import os
 
     os.environ['YOUR_TOKEN'] = 'foo'
-    f = Flow().add(uses='jinahub://YOUR_EXECUTOR')
+    f = Flow().add(uses='jinaai://<username>/YOUR_EXECUTOR')
 
     with f:
         f.post(on='/', inputs=Document(), on_done=print)

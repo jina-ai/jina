@@ -524,7 +524,7 @@ async def test_flow_with_configmap(k8s_flow_configmap, docker_images, tmpdir, lo
         docs = resp[0].docs
         assert len(docs) == 10
         for doc in docs:
-            assert doc.tags['JINA_LOG_LEVEL'] == 'INFO'
+            assert doc.tags['JINA_LOG_LEVEL'] == 'DEBUG'
             assert doc.tags['k1'] == 'v1'
             assert doc.tags['k2'] == 'v2'
             assert doc.tags['env'] == {'k1': 'v1', 'k2': 'v2'}
@@ -1238,6 +1238,8 @@ async def test_flow_with_stateful_executor(
             core_client=core_client,
             endpoint='/len',
         )
+        assert len(resp) == 1
+        assert resp[0].parameters == {'__results__': {'statefulexecutor': {'length': 10.0}}}
     except Exception as exc:
         logger.error(f' Exception raised {exc}')
         print(f' ############## GATEWAY LOGS #########################')

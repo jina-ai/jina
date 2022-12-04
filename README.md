@@ -354,8 +354,8 @@ To use a Hub Executor in your Flow:
 
 |        | Docker container                           | Sandbox                                     | Source                              |
 |--------|--------------------------------------------|---------------------------------------------|-------------------------------------|
-| YAML   | `uses: jinahub+docker://MyExecutor`        | `uses: jinahub+sandbox://MyExecutor`        | `uses: jinahub://MyExecutor`        |
-| Python | `.add(uses='jinahub+docker://MyExecutor')` | `.add(uses='jinahub+sandbox://MyExecutor')` | `.add(uses='jinahub://MyExecutor')` |
+| YAML   | `uses: jinaai+docker://<username>/MyExecutor`        | `uses: jinaai+sandbox://<username>/MyExecutor`        | `uses: jinaai://<username>/MyExecutor`        |
+| Python | `.add(uses='jinaai+docker://<username>/MyExecutor')` | `.add(uses='jinaai+sandbox://<username>/MyExecutor')` | `.add(uses='jinaai://<username>/MyExecutor')` |
 
 Behind this smooth experience is advanced management of Executors:
 - Automated builds on the cloud

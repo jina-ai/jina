@@ -184,7 +184,7 @@ class TopologyGraph:
                     except InternalNetworkError as err:
                         self._handle_internalnetworkerror(err)
                     except Exception as err:
-                        self.logger.error(f' Exception sending requests to {self.name}: {err}')
+                        self.logger.error(f'Exception sending requests to {self.name}: {err}')
                         raise err
 
                     self.end_time = datetime.utcnow()

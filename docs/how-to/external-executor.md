@@ -96,7 +96,7 @@ Here we pick `12345`.
 ````{tab} Using Docker
 
 ```bash
-jina executor --uses jinahub+docker://CLIPTextEncoder --port 12345
+jina executor --uses jinaai+docker://jina-ai/CLIPTextEncoder --port 12345
 ```
 
 ````
@@ -104,7 +104,7 @@ jina executor --uses jinahub+docker://CLIPTextEncoder --port 12345
 ````{tab} Without Docker
 
 ```bash
-jina executor --uses jinahub://CLIPTextEncoder --port 12345
+jina executor --uses jinaai://jina-ai/CLIPTextEncoder --port 12345
 ```
 
 ````

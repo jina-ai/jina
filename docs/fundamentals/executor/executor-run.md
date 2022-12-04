@@ -38,7 +38,9 @@ You can pull an Executor from Executor Hub and use it directly as a Python objec
 from docarray import Document, DocumentArray
 from jina import Executor
 
-executor = Executor.from_hub(uri='jinahub://CLIPTextEncoder', install_requirements=True)
+executor = Executor.from_hub(
+    uri='jinaai://jina-ai/CLIPTextEncoder', install_requirements=True
+)
 
 docs = DocumentArray(Document(text='hello'))
 executor.encode(docs, {})
