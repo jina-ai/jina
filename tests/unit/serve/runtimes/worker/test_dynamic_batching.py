@@ -194,3 +194,21 @@ def test_failure_propagation():
             Client(port=f.port).post('/wronglenda', inputs=DocumentArray([Document(text=str(i)) for i in range(8)]))
         with pytest.raises(BadServer):
             Client(port=f.port).post('/wronglennone', inputs=DocumentArray([Document(text=str(i)) for i in range(8)]))
+
+
+def test_specific_endpoint_batching():
+    f = Flow().add(
+        uses=PlaceholderExecutor,
+        uses_dynamic_batching={'/baz': {'preferred_batch_size': 2, 'timeout': 1000}},
+    )
+    with f:
+        start_time = time.time()
+        f.post('/bar', inputs=DocumentArray.empty(2))
+        time_taken = time.time() - start_time
+        assert time_taken > 2, 'Timeout ended too fast'
+        assert time_taken < 2 + TIMEOUT_TOLERANCE, 'Timeout ended too slowly'
+        
+        start_time = time.time()
+        f.post('/baz', inputs=DocumentArray.empty(2))
+        time_taken = time.time() - start_time
+        assert time_taken < TIMEOUT_TOLERANCE, 'Timeout ended too slowly'
