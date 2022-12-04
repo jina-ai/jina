@@ -112,6 +112,7 @@ class ReplicaList:
         runtime_name: str,
         aio_tracing_client_interceptors: Optional[Sequence['ClientInterceptor']] = None,
         tracing_client_interceptor: Optional['OpenTelemetryClientInterceptor'] = None,
+        deployment_name: str = ''
     ):
         self.runtime_name = runtime_name
         self._connections = []
@@ -124,6 +125,7 @@ class ReplicaList:
         self._destroyed_event = asyncio.Event()
         self.aio_tracing_client_interceptors = aio_tracing_client_interceptors
         self.tracing_client_interceptors = tracing_client_interceptor
+        self._deployment_name = deployment_name
 
     async def reset_connection(
         self, address: str, deployment_name: str
@@ -137,7 +139,7 @@ class ReplicaList:
         :param deployment_name: Target deployment of this connection
         :returns: The reset connection or None if there was no connection for the given address
         """
-        self._logger.debug(f'resetting connection to {address}')
+        self._logger.debug(f'resetting connection for {deployment_name} to {address}')
 
         if (
             address in self._address_to_connection_idx
@@ -255,12 +257,12 @@ class ReplicaList:
             if all_connections_unavailable:
                 if num_retries <= 0:
                     raise EstablishGrpcConnectionError(
-                        f'Error while resetting connections {self._connections}. Connections cannot be used.'
+                        f'Error while resetting connections {self._connections} for {self._deployment_name}. Connections cannot be used.'
                     )
             elif connection is None:
                 # give control back to async event loop so connection resetting can be completed; then retry
                 self._logger.debug(
-                    f' No valid connection found, give chance for potential resetting of connection'
+                    f' No valid connection found for {self._deployment_name}, give chance for potential resetting of connection'
                 )
                 try:
                     await asyncio.wait_for(
@@ -545,7 +547,7 @@ class GrpcConnectionPool:
             head: bool,
             entity_id: Optional[int] = None,
             increase_access_count: bool = True,
-        ) -> ReplicaList:
+        ) -> Optional[ReplicaList]:
             # returns all replicas of a given deployment, using a given shard
             if deployment in self._deployments:
                 type_ = 'heads' if head else 'shards'
@@ -630,12 +632,13 @@ class GrpcConnectionPool:
             self._add_deployment(deployment)
             if entity_id not in self._deployments[deployment][type]:
                 connection_list = ReplicaList(
-                    self._metrics,
-                    self._histograms,
-                    self._logger,
-                    self.runtime_name,
-                    self.aio_tracing_client_interceptors,
-                    self.tracing_client_interceptor,
+                    metrics=self._metrics,
+                    histograms=self._histograms,
+                    logger=self._logger,
+                    runtime_name=self.runtime_name,
+                    aio_tracing_client_interceptors=self.aio_tracing_client_interceptors,
+                    tracing_client_interceptor=self.tracing_client_interceptor,
+                    deployment_name=deployment
                 )
                 self._deployments[deployment][type][entity_id] = connection_list
 
@@ -650,7 +653,7 @@ class GrpcConnectionPool:
                 )
             else:
                 self._logger.debug(
-                    f'ignoring activation of pod, {address} already known'
+                    f'ignoring activation of pod for deployment {deployment}, {address} already known'
                 )
 
         async def remove_head(self, deployment, address, head_id: Optional[int] = 0):
@@ -830,7 +833,7 @@ class GrpcConnectionPool:
         shard_id: Optional[int] = None,
         timeout: Optional[float] = None,
         retries: Optional[int] = -1,
-    ) -> asyncio.Task:
+    ) -> Optional[asyncio.Task]:
         """Sends a discover Endpoint call to target.
 
         :param deployment: name of the Jina deployment to send the request to
@@ -863,7 +866,7 @@ class GrpcConnectionPool:
         endpoint: Optional[str] = None,
         timeout: Optional[float] = None,
         retries: Optional[int] = -1,
-    ) -> asyncio.Task:
+    ) -> Optional[asyncio.Task]:
         """Send a request to target via only one of the pooled connections
 
         :param requests: request to send
@@ -966,7 +969,7 @@ class GrpcConnectionPool:
         # requests usually gets cancelled when the server shuts down
         # retries for cancelled requests will hit another replica in K8s
         self._logger.debug(
-            f'GRPC call errored, getting error {error} for the {retry_i + 1}th time.'
+            f'GRPC call to {current_deployment} errored, getting error {error} for the {retry_i + 1}th time.'
         )
         if (
             error.code() != grpc.StatusCode.UNAVAILABLE
@@ -978,7 +981,7 @@ class GrpcConnectionPool:
             error.code() == grpc.StatusCode.UNAVAILABLE
             or error.code() == grpc.StatusCode.DEADLINE_EXCEEDED
         ) and retry_i >= total_num_tries - 1:  # retries exhausted. if we land here it already failed once, therefore -1
-            self._logger.debug(f'GRPC call failed, retries exhausted')
+            self._logger.debug(f'GRPC call for {current_deployment} failed, retries exhausted')
             from jina.excepts import InternalNetworkError
 
             # after connection failure the gRPC `channel` gets stuck in a failure state for a few seconds
@@ -996,7 +999,7 @@ class GrpcConnectionPool:
             )
         else:
             self._logger.debug(
-                f'GRPC call failed with code {error.code()}, retry attempt {retry_i + 1}/{total_num_tries - 1}.'
+                f'GRPC call to deployment {current_deployment} failed with code {error.code()}, retry attempt {retry_i + 1}/{total_num_tries - 1}.'
                 f' Trying next replica, if available.'
             )
             return None
@@ -1448,7 +1451,7 @@ def host_is_local(hostname):
     import socket
 
     fqn = socket.getfqdn(hostname)
-    if fqn in ("localhost", "0.0.0.0") or hostname == '0.0.0.0':
+    if fqn in ('localhost', '0.0.0.0') or hostname == '0.0.0.0':
         return True
 
     try:
