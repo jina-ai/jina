@@ -6,8 +6,6 @@ from jina import DocumentArray
 from jina.serve.executors import BaseExecutor
 from jina.types.request.data import DataRequest
 
-# TODO: Make sure we dont deserialize the request twice
-# TODO: SIGINT/SIGTEM: Flush
 
 async def sleep_then_set(time_seconds: int, event: Event):
     """Sleep for time_seconds and then set the event
