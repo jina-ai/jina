@@ -21,6 +21,7 @@ if _sys.version_info < (3, 7, 0):
     raise OSError(f'Jina requires Python >= 3.7, but yours is {_sys.version_info}')
 
 __windows__ = _sys.platform == 'win32'
+__mac__ = _sys.platform == 'darwin'
 
 
 def _warning_on_one_line(message, category, filename, lineno, *args, **kwargs):

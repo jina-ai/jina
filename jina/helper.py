@@ -1,5 +1,6 @@
 import asyncio
 import base64
+import contextlib
 import functools
 import inspect
 import json
@@ -1762,3 +1763,20 @@ def make_iterable(o: object) -> Iterable:
         return o
     else:
         return [o]
+
+
+@contextlib.contextmanager
+def set_env(env_dict: Dict[str, str]):
+    """
+    Temporarily set the process environment variables.
+
+    :param env_dict: environment variable mapping dict
+    :yield: yield context manager
+    """
+    old_env = dict(os.environ)
+    os.environ.update(env_dict)
+    try:
+        yield
+    finally:
+        os.environ.clear()
+        os.environ.update(old_env)
