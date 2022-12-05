@@ -6,6 +6,7 @@
 | `quiet` | If set, then no log will be emitted from this object. | `boolean` | `False` |
 | `quiet_error` | If set, then exception stack information will not be added to the log | `boolean` | `False` |
 | `timeout_ctrl` | The timeout in milliseconds of the control request, -1 for waiting forever | `number` | `60` |
+| `restart` | If set, the Executor will restart while serving if the YAML configuration source is changed. This differst from `reload` argument that this will restart the server and more configuration can be changed, like the number of replicas | `boolean` | `False` |
 | `entrypoint` | The entrypoint command overrides the ENTRYPOINT in Docker image. when not set then the Docker image ENTRYPOINT takes effective. | `string` | `None` |
 | `docker_kwargs` | Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker '<br>container. <br><br>More details can be found in the Docker SDK docs:  https://docker-py.readthedocs.io/en/stable/ | `object` | `None` |
 | `prefetch` | Number of requests fetched from the client before feeding into the first Executor. <br>    <br>    Used to control the speed of data input into a Flow. 0 disables prefetch (1000 requests is the default) | `number` | `1000` |

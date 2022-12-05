@@ -6,6 +6,7 @@
 | `quiet` | If set, then no log will be emitted from this object. | `boolean` | `False` |
 | `quiet_error` | If set, then exception stack information will not be added to the log | `boolean` | `False` |
 | `timeout_ctrl` | The timeout in milliseconds of the control request, -1 for waiting forever | `number` | `60` |
+| `restart` | If set, the Executor will restart while serving if the YAML configuration source is changed. This differst from `reload` argument that this will restart the server and more configuration can be changed, like the number of replicas | `boolean` | `False` |
 | `polling` | The polling strategy of the Deployment and its endpoints (when `shards>1`).<br>    Can be defined for all endpoints of a Deployment or by endpoint.<br>    Define per Deployment:<br>    - ANY: only one (whoever is idle) Pod polls the message<br>    - ALL: all Pods poll the message (like a broadcast)<br>    Define per Endpoint:<br>    JSON dict, {endpoint: PollingType}<br>    {'/custom': 'ALL', '/search': 'ANY', '*': 'ANY'} | `string` | `ANY` |
 | `shards` | The number of shards in the deployment running at the same time. For more details check https://docs.jina.ai/fundamentals/flow/create-flow/#complex-flow-topologies | `number` | `1` |
 | `replicas` | The number of replicas in the deployment | `number` | `1` |

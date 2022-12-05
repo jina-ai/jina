@@ -114,21 +114,21 @@ class Flow(
     # overload_inject_start_client_flow
     @overload
     def __init__(
-            self,
-            *,
-            asyncio: Optional[bool] = False,
-            host: Optional[str] = '0.0.0.0',
-            metrics: Optional[bool] = False,
-            metrics_exporter_host: Optional[str] = None,
-            metrics_exporter_port: Optional[int] = None,
-            port: Optional[int] = None,
-            protocol: Optional[str] = 'GRPC',
-            proxy: Optional[bool] = False,
-            tls: Optional[bool] = False,
-            traces_exporter_host: Optional[str] = None,
-            traces_exporter_port: Optional[int] = None,
-            tracing: Optional[bool] = False,
-            **kwargs,
+        self,
+        *,
+        asyncio: Optional[bool] = False,
+        host: Optional[str] = '0.0.0.0',
+        metrics: Optional[bool] = False,
+        metrics_exporter_host: Optional[str] = None,
+        metrics_exporter_port: Optional[int] = None,
+        port: Optional[int] = None,
+        protocol: Optional[str] = 'GRPC',
+        proxy: Optional[bool] = False,
+        tls: Optional[bool] = False,
+        traces_exporter_host: Optional[str] = None,
+        traces_exporter_port: Optional[int] = None,
+        tracing: Optional[bool] = False,
+        **kwargs,
     ):
         """Create a Flow. Flow is how Jina streamlines and scales Executors. This overloaded method provides arguments from `jina client` CLI.
 
@@ -155,55 +155,56 @@ class Flow(
     # overload_inject_start_gateway_flow
     @overload
     def __init__(
-            self,
-            *,
-            compression: Optional[str] = None,
-            cors: Optional[bool] = False,
-            deployments_addresses: Optional[str] = '{}',
-            deployments_metadata: Optional[str] = '{}',
-            deployments_no_reduce: Optional[str] = '[]',
-            description: Optional[str] = None,
-            docker_kwargs: Optional[dict] = None,
-            entrypoint: Optional[str] = None,
-            env: Optional[dict] = None,
-            expose_endpoints: Optional[str] = None,
-            expose_graphql_endpoint: Optional[bool] = False,
-            floating: Optional[bool] = False,
-            graph_conditions: Optional[str] = '{}',
-            graph_description: Optional[str] = '{}',
-            grpc_server_options: Optional[dict] = None,
-            host: Optional[str] = '0.0.0.0',
-            log_config: Optional[str] = None,
-            metrics: Optional[bool] = False,
-            metrics_exporter_host: Optional[str] = None,
-            metrics_exporter_port: Optional[int] = None,
-            monitoring: Optional[bool] = False,
-            name: Optional[str] = 'gateway',
-            no_crud_endpoints: Optional[bool] = False,
-            no_debug_endpoints: Optional[bool] = False,
-            port_monitoring: Optional[str] = None,
-            prefetch: Optional[int] = 1000,
-            protocol: Optional[List[str]] = ['GRPC'],
-            proxy: Optional[bool] = False,
-            py_modules: Optional[List[str]] = None,
-            quiet: Optional[bool] = False,
-            quiet_error: Optional[bool] = False,
-            retries: Optional[int] = -1,
-            runtime_cls: Optional[str] = 'GatewayRuntime',
-            ssl_certfile: Optional[str] = None,
-            ssl_keyfile: Optional[str] = None,
-            timeout_ctrl: Optional[int] = 60,
-            timeout_ready: Optional[int] = 600000,
-            timeout_send: Optional[int] = None,
-            title: Optional[str] = None,
-            traces_exporter_host: Optional[str] = None,
-            traces_exporter_port: Optional[int] = None,
-            tracing: Optional[bool] = False,
-            uses: Optional[Union[str, Type['BaseExecutor'], dict]] = None,
-            uses_with: Optional[dict] = None,
-            uvicorn_kwargs: Optional[dict] = None,
-            workspace: Optional[str] = None,
-            **kwargs,
+        self,
+        *,
+        compression: Optional[str] = None,
+        cors: Optional[bool] = False,
+        deployments_addresses: Optional[str] = '{}',
+        deployments_metadata: Optional[str] = '{}',
+        deployments_no_reduce: Optional[str] = '[]',
+        description: Optional[str] = None,
+        docker_kwargs: Optional[dict] = None,
+        entrypoint: Optional[str] = None,
+        env: Optional[dict] = None,
+        expose_endpoints: Optional[str] = None,
+        expose_graphql_endpoint: Optional[bool] = False,
+        floating: Optional[bool] = False,
+        graph_conditions: Optional[str] = '{}',
+        graph_description: Optional[str] = '{}',
+        grpc_server_options: Optional[dict] = None,
+        host: Optional[str] = '0.0.0.0',
+        log_config: Optional[str] = None,
+        metrics: Optional[bool] = False,
+        metrics_exporter_host: Optional[str] = None,
+        metrics_exporter_port: Optional[int] = None,
+        monitoring: Optional[bool] = False,
+        name: Optional[str] = 'gateway',
+        no_crud_endpoints: Optional[bool] = False,
+        no_debug_endpoints: Optional[bool] = False,
+        port_monitoring: Optional[str] = None,
+        prefetch: Optional[int] = 1000,
+        protocol: Optional[List[str]] = ['GRPC'],
+        proxy: Optional[bool] = False,
+        py_modules: Optional[List[str]] = None,
+        quiet: Optional[bool] = False,
+        quiet_error: Optional[bool] = False,
+        restart: Optional[bool] = False,
+        retries: Optional[int] = -1,
+        runtime_cls: Optional[str] = 'GatewayRuntime',
+        ssl_certfile: Optional[str] = None,
+        ssl_keyfile: Optional[str] = None,
+        timeout_ctrl: Optional[int] = 60,
+        timeout_ready: Optional[int] = 600000,
+        timeout_send: Optional[int] = None,
+        title: Optional[str] = None,
+        traces_exporter_host: Optional[str] = None,
+        traces_exporter_port: Optional[int] = None,
+        tracing: Optional[bool] = False,
+        uses: Optional[Union[str, Type['BaseExecutor'], dict]] = None,
+        uses_with: Optional[dict] = None,
+        uvicorn_kwargs: Optional[dict] = None,
+        workspace: Optional[str] = None,
+        **kwargs,
     ):
         """Create a Flow. Flow is how Jina streamlines and scales Executors. This overloaded method provides arguments from `jina gateway` CLI.
 
@@ -257,6 +258,7 @@ class Flow(
           which should be structured as a python package.
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
+        :param restart: If set, the Executor will restart while serving if the YAML configuration source is changed. This differst from `reload` argument that this will restart the server and more configuration can be changed, like the number of replicas
         :param retries: Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
         :param runtime_cls: The runtime class to run inside the Pod
         :param ssl_certfile: the path to the certificate file
@@ -293,18 +295,18 @@ class Flow(
     # overload_inject_start_flow
     @overload
     def __init__(
-            self,
-            *,
-            env: Optional[dict] = None,
-            inspect: Optional[str] = 'COLLECT',
-            log_config: Optional[str] = None,
-            name: Optional[str] = None,
-            quiet: Optional[bool] = False,
-            quiet_error: Optional[bool] = False,
-            restart: Optional[bool] = False,
-            uses: Optional[str] = None,
-            workspace: Optional[str] = None,
-            **kwargs,
+        self,
+        *,
+        env: Optional[dict] = None,
+        inspect: Optional[str] = 'COLLECT',
+        log_config: Optional[str] = None,
+        name: Optional[str] = None,
+        quiet: Optional[bool] = False,
+        quiet_error: Optional[bool] = False,
+        restart: Optional[bool] = False,
+        uses: Optional[str] = None,
+        workspace: Optional[str] = None,
+        **kwargs,
     ):
         """Create a Flow. Flow is how Jina streamlines and scales Executors. This overloaded method provides arguments from `jina flow` CLI.
 
@@ -324,7 +326,7 @@ class Flow(
               When not given, then the default naming strategy will apply.
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
-        :param restart: If set, the Flow will restart while blocked if the YAML source is changed
+        :param restart: If set, the Flow will restart while blocked if the YAML configuration source is changed
         :param uses: The YAML path represents a flow. It can be either a local file path or a URL.
         :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.
 
@@ -335,9 +337,9 @@ class Flow(
 
     # overload_inject_end_flow
     def __init__(
-            self,
-            args: Optional['argparse.Namespace'] = None,
-            **kwargs,
+        self,
+        args: Optional['argparse.Namespace'] = None,
+        **kwargs,
     ):
         # implementation_stub_inject_start_flow
 
@@ -429,6 +431,7 @@ class Flow(
           which should be structured as a python package.
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
+        :param restart: If set, the Executor will restart while serving if the YAML configuration source is changed. This differst from `reload` argument that this will restart the server and more configuration can be changed, like the number of replicas
         :param retries: Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
         :param runtime_cls: The runtime class to run inside the Pod
         :param ssl_certfile: the path to the certificate file
@@ -471,7 +474,7 @@ class Flow(
               When not given, then the default naming strategy will apply.
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
-        :param restart: If set, the Flow will restart while blocked if the YAML source is changed
+        :param restart: If set, the Flow will restart while blocked if the YAML configuration source is changed
         :param uses: The YAML path represents a flow. It can be either a local file path or a URL.
         :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.
 
@@ -525,7 +528,7 @@ class Flow(
         )  #: for yaml dump
 
         if self._common_kwargs.get('asyncio', False) and not isinstance(
-                self, AsyncPostMixin
+            self, AsyncPostMixin
         ):
             from jina.orchestrate.flow.asyncio import AsyncFlow
 
@@ -533,7 +536,7 @@ class Flow(
 
     @staticmethod
     def _parse_endpoints(
-            op_flow, deployment_name, endpoint, connect_to_last_deployment=False
+        op_flow, deployment_name, endpoint, connect_to_last_deployment=False
     ) -> Set:
         # parsing needs
         if isinstance(endpoint, str):
@@ -592,14 +595,14 @@ class Flow(
 
     @allowed_levels([FlowBuildLevel.EMPTY])
     def _add_gateway(
-            self,
-            needs: Union[str, Set[str]],
-            graph_description: Dict[str, List[str]],
-            deployments_addresses: Dict[str, List[str]],
-            deployments_metadata: Dict[str, Dict[str, str]],
-            graph_conditions: Dict[str, Dict],
-            deployments_no_reduce: List[str],
-            **kwargs,
+        self,
+        needs: Union[str, Set[str]],
+        graph_description: Dict[str, List[str]],
+        deployments_addresses: Dict[str, List[str]],
+        deployments_metadata: Dict[str, Dict[str, str]],
+        graph_conditions: Dict[str, Dict],
+        deployments_no_reduce: List[str],
+        **kwargs,
     ):
         kwargs.update(
             dict(
@@ -619,7 +622,7 @@ class Flow(
 
         # We need to check later if the port was manually set or randomly
         args.default_port = (
-                kwargs.get('port', None) is None and kwargs.get('port_expose', None) is None
+            kwargs.get('port', None) is None and kwargs.get('port_expose', None) is None
         )
 
         if not args.port:
@@ -659,8 +662,8 @@ class Flow(
                 hosts = [
                     __docker_host__
                     if host_is_local(host)
-                       and in_docker()
-                       and deployment.dockerized_uses
+                    and in_docker()
+                    and deployment.dockerized_uses
                     else host
                     for host in deployment.hosts
                 ]
@@ -672,7 +675,7 @@ class Flow(
         return graph_dict
 
     def _get_k8s_deployments_addresses(
-            self, k8s_namespace: str
+        self, k8s_namespace: str
     ) -> Dict[str, List[str]]:
         graph_dict = {}
         from jina.orchestrate.deployments.config.helper import to_compatible_name
@@ -785,7 +788,7 @@ class Flow(
 
     @allowed_levels([FlowBuildLevel.EMPTY])
     def needs(
-            self, needs: Union[Tuple[str], List[str]], name: str = 'joiner', *args, **kwargs
+        self, needs: Union[Tuple[str], List[str]], name: str = 'joiner', *args, **kwargs
     ) -> 'Flow':
         """
         Add a blocker to the Flow, wait until all pods defined in **needs** completed.
@@ -829,61 +832,62 @@ class Flow(
     # overload_inject_start_deployment
     @overload
     def add(
-            self,
-            *,
-            compression: Optional[str] = None,
-            connection_list: Optional[str] = None,
-            disable_auto_volume: Optional[bool] = False,
-            docker_kwargs: Optional[dict] = None,
-            entrypoint: Optional[str] = None,
-            env: Optional[dict] = None,
-            exit_on_exceptions: Optional[List[str]] = [],
-            external: Optional[bool] = False,
-            floating: Optional[bool] = False,
-            force_update: Optional[bool] = False,
-            gpus: Optional[str] = None,
-            grpc_metadata: Optional[dict] = None,
-            grpc_server_options: Optional[dict] = None,
-            host: Optional[str] = '0.0.0.0',
-            install_requirements: Optional[bool] = False,
-            log_config: Optional[str] = None,
-            metrics: Optional[bool] = False,
-            metrics_exporter_host: Optional[str] = None,
-            metrics_exporter_port: Optional[int] = None,
-            monitoring: Optional[bool] = False,
-            name: Optional[str] = None,
-            native: Optional[bool] = False,
-            no_reduce: Optional[bool] = False,
-            output_array_type: Optional[str] = None,
-            polling: Optional[str] = 'ANY',
-            port_monitoring: Optional[str] = None,
-            py_modules: Optional[List[str]] = None,
-            quiet: Optional[bool] = False,
-            quiet_error: Optional[bool] = False,
-            reload: Optional[bool] = False,
-            replicas: Optional[int] = 1,
-            retries: Optional[int] = -1,
-            runtime_cls: Optional[str] = 'WorkerRuntime',
-            shards: Optional[int] = 1,
-            timeout_ctrl: Optional[int] = 60,
-            timeout_ready: Optional[int] = 600000,
-            timeout_send: Optional[int] = None,
-            tls: Optional[bool] = False,
-            traces_exporter_host: Optional[str] = None,
-            traces_exporter_port: Optional[int] = None,
-            tracing: Optional[bool] = False,
-            uses: Optional[Union[str, Type['BaseExecutor'], dict]] = 'BaseExecutor',
-            uses_after: Optional[Union[str, Type['BaseExecutor'], dict]] = None,
-            uses_after_address: Optional[str] = None,
-            uses_before: Optional[Union[str, Type['BaseExecutor'], dict]] = None,
-            uses_before_address: Optional[str] = None,
-            uses_metas: Optional[dict] = None,
-            uses_requests: Optional[dict] = None,
-            uses_with: Optional[dict] = None,
-            volumes: Optional[List[str]] = None,
-            when: Optional[dict] = None,
-            workspace: Optional[str] = None,
-            **kwargs,
+        self,
+        *,
+        compression: Optional[str] = None,
+        connection_list: Optional[str] = None,
+        disable_auto_volume: Optional[bool] = False,
+        docker_kwargs: Optional[dict] = None,
+        entrypoint: Optional[str] = None,
+        env: Optional[dict] = None,
+        exit_on_exceptions: Optional[List[str]] = [],
+        external: Optional[bool] = False,
+        floating: Optional[bool] = False,
+        force_update: Optional[bool] = False,
+        gpus: Optional[str] = None,
+        grpc_metadata: Optional[dict] = None,
+        grpc_server_options: Optional[dict] = None,
+        host: Optional[str] = '0.0.0.0',
+        install_requirements: Optional[bool] = False,
+        log_config: Optional[str] = None,
+        metrics: Optional[bool] = False,
+        metrics_exporter_host: Optional[str] = None,
+        metrics_exporter_port: Optional[int] = None,
+        monitoring: Optional[bool] = False,
+        name: Optional[str] = None,
+        native: Optional[bool] = False,
+        no_reduce: Optional[bool] = False,
+        output_array_type: Optional[str] = None,
+        polling: Optional[str] = 'ANY',
+        port_monitoring: Optional[str] = None,
+        py_modules: Optional[List[str]] = None,
+        quiet: Optional[bool] = False,
+        quiet_error: Optional[bool] = False,
+        reload: Optional[bool] = False,
+        replicas: Optional[int] = 1,
+        restart: Optional[bool] = False,
+        retries: Optional[int] = -1,
+        runtime_cls: Optional[str] = 'WorkerRuntime',
+        shards: Optional[int] = 1,
+        timeout_ctrl: Optional[int] = 60,
+        timeout_ready: Optional[int] = 600000,
+        timeout_send: Optional[int] = None,
+        tls: Optional[bool] = False,
+        traces_exporter_host: Optional[str] = None,
+        traces_exporter_port: Optional[int] = None,
+        tracing: Optional[bool] = False,
+        uses: Optional[Union[str, Type['BaseExecutor'], dict]] = 'BaseExecutor',
+        uses_after: Optional[Union[str, Type['BaseExecutor'], dict]] = None,
+        uses_after_address: Optional[str] = None,
+        uses_before: Optional[Union[str, Type['BaseExecutor'], dict]] = None,
+        uses_before_address: Optional[str] = None,
+        uses_metas: Optional[dict] = None,
+        uses_requests: Optional[dict] = None,
+        uses_with: Optional[dict] = None,
+        volumes: Optional[List[str]] = None,
+        when: Optional[dict] = None,
+        workspace: Optional[str] = None,
+        **kwargs,
     ) -> Union['Flow', 'AsyncFlow']:
         """Add an Executor to the current Flow object.
 
@@ -952,6 +956,7 @@ class Flow(
         :param quiet_error: If set, then exception stack information will not be added to the log
         :param reload: If set, the Executor reloads the modules as they change
         :param replicas: The number of replicas in the deployment
+        :param restart: If set, the Executor will restart while serving if the YAML configuration source is changed. This differst from `reload` argument that this will restart the server and more configuration can be changed, like the number of replicas
         :param retries: Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
         :param runtime_cls: The runtime class to run inside the Pod
         :param shards: The number of shards in the deployment running at the same time. For more details check https://docs.jina.ai/fundamentals/flow/create-flow/#complex-flow-topologies
@@ -998,12 +1003,12 @@ class Flow(
     # overload_inject_end_deployment
     @overload
     def add(
-            self,
-            *,
-            needs: Optional[Union[str, Tuple[str], List[str]]] = None,
-            copy_flow: bool = True,
-            deployment_role: 'DeploymentRoleType' = DeploymentRoleType.DEPLOYMENT,
-            **kwargs,
+        self,
+        *,
+        needs: Optional[Union[str, Tuple[str], List[str]]] = None,
+        copy_flow: bool = True,
+        deployment_role: 'DeploymentRoleType' = DeploymentRoleType.DEPLOYMENT,
+        **kwargs,
     ) -> Union['Flow', 'AsyncFlow']:
         """
         Add a Deployment to the current Flow object and return the new modified Flow object.
@@ -1024,8 +1029,8 @@ class Flow(
 
     @allowed_levels([FlowBuildLevel.EMPTY])
     def add(
-            self,
-            **kwargs,
+        self,
+        **kwargs,
     ) -> Union['Flow', 'AsyncFlow']:
         # implementation_stub_inject_start_add
 
@@ -1097,6 +1102,7 @@ class Flow(
         :param quiet_error: If set, then exception stack information will not be added to the log
         :param reload: If set, the Executor reloads the modules as they change
         :param replicas: The number of replicas in the deployment
+        :param restart: If set, the Executor will restart while serving if the YAML configuration source is changed. This differst from `reload` argument that this will restart the server and more configuration can be changed, like the number of replicas
         :param retries: Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
         :param runtime_cls: The runtime class to run inside the Pod
         :param shards: The number of shards in the deployment running at the same time. For more details check https://docs.jina.ai/fundamentals/flow/create-flow/#complex-flow-topologies
@@ -1227,55 +1233,56 @@ class Flow(
     # overload_inject_start_config_gateway
     @overload
     def config_gateway(
-            self,
-            *,
-            compression: Optional[str] = None,
-            cors: Optional[bool] = False,
-            deployments_addresses: Optional[str] = '{}',
-            deployments_metadata: Optional[str] = '{}',
-            deployments_no_reduce: Optional[str] = '[]',
-            description: Optional[str] = None,
-            docker_kwargs: Optional[dict] = None,
-            entrypoint: Optional[str] = None,
-            env: Optional[dict] = None,
-            expose_endpoints: Optional[str] = None,
-            expose_graphql_endpoint: Optional[bool] = False,
-            floating: Optional[bool] = False,
-            graph_conditions: Optional[str] = '{}',
-            graph_description: Optional[str] = '{}',
-            grpc_server_options: Optional[dict] = None,
-            host: Optional[str] = '0.0.0.0',
-            log_config: Optional[str] = None,
-            metrics: Optional[bool] = False,
-            metrics_exporter_host: Optional[str] = None,
-            metrics_exporter_port: Optional[int] = None,
-            monitoring: Optional[bool] = False,
-            name: Optional[str] = 'gateway',
-            no_crud_endpoints: Optional[bool] = False,
-            no_debug_endpoints: Optional[bool] = False,
-            port_monitoring: Optional[str] = None,
-            prefetch: Optional[int] = 1000,
-            protocol: Optional[List[str]] = ['GRPC'],
-            proxy: Optional[bool] = False,
-            py_modules: Optional[List[str]] = None,
-            quiet: Optional[bool] = False,
-            quiet_error: Optional[bool] = False,
-            retries: Optional[int] = -1,
-            runtime_cls: Optional[str] = 'GatewayRuntime',
-            ssl_certfile: Optional[str] = None,
-            ssl_keyfile: Optional[str] = None,
-            timeout_ctrl: Optional[int] = 60,
-            timeout_ready: Optional[int] = 600000,
-            timeout_send: Optional[int] = None,
-            title: Optional[str] = None,
-            traces_exporter_host: Optional[str] = None,
-            traces_exporter_port: Optional[int] = None,
-            tracing: Optional[bool] = False,
-            uses: Optional[Union[str, Type['BaseExecutor'], dict]] = None,
-            uses_with: Optional[dict] = None,
-            uvicorn_kwargs: Optional[dict] = None,
-            workspace: Optional[str] = None,
-            **kwargs,
+        self,
+        *,
+        compression: Optional[str] = None,
+        cors: Optional[bool] = False,
+        deployments_addresses: Optional[str] = '{}',
+        deployments_metadata: Optional[str] = '{}',
+        deployments_no_reduce: Optional[str] = '[]',
+        description: Optional[str] = None,
+        docker_kwargs: Optional[dict] = None,
+        entrypoint: Optional[str] = None,
+        env: Optional[dict] = None,
+        expose_endpoints: Optional[str] = None,
+        expose_graphql_endpoint: Optional[bool] = False,
+        floating: Optional[bool] = False,
+        graph_conditions: Optional[str] = '{}',
+        graph_description: Optional[str] = '{}',
+        grpc_server_options: Optional[dict] = None,
+        host: Optional[str] = '0.0.0.0',
+        log_config: Optional[str] = None,
+        metrics: Optional[bool] = False,
+        metrics_exporter_host: Optional[str] = None,
+        metrics_exporter_port: Optional[int] = None,
+        monitoring: Optional[bool] = False,
+        name: Optional[str] = 'gateway',
+        no_crud_endpoints: Optional[bool] = False,
+        no_debug_endpoints: Optional[bool] = False,
+        port_monitoring: Optional[str] = None,
+        prefetch: Optional[int] = 1000,
+        protocol: Optional[List[str]] = ['GRPC'],
+        proxy: Optional[bool] = False,
+        py_modules: Optional[List[str]] = None,
+        quiet: Optional[bool] = False,
+        quiet_error: Optional[bool] = False,
+        restart: Optional[bool] = False,
+        retries: Optional[int] = -1,
+        runtime_cls: Optional[str] = 'GatewayRuntime',
+        ssl_certfile: Optional[str] = None,
+        ssl_keyfile: Optional[str] = None,
+        timeout_ctrl: Optional[int] = 60,
+        timeout_ready: Optional[int] = 600000,
+        timeout_send: Optional[int] = None,
+        title: Optional[str] = None,
+        traces_exporter_host: Optional[str] = None,
+        traces_exporter_port: Optional[int] = None,
+        tracing: Optional[bool] = False,
+        uses: Optional[Union[str, Type['BaseExecutor'], dict]] = None,
+        uses_with: Optional[dict] = None,
+        uvicorn_kwargs: Optional[dict] = None,
+        workspace: Optional[str] = None,
+        **kwargs,
     ):
         """Configure the Gateway inside a Flow. The Gateway exposes your Flow logic as a service to the internet according to the protocol and configuration you choose.
 
@@ -1329,6 +1336,7 @@ class Flow(
           which should be structured as a python package.
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
+        :param restart: If set, the Executor will restart while serving if the YAML configuration source is changed. This differst from `reload` argument that this will restart the server and more configuration can be changed, like the number of replicas
         :param retries: Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
         :param runtime_cls: The runtime class to run inside the Pod
         :param ssl_certfile: the path to the certificate file
@@ -1365,9 +1373,9 @@ class Flow(
 
     @allowed_levels([FlowBuildLevel.EMPTY])
     def config_gateway(
-            self,
-            args: Optional['argparse.Namespace'] = None,
-            **kwargs,
+        self,
+        args: Optional['argparse.Namespace'] = None,
+        **kwargs,
     ) -> Union['Flow', 'AsyncFlow']:
         # implementation_stub_inject_start_config_gateway
 
@@ -1423,6 +1431,7 @@ class Flow(
           which should be structured as a python package.
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
+        :param restart: If set, the Executor will restart while serving if the YAML configuration source is changed. This differst from `reload` argument that this will restart the server and more configuration can be changed, like the number of replicas
         :param retries: Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
         :param runtime_cls: The runtime class to run inside the Pod
         :param ssl_certfile: the path to the certificate file
@@ -1524,11 +1533,11 @@ class Flow(
 
     @allowed_levels([FlowBuildLevel.EMPTY])
     def gather_inspect(
-            self,
-            name: str = 'gather_inspect',
-            include_last_deployment: bool = True,
-            *args,
-            **kwargs,
+        self,
+        name: str = 'gather_inspect',
+        include_last_deployment: bool = True,
+        *args,
+        **kwargs,
     ) -> 'Flow':
         """Gather all inspect Deployments output into one Deployment. When the Flow has no inspect Deployment then the Flow itself
         is returned.
@@ -1582,7 +1591,7 @@ class Flow(
 
     @allowed_levels([FlowBuildLevel.EMPTY])
     def build(
-            self, copy_flow: bool = False, disable_build_sandbox: bool = False
+        self, copy_flow: bool = False, disable_build_sandbox: bool = False
     ) -> 'Flow':
         """
         Build the current Flow and make it ready to use
@@ -1651,9 +1660,9 @@ class Flow(
                 v: k for k, v in op_flow._inspect_deployments.items()
             }
             while (
-                    len(op_flow._last_changed_deployment) > 0
-                    and len(removed_deployments) > 0
-                    and op_flow._last_deployment in removed_deployments
+                len(op_flow._last_changed_deployment) > 0
+                and len(removed_deployments) > 0
+                and op_flow._last_deployment in removed_deployments
             ):
                 op_flow._last_changed_deployment.pop()
 
@@ -1755,7 +1764,7 @@ class Flow(
         host_gateway = self._deployment_nodes[GATEWAY_NAME].args.host
 
         if not (
-                is_port_free(host_gateway, port_gateway)
+            is_port_free(host_gateway, port_gateway)
         ):  # we check if the port is not used at parsing time as well for robustness
             raise PortAlreadyUsed(f'port:{port_gateway}')
 
@@ -1977,8 +1986,8 @@ class Flow(
                     _e_role = 'EXTERNAL'
                 line_st = '-->'
                 if (
-                        _s_role == DeploymentRoleType.INSPECT
-                        or _e_role == DeploymentRoleType.INSPECT
+                    _s_role == DeploymentRoleType.INSPECT
+                    or _e_role == DeploymentRoleType.INSPECT
                 ):
                     line_st = '-.->'
                 mermaid_graph.append(
@@ -2005,12 +2014,12 @@ class Flow(
         return '\n'.join(mermaid_graph)
 
     def plot(
-            self,
-            output: Optional[str] = None,
-            vertical_layout: bool = False,
-            inline_display: bool = False,
-            build: bool = True,
-            copy_flow: bool = True,
+        self,
+        output: Optional[str] = None,
+        vertical_layout: bool = False,
+        inline_display: bool = False,
+        build: bool = True,
+        copy_flow: bool = True,
     ) -> 'Flow':
         """
         Visualize the Flow up to the current point
@@ -2365,16 +2374,18 @@ class Flow(
 
     @allowed_levels([FlowBuildLevel.RUNNING])
     def block(
-            self, stop_event: Optional[Union[threading.Event, multiprocessing.Event]] = None
+        self, stop_event: Optional[Union[threading.Event, multiprocessing.Event]] = None
     ):
         """Block the Flow until `stop_event` is set or user hits KeyboardInterrupt
 
         :param stop_event: a threading event or a multiprocessing event that onces set will resume the control Flow
             to main thread.
         """
+
         def _restart_flow(changed_file):
             self.logger.info(
-                f'change in Flow YAML {changed_file} observed, restarting Flow')
+                f'change in Flow YAML {changed_file} observed, restarting Flow'
+            )
             self.__exit__(None, None, None)
             new_flow = Flow.load_config(changed_file)
             self.__dict__ = new_flow.__dict__
@@ -2382,7 +2393,8 @@ class Flow(
 
         def _restart_deployment(deployment, changed_file):
             self.logger.info(
-                f'change in Executor configuration YAML {changed_file} observed, restarting Executor deployment')
+                f'change in Executor configuration YAML {changed_file} observed, restarting Executor deployment'
+            )
             deployment.__exit__(None, None, None)
             old_args, old_needs = deployment.args, deployment.needs
             new_deployment = Deployment(old_args, old_needs)
@@ -2391,7 +2403,11 @@ class Flow(
 
         try:
             watch_changes = self.args.restart or any(
-                [deployment.args.restart for deployment in list(self._deployment_nodes.values())])
+                [
+                    deployment.args.restart
+                    for deployment in list(self._deployment_nodes.values())
+                ]
+            )
             watch_files_from_deployments = {}
             for name, deployment in self._deployment_nodes.items():
                 if deployment.args.restart:
@@ -2405,9 +2421,9 @@ class Flow(
             if watch_changes and len(watch_files_list) > 0:
 
                 with ImportExtensions(
-                        required=True,
-                        logger=self.logger,
-                        help_text='''restart requires watchfiles dependency to be installed. You can do `pip install 
+                    required=True,
+                    logger=self.logger,
+                    help_text='''restart requires watchfiles dependency to be installed. You can do `pip install 
                     watchfiles''',
                 ):
                     from watchfiles import watch
@@ -2415,13 +2431,22 @@ class Flow(
                 new_stop_event = stop_event or threading.Event()
                 if len(watch_files_list) > 0:
                     while True:
-                        for changes in watch(*watch_files_list, stop_event=new_stop_event):
-                            chanded_files = [changed_file for _, changed_file in changes]
+                        for changes in watch(
+                            *watch_files_list, stop_event=new_stop_event
+                        ):
+                            chanded_files = [
+                                changed_file for _, changed_file in changes
+                            ]
                             for changed_file in chanded_files:
                                 if changed_file not in watch_files_from_deployments:
-                                    _restart_flow([changed_file for _, changed_file in changes][0])
+                                    _restart_flow(
+                                        [changed_file for _, changed_file in changes][0]
+                                    )
                                 else:
-                                    _restart_deployment(watch_files_from_deployments[changed_file], changed_file)
+                                    _restart_deployment(
+                                        watch_files_from_deployments[changed_file],
+                                        changed_file,
+                                    )
                         if new_stop_event.is_set():
                             break
             else:
@@ -2440,9 +2465,9 @@ class Flow(
         :return: the protocol of this Flow, if only 1 protocol is supported otherwise returns the list of protocols
         """
         v = (
-                self._gateway_kwargs.get('protocol', None)
-                or self._gateway_kwargs.get('protocols', None)
-                or [GatewayProtocolType.GRPC]
+            self._gateway_kwargs.get('protocol', None)
+            or self._gateway_kwargs.get('protocols', None)
+            or [GatewayProtocolType.GRPC]
         )
         if not isinstance(v, list):
             v = [v]
@@ -2454,8 +2479,8 @@ class Flow(
 
     @protocol.setter
     def protocol(
-            self,
-            value: Union[str, GatewayProtocolType, List[str], List[GatewayProtocolType]],
+        self,
+        value: Union[str, GatewayProtocolType, List[str], List[GatewayProtocolType]],
     ):
         """Set the protocol of this Flow, can only be set before the Flow has been started
 
@@ -2581,24 +2606,24 @@ class Flow(
 
     @overload
     def expose_endpoint(
-            self,
-            exec_endpoint: str,
-            *,
-            path: Optional[str] = None,
-            status_code: int = 200,
-            tags: Optional[List[str]] = None,
-            summary: Optional[str] = None,
-            description: Optional[str] = None,
-            response_description: str = 'Successful Response',
-            deprecated: Optional[bool] = None,
-            methods: Optional[List[str]] = None,
-            operation_id: Optional[str] = None,
-            response_model_by_alias: bool = True,
-            response_model_exclude_unset: bool = False,
-            response_model_exclude_defaults: bool = False,
-            response_model_exclude_none: bool = False,
-            include_in_schema: bool = True,
-            name: Optional[str] = None,
+        self,
+        exec_endpoint: str,
+        *,
+        path: Optional[str] = None,
+        status_code: int = 200,
+        tags: Optional[List[str]] = None,
+        summary: Optional[str] = None,
+        description: Optional[str] = None,
+        response_description: str = 'Successful Response',
+        deprecated: Optional[bool] = None,
+        methods: Optional[List[str]] = None,
+        operation_id: Optional[str] = None,
+        response_model_by_alias: bool = True,
+        response_model_exclude_unset: bool = False,
+        response_model_exclude_defaults: bool = False,
+        response_model_exclude_none: bool = False,
+        include_in_schema: bool = True,
+        name: Optional[str] = None,
     ):
         """Expose an Executor's endpoint (defined by `@requests(on=...)`) to HTTP endpoint for easier access.
 
@@ -2626,10 +2651,10 @@ class Flow(
         self._endpoints_mapping[exec_endpoint] = kwargs
 
     def to_kubernetes_yaml(
-            self,
-            output_base_path: str,
-            k8s_namespace: Optional[str] = None,
-            include_gateway: bool = True,
+        self,
+        output_base_path: str,
+        k8s_namespace: Optional[str] = None,
+        include_gateway: bool = True,
     ):
         """
         Converts the Flow into a set of yaml deployments to deploy in Kubernetes.
@@ -2696,10 +2721,10 @@ class Flow(
     to_k8s_yaml = to_kubernetes_yaml
 
     def to_docker_compose_yaml(
-            self,
-            output_path: Optional[str] = None,
-            network_name: Optional[str] = None,
-            include_gateway: bool = True,
+        self,
+        output_path: Optional[str] = None,
+        network_name: Optional[str] = None,
+        include_gateway: bool = True,
     ):
         """
         Converts the Flow into a yaml file to run with `docker-compose up`
@@ -2784,7 +2809,7 @@ class Flow(
         obj = super().__getattribute__(item)
 
         if (
-                item == 'load_config' and inspect.ismethod(obj) and obj.__self__ is Flow
+            item == 'load_config' and inspect.ismethod(obj) and obj.__self__ is Flow
         ):  # check if obj load config call from an instance and not the Class
             warnings.warn(
                 "Calling `load_config` from a Flow instance will override all of the instance's initial parameters. We recommend to use `Flow.load_config(...)` instead"
