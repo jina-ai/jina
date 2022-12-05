@@ -5,14 +5,13 @@ import inspect
 import json
 import multiprocessing
 import os
-import platform
 import sys
 import threading
 import time
 import uuid
 import warnings
 from collections import OrderedDict
-from contextlib import ExitStack, nullcontext
+from contextlib import ExitStack
 from typing import (
     TYPE_CHECKING,
     Dict,
@@ -37,7 +36,7 @@ from rich.progress import (
 )
 from rich.table import Table
 
-from jina import __default_host__, __docker_host__, __mac__, helper
+from jina import __default_host__, __docker_host__, helper
 from jina.clients import Client
 from jina.clients.mixin import AsyncPostMixin, HealthCheckMixin, PostMixin, ProfileMixin
 from jina.enums import (
@@ -61,7 +60,6 @@ from jina.helper import (
     get_public_ip,
     is_port_free,
     send_telemetry_event,
-    set_env,
     typename,
 )
 from jina.jaml import JAMLCompatible
@@ -1701,12 +1699,7 @@ class Flow(
 
     def __enter__(self):
         with CatchAllCleanupContextManager(self):
-            if __mac__ and platform.mac_ver()[0] >= '10.13':
-                env_cntx = set_env({'OBJC_DISABLE_INITIALIZE_FORK_SAFETY': 'YES'})
-            else:
-                env_cntx = nullcontext()
-            with env_cntx:
-                return self.start()
+            return self.start()
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         if hasattr(self, '_stop_event'):
