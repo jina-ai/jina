@@ -2443,15 +2443,24 @@ class Flow(
                                 if changed_file not in watch_files_from_deployments:
                                     # maybe changed_file is the absolute path of one in watch_files_from_deployments
                                     is_absolute_path = False
-                                    for file, deployment_name in watch_files_from_deployments.items():
+                                    for (
+                                        file,
+                                        deployment_name,
+                                    ) in watch_files_from_deployments.items():
                                         if changed_file.endswith(file):
                                             is_absolute_path = True
-                                            _restart_deployment( self._deployment_nodes[deployment_name], changed_file)
+                                            _restart_deployment(
+                                                self._deployment_nodes[deployment_name],
+                                                changed_file,
+                                            )
                                             break
 
                                     if not is_absolute_path:
                                         _restart_flow(
-                                            [changed_file for _, changed_file in changes][0]
+                                            [
+                                                changed_file
+                                                for _, changed_file in changes
+                                            ][0]
                                         )
                                 else:
                                     _restart_deployment(
