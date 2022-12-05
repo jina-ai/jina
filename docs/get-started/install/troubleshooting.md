@@ -37,7 +37,7 @@ Unfortunately, `conda install` is not supported on Windows. You can either do `p
 
 ## On MacOS >= 10.13
 {ref}`Multiprocessing with fork in MacOS <flow-macos-multi-processing-fork>` requires setting the environment variable 
-`OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES`.
+`OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES` for versions higher than 10.13.
 You can set this variable each time you run a python interpreter that uses Jina or configure it by default using the 
 following command:
 ```shell
