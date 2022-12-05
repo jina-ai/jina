@@ -1,6 +1,6 @@
 # {octicon}`book` How-To
 
-Jina is a powerful framework for building distributed multi-modal and cross-modal applications, from start to finish.
+Jina is a powerful framework for building multimodal AI services, from start to finish.
 
 ```{admonition} See Also
 :class: seealso
