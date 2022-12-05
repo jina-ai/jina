@@ -3,20 +3,20 @@
 Jina Gateways are customizable, and you can implement them in much the same way as an Executor.
 With Custom Gateways, Jina gives power back to the users, by allowing them to implement any server, protocol and 
 interface at the gateway level. This means you have more freedom to:
-* Define and expose your own API Gateway interface to clients. You can define your JSON schema or protos,...
+* Define and expose your own API Gateway interface to clients. You can define your JSON schema or protos etc.
 * Choose your favourite server framework.
 * Choose the protocol used to serve your app.
 
 The next sections will detail the steps to implement and use a custom Gateway.
 
 ## Implementing the custom Gateway
-Just like for Executors, you can implement a custom Gateway by inheriting from a base gateway class.
+Just like for Executors, you can implement a custom Gateway by inheriting from a base Gateway class.
 Jina will instantiate your implemented class, inject runtime arguments and user-defined arguments into it, 
 run it, orchestrate it, and send it health-checks.
 
-There are two Gateway base classes to allow implementing a custom gateway:
-* {class}`~jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway`: Use this abstract class to implement a custom gateway using FastAPI.
-* {class}`~jina.Gateway`: Use this abstract class to implement a custom gateway of any type.
+There are two Gateway base classes to allow implementing a custom Gateway:
+* {class}`~jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway`: Use this abstract class to implement a custom Gateway using FastAPI.
+* {class}`~jina.Gateway`: Use this abstract class to implement a custom Gateway of any type.
 
 ### Using {class}`~jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway`:
 {class}`~jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway` offers a simple API to implement custom 
@@ -118,7 +118,7 @@ When implementing a custom Gateway, you need to care about the following items:
 
 (gateway-streamer)=
 ## Calling Executors with {class}`~jina.serve.streamer.GatewayStreamer`
-{class}`~jina.serve.streamer.GatewayStreamer` allows you to interface with Executors within the gateway. An instance of 
+{class}`~jina.serve.streamer.GatewayStreamer` allows you to interface with Executors within the Gateway. An instance of 
 this class knows about the Flow topology and where each Executor lives. 
 Use this object to send Documents to Executors in the Flow. A {class}`~jina.serve.streamer.GatewayStreamer` object 
 connects the custom Gateway with the rest of the Flow.
