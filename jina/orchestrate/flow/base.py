@@ -2439,14 +2439,18 @@ class Flow(
                                 changed_file for _, changed_file in changes
                             ]
                             for changed_file in chanded_files:
-                                print(f' changed_file {changed_file} from {watch_files_from_deployments}')
+                                print(
+                                    f' changed_file {changed_file} from {watch_files_from_deployments}'
+                                )
                                 if changed_file not in watch_files_from_deployments:
                                     _restart_flow(
                                         [changed_file for _, changed_file in changes][0]
                                     )
                                 else:
                                     _restart_deployment(
-                                        self._deployment_nodes[watch_files_from_deployments[changed_file]],
+                                        self._deployment_nodes[
+                                            watch_files_from_deployments[changed_file]
+                                        ],
                                         changed_file,
                                     )
                         if new_stop_event.is_set():
