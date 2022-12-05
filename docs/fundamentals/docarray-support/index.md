@@ -165,7 +165,7 @@ Say if you want to use it as a Sandbox, you can change your Flow to:
 ```python
 from jina import Flow, DocumentArray
 
-f = Flow().add(uses='jinahub+sandbox://mp0pe477')
+f = Flow().add(uses='jinaai+sandbox://<username>/<name>')
 
 with f:
     f.post('/', DocumentArray.from_files('**/*.png'), show_progressbar=True)

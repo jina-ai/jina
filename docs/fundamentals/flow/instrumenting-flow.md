@@ -26,7 +26,7 @@ f = Flow(
     tracing=True,
     traces_exporter_host='localhost',
     traces_exporter_port=4317,
-).add(uses='jinahub://SimpleIndexer')
+).add(uses='jinaai://jina-ai/SimpleIndexer')
 
 with f:
     f.block()
@@ -42,7 +42,7 @@ with:
   tracing_exporter_host: 'localhost'
   tracing_exporter_port: 4317
 executors:
-- uses: jinahub://SimpleIndexer
+- uses: jinaai://jina-ai/SimpleIndexer
 ```
 
 ```bash
@@ -104,7 +104,7 @@ f = Flow(
     metrics=True,
     metrics_exporter_host='localhost',
     metrics_exporter_port=4317,
-).add(uses='jinahub://SimpleIndexer')
+).add(uses='jinaai://jina-ai/SimpleIndexer')
 
 with f:
     f.block()
@@ -120,7 +120,7 @@ with:
   metrics_exporter_host: 'localhost'
   metrics_exporter_port: 4317
 executors:
-- uses: jinahub://SimpleIndexer
+- uses: jinaai://jina-ai/SimpleIndexer
 ```
 
 ```bash
