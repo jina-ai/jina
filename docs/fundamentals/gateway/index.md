@@ -163,7 +163,7 @@ f = Flow().config_gateway(protocol='http', port=12345)
 Although both interfaces are similar, we recommend using the Gateway API in certain cases, especially for customizing 
 the gateway implementation.
 `````
-## Serve multiple protocols at the same time:
+## Support multiple protocols at the same time
 You can use multiple protocols in the same gateway, serve your Flow using multiple protocols and bind it 
 to several ports:
 
@@ -173,24 +173,20 @@ to several ports:
 emphasize-lines: 2
 ---
 from jina import Flow
-flow = Flow().config_gateway(port=[12345, 12344, 12343], protocol=['grpc', 'http', 'websocket'])
+flow = Flow().config_gateway(protocol=['grpc', 'http', 'websocket'])
 with flow:
     flow.block()
 ```
 ````
 
 ````{tab} YAML
-```{code-block yaml}
+```yaml
 jtype: Flow
 gateway:
   protocol:
     - 'grpc'
     - 'http'
     - 'websocket'
-  port:
-    - 12345
-    - 12344
-    - 12343
 ```
 ````
 
