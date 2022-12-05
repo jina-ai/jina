@@ -2412,8 +2412,8 @@ class Flow(
             for name, deployment in self._deployment_nodes.items():
                 if deployment.args.restart:
                     if deployment._is_executor_from_yaml:
-                        watch_files_from_deployments[name] = deployment.args.uses
-            watch_files_list = list(watch_files_from_deployments.values())
+                        watch_files_from_deployments[deployment.args.uses] = name
+            watch_files_list = list(watch_files_from_deployments.keys())
             config_loaded = getattr(self, '_config_loaded', '')
             if config_loaded.endswith('yml') or config_loaded.endswith('yaml'):
                 watch_files_list.append(config_loaded)
@@ -2438,13 +2438,14 @@ class Flow(
                                 changed_file for _, changed_file in changes
                             ]
                             for changed_file in chanded_files:
+                                print(f' changed_file {changed_file} from {watch_files_from_deployments}')
                                 if changed_file not in watch_files_from_deployments:
                                     _restart_flow(
                                         [changed_file for _, changed_file in changes][0]
                                     )
                                 else:
                                     _restart_deployment(
-                                        watch_files_from_deployments[changed_file],
+                                        self._deployment_nodes[watch_files_from_deployments[changed_file]],
                                         changed_file,
                                     )
                         if new_stop_event.is_set():

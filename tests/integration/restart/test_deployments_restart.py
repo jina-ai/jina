@@ -29,43 +29,10 @@ def flow_run(flow, stop_event):
         flow.block(stop_event)
 
 
-class MyExecutorBeforeRestart(Executor):
-
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-
-    @requests()
-    def foo(self, docs, **kwargs):
-        for doc in docs:
-            doc.text = 'MyExecutorBeforeRestart'
-
-
-class MyExecutorAfterRestart(Executor):
-
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-
-    @requests()
-    def foo(self, docs, **kwargs):
-        for doc in docs:
-            doc.text = 'MyExecutorAfterRestart'
-
-
-@pytest.fixture
-def flow_yamls(tmpdir):
-    port = random_port()
-    f1 = Flow(restart=True, port=port).add(uses=MyExecutorBeforeRestart)
-    f1.build()
-    f1.save_config(os.path.join(str(tmpdir), 'flow.yml'))
-    f2 = Flow(port=port).add(uses=MyExecutorAfterRestart)
-    f2.build()
-    f2.save_config(os.path.join(str(tmpdir), 'flow_new.yml'))
-
-
-def test_flow_restart(flow_yamls, tmpdir):
+def test_deployment_restart(tmpdir):
     stop_event = threading.Event()
 
-    flow = Flow.load_config(os.path.join(str(tmpdir), 'flow.yml'))
+    flow = Flow().add(uses=os.path.join(os.path.join(cur_dir, 'exec'), 'config.yml'), restart=True)
     t = threading.Thread(target=flow_run, args=(flow, stop_event))
     t.start()
     time.sleep(5)
@@ -75,7 +42,7 @@ def test_flow_restart(flow_yamls, tmpdir):
         assert len(res) == 10
         for doc in res:
             assert doc.text == 'MyExecutorBeforeRestart'
-        with _update_file(os.path.join(str(tmpdir), 'flow_new.yml'), os.path.join(str(tmpdir), 'flow.yml'), str(tmpdir)):
+        with _update_file(os.path.join(os.path.join(cur_dir, 'exec'), 'config_alt.yml'), os.path.join(os.path.join(cur_dir, 'exec'), 'config.yml'), str(tmpdir)):
             client = Client(port=flow.port, protocol=str(flow.protocol))
             res = client.post(on='/', inputs=DocumentArray.empty(10))
             assert len(res) == 10
