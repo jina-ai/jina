@@ -26,7 +26,7 @@ def set_base_parser():
 
     parser = argparse.ArgumentParser(
         epilog=f'''
-Jina v{colored(__version__, "green")}: build cross-modal and multimodal applications on the cloud.
+Jina v{colored(__version__, "green")}: Build multimodal AI services via cloud native technologies.
 
 {url_str}
 
