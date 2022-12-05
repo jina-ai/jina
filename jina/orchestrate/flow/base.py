@@ -45,6 +45,7 @@ from jina.enums import (
     FlowInspectType,
     GatewayProtocolType,
 )
+from jina import __windows__
 from jina.excepts import (
     FlowMissingDeploymentError,
     FlowTopologyError,
@@ -2373,9 +2374,21 @@ class Flow(
                 self._stop_event = (
                     threading.Event()
                 )  #: this allows `.close` to close the Flow from another thread/proc
-                self._stop_event.wait()
+                if not __windows__:
+                    self._stop_event.wait()
+                else:
+                    while True:
+                        if self._stop_event.is_set():
+                            break
+                        time.sleep(0.5)
             else:
-                stop_event.wait()
+                if not __windows__:
+                    stop_event.wait()
+                else:
+                    while True:
+                        if stop_event.is_set():
+                            break
+                        time.sleep(0.5)
         except KeyboardInterrupt:
             pass
 

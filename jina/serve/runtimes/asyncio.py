@@ -9,7 +9,6 @@ from grpc import RpcError
 
 from jina import __windows__
 from jina.helper import send_telemetry_event
-from jina.importer import ImportExtensions
 from jina.serve.instrumentation import InstrumentationMixin
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.base import BaseRuntime
