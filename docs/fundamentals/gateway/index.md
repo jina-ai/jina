@@ -9,6 +9,7 @@ There are two ways of defining a Gateway, either directly from the Python or usi
 ```{toctree}
 :hidden:
 
+custom-gateway
 yaml-spec
 ```
 
@@ -34,7 +35,7 @@ class FooExecutor(Executor):
         docs.append(Document(text='foo was called'))
 
 
-f = Flow(protocol='grpc', port=12345).add(uses=FooExecutor)
+f = Flow().config_gateway(protocol='grpc', port=12345).add(uses=FooExecutor)
 with f:
     client = Client(port=12345)
     docs = client.post(on='/')
@@ -62,7 +63,7 @@ class FooExecutor(Executor):
         docs.append(Document(text='foo was called'))
 
 
-f = Flow(protocol='http', port=12345).add(uses=FooExecutor)
+f = Flow().config_gateway(protocol='http', port=12345).add(uses=FooExecutor)
 with f:
     client = Client(port=12345, protocol='http')
     docs = client.post(on='/')
@@ -92,7 +93,7 @@ class FooExecutor(Executor):
         docs.append(Document(text='foo was called'))
 
 
-f = Flow(protocol='websocket', port=12345).add(uses=FooExecutor)
+f = Flow().config_gateway(protocol='websocket', port=12345).add(uses=FooExecutor)
 with f:
     client = Client(port=12345, protocol='websocket')
     docs = client.post(on='/')
@@ -112,7 +113,7 @@ To configure the protocol using a YAML file, just do
 Note that gRPC is the default protocol, so you can just omit it.
 ```{code-block} yaml
 jtype: Flow
-with:
+gateway:
   protocol: 'grpc'
 ```
 
@@ -121,7 +122,7 @@ with:
 ````{tab} HTTP
 ```{code-block} yaml
 jtype: Flow
-with:
+gateway:
   protocol: 'http'
 ```
 
@@ -132,12 +133,37 @@ with:
 
 ```{code-block} yaml
 jtype: Flow
-with:
+gateway:
   protocol: 'websocket'
 ```
 
 ````
-## Serve multiple protocols at the same time:
+
+`````{admonition} Important
+:class: important
+
+Gateway API was introduced in [v3.12.0](https://github.com/jina-ai/jina/releases/tag/v3.12.0) which added the `gateway` 
+section to the yaml specifications and the {meth}`~jina.Flow.config_gateway` method.
+However, it is still possible to configure the Gateway using Flow API:
+
+````{tab} YAML Spec
+```{code-block} yaml
+jtype: Flow
+with:
+  protocol: 'http'
+  port: 12345
+```
+````
+
+````{tab} Python API
+```{code-block} python
+f = Flow().config_gateway(protocol='http', port=12345)
+```
+````
+Although both interfaces are similar, we recommend using the Gateway API in certain cases, especially for customizing 
+the gateway implementation.
+`````
+## Support multiple protocols at the same time
 You can use multiple protocols in the same gateway, serve your Flow using multiple protocols and bind it 
 to several ports:
 
@@ -147,24 +173,20 @@ to several ports:
 emphasize-lines: 2
 ---
 from jina import Flow
-flow = Flow(port=[12345, 12344, 12343], protocol=['grpc', 'http', 'websocket'])
+flow = Flow().config_gateway(protocol=['grpc', 'http', 'websocket'])
 with flow:
     flow.block()
 ```
 ````
 
 ````{tab} YAML
-```{code-block yaml}
+```yaml
 jtype: Flow
-with:
+gateway:
   protocol:
     - 'grpc'
     - 'http'
     - 'websocket'
-  port:
-    - 12345
-    - 12344
-    - 12343
 ```
 ````
 
