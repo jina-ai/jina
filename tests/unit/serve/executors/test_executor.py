@@ -522,7 +522,7 @@ async def test_blocking_sync_exec():
 
     assert AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
         timeout=5.0,
-        ctrl_address=f'{args.host}:{args.port}',
+        ctrl_address=f'{args.host[0]}:{args.port[0]}',
         ready_or_shutdown_event=Event(),
     )
 
@@ -533,7 +533,7 @@ async def test_blocking_sync_exec():
             asyncio.create_task(
                 GrpcConnectionPool.send_request_async(
                     _create_test_data_message(),
-                    target=f'{args.host}:{args.port}',
+                    target=f'{args.host[0]}:{args.port[0]}',
                     timeout=3.0,
                 )
             )
