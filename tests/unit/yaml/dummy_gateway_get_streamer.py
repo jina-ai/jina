@@ -5,6 +5,7 @@ from pydantic import BaseModel
 from uvicorn import Config, Server
 
 from jina import Gateway
+from jina.serve.streamer import GatewayStreamer
 
 
 class DummyResponseModel(BaseModel):
@@ -18,7 +19,7 @@ class ProcessedResponseModel(BaseModel):
     tags: Optional[dict]
 
 
-class DummyGateway(Gateway):
+class DummyGatewayGetStreamer(Gateway):
     def __init__(
         self, arg1: str = None, arg2: str = None, arg3: str = 'default-arg3', **kwargs
     ):
@@ -26,6 +27,7 @@ class DummyGateway(Gateway):
         self.arg1 = arg1
         self.arg2 = arg2
         self.arg3 = arg3
+        self.streamer_obj = GatewayStreamer.get_streamer()
 
     async def setup_server(self):
         from fastapi import FastAPI
@@ -48,7 +50,7 @@ class DummyGateway(Gateway):
         )
         async def _process(text: str):
             doc = None
-            async for docs in self.streamer.stream_docs(
+            async for docs in self.streamer_obj.stream_docs(
                 docs=DocumentArray([Document(text=text)]),
                 exec_endpoint='/',
             ):
