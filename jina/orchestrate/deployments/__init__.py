@@ -811,9 +811,12 @@ class Deployment(BaseDeployment):
 
                 if cuda_device_map:
                     _args.env['CUDA_VISIBLE_DEVICES'] = str(cuda_device_map[replica_id])
-
-                _args.host = args.host # [0]
-                print('cuda_device_map _args.host = args.host[0]', args.host)
+                
+                if isinstance(args.host, list):
+                    _args.host = args.host[0]
+                else:
+                    _args.host = args.host
+                
                 if _args.name:
                     _args.name += (
                         f'/shard-{shard_id}/rep-{replica_id}'
@@ -859,6 +862,7 @@ class Deployment(BaseDeployment):
                 if not _args.workspace:
                     _args.workspace = args.workspace
                 replica_args.append(_args)
+                print('_set_pod_args!!!', _args.host, _args.port)
             result[shard_id] = replica_args
         return result
 
