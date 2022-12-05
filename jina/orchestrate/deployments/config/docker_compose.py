@@ -351,6 +351,7 @@ class DockerComposeConfig:
             uses_before_cargs.uses_with = None
             uses_before_cargs.uses_metas = None
             uses_before_cargs.env = None
+            uses_before_cargs.host = args.host[0]
             uses_before_cargs.port = port
             uses_before_cargs.uses_before_address = None
             uses_before_cargs.uses_after_address = None
@@ -374,6 +375,7 @@ class DockerComposeConfig:
             uses_after_cargs.uses_with = None
             uses_after_cargs.uses_metas = None
             uses_after_cargs.env = None
+            uses_after_cargs.host = args.host[0]
             uses_after_cargs.port = port
             uses_after_cargs.uses_before_address = None
             uses_after_cargs.uses_after_address = None
@@ -389,6 +391,7 @@ class DockerComposeConfig:
 
         for i in range(shards):
             cargs = copy.deepcopy(args)
+            cargs.host = args.host[0]
             cargs.shard_id = i
             cargs.uses_before = None
             cargs.uses_after = None
