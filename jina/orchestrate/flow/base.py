@@ -301,6 +301,7 @@ class Flow(
         name: Optional[str] = None,
         quiet: Optional[bool] = False,
         quiet_error: Optional[bool] = False,
+        restart: Optional[bool] = False,
         uses: Optional[str] = None,
         workspace: Optional[str] = None,
         **kwargs,
@@ -323,6 +324,7 @@ class Flow(
               When not given, then the default naming strategy will apply.
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
+        :param restart: If set, the Flow will restart while blocked if the YAML source is changed
         :param uses: The YAML path represents a flow. It can be either a local file path or a URL.
         :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.
 
@@ -469,6 +471,7 @@ class Flow(
               When not given, then the default naming strategy will apply.
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
+        :param restart: If set, the Flow will restart while blocked if the YAML source is changed
         :param uses: The YAML path represents a flow. It can be either a local file path or a URL.
         :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.
 
@@ -2374,17 +2377,21 @@ class Flow(
                 config_loaded = getattr(self, '_config_loaded', '')
                 if config_loaded.endswith('yml') or config_loaded.endswith('yaml'):
                     with ImportExtensions(
-                            required=True,
-                            logger=self.logger,
-                            help_text='''hot reload requires watchfiles dependency to be installed. You can do `pip install 
+                        required=True,
+                        logger=self.logger,
+                        help_text='''hot reload requires watchfiles dependency to be installed. You can do `pip install 
                         watchfiles''',
-                            ):
+                    ):
                         from watchfiles import watch
 
                     new_stop_event = stop_event or threading.Event()
                     while True:
-                        for changes in watch(*[config_loaded], stop_event=new_stop_event):
-                            self.logger.info(f'change in Flow YAML {[changed_file for _, changed_file in changes][0]} observed, restarting Flow')
+                        for changes in watch(
+                            *[config_loaded], stop_event=new_stop_event
+                        ):
+                            self.logger.info(
+                                f'change in Flow YAML {[changed_file for _, changed_file in changes][0]} observed, restarting Flow'
+                            )
                             self.__exit__(None, None, None)
                             new_flow = Flow.load_config(config_loaded)
                             self.__dict__ = new_flow.__dict__
@@ -2392,7 +2399,9 @@ class Flow(
                         if new_stop_event.is_set():
                             break
                 else:
-                    self.logger.warning(f' The reload argument was passed to the Flow but it was not loaded from any valid YAML file that can be observed')
+                    self.logger.warning(
+                        f' The reload argument was passed to the Flow but it was not loaded from any valid YAML file that can be observed'
+                    )
 
                     if not stop_event:
                         self._stop_event = threading.Event()
