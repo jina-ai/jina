@@ -18,7 +18,7 @@ def api_to_dict(show_all_args: bool = False):
 
     all_d = {
         'name': 'Jina',
-        'description': 'Build cross-modal and multi-modal applications on the cloud',
+        'description': 'Build multimodal AI services via cloud native technologies',
         'license': 'Apache 2.0',
         'vendor': 'Jina AI Limited',
         'source': 'https://github.com/jina-ai/jina/tree/'

@@ -145,7 +145,7 @@ setup(
     packages=find_packages(),
     version=__version__,
     include_package_data=True,
-    description='Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native · MLOps',
+    description='Build multimodal AI services via cloud native technologies · Neural Search · Generative AI · MLOps',
     author='Jina AI',
     author_email='hello@jina.ai',
     license='Apache 2.0',
@@ -194,6 +194,6 @@ setup(
         'Source': 'https://github.com/jina-ai/jina/',
         'Tracker': 'https://github.com/jina-ai/jina/issues',
     },
-    keywords='jina cloud-native cross-modal multi-modal neural-search query search index elastic neural-network encoding '
+    keywords='jina cloud-native cross-modal multimodal neural-search query search index elastic neural-network encoding '
     'embedding serving docker container image video audio deep-learning mlops',
 )

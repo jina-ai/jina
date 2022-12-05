@@ -146,7 +146,7 @@ about:
   license: Apache-2.0
   license_family: Apache
   license_file: LICENSE
-  summary: "Build cross-modal and multi-modal applications on the cloud \xB7 Neural Search \xB7 Creative AI \xB7 Cloud Native"
+  summary: "Build multimodal AI services via cloud native technologies \xB7 Neural Search \xB7 Generative AI \xB7 Cloud Native"
   doc_url: https://docs.jina.ai
 
 extra:
