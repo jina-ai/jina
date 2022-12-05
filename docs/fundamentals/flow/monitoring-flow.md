@@ -36,7 +36,7 @@ Start a Flow with monitoring using the Python API:
 from jina import Flow
 
 with Flow(monitoring=True, port_monitoring=9090).add(
-    uses='jinahub://SimpleIndexer', port_monitoring=9091
+    uses='jinaai://jina-ai/SimpleIndexer', port_monitoring=9091
 ) as f:
     f.block()
 ```
@@ -52,7 +52,7 @@ with:
   monitoring: true
   port_monitoring: 9090
 executors:
-- uses: jinahub://SimpleIndexer
+- uses: jinaai://jina-ai/SimpleIndexer
   port_monitoring: 9091
 ```
 
@@ -116,7 +116,7 @@ To monitor replicas and shards when deploying natively, pass a comma-separated s
 from jina import Flow
 
 with Flow(monitoring=True).add(
-    uses='jinahub://SimpleIndexer', replicas=2, port_monitoring='9091,9092'
+    uses='jinaai://jina-ai/SimpleIndexer', replicas=2, port_monitoring='9091,9092'
 ) as f:
     f.block()
 ```
@@ -131,7 +131,7 @@ jtype: Flow
 with:
   monitoring: true
 executors:
-- uses: jinahub://SimpleIndexer
+- uses: jinaai://jina-ai/SimpleIndexer
   replicas=2
   port_monitoring: '9091,9092'
 ```

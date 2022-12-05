@@ -363,11 +363,9 @@ class Deployment(BaseDeployment):
 
         :return: True if this deployment is provided as a sandbox, False otherwise
         """
+        from hubble.executor.helper import is_valid_sandbox_uri
         uses = getattr(self.args, 'uses') or ''
-        is_sandbox = uses.startswith('jinahub+sandbox://') or uses.startswith(
-            'jinaai+sandbox://'
-        )
-        return is_sandbox
+        return is_valid_sandbox_uri(uses)
 
     @property
     def _is_docker(self) -> bool:
@@ -376,13 +374,9 @@ class Deployment(BaseDeployment):
 
         :return: True if this deployment is to be run in docker
         """
+        from hubble.executor.helper import is_valid_docker_uri
         uses = getattr(self.args, 'uses', '')
-        is_docker = (
-            uses.startswith('jinahub+docker://')
-            or uses.startswith('docker://')
-            or uses.startswith('jinaai+docker://')
-        )
-        return is_docker
+        return is_valid_docker_uri(uses)
 
     @property
     def tls_enabled(self):
