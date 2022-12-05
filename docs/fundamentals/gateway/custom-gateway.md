@@ -44,16 +44,17 @@ from fastapi import FastAPI
 from uvicorn import Server, Config
 from jina import Document, DocumentArray, Gateway
 
+
 class MyGateway(Gateway):
     async def setup_server(self):
         # step 1: create an app and define the service endpoint
         app = FastAPI(title='Custom Gateway')
-        
+
         @app.get(path='/service')
-        def my_service(input: str):
+        async def my_service(input: str):
             # step 2: convert input request to Documents
             docs = DocumentArray([Document(text=input)])
-            
+
             # step 3: send Documents to Executors using GatewayStreamer
             result = None
             async for response_docs in self.streamer.stream_docs(
@@ -62,14 +63,15 @@ class MyGateway(Gateway):
             ):
                 # step 4: convert response docs to server response and return it
                 result = response_docs[0].text
-            
+
             return {'result': result}
+
         # step 5: implement health-check
-        
+
         @app.get(path='/')
         def health_check():
             return {}
-        
+
         # step 6: bind the gateway server to the right port and host
         self.server = Server(Config(app, host=self.host, port=self.port))
 ```
