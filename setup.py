@@ -4,6 +4,7 @@ from os import path
 
 from setuptools import find_packages, setup
 from setuptools.command.develop import develop
+from setuptools.command.egg_info import egg_info
 from setuptools.command.install import install
 
 if sys.version_info < (3, 7, 0):
@@ -89,6 +90,14 @@ class PostInstallCommand(install):
         register_ac()
 
 
+class PostEggInfoCommand(egg_info):
+    """Post-installation for egg info mode."""
+
+    def run(self):
+        egg_info.run(self)
+        register_ac()
+
+
 def get_extra_requires(path, add_all=True):
     import re
     from collections import defaultdict
@@ -164,6 +173,7 @@ setup(
     cmdclass={
         'develop': PostDevelopCommand,
         'install': PostInstallCommand,
+        'egg_info': PostEggInfoCommand,
     },
     classifiers=[
         'Development Status :: 5 - Production/Stable',
