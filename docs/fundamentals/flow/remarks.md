@@ -132,6 +132,7 @@ Few cases require to use `spawn` start method for multiprocessing.
     Inline functions, such as nested or lambda functions are not picklable. Use `functools.partial` instead.
 
 
+(flow-macos-multi-processing-fork)=
 ## Multiprocessing Fork in MacOS
 
 Apple has changed the rules for using Objective-C between `fork()` and `exec()` since macOS 10.13.

@@ -35,6 +35,20 @@ Then you are likely installing Jina on a less-supported system/architecture. For
 
 Unfortunately, `conda install` is not supported on Windows. You can either do `pip install jina` natively on Windows, or use `pip/conda install` under WSL2.
 
+## On MacOS >= 10.13
+{ref}`Multiprocessing with fork in MacOS <flow-macos-multi-processing-fork>` requires setting the environment variable 
+`OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES` for versions higher than 10.13.
+You can set this variable each time you run a python interpreter that uses Jina or configure it by default using the 
+following command:
+```shell
+echo "export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES" >> ~/.zshrc
+```
+
+````{admonition} Caution
+:class: caution
+Be aware that the latter method will apply to all tools that use the underlying Objective-C fork method.
+````
+
 ## Upgrading from Jina 2.x to 3.x
 If you upgraded an existing Jina installation from 2.x to 3.x you may see the following error message:
 
