@@ -101,7 +101,7 @@ def get_template_yamls(
         'volume_path': volumes[0] if volumes is not None else None,
     }
 
-    if gpus:
+    if gpus and gpus != 'all':
         template_params['device_plugins'] = {'nvidia.com/gpu': gpus}
 
     template_name = 'deployment-executor' if name != 'gateway' else 'deployment-gateway'
