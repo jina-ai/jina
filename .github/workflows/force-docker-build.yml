@@ -34,14 +34,14 @@ jobs:
       fail-fast: false
       matrix:
         pip_tag: [ "", "perf", "standard", "devel"]  # default: "" = core
-        py_version: [ "3.7", "3.8", "3.9" ]  # default "" = 3.7
+        py_version: [ "3.7", "3.8", "3.9" , "3.10", "3.11"]  # default "" = 3.7
     steps:
       - uses: actions/checkout@v2.5.0
         with:
           fetch-depth: 100
       - name: Set envs and versions
         run: |
-          DEFAULT_PY_VERSION="3.7"
+          DEFAULT_PY_VERSION="3.8"
           VCS_REF=${{ github.ref }}
           echo "VCS_REF=$VCS_REF" >> $GITHUB_ENV
           echo "Will build $VCS_REF"
