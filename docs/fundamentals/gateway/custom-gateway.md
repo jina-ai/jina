@@ -23,7 +23,7 @@ or based on a general server using {class}`~jina.Gateway`, you will need to impl
 the same way.
 In the next section we will discuss the implementation steps, and then we will discuss how to use both base Gateway classes.
 
-
+(custom-gateway-server-implementation)
 ### Server implementation
 
 When implementing the server to your custom Gateway, you need to care about the following items:
@@ -140,6 +140,10 @@ class MyGateway(Gateway):
 
         self.server = Server(Config(app, host=self.host, port=self.port))
 ```
+
+Please refer to {ref}`the Server Implementation section<custom-gateway-server-implementation>` for details on how to implement 
+the server.
+
 * Implement `async def run_server():`. This should run the server and `await` for it while serving:
 ```python
 from jina import Gateway
