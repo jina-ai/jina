@@ -160,6 +160,7 @@ class TopologyGraph:
                         return request, metadata
                     # otherwise, send to executor and get response
                     try:
+                        print(f' send to {self.name} endpoint {endpoint}=> {len(self.parts_to_send[0].docs)}')
                         result = await connection_pool.send_requests_once(
                             requests=self.parts_to_send,
                             deployment=self.name,
@@ -173,6 +174,8 @@ class TopologyGraph:
                             raise result
                         else:
                             resp, metadata = result
+
+                        print(f' got from {self.name} => {len(resp.docs)}')
                         if WorkerRequestHandler._KEY_RESULT in resp.parameters:
                             # Accumulate results from each Node and then add them to the original
                             self.result_in_params_returned = resp.parameters[
@@ -180,6 +183,7 @@ class TopologyGraph:
                             ]
                         request.parameters = request_input_parameters
                         resp.parameters = request_input_parameters
+                        print(f' CLEAR PARTS TO SEND')
                         self.parts_to_send.clear()
                     except InternalNetworkError as err:
                         self._handle_internalnetworkerror(err)
