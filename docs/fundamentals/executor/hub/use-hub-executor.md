@@ -11,7 +11,7 @@ You can use a Hub Executor as-is via `Executor.from_hub()`:
 ```python
 from jina import Executor, Document, DocumentArray
 
-exec = Executor.from_hub('jinahub://DummyHubExecutor')
+exec = Executor.from_hub('jinaai://jina-ai/DummyHubExecutor')
 da = DocumentArray([Document()])
 exec.foo(da)
 assert da.texts == ['hello']
@@ -36,17 +36,22 @@ Use prebuilt images from Hub in your Python code:
 ```python
 from jina import Flow
 
-# SECRET must be provided for private Executor
-f = Flow().add(uses='jinahub+docker://<UUID>[:<SECRET>][/<TAG>]')
+# You have to login for private Executor
+# import hubble
+# hubble.login()
+
+f = Flow().add(uses='jinaai+docker://<USERNAME>/<NAME>[:<TAG>]')
 ```
 
-If you do not provide a `/<TAG>`, it defaults to `/latest`.
+If you do not provide a `:<TAG>`, it defaults to `/latest`.
 
 ````{important}
-To use a private Executor, you must provide the `SECRET` which is generated after `jina hub push`.
+To use a private Executor, you have to login.
 
-```{figure} screenshots/secret.png
-:align: center
+```python
+import hubble
+
+hubble.login()
 ```
 
 ````
@@ -64,7 +69,7 @@ will connect PostgreSQL server which was started locally. Then you must use it w
 from jina import Flow, Document
 
 f = Flow().add(
-    uses='jinahub+docker://PostgreSQLStorage',
+    uses='jinaai+docker://jina-ai/PostgreSQLStorage',
     uses_with={'hostname': 'host.docker.internal'},
 )
 with f:
@@ -74,7 +79,7 @@ with f:
 ````
 
 
-If `jinahub+docker://` Executors don't load properly or have issues during initialization, ensure you have sufficient Docker resources allocated.
+If `jinaai+docker://` Executors don't load properly or have issues during initialization, ensure you have sufficient Docker resources allocated.
 
 
 ### Mount local volumes
@@ -108,7 +113,7 @@ Use the source code from Executor Hub in your Python code:
 ```python
 from jina import Flow
 
-f = Flow().add(uses='jinahub://<UUID>[:<SECRET>][/<TAG>]')
+f = Flow().add(uses='jinaai+docker://<USERNAME>/<NAME>[:<TAG>]')
 ```
 
 ## Set/override default parameters
@@ -120,7 +125,7 @@ pass `uses_with` and `uses_metas` as parameters to override this:
 from jina import Flow
 
 f = Flow().add(
-    uses='jinahub://<UUID>[:<SECRET>][/<TAG>]',
+    uses='jinaai+docker://<USERNAME>/<NAME>[:<TAG>]',
     uses_with={'param1': 'new_value'},
     uses_metas={'name': 'new_name'},
 )
@@ -135,20 +140,20 @@ You can also use `jina hub` CLI to pull an Executor without actually using it in
 ### Pull the Docker image
 
 ```bash
-jina hub pull jinahub+docker://<UUID>[:<SECRET>][/<TAG>]
+jina hub pull jinaai+docker://<USERNAME>/<NAME>[:<TAG>]
 ```
 
 
-You can find the Executor by running `docker images`. You can also indicate which version of the Executor you want to use by specifying the `/<TAG>`.
+You can find the Executor by running `docker images`. You can also indicate which version of the Executor you want to use by specifying the `:<TAG>`.
 
 ```bash
-jina hub pull jinahub+docker://DummyExecutor/v1.0.0
+jina hub pull jinaai+docker://jina-ai/DummyExecutor:v1.0.0
 ```
 
 ### Pull the source code
 
 ```bash
-jina hub pull jinahub://<UUID>[:<SECRET>][/<TAG>]
+jina hub pull jinaai://<USERNAME>/<NAME>[:<TAG>]
 ```
 
 ### List locations of local Executors
@@ -160,7 +165,7 @@ jina hub list
 <script id="asciicast-z81wi9gwVm7gYjfl5ocBD1RH3" src="https://asciinema.org/a/z81wi9gwVm7gYjfl5ocBD1RH3.js" async></script>
 
 ```{tip}
-To list all the Executors that are in source-code format (i.e. pulled via `jinahub://`), use the command `jina hub list`.
+To list all the Executors that are in source-code format (i.e. pulled via `jinaai://`), use the command `jina hub list`.
 
 To list all the Executors that are in Docker format, use the command `docker images`.
 ```

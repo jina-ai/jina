@@ -178,6 +178,10 @@ def get_template_yamls(
 
     template_yaml = kubernetes_tools.get_yaml(template_name, template_params)
 
+    if 'JINA_LOG_LEVEL' in os.environ:
+        env = env or {}
+        env['JINA_LOG_LEVEL'] = os.environ['JINA_LOG_LEVEL']
+
     yamls = [
         kubernetes_tools.get_yaml(
             'configmap',

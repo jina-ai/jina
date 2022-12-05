@@ -26,9 +26,9 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
     """Runtime procedure leveraging :class:`Grpclet` for sending DataRequests"""
 
     def __init__(
-            self,
-            args: argparse.Namespace,
-            **kwargs,
+        self,
+        args: argparse.Namespace,
+        **kwargs,
     ):
         """Initialize grpc and data request handling.
         :param args: args from CLI
@@ -44,8 +44,8 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         """
         if self.metrics_registry:
             with ImportExtensions(
-                    required=True,
-                    help_text='You need to install the `prometheus_client` to use the montitoring functionality of jina',
+                required=True,
+                help_text='You need to install the `prometheus_client` to use the montitoring functionality of jina',
             ):
                 from prometheus_client import Counter, Summary
 
@@ -142,30 +142,35 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
             self._health_servicer, self._grpc_server
         )
 
-        for service in service_names:
-            await self._health_servicer.set(
-                service, health_pb2.HealthCheckResponse.SERVING
-            )
         reflection.enable_server_reflection(service_names, self._grpc_server)
         bind_addr = f'{self.args.host}:{self.args.port}'
         self.logger.debug(f'start listening on {bind_addr}')
         self._grpc_server.add_insecure_port(bind_addr)
         await self._grpc_server.start()
+        for service in service_names:
+            await self._health_servicer.set(
+                service, health_pb2.HealthCheckResponse.SERVING
+            )
 
     async def _hot_reload(self):
         import inspect
+
         executor_file = inspect.getfile(self._request_handler._executor.__class__)
         watched_files = set([executor_file] + (self.args.py_modules or []))
         executor_base_path = os.path.dirname(os.path.abspath(executor_file))
-        extra_paths = [os.path.join(path, name) for path, subdirs, files in os.walk(executor_base_path) for name in files]
+        extra_paths = [
+            os.path.join(path, name)
+            for path, subdirs, files in os.walk(executor_base_path)
+            for name in files
+        ]
         extra_python_paths = list(filter(lambda x: x.endswith('.py'), extra_paths))
         for extra_python_file in extra_python_paths:
             watched_files.add(extra_python_file)
 
         with ImportExtensions(
-                required=True,
-                logger=self.logger,
-                help_text='''hot reload requires watchfiles dependency to be installed. You can do `pip install 
+            required=True,
+            logger=self.logger,
+            help_text='''hot reload requires watchfiles dependency to be installed. You can do `pip install 
                 watchfiles''',
         ):
             from watchfiles import awatch
@@ -179,6 +184,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
 
     async def async_run_forever(self):
         """Block until the GRPC server is terminated"""
+        self.logger.debug(f'run grpc server forever')
         if self.args.reload:
             self._hot_reload_task = asyncio.create_task(self._hot_reload())
         await self._grpc_server.wait_for_termination()
@@ -190,12 +196,13 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
             self._hot_reload_task.cancel()
         # 0.5 gives the runtime some time to complete outstanding responses
         # this should be handled better, 1.0 is a rather random number
+        await self._health_servicer.enter_graceful_shutdown()
         await self._grpc_server.stop(1.0)
         self.logger.debug('stopped GRPC Server')
 
     async def async_teardown(self):
         """Close the data request handler"""
-        await self._health_servicer.enter_graceful_shutdown()
+        self.logger.debug('tearing down WorkerRuntime')
         await self.async_cancel()
         self._request_handler.close()
 
@@ -225,7 +232,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         return endpoints_proto
 
     def _extract_tracing_context(
-            self, metadata: grpc.aio.Metadata
+        self, metadata: grpc.aio.Metadata
     ) -> Optional['Context']:
         if self.tracer:
             from opentelemetry.propagate import extract
@@ -245,7 +252,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         """
 
         with MetricsTimer(
-                self._summary, self._receiving_request_seconds, self._metric_attributes
+            self._summary, self._receiving_request_seconds, self._metric_attributes
         ):
             try:
                 if self.logger.debug_enabled:
@@ -283,8 +290,8 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
                     )
 
                 if (
-                        self.args.exit_on_exceptions
-                        and type(ex).__name__ in self.args.exit_on_exceptions
+                    self.args.exit_on_exceptions
+                    and type(ex).__name__ in self.args.exit_on_exceptions
                 ):
                     self.logger.info('Exiting because of "--exit-on-exceptions".')
                     raise RuntimeTerminated

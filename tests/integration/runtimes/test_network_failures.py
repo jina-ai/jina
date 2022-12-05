@@ -738,12 +738,12 @@ def _test_custom_retry(gateway_port, error_ports, protocol, retries, capfd):
     out, err = capfd.readouterr()
     if retries > 0:  # do as many retries as specified
         for i in range(retries):
-            assert f'retry attempt {i+1}/{retries}' in out
+            assert f'attempt {i+1}/{retries}' in out
     elif retries == 0:  # do no retries
-        assert 'retry attempt' not in out
+        assert 'attempt' not in out
     elif retries < 0:  # use default retry policy, doing at least 3 retries
         for i in range(3):
-            assert f'retry attempt {i+1}' in out
+            assert f'attempt {i+1}' in out
 
 
 @pytest.mark.parametrize('retries', [-1, 0, 5])

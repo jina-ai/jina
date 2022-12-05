@@ -100,7 +100,7 @@ For example, if you have three GPUs and one of your Executor has five replicas t
 from jina import Flow
 
 with Flow().add(
-    uses='jinahub://CLIPEncoder', replicas=5, install_requirements=True
+    uses='jinaai://jina-ai/CLIPEncoder', replicas=5, install_requirements=True
 ) as f:
     f.block()
 ```
@@ -115,7 +115,7 @@ In a `flow.yaml` file
 ```yaml
 jtype: Flow
 executors:
-- uses: jinahub://CLIPEncoder
+- uses: jinaai://jina-ai/CLIPEncoder
   install_requirements: True
   replicas: 5  
 ```

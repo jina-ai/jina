@@ -107,6 +107,7 @@ __jina_env__ = (
     'JINA_K8S_ACCESS_MODES',
     'JINA_K8S_STORAGE_CLASS_NAME',
     'JINA_K8S_STORAGE_CAPACITY',
+    'JINA_STREAMER_ARGS',
 )
 
 __default_host__ = _os.environ.get(
