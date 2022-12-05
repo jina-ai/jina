@@ -56,7 +56,7 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, InstrumentationMixin, AB
                 self._loop.add_signal_handler(sig, _cancel(sig), sig, None)
         else:
             def _cancel(signum, frame):
-                self.logger.debug(f'Received signal {signum.name}')
+                self.logger.debug(f'Received signal {signum}')
                 self.is_cancel.set(),
 
             for sig in HANDLED_SIGNALS:
