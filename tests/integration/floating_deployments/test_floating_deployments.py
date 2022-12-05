@@ -310,3 +310,39 @@ def test_floating_needs_more_complex(needs, tmpdir):
         resulted_str = f.read()
 
     assert resulted_str == expected_str2
+
+
+
+@pytest.mark.parametrize('protocol', ['grpc', 'http', 'websocket'])
+def test_flow_all_floating(protocol, tmpdir):
+    file_name = os.path.join(str(tmpdir), 'file.txt')
+
+
+    class FloatingTestExecutorWriteDocs(Executor):
+        def __init__(self, file_name, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            self.file_name = file_name
+
+        @requests
+        def foo(self, docs, **kwargs):
+            length_of_docs = len(docs)
+            with open(self.file_name, 'a+') as f:
+                f.write(str(len(docs)))
+
+    class MyExec(Executor):
+
+        @requests
+        def foo(self, docs, **kwargs):
+            print(f'len(docs) {len(docs)}')
+
+    f = Flow(protocol=protocol).add(name='A', floating=True, uses=MyExec). \
+        add(name='B', needs='A', floating=True, uses=MyExec). \
+        add(name='C', needs='B', floating=True, uses=FloatingTestExecutorWriteDocs,
+            uses_with={'file_name': file_name},)
+    with f:
+        f.post(on='/', inputs=DocumentArray.empty(1))
+
+    with open(file_name, 'r') as f:
+        resulted_str = f.read()
+
+    assert resulted_str == '1'
