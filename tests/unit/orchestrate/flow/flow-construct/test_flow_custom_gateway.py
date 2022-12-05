@@ -99,6 +99,23 @@ def test_flow_custom_gateway_no_executor(uses, uses_with, expected):
         )
 
 
+def test_flow_fastapi_default_health_check():
+
+    flow = (
+        Flow()
+        .config_gateway(
+            uses=_dummy_fastapi_gateway_yaml_path,
+            uses_with={'default_health_check': True},
+        )
+        .add(uses='ProcessExecutor')
+    )
+    with flow:
+        _validate_dummy_custom_gateway_response(flow.port, {})
+        _validate_custom_gateway_process(
+            flow.port, 'hello', {'text': 'helloworld', 'tags': {'processed': True}}
+        )
+
+
 def test_flow_custom_gateway_nested_config():
 
     flow = Flow.load_config(_flow_with_dummy_gateway_yaml_path)
