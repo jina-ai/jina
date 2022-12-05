@@ -18,6 +18,63 @@ There are two Gateway base classes to allow implementing a custom Gateway:
 * {class}`~jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway`: Use this abstract class to implement a custom Gateway using FastAPI.
 * {class}`~jina.Gateway`: Use this abstract class to implement a custom Gateway of any type.
 
+Whether your custom Gateway is based on a FastAPI app using {class}`~jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway` 
+or based on a general server using {class}`~jina.Gateway`, you will need to implement your server behavior in almost 
+the same way.
+In the next section we will discuss the implementation steps, and then we will discuss how to use both base Gateway classes.
+
+
+### Server implementation
+
+When implementing the server to your custom Gateway, you need to care about the following items:
+1. Create an app/server and define the endpoints you want to expose as a service.
+2. In each of your endpoints' implementation, make sure to convert server requests to your endpoint into `Document` objects.
+3. Send `Documents` to Executors in the Flow using {ref}`a GatewayStreamer object <gateway-streamer>`. This will let you 
+use Executors as a service and receive response Documents back.
+4. Convert response `Documents` to a server response and return it.
+5. Implement  {ref}`the needed health-checks <custom-gateway-health-check>` for the Gateway.
+This step is not required when using {class}`~jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway`.
+6. Bind your gateway server to {ref}`parameters injected by the runtime <gateway-runtime-arguments>`, i.e, `self.port`, `self.host`,...
+This step is also not required for {class}`~jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway`.
+
+Let's suppose you want to implement a '/service' GET endpoint in an HTTP server. Following the steps above, the server 
+implementation might look like the following:
+```python
+from fastapi import FastAPI
+from uvicorn import Server, Config
+from jina import Document, DocumentArray, Gateway
+
+class MyGateway(Gateway):
+    async def setup_server(self):
+        # step 1: create an app and define the service endpoint
+        app = FastAPI(title='Custom Gateway')
+        
+        @app.get(path='/service')
+        def my_service(input: str):
+            # step 2: convert input request to Documents
+            docs = DocumentArray([Document(text=input)])
+            
+            # step 3: send Documents to Executors using GatewayStreamer
+            result = None
+            async for response_docs in self.streamer.stream_docs(
+                docs=docs,
+                exec_endpoint='/',
+            ):
+                # step 4: convert response docs to server response and return it
+                result = response_docs[0].text
+            
+            return {'result': result}
+        # step 5: implement health-check
+        
+        @app.get(path='/')
+        def health_check():
+            return {}
+        
+        # step 6: bind the gateway server to the right port and host
+        self.server = Server(Config(app, host=self.host, port=self.port))
+```
+
+
 ### Using {class}`~jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway`:
 {class}`~jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway` offers a simple API to implement custom 
 gateways but is restricted to FastAPI apps.
@@ -109,12 +166,6 @@ class MyGateway(Gateway):
 
 As an example, you can refer to {class}`~jina.serve.runtimes.gateway.grpc.GRPCGateway` and 
 {class}`~jina.serve.runtimes.gateway.websocket.WebSocketGateway`.
-
-
-When implementing a custom Gateway, you need to care about the following items:
-* Bind your gateway server to {ref}`parameters injected by the runtime <gateway-runtime-arguments>`, i.e, `self.port`, `self.host`,...
-* Make requests to Executors in the Flow using {ref}`a GatewayStreamer object <gateway-streamer>`.
-* Implement the needed health-checks (only required for {class}`~jina.Gateway`)
 
 (gateway-streamer)=
 ## Calling Executors with {class}`~jina.serve.streamer.GatewayStreamer`
@@ -208,7 +259,7 @@ parameters in the Flow Python API (using `uses_with` parameter) or in the YAML c
 Refer to the {ref}`Use Custom Gateway section <use-custom-gateway>` for more information.
 
 
-
+(custom-gateway-health-check)=
 ## Required health-checks
 Jina relies on health-checks to determine the health of the gateway. In environments like Kubernetes, 
 docker-compose and Jina Cloud, this information is crucial for orchestrating the Gateway.
