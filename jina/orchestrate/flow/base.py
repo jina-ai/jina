@@ -2415,6 +2415,7 @@ class Flow(
                     if deployment._is_executor_from_yaml:
                         watch_files_from_deployments[deployment.args.uses] = name
             watch_files_list = list(watch_files_from_deployments.keys())
+
             config_loaded = getattr(self, '_config_loaded', '')
             if config_loaded.endswith('yml') or config_loaded.endswith('yaml'):
                 watch_files_list.append(config_loaded)
@@ -2440,9 +2441,18 @@ class Flow(
                             ]
                             for changed_file in chanded_files:
                                 if changed_file not in watch_files_from_deployments:
-                                    _restart_flow(
-                                        [changed_file for _, changed_file in changes][0]
-                                    )
+                                    # maybe changed_file is the absolute path of one in watch_files_from_deployments
+                                    is_absolute_path = False
+                                    for file, deployment_name in watch_files_from_deployments.items():
+                                        if changed_file.endswith(file):
+                                            is_absolute_path = True
+                                            _restart_deployment( self._deployment_nodes[deployment_name], changed_file)
+                                            break
+
+                                    if not is_absolute_path:
+                                        _restart_flow(
+                                            [changed_file for _, changed_file in changes][0]
+                                        )
                                 else:
                                     _restart_deployment(
                                         self._deployment_nodes[

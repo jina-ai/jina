@@ -186,6 +186,103 @@ t.start()  # start Flow in new Thread
 e.set()  # set event and stop (unblock) the Flow
 ```
 
+(restart-flow)=
+## Restart
+
+While developing your Flow, it can be useful to have the Flow be restarted automatically as you keep applying changes to the Flow YAML.
+
+For this you can use the `restart` argument for the Flow so that it watches changes in the configuration YAML code and makes sure that the Flow is restarted with the new configuration.
+
+````{admonition} Caution
+:class: caution
+This feature is thought to let the developer iterate faster while developing but is not intended to be used in production environment.
+````
+
+````{admonition} Note
+:class: note
+This feature requires watchfiles>=0.18 package to be installed.
+````
+
+To see how this would work, let's have a Flow defined in a file `flow.yml` with restart option.
+```yaml
+jtype: Flow
+with:
+  port: 12345
+  restart: True
+executors:
+- name: exec1
+  uses: ConcatenateTextExecutor
+```
+
+We build a Flow and expose it:
+
+```python
+import os
+from jina import Flow, Executor, requests
+
+
+class ConcatenateTextExecutor(Executor):
+   @requests
+   def foo(self, docs, **kwargs):
+       for doc in docs:
+          doc.text += 'add text '
+
+os.environ['JINA_LOG_LEVEL'] = 'DEBUG'
+
+
+f = Flow.load_config('flow.yml')
+
+with f:
+    f.block()
+```
+
+We can see that the Flow is running and serving:
+
+```python
+from jina import Client, DocumentArray
+
+c = Client(port=12345)
+
+print(c.post(on='/', inputs=DocumentArray.empty(1))[0].text)
+```
+
+```text
+add text
+```
+
+We can edit the Flow YAML file and save the changes:
+
+```yaml
+jtype: Flow
+with:
+  port: 12345
+  restart: True
+executors:
+- name: exec1
+  uses: ConcatenateTextExecutor
+- name: exec2
+  uses: ConcatenateTextExecutor
+```
+
+You should see in the logs of the Flow
+
+```text
+INFO   Flow@28301 change in Flow YAML XXX/flow.yml observed, restarting Flow                                                   
+```
+
+And after this, the Flow will have 2 Executors with the new topology
+
+```python
+from jina import Client, DocumentArray
+
+c = Client(port=12345)
+
+print(c.post(on='/', inputs=DocumentArray.empty(1))[0].text)
+```
+
+```text
+add text add text
+```
 
 
 ## Visualize
