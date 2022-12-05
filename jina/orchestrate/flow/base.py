@@ -37,6 +37,7 @@ from rich.progress import (
 from rich.table import Table
 
 from jina import __default_host__, __docker_host__, helper
+from jina.importer import ImportExtensions
 from jina.clients import Client
 from jina.clients.mixin import AsyncPostMixin, HealthCheckMixin, PostMixin, ProfileMixin
 from jina.enums import (
@@ -2369,13 +2370,41 @@ class Flow(
             to main thread.
         """
         try:
-            if stop_event is None:
-                self._stop_event = (
-                    threading.Event()
-                )  #: this allows `.close` to close the Flow from another thread/proc
-                self._stop_event.wait()
+            if self.args.restart:
+                config_loaded = getattr(self, '_config_loaded', '')
+                if config_loaded.endswith('yml') or config_loaded.endswith('yaml'):
+                    with ImportExtensions(
+                            required=True,
+                            logger=self.logger,
+                            help_text='''hot reload requires watchfiles dependency to be installed. You can do `pip install 
+                        watchfiles''',
+                            ):
+                        from watchfiles import watch
+
+                    new_stop_event = stop_event or threading.Event()
+                    while True:
+                        for changes in watch(*[config_loaded], stop_event=new_stop_event):
+                            self.logger.info(f'change in Flow YAML {[changed_file for _, changed_file in changes][0]} observed, restarting Flow')
+                            self.__exit__(None, None, None)
+                            new_flow = Flow.load_config(config_loaded)
+                            self.__dict__ = new_flow.__dict__
+                            self.__enter__()
+                        if new_stop_event.is_set():
+                            break
+                else:
+                    self.logger.warning(f' The reload argument was passed to the Flow but it was not loaded from any valid YAML file that can be observed')
+
+                    if not stop_event:
+                        self._stop_event = threading.Event()
+                        self._stop_event.wait()
+                    else:
+                        stop_event.wait()
             else:
-                stop_event.wait()
+                if not stop_event:
+                    self._stop_event = threading.Event()
+                    self._stop_event.wait()
+                else:
+                    stop_event.wait()
         except KeyboardInterrupt:
             pass
 

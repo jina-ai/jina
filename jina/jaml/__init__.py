@@ -762,6 +762,8 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
                 raise BadConfigSource(
                     f'Can not construct {cls} object from {source}. Source might be an invalid configuration.'
                 )
+
+            obj._config_loaded = source
             return obj
 
     @classmethod
