@@ -28,7 +28,7 @@ def test_regular_data_case():
     cancel_event, handle_queue, runtime_thread = _create_runtime(args)
 
     with grpc.insecure_channel(
-        f'{args.host}:{args.port}',
+        f'{args.host[0]}:{args.port[0]}',
         options=GrpcConnectionPool.get_default_grpc_options(),
     ) as channel:
         stub = jina_pb2_grpc.JinaSingleDataRequestRPCStub(channel)
@@ -57,7 +57,7 @@ def test_message_merging(disable_reduce):
 
     data_request = _create_test_data_message()
     result = GrpcConnectionPool.send_requests_sync(
-        [data_request, data_request], f'{args.host}:{args.port}'
+        [data_request, data_request], f'{args.host[0]}:{args.port[0]}'
     )
     assert result
     assert _queue_length(handle_queue) == 3
@@ -78,7 +78,7 @@ def test_uses_before_uses_after():
     assert handle_queue.empty()
 
     result = GrpcConnectionPool.send_request_sync(
-        _create_test_data_message(), f'{args.host}:{args.port}'
+        _create_test_data_message(), f'{args.host[0]}:{args.port[0]}'
     )
     assert result
     assert _queue_length(handle_queue) == 5  # uses_before + 3 workers + uses_after
@@ -111,7 +111,7 @@ def test_decompress(monkeypatch):
     cancel_event, handle_queue, runtime_thread = _create_runtime(args)
 
     with grpc.insecure_channel(
-        f'{args.host}:{args.port}',
+        f'{args.host[0]}:{args.port[0]}',
         options=GrpcConnectionPool.get_default_grpc_options(),
     ) as channel:
         stub = jina_pb2_grpc.JinaSingleDataRequestRPCStub(channel)
@@ -146,7 +146,7 @@ def test_dynamic_polling(polling):
     cancel_event, handle_queue, runtime_thread = _create_runtime(args)
 
     with grpc.insecure_channel(
-        f'{args.host}:{args.port}',
+        f'{args.host[0]}:{args.port[0]}',
         options=GrpcConnectionPool.get_default_grpc_options(),
     ) as channel:
         stub = jina_pb2_grpc.JinaSingleDataRequestRPCStub(channel)
@@ -158,7 +158,7 @@ def test_dynamic_polling(polling):
     assert _queue_length(handle_queue) == 2
 
     with grpc.insecure_channel(
-        f'{args.host}:{args.port}',
+        f'{args.host[0]}:{args.port[0]}',
         options=GrpcConnectionPool.get_default_grpc_options(),
     ) as channel:
         stub = jina_pb2_grpc.JinaSingleDataRequestRPCStub(channel)
@@ -187,7 +187,7 @@ def test_base_polling(polling):
     cancel_event, handle_queue, runtime_thread = _create_runtime(args)
 
     with grpc.insecure_channel(
-        f'{args.host}:{args.port}',
+        f'{args.host[0]}:{args.port[0]}',
         options=GrpcConnectionPool.get_default_grpc_options(),
     ) as channel:
         stub = jina_pb2_grpc.JinaSingleDataRequestRPCStub(channel)
@@ -199,7 +199,7 @@ def test_base_polling(polling):
     assert _queue_length(handle_queue) == 2 if polling == 'all' else 1
 
     with grpc.insecure_channel(
-        f'{args.host}:{args.port}',
+        f'{args.host[0]}:{args.port[0]}',
         options=GrpcConnectionPool.get_default_grpc_options(),
     ) as channel:
         stub = jina_pb2_grpc.JinaSingleDataRequestRPCStub(channel)
@@ -220,11 +220,11 @@ async def test_head_runtime_reflection():
 
     assert AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
         timeout=3.0,
-        ctrl_address=f'{args.host}:{args.port}',
+        ctrl_address=f'{args.host[0]}:{args.port[0]}',
         ready_or_shutdown_event=multiprocessing.Event(),
     )
 
-    async with grpc.aio.insecure_channel(f'{args.host}:{args.port}') as channel:
+    async with grpc.aio.insecure_channel(f'{args.host[0]}:{args.port[0]}') as channel:
         service_names = await GrpcConnectionPool.get_available_services(channel)
 
     assert all(
@@ -246,7 +246,7 @@ def test_timeout_behaviour():
     cancel_event, handle_queue, runtime_thread = _create_runtime(args)
 
     with grpc.insecure_channel(
-        f'{args.host}:{args.port}',
+        f'{args.host[0]}:{args.port[0]}',
         options=GrpcConnectionPool.get_default_grpc_options(),
     ) as channel:
         stub = jina_pb2_grpc.JinaSingleDataRequestRPCStub(channel)
@@ -305,7 +305,7 @@ def _create_runtime(args):
     runtime_thread.start()
     assert AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
         timeout=5.0,
-        ctrl_address=f'{args.host}:{args.port}',
+        ctrl_address=f'{args.host[0]}:{args.port[0]}',
         ready_or_shutdown_event=multiprocessing.Event(),
     )
     return cancel_event, handle_queue, runtime_thread
@@ -314,7 +314,7 @@ def _create_runtime(args):
 def _destroy_runtime(args, cancel_event, runtime_thread):
     cancel_event.set()
     runtime_thread.join()
-    assert not HeadRuntime.is_ready(f'{args.host}:{args.port}')
+    assert not HeadRuntime.is_ready(f'{args.host[0]}:{args.port[0]}')
 
 
 def _queue_length(queue: 'multiprocessing.Queue'):

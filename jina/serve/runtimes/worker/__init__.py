@@ -143,7 +143,14 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         )
 
         reflection.enable_server_reflection(service_names, self._grpc_server)
+        
+        if isinstance(self.args.port, list):
+            self.args.port = self.args.port[0]
+        if isinstance(self.args.host, list):
+            self.args.host = self.args.host[0]
+        
         bind_addr = f'{self.args.host}:{self.args.port}'
+        print(f'worker bind_addr on {bind_addr}')
         self.logger.debug(f'start listening on {bind_addr}')
         self._grpc_server.add_insecure_port(bind_addr)
         await self._grpc_server.start()

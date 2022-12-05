@@ -58,7 +58,7 @@ def test_executor_runtimes(signal, tmpdir):
     time.sleep(0.5)
 
     GrpcConnectionPool.send_request_sync(
-        _create_test_data_message(), target=f'{args.host}:{args.port}'
+        _create_test_data_message(), target=f'{args.host[0]}:{args.port[0]}'
     )
 
     time.sleep(0.1)

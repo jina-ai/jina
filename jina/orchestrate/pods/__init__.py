@@ -138,7 +138,7 @@ class BasePod(ABC):
 
     def _get_control_address(self):
         if self.args.pod_role == PodRoleType.GATEWAY:
-            return f'{self.args.host[0]}:{self.args.port[0]}'
+            return f'{self.args.host}:{self.args.port}'
         return f'{self.args.host}:{self.args.port}'
 
     def close(self) -> None:

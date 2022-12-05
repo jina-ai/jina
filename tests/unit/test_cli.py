@@ -97,10 +97,10 @@ def test_parse_env_map():
 @pytest.mark.slow
 def test_ping():
     a1 = set_pod_parser().parse_args([])
-    a2 = set_ping_parser().parse_args(['executor', f'0.0.0.0:{a1.port}'])
+    a2 = set_ping_parser().parse_args(['executor', f'0.0.0.0:{a1.port[0]}'])
 
     a3 = set_ping_parser().parse_args(
-        ['executor', f'0.0.0.1:{a1.port}', '--timeout', '1000']
+        ['executor', f'0.0.0.1:{a1.port[0]}', '--timeout', '1000']
     )
 
     with pytest.raises(SystemExit) as cm:

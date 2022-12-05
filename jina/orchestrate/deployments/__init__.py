@@ -107,6 +107,7 @@ class BaseDeployment(ExitStack):
         #     _head_args.port = args.port
         _head_args.port = args.port[0]
         _head_args.host = args.host[0]
+        print(f'Head args: {args.host}')
         _head_args.uses = args.uses
         _head_args.pod_role = PodRoleType.HEAD
         _head_args.runtime_cls = 'HeadRuntime'
@@ -811,7 +812,8 @@ class Deployment(BaseDeployment):
                 if cuda_device_map:
                     _args.env['CUDA_VISIBLE_DEVICES'] = str(cuda_device_map[replica_id])
 
-                _args.host = args.host[0]
+                _args.host = args.host # [0]
+                print('cuda_device_map _args.host = args.host[0]', args.host)
                 if _args.name:
                     _args.name += (
                         f'/shard-{shard_id}/rep-{replica_id}'
@@ -866,6 +868,7 @@ class Deployment(BaseDeployment):
         _args = copy.deepcopy(args)
         _args.pod_role = PodRoleType.WORKER
         _args.host = _args.host[0] or __default_host__
+        print('uses_before_after _args.host = args.host[0]', _args.host)
         _args.port = helper.random_port()
 
         if _args.name:

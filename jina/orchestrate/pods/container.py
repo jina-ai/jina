@@ -332,6 +332,7 @@ class ContainerPod(BasePod):
                 ctrl_host = self.args.host
 
             if self.args.pod_role == PodRoleType.GATEWAY:
+                print(f'ctrl_address = ctrl_host[0] {ctrl_host}')
                 ctrl_address = f'{ctrl_host[0]}:{self.args.port[0]}'
             else:
                 ctrl_address = f'{ctrl_host}:{self.args.port}'
