@@ -817,7 +817,7 @@ class Deployment(BaseDeployment):
                 if cuda_device_map:
                     _args.env['CUDA_VISIBLE_DEVICES'] = str(cuda_device_map[replica_id])
 
-                _args.host = args.host
+                _args.host = args.host[0]
                 if _args.name:
                     _args.name += (
                         f'/shard-{shard_id}/rep-{replica_id}'
@@ -871,7 +871,7 @@ class Deployment(BaseDeployment):
 
         _args = copy.deepcopy(args)
         _args.pod_role = PodRoleType.WORKER
-        _args.host = _args.host or __default_host__
+        _args.host = _args.host[0] or __default_host__
         _args.port = helper.random_port()
 
         if _args.name:
