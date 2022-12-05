@@ -1,7 +1,7 @@
 (flow-cookbook)=
 # Flow
 
-A {class}`~jina.Flow` orchestrates {class}`~jina.Executor`s into a processing pipeline to build a multi-modal/cross-modal application.
+A {class}`~jina.Flow` orchestrates {class}`~jina.Executor`s into a processing pipeline to accomplish a task.
 Documents "flow" through the pipeline and are processed by Executors.
 
 You can think of Flow as an interface to configure and launch your {ref}`microservice architecture <architecture-overview>`,
@@ -25,7 +25,7 @@ The most important methods of the `Flow` object are the following:
 
 ## Why should you use a Flow?
 
-Once you've learned DocumentArray and Executor, you can split your multi-modal/cross-modal application into different independent modules and services.
+Once you've learned DocumentArray and Executor, you can split a big task into small independent modules and services.
 But you need to chain them together to bring real value and build and serve an application. Flows enable you to do exactly this.
 
 - Flows connect microservices (Executors) to build a service with proper client/server style interface over HTTP, gRPC, or WebSockets.

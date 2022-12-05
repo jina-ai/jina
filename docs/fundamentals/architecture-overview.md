@@ -60,7 +60,7 @@ The following concepts are covered in the user guide:
 ```{glossary}
 
 **Document**
-    Document is the fundamental data structure in Jina for representing multi-modal and cross-modal data. It is the essential element of IO in Jina. More information can be found in [DocArray's Docs](https://docarray.jina.ai/fundamentals/document/). 
+    Document is the fundamental data structure in Jina for representing multimodal data. It is the essential element of IO in Jina. More information can be found in [DocArray's Docs](https://docarray.jina.ai/fundamentals/document/). 
 
 **DocumentArray**
     DocumentArray is a list-like container of multiple Documents. More information can be found in [DocArray's Docs](https://docarray.jina.ai/fundamentals/documentarray/). 
