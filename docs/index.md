@@ -76,7 +76,7 @@ DocArray is the foundational data structure of Jina. Before starting Jina, first
 :link-type: doc
 
 
-{term}`Flow` orchestrates Executors into a processing pipeline to build a multi-modal/cross-modal application
+{term}`Flow` orchestrates Executors into a processing pipeline to accomplish a task
 ::::
 
 ::::{grid-item-card} {octicon}`package-dependents;1.5em` Explore Executor Hub
