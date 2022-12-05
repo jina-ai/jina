@@ -6,8 +6,8 @@ from jina import __default_endpoint__
 from jina.excepts import BadConfigSource
 from jina.importer import ImportExtensions
 from jina.serve.executors import BaseExecutor
-from jina.types.request.data import DataRequest
 from jina.serve.runtimes.worker.batch_queue import BatchQueue
+from jina.types.request.data import DataRequest
 
 if TYPE_CHECKING:  # pragma: no cover
     import argparse
@@ -60,11 +60,19 @@ class WorkerRequestHandler:
         )
         self._init_monitoring(metrics_registry, meter)
         self.deployment_name = deployment_name
-        
         # In order to support batching parameters separately, we have to lazily create batch queues
         # So we store the config for each endpoint in the initialization
         self._batchqueue_config: Dict[str, Dict] = {}
+        # the below is of "shape" exec_endpoint_name -> parameters_key -> batch_queue
+        self._batchqueue_instances: Dict[
+            str, Dict[str, BatchQueue]
+        ] = self._init_batchqueue_dict()
 
+    def _init_batchqueue_dict(self) -> Dict[str, Dict[str, BatchQueue]]:
+        """Determines how endpoints and method names map to batch queues, without instantiating them.
+        :return: a dictionary of "shape" exec_endpoint_name -> parameters_key -> batch_queue.
+            The `exec_endpoint_name` keys are filled in, the rest is empty.
+        """
         if getattr(self._executor, 'dynamic_batching', None) is not None:
             # We need to sort the keys into endpoints and functions
             # Endpoints allow specific configurations while functions allow configs to be applied to all endpoints of the function
@@ -75,13 +83,15 @@ class WorkerRequestHandler:
                     dbatch_endpoints.append((key, dbatch_config))
                 else:
                     dbatch_functions.append((key, dbatch_config))
-            
+
             # Specific endpoint configs take precedence over function configs
             for endpoint, dbatch_config in dbatch_endpoints:
                 self._batchqueue_config[endpoint] = dbatch_config
 
             # Process function configs
-            func_endpoints: Dict[str, List[str]] = {func.__name__: [] for func in self._executor.requests.values()}
+            func_endpoints: Dict[str, List[str]] = {
+                func.__name__: [] for func in self._executor.requests.values()
+            }
             for endpoint, func in self._executor.requests.items():
                 func_endpoints[func.__name__].append(endpoint)
             for func_name, dbatch_config in dbatch_functions:
@@ -89,10 +99,14 @@ class WorkerRequestHandler:
                     if endpoint not in self._batchqueue_config:
                         self._batchqueue_config[endpoint] = dbatch_config
 
-            self.logger.debug(f'Executor Dynamic Batching configs: {self._executor.dynamic_batching}')
-            self.logger.debug(f'Endpoint Batch Queue Configs: {self._batchqueue_config}')
+            self.logger.debug(
+                f'Executor Dynamic Batching configs: {self._executor.dynamic_batching}'
+            )
+            self.logger.debug(
+                f'Endpoint Batch Queue Configs: {self._batchqueue_config}'
+            )
 
-            self._batchqueue_instances: Dict[str, Dict[str, BatchQueue]] = {endpoint: {} for endpoint in self._batchqueue_config.keys()}
+            return {endpoint: {} for endpoint in self._batchqueue_config.keys()}
 
     def _init_monitoring(
         self,
@@ -204,21 +218,28 @@ class WorkerRequestHandler:
             raise
 
     def _refresh_executor(self, changed_files):
+        import copy
         import importlib
         import inspect
-        import copy
         import sys
 
         try:
-            sys_mod_files_modules = {getattr(module, '__file__', ''): module for module in sys.modules.values()}
+            sys_mod_files_modules = {
+                getattr(module, '__file__', ''): module
+                for module in sys.modules.values()
+            }
 
             for file in changed_files:
                 if file in sys_mod_files_modules:
                     importlib.reload(sys_mod_files_modules[file])
                 else:
-                    self.logger.debug(f'Changed file {file} was not previously imported.')
+                    self.logger.debug(
+                        f'Changed file {file} was not previously imported.'
+                    )
         except Exception as exc:
-            self.logger.error(f' Exception when refreshing Executor when changes detected in {changed_files}')
+            self.logger.error(
+                f' Exception when refreshing Executor when changes detected in {changed_files}'
+            )
             raise exc
 
         importlib.reload(inspect.getmodule(self._executor.__class__))
@@ -236,7 +257,7 @@ class WorkerRequestHandler:
 
     @staticmethod
     def _parse_params(parameters: Dict, executor_name: str):
-        parsed_params = parameters # TODO: Copy? This still points to the same object
+        parsed_params = parameters  # TODO: Copy? This still points to the same object
         specific_parameters = parameters.get(executor_name, None)
         if specific_parameters:
             parsed_params.update(**specific_parameters)
@@ -363,7 +384,9 @@ class WorkerRequestHandler:
                     **self._batchqueue_config[exec_endpoint],
                 )
             # This is necessary because push might need to await for the queue to be emptied
-            task = await self._batchqueue_instances[exec_endpoint][param_key].push(requests[0])
+            task = await self._batchqueue_instances[exec_endpoint][param_key].push(
+                requests[0]
+            )
             await task
         else:
             docs = WorkerRequestHandler.get_docs_from_request(
