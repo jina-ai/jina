@@ -1,9 +1,10 @@
 import asyncio
-import pytest
 import time
 
-from jina.serve.runtimes.worker.batch_queue import sleep_then_set, BatchQueue
-from jina import Executor, DocumentArray, requests, Document
+import pytest
+
+from jina import Document, DocumentArray, Executor, requests
+from jina.serve.runtimes.worker.batch_queue import BatchQueue, sleep_then_set
 from jina.types.request.data import DataRequest
 
 
@@ -59,7 +60,7 @@ async def test_batch_queue():
     for req in data_requests:
         req.data.docs = DocumentArray.empty(1)
         assert req.data.docs[0].text == ''
-    
+
     # Test preferred batch size
     tasks = [await bq.push(req) for req in data_requests[:-1]]
     assert len(bq._requests) == 3
@@ -76,18 +77,18 @@ async def test_batch_queue():
     assert len(bq._big_doc) == 0
     assert all(task.done() for task in tasks)
     assert all(task.exception() is None for task in tasks)
-    
+
     for req in data_requests:
         assert req.data.docs[0].text == 'Done'
 
     # Test timeout
     for req in data_requests:
         req.data.docs[0].text = 'Not Done'
-    
+
     single_task = await bq.push(data_requests[0])
     assert not single_task.done()
     assert data_requests[0].data.docs[0].text == 'Not Done'
-    
+
     await asyncio.sleep(0)
     assert not single_task.done()
     assert data_requests[0].data.docs[0].text == 'Not Done'
@@ -95,7 +96,7 @@ async def test_batch_queue():
     await asyncio.sleep(0.1)
     assert not single_task.done()
     assert data_requests[0].data.docs[0].text == 'Not Done'
-    
+
     await asyncio.sleep(0.5)
     assert single_task.done()
     assert data_requests[0].data.docs[0].text == 'Done'
@@ -125,7 +126,7 @@ async def test_batch_queue_max_batch_size():
     for req in data_requests:
         req.data.docs = DocumentArray.empty(1)
         assert req.data.docs[0].text == ''
-    
+
     # Test preferred batch size
     tasks = [await bq.push(req) for req in data_requests]
     assert len(bq._requests) == 3
@@ -220,7 +221,7 @@ async def test_exception():
     for req in data_requests:
         req.data.docs = DocumentArray.empty(1)
         assert req.data.docs[0].text == ''
-    
+
     tasks = [await bq.push(req) for req in data_requests]
     assert len(bq._requests) == 4
     assert all(not task.done() for task in tasks)
@@ -230,7 +231,7 @@ async def test_exception():
             await tasks[i]
         assert tasks[i].done()
         assert tasks[i].exception is not None
-    
+
 
 @pytest.mark.asyncio
 async def test_repr_and_str():
