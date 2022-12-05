@@ -2439,9 +2439,6 @@ class Flow(
                                 changed_file for _, changed_file in changes
                             ]
                             for changed_file in chanded_files:
-                                print(
-                                    f' changed_file {changed_file} from {watch_files_from_deployments}'
-                                )
                                 if changed_file not in watch_files_from_deployments:
                                     _restart_flow(
                                         [changed_file for _, changed_file in changes][0]

@@ -763,7 +763,8 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
                     f'Can not construct {cls} object from {source}. Source might be an invalid configuration.'
                 )
 
-            obj._config_loaded = source
+            if type(source) == str:
+                obj._config_loaded = source
             return obj
 
     @classmethod
