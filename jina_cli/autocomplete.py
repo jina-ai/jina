@@ -87,6 +87,7 @@ ac_table = {
             '--quiet-error',
             '--workspace-id',
             '--uses',
+            '--restart',
             '--env',
             '--inspect',
         ],

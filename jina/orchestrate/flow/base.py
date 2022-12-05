@@ -301,6 +301,7 @@ class Flow(
             name: Optional[str] = None,
             quiet: Optional[bool] = False,
             quiet_error: Optional[bool] = False,
+            restart: Optional[bool] = False,
             uses: Optional[str] = None,
             workspace: Optional[str] = None,
             **kwargs,
@@ -323,6 +324,7 @@ class Flow(
               When not given, then the default naming strategy will apply.
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
+        :param restart: If set, the Flow will restart while blocked if the YAML source is changed
         :param uses: The YAML path represents a flow. It can be either a local file path or a URL.
         :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.
 
@@ -469,6 +471,7 @@ class Flow(
               When not given, then the default naming strategy will apply.
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
+        :param restart: If set, the Flow will restart while blocked if the YAML source is changed
         :param uses: The YAML path represents a flow. It can be either a local file path or a URL.
         :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.
 
@@ -2389,37 +2392,38 @@ class Flow(
         try:
             watch_changes = self.args.restart or any(
                 [deployment.args.restart for deployment in list(self._deployment_nodes.values())])
-            if watch_changes:
-                watch_files_from_deployments = {}
-                for name, deployment in self._deployment_nodes.items():
-                    if deployment.args.restart:
-                        if deployment._is_executor_from_yaml:
-                            watch_files_from_deployments[name] = deployment.args.uses
-                watch_files_list = list(watch_files_from_deployments.values())
-                config_loaded = getattr(self, '_config_loaded', '')
-                if config_loaded.endswith('yml') or config_loaded.endswith('yaml'):
-                    watch_files_list.append(config_loaded)
+            watch_files_from_deployments = {}
+            for name, deployment in self._deployment_nodes.items():
+                if deployment.args.restart:
+                    if deployment._is_executor_from_yaml:
+                        watch_files_from_deployments[name] = deployment.args.uses
+            watch_files_list = list(watch_files_from_deployments.values())
+            config_loaded = getattr(self, '_config_loaded', '')
+            if config_loaded.endswith('yml') or config_loaded.endswith('yaml'):
+                watch_files_list.append(config_loaded)
+
+            if watch_changes and len(watch_files_list) > 0:
 
                 with ImportExtensions(
                         required=True,
                         logger=self.logger,
-                        help_text='''hot reload requires watchfiles dependency to be installed. You can do `pip install 
+                        help_text='''restart requires watchfiles dependency to be installed. You can do `pip install 
                     watchfiles''',
                 ):
                     from watchfiles import watch
 
                 new_stop_event = stop_event or threading.Event()
-                while True:
-                    for changes in watch(*watch_files_list, stop_event=new_stop_event):
-                        chanded_files = [changed_file for _, changed_file in changes]
-                        for changed_file in chanded_files:
-                            if changed_file not in watch_files_from_deployments:
-                                _restart_flow([changed_file for _, changed_file in changes][0])
-                            else:
-                                _restart_deployment(watch_files_from_deployments[changed_file], changed_file)
-                    if new_stop_event.is_set():
-                        break
-
+                if len(watch_files_list) > 0:
+                    while True:
+                        for changes in watch(*watch_files_list, stop_event=new_stop_event):
+                            chanded_files = [changed_file for _, changed_file in changes]
+                            for changed_file in chanded_files:
+                                if changed_file not in watch_files_from_deployments:
+                                    _restart_flow([changed_file for _, changed_file in changes][0])
+                                else:
+                                    _restart_deployment(watch_files_from_deployments[changed_file], changed_file)
+                        if new_stop_event.is_set():
+                            break
             else:
                 if not stop_event:
                     self._stop_event = threading.Event()
