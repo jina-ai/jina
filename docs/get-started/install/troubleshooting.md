@@ -6,7 +6,7 @@ This article helps you to solve the installation problems of Jina.
 
 The normal installation of Jina takes 10 seconds. If yours takes longer than this, then it is likely you unnecessarily built wheels from scratch. 
 
-Every upstream dependency of Jina has pre-built wheels exhaustively for x86/arm64, macos/Linux and Python 3.7/3.8/3.9, including `numpy`, `protobuf`, `pyzmq`, `grpcio` etc. This means when you install Jina, your `pip` should directly leverage the pre-built wheels instead of building them from scratch locally. For example, you should expect the install log to contain `-cp38-cp38-macosx_10_15_x86_64.whl` when installing Jina on MacOS with Python 3.8.
+Every upstream dependency of Jina has pre-built wheels exhaustively for x86/arm64, macos/Linux and Python 3.7/3.8/3.9, including `numpy`, `protobuf`, `grpcio` etc. This means when you install Jina, your `pip` should directly leverage the pre-built wheels instead of building them from scratch locally. For example, you should expect the install log to contain `-cp38-cp38-macosx_10_15_x86_64.whl` when installing Jina on MacOS with Python 3.8.
 
 If you find you are building wheels during installation (see an example below), then it is a sign that you are installing Jina **wrongly**. 
 
@@ -34,6 +34,20 @@ Then you are likely installing Jina on a less-supported system/architecture. For
 ## On Windows with `conda`
 
 Unfortunately, `conda install` is not supported on Windows. You can either do `pip install jina` natively on Windows, or use `pip/conda install` under WSL2.
+
+## On MacOS >= 10.13
+{ref}`Multiprocessing with fork in MacOS <flow-macos-multi-processing-fork>` requires setting the environment variable 
+`OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES` for versions higher than 10.13.
+You can set this variable each time you run a python interpreter that uses Jina or configure it by default using the 
+following command:
+```shell
+echo "export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES" >> ~/.zshrc
+```
+
+````{admonition} Caution
+:class: caution
+Be aware that the latter method will apply to all tools that use the underlying Objective-C fork method.
+````
 
 ## Upgrading from Jina 2.x to 3.x
 If you upgraded an existing Jina installation from 2.x to 3.x you may see the following error message:
