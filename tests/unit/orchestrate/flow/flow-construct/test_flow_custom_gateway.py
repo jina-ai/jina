@@ -96,7 +96,7 @@ def test_flow_fastapi_default_health_check():
         .add(uses='ProcessExecutor')
     )
     with flow:
-        _validate_dummy_custom_gateway_response(flow.port, {'message': 'OK'})
+        _validate_dummy_custom_gateway_response(flow.port, {})
         _validate_custom_gateway_process(
             flow.port, 'hello', {'text': 'helloworld', 'tags': {'processed': True}}
         )
