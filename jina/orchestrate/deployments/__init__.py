@@ -107,7 +107,6 @@ class BaseDeployment(ExitStack):
         #     _head_args.port = args.port
         _head_args.port = args.port[0]
         _head_args.host = args.host[0]
-        print(f'Head args: {args.host}')
         _head_args.uses = args.uses
         _head_args.pod_role = PodRoleType.HEAD
         _head_args.runtime_cls = 'HeadRuntime'
@@ -809,13 +808,17 @@ class Deployment(BaseDeployment):
                 if _args.pod_role != PodRoleType.GATEWAY:
                     _args.pod_role = PodRoleType.WORKER
 
-                if cuda_device_map:
-                    _args.env['CUDA_VISIBLE_DEVICES'] = str(cuda_device_map[replica_id])
-                
-                if isinstance(args.host, list):
-                    _args.host = args.host[0]
+                    if len(args.host) == 1:
+                        _args.host = args.host[0]
+                    else:
+                        _args.host = args.host[replica_id]
+                    # TODO raise error when two length donnot match
+
                 else:
                     _args.host = args.host
+
+                if cuda_device_map:
+                    _args.env['CUDA_VISIBLE_DEVICES'] = str(cuda_device_map[replica_id])
                 
                 if _args.name:
                     _args.name += (
@@ -828,7 +831,11 @@ class Deployment(BaseDeployment):
 
                 # the gateway needs to respect the assigned port
                 if args.deployment_role == DeploymentRoleType.GATEWAY or args.external:
-                    _args.port = args.port
+                    if args.deployment_role == DeploymentRoleType.GATEWAY:
+                        _args.port = args.port
+                    elif args.external:
+                        _args.port = args.port[0]  # TODO split at higher level
+                        
                 elif shards == 1 and replicas == 1:
                     _args.port = args.port
                     _args.port_monitoring = args.port_monitoring
