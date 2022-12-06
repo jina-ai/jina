@@ -289,7 +289,7 @@ executors:
 
 ## Expose Executors
 
-A Flow deployment without a gateway is often used for {ref}`external-executors`, which can be shared over different Flows. You can expose an Executor by setting `expose: true`:
+A Flow deployment without a gateway is often used for {ref}`external-executors`, which can be shared over different Flows. You can expose an Executor by setting `expose: true` (and un-expose the Gateway by setting `expose: false`):
 
 ```{code-block} yaml
 ---
