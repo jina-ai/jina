@@ -253,15 +253,15 @@ The JCloud gateway is different from Jina's gateway. In JCloud, a gateway works 
 
 ### Set timeout
 
-By default, the JCloud gateway will close connections that have been idle for over 600 seconds. If you want longer a connection timeout threshold, you can change the `timeout` parameter under `gateway`.
+By default, the JCloud gateway will close connections that have been idle for over 600 seconds. If you want longer a connection timeout threshold, you can change the `timeout` parameter under `gateway.jcloud`.
 
 ```{code-block} yaml
 ---
 emphasize-lines: 2-4
 ---
 jtype: Flow
-jcloud:
-  gateway:
+gateway:
+  jcloud:
     timeout: 600
 executors:
   - name: executor1
@@ -270,15 +270,15 @@ executors:
 
 ### Control gateway resources
 
-If you'd like to customize the gateway's CPU or memory, you can specify the `memory` and/or `cpu` argument under `jcloud.gateway.resources`:
+If you'd like to customize the gateway's CPU or memory, you can specify the `memory` and/or `cpu` argument under `gateway.jcloud.resources`:
 
 ```{code-block} yaml
 ---
 emphasize-lines: 2-6
 ---
 jtype: Flow
-jcloud:
-  gateway:
+gateway:
+  jcloud:
     resources:
       memory: 800M
       cpu: 0.4
@@ -296,8 +296,8 @@ A Flow deployment without a gateway is often used for {ref}`external-executors`,
 emphasize-lines: 2-4, 8-9
 ---
 jtype: Flow
-jcloud:
-  gateway:
+gateway:
+  jcloud:
     expose: false       # don't expose the Gateway
 executors:
   - name: custom
@@ -317,8 +317,8 @@ You can expose the Gateway along with Executors:
 emphasize-lines: 2-4,8-9
 ---
 jtype: Flow
-jcloud:
-  gateway:
+gateway:
+  jcloud:
     expose: true
 executors:
   - name: custom1
@@ -375,5 +375,4 @@ Keys in `labels` have the following restrictions:
   - The following keys are skipped if passed in the Flow YAML.
     - `user`
     - `jina`-version
-    - `retention`-days
 ```
