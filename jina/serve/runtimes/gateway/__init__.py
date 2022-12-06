@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Optional, Union
 from jina import __default_host__
 from jina.enums import GatewayProtocolType
 from jina.excepts import PortAlreadyUsed
-from jina.helper import is_port_free
+from jina.helper import is_port_free, send_telemetry_event
 from jina.parsers.helper import _update_gateway_args
 from jina.serve.gateway import BaseGateway
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
@@ -101,6 +101,10 @@ class GatewayRuntime(AsyncNewLoopRuntime):
             },
             py_modules=self.args.py_modules,
             extra_search_paths=self.args.extra_search_paths,
+        )
+
+        send_telemetry_event(
+            event='start', obj=self.gateway, protocol=self.args.protocol
         )
 
         await self.gateway.setup_server()
