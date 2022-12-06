@@ -45,7 +45,7 @@ def test_container_pod_pass_envs(env_checker_docker_image_built):
     # set_pod_parser returns a parser for worker runtime, which expects list of ports (because external executors
     # can provide multiple ports and hosts). However this parser is not compatible with ContainerPod, Pod and worker runtime.
     # Should we add a seperate parser for Pod?
-    args = set_pod_parser().parse_args(
+    args = _generate_args(
             [
                 '--uses',
                 'docker://env-checker',
@@ -55,8 +55,6 @@ def test_container_pod_pass_envs(env_checker_docker_image_built):
                 'key2=value2',
             ]
         )
-
-    args.port = args.port[0]
 
     with ContainerPod(
         args
@@ -105,7 +103,7 @@ def test_container_pod_volume_setting(
 
     default_workspace = __cache_path__
 
-    with ContainerPod(set_pod_parser().parse_args(pod_args)) as pod:
+    with ContainerPod(_generate_args(pod_args)) as pod:
         container = pod._container
         source = container.attrs['Mounts'][0]['Source']
         destination = container.attrs['Mounts'][0]['Destination']
@@ -142,7 +140,7 @@ def fail_start_docker_image_built():
 def test_failing_executor(fail_start_docker_image_built):
     import docker
 
-    args = set_pod_parser().parse_args(
+    args = _generate_args(
         [
             '--uses',
             'docker://fail-start',
@@ -229,7 +227,7 @@ def test_pass_arbitrary_kwargs(monkeypatch, mocker):
             return {}
 
     monkeypatch.setattr(docker, 'from_env', MockClient)
-    args = set_pod_parser().parse_args(
+    args = _generate_args(
         [
             '--uses',
             'docker://jinahub/pod',
@@ -298,3 +296,9 @@ def test_container_pod_with_flow_custom_gateway(
         _validate_dummy_custom_gateway_response(
             flow.port, {'arg1': 'hello', 'arg2': 'world', 'arg3': 'default-arg3'}
         )
+
+def _generate_args(cli_split: list=[]):
+    args = set_pod_parser().parse_args(cli_split)
+    args.port = args.port[0]
+    
+    return args

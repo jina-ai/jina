@@ -532,6 +532,7 @@ def _create_head_pod(
     uses_after=None,
 ):
     args = set_pod_parser().parse_args([])
+    args.host = args.host[0]
     args.port = port
     args.name = name
     args.pod_cls = 'HeadRuntime'

@@ -702,6 +702,7 @@ def _create_head_runtime(
         retries=-1,
 ):
     args = set_pod_parser().parse_args([])
+    args.host = args.host[0]
     args.port = port
     args.name = name
     args.retries = retries

@@ -21,14 +21,14 @@ from jina.types.request.data import DataRequest
 
 
 def test_regular_data_case():
-    args = set_pod_parser().parse_args([])
+    args = _generate_args()
     args.polling = PollingType.ANY
     connection_list_dict = {0: [f'fake_ip:8080']}
     args.connection_list = json.dumps(connection_list_dict)
     cancel_event, handle_queue, runtime_thread = _create_runtime(args)
 
     with grpc.insecure_channel(
-        f'{args.host[0]}:{args.port[0]}',
+        f'{args.host}:{args.port}',
         options=GrpcConnectionPool.get_default_grpc_options(),
     ) as channel:
         stub = jina_pb2_grpc.JinaSingleDataRequestRPCStub(channel)
@@ -45,9 +45,9 @@ def test_regular_data_case():
 @pytest.mark.parametrize('disable_reduce', [False, True])
 def test_message_merging(disable_reduce):
     if not disable_reduce:
-        args = set_pod_parser().parse_args([])
+        args = _generate_args()
     else:
-        args = set_pod_parser().parse_args(['--no-reduce'])
+        args = _generate_args(['--no-reduce'])
     args.polling = PollingType.ALL
     connection_list_dict = {0: [f'ip1:8080'], 1: [f'ip2:8080'], 2: [f'ip3:8080']}
     args.connection_list = json.dumps(connection_list_dict)
@@ -57,7 +57,7 @@ def test_message_merging(disable_reduce):
 
     data_request = _create_test_data_message()
     result = GrpcConnectionPool.send_requests_sync(
-        [data_request, data_request], f'{args.host[0]}:{args.port[0]}'
+        [data_request, data_request], f'{args.host}:{args.port}'
     )
     assert result
     assert _queue_length(handle_queue) == 3
@@ -67,7 +67,7 @@ def test_message_merging(disable_reduce):
 
 
 def test_uses_before_uses_after():
-    args = set_pod_parser().parse_args([])
+    args = _generate_args()
     args.polling = PollingType.ALL
     args.uses_before_address = 'fake_address'
     args.uses_after_address = 'fake_address'
@@ -78,7 +78,7 @@ def test_uses_before_uses_after():
     assert handle_queue.empty()
 
     result = GrpcConnectionPool.send_request_sync(
-        _create_test_data_message(), f'{args.host[0]}:{args.port[0]}'
+        _create_test_data_message(), f'{args.host}:{args.port}'
     )
     assert result
     assert _queue_length(handle_queue) == 5  # uses_before + 3 workers + uses_after
@@ -104,14 +104,14 @@ def test_decompress(monkeypatch):
         decompress,
     )
 
-    args = set_pod_parser().parse_args([])
+    args = _generate_args()
     args.polling = PollingType.ANY
     connection_list_dict = {0: [f'fake_ip:8080']}
     args.connection_list = json.dumps(connection_list_dict)
     cancel_event, handle_queue, runtime_thread = _create_runtime(args)
 
     with grpc.insecure_channel(
-        f'{args.host[0]}:{args.port[0]}',
+        f'{args.host}:{args.port}',
         options=GrpcConnectionPool.get_default_grpc_options(),
     ) as channel:
         stub = jina_pb2_grpc.JinaSingleDataRequestRPCStub(channel)
@@ -129,16 +129,14 @@ def test_decompress(monkeypatch):
 
 @pytest.mark.parametrize('polling', ['any', 'all'])
 def test_dynamic_polling(polling):
-    args = set_pod_parser().parse_args(
-        [
+    args = _generate_args([
             '--polling',
             json.dumps(
                 {'/any': PollingType.ANY, '/all': PollingType.ALL, '*': polling}
             ),
             '--shards',
             str(2),
-        ]
-    )
+        ])
 
     connection_list_dict = {0: [f'fake_ip:8080'], 1: [f'fake_ip:8080']}
     args.connection_list = json.dumps(connection_list_dict)
@@ -146,7 +144,7 @@ def test_dynamic_polling(polling):
     cancel_event, handle_queue, runtime_thread = _create_runtime(args)
 
     with grpc.insecure_channel(
-        f'{args.host[0]}:{args.port[0]}',
+        f'{args.host}:{args.port}',
         options=GrpcConnectionPool.get_default_grpc_options(),
     ) as channel:
         stub = jina_pb2_grpc.JinaSingleDataRequestRPCStub(channel)
@@ -158,7 +156,7 @@ def test_dynamic_polling(polling):
     assert _queue_length(handle_queue) == 2
 
     with grpc.insecure_channel(
-        f'{args.host[0]}:{args.port[0]}',
+        f'{args.host}:{args.port}',
         options=GrpcConnectionPool.get_default_grpc_options(),
     ) as channel:
         stub = jina_pb2_grpc.JinaSingleDataRequestRPCStub(channel)
@@ -174,7 +172,7 @@ def test_dynamic_polling(polling):
 
 @pytest.mark.parametrize('polling', ['any', 'all'])
 def test_base_polling(polling):
-    args = set_pod_parser().parse_args(
+    args = _generate_args(
         [
             '--polling',
             polling,
@@ -187,7 +185,7 @@ def test_base_polling(polling):
     cancel_event, handle_queue, runtime_thread = _create_runtime(args)
 
     with grpc.insecure_channel(
-        f'{args.host[0]}:{args.port[0]}',
+        f'{args.host}:{args.port}',
         options=GrpcConnectionPool.get_default_grpc_options(),
     ) as channel:
         stub = jina_pb2_grpc.JinaSingleDataRequestRPCStub(channel)
@@ -199,7 +197,7 @@ def test_base_polling(polling):
     assert _queue_length(handle_queue) == 2 if polling == 'all' else 1
 
     with grpc.insecure_channel(
-        f'{args.host[0]}:{args.port[0]}',
+        f'{args.host}:{args.port}',
         options=GrpcConnectionPool.get_default_grpc_options(),
     ) as channel:
         stub = jina_pb2_grpc.JinaSingleDataRequestRPCStub(channel)
@@ -215,16 +213,16 @@ def test_base_polling(polling):
 
 @pytest.mark.asyncio
 async def test_head_runtime_reflection():
-    args = set_pod_parser().parse_args([])
+    args = _generate_args()
     cancel_event, handle_queue, runtime_thread = _create_runtime(args)
 
     assert AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
         timeout=3.0,
-        ctrl_address=f'{args.host[0]}:{args.port[0]}',
+        ctrl_address=f'{args.host}:{args.port}',
         ready_or_shutdown_event=multiprocessing.Event(),
     )
 
-    async with grpc.aio.insecure_channel(f'{args.host[0]}:{args.port[0]}') as channel:
+    async with grpc.aio.insecure_channel(f'{args.host}:{args.port}') as channel:
         service_names = await GrpcConnectionPool.get_available_services(channel)
 
     assert all(
@@ -239,14 +237,14 @@ async def test_head_runtime_reflection():
 
 
 def test_timeout_behaviour():
-    args = set_pod_parser().parse_args(['--timeout-send', '100'])
+    args = _generate_args(['--timeout-send', '100'])
     args.polling = PollingType.ANY
     connection_list_dict = {0: [f'fake_ip:8080']}
     args.connection_list = json.dumps(connection_list_dict)
     cancel_event, handle_queue, runtime_thread = _create_runtime(args)
 
     with grpc.insecure_channel(
-        f'{args.host[0]}:{args.port[0]}',
+        f'{args.host}:{args.port}',
         options=GrpcConnectionPool.get_default_grpc_options(),
     ) as channel:
         stub = jina_pb2_grpc.JinaSingleDataRequestRPCStub(channel)
@@ -305,7 +303,7 @@ def _create_runtime(args):
     runtime_thread.start()
     assert AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
         timeout=5.0,
-        ctrl_address=f'{args.host[0]}:{args.port[0]}',
+        ctrl_address=f'{args.host}:{args.port}',
         ready_or_shutdown_event=multiprocessing.Event(),
     )
     return cancel_event, handle_queue, runtime_thread
@@ -314,7 +312,7 @@ def _create_runtime(args):
 def _destroy_runtime(args, cancel_event, runtime_thread):
     cancel_event.set()
     runtime_thread.join()
-    assert not HeadRuntime.is_ready(f'{args.host[0]}:{args.port[0]}')
+    assert not HeadRuntime.is_ready(f'{args.host}:{args.port}')
 
 
 def _queue_length(queue: 'multiprocessing.Queue'):
@@ -340,3 +338,11 @@ def _queue_length_copy(queue: 'multiprocessing.Manager().Queue'):
         c_queue.get()
         length += 1
     return length
+
+
+def _generate_args(cli_split: list=[]):
+    args = set_pod_parser().parse_args(cli_split)
+    args.host = args.host[0]
+    args.port = args.port[0]
+    
+    return args
