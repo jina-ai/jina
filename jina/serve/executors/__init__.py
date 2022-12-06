@@ -687,6 +687,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         uses_with: Optional[Dict] = None,
         uses_metas: Optional[Dict] = None,
         uses_requests: Optional[Dict] = None,
+        reload: Optional[bool] = False,
         stop_event: Optional[Union[threading.Event, multiprocessing.Event]] = None,
         **kwargs,
     ):
@@ -695,6 +696,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         :param uses_with: dictionary of parameters to overwrite from the default config's with field
         :param uses_metas: dictionary of parameters to overwrite from the default config's metas field
         :param uses_requests: dictionary of parameters to overwrite from the default config's requests field
+        :param reload: If set, the Executor reloads the modules as they change
         :param stop_event: a threading event or a multiprocessing event that once set will resume the control Flow
             to main thread.
         :param kwargs: other kwargs accepted by the Flow, full list can be found `here <https://docs.jina.ai/api/jina.orchestrate.flow.base/>`
@@ -707,6 +709,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             uses_with=uses_with,
             uses_metas=uses_metas,
             uses_requests=uses_requests,
+            reload=reload,
         )
         with f:
             f.block(stop_event)
