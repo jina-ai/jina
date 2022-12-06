@@ -104,7 +104,7 @@ class GatewayRuntime(AsyncNewLoopRuntime):
         )
 
         send_telemetry_event(
-            event='start', obj=self.gateway, protocol=self.args.protocol
+            event='start_gateway ', obj=self.gateway, protocol=self.args.protocol
         )
 
         await self.gateway.setup_server()
