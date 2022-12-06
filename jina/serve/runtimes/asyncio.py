@@ -9,7 +9,6 @@ from grpc import RpcError
 
 from jina import __windows__
 from jina.helper import send_telemetry_event
-from jina.importer import ImportExtensions
 from jina.serve.instrumentation import InstrumentationMixin
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.base import BaseRuntime
@@ -44,34 +43,23 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, InstrumentationMixin, AB
         asyncio.set_event_loop(self._loop)
         self.is_cancel = cancel_event or asyncio.Event()
 
-        def _cancel(sig):
-            def _inner_cancel(*args, **kwargs):
-                self.logger.debug(f'Received signal {sig.name}')
+        if not __windows__:
+            def _cancel(sig):
+                def _inner_cancel(*args, **kwargs):
+                    self.logger.debug(f'Received signal {sig.name}')
+                    self.is_cancel.set(),
+
+                return _inner_cancel
+
+            for sig in HANDLED_SIGNALS:
+                self._loop.add_signal_handler(sig, _cancel(sig), sig, None)
+        else:
+            def _cancel(signum, frame):
+                self.logger.debug(f'Received signal {signum}')
                 self.is_cancel.set(),
 
-            return _inner_cancel
-
-        if not __windows__:
-            try:
-                for sig in HANDLED_SIGNALS:
-                    self._loop.add_signal_handler(sig, _cancel(sig), sig, None)
-            except (ValueError, RuntimeError) as exc:
-                self.logger.warning(
-                    f' The runtime {self.__class__.__name__} will not be able to handle termination signals. '
-                    f' {repr(exc)}'
-                )
-        else:
-            with ImportExtensions(
-                    required=True,
-                    logger=self.logger,
-                    help_text='''If you see a 'DLL load failed' error, please reinstall `pywin32`.
-                    If you're using conda, please use the command `conda install -c anaconda pywin32`''',
-            ):
-                import win32api
-
-            win32api.SetConsoleCtrlHandler(
-                lambda *args, **kwargs: self.is_cancel.set(), True
-            )
+            for sig in HANDLED_SIGNALS:
+                signal.signal(sig, _cancel)
 
         self._setup_monitoring()
         self._setup_instrumentation(

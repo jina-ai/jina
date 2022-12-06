@@ -20,12 +20,18 @@ class ProcessedResponseModel(BaseModel):
 
 class DummyFastAPIGateway(FastAPIBaseGateway):
     def __init__(
-        self, arg1: str = None, arg2: str = None, arg3: str = 'default-arg3', **kwargs
+        self,
+        arg1: str = None,
+        arg2: str = None,
+        arg3: str = 'default-arg3',
+        default_health_check: bool = False,
+        **kwargs
     ):
         super().__init__(**kwargs)
         self.arg1 = arg1
         self.arg2 = arg2
         self.arg3 = arg3
+        self.default_health_check = default_health_check
 
     @property
     def app(self):
@@ -35,13 +41,15 @@ class DummyFastAPIGateway(FastAPIBaseGateway):
             title='Dummy Server',
         )
 
-        @app.get(path='/', response_model=DummyResponseModel)
-        def _get_response():
-            return {
-                'arg1': self.arg1,
-                'arg2': self.arg2,
-                'arg3': self.arg3,
-            }
+        if not self.default_health_check:
+
+            @app.get(path='/', response_model=DummyResponseModel)
+            def _get_response():
+                return {
+                    'arg1': self.arg1,
+                    'arg2': self.arg2,
+                    'arg3': self.arg3,
+                }
 
         @app.get(
             path='/stream',
