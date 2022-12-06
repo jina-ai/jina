@@ -111,6 +111,18 @@ class BaseGateway(JAMLCompatible, metaclass=GatewayType):
             aio_tracing_client_interceptors=self.runtime_args.aio_tracing_client_interceptors,
             tracing_client_interceptor=self.runtime_args.tracing_client_interceptor,
         )
+        GatewayStreamer._set_env_streamer_args(
+            graph_representation=graph_description,
+            executor_addresses=deployments_addresses,
+            graph_conditions=graph_conditions,
+            deployments_metadata=deployments_metadata,
+            deployments_no_reduce=deployments_no_reduce,
+            timeout_send=self.runtime_args.timeout_send,
+            retries=self.runtime_args.retries,
+            compression=self.runtime_args.compression,
+            runtime_name=self.runtime_args.runtime_name,
+            prefetch=self.runtime_args.prefetch,
+        )
 
     def _add_runtime_args(self, _runtime_args: Optional[Dict]):
         from jina.parsers import set_gateway_runtime_args_parser

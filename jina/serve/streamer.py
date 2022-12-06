@@ -1,6 +1,9 @@
+import json
+import os
 from typing import TYPE_CHECKING, Dict, List, Optional, Sequence, Union
 
 from docarray import DocumentArray
+
 from jina.logging.logger import JinaLogger
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.gateway.graph.topology_graph import TopologyGraph
@@ -24,22 +27,22 @@ class GatewayStreamer:
     """
 
     def __init__(
-            self,
-            graph_representation: Dict,
-            executor_addresses: Dict[str, Union[str, List[str]]],
-            graph_conditions: Dict = {},
-            deployments_metadata: Dict[str, Dict[str, str]] = {},
-            deployments_no_reduce: List[str] = [],
-            timeout_send: Optional[float] = None,
-            retries: int = 0,
-            compression: Optional[str] = None,
-            runtime_name: str = 'custom gateway',
-            prefetch: int = 0,
-            logger: Optional['JinaLogger'] = None,
-            metrics_registry: Optional['CollectorRegistry'] = None,
-            meter: Optional['Meter'] = None,
-            aio_tracing_client_interceptors: Optional[Sequence['ClientInterceptor']] = None,
-            tracing_client_interceptor: Optional['OpenTelemetryClientInterceptor'] = None,
+        self,
+        graph_representation: Dict,
+        executor_addresses: Dict[str, Union[str, List[str]]],
+        graph_conditions: Dict = {},
+        deployments_metadata: Dict[str, Dict[str, str]] = {},
+        deployments_no_reduce: List[str] = [],
+        timeout_send: Optional[float] = None,
+        retries: int = 0,
+        compression: Optional[str] = None,
+        runtime_name: str = 'custom gateway',
+        prefetch: int = 0,
+        logger: Optional['JinaLogger'] = None,
+        metrics_registry: Optional['CollectorRegistry'] = None,
+        meter: Optional['Meter'] = None,
+        aio_tracing_client_interceptors: Optional[Sequence['ClientInterceptor']] = None,
+        tracing_client_interceptor: Optional['OpenTelemetryClientInterceptor'] = None,
     ):
         """
         :param graph_representation: A dictionary describing the topology of the Deployments. 2 special nodes are expected, the name `start-gateway` and `end-gateway` to
@@ -97,14 +100,14 @@ class GatewayStreamer:
         self._streamer.Call = self._streamer.stream
 
     def _create_connection_pool(
-            self,
-            deployments_addresses,
-            compression,
-            metrics_registry,
-            meter,
-            logger,
-            aio_tracing_client_interceptors,
-            tracing_client_interceptor,
+        self,
+        deployments_addresses,
+        compression,
+        metrics_registry,
+        meter,
+        logger,
+        aio_tracing_client_interceptors,
+        tracing_client_interceptor,
     ):
         # add the connections needed
         connection_pool = GrpcConnectionPool(
@@ -135,14 +138,14 @@ class GatewayStreamer:
         return self._streamer.stream(*args, **kwargs)
 
     async def stream_docs(
-            self,
-            docs: DocumentArray,
-            request_size: int = 100,
-            return_results: bool = False,
-            exec_endpoint: Optional[str] = None,
-            target_executor: Optional[str] = None,
-            parameters: Optional[Dict] = None,
-            results_in_order: bool = False
+        self,
+        docs: DocumentArray,
+        request_size: int = 100,
+        return_results: bool = False,
+        exec_endpoint: Optional[str] = None,
+        target_executor: Optional[str] = None,
+        parameters: Optional[Dict] = None,
+        results_in_order: bool = False,
     ):
         """
         stream documents and stream responses back.
@@ -170,7 +173,9 @@ class GatewayStreamer:
                     req.parameters = parameters
                 yield req
 
-        async for resp in self.stream(request_iterator=_req_generator(), results_in_order=results_in_order):
+        async for resp in self.stream(
+            request_iterator=_req_generator(), results_in_order=results_in_order
+        ):
             if return_results:
                 yield resp
             else:
@@ -184,3 +189,24 @@ class GatewayStreamer:
         await self._connection_pool.close()
 
     Call = stream
+
+    @staticmethod
+    def get_streamer():
+        """
+        Return a streamer object based on the current environment context.
+        The streamer object is contructed using runtime arguments stored in the `JINA_STREAMER_ARGS` environment variable.
+        If this method is used outside a Jina context (process not controlled/orchestrated by jina), this method will
+        raise an error.
+        The streamer object does not have tracing/instrumentation capabilities.
+
+        :return: Returns an instance of `GatewayStreamer`
+        """
+        if 'JINA_STREAMER_ARGS' in os.environ:
+            args_dict = json.loads(os.environ['JINA_STREAMER_ARGS'])
+            return GatewayStreamer(**args_dict)
+        else:
+            raise OSError('JINA_STREAMER_ARGS environment variable is not set')
+
+    @staticmethod
+    def _set_env_streamer_args(**kwargs):
+        os.environ['JINA_STREAMER_ARGS'] = json.dumps(kwargs)
