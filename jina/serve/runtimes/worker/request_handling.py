@@ -1,3 +1,4 @@
+import asyncio
 from typing import TYPE_CHECKING, Dict, List, Optional, Tuple
 
 from docarray import DocumentArray
@@ -67,6 +68,16 @@ class WorkerRequestHandler:
         self._batchqueue_instances: Dict[
             str, Dict[str, BatchQueue]
         ] = self._init_batchqueue_dict()
+
+    def _all_batch_queues(self) -> List[BatchQueue]:
+        """Returns a list of all batch queue instances
+        :return: List of all batch queues for this request handler
+        """
+        return [
+            batch_queue
+            for param_to_queue in self._batchqueue_instances.values()
+            for batch_queue in param_to_queue.values()
+        ]
 
     def _init_batchqueue_dict(self) -> Dict[str, Dict[str, BatchQueue]]:
         """Determines how endpoints and method names map to batch queues, without instantiating them.
@@ -452,9 +463,10 @@ class WorkerRequestHandler:
                     requests[0].routes.append(route)
                     existing_executor_routes.append(route.executor)
 
-    def close(self):
-        """Close the data request handler, by closing the executor"""
+    async def close(self):
+        """Close the data request handler, by closing the executor and the batch queues."""
         if not self._is_closed:
+            await asyncio.gather(*[q.close() for q in self._all_batch_queues()])
             self._executor.close()
             self._is_closed = True
 

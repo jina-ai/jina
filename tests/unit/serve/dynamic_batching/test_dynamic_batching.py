@@ -1,3 +1,4 @@
+import multiprocessing
 import multiprocessing as mp
 import time
 from collections import namedtuple
@@ -13,6 +14,10 @@ from jina import (
     dynamic_batching,
     requests,
 )
+from jina.parsers import set_gateway_parser, set_pod_parser
+from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
+from jina.serve.runtimes.gateway import GatewayRuntime
+from jina.serve.runtimes.worker import WorkerRuntime
 
 TIMEOUT_TOLERANCE = 1
 FOO_SUCCESS_MSG = 'Done through foo'
@@ -50,6 +55,12 @@ class PlaceholderExecutor(Executor):
 
     @requests(on=['/param'])
     @dynamic_batching(preferred_batch_size=4, timeout=2000)
+    def param_fun(self, docs, parameters, **kwargs):
+        for doc in docs:
+            doc.text += str(parameters)
+
+    @requests(on=['/long_timeout'])
+    @dynamic_batching(preferred_batch_size=100, timeout=20000000)
     def param_fun(self, docs, parameters, **kwargs):
         for doc in docs:
             doc.text += str(parameters)
@@ -343,3 +354,130 @@ def test_specific_endpoint_batching():
         f.post('/baz', inputs=DocumentArray.empty(2))
         time_taken = time.time() - start_time
         assert time_taken < TIMEOUT_TOLERANCE, 'Timeout ended too slowly'
+
+
+################
+# Helper stuff to build our own Flow in the next test
+################
+
+
+def _create_worker_runtime(port, name='', executor=None):
+    args = set_pod_parser().parse_args([])
+    args.port = port
+    args.uses = 'PlaceholderExecutor'
+    args.name = name
+    if executor:
+        args.uses = executor
+    with WorkerRuntime(args) as runtime:
+        runtime.run_forever()
+
+
+def _create_gateway_runtime(
+    graph_description, pod_addresses, port, protocol='grpc', retries=-1
+):
+    with GatewayRuntime(
+        set_gateway_parser().parse_args(
+            [
+                '--graph-description',
+                graph_description,
+                '--deployments-addresses',
+                pod_addresses,
+                '--port',
+                str(port),
+                '--retries',
+                str(retries),
+                '--protocol',
+                protocol,
+            ]
+        )
+    ) as runtime:
+        runtime.run_forever()
+
+
+def _create_worker(port):
+    # create a single worker runtime
+    p = multiprocessing.Process(target=_create_worker_runtime, args=(port,))
+    p.start()
+    time.sleep(0.1)
+    return p
+
+
+def _create_gateway(port, graph, pod_addr, protocol, retries=-1):
+    # create a single worker runtime
+    # create a single gateway runtime
+    p = multiprocessing.Process(
+        target=_create_gateway_runtime,
+        args=(graph, pod_addr, port, protocol, retries),
+    )
+    p.start()
+    time.sleep(0.1)
+    return p
+
+
+def _send_request(gateway_port, num_docs, endpoint):
+    """send request to gateway and see what happens"""
+    c = Client(host='localhost', port=gateway_port, protocol='grpc')
+    res = c.post(endpoint, inputs=DocumentArray.empty(num_docs))
+    return res
+
+
+def _assert_all_docs_processed(gateway_port, num_docs, endpoint):
+    res = _send_request(gateway_port, num_docs, endpoint)
+    assert len(res) == num_docs
+
+
+################
+# Helper stuff end
+################
+
+
+def test_sigterm_handling(port_generator):
+    try:
+        # setup flow by had
+        worker_port = port_generator()
+        gateway_port = port_generator()
+        graph_description = '{"start-gateway": ["pod0"], "pod0": ["end-gateway"]}'
+        pod_addresses = f'{{"pod0": ["0.0.0.0:{worker_port}"]}}'
+
+        worker_process = _create_worker(worker_port)
+        time.sleep(0.1)
+        AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+            timeout=5.0,
+            ctrl_address=f'0.0.0.0:{worker_port}',
+            ready_or_shutdown_event=multiprocessing.Event(),
+        )
+
+        gateway_process = _create_gateway(
+            gateway_port,
+            graph_description,
+            pod_addresses,
+            'grpc',
+        )
+        AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+            timeout=5.0,
+            ctrl_address=f'0.0.0.0:{gateway_port}',
+            ready_or_shutdown_event=multiprocessing.Event(),
+        )
+
+        # send request with only 2 docs, not enough to trigger flushing
+        # doing this in a new process bc of some pytest vs gRPC weirdness
+        assert_all_docs_process = multiprocessing.Process(
+            target=_assert_all_docs_processed, args=(gateway_port, 2, '/long_timeout')
+        )
+        assert_all_docs_process.start()
+        time.sleep(0.5)
+        # send sigterm signal to worker process. This should trigger flushing
+        worker_process.terminate()
+        worker_process.join()
+        # now check that all docs were processed
+        assert (
+            assert_all_docs_process.exitcode == 0
+        )  # no error -> test in the process passed
+    finally:
+        # cleanup
+        worker_process.kill()
+        worker_process.join()
+        gateway_process.kill()
+        gateway_process.join()
+        assert_all_docs_process.kill()
+        assert_all_docs_process.join()

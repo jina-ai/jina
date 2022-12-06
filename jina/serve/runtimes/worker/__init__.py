@@ -34,6 +34,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         :param args: args from CLI
         :param kwargs: keyword args
         """
+        self._reject_incoming_requests = False
         self._hot_reload_task = None
         self._health_servicer = health.aio.HealthServicer()
         super().__init__(args, **kwargs)
@@ -110,6 +111,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
             deployment_name=self.name.split('/')[0],
         )
         await self._async_setup_grpc_server()
+        self._reject_incoming_requests = False
 
     async def _async_setup_grpc_server(self):
         """
@@ -192,8 +194,11 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
     async def async_cancel(self):
         """Stop the GRPC server"""
         self.logger.debug('cancel WorkerRuntime')
+        self._reject_incoming_requests = True
         if self._hot_reload_task is not None:
             self._hot_reload_task.cancel()
+        await self._request_handler.close()  # allow pending requests to be processed
+        self.logger.debug('closing the server')
         # 0.5 gives the runtime some time to complete outstanding responses
         # this should be handled better, 1.0 is a rather random number
         await self._health_servicer.enter_graceful_shutdown()
@@ -204,7 +209,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         """Close the data request handler"""
         self.logger.debug('tearing down WorkerRuntime')
         await self.async_cancel()
-        self._request_handler.close()
+        await self._request_handler.close()
 
     async def process_single_data(self, request: DataRequest, context) -> DataRequest:
         """
@@ -224,6 +229,11 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         :param context: grpc context
         :returns: the response request
         """
+        if self._reject_incoming_requests:
+            self.logger.debug('Rejecting endpoint discovery because shutting down')
+            context.set_code(grpc.StatusCode.UNAVAILABLE)
+            context.set_details('Executor is currently shutting down')
+            return jina_pb2.EndpointsProto()
         self.logger.debug('got an endpoint discovery request')
         endpoints_proto = jina_pb2.EndpointsProto()
         endpoints_proto.endpoints.extend(
@@ -250,6 +260,11 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         :param context: grpc context
         :returns: the response request
         """
+        if self._reject_incoming_requests:
+            self.logger.debug('Rejecting data request because shutting down')
+            context.set_code(grpc.StatusCode.UNAVAILABLE)
+            context.set_details('Executor is currently shutting down')
+            return requests[0]
 
         with MetricsTimer(
             self._summary, self._receiving_request_seconds, self._metric_attributes
@@ -306,6 +321,12 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         :param context: grpc context
         :returns: the response request
         """
+        if self._reject_incoming_requests:
+            self.logger.debug('Rejecting status request because shutting down')
+            context.set_code(grpc.StatusCode.UNAVAILABLE)
+            context.set_details('Executor is currently shutting down')
+            return jina_pb2.JinaInfoProto()
+
         info_proto = jina_pb2.JinaInfoProto()
         version, env_info = get_full_version()
         for k, v in version.items():

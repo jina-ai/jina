@@ -32,6 +32,7 @@ class BatchQueue:
     ) -> None:
         if params is None:
             params = dict()
+        self._is_closed = False
         self._executor: BaseExecutor = executor
         self._exec_endpoint: str = exec_endpoint
         self.args = args
@@ -65,9 +66,18 @@ class BatchQueue:
         self._request_lens: List[int] = []
         self._big_doc: DocumentArray = DocumentArray.empty()
 
-        self._flush_trigger: Event = Event()
+        self._flush_trigger: Event = (
+            Event()
+        )  # this is for "normal" flushing (batch size or timeout reached)
+        self._flush_forced_event: Event = Event()  # this is for cases like SIGTERM
         self._flush_task: Task = asyncio.create_task(
-            self.await_then_flush(self._flush_trigger)
+            asyncio.wait(
+                [
+                    self.await_then_flush(self._flush_trigger),
+                    self._flush_forced_event.wait(),
+                ],
+                return_when=asyncio.FIRST_COMPLETED,
+            )
         )
         self._timer_started: bool = False
 
@@ -170,3 +180,11 @@ class BatchQueue:
                     self._big_doc[left:right], ndarray_type=self.args.output_array_type
                 )
             consumed_count += request_len
+
+    async def close(self):
+        """Closes the batch queue by flushing pending requests."""
+        if not self._is_closed:
+            self._flush_trigger.set()
+            await self.await_then_flush(self._flush_trigger)
+            self._flush_forced_event.set()
+            self._is_closed = True
