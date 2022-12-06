@@ -1655,7 +1655,7 @@ def is_port_free(host: Union[str, List[str]], port: Union[int, List[int]]) -> bo
         else:
             return all([_single_port_free(_h, port) for _h in host])
 
-
+# TODO check if not needed
 def _parse_ports(port: Union[str, List[str]]) -> Union[int, List[int]]:
     """Parse port
 
@@ -1685,7 +1685,7 @@ def _parse_ports(port: Union[str, List[str]]) -> Union[int, List[int]]:
             port = int(port)
     return port
 
-
+# TODO check if not needed
 def _parse_hosts(host: Union[str, List[str]]) -> Union[str, List[str]]:
     """Parse port
 
