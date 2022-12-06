@@ -138,8 +138,8 @@ class BasePod(ABC):
 
     def _get_control_address(self):
         if self.args.pod_role == PodRoleType.GATEWAY:
-            return f'{self.args.host}:{self.args.port}'
-        return f'{self.args.host}:{self.args.port}'
+            return f'{self.args.host}:{self.args.port[0]}'
+        return f'{self.args.host}:{self.args.port}' #TODO here!!!! with test_failing_head
 
     def close(self) -> None:
         """Close the Pod
