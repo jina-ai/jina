@@ -40,11 +40,11 @@ def test_worker_runtime():
 
     assert AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
         timeout=5.0,
-        ctrl_address=f'{args.host}:{args.port}',
+        ctrl_address=f'{args.host[0]}:{args.port[0]}',
         ready_or_shutdown_event=Event(),
     )
 
-    target = f'{args.host}:{args.port}'
+    target = f'{args.host[0]}:{args.port[0]}'
     with grpc.insecure_channel(
         target,
         options=GrpcConnectionPool.get_default_grpc_options(),
@@ -57,7 +57,7 @@ def test_worker_runtime():
 
     assert response
 
-    assert not AsyncNewLoopRuntime.is_ready(f'{args.host}:{args.port}')
+    assert not AsyncNewLoopRuntime.is_ready(f'{args.host[0]}:{args.port[0]}')
 
 
 class AsyncSlowNewDocsExecutor(Executor):
@@ -110,11 +110,11 @@ async def test_worker_runtime_slow_async_exec(uses):
 
     assert AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
         timeout=5.0,
-        ctrl_address=f'{args.host}:{args.port}',
+        ctrl_address=f'{args.host[0]}:{args.port[0]}',
         ready_or_shutdown_event=Event(),
     )
 
-    target = f'{args.host}:{args.port}'
+    target = f'{args.host[0]}:{args.port[0]}'
     results = []
     async with grpc.aio.insecure_channel(
         target,
@@ -140,7 +140,7 @@ async def test_worker_runtime_slow_async_exec(uses):
     else:
         assert results == ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
 
-    assert not AsyncNewLoopRuntime.is_ready(f'{args.host}:{args.port}')
+    assert not AsyncNewLoopRuntime.is_ready(f'{args.host[0]}:{args.port[0]}')
 
 
 @pytest.mark.slow
@@ -168,11 +168,11 @@ def test_error_in_worker_runtime(monkeypatch):
 
     assert AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
         timeout=5.0,
-        ctrl_address=f'{args.host}:{args.port}',
+        ctrl_address=f'{args.host[0]}:{args.port[0]}',
         ready_or_shutdown_event=Event(),
     )
 
-    target = f'{args.host}:{args.port}'
+    target = f'{args.host[0]}:{args.port[0]}'
     with grpc.insecure_channel(
         target,
         options=GrpcConnectionPool.get_default_grpc_options(),
@@ -187,7 +187,7 @@ def test_error_in_worker_runtime(monkeypatch):
 
     assert response
 
-    assert not AsyncNewLoopRuntime.is_ready(f'{args.host}:{args.port}')
+    assert not AsyncNewLoopRuntime.is_ready(f'{args.host[0]}:{args.port[0]}')
 
 
 class SlowInitExecutor(Executor):
@@ -229,7 +229,7 @@ async def test_worker_runtime_slow_init_exec():
         connected = False
         while not connected:
             try:
-                s.connect((args.host, args.port))
+                s.connect((args.host[0], args.port[0]))
                 connected = True
             except:
                 time.sleep(0.2)
@@ -239,12 +239,12 @@ async def test_worker_runtime_slow_init_exec():
 
     assert AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
         timeout=3.0,
-        ctrl_address=f'{args.host}:{args.port}',
+        ctrl_address=f'{args.host[0]}:{args.port[0]}',
         ready_or_shutdown_event=Event(),
     )
 
     result = await GrpcConnectionPool.send_request_async(
-        _create_test_data_message(), f'{args.host}:{args.port}', timeout=1.0
+        _create_test_data_message(), f'{args.host[0]}:{args.port[0]}', timeout=1.0
     )
 
     assert len(result.docs) == 1
@@ -252,7 +252,7 @@ async def test_worker_runtime_slow_init_exec():
     cancel_event.set()
     runtime_thread.join()
 
-    assert not AsyncNewLoopRuntime.is_ready(f'{args.host}:{args.port}')
+    assert not AsyncNewLoopRuntime.is_ready(f'{args.host[0]}:{args.port[0]}')
 
 
 @pytest.mark.asyncio
@@ -274,11 +274,11 @@ async def test_worker_runtime_reflection():
 
     assert AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
         timeout=3.0,
-        ctrl_address=f'{args.host}:{args.port}',
+        ctrl_address=f'{args.host[0]}:{args.port[0]}',
         ready_or_shutdown_event=Event(),
     )
 
-    async with grpc.aio.insecure_channel(f'{args.host}:{args.port}') as channel:
+    async with grpc.aio.insecure_channel(f'{args.host[0]}:{args.port[0]}') as channel:
         service_names = await GrpcConnectionPool.get_available_services(channel)
     assert all(
         service_name in service_names
@@ -291,7 +291,7 @@ async def test_worker_runtime_reflection():
     cancel_event.set()
     runtime_thread.join()
 
-    assert not AsyncNewLoopRuntime.is_ready(f'{args.host}:{args.port}')
+    assert not AsyncNewLoopRuntime.is_ready(f'{args.host[0]}:{args.port[0]}')
 
 
 def _create_test_data_message(counter=0):
@@ -339,18 +339,18 @@ async def test_decorator_monitoring(port_generator):
 
     assert AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
         timeout=5.0,
-        ctrl_address=f'{args.host}:{args.port}',
+        ctrl_address=f'{args.host[0]}:{args.port[0]}',
         ready_or_shutdown_event=Event(),
     )
 
     assert AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
         timeout=5.0,
-        ctrl_address=f'{args.host}:{args.port}',
+        ctrl_address=f'{args.host[0]}:{args.port[0]}',
         ready_or_shutdown_event=Event(),
     )
 
     await GrpcConnectionPool.send_request_async(
-        _create_test_data_message(), f'{args.host}:{args.port}', timeout=1.0
+        _create_test_data_message(), f'{args.host[0]}:{args.port[0]}', timeout=1.0
     )
 
     resp = req.get(f'http://localhost:{port}/')
@@ -359,7 +359,7 @@ async def test_decorator_monitoring(port_generator):
     cancel_event.set()
     runtime_thread.join()
 
-    assert not AsyncNewLoopRuntime.is_ready(f'{args.host}:{args.port}')
+    assert not AsyncNewLoopRuntime.is_ready(f'{args.host[0]}:{args.port[0]}')
 
 
 @pytest.mark.asyncio
@@ -387,10 +387,9 @@ async def test_decorator_monitoring(port_generator):
         def process_2(self, docs):
             ...
 
-    port1 = port_generator()
-    port2 = port_generator()
+    port = port_generator()
     args = set_pod_parser().parse_args(
-        ['--monitoring', '--port-monitoring', str(port1), str(port2), '--uses', 'DummyExecutor']
+        ['--monitoring', '--port-monitoring', str(port), '--uses', 'DummyExecutor']
     )
 
     cancel_event = multiprocessing.Event()
@@ -408,18 +407,18 @@ async def test_decorator_monitoring(port_generator):
 
     assert AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
         timeout=5.0,
-        ctrl_address=f'{args.host}:{args.port}',
+        ctrl_address=f'{args.host[0]}:{args.port[0]}',
         ready_or_shutdown_event=Event(),
     )
 
     assert AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
         timeout=5.0,
-        ctrl_address=f'{args.host}:{args.port}',
+        ctrl_address=f'{args.host[0]}:{args.port[0]}',
         ready_or_shutdown_event=Event(),
     )
 
     await GrpcConnectionPool.send_request_async(
-        _create_test_data_message(), f'{args.host}:{args.port}', timeout=1.0
+        _create_test_data_message(), f'{args.host[0]}:{args.port[0]}', timeout=1.0
     )
 
     resp = req.get(f'http://localhost:{port}/')
@@ -428,7 +427,7 @@ async def test_decorator_monitoring(port_generator):
     cancel_event.set()
     runtime_thread.join()
 
-    assert not AsyncNewLoopRuntime.is_ready(f'{args.host}:{args.port}')
+    assert not AsyncNewLoopRuntime.is_ready(f'{args.host[0]}:{args.port[0]}')
 
 
 @pytest.mark.slow
@@ -456,11 +455,11 @@ async def test_error_in_worker_runtime_with_exit_on_exceptions(monkeypatch):
 
     assert AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
         timeout=5.0,
-        ctrl_address=f'{args.host}:{args.port}',
+        ctrl_address=f'{args.host[0]}:{args.port[0]}',
         ready_or_shutdown_event=Event(),
     )
 
-    target = f'{args.host}:{args.port}'
+    target = f'{args.host[0]}:{args.port[0]}'
     response = await GrpcConnectionPool.send_request_async(
         _create_test_data_message(), target
     )
