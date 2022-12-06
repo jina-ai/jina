@@ -42,8 +42,10 @@ def dummy_exec_docker_image_built():
 def test_container_pod_pass_envs(env_checker_docker_image_built):
     import docker
 
-    with ContainerPod(
-        set_pod_parser().parse_args(
+    # set_pod_parser returns a parser for worker runtime, which expects list of ports (because external executors
+    # can provide multiple ports and hosts). However this parser is not compatible with ContainerPod, Pod and worker runtime.
+    # Should we add a seperate parser for Pod?
+    args = set_pod_parser().parse_args(
             [
                 '--uses',
                 'docker://env-checker',
@@ -53,6 +55,11 @@ def test_container_pod_pass_envs(env_checker_docker_image_built):
                 'key2=value2',
             ]
         )
+
+    args.port = args.port[0]
+
+    with ContainerPod(
+        args
     ) as pod:
         container = pod._container
         status = container.status
