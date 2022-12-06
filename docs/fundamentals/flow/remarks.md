@@ -132,20 +132,6 @@ Few cases require to use `spawn` start method for multiprocessing.
     Inline functions, such as nested or lambda functions are not picklable. Use `functools.partial` instead.
 
 
-## Multiprocessing Fork in MacOS
-
-Apple has changed the rules for using Objective-C between `fork()` and `exec()` since macOS 10.13.
-This may break some codes that use `fork()` in MacOS.
-For example, the Flow may not be able to start properly with error messages similar to:
-
-```bash
-objc[20337]: +[__NSCFConstantString initialize] may have been in progress in another thread when fork() was called.
-objc[20337]: +[__NSCFConstantString initialize] may have been in progress in another thread when fork() was called. We cannot safely call it or ignore it in the fork() child process. Crashing instead. Set a breakpoint on objc_initializeAfterForkError to debug.```
-```
-
-You can define the environment variable `OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES` to get around this issue.
-Read [here](http://sealiesoftware.com/blog/archive/2017/6/5/Objective-C_and_fork_in_macOS_1013.html) for more details.
-
 
 ## Debugging Executor in a Flow
 
