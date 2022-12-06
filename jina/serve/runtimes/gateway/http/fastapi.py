@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING, Optional
 
 from jina.importer import ImportExtensions
 from jina.serve.gateway import BaseGateway
-from jina.serve.runtimes.gateway.http.models import JinaHealthModel
 
 if TYPE_CHECKING:
     from fastapi import FastAPI
@@ -132,6 +131,7 @@ def _install_health_check(app: 'FastAPI', logger):
             )
 
     if not health_check_exists:
+        from jina.serve.runtimes.gateway.http.models import JinaHealthModel
 
         @app.get(
             path='/',
