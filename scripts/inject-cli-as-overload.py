@@ -345,14 +345,6 @@ implementation_stub_entries = [
         class_method=False,
         overload_tags=['client'],
     ),
-    dict(
-        doc_str_return='None',
-        return_type="None",
-        filepath='../jina/serve/executors/__init__.py',
-        overload_fn='Client',
-        class_method=False,
-        overload_tags=['client'],
-    ),
 ]
 
 
