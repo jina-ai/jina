@@ -100,6 +100,20 @@ def mixin_pod_parser(parser, pod_type: str = 'worker'):
         help='If set, the current Pod/Deployment can not be further chained, '
         'and the next `.add()` will chain after the last Pod/Deployment not this current one.',
     )
+    if pod_type != 'gateway':
+        gp.add_argument(
+            '--restart',
+            action='store_true',
+            default=False,
+            help='If set, the Executor will restart while serving if the YAML configuration source is changed. This differs from `reload` argument in that this will restart the server and more configuration can be changed, like number of replicas.'
+        )
+    else:
+        gp.add_argument(
+            '--restart',
+            action='store_true',
+            default=False,
+            help='If set, the Gateway will restart while serving if the YAML configuration source is changed.'
+        )
     mixin_pod_runtime_args_parser(gp, pod_type=pod_type)
 
 
