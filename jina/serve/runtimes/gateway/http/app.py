@@ -93,21 +93,6 @@ def get_fastapi_app(
             }
         )
 
-        from jina.serve.runtimes.gateway.http.models import JinaHealthModel
-
-        @app.get(
-            path='/',
-            summary='Get the health of Jina Gateway service',
-            response_model=JinaHealthModel,
-        )
-        async def _gateway_health():
-            """
-            Get the health of this Gateway service.
-            .. # noqa: DAR201
-
-            """
-            return {}
-
         from docarray import DocumentArray
 
         from jina.proto import jina_pb2
@@ -387,8 +372,8 @@ def get_fastapi_app(
         :param request_iterator: request iterator, with length of 1
         :return: the first result from the request iterator
         """
-        async for k in streamer.stream(request_iterator=request_iterator):
-            request_dict = k.to_dict()
-            return request_dict
+        async for result in streamer.stream(request_iterator=request_iterator):
+            result_dict = result.to_dict()
+            return result_dict
 
     return app
