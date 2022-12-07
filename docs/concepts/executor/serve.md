@@ -224,12 +224,12 @@ print(c.post(on='/', inputs=DocumentArray.empty(1))[0].text)
 
 
 (restart-executor)=
-## Restart Executor in the Flow
+## Automatic restart Executor in the Flow
 
 Sometimes, you don't just want to change the Python files where the Executor logic is implemented, but you also want to change the Executor's YAML configuration.
 For this you can use the `restart` argument for the Executor in the Flow. When `restart` is set, the Executor deployment automatically restarts whenever a change in its YAML configuration file is detected.
 
-Compared to {ref}`reload <reload-executor>`, where the Executor server is restarted with the new configuration YAML, in this case you can change the exact Executor class being used which is not possible with the {ref}`reload <reload-executor>` option.
+Compared to {ref}`reload <reload-executor>`, where the Executor class is reloaded with the new Python files, in this case you can change the exact Executor class being used which is not possible with the {ref}`reload <reload-executor>` option.
 
 ````{admonition} Caution
 :class: caution
