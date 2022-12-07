@@ -21,15 +21,15 @@ class AioHttpClientlet(ABC):
     """aiohttp session manager"""
 
     def __init__(
-            self,
-            url: str,
-            logger: 'JinaLogger',
-            max_attempts: int = 1,
-            initial_backoff: float = 0.5,
-            max_backoff: float = 0.1,
-            backoff_multiplier: float = 1.5,
-            tracer_provider: Optional['trace.TraceProvider'] = None,
-            **kwargs,
+        self,
+        url: str,
+        logger: 'JinaLogger',
+        max_attempts: int = 1,
+        initial_backoff: float = 0.5,
+        max_backoff: float = 0.1,
+        backoff_multiplier: float = 1.5,
+        tracer_provider: Optional['trace.TraceProvider'] = None,
+        **kwargs,
     ) -> None:
         """HTTP Client to be used with the streamer
 
@@ -155,7 +155,9 @@ class HTTPClientlet(AioHttpClientlet):
         :param kwargs: keyword arguments to make sure compatible API with other clients
         :return: send get message
         """
-        return await self.session.get(url=self.url, timeout=kwargs.get('timeout', None)).__aenter__()
+        return await self.session.get(
+            url=self.url, timeout=kwargs.get('timeout', None)
+        ).__aenter__()
 
     async def recv_message(self):
         """Receive message for HTTP (sleep)

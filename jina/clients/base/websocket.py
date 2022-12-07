@@ -77,17 +77,17 @@ class WebSocketBaseClient(BaseClient):
             return False
 
     async def _get_results(
-            self,
-            inputs: 'InputType',
-            on_done: 'CallbackFnType',
-            on_error: Optional['CallbackFnType'] = None,
-            on_always: Optional['CallbackFnType'] = None,
-            max_attempts: int = 1,
-            initial_backoff: float = 0.5,
-            max_backoff: float = 0.1,
-            backoff_multiplier: float = 1.5,
-            results_in_order: bool = False,
-            **kwargs,
+        self,
+        inputs: 'InputType',
+        on_done: 'CallbackFnType',
+        on_error: Optional['CallbackFnType'] = None,
+        on_always: Optional['CallbackFnType'] = None,
+        max_attempts: int = 1,
+        initial_backoff: float = 0.5,
+        max_backoff: float = 0.1,
+        backoff_multiplier: float = 1.5,
+        results_in_order: bool = False,
+        **kwargs,
     ):
         """
         :param inputs: the callable
@@ -164,7 +164,7 @@ class WebSocketBaseClient(BaseClient):
                 asyncio.create_task(iolet.send_eoi())
 
             def _request_handler(
-                    request: 'Request',
+                request: 'Request',
             ) -> 'Tuple[asyncio.Future, Optional[asyncio.Future]]':
                 """
                 For each request in the iterator, we send the `Message` using `iolet.send_message()`.
@@ -196,8 +196,9 @@ class WebSocketBaseClient(BaseClient):
             if receive_task.done():
                 raise RuntimeError('receive task not running, can not send messages')
             try:
-                async for response in streamer.stream(request_iterator=request_iterator,
-                                                      results_in_order=results_in_order):
+                async for response in streamer.stream(
+                    request_iterator=request_iterator, results_in_order=results_in_order
+                ):
                     callback_exec(
                         response=response,
                         on_error=on_error,

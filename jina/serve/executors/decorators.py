@@ -44,9 +44,9 @@ def avoid_concurrent_lock_cls(cls):
 
             if self.__class__ == cls:
                 with ImportExtensions(
-                        required=False,
-                        help_text=f'FileLock is needed to guarantee non-concurrent initialization of replicas in the '
-                                  f'same machine.',
+                    required=False,
+                    help_text=f'FileLock is needed to guarantee non-concurrent initialization of replicas in the '
+                    f'same machine.',
                 ):
                     import filelock
 
@@ -93,7 +93,8 @@ def _init_requests_by_class(cls):
 
 
 def requests(
-        func: Optional[Callable[
+    func: Optional[
+        Callable[
             [
                 'DocumentArray',
                 Dict,
@@ -102,9 +103,10 @@ def requests(
                 List['DocumentArray'],
             ],
             Optional[Union['DocumentArray', Dict]],
-        ]] = None,
-        *,
-        on: Optional[Union[str, Sequence[str]]] = None,
+        ]
+    ] = None,
+    *,
+    on: Optional[Union[str, Sequence[str]]] = None,
 ):
     """
     `@requests` defines the endpoints of an Executor. It has a keyword `on=` to define the endpoint.
@@ -158,7 +160,7 @@ def requests(
         def __init__(self, fn):
             arg_spec = inspect.getfullargspec(fn)
             if not arg_spec.varkw and not __args_executor_func__.issubset(
-                    arg_spec.args
+                arg_spec.args
             ):
                 raise TypeError(
                     f'{fn} accepts only {arg_spec.args} which is fewer than expected, '
@@ -166,9 +168,10 @@ def requests(
                 )
 
             if iscoroutinefunction(fn):
+
                 @functools.wraps(fn)
                 async def arg_wrapper(
-                        executor_instance, *args, **kwargs
+                    executor_instance, *args, **kwargs
                 ):  # we need to get the summary from the executor, so we need to access the self
                     return await fn(executor_instance, *args, **kwargs)
 
@@ -177,7 +180,7 @@ def requests(
 
                 @functools.wraps(fn)
                 def arg_wrapper(
-                        executor_instance, *args, **kwargs
+                    executor_instance, *args, **kwargs
                 ):  # we need to get the summary from the executor, so we need to access the self
                     return fn(executor_instance, *args, **kwargs)
 
@@ -190,7 +193,9 @@ def requests(
                 for o in on:
                     owner.requests_by_class[owner.__name__][o] = self.fn
             else:
-                owner.requests_by_class[owner.__name__][on or __default_endpoint__] = self.fn
+                owner.requests_by_class[owner.__name__][
+                    on or __default_endpoint__
+                ] = self.fn
 
             setattr(owner, name, self.fn)
 
@@ -201,9 +206,9 @@ def requests(
 
 
 def monitor(
-        *,
-        name: Optional[str] = None,
-        documentation: Optional[str] = None,
+    *,
+    name: Optional[str] = None,
+    documentation: Optional[str] = None,
 ):
     """
     Decorator and context manager that allows monitoring of an Executor.

@@ -8,7 +8,7 @@ DEPRECATED_ARGS_MAPPING = {
     'host_in': 'host',
     'https': 'tls',
     'disable_reduce': 'no_reduce',
-    'deployments_disable_reduce': 'deployments_no_reduce'
+    'deployments_disable_reduce': 'deployments_no_reduce',
 }
 
 

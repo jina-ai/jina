@@ -3,7 +3,7 @@ ARG PIP_TAG
 
 FROM python:${PY_VERSION}-slim
 
-RUN apt-get update && apt-get install --no-install-recommends -y gcc libc6-dev net-tools procps htop lsof
+RUN apt-get update && apt-get install --no-install-recommends -y gcc libc6-dev net-tools procps htop lsof dnsutils
 
 COPY . /jina/
 
