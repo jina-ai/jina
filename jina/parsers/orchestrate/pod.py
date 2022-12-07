@@ -159,7 +159,7 @@ def mixin_pod_runtime_args_parser(arg_group, pod_type='worker'):
         '--port-monitoring',
         type=str,
         nargs='+',
-        default=[str(64734)],
+        default=[helper.random_port()],
         action=CastToIntAction,
         dest='port_monitoring',
         help=f'The port on which the prometheus server is exposed, default is a random port between [49152, 65535]',
