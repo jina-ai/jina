@@ -174,6 +174,7 @@ class TopologyGraph:
                             raise result
                         else:
                             resp, metadata = result
+
                         if WorkerRequestHandler._KEY_RESULT in resp.parameters:
                             # Accumulate results from each Node and then add them to the original
                             self.result_in_params_returned = resp.parameters[
