@@ -195,7 +195,7 @@ For this you can use the Flow's `restart` argument to restart the Flow with the 
 
 ````{admonition} Caution
 :class: caution
-This feature is thought to let the developer iterate faster while developing but is not intended to be used in production environment.
+This feature aims to let developers iterate faster while developing, but is not intended for production use.
 ````
 
 ````{admonition} Note
@@ -203,7 +203,7 @@ This feature is thought to let the developer iterate faster while developing but
 This feature requires watchfiles>=0.18 package to be installed.
 ````
 
-To see how this would work, let's have a Flow defined in a file `flow.yml` with restart option.
+To see how this works, let's define a Flow in `flow.yml` with a restart option.
 ```yaml
 jtype: Flow
 with:
