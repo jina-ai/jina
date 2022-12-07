@@ -2,13 +2,14 @@ import os
 import time
 
 import pytest
-
 from jina import Flow, __cache_path__
 from jina.excepts import RuntimeFailToStart
 from jina.helper import random_port
 from jina.orchestrate.pods.container import ContainerPod
-from jina.parsers import set_gateway_parser, set_pod_parser
-from tests.helper import _validate_dummy_custom_gateway_response
+from jina.parsers import set_gateway_parser
+
+from tests.helper import (_generate_args,
+                          _validate_dummy_custom_gateway_response)
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -42,9 +43,6 @@ def dummy_exec_docker_image_built():
 def test_container_pod_pass_envs(env_checker_docker_image_built):
     import docker
 
-    # set_pod_parser returns a parser for worker runtime, which expects list of ports (because external executors
-    # can provide multiple ports and hosts). However this parser is not compatible with ContainerPod, Pod and worker runtime.
-    # Should we add a seperate parser for Pod?
     args = _generate_args(
             [
                 '--uses',
@@ -55,7 +53,7 @@ def test_container_pod_pass_envs(env_checker_docker_image_built):
                 'key2=value2',
             ]
         )
-
+    print(args)
     with ContainerPod(
         args
     ) as pod:
@@ -296,9 +294,3 @@ def test_container_pod_with_flow_custom_gateway(
         _validate_dummy_custom_gateway_response(
             flow.port, {'arg1': 'hello', 'arg2': 'world', 'arg3': 'default-arg3'}
         )
-
-def _generate_args(cli_split: list=[]):
-    args = set_pod_parser().parse_args(cli_split)
-    args.port = args.port[0]
-    
-    return args

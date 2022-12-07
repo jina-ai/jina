@@ -1,12 +1,12 @@
 import multiprocessing
 
 import pytest
-
 from jina import DocumentArray, Executor, requests
-from jina.parsers import set_pod_parser
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.worker import WorkerRuntime
 from jina.serve.streamer import GatewayStreamer
+
+from tests.helper import _generate_args
 
 
 class StreamerTestExecutor(Executor):
@@ -18,7 +18,7 @@ class StreamerTestExecutor(Executor):
 
 
 def _create_worker_runtime(port, name=''):
-    args = set_pod_parser().parse_args([])
+    args = _generate_args()
     args.port = port
     args.name = name
     args.uses = 'StreamerTestExecutor'

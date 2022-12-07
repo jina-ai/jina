@@ -8,16 +8,16 @@ from threading import Event
 import pytest
 import yaml
 from docarray import Document, DocumentArray
-
 from jina import Client, Executor, Flow, __cache_path__, requests
 from jina.clients.request import request_generator
 from jina.excepts import RuntimeFailToStart
-from jina.parsers import set_pod_parser
+from jina.helper import random_port
 from jina.serve.executors.metas import get_default_metas
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.worker import WorkerRuntime
-from jina.helper import random_port
+
+from tests.helper import _generate_args
 
 
 class WorkspaceExec(Executor):
@@ -505,7 +505,7 @@ async def test_blocking_sync_exec():
                 doc.text = 'BlockingExecutor'
             return docs
 
-    args = set_pod_parser().parse_args(['--uses', 'BlockingExecutor'])
+    args = _generate_args(['--uses', 'BlockingExecutor'])
 
     cancel_event = multiprocessing.Event()
 
@@ -522,7 +522,7 @@ async def test_blocking_sync_exec():
 
     assert AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
         timeout=5.0,
-        ctrl_address=f'{args.host[0]}:{args.port[0]}',
+        ctrl_address=f'{args.host}:{args.port}',
         ready_or_shutdown_event=Event(),
     )
 
@@ -533,7 +533,7 @@ async def test_blocking_sync_exec():
             asyncio.create_task(
                 GrpcConnectionPool.send_request_async(
                     _create_test_data_message(),
-                    target=f'{args.host[0]}:{args.port[0]}',
+                    target=f'{args.host}:{args.port}',
                     timeout=3.0,
                 )
             )

@@ -7,17 +7,17 @@ from typing import List
 
 import grpc
 import pytest
-
 from jina import Document, DocumentArray
 from jina.clients.request import request_generator
 from jina.enums import PollingType
-from jina.parsers import set_pod_parser
 from jina.proto import jina_pb2_grpc
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.head import HeadRuntime
 from jina.types.request import Request
 from jina.types.request.data import DataRequest
+
+from tests.helper import _generate_args
 
 
 def test_regular_data_case():
@@ -338,11 +338,3 @@ def _queue_length_copy(queue: 'multiprocessing.Manager().Queue'):
         c_queue.get()
         length += 1
     return length
-
-
-def _generate_args(cli_split: list=[]):
-    args = set_pod_parser().parse_args(cli_split)
-    args.host = args.host[0]
-    args.port = args.port[0]
-    
-    return args

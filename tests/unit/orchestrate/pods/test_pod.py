@@ -2,12 +2,13 @@ import os
 import time
 
 import pytest
-
 from jina.excepts import RuntimeFailToStart
 from jina.orchestrate.pods import Pod
-from jina.parsers import set_gateway_parser, set_pod_parser
+from jina.parsers import set_gateway_parser
 from jina.serve import runtimes
 from jina.serve.executors import BaseExecutor
+
+from tests.helper import _generate_args
 
 
 @pytest.fixture()
@@ -29,7 +30,7 @@ class EnvChecker1(BaseExecutor):
 
 def test_pod_runtime_env_setting(fake_env):
     with Pod(
-        set_pod_parser().parse_args(
+        _generate_args(
             [
                 '--uses',
                 'EnvChecker1',
@@ -100,14 +101,12 @@ def test_gateway_runtimes(protocol, expected):
     ['WorkerRuntime', 'HeadRuntime'],
 )
 def test_non_gateway_runtimes(runtime_cls):
-    args = set_pod_parser().parse_args(
+    args = _generate_args(
         [
             '--runtime-cls',
             runtime_cls,
         ]
     )
-    args.host = args.host[0]
-    args.port = args.port[0]
 
     with Pod(args) as p:
         assert p.runtime_cls.__name__ == runtime_cls
@@ -120,7 +119,7 @@ class RaisingExecutor(BaseExecutor):
 
 
 def test_failing_executor():
-    args = set_pod_parser().parse_args(
+    args = _generate_args(
         [
             '--uses',
             'RaisingExecutor',
@@ -158,7 +157,7 @@ def test_failing_gateway_runtimes(protocol, expected):
 
 
 def test_failing_head():
-    args = set_pod_parser().parse_args(
+    args = _generate_args(
         [
             '--runtime-cls',
             'HeadRuntime',
@@ -191,7 +190,7 @@ def test_close_before_start(monkeypatch):
         'get_runtime',
         lambda *args, **kwargs: SlowFakeRuntime,
     )
-    pod = Pod(set_pod_parser().parse_args(['--noblock-on-start']))
+    pod = Pod(_generate_args(['--noblock-on-start']))
     pod.start()
     pod.close()
 
@@ -216,6 +215,6 @@ def test_close_before_start_slow_enter(monkeypatch):
         'get_runtime',
         lambda *args, **kwargs: SlowFakeRuntime,
     )
-    pod = Pod(set_pod_parser().parse_args(['--noblock-on-start']))
+    pod = Pod(_generate_args(['--noblock-on-start']))
     pod.start()
     pod.close()
