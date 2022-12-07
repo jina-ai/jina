@@ -2,7 +2,7 @@ from typing import Dict
 
 from jina.helper import TYPE_CHECKING, T, deprecate_by, typename
 
-if TYPE_CHECKING: # pragma: no cover
+if TYPE_CHECKING:  # pragma: no cover
     from jina.proto import jina_pb2
 
 

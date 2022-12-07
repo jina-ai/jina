@@ -10,7 +10,7 @@ from jina.logging.logger import JinaLogger
 from jina.types.request.data import DataRequest
 from jina.types.request.status import StatusMessage
 
-if TYPE_CHECKING: # pragma: no cover
+if TYPE_CHECKING:  # pragma: no cover
     from opentelemetry import trace
 
     from jina.serve.streamer import GatewayStreamer

@@ -1,14 +1,14 @@
 """Module for async requests generator."""
 
-from typing import AsyncIterator, Optional, Dict, TYPE_CHECKING
+from typing import TYPE_CHECKING, AsyncIterator, Dict, Optional
 
-from jina.clients.request.helper import _new_data_request_from_batch, _new_data_request
+from jina.clients.request.helper import _new_data_request, _new_data_request_from_batch
 from jina.enums import DataInputType
 from jina.importer import ImportExtensions
 from jina.logging.predefined import default_logger
 from jina.types.request import Request
 
-if TYPE_CHECKING: # pragma: no cover
+if TYPE_CHECKING:  # pragma: no cover
     from jina.clients.request import GeneratorSourceType
 
 

@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, AsyncGenerator, Dict, List, Optional, Union
 from jina.helper import deprecate_by, get_or_reuse_loop, run_async
 from jina.importer import ImportExtensions
 
-if TYPE_CHECKING: # pragma: no cover
+if TYPE_CHECKING:  # pragma: no cover
     from docarray import DocumentArray
 
     from jina.clients.base import CallbackFnType, InputType
@@ -35,11 +35,11 @@ class MutateMixin:
     """The GraphQL Mutation Mixin for Client and Flow"""
 
     def mutate(
-            self,
-            mutation: str,
-            variables: Optional[dict] = None,
-            timeout: Optional[float] = None,
-            headers: Optional[dict] = None,
+        self,
+        mutation: str,
+        variables: Optional[dict] = None,
+        timeout: Optional[float] = None,
+        headers: Optional[dict] = None,
     ):
         """Perform a GraphQL mutation
 
@@ -70,11 +70,11 @@ class AsyncMutateMixin(MutateMixin):
     """The async GraphQL Mutation Mixin for Client and Flow"""
 
     async def mutate(
-            self,
-            mutation: str,
-            variables: Optional[dict] = None,
-            timeout: Optional[float] = None,
-            headers: Optional[dict] = None,
+        self,
+        mutation: str,
+        variables: Optional[dict] = None,
+        timeout: Optional[float] = None,
+        headers: Optional[dict] = None,
     ):
         """Perform a GraphQL mutation, asynchronously
 
@@ -123,14 +123,14 @@ def _render_response_table(r, st, ed, show_table: bool = True):
     elapsed = (ed - st) * 1000
     route = r.routes
     gateway_time = (
-            route[0].end_time.ToMilliseconds() - route[0].start_time.ToMilliseconds()
+        route[0].end_time.ToMilliseconds() - route[0].start_time.ToMilliseconds()
     )
     exec_time = {}
 
     if len(route) > 1:
         for r in route[1:]:
             exec_time[r.executor] = (
-                    r.end_time.ToMilliseconds() - r.start_time.ToMilliseconds()
+                r.end_time.ToMilliseconds() - r.start_time.ToMilliseconds()
             )
     network_time = elapsed - gateway_time
     server_network = gateway_time - sum(exec_time.values())
@@ -205,24 +205,24 @@ class PostMixin:
     """The Post Mixin class for Client and Flow"""
 
     def post(
-            self,
-            on: str,
-            inputs: Optional['InputType'] = None,
-            on_done: Optional['CallbackFnType'] = None,
-            on_error: Optional['CallbackFnType'] = None,
-            on_always: Optional['CallbackFnType'] = None,
-            parameters: Optional[Dict] = None,
-            target_executor: Optional[str] = None,
-            request_size: int = 100,
-            show_progress: bool = False,
-            continue_on_error: bool = False,
-            return_responses: bool = False,
-            max_attempts: int = 1,
-            initial_backoff: float = 0.5,
-            max_backoff: float = 0.1,
-            backoff_multiplier: float = 1.5,
-            results_in_order: bool = False,
-            **kwargs,
+        self,
+        on: str,
+        inputs: Optional['InputType'] = None,
+        on_done: Optional['CallbackFnType'] = None,
+        on_error: Optional['CallbackFnType'] = None,
+        on_always: Optional['CallbackFnType'] = None,
+        parameters: Optional[Dict] = None,
+        target_executor: Optional[str] = None,
+        request_size: int = 100,
+        show_progress: bool = False,
+        continue_on_error: bool = False,
+        return_responses: bool = False,
+        max_attempts: int = 1,
+        initial_backoff: float = 0.5,
+        max_backoff: float = 0.1,
+        backoff_multiplier: float = 1.5,
+        results_in_order: bool = False,
+        **kwargs,
     ) -> Optional[Union['DocumentArray', List['Response']]]:
         """Post a general data request to the Flow.
 
@@ -299,24 +299,24 @@ class AsyncPostMixin:
     """The Async Post Mixin class for AsyncClient and AsyncFlow"""
 
     async def post(
-            self,
-            on: str,
-            inputs: Optional['InputType'] = None,
-            on_done: Optional['CallbackFnType'] = None,
-            on_error: Optional['CallbackFnType'] = None,
-            on_always: Optional['CallbackFnType'] = None,
-            parameters: Optional[Dict] = None,
-            target_executor: Optional[str] = None,
-            request_size: int = 100,
-            show_progress: bool = False,
-            continue_on_error: bool = False,
-            return_responses: bool = False,
-            max_attempts: int = 1,
-            initial_backoff: float = 0.5,
-            max_backoff: float = 0.1,
-            backoff_multiplier: float = 1.5,
-            results_in_order: bool = False,
-            **kwargs,
+        self,
+        on: str,
+        inputs: Optional['InputType'] = None,
+        on_done: Optional['CallbackFnType'] = None,
+        on_error: Optional['CallbackFnType'] = None,
+        on_always: Optional['CallbackFnType'] = None,
+        parameters: Optional[Dict] = None,
+        target_executor: Optional[str] = None,
+        request_size: int = 100,
+        show_progress: bool = False,
+        continue_on_error: bool = False,
+        return_responses: bool = False,
+        max_attempts: int = 1,
+        initial_backoff: float = 0.5,
+        max_backoff: float = 0.1,
+        backoff_multiplier: float = 1.5,
+        results_in_order: bool = False,
+        **kwargs,
     ) -> AsyncGenerator[None, Union['DocumentArray', 'Response']]:
         """Async Post a general data request to the Flow.
 
@@ -349,20 +349,20 @@ class AsyncPostMixin:
         parameters = _include_results_field_in_param(parameters)
 
         async for result in c._get_results(
-                inputs=inputs,
-                on_done=on_done,
-                on_error=on_error,
-                on_always=on_always,
-                exec_endpoint=on,
-                target_executor=target_executor,
-                parameters=parameters,
-                request_size=request_size,
-                max_attempts=max_attempts,
-                initial_backoff=initial_backoff,
-                max_backoff=max_backoff,
-                backoff_multiplier=backoff_multiplier,
-                results_in_order=results_in_order,
-                **kwargs,
+            inputs=inputs,
+            on_done=on_done,
+            on_error=on_error,
+            on_always=on_always,
+            exec_endpoint=on,
+            target_executor=target_executor,
+            parameters=parameters,
+            request_size=request_size,
+            max_attempts=max_attempts,
+            initial_backoff=initial_backoff,
+            max_backoff=max_backoff,
+            backoff_multiplier=backoff_multiplier,
+            results_in_order=results_in_order,
+            **kwargs,
         ):
             if not return_responses:
                 yield result.data.docs
