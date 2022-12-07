@@ -17,7 +17,7 @@ def test_gateway_metric_labels(monkeypatch_metric_exporter):
     with Flow(
         tracing=False,
         metrics=True,
-        metrics_exporter_host='localhost',
+        metrics_exporter_host='http://localhost',
         metrics_exporter_port=4317,
         port=12345,
     ).add(name='first_exec', uses=FirstExec).add(
@@ -105,7 +105,7 @@ def test_merge_with_no_reduce(monkeypatch_metric_exporter):
         Flow(
             tracing=False,
             metrics=True,
-            metrics_exporter_host='localhost',
+            metrics_exporter_host='http://localhost',
             metrics_exporter_port=4317,
             port=12345,
         )
