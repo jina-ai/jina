@@ -176,7 +176,6 @@ class Flow(
         name: Optional[str] = 'gateway', 
         no_crud_endpoints: Optional[bool] = False, 
         no_debug_endpoints: Optional[bool] = False, 
-        port_monitoring: Optional[str] = None, 
         prefetch: Optional[int] = 1000, 
         protocol: Optional[Union[str, List[str]]] = ['GRPC'], 
         proxy: Optional[bool] = False, 
@@ -238,7 +237,6 @@ class Flow(
           
                   Any executor that has `@requests(on=...)` bound with those values will receive data requests.
         :param no_debug_endpoints: If set, `/status` `/post` endpoints are removed from HTTP interface.
-        :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]
         :param prefetch: Number of requests fetched from the client before feeding into the first Executor. 
               
               Used to control the speed of data input into a Flow. 0 disables prefetch (1000 requests is the default)
@@ -404,7 +402,6 @@ class Flow(
           
                   Any executor that has `@requests(on=...)` bound with those values will receive data requests.
         :param no_debug_endpoints: If set, `/status` `/post` endpoints are removed from HTTP interface.
-        :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]
         :param prefetch: Number of requests fetched from the client before feeding into the first Executor. 
               
               Used to control the speed of data input into a Flow. 0 disables prefetch (1000 requests is the default)
@@ -832,7 +829,6 @@ class Flow(
         gpus: Optional[str] = None, 
         grpc_metadata: Optional[dict] = None, 
         grpc_server_options: Optional[dict] = None, 
-        host: Optional[str] = '0.0.0.0', 
         install_requirements: Optional[bool] = False, 
         log_config: Optional[str] = None, 
         metrics: Optional[bool] = False, 
@@ -844,7 +840,6 @@ class Flow(
         no_reduce: Optional[bool] = False, 
         output_array_type: Optional[str] = None, 
         polling: Optional[str] = 'ANY', 
-        port_monitoring: Optional[str] = None, 
         py_modules: Optional[List[str]] = None, 
         quiet: Optional[bool] = False, 
         quiet_error: Optional[bool] = False, 
@@ -1229,7 +1224,6 @@ class Flow(
         name: Optional[str] = 'gateway', 
         no_crud_endpoints: Optional[bool] = False, 
         no_debug_endpoints: Optional[bool] = False, 
-        port_monitoring: Optional[str] = None, 
         prefetch: Optional[int] = 1000, 
         protocol: Optional[Union[str, List[str]]] = ['GRPC'], 
         proxy: Optional[bool] = False, 
@@ -1291,7 +1285,6 @@ class Flow(
           
                   Any executor that has `@requests(on=...)` bound with those values will receive data requests.
         :param no_debug_endpoints: If set, `/status` `/post` endpoints are removed from HTTP interface.
-        :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]
         :param prefetch: Number of requests fetched from the client before feeding into the first Executor. 
               
               Used to control the speed of data input into a Flow. 0 disables prefetch (1000 requests is the default)
@@ -1384,7 +1377,6 @@ class Flow(
           
                   Any executor that has `@requests(on=...)` bound with those values will receive data requests.
         :param no_debug_endpoints: If set, `/status` `/post` endpoints are removed from HTTP interface.
-        :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]
         :param prefetch: Number of requests fetched from the client before feeding into the first Executor. 
               
               Used to control the speed of data input into a Flow. 0 disables prefetch (1000 requests is the default)
