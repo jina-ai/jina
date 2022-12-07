@@ -62,7 +62,6 @@ class InstrumentationMixin:
             processor = BatchSpanProcessor(
                 OTLPSpanExporter(
                     endpoint=f'{traces_exporter_host}:{traces_exporter_port}',
-                    insecure=True,
                 )
             )
             provider.add_span_processor(processor)
@@ -85,7 +84,6 @@ class InstrumentationMixin:
             metric_reader = PeriodicExportingMetricReader(
                 OTLPMetricExporter(
                     endpoint=f'{metrics_exporter_host}:{metrics_exporter_port}',
-                    insecure=True,
                 )
             )
             meter_provider = MeterProvider(
