@@ -143,10 +143,10 @@ from jina import Flow, Document, DocumentArray
 
 with Flow(
     tracing=True,
-    traces_exporter_host='localhost',
+    traces_exporter_host='http://localhost',
     traces_exporter_port=4317,
     metrics=True,
-    metrics_exporter_host='localhost',
+    metrics_exporter_host='http://localhost',
     metrics_exporter_port=4317,
 ).add(uses='jinaai://jina-ai/SimpleIndexer') as f:
     f.post('/', DocumentArray([Document(text='hello')]))
