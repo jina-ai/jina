@@ -106,6 +106,8 @@ def test_non_gateway_runtimes(runtime_cls):
             runtime_cls,
         ]
     )
+    args.host = args.host[0]
+    args.port = args.port[0]
 
     with Pod(args) as p:
         assert p.runtime_cls.__name__ == runtime_cls
