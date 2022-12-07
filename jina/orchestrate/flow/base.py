@@ -2464,23 +2464,17 @@ class Flow(
                         if new_stop_event.is_set():
                             break
             else:
-                if not stop_event:
+                wait_event = stop_event
+                if not wait_event:
                     self._stop_event = threading.Event()
-                    if not __windows__:
-                        self._stop_event.wait()
-                    else:
-                        while True:
-                            if self._stop_event.is_set():
-                                break
-                            time.sleep(0.5)
+                    wait_event = self._stop_event
+                if not __windows__:
+                    wait_event.wait()
                 else:
-                    if not __windows__:
-                        stop_event.wait()
-                    else:
-                        while True:
-                            if stop_event.is_set():
-                                break
-                            time.sleep(0.5)
+                    while True:
+                        if wait_event.is_set():
+                            break
+                        time.sleep(0.5)
         except KeyboardInterrupt:
             pass
 
