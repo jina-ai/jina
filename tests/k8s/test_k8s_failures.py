@@ -270,7 +270,6 @@ async def test_failure_scenarios(logger, docker_images, tmpdir, k8s_cluster):
             endpoint='/',
             stop_event=stop_event,
             logger=logger,
-            sleep_time=None,
         )
     )
     logger.info(f' Sending task has been scheduled')
