@@ -324,15 +324,13 @@ def test_flow_all_floating(protocol, tmpdir):
         @requests
         def foo(self, docs, **kwargs):
             length_of_docs = len(docs)
-            print(f' length {length_of_docs}')
             with open(self.file_name, 'a+') as f:
                 f.write(str(len(docs)))
 
-    f = Flow(protocol=protocol).add(name='A', floating=True, uses=FloatingTestExecutorWriteDocs,
+    flow = Flow(protocol=protocol).add(name='A', floating=True, uses=FloatingTestExecutorWriteDocs,
                                     uses_with={'file_name': file_name})
-    with f:
-        f.post(on='/', inputs=DocumentArray.empty(1))
-        time.sleep(5)
+    with flow:
+        flow.post(on='/', inputs=DocumentArray.empty(1))
 
     with open(file_name, 'r') as f:
         resulted_str = f.read()
