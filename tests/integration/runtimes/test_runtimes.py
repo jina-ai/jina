@@ -116,7 +116,7 @@ def complete_graph_dict():
 @pytest.mark.parametrize('uses_after', [True, False])
 # test gateway, head and worker runtime by creating them manually in a more Flow like topology with branching/merging
 async def test_runtimes_flow_topology(
-        complete_graph_dict, uses_before, uses_after, port_generator
+    complete_graph_dict, uses_before, uses_after, port_generator
 ):
     pods = [
         pod_name for pod_name in complete_graph_dict.keys() if 'gateway' not in pod_name
@@ -444,7 +444,7 @@ async def test_runtimes_with_executor(port_generator):
 
     assert len(response_list) == 20
     assert (
-            len(response_list[0]) == (1 + 1 + 1) * 10 + 1
+        len(response_list[0]) == (1 + 1 + 1) * 10 + 1
     )  # 1 starting doc + 1 uses_before + every exec adds 1 * 10 shards + 1 doc uses_after
 
     doc_texts = [doc.text for doc in response_list[0]]
@@ -694,13 +694,13 @@ def _create_worker_runtime(port, name='', executor=None):
 
 
 def _create_head_runtime(
-        port,
-        connection_list_dict,
-        name='',
-        polling='ANY',
-        uses_before=None,
-        uses_after=None,
-        retries=-1,
+    port,
+    connection_list_dict,
+    name='',
+    polling='ANY',
+    uses_before=None,
+    uses_after=None,
+    retries=-1,
 ):
     args = _generate_args()
     args.port = port
@@ -718,23 +718,23 @@ def _create_head_runtime(
 
 
 def _create_gateway_runtime(
-        graph_description, pod_addresses, port, protocol='grpc', retries=-1
+    graph_description, pod_addresses, port, protocol='grpc', retries=-1
 ):
     with GatewayRuntime(
-            set_gateway_parser().parse_args(
-                [
-                    '--graph-description',
-                    graph_description,
-                    '--deployments-addresses',
-                    pod_addresses,
-                    '--port',
-                    str(port),
-                    '--retries',
-                    str(retries),
-                    '--protocol',
-                    protocol,
-                ]
-            )
+        set_gateway_parser().parse_args(
+            [
+                '--graph-description',
+                graph_description,
+                '--deployments-addresses',
+                pod_addresses,
+                '--port',
+                str(port),
+                '--retries',
+                str(retries),
+                '--protocol',
+                protocol,
+            ]
+        )
     ) as runtime:
         runtime.run_forever()
 
@@ -785,8 +785,8 @@ async def test_head_runtime_with_offline_shards(port_generator):
     )
 
     with grpc.insecure_channel(
-            f'0.0.0.0:{head_port}',
-            options=GrpcConnectionPool.get_default_grpc_options(),
+        f'0.0.0.0:{head_port}',
+        options=GrpcConnectionPool.get_default_grpc_options(),
     ) as channel:
         stub = jina_pb2_grpc.JinaSingleDataRequestRPCStub(channel)
         _, call = stub.process_single_data.with_call(
@@ -816,7 +816,8 @@ def test_runtime_slow_processing_readiness(port_generator):
     worker_port = port_generator()
     # create a single worker runtime
     worker_process = multiprocessing.Process(
-        target=_create_worker_runtime, args=(worker_port, f'pod0', 'SlowProcessingExecutor')
+        target=_create_worker_runtime,
+        args=(worker_port, f'pod0', 'SlowProcessingExecutor'),
     )
     try:
         worker_process.start()
@@ -828,18 +829,18 @@ def test_runtime_slow_processing_readiness(port_generator):
 
         def _send_messages():
             with grpc.insecure_channel(
-                    f'0.0.0.0:{worker_port}',
-                    options=GrpcConnectionPool.get_default_grpc_options(),
+                f'0.0.0.0:{worker_port}',
+                options=GrpcConnectionPool.get_default_grpc_options(),
             ) as channel:
                 stub = jina_pb2_grpc.JinaSingleDataRequestRPCStub(channel)
                 resp, _ = stub.process_single_data.with_call(
-                    list(request_generator('/', DocumentArray([Document(text='abc')])))[0]
+                    list(request_generator('/', DocumentArray([Document(text='abc')])))[
+                        0
+                    ]
                 )
                 assert resp.docs[0].text == 'abc'
 
-        send_message_process = multiprocessing.Process(
-            target=_send_messages
-        )
+        send_message_process = multiprocessing.Process(target=_send_messages)
         send_message_process.start()
 
         for _ in range(50):

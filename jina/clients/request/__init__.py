@@ -1,25 +1,26 @@
 """Module for Jina Requests."""
 
 from typing import (
-    Iterator,
-    Union,
-    Tuple,
-    AsyncIterable,
-    Iterable,
-    Optional,
-    Dict,
     TYPE_CHECKING,
+    AsyncIterable,
+    Dict,
+    Iterable,
+    Iterator,
+    Optional,
+    Tuple,
+    Union,
 )
 
-from jina.clients.request.helper import _new_data_request_from_batch, _new_data_request
+from jina.clients.request.helper import _new_data_request, _new_data_request_from_batch
 from jina.enums import DataInputType
 from jina.helper import batch_iterator
 from jina.logging.predefined import default_logger
 
-if TYPE_CHECKING: # pragma: no cover
-    from jina import Document
+if TYPE_CHECKING:  # pragma: no cover
     from docarray.document import DocumentSourceType
     from docarray.document.mixins.content import DocumentContentType
+
+    from jina import Document
     from jina.types.request import Request
 
     SingletonDataType = Union[

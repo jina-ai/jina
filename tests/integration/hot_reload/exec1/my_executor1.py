@@ -2,7 +2,6 @@ from jina import Executor, requests
 
 
 class MyExecutorToReload1(Executor):
-
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 

@@ -104,7 +104,7 @@ def test_executor_with_pymodule_path():
 
 def test_flow_uses_with_pymodule_path():
     with Flow.load_config(
-            '''
+        '''
     jtype: Flow
     executors:
         - uses: unit.serve.executors.dummy_executor.MyExecutor
@@ -115,13 +115,13 @@ def test_flow_uses_with_pymodule_path():
         pass
 
     with Flow().add(
-            uses='unit.serve.executors.dummy_executor.MyExecutor', uses_with={'bar': 123}
+        uses='unit.serve.executors.dummy_executor.MyExecutor', uses_with={'bar': 123}
     ):
         pass
 
     with pytest.raises(RuntimeFailToStart):
         with Flow.load_config(
-                '''
+            '''
             jtype: Flow
             executors:
                 - uses: jina.no_valide.executor
@@ -238,7 +238,7 @@ def test_executor_workspace(test_metas_workspace_replica_pods, shard_id):
 
 @pytest.mark.parametrize('shard_id', [None, -1], indirect=True)
 def test_executor_workspace_parent_replica_nopea(
-        test_metas_workspace_replica_pods, shard_id
+    test_metas_workspace_replica_pods, shard_id
 ):
     executor = Executor(
         metas={'name': test_metas_workspace_replica_pods['name']},
@@ -254,7 +254,7 @@ def test_executor_workspace_parent_replica_nopea(
 
 @pytest.mark.parametrize('shard_id', [0, 1, 2], indirect=True)
 def test_executor_workspace_parent_noreplica_pod(
-        test_metas_workspace_replica_pods, shard_id
+    test_metas_workspace_replica_pods, shard_id
 ):
     executor = Executor(
         metas={'name': test_metas_workspace_replica_pods['name']},
@@ -271,7 +271,7 @@ def test_executor_workspace_parent_noreplica_pod(
 
 @pytest.mark.parametrize('shard_id', [None, -1], indirect=True)
 def test_executor_workspace_parent_noreplica_nopea(
-        test_metas_workspace_replica_pods, shard_id
+    test_metas_workspace_replica_pods, shard_id
 ):
     executor = Executor(
         metas={'name': test_metas_workspace_replica_pods['name']},
@@ -406,7 +406,7 @@ def test_set_workspace(tmpdir):
         os.path.join(tmpdir, 'WorkspaceExec')
     )
     assert (
-            WorkspaceExec(workspace=str(tmpdir)).workspace == complete_workspace_no_replicas
+        WorkspaceExec(workspace=str(tmpdir)).workspace == complete_workspace_no_replicas
     )
 
 
@@ -451,10 +451,10 @@ def test_to_k8s_yaml(tmpdir, exec_type):
         with open(os.path.join(tmpdir, 'gateway', 'gateway.yml')) as f:
             gatewayyaml = list(yaml.safe_load_all(f))[-1]
             assert (
-                    gatewayyaml['spec']['template']['spec']['containers'][0]['ports'][0][
-                        'containerPort'
-                    ]
-                    == 2020
+                gatewayyaml['spec']['template']['spec']['containers'][0]['ports'][0][
+                    'containerPort'
+                ]
+                == 2020
             )
             gateway_args = gatewayyaml['spec']['template']['spec']['containers'][0][
                 'args'
@@ -560,7 +560,6 @@ def test_executors_inheritance_binding():
             pass
 
     class B(A):
-
         @requests(on='/index')
         def b(self, **kwargs):
             pass

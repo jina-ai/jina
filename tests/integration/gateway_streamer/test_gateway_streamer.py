@@ -85,7 +85,7 @@ async def test_custom_gateway(
             request_size=10,
             parameters=parameters,
             target_executor=target_executor,
-            results_in_order=results_in_order
+            results_in_order=results_in_order,
         ):
             num_resp += 1
             resp.extend(r)

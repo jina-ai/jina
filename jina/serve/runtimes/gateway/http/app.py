@@ -93,21 +93,6 @@ def get_fastapi_app(
             }
         )
 
-        from jina.serve.runtimes.gateway.http.models import JinaHealthModel
-
-        @app.get(
-            path='/',
-            summary='Get the health of Jina Gateway service',
-            response_model=JinaHealthModel,
-        )
-        async def _gateway_health():
-            """
-            Get the health of this Gateway service.
-            .. # noqa: DAR201
-
-            """
-            return {}
-
         from docarray import DocumentArray
 
         from jina.proto import jina_pb2

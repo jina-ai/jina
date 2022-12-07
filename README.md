@@ -43,12 +43,13 @@ Applications built with Jina enjoy the following features out of the box:
   - Improved engineering efficiency thanks to the Jina AI ecosystem, so you can focus on innovating with the data applications you build.
   - Free CPU/GPU hosting via [Jina AI Cloud](https://cloud.jina.ai).
 
+<!-- end jina-description -->
 
 <p align="center">
 <a href="#"><img src="https://github.com/jina-ai/jina/blob/master/.github/readme/core-tree-graph.svg?raw=true" alt="Jina in Jina AI neural search ecosystem" width="100%"></a>
 </p>
 
-<!-- end jina-description -->
+
 
 
 ## [Documentation](https://docs.jina.ai)
@@ -70,10 +71,10 @@ Find more install options on [Apple Silicon/Windows](https://docs.jina.ai/get-st
 Document, Executor and Flow are three fundamental concepts in Jina.
 
 - [**Document**](https://docarray.jina.ai/) is the fundamental data structure.
-- [**Executor**](https://docs.jina.ai/fundamentals/executor/) is a Python class with functions that use Documents as IO.
-- [**Flow**](https://docs.jina.ai/fundamentals/flow/) ties Executors together into a pipeline and exposes it with an API gateway.
+- [**Executor**](https://docs.jina.ai/concepts/executor/) is a Python class with functions that use Documents as IO.
+- [**Flow**](https://docs.jina.ai/concepts/flow/) ties Executors together into a pipeline and exposes it with an API gateway.
 
-[The full glossary is explained here.](https://docs.jina.ai/fundamentals/architecture-overview/)
+[The full glossary is explained here.](https://docs.jina.ai/concepts/architecture-overview/)
 
 
 ---
