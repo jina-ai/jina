@@ -189,6 +189,7 @@ class Flow(
         py_modules: Optional[List[str]] = None,
         quiet: Optional[bool] = False,
         quiet_error: Optional[bool] = False,
+        restart: Optional[bool] = False,
         retries: Optional[int] = -1,
         runtime_cls: Optional[str] = 'GatewayRuntime',
         ssl_certfile: Optional[str] = None,
@@ -258,6 +259,7 @@ class Flow(
           which should be structured as a python package.
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
+        :param restart: If set, the Gateway will restart while serving if the YAML configuration source is changed.
         :param retries: Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
         :param runtime_cls: The runtime class to run inside the Pod
         :param ssl_certfile: the path to the certificate file
@@ -430,6 +432,7 @@ class Flow(
           which should be structured as a python package.
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
+        :param restart: If set, the Gateway will restart while serving if the YAML configuration source is changed.
         :param retries: Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
         :param runtime_cls: The runtime class to run inside the Pod
         :param ssl_certfile: the path to the certificate file
@@ -1264,6 +1267,7 @@ class Flow(
         py_modules: Optional[List[str]] = None,
         quiet: Optional[bool] = False,
         quiet_error: Optional[bool] = False,
+        restart: Optional[bool] = False,
         retries: Optional[int] = -1,
         runtime_cls: Optional[str] = 'GatewayRuntime',
         ssl_certfile: Optional[str] = None,
@@ -1333,6 +1337,7 @@ class Flow(
           which should be structured as a python package.
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
+        :param restart: If set, the Gateway will restart while serving if the YAML configuration source is changed.
         :param retries: Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
         :param runtime_cls: The runtime class to run inside the Pod
         :param ssl_certfile: the path to the certificate file
@@ -1427,6 +1432,7 @@ class Flow(
           which should be structured as a python package.
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
+        :param restart: If set, the Gateway will restart while serving if the YAML configuration source is changed.
         :param retries: Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
         :param runtime_cls: The runtime class to run inside the Pod
         :param ssl_certfile: the path to the certificate file

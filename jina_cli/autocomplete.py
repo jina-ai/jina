@@ -155,6 +155,7 @@ ac_table = {
             '--pod-role',
             '--noblock-on-start',
             '--floating',
+            '--restart',
             '--port',
             '--port-expose',
             '--port-in',
