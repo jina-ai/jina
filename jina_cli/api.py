@@ -28,7 +28,10 @@ def pod(args: 'Namespace'):
     :param args: arguments coming from the CLI.
     """
     from jina.orchestrate.pods.factory import PodFactory
-
+    
+    args.host = args.host[0]
+    args.port = args.port[0]
+    
     try:
         with PodFactory.build_pod(args) as p:
             p.join()
@@ -42,8 +45,6 @@ def executor_native(args: 'Namespace'):
 
     :param args: arguments coming from the CLI.
     """
-    args.host = args.host[0]
-    args.port = args.port[0]
     
     if args.runtime_cls == 'WorkerRuntime':
         from jina.serve.runtimes.worker import WorkerRuntime
@@ -76,6 +77,9 @@ def executor(args: 'Namespace'):
 
     :returns: return the same as `pod` or `worker_runtime`
     """
+    args.host = args.host[0]
+    args.port = args.port[0]
+        
     if args.native:
         return executor_native(args)
     else:
