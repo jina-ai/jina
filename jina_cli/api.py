@@ -42,7 +42,9 @@ def executor_native(args: 'Namespace'):
 
     :param args: arguments coming from the CLI.
     """
-
+    args.host = args.host[0]
+    args.port = args.port[0]
+    
     if args.runtime_cls == 'WorkerRuntime':
         from jina.serve.runtimes.worker import WorkerRuntime
 
