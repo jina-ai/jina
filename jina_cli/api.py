@@ -29,9 +29,6 @@ def pod(args: 'Namespace'):
     """
     from jina.orchestrate.pods.factory import PodFactory
     
-    args.host = args.host[0]
-    args.port = args.port[0]
-    
     try:
         with PodFactory.build_pod(args) as p:
             p.join()
