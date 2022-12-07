@@ -513,12 +513,13 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
     @classmethod
     def serve(
-        cls,
-        uses_with: Optional[Dict] = None,
-        uses_metas: Optional[Dict] = None,
-        uses_requests: Optional[Dict] = None,
-        stop_event: Optional[Union[threading.Event, multiprocessing.Event]] = None,
-        **kwargs,
+            cls,
+            uses_with: Optional[Dict] = None,
+            uses_metas: Optional[Dict] = None,
+            uses_requests: Optional[Dict] = None,
+            stop_event: Optional[Union[threading.Event, multiprocessing.Event]] = None,
+            reload: bool = False,
+            **kwargs,
     ):
         """Serve this Executor in a temporary Flow. Useful in testing an Executor in remote settings.
 
@@ -527,6 +528,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         :param uses_requests: dictionary of parameters to overwrite from the default config's requests field
         :param stop_event: a threading event or a multiprocessing event that once set will resume the control Flow
             to main thread.
+        :param reload: a flag indicating if the Executor should watch the Python files of its implementation to reload the code live while serving.
         :param kwargs: other kwargs accepted by the Flow, full list can be found `here <https://docs.jina.ai/api/jina.orchestrate.flow.base/>`
 
         """
@@ -537,6 +539,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             uses_with=uses_with,
             uses_metas=uses_metas,
             uses_requests=uses_requests,
+            reload=reload
         )
         with f:
             f.block(stop_event)

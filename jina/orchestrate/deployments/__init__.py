@@ -371,6 +371,16 @@ class Deployment(BaseDeployment):
         return is_valid_docker_uri(uses)
 
     @property
+    def _is_executor_from_yaml(self) -> bool:
+        """
+        Check if this deployment is to be run from YAML configuration.
+
+        :return: True if this deployment is to be run from YAML configuration
+        """
+        uses = getattr(self.args, 'uses', '')
+        return uses.endswith('yml') or uses.endswith('yaml')
+
+    @property
     def tls_enabled(self):
         """
         Checks whether secure connection via tls is enabled for this Deployment.

@@ -21,6 +21,13 @@ def mixin_flow_features_parser(parser):
     )
 
     gp.add_argument(
+        '--restart',
+        action='store_true',
+        default=False,
+        help='If set, the Flow will restart while blocked if the YAML configuration source is changed.'
+    )
+
+    gp.add_argument(
         '--env',
         action=KVAppendAction,
         metavar='KEY: VALUE',
