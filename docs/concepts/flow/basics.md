@@ -313,7 +313,7 @@ For more in-depth guides on Flow deployment, check our how-tos for {ref}`Docker 
 
 While developing your Flow, it can be useful to have it restart automatically as you change the Flow YAML.
 
-For this you can use the Flow's `restart` argument to restart the Flow with the updated configuration every time you change the YAML configuration.
+For this you can use the Flow's `restart` argument to restart it with the updated configuration every time you change the YAML configuration.
 
 ````{admonition} Caution
 :class: caution
@@ -386,13 +386,13 @@ executors:
   uses: ConcatenateTextExecutor
 ```
 
-You should see in the logs of the Flow
+You should see the following in the Flow's logs:
 
 ```text
 INFO   Flow@28301 change in Flow YAML XXX/flow.yml observed, restarting Flow                                                   
 ```
 
-And after this, the Flow will have 2 Executors with the new topology
+After this, the Flow will have two Executors with the new topology:
 
 ```python
 from jina import Client, DocumentArray
