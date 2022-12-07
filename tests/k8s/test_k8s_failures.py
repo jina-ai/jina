@@ -1,7 +1,6 @@
 import asyncio
 import datetime
 import functools
-import multiprocessing
 import os
 import subprocess
 from contextlib import suppress
@@ -11,6 +10,7 @@ import pytest
 from pytest_kind import cluster
 
 from jina import Document, Flow
+from tests.k8s.conftest import shell_portforward
 from tests.k8s.test_k8s import create_all_flow_deployments_and_wait_ready
 
 cluster.KIND_VERSION = 'v0.11.1'
@@ -125,7 +125,13 @@ async def delete_pod(deployment, core_client, k8s_namespace, logger):
 
 
 async def run_test_until_event(
-    flow, core_client, namespace, endpoint, stop_event, logger, sleep_time=0.05
+    kubectl_path,
+    flow,
+    namespace,
+    endpoint,
+    stop_event,
+    logger,
+    sleep_time=0.05,
 ):
     # start port forwarding
     from jina.clients import Client
@@ -134,18 +140,8 @@ async def run_test_until_event(
     sent_ids = set()
     pod_ids = set()
     try:
-        gateway_pod_name = (
-            core_client.list_namespaced_pod(
-                namespace=namespace, label_selector='app=gateway'
-            )
-            .items[0]
-            .metadata.name
-        )
-        config_path = os.environ['KUBECONFIG']
-        import portforward
-
-        with portforward.forward(
-            namespace, gateway_pod_name, flow.port, flow.port, config_path
+        with shell_portforward(
+            kubectl_path, 'service/gateway', flow.port, flow.port, namespace
         ):
             client_kwargs = dict(
                 host='localhost',
@@ -264,9 +260,9 @@ async def test_failure_scenarios(logger, docker_images, tmpdir, k8s_cluster):
     stop_event = asyncio.Event()
     send_task = asyncio.create_task(
         run_test_until_event(
+            kubectl_path=k8s_cluster._cluster.kubectl_path,
             flow=flow,
             namespace=namespace,
-            core_client=core_client,
             endpoint='/',
             stop_event=stop_event,
             logger=logger,
@@ -340,9 +336,9 @@ async def test_failure_scenarios(logger, docker_images, tmpdir, k8s_cluster):
     stop_event.clear()
     send_task = asyncio.create_task(
         run_test_until_event(
+            kubectl_path=k8s_cluster._cluster.kubectl_path,
             flow=flow,
             namespace=namespace,
-            core_client=core_client,
             endpoint='/',
             stop_event=stop_event,
             logger=logger,
