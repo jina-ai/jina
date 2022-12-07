@@ -175,5 +175,7 @@ class BatchQueue:
     async def close(self):
         """Closes the batch queue by flushing pending requests."""
         if not self._is_closed:
+            # debug print amount of requests to be processed.
             self._flush_trigger.set()
+            # await tasks here
             self._is_closed = True

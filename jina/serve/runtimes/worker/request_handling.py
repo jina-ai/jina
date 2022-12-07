@@ -417,7 +417,7 @@ class WorkerRequestHandler:
                 tracing_context=tracing_context,
             )
 
-            docs = self._set_result(requests, return_data, docs)
+            _ = self._set_result(requests, return_data, docs)
 
         for req in requests:
             req.add_executor(self.deployment_name)
