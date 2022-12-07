@@ -22,10 +22,10 @@ def test_docker_instrumentation(
 ):
     f = Flow(
         tracing=True,
-        traces_exporter_host='localhost',
+        traces_exporter_host='http://localhost',
         traces_exporter_port=otlp_receiver_port,
         metrics=True,
-        metrics_exporter_host='localhost',
+        metrics_exporter_host='http://localhost',
         metrics_exporter_port=otlp_receiver_port,
     ).add(uses=f'docker://{docker_image_name}')
 
