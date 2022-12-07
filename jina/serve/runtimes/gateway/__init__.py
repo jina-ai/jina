@@ -103,11 +103,22 @@ class GatewayRuntime(AsyncNewLoopRuntime):
             extra_search_paths=self.args.extra_search_paths,
         )
 
-        send_telemetry_event(
-            event='start_gateway ', obj=self.gateway, protocol=self.args.protocol
-        )
-
         await self.gateway.setup_server()
+
+    def _send_telemetry_event(self):
+        is_custom_gateway = self.gateway.__class__ not in [
+            CompositeGateway,
+            GRPCGateway,
+            HTTPGateway,
+            WebSocketGateway,
+        ]
+        send_telemetry_event(
+            event='start',
+            obj=self,
+            entity_id=self._entity_id,
+            is_custom_gateway=is_custom_gateway,
+            protocol=self.args.protocol,
+        )
 
     async def _wait_for_cancel(self):
         """Do NOT override this method when inheriting from :class:`GatewayPod`"""
