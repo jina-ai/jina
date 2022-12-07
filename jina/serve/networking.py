@@ -112,7 +112,7 @@ class ReplicaList:
         runtime_name: str,
         aio_tracing_client_interceptors: Optional[Sequence['ClientInterceptor']] = None,
         tracing_client_interceptor: Optional['OpenTelemetryClientInterceptor'] = None,
-        deployment_name: str = ''
+        deployment_name: str = '',
     ):
         self.runtime_name = runtime_name
         self._connections = []
@@ -638,7 +638,7 @@ class GrpcConnectionPool:
                     runtime_name=self.runtime_name,
                     aio_tracing_client_interceptors=self.aio_tracing_client_interceptors,
                     tracing_client_interceptor=self.tracing_client_interceptor,
-                    deployment_name=deployment
+                    deployment_name=deployment,
                 )
                 self._deployments[deployment][type][entity_id] = connection_list
 
@@ -981,7 +981,9 @@ class GrpcConnectionPool:
             error.code() == grpc.StatusCode.UNAVAILABLE
             or error.code() == grpc.StatusCode.DEADLINE_EXCEEDED
         ) and retry_i >= total_num_tries - 1:  # retries exhausted. if we land here it already failed once, therefore -1
-            self._logger.debug(f'GRPC call for {current_deployment} failed, retries exhausted')
+            self._logger.debug(
+                f'GRPC call for {current_deployment} failed, retries exhausted'
+            )
             from jina.excepts import InternalNetworkError
 
             # after connection failure the gRPC `channel` gets stuck in a failure state for a few seconds

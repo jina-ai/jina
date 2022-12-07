@@ -63,50 +63,41 @@ python client.py
 DocArray is the foundational data structure of Jina. Before starting Jina, first learn DocArray to quickly build a PoC. 
 ::::
 
-::::{grid-item-card} {octicon}`gear;1.5em` Understand Executor
-:link: fundamentals/executor/index
+::::{grid-item-card} {octicon}`gear;1.5em` Learn Executor
+:link: concepts/executor/index
 :link-type: doc
 
 {term}`Executor` is a self-contained logic unit that performs a group of tasks on a `DocumentArray`.
 
 ::::
 
-::::{grid-item-card} {octicon}`workflow;1.5em` Understand Flow
-:link: fundamentals/flow/index
+::::{grid-item-card} {octicon}`workflow;1.5em` Learn Flow
+:link: concepts/flow/index
 :link-type: doc
 
 
-{term}`Flow` orchestrates Executors into a processing pipeline to accomplish a task
+{term}`Flow` orchestrates Executors into a processing pipeline to accomplish a task.
 ::::
 
 ::::{grid-item-card} {octicon}`package-dependents;1.5em` Explore Executor Hub
-:link: fundamentals/executor/hub/index
+:link: concepts/executor/hub/index
 :link-type: doc
 :class-card: color-gradient-card-1
 
 
-Executor Hub is an Executor marketplace that allows you to share, explore and test Executors.
+Executor Hub is a marketplace that allows you to share, explore and test Executors.
 
 ::::
 
 
-::::{grid-item-card} {octicon}`cpu;1.5em` Deploy a Flow to JCloud
-:link: fundamentals/jcloud/index
+::::{grid-item-card} {octicon}`cpu;1.5em` Deploy a Flow to Cloud
+:link: concepts/jcloud/index
 :link-type: doc
 :class-card: color-gradient-card-2
 
-JCloud is a free CPU/GPU hosting platform for Jina projects.
+Jina AI Cloud is the MLOps platform for hosting Jina projects.
 ::::
 
-
-
-
-::::{grid-item-card} {octicon}`squirrel;1.5em` Read in-depth tutorials
-:link: how-to/index
-:link-type: doc
-
-Check out more in-depth tutorials on the advanced usages of Jina.
-::::
 
 
 :::::
@@ -126,27 +117,24 @@ get-started/create-app
 ```
 
 ```{toctree}
-:caption: User Guides
+:caption: Concepts
 :hidden:
 
-fundamentals/architecture-overview
-fundamentals/executor/index
-fundamentals/flow/index
-fundamentals/gateway/index
-fundamentals/client/client
-fundamentals/k8s
-fundamentals/docaray-dependency/index
-how-to/index
+concepts/preliminaries/index
+concepts/executor/index
+concepts/flow/index
+concepts/gateway/index
+concepts/client/index
 ```
 
 ```{toctree}
 :caption: Cloud Native
 :hidden:
 
-jina-ai-cloud/index
 cloud-nativeness/k8s
 cloud-nativeness/docker-compose
 cloud-nativeness/opentelemetry
+jina-ai-cloud/index
 ```
 
 

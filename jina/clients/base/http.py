@@ -25,19 +25,19 @@ class HTTPBaseClient(BaseClient):
         if r_status == status.HTTP_404_NOT_FOUND:
             raise BadClient(f'no such endpoint {url}')
         elif (
-                r_status == status.HTTP_503_SERVICE_UNAVAILABLE
-                or r_status == status.HTTP_504_GATEWAY_TIMEOUT
+            r_status == status.HTTP_503_SERVICE_UNAVAILABLE
+            or r_status == status.HTTP_504_GATEWAY_TIMEOUT
         ):
             if (
-                    'header' in r_str
-                    and 'status' in r_str['header']
-                    and 'description' in r_str['header']['status']
+                'header' in r_str
+                and 'status' in r_str['header']
+                and 'description' in r_str['header']['status']
             ):
                 raise ConnectionError(r_str['header']['status']['description'])
             else:
                 raise ValueError(r_str)
         elif (
-                r_status < status.HTTP_200_OK or r_status > status.HTTP_300_MULTIPLE_CHOICES
+            r_status < status.HTTP_200_OK or r_status > status.HTTP_300_MULTIPLE_CHOICES
         ):  # failure codes
             raise ValueError(r_str)
 
@@ -80,17 +80,17 @@ class HTTPBaseClient(BaseClient):
         return False
 
     async def _get_results(
-            self,
-            inputs: 'InputType',
-            on_done: 'CallbackFnType',
-            on_error: Optional['CallbackFnType'] = None,
-            on_always: Optional['CallbackFnType'] = None,
-            max_attempts: int = 1,
-            initial_backoff: float = 0.5,
-            max_backoff: float = 0.1,
-            backoff_multiplier: float = 1.5,
-            results_in_order: bool = False,
-            **kwargs,
+        self,
+        inputs: 'InputType',
+        on_done: 'CallbackFnType',
+        on_error: Optional['CallbackFnType'] = None,
+        on_always: Optional['CallbackFnType'] = None,
+        max_attempts: int = 1,
+        initial_backoff: float = 0.5,
+        max_backoff: float = 0.1,
+        backoff_multiplier: float = 1.5,
+        results_in_order: bool = False,
+        **kwargs,
     ):
         """
         :param inputs: the callable
@@ -133,7 +133,7 @@ class HTTPBaseClient(BaseClient):
             )
 
             def _request_handler(
-                    request: 'Request',
+                request: 'Request',
             ) -> 'Tuple[asyncio.Future, Optional[asyncio.Future]]':
                 """
                 For HTTP Client, for each request in the iterator, we `send_message` using
@@ -153,7 +153,9 @@ class HTTPBaseClient(BaseClient):
                 logger=self.logger,
                 **vars(self.args),
             )
-            async for response in streamer.stream(request_iterator=request_iterator, results_in_order=results_in_order):
+            async for response in streamer.stream(
+                request_iterator=request_iterator, results_in_order=results_in_order
+            ):
                 r_status = response.status
 
                 r_str = await response.json()

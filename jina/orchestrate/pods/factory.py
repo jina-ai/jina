@@ -36,9 +36,9 @@ class PodFactory:
             cargs.uses = HubIO(_hub_args).pull()
 
         if (
-                cargs.pod_role != PodRoleType.HEAD
-                and cargs.uses
-                and cargs.uses.startswith('docker://')
+            cargs.pod_role != PodRoleType.HEAD
+            and cargs.uses
+            and cargs.uses.startswith('docker://')
         ):
             return ContainerPod(cargs)
         else:

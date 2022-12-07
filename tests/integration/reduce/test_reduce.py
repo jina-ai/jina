@@ -144,10 +144,10 @@ def test_reduce_needs(port_generator):
     exposed_port = port_generator()
     flow = (
         Flow(port=exposed_port)
-            .add(uses=Executor1, name='pod0')
-            .add(uses=Executor2, needs='gateway', name='pod1')
-            .add(uses=Executor3, needs='gateway', name='pod2')
-            .add(needs=['pod0', 'pod1', 'pod2'], name='pod3')
+        .add(uses=Executor1, name='pod0')
+        .add(uses=Executor2, needs='gateway', name='pod1')
+        .add(uses=Executor3, needs='gateway', name='pod2')
+        .add(needs=['pod0', 'pod1', 'pod2'], name='pod3')
     )
 
     with flow:
@@ -166,10 +166,10 @@ def test_uses_before_reduce(port_generator):
     exposed_port = port_generator()
     flow = (
         Flow(port=exposed_port)
-            .add(uses=Executor1, name='pod0')
-            .add(uses=Executor2, needs='gateway', name='pod1')
-            .add(uses=Executor3, needs='gateway', name='pod2')
-            .add(needs=['pod0', 'pod1', 'pod2'], name='pod3', uses_before='BaseExecutor')
+        .add(uses=Executor1, name='pod0')
+        .add(uses=Executor2, needs='gateway', name='pod1')
+        .add(uses=Executor3, needs='gateway', name='pod2')
+        .add(needs=['pod0', 'pod1', 'pod2'], name='pod3', uses_before='BaseExecutor')
     )
 
     with flow:
@@ -184,10 +184,10 @@ def test_uses_before_no_reduce_real_executor(port_generator):
     exposed_port = port_generator()
     flow = (
         Flow(port=exposed_port)
-            .add(uses=Executor1, name='pod0')
-            .add(uses=Executor2, needs='gateway', name='pod1')
-            .add(uses=Executor3, needs='gateway', name='pod2')
-            .add(needs=['pod0', 'pod1', 'pod2'], name='pod3', uses=DummyExecutor)
+        .add(uses=Executor1, name='pod0')
+        .add(uses=Executor2, needs='gateway', name='pod1')
+        .add(uses=Executor3, needs='gateway', name='pod2')
+        .add(needs=['pod0', 'pod1', 'pod2'], name='pod3', uses=DummyExecutor)
     )
 
     with flow:
@@ -203,10 +203,10 @@ def test_uses_before_no_reduce_real_executor_uses(port_generator):
     exposed_port = port_generator()
     flow = (
         Flow(port=exposed_port)
-            .add(uses=Executor1, name='pod0')
-            .add(uses=Executor2, needs='gateway', name='pod1')
-            .add(uses=Executor3, needs='gateway', name='pod2')
-            .add(needs=['pod0', 'pod1', 'pod2'], name='pod3', uses=DummyExecutor)
+        .add(uses=Executor1, name='pod0')
+        .add(uses=Executor2, needs='gateway', name='pod1')
+        .add(uses=Executor3, needs='gateway', name='pod2')
+        .add(needs=['pod0', 'pod1', 'pod2'], name='pod3', uses=DummyExecutor)
     )
 
     with flow:

@@ -113,15 +113,16 @@ def test_flow_to_k8s_yaml(tmpdir, protocol, flow_port):
     else:
         assert '--protocol' not in gateway_args
     assert '--uses-with' not in gateway_args
-    gateway_env = gateway_objects[2]['spec']['template']['spec']['containers'][0][
-        'env'
-    ]
+    gateway_env = gateway_objects[2]['spec']['template']['spec']['containers'][0]['env']
     assert gateway_env == [
         {'name': 'POD_UID', 'valueFrom': {'fieldRef': {'fieldPath': 'metadata.uid'}}},
         {'name': 'JINA_DEPLOYMENT_NAME', 'value': 'gateway'},
         {'name': 'K8S_DEPLOYMENT_NAME', 'value': 'gateway'},
         {'name': 'K8S_NAMESPACE_NAME', 'value': namespace},
-        {'name': 'K8S_POD_NAME', 'valueFrom': {'fieldRef': {'fieldPath': 'metadata.name'}}},
+        {
+            'name': 'K8S_POD_NAME',
+            'valueFrom': {'fieldRef': {'fieldPath': 'metadata.name'}},
+        },
     ]
 
     executor0_objects = yaml_dicts_per_deployment['executor0']
@@ -162,7 +163,10 @@ def test_flow_to_k8s_yaml(tmpdir, protocol, flow_port):
         {'name': 'JINA_DEPLOYMENT_NAME', 'value': 'executor0'},
         {'name': 'K8S_DEPLOYMENT_NAME', 'value': 'executor0'},
         {'name': 'K8S_NAMESPACE_NAME', 'value': namespace},
-        {'name': 'K8S_POD_NAME', 'valueFrom': {'fieldRef': {'fieldPath': 'metadata.name'}}},
+        {
+            'name': 'K8S_POD_NAME',
+            'valueFrom': {'fieldRef': {'fieldPath': 'metadata.name'}},
+        },
     ]
 
     executor1_head0_objects = yaml_dicts_per_deployment['executor1-head']
@@ -218,9 +222,11 @@ def test_flow_to_k8s_yaml(tmpdir, protocol, flow_port):
         {'name': 'JINA_DEPLOYMENT_NAME', 'value': 'executor1'},
         {'name': 'K8S_DEPLOYMENT_NAME', 'value': 'executor1-head'},
         {'name': 'K8S_NAMESPACE_NAME', 'value': namespace},
-        {'name': 'K8S_POD_NAME', 'valueFrom': {'fieldRef': {'fieldPath': 'metadata.name'}}},
+        {
+            'name': 'K8S_POD_NAME',
+            'valueFrom': {'fieldRef': {'fieldPath': 'metadata.name'}},
+        },
     ]
-
 
     executor1_shard0_objects = yaml_dicts_per_deployment['executor1-0']
     assert len(executor1_shard0_objects) == 3  # config-map, service, deployment
@@ -270,9 +276,11 @@ def test_flow_to_k8s_yaml(tmpdir, protocol, flow_port):
         {'name': 'JINA_DEPLOYMENT_NAME', 'value': 'executor1'},
         {'name': 'K8S_DEPLOYMENT_NAME', 'value': 'executor1-0'},
         {'name': 'K8S_NAMESPACE_NAME', 'value': namespace},
-        {'name': 'K8S_POD_NAME', 'valueFrom': {'fieldRef': {'fieldPath': 'metadata.name'}}},
+        {
+            'name': 'K8S_POD_NAME',
+            'valueFrom': {'fieldRef': {'fieldPath': 'metadata.name'}},
+        },
     ]
-
 
     executor1_shard1_objects = yaml_dicts_per_deployment['executor1-1']
     assert len(executor1_shard1_objects) == 3  # config-map, service, deployment
@@ -321,7 +329,10 @@ def test_flow_to_k8s_yaml(tmpdir, protocol, flow_port):
         {'name': 'JINA_DEPLOYMENT_NAME', 'value': 'executor1'},
         {'name': 'K8S_DEPLOYMENT_NAME', 'value': 'executor1-1'},
         {'name': 'K8S_NAMESPACE_NAME', 'value': namespace},
-        {'name': 'K8S_POD_NAME', 'valueFrom': {'fieldRef': {'fieldPath': 'metadata.name'}}},
+        {
+            'name': 'K8S_POD_NAME',
+            'valueFrom': {'fieldRef': {'fieldPath': 'metadata.name'}},
+        },
     ]
 
     executor2_head0_objects = yaml_dicts_per_deployment['executor2-head']
@@ -376,9 +387,11 @@ def test_flow_to_k8s_yaml(tmpdir, protocol, flow_port):
         {'name': 'JINA_DEPLOYMENT_NAME', 'value': 'executor2'},
         {'name': 'K8S_DEPLOYMENT_NAME', 'value': 'executor2-head'},
         {'name': 'K8S_NAMESPACE_NAME', 'value': namespace},
-        {'name': 'K8S_POD_NAME', 'valueFrom': {'fieldRef': {'fieldPath': 'metadata.name'}}},
+        {
+            'name': 'K8S_POD_NAME',
+            'valueFrom': {'fieldRef': {'fieldPath': 'metadata.name'}},
+        },
     ]
-
 
     executor2_uses_before_args = executor2_head_containers[1]['args']
     assert executor2_uses_before_args[0] == 'executor'
@@ -410,9 +423,11 @@ def test_flow_to_k8s_yaml(tmpdir, protocol, flow_port):
         {'name': 'JINA_DEPLOYMENT_NAME', 'value': 'executor2'},
         {'name': 'K8S_DEPLOYMENT_NAME', 'value': 'executor2-head'},
         {'name': 'K8S_NAMESPACE_NAME', 'value': namespace},
-        {'name': 'K8S_POD_NAME', 'valueFrom': {'fieldRef': {'fieldPath': 'metadata.name'}}},
+        {
+            'name': 'K8S_POD_NAME',
+            'valueFrom': {'fieldRef': {'fieldPath': 'metadata.name'}},
+        },
     ]
-
 
     executor2_uses_after_args = executor2_head_containers[2]['args']
     assert executor2_uses_after_args[0] == 'executor'
@@ -444,9 +459,11 @@ def test_flow_to_k8s_yaml(tmpdir, protocol, flow_port):
         {'name': 'JINA_DEPLOYMENT_NAME', 'value': 'executor2'},
         {'name': 'K8S_DEPLOYMENT_NAME', 'value': 'executor2-head'},
         {'name': 'K8S_NAMESPACE_NAME', 'value': namespace},
-        {'name': 'K8S_POD_NAME', 'valueFrom': {'fieldRef': {'fieldPath': 'metadata.name'}}},
+        {
+            'name': 'K8S_POD_NAME',
+            'valueFrom': {'fieldRef': {'fieldPath': 'metadata.name'}},
+        },
     ]
-
 
     executor2_objects = yaml_dicts_per_deployment['executor2-0']
     assert len(executor2_objects) == 3  # config-map, service, deployment
@@ -486,9 +503,11 @@ def test_flow_to_k8s_yaml(tmpdir, protocol, flow_port):
         {'name': 'JINA_DEPLOYMENT_NAME', 'value': 'executor2'},
         {'name': 'K8S_DEPLOYMENT_NAME', 'value': 'executor2-0'},
         {'name': 'K8S_NAMESPACE_NAME', 'value': namespace},
-        {'name': 'K8S_POD_NAME', 'valueFrom': {'fieldRef': {'fieldPath': 'metadata.name'}}},
+        {
+            'name': 'K8S_POD_NAME',
+            'valueFrom': {'fieldRef': {'fieldPath': 'metadata.name'}},
+        },
     ]
-
 
 
 @pytest.mark.parametrize('has_external', [False, True])

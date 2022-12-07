@@ -44,6 +44,9 @@ def _cli_to_schema(
             pv['default_literal'] = None
         if p['name'] in {'uses', 'uses_before', 'uses_after'} and target != 'flow':
             pv['type'] = 'Union[str, Type[\'BaseExecutor\'], dict]'
+        if p['name'] == 'protocol':
+            pv['type'] = 'Union[str, List[str]]'
+            print(_schema)
 
         pv['description'] = pv['description'].replace('\n', '\n' + ' ' * 10)
 
