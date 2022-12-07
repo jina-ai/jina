@@ -7,7 +7,7 @@ from tests.integration.instrumentation import ExecutorTestWithTracing, get_trace
 def test_span_order(jaeger_port, otlp_collector, otlp_receiver_port):
     f = Flow(
         tracing=True,
-        traces_exporter_host='localhost',
+        traces_exporter_host='http://localhost',
         traces_exporter_port=otlp_receiver_port,
     ).add(uses=ExecutorTestWithTracing)
 
