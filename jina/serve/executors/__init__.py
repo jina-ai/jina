@@ -546,6 +546,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         quiet_error: Optional[bool] = False, 
         reload: Optional[bool] = False, 
         replicas: Optional[int] = 1, 
+        restart: Optional[bool] = False, 
         retries: Optional[int] = -1, 
         runtime_cls: Optional[str] = 'WorkerRuntime', 
         shards: Optional[int] = 1, 
@@ -635,6 +636,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         :param quiet_error: If set, then exception stack information will not be added to the log
         :param reload: If set, the Executor reloads the modules as they change
         :param replicas: The number of replicas in the deployment
+        :param restart: If set, the Executor will restart while serving if the YAML configuration source is changed. This differs from `reload` argument in that this will restart the server and more configuration can be changed, like number of replicas.
         :param retries: Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
         :param runtime_cls: The runtime class to run inside the Pod
         :param shards: The number of shards in the deployment running at the same time. For more details check https://docs.jina.ai/fundamentals/flow/create-flow/#complex-flow-topologies
