@@ -169,21 +169,34 @@ class WorkerRequestHandler:
             raise
 
     def _refresh_executor(self, changed_files):
+        import copy
         import importlib
         import inspect
-        import copy
         import sys
 
         try:
-            sys_mod_files_modules = {getattr(module, '__file__', ''): module for module in sys.modules.values()}
+            sys_mod_files_modules = {
+                getattr(module, '__file__', ''): module
+                for module in sys.modules.values()
+            }
 
             for file in changed_files:
                 if file in sys_mod_files_modules:
+                    file_module = sys_mod_files_modules[file]
+                    if file_module.__name__ == '__main__':
+                        self.logger.warning(
+                            'The main module file was changed, cannot reload Executor, please restart '
+                            'the application'
+                        )
                     importlib.reload(sys_mod_files_modules[file])
                 else:
-                    self.logger.debug(f'Changed file {file} was not previously imported.')
+                    self.logger.debug(
+                        f'Changed file {file} was not previously imported.'
+                    )
         except Exception as exc:
-            self.logger.error(f' Exception when refreshing Executor when changes detected in {changed_files}')
+            self.logger.error(
+                f' Exception when refreshing Executor when changes detected in {changed_files}'
+            )
             raise exc
 
         importlib.reload(inspect.getmodule(self._executor.__class__))
