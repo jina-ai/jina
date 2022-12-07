@@ -50,12 +50,26 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.name
-
-        readinessProbe:
-          tcpSocket:
-            port: {port}
+        startupProbe:
+          exec:
+            command:
+              - jina
+              - ping
+              - executor
+              - 127.0.0.1:{port_uses}
           initialDelaySeconds: 5
-          periodSeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 10
+        livenessProbe:
+          exec:
+            command:
+              - jina
+              - ping
+              - executor
+              - 127.0.0.1:{port}
+          initialDelaySeconds: 30
+          periodSeconds: 5
+          timeoutSeconds: 10
         lifecycle:
           preStop:
             exec:
@@ -85,8 +99,7 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.name
-
-        readinessProbe:
+        startupProbe:
           exec:
             command:
               - jina
@@ -94,7 +107,17 @@ spec:
               - executor
               - 127.0.0.1:{port_uses_before}
           initialDelaySeconds: 5
-          periodSeconds: 20
+          periodSeconds: 5
+          timeoutSeconds: 10
+        livenessProbe:
+          exec:
+            command:
+              - jina
+              - ping
+              - executor
+              - 127.0.0.1:{port_uses_before}
+          initialDelaySeconds: 30
+          periodSeconds: 5
           timeoutSeconds: 10
         lifecycle:
           preStop:
@@ -125,7 +148,7 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.name
-        readinessProbe:
+        startupProbe:
           exec:
             command:
               - jina
@@ -133,7 +156,17 @@ spec:
               - executor
               - 127.0.0.1:{port_uses_after}
           initialDelaySeconds: 5
-          periodSeconds: 20
+          periodSeconds: 5
+          timeoutSeconds: 10
+        livenessProbe:
+          exec:
+            command:
+              - jina
+              - ping
+              - executor
+              - 127.0.0.1:{port_uses_after}
+          initialDelaySeconds: 30
+          periodSeconds: 5
           timeoutSeconds: 10
         lifecycle:
           preStop:
