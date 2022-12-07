@@ -63,7 +63,7 @@ class PlaceholderExecutor(Executor):
     @dynamic_batching(preferred_batch_size=100, timeout=20000000)
     def param_fun(self, docs, parameters, **kwargs):
         for doc in docs:
-            doc.text += str(parameters)
+            doc.text += 'long timeout'
 
 
 RequestStruct = namedtuple('RequestStruct', ['port', 'endpoint', 'iterator'])
@@ -423,7 +423,9 @@ def _send_request(gateway_port, num_docs, endpoint):
 
 def _assert_all_docs_processed(gateway_port, num_docs, endpoint):
     res = _send_request(gateway_port, num_docs, endpoint)
-    assert len(res) == num_docs
+    print(f'Got response {res.texts}')
+    print(f'Sent {num_docs} docs')
+    assert res.texts == ['long timeout' for _ in range(num_docs)]
 
 
 ################
