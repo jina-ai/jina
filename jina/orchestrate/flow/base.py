@@ -36,7 +36,7 @@ from rich.progress import (
 )
 from rich.table import Table
 
-from jina import __default_host__, __docker_host__, helper
+from jina import __default_host__, __docker_host__, __windows__, helper
 from jina.clients import Client
 from jina.clients.mixin import AsyncPostMixin, HealthCheckMixin, PostMixin, ProfileMixin
 from jina.enums import (
@@ -45,7 +45,6 @@ from jina.enums import (
     FlowInspectType,
     GatewayProtocolType,
 )
-from jina import __windows__
 from jina.excepts import (
     FlowMissingDeploymentError,
     FlowTopologyError,
@@ -122,7 +121,7 @@ class Flow(
         metrics_exporter_host: Optional[str] = None,
         metrics_exporter_port: Optional[int] = None,
         port: Optional[int] = None,
-        protocol: Optional[str] = 'GRPC',
+        protocol: Optional[Union[str, List[str]]] = 'GRPC',
         proxy: Optional[bool] = False,
         tls: Optional[bool] = False,
         traces_exporter_host: Optional[str] = None,
@@ -183,9 +182,9 @@ class Flow(
         no_debug_endpoints: Optional[bool] = False,
         port_monitoring: Optional[str] = None,
         prefetch: Optional[int] = 1000,
-        protocol: Optional[List[str]] = ['GRPC'],
+        protocol: Optional[Union[str, List[str]]] = ['GRPC'],
         proxy: Optional[bool] = False,
-        py_modules: Optional[List[str]] = None,
+        py_modules: Optional[List] = None,
         quiet: Optional[bool] = False,
         quiet_error: Optional[bool] = False,
         retries: Optional[int] = -1,
@@ -834,7 +833,7 @@ class Flow(
         docker_kwargs: Optional[dict] = None,
         entrypoint: Optional[str] = None,
         env: Optional[dict] = None,
-        exit_on_exceptions: Optional[List[str]] = [],
+        exit_on_exceptions: Optional[List] = [],
         external: Optional[bool] = False,
         floating: Optional[bool] = False,
         force_update: Optional[bool] = False,
@@ -854,7 +853,7 @@ class Flow(
         output_array_type: Optional[str] = None,
         polling: Optional[str] = 'ANY',
         port_monitoring: Optional[str] = None,
-        py_modules: Optional[List[str]] = None,
+        py_modules: Optional[List] = None,
         quiet: Optional[bool] = False,
         quiet_error: Optional[bool] = False,
         reload: Optional[bool] = False,
@@ -877,7 +876,7 @@ class Flow(
         uses_metas: Optional[dict] = None,
         uses_requests: Optional[dict] = None,
         uses_with: Optional[dict] = None,
-        volumes: Optional[List[str]] = None,
+        volumes: Optional[List] = None,
         when: Optional[dict] = None,
         workspace: Optional[str] = None,
         **kwargs,
@@ -1252,9 +1251,9 @@ class Flow(
         no_debug_endpoints: Optional[bool] = False,
         port_monitoring: Optional[str] = None,
         prefetch: Optional[int] = 1000,
-        protocol: Optional[List[str]] = ['GRPC'],
+        protocol: Optional[Union[str, List[str]]] = ['GRPC'],
         proxy: Optional[bool] = False,
-        py_modules: Optional[List[str]] = None,
+        py_modules: Optional[List] = None,
         quiet: Optional[bool] = False,
         quiet_error: Optional[bool] = False,
         retries: Optional[int] = -1,

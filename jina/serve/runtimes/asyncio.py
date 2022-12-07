@@ -31,12 +31,12 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, InstrumentationMixin, AB
     """
 
     def __init__(
-            self,
-            args: 'argparse.Namespace',
-            cancel_event: Optional[
-                Union['asyncio.Event', 'multiprocessing.Event', 'threading.Event']
-            ] = None,
-            **kwargs,
+        self,
+        args: 'argparse.Namespace',
+        cancel_event: Optional[
+            Union['asyncio.Event', 'multiprocessing.Event', 'threading.Event']
+        ] = None,
+        **kwargs,
     ):
         super().__init__(args, **kwargs)
         self._loop = asyncio.new_event_loop()
@@ -44,6 +44,7 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, InstrumentationMixin, AB
         self.is_cancel = cancel_event or asyncio.Event()
 
         if not __windows__:
+
             def _cancel(sig):
                 def _inner_cancel(*args, **kwargs):
                     self.logger.debug(f'Received signal {sig.name}')
@@ -54,6 +55,7 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, InstrumentationMixin, AB
             for sig in HANDLED_SIGNALS:
                 self._loop.add_signal_handler(sig, _cancel(sig), sig, None)
         else:
+
             def _cancel(signum, frame):
                 self.logger.debug(f'Received signal {signum}')
                 self.is_cancel.set(),
@@ -192,11 +194,11 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, InstrumentationMixin, AB
 
     @classmethod
     def wait_for_ready_or_shutdown(
-            cls,
-            timeout: Optional[float],
-            ready_or_shutdown_event: Union['multiprocessing.Event', 'threading.Event'],
-            ctrl_address: str,
-            **kwargs,
+        cls,
+        timeout: Optional[float],
+        ready_or_shutdown_event: Union['multiprocessing.Event', 'threading.Event'],
+        ctrl_address: str,
+        **kwargs,
     ):
         """
         Check if the runtime has successfully started

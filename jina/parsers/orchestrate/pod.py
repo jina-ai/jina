@@ -127,7 +127,7 @@ def mixin_pod_runtime_args_parser(arg_group, pod_type='worker'):
             '--reload',
             action='store_true',
             default=False,
-            help='If set, the Executor reloads the modules as they change'
+            help='If set, the Executor reloads the modules as they change',
         )
     else:
         port_description = (

@@ -1,14 +1,15 @@
-import time
-import random
-import subprocess
-import socket
-import docker
 import os
+import random
+import socket
+import subprocess
+import time
+from contextlib import contextmanager
+from subprocess import CalledProcessError
+from typing import Generator
+
+import docker
 from docker import DockerClient
 from pytest_kind import KindCluster
-from subprocess import CalledProcessError
-from contextlib import contextmanager
-from typing import Generator
 
 from jina.logging.logger import JinaLogger
 
@@ -24,7 +25,7 @@ class KindClusterWrapperV2:
 
     def create_namespace(self, namespace: str) -> bool:
         """Create a namespace in the kind cluster.
-        
+
         Returns:
             bool: True if the namespace was created, False if it already exists.
         """
@@ -40,7 +41,7 @@ class KindClusterWrapperV2:
 
     def delete_namespace(self, namespace: str) -> bool:
         """Delete a namespace in the kind cluster.
-        
+
         Returns:
             bool: True if the namespace was deleted, False if it doesn't exist.
         """
@@ -54,10 +55,12 @@ class KindClusterWrapperV2:
             self._log.info(f"Namespace {namespace} doesn't exists")
             return False
 
-    def deploy_from_dir(self, dir: str, namespace: str, timeout_seconds: int = 300) -> None:
+    def deploy_from_dir(
+        self, dir: str, namespace: str, timeout_seconds: int = 300
+    ) -> None:
         """
         Deploy artifacts from a directory containing the k8s yaml files
-        
+
         Args:
             dir: directory containing the k8s yaml files
             namespace: namespace to deploy to
@@ -72,15 +75,24 @@ class KindClusterWrapperV2:
                 deployment_name = artifact.split()[0]
                 self._log.info(f'Awaiting deployment {deployment_name}')
                 try:
-                    self._cluster.kubectl('wait', '--for=condition=available', deployment_name, f"--timeout={timeout_seconds}s", '-n', namespace)
+                    self._cluster.kubectl(
+                        'wait',
+                        '--for=condition=available',
+                        deployment_name,
+                        f"--timeout={timeout_seconds}s",
+                        '-n',
+                        namespace,
+                    )
                 except CalledProcessError as e:
-                    self._log.error(f'Error while waiting for deployment {deployment_name}: {e}')
+                    self._log.error(
+                        f'Error while waiting for deployment {deployment_name}: {e}'
+                    )
                     self.log_node_summaries(namespace)
                     self.log_pod_summaries(namespace)
                     self.log_failing_pods(namespace)
                     raise e
                 self._log.info(f'Deployment {deployment_name} ready')
-    
+
     def log_node_summaries(self, namespace: str) -> None:
         """Logs node summaries in a namespace."""
         self._log.info(self._cluster.kubectl('get', 'nodes', '-n', namespace))
@@ -94,16 +106,31 @@ class KindClusterWrapperV2:
     def log_failing_pods(self, namespace: str) -> None:
         """Logs all pods that are not in a running state in a namespace."""
         self._log.info(f'Logging failing pods in {namespace}')
-        pods = self._cluster.kubectl('get', 'pods', '-n', namespace, '-o', 'jsonpath={.items[*].metadata.name}')
+        pods = self._cluster.kubectl(
+            'get', 'pods', '-n', namespace, '-o', 'jsonpath={.items[*].metadata.name}'
+        )
         for pod in pods.split():
-            if self._cluster.kubectl('get', 'pods', pod, '-n', namespace, '-o', 'jsonpath={.status.phase}') != 'Running':
+            if (
+                self._cluster.kubectl(
+                    'get',
+                    'pods',
+                    pod,
+                    '-n',
+                    namespace,
+                    '-o',
+                    'jsonpath={.status.phase}',
+                )
+                != 'Running'
+            ):
                 self._log.error(self._cluster.kubectl('logs', pod, '-n', namespace))
 
-    async def async_deploy_from_dir(self, dir: str, namespace: str, timeout_seconds: int = 900) -> None:
+    async def async_deploy_from_dir(
+        self, dir: str, namespace: str, timeout_seconds: int = 900
+    ) -> None:
         """
         Deploy artifacts from a directory containing the k8s yaml files
         But wait for the deployments to be ready asynchronously
-        
+
         Args:
             dir: directory containing the k8s yaml files
             namespace: namespace to deploy to
@@ -111,10 +138,10 @@ class KindClusterWrapperV2:
         """
         # TODO: Timeout should be shorter and should async sleep if failed
         raise NotImplementedError('Not implemented yet')
-    
+
     def build_and_load_docker_image(self, dir: str, image_name: str, tag: str) -> str:
         """Build and load docker image.
-        
+
         Args:
             dir: path to build directory
             image_name: name of the image
@@ -127,10 +154,10 @@ class KindClusterWrapperV2:
         self._log.info(f'Docker image {image_name}:{tag} built')
         self.load_docker_image(image_name, tag)
         return f'{image_name}:{tag}'
-    
+
     def load_docker_image(self, image_name: str, tag: str) -> str:
         """Load docker image.
-        
+
         Args:
             image_name: name of the image
             tag: tag of the image
@@ -141,10 +168,10 @@ class KindClusterWrapperV2:
         self._cluster.load_docker_image(f'{image_name}:{tag}')
         self._log.info(f'Docker image {image_name}:{tag} loaded')
         return f'{image_name}:{tag}'
-    
+
     def remove_docker_image(self, image_name: str, tag: str) -> None:
         """Remove docker image.
-        
+
         Args:
             image_name: name of the image
             tag: tag of the image
@@ -164,7 +191,7 @@ class KindClusterWrapperV2:
     ) -> Generator[int, None, None]:
         """
         Run "kubectl port-forward" for the given service/pod.
-        
+
         Args:
             service_or_pod_name: name of the service or pod
             namespace: namespace of the service or pod

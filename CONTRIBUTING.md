@@ -255,17 +255,13 @@ Good docs make developers happy, and we love happy developers! We've got a few d
 10. Link to any existing explanations of the concepts you are using.
 
 Bonus: **Know when to break the rules**. Documentation writing is as much art as it is science. Sometimes you will have to deviate from these rules in order to write good documentation.
-Refer to these pages as standardized examples:
 
-* https://docs.jina.ai/fundamentals/flow/access-flow-api/ 
-* https://docs.jina.ai/fundamentals/flow/flow-api/
-* https://docs.jina.ai/how-to/flow-switch/ 
 
 [MyST](https://myst-parser.readthedocs.io/en/latest/) Elements Usage
 
-1. Use the `{tab}` element to show multiple ways of doing one thing. [Example](https://docs.jina.ai/fundamentals/flow/create-flow/#instantiate-a-flow) 
-2. Use the `{admonition}` boxes with care. We recommend restricting yourself to [Hint](https://docs.jina.ai/fundamentals/flow/create-flow/#create-a-flow), [Caution](https://docs.jina.ai/fundamentals/flow/flow-api/#add-graphql-endpoint) and [See Also](https://docs.jina.ai/fundamentals/flow/flow-api/#add-graphql-endpoint).
-3. Use `{dropdown}` to hide optional content, such as long code snippets or console output. [Example](https://docs.jina.ai/fundamentals/flow/access-flow-api/#use-http-client-to-send-request)
+1. Use the `{tab}` element to show multiple ways of doing one thing. [Example](https://docs.jina.ai/concepts/flow/create-flow/#instantiate-a-flow) 
+2. Use the `{admonition}` boxes with care. We recommend restricting yourself to [Hint](https://docs.jina.ai/concepts/flow/create-flow/#create-a-flow), [Caution](https://docs.jina.ai/concepts/flow/flow-api/#add-graphql-endpoint) and [See Also](https://docs.jina.ai/concepts/flow/flow-api/#add-graphql-endpoint).
+3. Use `{dropdown}` to hide optional content, such as long code snippets or console output. [Example](https://docs.jina.ai/concepts/flow/access-flow-api/#use-http-client-to-send-request)
 
 ### Building documentation on your local machine
 
