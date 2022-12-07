@@ -189,7 +189,6 @@ class Flow(
         py_modules: Optional[List[str]] = None,
         quiet: Optional[bool] = False,
         quiet_error: Optional[bool] = False,
-        restart: Optional[bool] = False,
         retries: Optional[int] = -1,
         runtime_cls: Optional[str] = 'GatewayRuntime',
         ssl_certfile: Optional[str] = None,
@@ -259,7 +258,6 @@ class Flow(
           which should be structured as a python package.
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
-        :param restart: If set, the Executor will restart while serving if the YAML configuration source is changed. This differst from `reload` argument that this will restart the server and more configuration can be changed, like the number of replicas
         :param retries: Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
         :param runtime_cls: The runtime class to run inside the Pod
         :param ssl_certfile: the path to the certificate file
@@ -327,7 +325,7 @@ class Flow(
               When not given, then the default naming strategy will apply.
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
-        :param restart: If set, the Flow will restart while blocked if the YAML configuration source is changed
+        :param restart: If set, the Flow will restart while blocked if the YAML configuration source is changed.
         :param uses: The YAML path represents a flow. It can be either a local file path or a URL.
         :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.
 
@@ -432,7 +430,6 @@ class Flow(
           which should be structured as a python package.
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
-        :param restart: If set, the Executor will restart while serving if the YAML configuration source is changed. This differst from `reload` argument that this will restart the server and more configuration can be changed, like the number of replicas
         :param retries: Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
         :param runtime_cls: The runtime class to run inside the Pod
         :param ssl_certfile: the path to the certificate file
@@ -475,7 +472,7 @@ class Flow(
               When not given, then the default naming strategy will apply.
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
-        :param restart: If set, the Flow will restart while blocked if the YAML configuration source is changed
+        :param restart: If set, the Flow will restart while blocked if the YAML configuration source is changed.
         :param uses: The YAML path represents a flow. It can be either a local file path or a URL.
         :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.
 
@@ -957,7 +954,7 @@ class Flow(
         :param quiet_error: If set, then exception stack information will not be added to the log
         :param reload: If set, the Executor reloads the modules as they change
         :param replicas: The number of replicas in the deployment
-        :param restart: If set, the Executor will restart while serving if the YAML configuration source is changed. This differst from `reload` argument that this will restart the server and more configuration can be changed, like the number of replicas
+        :param restart: If set, the Executor will restart while serving if the YAML configuration source is changed. This differs from `reload` argument in that this will restart the server and more configuration can be changed, like number of replicas.
         :param retries: Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
         :param runtime_cls: The runtime class to run inside the Pod
         :param shards: The number of shards in the deployment running at the same time. For more details check https://docs.jina.ai/fundamentals/flow/create-flow/#complex-flow-topologies
@@ -1103,7 +1100,7 @@ class Flow(
         :param quiet_error: If set, then exception stack information will not be added to the log
         :param reload: If set, the Executor reloads the modules as they change
         :param replicas: The number of replicas in the deployment
-        :param restart: If set, the Executor will restart while serving if the YAML configuration source is changed. This differst from `reload` argument that this will restart the server and more configuration can be changed, like the number of replicas
+        :param restart: If set, the Executor will restart while serving if the YAML configuration source is changed. This differs from `reload` argument in that this will restart the server and more configuration can be changed, like number of replicas.
         :param retries: Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
         :param runtime_cls: The runtime class to run inside the Pod
         :param shards: The number of shards in the deployment running at the same time. For more details check https://docs.jina.ai/fundamentals/flow/create-flow/#complex-flow-topologies
@@ -1267,7 +1264,6 @@ class Flow(
         py_modules: Optional[List[str]] = None,
         quiet: Optional[bool] = False,
         quiet_error: Optional[bool] = False,
-        restart: Optional[bool] = False,
         retries: Optional[int] = -1,
         runtime_cls: Optional[str] = 'GatewayRuntime',
         ssl_certfile: Optional[str] = None,
@@ -1337,7 +1333,6 @@ class Flow(
           which should be structured as a python package.
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
-        :param restart: If set, the Executor will restart while serving if the YAML configuration source is changed. This differst from `reload` argument that this will restart the server and more configuration can be changed, like the number of replicas
         :param retries: Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
         :param runtime_cls: The runtime class to run inside the Pod
         :param ssl_certfile: the path to the certificate file
@@ -1432,7 +1427,6 @@ class Flow(
           which should be structured as a python package.
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
-        :param restart: If set, the Executor will restart while serving if the YAML configuration source is changed. This differst from `reload` argument that this will restart the server and more configuration can be changed, like the number of replicas
         :param retries: Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
         :param runtime_cls: The runtime class to run inside the Pod
         :param ssl_certfile: the path to the certificate file
