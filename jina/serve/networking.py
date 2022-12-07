@@ -445,7 +445,6 @@ class GrpcConnectionPool:
 
             :returns: Tuple of response and metadata about the response
             """
-            print(f' send requests HERE {len(requests[0].docs)}')
             if not self._initialized:
                 await self._init_stubs()
             request_type = type(requests[0])
@@ -455,7 +454,6 @@ class GrpcConnectionPool:
                 request = requests[0]
                 if self.single_data_stub:
                     self._record_request_bytes_metric(request.nbytes)
-                    print(f'A HERE {len(request.docs)}')
                     call_result = self.single_data_stub.process_single_data(
                         request,
                         metadata=metadata,
@@ -463,18 +461,15 @@ class GrpcConnectionPool:
                         timeout=timeout,
                     )
                     with timer:
-                        print(f'AWAIT {len(request.docs)} => {request.header.request_id}')
                         metadata, response = (
                             await call_result.trailing_metadata(),
                             await call_result,
                         )
-                        print(f'A HERE response {len(response.docs)} => {response.header.request_id}')
                         self._record_received_bytes_metric(response.nbytes)
                     return response, metadata
 
                 elif self.stream_stub:
                     self._record_request_bytes_metric(request.nbytes)
-                    print(f'B HERE {len(requests[0].docs)}')
 
                     with timer:
                         async for response in self.stream_stub.Call(
@@ -819,7 +814,6 @@ class GrpcConnectionPool:
             raise ValueError(f'Unsupported polling type {polling_type}')
 
         for replica_list in connections:
-            print(f' _send requests {len(requests[0].docs)}')
             task = self._send_requests(
                 requests,
                 replica_list,
@@ -1044,7 +1038,6 @@ class GrpcConnectionPool:
                 )
                 tried_addresses.add(current_connection.address)
                 try:
-                    print(f' send requests {len(requests[0].docs)}')
                     return await current_connection.send_requests(
                         requests=requests,
                         metadata=metadata,
