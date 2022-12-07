@@ -16,29 +16,20 @@ if TYPE_CHECKING:  # pragma: no cover
 
 # overload_inject_start_client
 @overload
-def Client(
-    *,
-    asyncio: Optional[bool] = False,
-    host: Optional[str] = '0.0.0.0',
-    metrics: Optional[bool] = False,
-    metrics_exporter_host: Optional[str] = None,
-    metrics_exporter_port: Optional[int] = None,
-    port: Optional[int] = None,
-    protocol: Optional[Union[str, List[str]]] = 'GRPC',
-    proxy: Optional[bool] = False,
-    tls: Optional[bool] = False,
-    traces_exporter_host: Optional[str] = None,
-    traces_exporter_port: Optional[int] = None,
-    tracing: Optional[bool] = False,
-    **kwargs
-) -> Union[
-    'AsyncWebSocketClient',
-    'WebSocketClient',
-    'AsyncGRPCClient',
-    'GRPCClient',
-    'HTTPClient',
-    'AsyncHTTPClient',
-]:
+def Client(*, 
+    asyncio: Optional[bool] = False, 
+    host: Optional[str] = '0.0.0.0', 
+    metrics: Optional[bool] = False, 
+    metrics_exporter_host: Optional[str] = None, 
+    metrics_exporter_port: Optional[int] = None, 
+    port: Optional[int] = None, 
+    protocol: Optional[Union[str, List[str]]] = 'GRPC', 
+    proxy: Optional[bool] = False, 
+    tls: Optional[bool] = False, 
+    traces_exporter_host: Optional[str] = None, 
+    traces_exporter_port: Optional[int] = None, 
+    tracing: Optional[bool] = False, 
+    **kwargs) -> Union['AsyncWebSocketClient', 'WebSocketClient', 'AsyncGRPCClient', 'GRPCClient', 'HTTPClient', 'AsyncHTTPClient']:
     """Create a Client. Client is how user interact with Flow
 
     :param asyncio: If set, then the input and output of this Client work in an asynchronous manner.
