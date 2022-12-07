@@ -391,7 +391,6 @@ class DockerComposeConfig:
 
         for i in range(shards):
             cargs = copy.deepcopy(args)
-            cargs.host = args.host[0]
             cargs.shard_id = i
             cargs.uses_before = None
             cargs.uses_after = None
@@ -403,6 +402,7 @@ class DockerComposeConfig:
                 cargs.pod_role = PodRoleType.GATEWAY
             else:
                 cargs.port = port
+                cargs.host = args.host[0]
             parsed_args['services'].append(cargs)
 
         return parsed_args
