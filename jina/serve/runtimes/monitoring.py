@@ -45,10 +45,10 @@ class MonitoringRequestMixin:
     """
 
     def __init__(
-            self,
-            metrics_registry: Optional['CollectorRegistry'] = None,
-            meter: Optional['Meter'] = None,
-            runtime_name: Optional[str] = None,
+        self,
+        metrics_registry: Optional['CollectorRegistry'] = None,
+        meter: Optional['Meter'] = None,
+        runtime_name: Optional[str] = None,
     ):
 
         self._request_init_time = {} if metrics_registry else None
@@ -56,8 +56,8 @@ class MonitoringRequestMixin:
 
         if metrics_registry:
             with ImportExtensions(
-                    required=True,
-                    help_text='You need to install the `prometheus_client` to use the montitoring functionality of jina',
+                required=True,
+                help_text='You need to install the `prometheus_client` to use the montitoring functionality of jina',
             ):
                 from prometheus_client import Counter, Gauge, Summary
 
@@ -181,14 +181,14 @@ class MonitoringRequestMixin:
 
     def _update_end_successful_requests_metrics(self, result: 'Request'):
         if (
-                self._receiving_request_metrics
+            self._receiving_request_metrics
         ):  # this one should only be observed when the metrics is succesful
             init_time = self._request_init_time.pop(
                 result.request_id
             )  # need to pop otherwise it stays in memory forever
             self._receiving_request_metrics.observe(time.time() - init_time)
         if (
-                self._receiving_request_histogram
+            self._receiving_request_histogram
         ):  # this one should only be observed when the metrics is succesful
             init_time = self._meter_request_init_time.pop(
                 result.request_id

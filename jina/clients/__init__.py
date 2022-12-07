@@ -1,6 +1,6 @@
 """Module wrapping the Client of Jina."""
 import argparse
-from typing import TYPE_CHECKING, Optional, Union, overload
+from typing import TYPE_CHECKING, List, Optional, Union, overload
 
 from jina.helper import parse_client
 
@@ -24,7 +24,7 @@ def Client(
     metrics_exporter_host: Optional[str] = None,
     metrics_exporter_port: Optional[int] = None,
     port: Optional[int] = None,
-    protocol: Optional[str] = 'GRPC',
+    protocol: Optional[Union[str, List[str]]] = 'GRPC',
     proxy: Optional[bool] = False,
     tls: Optional[bool] = False,
     traces_exporter_host: Optional[str] = None,
