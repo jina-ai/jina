@@ -2416,37 +2416,34 @@ class Flow(
 
                 new_stop_event = stop_event or threading.Event()
                 if len(watch_files_list) > 0:
-                    while True:
-                        for changes in watch(
-                            *watch_files_list, stop_event=new_stop_event
-                        ):
-                            for _, changed_file in changes:
-                                if changed_file not in watch_files_from_deployments:
-                                    # maybe changed_file is the absolute path of one in watch_files_from_deployments
-                                    is_absolute_path = False
-                                    for (
-                                        file,
-                                        deployment_name,
-                                    ) in watch_files_from_deployments.items():
-                                        if changed_file.endswith(file):
-                                            is_absolute_path = True
-                                            _restart_deployment(
-                                                self._deployment_nodes[deployment_name],
-                                                changed_file,
-                                            )
-                                            break
+                    for changes in watch(
+                        *watch_files_list, stop_event=new_stop_event
+                    ):
+                        for _, changed_file in changes:
+                            if changed_file not in watch_files_from_deployments:
+                                # maybe changed_file is the absolute path of one in watch_files_from_deployments
+                                is_absolute_path = False
+                                for (
+                                    file,
+                                    deployment_name,
+                                ) in watch_files_from_deployments.items():
+                                    if changed_file.endswith(file):
+                                        is_absolute_path = True
+                                        _restart_deployment(
+                                            self._deployment_nodes[deployment_name],
+                                            changed_file,
+                                        )
+                                        break
 
-                                    if not is_absolute_path:
-                                        _restart_flow(changed_file)
-                                else:
-                                    _restart_deployment(
-                                        self._deployment_nodes[
-                                            watch_files_from_deployments[changed_file]
-                                        ],
-                                        changed_file,
-                                    )
-                        if new_stop_event.is_set():
-                            break
+                                if not is_absolute_path:
+                                    _restart_flow(changed_file)
+                            else:
+                                _restart_deployment(
+                                    self._deployment_nodes[
+                                        watch_files_from_deployments[changed_file]
+                                    ],
+                                    changed_file,
+                                )
             else:
                 wait_event = stop_event
                 if not wait_event:
