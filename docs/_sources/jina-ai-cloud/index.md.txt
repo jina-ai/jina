@@ -1,4 +1,4 @@
-# {octicon}`flame` Jina AI Cloud
+# {octicon}`beaker` Jina AI Cloud
 
 
 
@@ -7,7 +7,7 @@
 
 
 ::::{grid-item-card} {octicon}`package-dependents;1.5em` Explore Executor Hub
-:link: ../fundamentals/executor/hub/index
+:link: ../concepts/executor/hub/index
 :link-type: doc
 
 
@@ -17,7 +17,7 @@ Executor Hub is an Executor marketplace that allows you to share, explore and te
 
 
 ::::{grid-item-card} {octicon}`cpu;1.5em` Deploy a Flow to JCloud
-:link: ../fundamentals/jcloud/index
+:link: ../concepts/jcloud/index
 :link-type: doc
 
 JCloud is a free CPU/GPU hosting platform for Jina projects.
@@ -31,8 +31,8 @@ Jina AI Cloud is the **portal** and **single entrypoint** to manage **all** your
 - Data
   - [DocumentArray](https://docarray.jina.ai/fundamentals/documentarray/serialization/#from-to-cloud)
   - [Finetuner artifacts](https://finetuner.jina.ai/walkthrough/save-model/#save-artifact)
-- [Executors](../fundamentals/executor/index.md)
-- [Flows](../fundamentals/flow/index.md)
+- [Executors](../concepts/executor/index.md)
+- [Flows](../concepts/flow/index.md)
 - [Apps](https://now.jina.ai)
 
 _Manage_ in this context means: CRUD, access control, personal access tokens, and subscription.
@@ -50,6 +50,6 @@ We are actively working on the GUI for Jina AI Cloud. You may not see the full f
 :hidden:
 
 login
-../fundamentals/executor/hub/index
-../fundamentals/jcloud/index
+../concepts/executor/hub/index
+../concepts/jcloud/index
 ```

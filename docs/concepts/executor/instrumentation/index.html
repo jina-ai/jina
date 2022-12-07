@@ -1,0 +1,780 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+<meta property="og:title" content="Instrumentation" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://docs.jina.ai/concepts/executor/instrumentation/" />
+<meta property="og:site_name" content="Jina 3.12.1 Documentation" />
+<meta property="og:description" content="Instrumentation consists of OpenTelemetry Tracing and Metrics. Each feature can be enabled independently, and they allow you to collect request-level and application-level metrics for analyzing an Executor’s real-time behavior. Tracing: Any method that uses the requests decorator adds a default t..." />
+<meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
+<meta property="og:image:alt" content="Jina 3.12.1 Documentation" />
+<meta name="description" content="Instrumentation consists of OpenTelemetry Tracing and Metrics. Each feature can be enabled independently, and they allow you to collect request-level and application-level metrics for analyzing an Executor’s real-time behavior. Tracing: Any method that uses the requests decorator adds a default t..." />
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@JinaAI_">
+<meta name="twitter:creator" content="@JinaAI_">
+<meta name="description" content="Build multimodal AI services via cloud native technologies · Neural Search · Generative AI · Cloud Native · MLOps">
+<meta property="og:description" content="Build multimodal AI services via cloud native technologies · Neural Search · Generative AI · Cloud Native · MLOps">
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-48ZDWC8GT6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-48ZDWC8GT6');
+</script>
+
+<script async defer src="https://buttons.github.io/buttons.js"></script>
+    
+<link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" /><link rel="next" title="YAML specification" href="../yaml-spec/" /><link rel="prev" title="Containerize" href="../containerize/" />
+        <link rel="canonical" href="https://docs.jina.ai/concepts/executor/instrumentation.html" />
+
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
+        <title>Instrumentation - Jina 3.12.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/tabs.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/main.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/docbot.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #ffffff;
+  --color-code-foreground: #4d4d4d;
+  --color-brand-primary: #009191;
+  --color-brand-content: #009191;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #FBCB67;
+  --color-brand-content: #FBCB67;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #FBCB67;
+  --color-brand-content: #FBCB67;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+    <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+    <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+    <header class="mobile-header">
+        <div class="header-left">
+            <label class="nav-overlay-icon" for="__navigation">
+                <div class="visually-hidden">Toggle site navigation sidebar</div>
+                <i class="icon">
+                    <svg>
+                        <use href="#svg-menu"></use>
+                    </svg>
+                </i>
+            </label>
+        </div>
+        <div class="header-center">
+            <a href="../../../">
+                <div class="brand">Jina 3.12.1 documentation</div>
+            </a>
+        </div>
+        <div class="header-right">
+            <div class="theme-toggle-container theme-toggle-header">
+                <button class="theme-toggle">
+                    <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+                    <svg class="theme-icon-when-auto">
+                        <use href="#svg-sun-half"></use>
+                    </svg>
+                    <svg class="theme-icon-when-dark">
+                        <use href="#svg-moon"></use>
+                    </svg>
+                    <svg class="theme-icon-when-light">
+                        <use href="#svg-sun"></use>
+                    </svg>
+                </button>
+            </div>
+            <label class="toc-overlay-icon toc-header-icon" for="__toc">
+                <div class="visually-hidden">Toggle table of contents sidebar</div>
+                <i class="icon">
+                    <svg>
+                        <use href="#svg-toc"></use>
+                    </svg>
+                </i>
+            </label>
+        </div>
+    </header>
+    <aside class="sidebar-drawer">
+        <div class="sidebar-container">
+            
+            <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo only-light" src="../../../_static/logo-light.svg" alt="Light Logo" />
+    <img class="sidebar-logo only-dark" src="../../../_static/logo-dark.svg" alt="Dark Logo" />
+  </div>
+  
+  
+</a>
+<script>
+  function setPrefix(prefix){
+    window.location.href = prefix
+  }
+</script>
+<script defer>
+  fetch(`https://${window.location.host}/_versions.json`)
+  .then((resp) => resp.json())
+  .then((data) => {
+    var versionSelector = document.getElementsByClassName("version-select")[0];
+    var currentPrefix = window.location.href.toString().split(window.location.host)[1].split('/')[1];
+
+    for(var i = 0; i < data.length; i++){
+      var option = document.createElement("option");
+      option.innerHTML = data[i].version;
+      option.value = "/" + data[i].version;
+      versionSelector.appendChild(option);
+      if(currentPrefix === data[i].version){
+        versionSelector.selectedIndex = i + 1;
+      }
+    }
+  })
+  .catch((err) => console.log(err));
+</script>
+<div class="sd-d-flex-row sd-align-major-spaced">
+  <a class="github-button" href="https://github.com/jina-ai/jina" data-icon="octicon-star" data-show-count="true" aria-label="Star jina-ai/jina on GitHub" style="opacity: 0;">Star</a>
+  <select onChange="setPrefix(this.value)" class="version-select">
+    <option value="/">latest</option>
+  </select>
+</div><form class="sidebar-search-container" method="get" action="../../../search/" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+    <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../get-started/install/">Install</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../get-started/install/docker/">Docker image</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../get-started/install/apple-silicon-m1-m2/">On Apple Silicon</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../get-started/install/windows/">On Windows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../get-started/install/troubleshooting/">Troubleshooting</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../get-started/create-app/"><svg aria-hidden="true" class="sd-octicon sd-octicon-milestone" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M7.75 0a.75.75 0 01.75.75V3h3.634c.414 0 .814.147 1.13.414l2.07 1.75a1.75 1.75 0 010 2.672l-2.07 1.75a1.75 1.75 0 01-1.13.414H8.5v5.25a.75.75 0 11-1.5 0V10H2.75A1.75 1.75 0 011 8.25v-3.5C1 3.784 1.784 3 2.75 3H7V.75A.75.75 0 017.75 0zm0 8.5h4.384a.25.25 0 00.161-.06l2.07-1.75a.25.25 0 000-.38l-2.07-1.75a.25.25 0 00-.161-.06H2.75a.25.25 0 00-.25.25v3.5c0 .138.112.25.25.25h5z" fill-rule="evenodd"></path></svg> Create First Project</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Concepts</span></p>
+<ul class="current">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../preliminaries/">Preliminaries</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../preliminaries/coding-in-python-yaml/">Coding in Python/YAML</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../preliminaries/clean-code/">Clean &amp; Efficient Code</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../">Executor</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../basics/">Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../add-endpoints/">Add Endpoints</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../run/">Run</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../serve/">Serve</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../health-check/">Health Check</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../hot-reload/">Hot Reload</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../file-structure/">File Structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../containerize/">Containerize</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Instrumentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../flow/">Flow</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../flow/basics/">Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../flow/add-executors/">Add Executors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../flow/add-conditioning/">Add Conditioning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../flow/scale-out/">Scale Out</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../flow/handle-exceptions/">Handle Exceptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../flow/readiness/">Readiness</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../flow/health-check/">Health Check</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../flow/instrumentation/">Instrumentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../flow/troubleshooting-on-multiprocess/">Troubleshooting on Multiprocessing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../flow/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../gateway/">Gateway</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../gateway/health-check/">Health Check</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../gateway/rate-limit/">Rate Limit</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../gateway/customize-http-endpoints/">Customize HTTP endpoints</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../gateway/customization/">Customization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../gateway/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../client/">Client</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../client/send-receive-data/">Send &amp; Receive Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../client/send-parameters/">Send Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../client/send-graphql-mutation/">Send GraphQL Mutation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../client/callbacks/">Callbacks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../client/instrumentation/">Instrumentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../client/third-party-clients/">Third-party clients</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Cloud Native</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../cloud-nativeness/k8s/"><span class="fas fa-dharmachakra"></span> Kubernetes Support</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../cloud-nativeness/kubernetes/">Deploy on Kubernetes</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../cloud-nativeness/docker-compose/"><span class="fab fa-docker"></span> Docker Compose Support</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../cloud-nativeness/opentelemetry/"><svg aria-hidden="true" class="sd-octicon sd-octicon-telescope-fill" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M8.531 10.21a.75.75 0 01.944.253l2.644 3.864a.75.75 0 11-1.238.847L9 12.424v2.826a.75.75 0 01-1.5 0v-2.826l-1.881 2.75a.75.75 0 01-1.238-.848l2.048-2.992a.75.75 0 01.293-.252l1.81-.871zM11.905.42a1.5 1.5 0 012.144.49l1.692 2.93a1.5 1.5 0 01-.649 2.102L2.895 11.815a1.5 1.5 0 01-1.95-.602l-.68-1.176a1.5 1.5 0 01.455-1.99L11.905.422zM3.279 8.119l.835 1.445 1.355-.653-.947-1.64-1.243.848zm7.728-1.874L9.6 3.808l1.243-.848 1.52 2.631-1.356.653z" fill-rule="evenodd"></path></svg> OpenTelemetry Support</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../cloud-nativeness/opentelemetry-migration/">Migrate from Prometheus/Grafana to OpenTelemetry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../cloud-nativeness/monitoring/">Prometheus/Grafana Support (Legacy)</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../jina-ai-cloud/"><svg aria-hidden="true" class="sd-octicon sd-octicon-beaker" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M5 5.782V2.5h-.25a.75.75 0 010-1.5h6.5a.75.75 0 010 1.5H11v3.282l3.666 5.76C15.619 13.04 14.543 15 12.767 15H3.233c-1.776 0-2.852-1.96-1.899-3.458L5 5.782zM9.5 2.5h-3V6a.75.75 0 01-.117.403L4.73 9h6.54L9.617 6.403A.75.75 0 019.5 6V2.5zm-6.9 9.847L3.775 10.5h8.45l1.175 1.847a.75.75 0 01-.633 1.153H3.233a.75.75 0 01-.633-1.153z" fill-rule="evenodd"></path></svg> Jina AI Cloud</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../jina-ai-cloud/login/">Login &amp; Token Management</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../hub/">Executor Hub</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../hub/hub-portal/">Portal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../hub/create-hub-executor/">Create</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../hub/push-executor/">Publish</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../hub/use-hub-executor/">Use</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../jcloud/">Jina AI Cloud Hosting</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../jcloud/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api-rst/"><span class="fab fa-python"></span> Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../cli/"><svg aria-hidden="true" class="sd-octicon sd-octicon-terminal" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M0 2.75C0 1.784.784 1 1.75 1h12.5c.966 0 1.75.784 1.75 1.75v10.5A1.75 1.75 0 0114.25 15H1.75A1.75 1.75 0 010 13.25V2.75zm1.75-.25a.25.25 0 00-.25.25v10.5c0 .138.112.25.25.25h12.5a.25.25 0 00.25-.25V2.75a.25.25 0 00-.25-.25H1.75zM7.25 8a.75.75 0 01-.22.53l-2.25 2.25a.75.75 0 11-1.06-1.06L5.44 8 3.72 6.28a.75.75 0 111.06-1.06l2.25 2.25c.141.14.22.331.22.53zm1.5 1.5a.75.75 0 000 1.5h3a.75.75 0 000-1.5h-3z" fill-rule="evenodd"></path></svg> Command-Line Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML Specification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../proto/docs/">Protocol Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../envs/">Environment Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../telemetry/">Telemetry</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Legacy Support</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../get-started/migrate/">Migrate Jina 2 to Jina 3</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://docs2.jina.ai/">Jina 2 Documentation</a></li>
+</ul>
+
+    <p class="caption" role="heading"><span class="caption-text">Ecosystem</span></p>
+    <ul>
+        <li class="toctree-l1">
+            <a class="reference internal" href="#">
+                <img class="sidebar-ecosys-logo only-light-line" src="../../../_static/search-light.svg">
+                <img class="sidebar-ecosys-logo only-dark-line" src="../../../_static/search-dark.svg">
+                Jina</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://cloud.jina.ai">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../../_static/hub-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../../_static/hub-dark.svg">
+            Jina Hub</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://finetuner.jina.ai">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../../_static/finetuner-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../../_static/finetuner-dark.svg">
+            Finetuner</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://docarray.jina.ai">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../../_static/docarray-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../../_static/docarray-dark.svg">
+            DocArray</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://clip-as-service.jina.ai">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../../_static/cas-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../../_static/cas-dark.svg">
+            CLIP-as-service</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://github.com/jina-ai/jcloud">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../../_static/JCloud-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../../_static/JCloud-dark.svg">
+            JCloud</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://now.jina.ai">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../../_static/now-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../../_static/now-dark.svg">
+            NOW</a></li>
+    </ul>
+</div>
+
+</div>
+
+            </div>
+            
+        </div>
+    </aside>
+    <div class="main">
+        <div class="content">
+            <div class="article-container">
+                <a href="#" class="back-to-top muted-link">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+                    </svg>
+                    <span>Back to top</span>
+                </a>
+                <div class="content-icon-container"><div class="theme-toggle-container theme-toggle-content">
+                        <button class="theme-toggle">
+                            <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+                            <svg class="theme-icon-when-auto">
+                                <use href="#svg-sun-half"></use>
+                            </svg>
+                            <svg class="theme-icon-when-dark">
+                                <use href="#svg-moon"></use>
+                            </svg>
+                            <svg class="theme-icon-when-light">
+                                <use href="#svg-sun"></use>
+                            </svg>
+                        </button>
+                    </div>
+                    <label class="toc-overlay-icon toc-content-icon"
+                           for="__toc">
+                        <div class="visually-hidden">Toggle table of contents sidebar</div>
+                        <i class="icon">
+                            <svg>
+                                <use href="#svg-toc"></use>
+                            </svg>
+                        </i>
+                    </label>
+                </div>
+                <article role="main">
+                    <section id="instrumentation">
+<span id="instrumenting-executor"></span><h1>Instrumentation<a class="headerlink" href="#instrumentation" title="Permalink to this heading">#</a></h1>
+<p>Instrumentation consists of <a class="reference external" href="https://opentelemetry.io">OpenTelemetry</a> Tracing and Metrics. Each feature can be enabled independently, and they allow you to collect request-level and application-level metrics for analyzing an Executor’s real-time behavior.</p>
+<div class="seealso admonition">
+<p class="admonition-title">Full details on Instrumentation</p>
+<p>This section describes <strong>custom</strong> tracing spans. To use the Executor’s default tracing, refer to <a class="reference internal" href="../../flow/instrumentation/#instrumenting-flow"><span class="std std-ref">Flow Instrumentation</span></a>.</p>
+</div>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>Read more on setting up an OpenTelemetry collector backend in the <a class="reference internal" href="../../../cloud-nativeness/opentelemetry/#opentelemetry"><span class="std std-ref">OpenTelemetry Setup</span></a> section.</p>
+</div>
+<div class="admonition caution">
+<p class="admonition-title">Caution</p>
+<p>Prometheus-only based metrics collection will soon be deprecated. Refer to <span class="xref std std-ref">Monitoring Executor</span> for this deprecated setup.</p>
+</div>
+<section id="tracing">
+<h2>Tracing<a class="headerlink" href="#tracing" title="Permalink to this heading">#</a></h2>
+<p>Any method that uses the <a class="reference internal" href="../../../api/jina/#jina.requests" title="jina.requests"><code class="xref py py-class docutils literal notranslate"><span class="pre">requests</span></code></a> decorator adds a
+default tracing span for the defined operation. In addition, the operation span context
+is propagated to the method for creating further user-defined child spans within the
+method.</p>
+<p>You can create custom spans to observe the operation’s individual steps or record details and attributes with finer granularity. When tracing is enabled, Jina provides the OpenTelemetry Tracer implementation as an Executor class attribute that you can use to create new child spans. The <code class="docutils literal notranslate"><span class="pre">tracing_context</span></code> method argument contains the parent span context using which a new span can be created to trace the desired operation in the method.</p>
+<p>If tracing is enabled, each Executor exports its traces to the configured exporter host via the <a class="reference external" href="https://opentelemetry.io/docs/reference/specification/trace/sdk/#span-exporter">Span Exporter</a>. The backend combines these traces for visualization and alerting.</p>
+<section id="create-custom-traces">
+<h3>Create custom traces<a class="headerlink" href="#create-custom-traces" title="Permalink to this heading">#</a></h3>
+<p>A <code class="docutils literal notranslate"><span class="pre">request</span></code> method is the public method that exposes an operation as an API. Depending on complexity, the method can be composed of different sub-operations that are required to build the final response.</p>
+<p>You can record/observe each internal step (along with its global or request-specific attributes) to give a finer-grained view of the operation at the request level. This helps identify bottlenecks and isolate request patterns that cause service degradation or errors.</p>
+<p>You can use the <code class="docutils literal notranslate"><span class="pre">self.tracer</span></code> class attribute to create a new child span using the <code class="docutils literal notranslate"><span class="pre">tracing_context</span></code> method argument:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
+
+
+<span class="k">class</span> <span class="nc">MyExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+    <span class="nd">@requests</span>
+    <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">,</span> <span class="n">tracing_context</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">tracer</span><span class="o">.</span><span class="n">start_as_current_span</span><span class="p">(</span>
+            <span class="s1">&#39;process_docs&#39;</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">tracing_context</span>
+        <span class="p">)</span> <span class="k">as</span> <span class="n">process_span</span><span class="p">:</span>
+            <span class="n">process_span</span><span class="o">.</span><span class="n">set_attribute</span><span class="p">(</span><span class="s1">&#39;sampling_rate&#39;</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">)</span>
+            <span class="n">docs</span> <span class="o">=</span> <span class="n">process</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">tracer</span><span class="o">.</span><span class="n">start_as_current_span</span><span class="p">(</span><span class="s1">&#39;update_docs&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">update_span</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">update_span</span><span class="o">.</span><span class="n">set_attribute</span><span class="p">(</span><span class="s1">&#39;len_updated_docs&#39;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">docs</span><span class="p">))</span>
+                    <span class="n">docs</span> <span class="o">=</span> <span class="n">update</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+                    <span class="n">update_span</span><span class="o">.</span><span class="n">set_status</span><span class="p">(</span><span class="n">Status</span><span class="p">(</span><span class="n">StatusCode</span><span class="o">.</span><span class="n">ERROR</span><span class="p">))</span>
+                    <span class="n">update_span</span><span class="o">.</span><span class="n">record_exception</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The above pieces of instrumentation generate three spans:</p>
+<ol class="arabic simple">
+<li><p>Default span with name <code class="docutils literal notranslate"><span class="pre">foo</span></code> for the overall method.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">process_span</span></code> that measures the <code class="docutils literal notranslate"><span class="pre">process</span></code> and <code class="docutils literal notranslate"><span class="pre">update</span></code> sub-operations along with a <code class="docutils literal notranslate"><span class="pre">sampling_rate</span></code> attribute that is either a constant or specific to the request/operation.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">update_span</span></code> that measures the <code class="docutils literal notranslate"><span class="pre">updated</span></code> operation along with any exceptions that might arise during the operation. The exception is recorded and marked on the <code class="docutils literal notranslate"><span class="pre">update_span</span></code> span. Since the exception is swallowed, the request succeeds with successful parent spans.</p></li>
+</ol>
+<div class="caution admonition">
+<p class="admonition-title">Respect OpenTelemetry Tracing semantic conventions</p>
+<p>You should respect OpenTelemetry Tracing <a class="reference external" href="https://opentelemetry.io/docs/reference/specification/trace/semantic_conventions/">semantic conventions</a>.</p>
+</div>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>If tracing is not enabled by default or enabled in your environment, check <code class="docutils literal notranslate"><span class="pre">self.tracer</span></code> exists before usage. If metrics are disabled then <code class="docutils literal notranslate"><span class="pre">self.tracer</span></code> will be <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</div>
+</section>
+</section>
+<section id="metrics">
+<h2>Metrics<a class="headerlink" href="#metrics" title="Permalink to this heading">#</a></h2>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>Prometheus-only based metrics collection will be deprecated soon. Refer to <span class="xref std std-ref">Monitoring Executor</span> section for the deprecated setup.</p>
+</div>
+<p>Any method that uses the <a class="reference internal" href="../../../api/jina/#jina.requests" title="jina.requests"><code class="xref py py-class docutils literal notranslate"><span class="pre">requests</span></code></a> decorator is monitored and creates a
+<a class="reference external" href="https://opentelemetry.io/docs/reference/specification/metrics/data-model/#histogram">histogram</a> which tracks the method’s execution time.</p>
+<p>This section documents adding custom monitoring to the <a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a> with the OpenTelemetry Metrics API.</p>
+<p>Custom metrics are useful to monitor each sub-part of your Executor(s). Jina lets you leverage
+the <a class="reference external" href="https://opentelemetry.io/docs/reference/specification/metrics/api/#meter">Meter</a> to define useful metrics
+for each of your Executors. We also provide a convenient wrapper, (<a class="reference internal" href="../../../api/jina/#jina.monitor" title="jina.monitor"><code class="xref py py-func docutils literal notranslate"><span class="pre">monitor()</span></code></a>), which lets you monitor
+your Executor’s sub-methods.</p>
+<p>When metrics are enabled, each Executor exposes its
+own metrics via the <a class="reference external" href="https://opentelemetry.io/docs/reference/specification/metrics/sdk/#metricexporter">Metric Exporter</a>.</p>
+<section id="define-custom-metrics">
+<h3>Define custom metrics<a class="headerlink" href="#define-custom-metrics" title="Permalink to this heading">#</a></h3>
+<p>Sometimes monitoring the <code class="docutils literal notranslate"><span class="pre">encoding</span></code> method is not enough - you need to break it up into multiple parts to monitor one by one.</p>
+<p>This is useful if your encoding phase is composed of two tasks, like image processing and
+image embedding. By using custom metrics on these two tasks you can identify potential bottlenecks.</p>
+<p>Overall, adding custom metrics gives you full flexibility when monitoring your Executor.</p>
+<section id="use-context-manager">
+<h4>Use context manager<a class="headerlink" href="#use-context-manager" title="Permalink to this heading">#</a></h4>
+<p>Use <code class="docutils literal notranslate"><span class="pre">self.monitor</span></code> to monitor your function’s internal blocks:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
+
+
+<span class="k">class</span> <span class="nc">MyExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+    <span class="nd">@requests</span>
+    <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">monitor</span><span class="p">(</span><span class="s1">&#39;processing_seconds&#39;</span><span class="p">,</span> <span class="s1">&#39;Time processing my document&#39;</span><span class="p">):</span>
+            <span class="n">docs</span> <span class="o">=</span> <span class="n">process</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">docs</span><span class="o">.</span><span class="n">texts</span><span class="p">)</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">monitor</span><span class="p">(</span><span class="s1">&#39;update_seconds&#39;</span><span class="p">,</span> <span class="s1">&#39;Time updates my document&#39;</span><span class="p">):</span>
+            <span class="n">docs</span> <span class="o">=</span> <span class="n">update</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="use-the-monitor-decorator">
+<h4>Use the <code class="docutils literal notranslate"><span class="pre">&#64;monitor</span></code> decorator<a class="headerlink" href="#use-the-monitor-decorator" title="Permalink to this heading">#</a></h4>
+<p>Add custom monitoring to a method with the <a class="reference internal" href="../../../api/jina/#jina.monitor" title="jina.monitor"><code class="xref py py-func docutils literal notranslate"><span class="pre">monitor()</span></code></a> decorator:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">monitor</span>
+
+
+<span class="k">class</span> <span class="nc">MyExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+    <span class="nd">@monitor</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">my_method</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="o">...</span>
+</pre></div>
+</div>
+<p>This creates a <a class="reference external" href="https://opentelemetry.io/docs/reference/specification/metrics/data-model/#histogram">Histogram</a> <code class="docutils literal notranslate"><span class="pre">jina_my_method_seconds</span></code> which tracks the execution time of <code class="docutils literal notranslate"><span class="pre">my_method</span></code></p>
+<p>By default, the name and documentation of the metric created by <a class="reference internal" href="../../../api/jina/#jina.monitor" title="jina.monitor"><code class="xref py py-func docutils literal notranslate"><span class="pre">monitor()</span></code></a> are auto-generated based on the function’s name.
+To set a custom name:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@monitor</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s1">&#39;my_custom_metrics_seconds&#39;</span><span class="p">,</span> <span class="n">documentation</span><span class="o">=</span><span class="s1">&#39;This is my custom documentation&#39;</span>
+<span class="p">)</span>
+<span class="k">def</span> <span class="nf">method</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+<div class="caution admonition">
+<p class="admonition-title">respect OpenTelemetry Metrics semantic conventions</p>
+<p>You should respect OpenTelemetry Metrics <a class="reference external" href="https://opentelemetry.io/docs/reference/specification/metrics/semantic_conventions/">semantic conventions</a>.</p>
+</div>
+</section>
+<section id="use-opentelemetry-meter">
+<h4>Use OpenTelemetry Meter<a class="headerlink" href="#use-opentelemetry-meter" title="Permalink to this heading">#</a></h4>
+<p>Under the hood, Python <a class="reference external" href="https://opentelemetry.io/docs/concepts/signals/metrics/">OpenTelemetry Metrics API</a> handles the Executor’s metrics feature. The <a class="reference internal" href="../../../api/jina/#jina.monitor" title="jina.monitor"><code class="xref py py-func docutils literal notranslate"><span class="pre">monitor()</span></code></a> decorator is convenient for monitoring an Executor’s sub-methods, but if you need more flexibility, use the <code class="docutils literal notranslate"><span class="pre">self.meter</span></code> Executor class attribute to create supported instruments:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">requests</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">DocumentArray</span>
+
+<span class="kn">from</span> <span class="nn">prometheus_client</span> <span class="kn">import</span> <span class="n">Counter</span>
+
+
+<span class="k">class</span> <span class="nc">MyExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">counter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">meter</span><span class="o">.</span><span class="n">create_counter</span><span class="p">(</span><span class="s1">&#39;my_count&#39;</span><span class="p">,</span> <span class="s1">&#39;my count&#39;</span><span class="p">)</span>
+
+    <span class="nd">@requests</span>
+    <span class="k">def</span> <span class="nf">encode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">counter</span><span class="o">.</span><span class="n">inc</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">docs</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>This creates a <a class="reference external" href="https://opentelemetry.io/docs/reference/specification/metrics/api/#counter">Counter</a> that you can use to incrementally track the number of Documents received in each request.</p>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>If metrics are not enabled by default or enabled in your environment, you should check <code class="docutils literal notranslate"><span class="pre">self.meter</span></code> and <code class="docutils literal notranslate"><span class="pre">self.counter</span></code> exists before usage. If metrics are disabled then <code class="docutils literal notranslate"><span class="pre">self.meter</span></code> will be <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</div>
+</section>
+<section id="example">
+<h4>Example<a class="headerlink" href="#example" title="Permalink to this heading">#</a></h4>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">requests</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">DocumentArray</span>
+
+
+<span class="k">class</span> <span class="nc">MyExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">preprocessing</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocumentArray</span><span class="p">):</span>
+        <span class="o">...</span>
+
+    <span class="k">def</span> <span class="nf">model_inference</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tensor</span><span class="p">):</span>
+        <span class="o">...</span>
+
+    <span class="nd">@requests</span>
+    <span class="k">def</span> <span class="nf">encode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">docs</span><span class="o">.</span><span class="n">tensors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">preprocessing</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span>
+        <span class="n">docs</span><span class="o">.</span><span class="n">embedding</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_inference</span><span class="p">(</span><span class="n">docs</span><span class="o">.</span><span class="n">tensors</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">encode</span></code> function is composed of two sub-functions.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">preprocessing</span></code> takes raw bytes from a DocumentArray and puts them into a PyTorch tensor.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">model</span> <span class="pre">inference</span></code> calls the forward function of a deep learning model.</p></li>
+</ul>
+<p>By default, only the <code class="docutils literal notranslate"><span class="pre">encode</span></code> function is monitored:</p>
+<div class="tab-set docutils">
+<input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">Decorator</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">requests</span><span class="p">,</span> <span class="n">monitor</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">DocumentArray</span>
+
+<span class="k">class</span> <span class="nc">MyExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+
+<span class="hll">    <span class="nd">@monitor</span><span class="p">()</span>
+</span>    <span class="k">def</span> <span class="nf">preprocessing</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocumentArray</span><span class="p">):</span>
+        <span class="o">...</span>
+
+<span class="hll">    <span class="nd">@monitor</span><span class="p">()</span>
+</span>    <span class="k">def</span> <span class="nf">model_inference</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tensor</span><span class="p">):</span>
+        <span class="o">...</span>
+
+    <span class="nd">@requests</span>
+    <span class="k">def</span> <span class="nf">encode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">docs</span><span class="o">.</span><span class="n">tensors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">preprocessing</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span>
+        <span class="n">docs</span><span class="o">.</span><span class="n">embedding</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_inference</span><span class="p">(</span><span class="n">docs</span><span class="o">.</span><span class="n">tensors</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--2">Context manager</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">requests</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">DocumentArray</span>
+
+<span class="k">def</span> <span class="nf">preprocessing</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocumentArray</span><span class="p">):</span>
+    <span class="o">...</span>
+
+<span class="k">def</span> <span class="nf">model_inference</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tensor</span><span class="p">):</span>
+    <span class="o">...</span>
+
+<span class="k">class</span> <span class="nc">MyExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+
+    <span class="nd">@requests</span>
+    <span class="k">def</span> <span class="nf">encode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="hll">        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">monitor</span><span class="p">(</span><span class="s1">&#39;preprocessing_seconds&#39;</span><span class="p">,</span> <span class="s1">&#39;Time preprocessing the requests&#39;</span><span class="p">):</span>
+</span>            <span class="n">docs</span><span class="o">.</span><span class="n">tensors</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span>
+<span class="hll">        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">monitor</span><span class="p">(</span><span class="s1">&#39;model_inference_seconds&#39;</span><span class="p">,</span> <span class="s1">&#39;Time doing inference the requests&#39;</span><span class="p">):</span>
+</span>            <span class="n">docs</span><span class="o">.</span><span class="n">embedding</span> <span class="o">=</span> <span class="n">model_inference</span><span class="p">(</span><span class="n">docs</span><span class="o">.</span><span class="n">tensors</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+</section>
+<section id="see-also">
+<h2>See also<a class="headerlink" href="#see-also" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../flow/instrumentation/#instrumenting-flow"><span class="std std-ref">List of available metrics</span></a></p></li>
+<li><p><a class="reference internal" href="../../../cloud-nativeness/opentelemetry/#opentelemetry"><span class="std std-ref">How to deploy and use OpenTelemetry in Jina</span></a></p></li>
+<li><p><a class="reference external" href="https://opentelemetry.io/docs/concepts/signals/traces/">Tracing in OpenTelemetry</a></p></li>
+<li><p><a class="reference external" href="https://opentelemetry.io/docs/concepts/signals/metrics/">Metrics in OpenTelemetry</a></p></li>
+</ul>
+</section>
+</section>
+
+                </article>
+            </div>
+            <footer>
+                
+                <div class="related-pages">
+                    <a class="next-page" href="../yaml-spec/">
+                        <div class="page-info">
+                            <div class="context">
+                                <span>Next</span>
+                            </div>
+                            <div class="title"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-file-code" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z"></path></svg> YAML specification</div>
+                        </div>
+                        <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+                    </a>
+                    <a class="prev-page" href="../containerize/">
+                        <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+                        <div class="page-info">
+                            <div class="context">
+                                <span>Previous</span>
+                            </div>
+                            
+                            <div class="title">Containerize</div>
+                            
+                        </div>
+                    </a>
+                </div>
+                <div class="bottom-of-page">
+                    <div class="left-details">
+                        <div class="copyright">
+                            Copyright &#169; Jina AI Limited. All rights reserved.
+                        </div><div class="last-updated">
+                            Last updated on Dec 07, 2022</div>
+                    </div>
+                    <div class="right-details">
+                        <div class="social-btns">
+                            <a class='social-btn' href="https://github.com/jina-ai/jina" aria-label="GitHub"
+                               target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
+                            <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank"
+                               rel="noreferrer"> <i class="fab fa-slack"></i></a>
+                            <a class='social-btn' href="https://youtube.com/c/jina-ai" aria-label="YouTube"
+                               target="_blank" rel="noreferrer"> <i class="fab fa-youtube"></i></a>
+                            <a class='social-btn' href="https://twitter.com/JinaAI_" aria-label="Twitter"
+                               target="_blank" rel="noreferrer"> <i class="fab fa-twitter"></i></a>
+                            <a class='social-btn' href="https://www.linkedin.com/company/jinaai/" aria-label="LinkedIn"
+                               target="_blank" rel="noreferrer"> <i class="fab fa-linkedin"></i></a>
+                        </div>
+                    </div>
+                </div>
+                
+            </footer>
+        </div>
+        <aside class="toc-drawer">
+            
+            
+            <div class="toc-sticky toc-scroll">
+                <div class="toc-title-container">
+          <span class="toc-title">
+            Contents
+          </span>
+                </div>
+                <div class="toc-tree-container">
+                    <div class="toc-tree">
+                        <ul>
+<li><a class="reference internal" href="#">Instrumentation</a><ul>
+<li><a class="reference internal" href="#tracing">Tracing</a><ul>
+<li><a class="reference internal" href="#create-custom-traces">Create custom traces</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#metrics">Metrics</a><ul>
+<li><a class="reference internal" href="#define-custom-metrics">Define custom metrics</a><ul>
+<li><a class="reference internal" href="#use-context-manager">Use context manager</a></li>
+<li><a class="reference internal" href="#use-the-monitor-decorator">Use the <code class="docutils literal notranslate"><span class="pre">&#64;monitor</span></code> decorator</a></li>
+<li><a class="reference internal" href="#use-opentelemetry-meter">Use OpenTelemetry Meter</a></li>
+<li><a class="reference internal" href="#example">Example</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#see-also">See also</a></li>
+</ul>
+</li>
+</ul>
+
+                    </div>
+                </div>
+            </div>
+            
+            
+        </aside>
+    </div>
+    <qa-bot
+            title="Jina Bot"
+            description="Build multimodal AI services via cloud native technologies"
+    >
+        <template>
+            <dl>
+                <dt>You can ask questions about our docs. Try:</dt>
+                <dd>Does Jina support Kubernetes?</dd>
+                <dd>What are the basic concepts in Jina?</dd>
+                <dd>How to share my Executor?</dd>
+            </dl>
+        </template>
+    </qa-bot>
+</div>
+<img referrerpolicy="no-referrer-when-downgrade"
+     src="https://static.scarf.sh/a.png?x-pxid=2823e771-0e1e-4320-8fde-48bc48e53262"/><script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/scripts/furo.js"></script>
+    <script src="../../../_static/clipboard.min.js"></script>
+    <script src="../../../_static/copybutton.js"></script>
+    <script src="../../../_static/tabs.js"></script>
+    <script src="../../../_static/design-tabs.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() { 
+            document.querySelector('qa-bot').setAttribute('server', 'https://jina-ai-jina.docsqa.jina.ai');
+        });
+        </script>
+    <script src="https://cdn.jsdelivr.net/npm/qabot@0.4"></script>
+    </body>
+</html>

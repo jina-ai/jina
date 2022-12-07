@@ -53,7 +53,7 @@ jtype: Flow
 with:
   monitoring: true
 executors:
-- uses: jinahub://SimpleIndexer
+- uses: jinaai://jina-ai/SimpleIndexer
 ```
 
 ```bash
@@ -64,7 +64,7 @@ jina export kubernetes flow.yml ./config ```
 ```python
 from jina import Flow
 
-f = Flow(monitoring=True).add(uses='jinahub+docker://SimpleIndexer')
+f = Flow(monitoring=True).add(uses='jinaai+docker://jina-ai/SimpleIndexer')
 f.to_kubernetes_yaml('config')
 ```
 ````
@@ -126,7 +126,7 @@ Deploy the Flow that we want to monitor:
 from jina import Flow
 
 with Flow(monitoring=True, port_monitoring=8000, port=8080).add(
-    uses='jinahub://SimpleIndexer', port_monitoring=9000
+    uses='jinaai://jina-ai/SimpleIndexer', port_monitoring=9000
 ) as f:
     f.block()
 ```
@@ -137,7 +137,7 @@ with Flow(monitoring=True, port_monitoring=8000, port=8080).add(
 from jina import Flow
 
 Flow(monitoring=True, port_monitoring=8000, port=8080).add(
-    uses='jinahub+docker://SimpleIndexer', port_monitoring=9000
+    uses='jinaai+docker://jina-ai/SimpleIndexer', port_monitoring=9000
 ).to_docker_compose_yaml('config.yaml')
 ```
 ```bash

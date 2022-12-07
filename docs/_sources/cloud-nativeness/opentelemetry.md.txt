@@ -148,7 +148,7 @@ with Flow(
     metrics=True,
     metrics_exporter_host='localhost',
     metrics_exporter_port=4317,
-).add(uses='jinahub://SimpleIndexer') as f:
+).add(uses='jinaai://jina-ai/SimpleIndexer') as f:
     f.post('/', DocumentArray([Document(text='hello')]))
 ```
 

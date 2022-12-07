@@ -29,7 +29,7 @@ Docker Compose, avoiding the overhead of manually defining all of your Flow's se
 
 ````{admonition} Use Docker-based Executors
 :class: caution
-All Executors in the Flow should be used with `jinahub+docker://...` or `docker://...`.
+All Executors in the Flow should be used with `jinaai+docker://...` or `docker://...`.
 ````
 
 ````{admonition} Health check available from 3.1.3
@@ -66,10 +66,10 @@ with:
   protocol: http
 executors:
 - name: encoder
-  uses: jinahub+docker://CLIPEncoder
+  uses: jinaai+docker://jina-ai/CLIPEncoder
   replicas: 2
 - name: indexer
-  uses: jinahub+docker://AnnLiteIndexer
+  uses: jinaai+docker://jina-ai/AnnLiteIndexer
   uses_with:
     dim: 512
   shards: 2
@@ -88,10 +88,10 @@ from jina import Flow
 
 flow = (
     Flow(port=8080, protocol='http')
-    .add(name='encoder', uses='jinahub+docker://CLIPEncoder', replicas=2)
+    .add(name='encoder', uses='jinaai+docker://jina-ai/CLIPEncoder', replicas=2)
     .add(
         name='indexer',
-        uses='jinahub+docker://AnnLiteIndexer',
+        uses='jinaai+docker://jina-ai/AnnLiteIndexer',
         uses_with={'dim': 512},
         shards=2,
     )
