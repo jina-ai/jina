@@ -374,7 +374,10 @@ class WorkerRequestHandler:
                 exec_endpoint = __default_endpoint__
             else:
                 self.logger.debug(
-                    f'skip executor: mismatch request, exec_endpoint: {exec_endpoint}, requests: {self._executor.requests}'
+                    f'skip executor: endpoint mismatch. '
+                    f'Request endpoint: `{exec_endpoint}`. '
+                    'Available endpoints: '
+                    f'{", ".join(list(self._executor.requests.keys()))}'
                 )
                 return requests[0]
 
