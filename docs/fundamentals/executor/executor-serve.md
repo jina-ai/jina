@@ -226,14 +226,14 @@ print(c.post(on='/', inputs=DocumentArray.empty(1))[0].text)
 (restart-executor)=
 ## Restart Executor in the Flow
 
-Sometimes, you do not just change the Python files where the Executor logic is implemented, but you also want to change the YAML configuration of the Executor.
-For this you can use the `restart` argument for the Executor in the Flow so that it watches changes in the configuration YAML code and makes sure that the Executor deployment is restarted with the new configuration.
+Sometimes, you don't just want to change the Python files where the Executor logic is implemented, but you also want to change the Executor's YAML configuration.
+For this you can use the `restart` argument for the Executor in the Flow so that it watches changes in the configuration YAML code and ensures Executor deployment is restarted with the new configuration.
 
-In comparision with {ref}`reload <reload-executor>`, the Executor server is restarted with the new configuration YAML, in this case you can change the exact Executor class being used which is not possible with the {ref}`reload <reload-executor>` option.
+Compared to {ref}`reload <reload-executor>`, where the Executor server is restarted with the new configuration YAML, in this case you can change the exact Executor class being used which is not possible with the {ref}`reload <reload-executor>` option.
 
 ````{admonition} Caution
 :class: caution
-This feature is thought to let the developer iterate faster while developing but is not intended to be used in production environment.
+This feature aims to let developers iterate faster during development, but is not intended to for use in in production.
 ````
 
 ````{admonition} Note
@@ -241,7 +241,7 @@ This feature is thought to let the developer iterate faster while developing but
 This feature requires watchfiles>=0.18 package to be installed.
 ````
 
-To see how this would work, let's have an Executor configuration defined in a file `executor.yml`.
+To see how this works, let's define an Executor configuration in the file `executor.yml`.
 ```yaml
 jtype: MyExecutorBeforeRestart
 ```
@@ -294,7 +294,7 @@ jtype: MyExecutorAfterRestart
 ```
 ```
 
-You should see in the logs of the Flow
+In the Flow's logs we should see:
 
 ```text
 INFO   Flow@1843 change in Executor configuration YAML /home/joan/jina/jina/exec.yml observed, restarting Executor deployment  

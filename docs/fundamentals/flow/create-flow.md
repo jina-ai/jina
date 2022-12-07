@@ -189,9 +189,9 @@ e.set()  # set event and stop (unblock) the Flow
 (restart-flow)=
 ## Restart
 
-While developing your Flow, it can be useful to have the Flow be restarted automatically as you keep applying changes to the Flow YAML.
+While developing your Flow, it can be useful to have it restart automatically as you change the Flow YAML.
 
-For this you can use the `restart` argument for the Flow so that it watches changes in the configuration YAML code and makes sure that the Flow is restarted with the new configuration.
+For this you can use the Flow's `restart` argument to restart the Flow with the updated configuration every time you change the YAML configuration.
 
 ````{admonition} Caution
 :class: caution

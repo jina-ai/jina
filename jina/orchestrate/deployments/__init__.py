@@ -371,9 +371,9 @@ class Deployment(BaseDeployment):
     @property
     def _is_executor_from_yaml(self) -> bool:
         """
-        Check if this deployment is to be run in docker.
+        Check if this deployment is to be run from yaml configuration.
 
-        :return: True if this deployment is to be run in docker
+        :return: True if this deployment is to be run from yaml configuration
         """
         uses = getattr(self.args, 'uses', '')
         return uses.endswith('yml') or uses.endswith('yaml')
