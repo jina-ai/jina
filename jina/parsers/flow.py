@@ -24,7 +24,7 @@ def mixin_flow_features_parser(parser):
         '--restart',
         action='store_true',
         default=False,
-        help='If set, the Flow will restart while blocked if the YAML configuration source is changed'
+        help='If set, the Flow will restart while blocked if the YAML configuration source is changed.'
     )
 
     gp.add_argument(
