@@ -354,6 +354,7 @@ class Deployment(BaseDeployment):
         :return: True if this deployment is provided as a sandbox, False otherwise
         """
         from hubble.executor.helper import is_valid_sandbox_uri
+
         uses = getattr(self.args, 'uses') or ''
         return is_valid_sandbox_uri(uses)
 
@@ -365,8 +366,19 @@ class Deployment(BaseDeployment):
         :return: True if this deployment is to be run in docker
         """
         from hubble.executor.helper import is_valid_docker_uri
+
         uses = getattr(self.args, 'uses', '')
         return is_valid_docker_uri(uses)
+
+    @property
+    def _is_executor_from_yaml(self) -> bool:
+        """
+        Check if this deployment is to be run from YAML configuration.
+
+        :return: True if this deployment is to be run from YAML configuration
+        """
+        uses = getattr(self.args, 'uses', '')
+        return uses.endswith('yml') or uses.endswith('yaml')
 
     @property
     def tls_enabled(self):

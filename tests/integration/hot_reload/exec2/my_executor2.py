@@ -4,7 +4,6 @@ from .helper import get_doc_value
 
 
 class MyExecutorToReload2(Executor):
-
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
