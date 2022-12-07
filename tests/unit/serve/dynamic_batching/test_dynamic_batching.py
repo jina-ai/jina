@@ -61,7 +61,7 @@ class PlaceholderExecutor(Executor):
 
     @requests(on=['/long_timeout'])
     @dynamic_batching(preferred_batch_size=100, timeout=20000000)
-    def param_fun(self, docs, parameters, **kwargs):
+    def long_timeout_fun(self, docs, parameters, **kwargs):
         for doc in docs:
             doc.text += 'long timeout'
 
