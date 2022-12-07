@@ -73,6 +73,7 @@ class BatchQueue:
         self._timer_started: bool = False
 
     def _start_timer(self):
+        # TODO: make sure to cancel old timer task before starting the new one
         asyncio.create_task(sleep_then_set(self._timeout / 1000, self._flush_trigger))
         self._timer_started = True
 
@@ -132,6 +133,7 @@ class BatchQueue:
             )
 
             # Output validation
+            # TODO: raise exception instead of using assert
             if isinstance(return_data, DocumentArray):
                 assert (
                     len(return_data) == input_len_before_call
