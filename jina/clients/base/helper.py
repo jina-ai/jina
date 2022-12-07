@@ -155,7 +155,9 @@ class HTTPClientlet(AioHttpClientlet):
         :param kwargs: keyword arguments to make sure compatible API with other clients
         :return: send get message
         """
-        return await self.session.get(url=self.url).__aenter__()
+        return await self.session.get(
+            url=self.url, timeout=kwargs.get('timeout', None)
+        ).__aenter__()
 
     async def recv_message(self):
         """Receive message for HTTP (sleep)

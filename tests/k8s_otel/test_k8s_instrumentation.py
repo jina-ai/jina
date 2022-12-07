@@ -25,10 +25,10 @@ async def test_flow_resource_labeling(
         name='test-flow-metrics',
         port=8080,
         metrics=True,
-        metrics_exporter_host=f'otel-collector.{otel_test_namespace}.svc.cluster.local',
+        metrics_exporter_host=f'http://otel-collector.{otel_test_namespace}.svc.cluster.local',
         metrics_exporter_port=4317,
         tracing=True,
-        traces_exporter_host=f'jaeger.{otel_test_namespace}.svc.cluster.local',
+        traces_exporter_host=f'http://jaeger.{otel_test_namespace}.svc.cluster.local',
         traces_exporter_port=4317,
     ).add(
         name='instrumentation',

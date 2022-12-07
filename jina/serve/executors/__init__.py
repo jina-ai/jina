@@ -696,6 +696,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         :param reload: If set, the Executor reloads the modules as they change
         :param stop_event: a threading event or a multiprocessing event that once set will resume the control Flow
             to main thread.
+        :param reload: a flag indicating if the Executor should watch the Python files of its implementation to reload the code live while serving.
         :param kwargs: other kwargs accepted by the Flow, full list can be found `here <https://docs.jina.ai/api/jina.orchestrate.flow.base/>`
 
         """

@@ -229,79 +229,6 @@ def inject_failures(k8s_cluster, logger):
         raise Exception(f"Injecting failures failed with {returncode}")
 
 
-def watch_k8s_resources(namespace):
-    import os
-    import subprocess
-    import time
-
-    while True:
-        pod_metadata = subprocess.check_output(
-            (
-                'kubectl',
-                '-n',
-                namespace,
-                'get',
-                'pods',
-                '-l',
-                'app=executor0',
-                '-o',
-                "jsonpath=\"{$.items[*]['.metadata.name', '.metadata.uid']}\"",
-            ),
-            env=os.environ,
-        )
-        print('pod metadata:')
-        print(pod_metadata.decode())
-        endpoints = subprocess.check_output(
-            (
-                'kubectl',
-                '-n',
-                namespace,
-                'get',
-                'endpoints',
-                '-l',
-                'app=executor0',
-                '-o',
-                "jsonpath=\"{$.items[*].subsets[*].addresses[*]['targetRef.name', 'ip']}\"",
-            ),
-            env=os.environ,
-        )
-        print('endpoints:')
-        print(endpoints.decode())
-        container_statuses = subprocess.check_output(
-            (
-                'kubectl',
-                '-n',
-                namespace,
-                'get',
-                'pods',
-                '-l',
-                'app=executor0',
-                '-o',
-                "jsonpath=\"{$.items[*].status.containerStatuses[*].ready}\"",
-            ),
-            env=os.environ,
-        )
-        print('container statuses:')
-        print(container_statuses.decode())
-        print()
-        time.sleep(5)
-
-
-def print_services(namespace):
-    services = subprocess.check_output(
-        (
-            'kubectl',
-            '-n',
-            namespace,
-            'get',
-            'service',
-        ),
-        env=os.environ,
-    )
-    print('services:')
-    print(services.decode())
-
-
 @pytest.mark.asyncio
 @pytest.mark.timeout(3600)
 @pytest.mark.parametrize(
@@ -316,126 +243,115 @@ async def test_failure_scenarios(logger, docker_images, tmpdir, k8s_cluster):
     api_client = client.ApiClient()
     core_client = client.CoreV1Api(api_client=api_client)
     app_client = client.AppsV1Api(api_client=api_client)
-    k8s_endpoints_watcher = multiprocessing.Process(
-        target=watch_k8s_resources, args=(namespace,), daemon=True
+    flow = Flow(prefetch=100).add(replicas=2, uses=f'docker://{docker_images[0]}')
+
+    dump_path = os.path.join(str(tmpdir), namespace)
+    flow.to_kubernetes_yaml(dump_path, k8s_namespace=namespace)
+
+    await create_all_flow_deployments_and_wait_ready(
+        dump_path,
+        namespace=namespace,
+        api_client=api_client,
+        app_client=app_client,
+        core_client=core_client,
+        deployment_replicas_expected={
+            'gateway': 1,
+            'executor0': 2,
+        },
+        logger=logger,
     )
-    k8s_endpoints_watcher.start()
-    try:
-        flow = Flow(prefetch=100).add(replicas=2, uses=f'docker://{docker_images[0]}')
 
-        dump_path = os.path.join(str(tmpdir), namespace)
-        flow.to_kubernetes_yaml(dump_path, k8s_namespace=namespace)
-
-        await create_all_flow_deployments_and_wait_ready(
-            dump_path,
+    stop_event = asyncio.Event()
+    send_task = asyncio.create_task(
+        run_test_until_event(
+            flow=flow,
             namespace=namespace,
-            api_client=api_client,
-            app_client=app_client,
             core_client=core_client,
-            deployment_replicas_expected={
-                'gateway': 1,
-                'executor0': 2,
-            },
+            endpoint='/',
+            stop_event=stop_event,
             logger=logger,
         )
-        print_services(namespace)
+    )
+    logger.info(f' Sending task has been scheduled')
+    await asyncio.sleep(5.0)
+    # Scale down the Executor to 1 replicas
+    await scale(
+        deployment_name='executor0',
+        desired_replicas=1,
+        core_client=core_client,
+        app_client=app_client,
+        k8s_namespace=namespace,
+        logger=logger,
+    )
+    logger.info(f' Scaling to 1 replicas has been done')
+    await asyncio.sleep(5.0)
+    # Scale back up to 2 replicas
+    await scale(
+        deployment_name='executor0',
+        desired_replicas=2,
+        core_client=core_client,
+        app_client=app_client,
+        k8s_namespace=namespace,
+        logger=logger,
+    )
+    logger.info(f' Scaling to 2 replicas has been done')
+    await asyncio.sleep(5.0)
+    # restart all pods in the deployment
+    await restart_deployment(
+        deployment='executor0',
+        app_client=app_client,
+        core_client=core_client,
+        k8s_namespace=namespace,
+        logger=logger,
+    )
+    logger.info(f' Restarting deployment has been done')
+    await asyncio.sleep(5.0)
+    await delete_pod(
+        deployment='executor0',
+        core_client=core_client,
+        k8s_namespace=namespace,
+        logger=logger,
+    )
+    logger.info(f'Deleting pod has been done')
+    await asyncio.sleep(5.0)
 
-        stop_event = asyncio.Event()
-        send_task = asyncio.create_task(
-            run_test_until_event(
-                flow=flow,
-                namespace=namespace,
-                core_client=core_client,
-                endpoint='/',
-                stop_event=stop_event,
-                logger=logger,
-                sleep_time=None,
-            )
-        )
-        logger.info(f' Sending task has been scheduled')
-        await asyncio.sleep(5.0)
-        # Scale down the Executor to 1 replicas
-        await scale(
-            deployment_name='executor0',
-            desired_replicas=1,
-            core_client=core_client,
-            app_client=app_client,
-            k8s_namespace=namespace,
-            logger=logger,
-        )
-        logger.info(f' Scaling to 1 replicas has been done')
-        await asyncio.sleep(5.0)
-        # Scale back up to 2 replicas
-        await scale(
-            deployment_name='executor0',
-            desired_replicas=2,
-            core_client=core_client,
-            app_client=app_client,
-            k8s_namespace=namespace,
-            logger=logger,
-        )
-        logger.info(f' Scaling to 2 replicas has been done')
-        await asyncio.sleep(5.0)
-        # restart all pods in the deployment
-        await restart_deployment(
-            deployment='executor0',
-            app_client=app_client,
-            core_client=core_client,
-            k8s_namespace=namespace,
-            logger=logger,
-        )
-        logger.info(f' Restarting deployment has been done')
-        await asyncio.sleep(5.0)
-        await delete_pod(
-            deployment='executor0',
-            core_client=core_client,
-            k8s_namespace=namespace,
-            logger=logger,
-        )
-        logger.info(f'Deleting pod has been done')
-        await asyncio.sleep(5.0)
+    stop_event.set()
+    responses, sent_ids = await send_task
+    logger.info(f'Sending task has finished')
+    logger.info(f'Sending task has finished: {len(sent_ids)} vs {len(responses)}')
+    assert len(sent_ids) == len(responses)
+    doc_ids = set()
+    pod_ids = set()
+    logger.info(f'Collecting doc and pod ids from responses...')
+    assert len(sent_ids) == len(responses)
+    for response in responses:
+        doc = response.docs[0]
+        doc_id, pod_id = doc.id, doc.tags['replica_uid']
+        doc_ids.add(doc_id)
+        pod_ids.add(pod_id)
+    assert len(sent_ids) == len(doc_ids)
+    logger.info(f'pod_ids {pod_ids}')
+    assert len(pod_ids) >= 2  # 2 original + 2 restarted + 1 scaled up + 1 deleted
 
-        stop_event.set()
-        responses, sent_ids = await send_task
-        logger.info(f'Sending task has finished')
-        logger.info(f'Sending task has finished: {len(sent_ids)} vs {len(responses)}')
-        assert len(sent_ids) == len(responses)
-        doc_ids = set()
-        pod_ids = set()
-        logger.info(f'Collecting doc and pod ids from responses...')
-        assert len(sent_ids) == len(responses)
-        for response in responses:
-            doc = response.docs[0]
-            doc_id, pod_id = doc.id, doc.tags['replica_uid']
-            doc_ids.add(doc_id)
-            pod_ids.add(pod_id)
-        assert len(sent_ids) == len(doc_ids)
-        logger.info(f'pod_ids {pod_ids}')
-        assert len(pod_ids) >= 2  # 2 original + 2 restarted + 1 scaled up + 1 deleted
-
-        # do the random failure test
-        # start sending again
-        logger.info('Start sending for random failure test')
-        stop_event.clear()
-        send_task = asyncio.create_task(
-            run_test_until_event(
-                flow=flow,
-                namespace=namespace,
-                core_client=core_client,
-                endpoint='/',
-                stop_event=stop_event,
-                logger=logger,
-            )
+    # do the random failure test
+    # start sending again
+    logger.info('Start sending for random failure test')
+    stop_event.clear()
+    send_task = asyncio.create_task(
+        run_test_until_event(
+            flow=flow,
+            namespace=namespace,
+            core_client=core_client,
+            endpoint='/',
+            stop_event=stop_event,
+            logger=logger,
         )
-        # inject failures
-        inject_failures(k8s_cluster, logger)
-        # wait a bit
-        await asyncio.sleep(5.0)
-        # check that no message was lost
-        stop_event.set()
-        responses, sent_ids = await send_task
-        assert len(sent_ids) == len(responses)
-    except Exception as exc:
-        raise exc
-    finally:
-        k8s_endpoints_watcher.terminate()
+    )
+    # inject failures
+    inject_failures(k8s_cluster, logger)
+    # wait a bit
+    await asyncio.sleep(5.0)
+    # check that no message was lost
+    stop_event.set()
+    responses, sent_ids = await send_task
+    assert len(sent_ids) == len(responses)

@@ -15,7 +15,7 @@ from jina import Flow
 
 f = Flow(
         tracing=True, 
-        traces_exporter_host='localhost', 
+        traces_exporter_host='http://localhost', 
         traces_exporter_port=4317,
     )
 
@@ -36,7 +36,7 @@ from jina import Client
 # must match the Flow setup
 c = Client(
     tracing=True,
-    traces_exporter_host='localhost',
+    traces_exporter_host='http://localhost',
     traces_exporter_port=4317,
 )
 c.post('/')

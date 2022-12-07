@@ -975,6 +975,8 @@ class GrpcConnectionPool:
             error.code() != grpc.StatusCode.UNAVAILABLE
             and error.code() != grpc.StatusCode.CANCELLED
             and error.code() != grpc.StatusCode.DEADLINE_EXCEEDED
+            and error.code() != grpc.StatusCode.UNKNOWN
+            and error.code() != grpc.StatusCode.INTERNAL
         ):
             return error
         elif (

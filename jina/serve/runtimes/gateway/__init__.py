@@ -132,12 +132,18 @@ class GatewayRuntime(AsyncNewLoopRuntime):
         self.is_cancel.set()
 
     @staticmethod
-    def is_ready(ctrl_address: str, protocol: Optional[str] = 'grpc', **kwargs) -> bool:
+    def is_ready(
+        ctrl_address: str,
+        protocol: Optional[str] = 'grpc',
+        timeout: float = 1.0,
+        **kwargs,
+    ) -> bool:
         """
         Check if status is ready.
 
         :param ctrl_address: the address where the control request needs to be sent
         :param protocol: protocol of the gateway runtime
+        :param timeout: timeout of grpc call in seconds
         :param kwargs: extra keyword arguments
 
         :return: True if status is ready else False.
@@ -151,7 +157,9 @@ class GatewayRuntime(AsyncNewLoopRuntime):
             res = AsyncNewLoopRuntime.is_ready(ctrl_address)
         else:
             try:
-                conn = urllib.request.urlopen(url=f'http://{ctrl_address}')
+                conn = urllib.request.urlopen(
+                    url=f'http://{ctrl_address}', timeout=timeout
+                )
                 res = conn.code == HTTPStatus.OK
             except:
                 res = False
