@@ -183,6 +183,8 @@ class WorkerRequestHandler:
             for file in changed_files:
                 if file in sys_mod_files_modules:
                     file_module = sys_mod_files_modules[file]
+                    # TODO: unable to reload main module (for instance, Executor implementation and Executor.serve are
+                    #  in the same file). Raising a warning for now
                     if file_module.__name__ == '__main__':
                         self.logger.warning(
                             'The main module file was changed, cannot reload Executor, please restart '
