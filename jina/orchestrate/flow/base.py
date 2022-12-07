@@ -2430,10 +2430,7 @@ class Flow(
                         for changes in watch(
                             *watch_files_list, stop_event=new_stop_event
                         ):
-                            chanded_files = [
-                                changed_file for _, changed_file in changes
-                            ]
-                            for changed_file in chanded_files:
+                            for _, changed_file in changes:
                                 if changed_file not in watch_files_from_deployments:
                                     # maybe changed_file is the absolute path of one in watch_files_from_deployments
                                     is_absolute_path = False
@@ -2450,12 +2447,7 @@ class Flow(
                                             break
 
                                     if not is_absolute_path:
-                                        _restart_flow(
-                                            [
-                                                changed_file
-                                                for _, changed_file in changes
-                                            ][0]
-                                        )
+                                        _restart_flow(changed_file)
                                 else:
                                     _restart_deployment(
                                         self._deployment_nodes[
