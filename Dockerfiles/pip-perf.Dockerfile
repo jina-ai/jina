@@ -11,7 +11,4 @@ RUN cd /jina && pip install ."$PIP_TAG"
 RUN cat $HOME/.bashrc
 RUN grep -Fxq "# JINA_CLI_BEGIN" $HOME/.bashrc
 
-ENV JINA_OPTOUT_TELEMETRY='true'
-ENV GRPC_ENABLE_FORK_SUPPORT='0'
-ENV JINA_LOG_LEVEL='DEBUG'
 ENTRYPOINT ["jina"]
