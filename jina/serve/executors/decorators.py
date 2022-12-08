@@ -205,6 +205,7 @@ def requests(
                 owner.requests_by_class[owner.__name__][
                     on or __default_endpoint__
                 ] = self.fn
+
             setattr(owner, name, self.fn)
 
         def __set_name__(self, owner, name):

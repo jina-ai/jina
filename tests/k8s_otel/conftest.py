@@ -1,6 +1,7 @@
-import pytest
 import os
 from pathlib import Path
+
+import pytest
 from pytest_kind import KindCluster, cluster
 
 from jina.logging.logger import JinaLogger
@@ -11,10 +12,12 @@ from tests.k8s_otel.kind_wrapper import KindClusterWrapperV2
 cluster.KIND_VERSION = 'v0.11.1'
 
 # TODO: Can we get jina image to build here as well?
-@pytest.fixture(scope='session' ,autouse=True)
+@pytest.fixture(scope='session', autouse=True)
 def build_and_load_images(k8s_cluster_v2: KindClusterWrapperV2) -> None:
     CUR_DIR = Path(__file__).parent
-    k8s_cluster_v2.build_and_load_docker_image(str(CUR_DIR / 'test-instrumentation'), 'test-instrumentation', 'test-pip')
+    k8s_cluster_v2.build_and_load_docker_image(
+        str(CUR_DIR / 'test-instrumentation'), 'test-instrumentation', 'test-pip'
+    )
     k8s_cluster_v2.load_docker_image(image_name='jinaai/jina', tag='test-pip')
     os.environ['JINA_GATEWAY_IMAGE'] = 'jinaai/jina:test-pip'
     yield
@@ -49,4 +52,3 @@ def otel_test_namespace(k8s_cluster_v2: KindClusterWrapperV2) -> str:
     ARTIFACT_DIR = os.path.join(os.path.dirname(__file__), NAMESPACE)
     k8s_cluster_v2.deploy_from_dir(dir=ARTIFACT_DIR, namespace=NAMESPACE)
     return NAMESPACE
-

@@ -6,16 +6,18 @@ import aiohttp
 import pytest
 
 from jina import DocumentArray, Executor, Flow, requests
-from jina.types.request.data import DataRequest
 from jina.helper import random_port
+from jina.types.request.data import DataRequest
 
 INPUT_DA_LEN = 2
 NUM_CLIENTS = 3
+
 
 @pytest.fixture()
 def gateway_port():
     port = random_port()
     yield port
+
 
 class DummyExecutor(Executor):
     @requests(on='/foo')
@@ -58,11 +60,7 @@ def flow_context(gateway_port):
     stop_event = Event()
     p = Process(
         target=ws_flow,
-        args=(
-            start_event,
-            stop_event,
-            gateway_port
-        ),
+        args=(start_event, stop_event, gateway_port),
     )
     p.start()
     start_event.wait()

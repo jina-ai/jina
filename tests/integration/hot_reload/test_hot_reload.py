@@ -1,9 +1,9 @@
-import os
-import time
-import shutil
 import contextlib
+import os
+import shutil
+import time
 
-from jina import Flow, DocumentArray
+from jina import DocumentArray, Flow
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -30,8 +30,11 @@ def test_reload_simple_executor(tmpdir):
         assert len(res) == 10
         for doc in res:
             assert doc.text == 'MyExecutorBeforeReload'
-        with _update_file(os.path.join(cur_dir, 'my_executor_1_new.py'), os.path.join(cur_dir, 'exec1/my_executor1.py'),
-                          str(tmpdir)):
+        with _update_file(
+            os.path.join(cur_dir, 'my_executor_1_new.py'),
+            os.path.join(cur_dir, 'exec1/my_executor1.py'),
+            str(tmpdir),
+        ):
             res = f.post(on='/', inputs=DocumentArray.empty(10))
             assert len(res) == 10
             for doc in res:
@@ -51,8 +54,11 @@ def test_reload_helper(tmpdir):
         assert len(res) == 10
         for doc in res:
             assert doc.text == 'MyExecutorBeforeReload'
-        with _update_file(os.path.join(cur_dir, 'helper2.py'), os.path.join(cur_dir, 'exec2/helper.py'),
-                          str(tmpdir)):
+        with _update_file(
+            os.path.join(cur_dir, 'helper2.py'),
+            os.path.join(cur_dir, 'exec2/helper.py'),
+            str(tmpdir),
+        ):
             res = f.post(on='/', inputs=DocumentArray.empty(10))
             assert len(res) == 10
             for doc in res:
@@ -72,8 +78,11 @@ def test_reload_with_inheritance(tmpdir):
         assert len(res) == 10
         for doc in res:
             assert doc.text == 'ABeforeReload'
-        with _update_file(os.path.join(cur_dir, 'my_executor_3_new.py'), os.path.join(cur_dir, 'exec3/my_executor3.py'),
-                          str(tmpdir)):
+        with _update_file(
+            os.path.join(cur_dir, 'my_executor_3_new.py'),
+            os.path.join(cur_dir, 'exec3/my_executor3.py'),
+            str(tmpdir),
+        ):
             res = f.post(on='/', inputs=DocumentArray.empty(10))
             assert len(res) == 10
             for doc in res:

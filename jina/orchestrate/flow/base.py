@@ -36,7 +36,7 @@ from rich.progress import (
 )
 from rich.table import Table
 
-from jina import __default_host__, __docker_host__, helper
+from jina import __default_host__, __docker_host__, __windows__, helper
 from jina.clients import Client
 from jina.clients.mixin import AsyncPostMixin, HealthCheckMixin, PostMixin, ProfileMixin
 from jina.enums import (
@@ -62,6 +62,7 @@ from jina.helper import (
     send_telemetry_event,
     typename,
 )
+from jina.importer import ImportExtensions
 from jina.jaml import JAMLCompatible
 from jina.logging.logger import JinaLogger
 from jina.orchestrate.deployments import Deployment
@@ -121,7 +122,7 @@ class Flow(
         metrics_exporter_host: Optional[str] = None,
         metrics_exporter_port: Optional[int] = None,
         port: Optional[int] = None,
-        protocol: Optional[str] = 'GRPC',
+        protocol: Optional[Union[str, List[str]]] = 'GRPC',
         proxy: Optional[bool] = False,
         tls: Optional[bool] = False,
         traces_exporter_host: Optional[str] = None,
@@ -180,13 +181,15 @@ class Flow(
         name: Optional[str] = 'gateway',
         no_crud_endpoints: Optional[bool] = False,
         no_debug_endpoints: Optional[bool] = False,
+        port: Optional[Union[int, List[int]]] = None,
         port_monitoring: Optional[str] = None,
         prefetch: Optional[int] = 1000,
-        protocol: Optional[List[str]] = ['GRPC'],
+        protocol: Optional[Union[str, List[str]]] = ['GRPC'],
         proxy: Optional[bool] = False,
         py_modules: Optional[List[str]] = None,
         quiet: Optional[bool] = False,
         quiet_error: Optional[bool] = False,
+        restart: Optional[bool] = False,
         retries: Optional[int] = -1,
         runtime_cls: Optional[str] = 'GatewayRuntime',
         ssl_certfile: Optional[str] = None,
@@ -243,6 +246,7 @@ class Flow(
 
                   Any executor that has `@requests(on=...)` bound with those values will receive data requests.
         :param no_debug_endpoints: If set, `/status` `/post` endpoints are removed from HTTP interface.
+        :param port: The port for input data to bind the gateway server to, by default, random ports between range [49152, 65535] will be assigned. The port argument can be either 1 single value in case only 1 protocol is used or multiple values when many protocols are used.
         :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]
         :param prefetch: Number of requests fetched from the client before feeding into the first Executor.
 
@@ -256,6 +260,7 @@ class Flow(
           which should be structured as a python package.
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
+        :param restart: If set, the Gateway will restart while serving if the YAML configuration source is changed.
         :param retries: Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
         :param runtime_cls: The runtime class to run inside the Pod
         :param ssl_certfile: the path to the certificate file
@@ -300,6 +305,7 @@ class Flow(
         name: Optional[str] = None,
         quiet: Optional[bool] = False,
         quiet_error: Optional[bool] = False,
+        restart: Optional[bool] = False,
         uses: Optional[str] = None,
         workspace: Optional[str] = None,
         **kwargs,
@@ -322,6 +328,7 @@ class Flow(
               When not given, then the default naming strategy will apply.
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
+        :param restart: If set, the Flow will restart while blocked if the YAML configuration source is changed.
         :param uses: The YAML path represents a flow. It can be either a local file path or a URL.
         :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.
 
@@ -413,6 +420,7 @@ class Flow(
 
                   Any executor that has `@requests(on=...)` bound with those values will receive data requests.
         :param no_debug_endpoints: If set, `/status` `/post` endpoints are removed from HTTP interface.
+        :param port: The port for input data to bind the gateway server to, by default, random ports between range [49152, 65535] will be assigned. The port argument can be either 1 single value in case only 1 protocol is used or multiple values when many protocols are used.
         :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]
         :param prefetch: Number of requests fetched from the client before feeding into the first Executor.
 
@@ -426,6 +434,7 @@ class Flow(
           which should be structured as a python package.
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
+        :param restart: If set, the Gateway will restart while serving if the YAML configuration source is changed.
         :param retries: Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
         :param runtime_cls: The runtime class to run inside the Pod
         :param ssl_certfile: the path to the certificate file
@@ -468,6 +477,7 @@ class Flow(
               When not given, then the default naming strategy will apply.
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
+        :param restart: If set, the Flow will restart while blocked if the YAML configuration source is changed.
         :param uses: The YAML path represents a flow. It can be either a local file path or a URL.
         :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.
 
@@ -852,12 +862,14 @@ class Flow(
         no_reduce: Optional[bool] = False,
         output_array_type: Optional[str] = None,
         polling: Optional[str] = 'ANY',
+        port: Optional[Union[int, List[int]]] = None,
         port_monitoring: Optional[str] = None,
         py_modules: Optional[List[str]] = None,
         quiet: Optional[bool] = False,
         quiet_error: Optional[bool] = False,
         reload: Optional[bool] = False,
         replicas: Optional[int] = 1,
+        restart: Optional[bool] = False,
         retries: Optional[int] = -1,
         runtime_cls: Optional[str] = 'WorkerRuntime',
         shards: Optional[int] = 1,
@@ -938,20 +950,22 @@ class Flow(
               Define per Endpoint:
               JSON dict, {endpoint: PollingType}
               {'/custom': 'ALL', '/search': 'ANY', '*': 'ANY'}
+        :param port: The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (`--external` or `external=True`) this can be a list of ports, separated by commas. Then, every resulting address will be considered as one replica of the Executor.
         :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]
         :param py_modules: The customized python modules need to be imported before loading the executor
 
           Note that the recommended way is to only import a single module - a simple python file, if your
           executor can be defined in a single file, or an ``__init__.py`` file if you have multiple files,
           which should be structured as a python package. For more details, please see the
-          `Executor cookbook <https://docs.jina.ai/fundamentals/executor/executor-files/>`__
+          `Executor cookbook <https://docs.jina.ai/concepts/executor/executor-files/>`__
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
         :param reload: If set, the Executor reloads the modules as they change
         :param replicas: The number of replicas in the deployment
+        :param restart: If set, the Executor will restart while serving if the YAML configuration source is changed. This differs from `reload` argument in that this will restart the server and more configuration can be changed, like number of replicas.
         :param retries: Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
         :param runtime_cls: The runtime class to run inside the Pod
-        :param shards: The number of shards in the deployment running at the same time. For more details check https://docs.jina.ai/fundamentals/flow/create-flow/#complex-flow-topologies
+        :param shards: The number of shards in the deployment running at the same time. For more details check https://docs.jina.ai/concepts/flow/create-flow/#complex-flow-topologies
         :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever
         :param timeout_ready: The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting forever
         :param timeout_send: The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default
@@ -1084,20 +1098,22 @@ class Flow(
               Define per Endpoint:
               JSON dict, {endpoint: PollingType}
               {'/custom': 'ALL', '/search': 'ANY', '*': 'ANY'}
+        :param port: The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (`--external` or `external=True`) this can be a list of ports, separated by commas. Then, every resulting address will be considered as one replica of the Executor.
         :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]
         :param py_modules: The customized python modules need to be imported before loading the executor
 
           Note that the recommended way is to only import a single module - a simple python file, if your
           executor can be defined in a single file, or an ``__init__.py`` file if you have multiple files,
           which should be structured as a python package. For more details, please see the
-          `Executor cookbook <https://docs.jina.ai/fundamentals/executor/executor-files/>`__
+          `Executor cookbook <https://docs.jina.ai/concepts/executor/executor-files/>`__
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
         :param reload: If set, the Executor reloads the modules as they change
         :param replicas: The number of replicas in the deployment
+        :param restart: If set, the Executor will restart while serving if the YAML configuration source is changed. This differs from `reload` argument in that this will restart the server and more configuration can be changed, like number of replicas.
         :param retries: Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
         :param runtime_cls: The runtime class to run inside the Pod
-        :param shards: The number of shards in the deployment running at the same time. For more details check https://docs.jina.ai/fundamentals/flow/create-flow/#complex-flow-topologies
+        :param shards: The number of shards in the deployment running at the same time. For more details check https://docs.jina.ai/concepts/flow/create-flow/#complex-flow-topologies
         :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever
         :param timeout_ready: The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting forever
         :param timeout_send: The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default
@@ -1252,13 +1268,15 @@ class Flow(
         name: Optional[str] = 'gateway',
         no_crud_endpoints: Optional[bool] = False,
         no_debug_endpoints: Optional[bool] = False,
+        port: Optional[Union[int, List[int]]] = None,
         port_monitoring: Optional[str] = None,
         prefetch: Optional[int] = 1000,
-        protocol: Optional[List[str]] = ['GRPC'],
+        protocol: Optional[Union[str, List[str]]] = ['GRPC'],
         proxy: Optional[bool] = False,
         py_modules: Optional[List[str]] = None,
         quiet: Optional[bool] = False,
         quiet_error: Optional[bool] = False,
+        restart: Optional[bool] = False,
         retries: Optional[int] = -1,
         runtime_cls: Optional[str] = 'GatewayRuntime',
         ssl_certfile: Optional[str] = None,
@@ -1315,6 +1333,7 @@ class Flow(
 
                   Any executor that has `@requests(on=...)` bound with those values will receive data requests.
         :param no_debug_endpoints: If set, `/status` `/post` endpoints are removed from HTTP interface.
+        :param port: The port for input data to bind the gateway server to, by default, random ports between range [49152, 65535] will be assigned. The port argument can be either 1 single value in case only 1 protocol is used or multiple values when many protocols are used.
         :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]
         :param prefetch: Number of requests fetched from the client before feeding into the first Executor.
 
@@ -1328,6 +1347,7 @@ class Flow(
           which should be structured as a python package.
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
+        :param restart: If set, the Gateway will restart while serving if the YAML configuration source is changed.
         :param retries: Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
         :param runtime_cls: The runtime class to run inside the Pod
         :param ssl_certfile: the path to the certificate file
@@ -1409,6 +1429,7 @@ class Flow(
 
                   Any executor that has `@requests(on=...)` bound with those values will receive data requests.
         :param no_debug_endpoints: If set, `/status` `/post` endpoints are removed from HTTP interface.
+        :param port: The port for input data to bind the gateway server to, by default, random ports between range [49152, 65535] will be assigned. The port argument can be either 1 single value in case only 1 protocol is used or multiple values when many protocols are used.
         :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]
         :param prefetch: Number of requests fetched from the client before feeding into the first Executor.
 
@@ -1422,6 +1443,7 @@ class Flow(
           which should be structured as a python package.
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
+        :param restart: If set, the Gateway will restart while serving if the YAML configuration source is changed.
         :param retries: Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
         :param runtime_cls: The runtime class to run inside the Pod
         :param ssl_certfile: the path to the certificate file
@@ -2371,14 +2393,94 @@ class Flow(
         :param stop_event: a threading event or a multiprocessing event that onces set will resume the control Flow
             to main thread.
         """
+
+        def _restart_flow(changed_file):
+            self.logger.info(
+                f'change in Flow YAML {changed_file} observed, restarting Flow'
+            )
+            self.__exit__(None, None, None)
+            new_flow = Flow.load_config(changed_file)
+            self.__dict__ = new_flow.__dict__
+            self.__enter__()
+
+        def _restart_deployment(deployment, changed_file):
+            self.logger.info(
+                f'change in Executor configuration YAML {changed_file} observed, restarting Executor deployment'
+            )
+            deployment.__exit__(None, None, None)
+            old_args, old_needs = deployment.args, deployment.needs
+            new_deployment = Deployment(old_args, old_needs)
+            deployment.__dict__ = new_deployment.__dict__
+            deployment.__enter__()
+
         try:
-            if stop_event is None:
-                self._stop_event = (
-                    threading.Event()
-                )  #: this allows `.close` to close the Flow from another thread/proc
-                self._stop_event.wait()
+            watch_changes = self.args.restart or any(
+                [
+                    deployment.args.restart
+                    for deployment in list(self._deployment_nodes.values())
+                ]
+            )
+            watch_files_from_deployments = {}
+            for name, deployment in self._deployment_nodes.items():
+                if deployment.args.restart:
+                    if deployment._is_executor_from_yaml:
+                        watch_files_from_deployments[deployment.args.uses] = name
+            watch_files_list = list(watch_files_from_deployments.keys())
+
+            config_loaded = getattr(self, '_config_loaded', '')
+            if config_loaded.endswith('yml') or config_loaded.endswith('yaml'):
+                watch_files_list.append(config_loaded)
+
+            if watch_changes and len(watch_files_list) > 0:
+
+                with ImportExtensions(
+                    required=True,
+                    logger=self.logger,
+                    help_text='''restart requires watchfiles dependency to be installed. You can do `pip install 
+                    watchfiles''',
+                ):
+                    from watchfiles import watch
+
+                new_stop_event = stop_event or threading.Event()
+                if len(watch_files_list) > 0:
+                    for changes in watch(*watch_files_list, stop_event=new_stop_event):
+                        for _, changed_file in changes:
+                            if changed_file not in watch_files_from_deployments:
+                                # maybe changed_file is the absolute path of one in watch_files_from_deployments
+                                is_absolute_path = False
+                                for (
+                                    file,
+                                    deployment_name,
+                                ) in watch_files_from_deployments.items():
+                                    if changed_file.endswith(file):
+                                        is_absolute_path = True
+                                        _restart_deployment(
+                                            self._deployment_nodes[deployment_name],
+                                            changed_file,
+                                        )
+                                        break
+
+                                if not is_absolute_path:
+                                    _restart_flow(changed_file)
+                            else:
+                                _restart_deployment(
+                                    self._deployment_nodes[
+                                        watch_files_from_deployments[changed_file]
+                                    ],
+                                    changed_file,
+                                )
             else:
-                stop_event.wait()
+                wait_event = stop_event
+                if not wait_event:
+                    self._stop_event = threading.Event()
+                    wait_event = self._stop_event
+                if not __windows__:
+                    wait_event.wait()
+                else:
+                    while True:
+                        if wait_event.is_set():
+                            break
+                        time.sleep(0.5)
         except KeyboardInterrupt:
             pass
 

@@ -23,13 +23,13 @@ cluster.KIND_VERSION = 'v0.11.1'
 
 
 async def create_all_flow_deployments_and_wait_ready(
-        flow_dump_path,
-        namespace,
-        api_client,
-        app_client,
-        core_client,
-        deployment_replicas_expected,
-        logger,
+    flow_dump_path,
+    namespace,
+    api_client,
+    app_client,
+    core_client,
+    deployment_replicas_expected,
+    logger,
 ):
     from kubernetes import utils
 
@@ -75,8 +75,8 @@ async def create_all_flow_deployments_and_wait_ready(
     while True:
         namespaced_pods = core_client.list_namespaced_pod(namespace)
         if (
-                namespaced_pods.items is not None
-                and len(namespaced_pods.items) == expected_deployments
+            namespaced_pods.items is not None
+            and len(namespaced_pods.items) == expected_deployments
         ):
             break
         logger.info(
@@ -104,8 +104,8 @@ async def create_all_flow_deployments_and_wait_ready(
                 )
             expected_num_replicas = deployment_replicas_expected[deployment_name]
             if (
-                    api_response.status.ready_replicas is not None
-                    and api_response.status.ready_replicas == expected_num_replicas
+                api_response.status.ready_replicas is not None
+                and api_response.status.ready_replicas == expected_num_replicas
             ):
                 logger.info(f'Deployment {deployment_name} is now ready')
                 deployments_ready.append(deployment_name)
@@ -128,14 +128,14 @@ async def run_test(flow, core_client, namespace, endpoint, n_docs=10, request_si
         core_client.list_namespaced_pod(
             namespace=namespace, label_selector='app=gateway'
         )
-            .items[0]
-            .metadata.name
+        .items[0]
+        .metadata.name
     )
     config_path = os.environ['KUBECONFIG']
     import portforward
 
     with portforward.forward(
-            namespace, gateway_pod_name, flow.port, flow.port, config_path
+        namespace, gateway_pod_name, flow.port, flow.port, config_path
     ):
         client_kwargs = dict(
             host='localhost',
@@ -148,10 +148,10 @@ async def run_test(flow, core_client, namespace, endpoint, n_docs=10, request_si
         client.show_progress = True
         responses = []
         async for resp in client.post(
-                endpoint,
-                inputs=[Document() for _ in range(n_docs)],
-                request_size=request_size,
-                return_responses=True,
+            endpoint,
+            inputs=[Document() for _ in range(n_docs)],
+            request_size=request_size,
+            return_responses=True,
         ):
             responses.append(resp)
 
@@ -174,6 +174,7 @@ def k8s_flow_with_sharding(docker_images, polling):
 @pytest.fixture()
 def jina_k3_env():
     import os
+
     os.environ['JINA_K3'] = '1'
     yield
     del os.environ['JINA_K3']
@@ -230,21 +231,21 @@ def k8s_flow_with_needs(docker_images):
             port=9090,
             protocol='http',
         )
-            .add(
+        .add(
             name='segmenter',
             uses=f'docker://{docker_images[0]}',
         )
-            .add(
+        .add(
             name='textencoder',
             uses=f'docker://{docker_images[0]}',
             needs='segmenter',
         )
-            .add(
+        .add(
             name='imageencoder',
             uses=f'docker://{docker_images[0]}',
             needs='segmenter',
         )
-            .add(
+        .add(
             name='merger',
             uses=f'docker://{docker_images[1]}',
             needs=['imageencoder', 'textencoder'],
@@ -263,6 +264,7 @@ def k8s_flow_with_needs(docker_images):
 )
 async def test_flow_with_monitoring(logger, tmpdir, docker_images, port_generator):
     from kubernetes import client
+
     namespace = f'test-flow-monitoring'.lower()
     api_client = client.ApiClient()
     core_client = client.CoreV1Api(api_client=api_client)
@@ -277,11 +279,6 @@ async def test_flow_with_monitoring(logger, tmpdir, docker_images, port_generato
 
         flow.to_kubernetes_yaml(dump_path, k8s_namespace=namespace)
 
-        from kubernetes import client
-
-        api_client = client.ApiClient()
-        core_client = client.CoreV1Api(api_client=api_client)
-        app_client = client.AppsV1Api(api_client=api_client)
         await create_all_flow_deployments_and_wait_ready(
             dump_path,
             namespace=namespace,
@@ -301,16 +298,16 @@ async def test_flow_with_monitoring(logger, tmpdir, docker_images, port_generato
             core_client.list_namespaced_pod(
                 namespace=namespace, label_selector='app=gateway'
             )
-                .items[0]
-                .metadata.name
+            .items[0]
+            .metadata.name
         )
 
         executor_pod_name = (
             core_client.list_namespaced_pod(
                 namespace=namespace, label_selector='app=segmenter'
             )
-                .items[0]
-                .metadata.name
+            .items[0]
+            .metadata.name
         )
 
         port_monitoring = GrpcConnectionPool.K8S_PORT_MONITORING
@@ -318,7 +315,7 @@ async def test_flow_with_monitoring(logger, tmpdir, docker_images, port_generato
 
         for pod_name in [gateway_pod_name, executor_pod_name]:
             with portforward.forward(
-                    namespace, pod_name, port, port_monitoring, config_path
+                namespace, pod_name, port, port_monitoring, config_path
             ):
                 resp = req.get(f'http://localhost:{port}/')
                 assert resp.status_code == 200
@@ -328,12 +325,18 @@ async def test_flow_with_monitoring(logger, tmpdir, docker_images, port_generato
         logger.error(f' Exception raised {exc}')
         print(f' ############## GATEWAY LOGS #########################')
         import subprocess
+
         gateway_pods = core_client.list_namespaced_pod(
             namespace=namespace,
             label_selector=f'app=gateway',
         )
         for gateway_pod in gateway_pods.items:
-            out = subprocess.run(f'kubectl logs {gateway_pod.metadata.name} -n {namespace} gateway', shell=True, capture_output=True, text=True).stdout.strip("\n")
+            out = subprocess.run(
+                f'kubectl logs {gateway_pod.metadata.name} -n {namespace} gateway',
+                shell=True,
+                capture_output=True,
+                text=True,
+            ).stdout.strip("\n")
             print(out)
 
         print(f' ############## EXECUTOR LOGS #########################')
@@ -342,7 +345,12 @@ async def test_flow_with_monitoring(logger, tmpdir, docker_images, port_generato
             label_selector=f'app=segmenter',
         )
         for executor_pod in executor_pods.items:
-            out = subprocess.run(f'kubectl logs {executor_pod.metadata.name} -n {namespace} executor', shell=True, capture_output=True, text=True).stdout.strip("\n")
+            out = subprocess.run(
+                f'kubectl logs {executor_pod.metadata.name} -n {namespace} executor',
+                shell=True,
+                capture_output=True,
+                text=True,
+            ).stdout.strip("\n")
             print(out)
         raise exc
 
@@ -356,6 +364,7 @@ async def test_flow_with_monitoring(logger, tmpdir, docker_images, port_generato
 )
 async def test_flow_with_needs(logger, k8s_flow_with_needs, tmpdir):
     from kubernetes import client
+
     namespace = f'test-flow-with-needs'.lower()
     api_client = client.ApiClient()
     core_client = client.CoreV1Api(api_client=api_client)
@@ -400,22 +409,35 @@ async def test_flow_with_needs(logger, k8s_flow_with_needs, tmpdir):
         logger.error(f' Exception raised {exc}')
         print(f' ############## GATEWAY LOGS #########################')
         import subprocess
+
         gateway_pods = core_client.list_namespaced_pod(
             namespace=namespace,
             label_selector=f'app=gateway',
         )
         for gateway_pod in gateway_pods.items:
-            out = subprocess.run(f'kubectl logs {gateway_pod.metadata.name} -n {namespace} gateway', shell=True, capture_output=True, text=True).stdout.strip("\n")
+            out = subprocess.run(
+                f'kubectl logs {gateway_pod.metadata.name} -n {namespace} gateway',
+                shell=True,
+                capture_output=True,
+                text=True,
+            ).stdout.strip("\n")
             print(out)
 
         for deployment in ['segmenter', 'textencoder', 'imageencoder', 'merger']:
-            print(f' ############## EXECUTOR LOGS in {deployment} #########################')
+            print(
+                f' ############## EXECUTOR LOGS in {deployment} #########################'
+            )
             executor_pods = core_client.list_namespaced_pod(
                 namespace=namespace,
                 label_selector=f'app={deployment}',
             )
             for executor_pod in executor_pods.items:
-                out = subprocess.run(f'kubectl logs {executor_pod.metadata.name} -n {namespace} executor', shell=True, capture_output=True, text=True).stdout.strip("\n")
+                out = subprocess.run(
+                    f'kubectl logs {executor_pod.metadata.name} -n {namespace} executor',
+                    shell=True,
+                    capture_output=True,
+                    text=True,
+                ).stdout.strip("\n")
                 print(out)
         raise exc
 
@@ -430,6 +452,7 @@ async def test_flow_with_needs(logger, k8s_flow_with_needs, tmpdir):
 @pytest.mark.parametrize('polling', ['ANY', 'ALL'])
 async def test_flow_with_sharding(k8s_flow_with_sharding, polling, tmpdir, logger):
     from kubernetes import client
+
     namespace = f'test-flow-with-sharding-{polling}'.lower()
     api_client = client.ApiClient()
     core_client = client.CoreV1Api(api_client=api_client)
@@ -474,9 +497,9 @@ async def test_flow_with_sharding(k8s_flow_with_sharding, polling, tmpdir, logge
                 assert doc.tags['shards'] == [2, 2]
             else:
                 assert len(set(doc.tags['traversed-executors'])) == 1
-                assert set(doc.tags['traversed-executors']) == {'test_executor-0'} or set(
-                    doc.tags['traversed-executors']
-                ) == {'test_executor-1'}
+                assert set(doc.tags['traversed-executors']) == {
+                    'test_executor-0'
+                } or set(doc.tags['traversed-executors']) == {'test_executor-1'}
                 assert len(set(doc.tags['shard_id'])) == 1
                 assert 0 in set(doc.tags['shard_id']) or 1 in set(doc.tags['shard_id'])
                 assert doc.tags['parallel'] == [2]
@@ -493,6 +516,7 @@ async def test_flow_with_sharding(k8s_flow_with_sharding, polling, tmpdir, logge
 )
 async def test_flow_with_configmap(k8s_flow_configmap, docker_images, tmpdir, logger):
     from kubernetes import client
+
     namespace = f'test-flow-with-configmap'.lower()
     api_client = client.ApiClient()
     core_client = client.CoreV1Api(api_client=api_client)
@@ -533,22 +557,35 @@ async def test_flow_with_configmap(k8s_flow_configmap, docker_images, tmpdir, lo
         logger.error(f' Exception raised {exc}')
         print(f' ############## GATEWAY LOGS #########################')
         import subprocess
+
         gateway_pods = core_client.list_namespaced_pod(
             namespace=namespace,
             label_selector=f'app=gateway',
         )
         for gateway_pod in gateway_pods.items:
-            out = subprocess.run(f'kubectl logs {gateway_pod.metadata.name} -n {namespace} gateway', shell=True, capture_output=True, text=True).stdout.strip("\n")
+            out = subprocess.run(
+                f'kubectl logs {gateway_pod.metadata.name} -n {namespace} gateway',
+                shell=True,
+                capture_output=True,
+                text=True,
+            ).stdout.strip("\n")
             print(out)
 
         for deployment in ['test-executor']:
-            print(f' ############## EXECUTOR LOGS in {deployment} #########################')
+            print(
+                f' ############## EXECUTOR LOGS in {deployment} #########################'
+            )
             executor_pods = core_client.list_namespaced_pod(
                 namespace=namespace,
                 label_selector=f'app={deployment}',
             )
             for executor_pod in executor_pods.items:
-                out = subprocess.run(f'kubectl logs {executor_pod.metadata.name} -n {namespace} executor', shell=True, capture_output=True, text=True).stdout.strip("\n")
+                out = subprocess.run(
+                    f'kubectl logs {executor_pod.metadata.name} -n {namespace} executor',
+                    shell=True,
+                    capture_output=True,
+                    text=True,
+                ).stdout.strip("\n")
                 print(out)
         raise exc
 
@@ -561,6 +598,7 @@ async def test_flow_with_configmap(k8s_flow_configmap, docker_images, tmpdir, lo
 )
 async def test_flow_with_gpu(k8s_flow_gpu, docker_images, tmpdir, logger):
     from kubernetes import client
+
     namespace = f'test-flow-with-gpu'.lower()
     api_client = client.ApiClient()
     core_client = client.CoreV1Api(api_client=api_client)
@@ -595,22 +633,35 @@ async def test_flow_with_gpu(k8s_flow_gpu, docker_images, tmpdir, logger):
         logger.error(f' Exception raised {exc}')
         print(f' ############## GATEWAY LOGS #########################')
         import subprocess
+
         gateway_pods = core_client.list_namespaced_pod(
             namespace=namespace,
             label_selector=f'app=gateway',
         )
         for gateway_pod in gateway_pods.items:
-            out = subprocess.run(f'kubectl logs {gateway_pod.metadata.name} -n {namespace} gateway', shell=True, capture_output=True, text=True).stdout.strip("\n")
+            out = subprocess.run(
+                f'kubectl logs {gateway_pod.metadata.name} -n {namespace} gateway',
+                shell=True,
+                capture_output=True,
+                text=True,
+            ).stdout.strip("\n")
             print(out)
 
         for deployment in ['test-executor']:
-            print(f' ############## EXECUTOR LOGS in {deployment} #########################')
+            print(
+                f' ############## EXECUTOR LOGS in {deployment} #########################'
+            )
             executor_pods = core_client.list_namespaced_pod(
                 namespace=namespace,
                 label_selector=f'app={deployment}',
             )
             for executor_pod in executor_pods.items:
-                out = subprocess.run(f'kubectl logs {executor_pod.metadata.name} -n {namespace} executor', shell=True, capture_output=True, text=True).stdout.strip("\n")
+                out = subprocess.run(
+                    f'kubectl logs {executor_pod.metadata.name} -n {namespace} executor',
+                    shell=True,
+                    capture_output=True,
+                    text=True,
+                ).stdout.strip("\n")
                 print(out)
         raise exc
 
@@ -624,6 +675,7 @@ async def test_flow_with_gpu(k8s_flow_gpu, docker_images, tmpdir, logger):
 )
 async def test_flow_with_workspace(logger, docker_images, tmpdir):
     from kubernetes import client
+
     namespace = f'test-flow-with-workspace'.lower()
     api_client = client.ApiClient()
     core_client = client.CoreV1Api(api_client=api_client)
@@ -665,22 +717,35 @@ async def test_flow_with_workspace(logger, docker_images, tmpdir):
         logger.error(f' Exception raised {exc}')
         print(f' ############## GATEWAY LOGS #########################')
         import subprocess
+
         gateway_pods = core_client.list_namespaced_pod(
             namespace=namespace,
             label_selector=f'app=gateway',
         )
         for gateway_pod in gateway_pods.items:
-            out = subprocess.run(f'kubectl logs {gateway_pod.metadata.name} -n {namespace} gateway', shell=True, capture_output=True, text=True).stdout.strip("\n")
+            out = subprocess.run(
+                f'kubectl logs {gateway_pod.metadata.name} -n {namespace} gateway',
+                shell=True,
+                capture_output=True,
+                text=True,
+            ).stdout.strip("\n")
             print(out)
 
         for deployment in ['test-executor']:
-            print(f' ############## EXECUTOR LOGS in {deployment} #########################')
+            print(
+                f' ############## EXECUTOR LOGS in {deployment} #########################'
+            )
             executor_pods = core_client.list_namespaced_pod(
                 namespace=namespace,
                 label_selector=f'app={deployment}',
             )
             for executor_pod in executor_pods.items:
-                out = subprocess.run(f'kubectl logs {executor_pod.metadata.name} -n {namespace} executor', shell=True, capture_output=True, text=True).stdout.strip("\n")
+                out = subprocess.run(
+                    f'kubectl logs {executor_pod.metadata.name} -n {namespace} executor',
+                    shell=True,
+                    capture_output=True,
+                    text=True,
+                ).stdout.strip("\n")
                 print(out)
         raise exc
 
@@ -694,6 +759,7 @@ async def test_flow_with_workspace(logger, docker_images, tmpdir):
 )
 async def test_flow_with_external_native_deployment(logger, docker_images, tmpdir):
     from kubernetes import client
+
     namespace = 'test-flow-with-external-deployment'.lower()
     api_client = client.ApiClient()
     core_client = client.CoreV1Api(api_client=api_client)
@@ -705,6 +771,7 @@ async def test_flow_with_external_native_deployment(logger, docker_images, tmpdi
             return DocumentArray(
                 [Document(text='executor was here') for _ in range(100)]
             )
+
     try:
         args = set_deployment_parser().parse_args(['--uses', 'DocReplaceExecutor'])
         with Deployment(args) as external_deployment:
@@ -744,12 +811,18 @@ async def test_flow_with_external_native_deployment(logger, docker_images, tmpdi
         logger.error(f' Exception raised {exc}')
         print(f' ############## GATEWAY LOGS #########################')
         import subprocess
+
         gateway_pods = core_client.list_namespaced_pod(
             namespace=namespace,
             label_selector=f'app=gateway',
         )
         for gateway_pod in gateway_pods.items:
-            out = subprocess.run(f'kubectl logs {gateway_pod.metadata.name} -n {namespace} gateway', shell=True, capture_output=True, text=True).stdout.strip("\n")
+            out = subprocess.run(
+                f'kubectl logs {gateway_pod.metadata.name} -n {namespace} gateway',
+                shell=True,
+                capture_output=True,
+                text=True,
+            ).stdout.strip("\n")
             print(out)
         raise exc
 
@@ -763,6 +836,7 @@ async def test_flow_with_external_native_deployment(logger, docker_images, tmpdi
 )
 async def test_flow_with_external_k8s_deployment(logger, docker_images, tmpdir):
     from kubernetes import client
+
     namespace = 'test-flow-with-external-k8s-deployment'.lower()
     api_client = client.ApiClient()
     core_client = client.CoreV1Api(api_client=api_client)
@@ -805,12 +879,18 @@ async def test_flow_with_external_k8s_deployment(logger, docker_images, tmpdir):
         logger.error(f' Exception raised {exc}')
         print(f' ############## GATEWAY LOGS #########################')
         import subprocess
+
         gateway_pods = core_client.list_namespaced_pod(
             namespace=namespace,
             label_selector=f'app=gateway',
         )
         for gateway_pod in gateway_pods.items:
-            out = subprocess.run(f'kubectl logs {gateway_pod.metadata.name} -n {namespace} gateway', shell=True, capture_output=True, text=True).stdout.strip("\n")
+            out = subprocess.run(
+                f'kubectl logs {gateway_pod.metadata.name} -n {namespace} gateway',
+                shell=True,
+                capture_output=True,
+                text=True,
+            ).stdout.strip("\n")
             print(out)
         raise exc
 
@@ -820,6 +900,7 @@ async def test_flow_with_external_k8s_deployment(logger, docker_images, tmpdir):
 @pytest.mark.parametrize('grpc_metadata', [{}, {"key1": "value1"}])
 async def test_flow_with_metadata_k8s_deployment(logger, grpc_metadata, tmpdir):
     from kubernetes import client
+
     namespace = 'test-flow-with-metadata-k8s-deployment'.lower()
     api_client = client.ApiClient()
     core_client = client.CoreV1Api(api_client=api_client)
@@ -865,12 +946,18 @@ async def test_flow_with_metadata_k8s_deployment(logger, grpc_metadata, tmpdir):
         logger.error(f' Exception raised {exc}')
         print(f' ############## GATEWAY LOGS #########################')
         import subprocess
+
         gateway_pods = core_client.list_namespaced_pod(
             namespace=namespace,
             label_selector=f'app=gateway',
         )
         for gateway_pod in gateway_pods.items:
-            out = subprocess.run(f'kubectl logs {gateway_pod.metadata.name} -n {namespace} gateway', shell=True, capture_output=True, text=True).stdout.strip("\n")
+            out = subprocess.run(
+                f'kubectl logs {gateway_pod.metadata.name} -n {namespace} gateway',
+                shell=True,
+                capture_output=True,
+                text=True,
+            ).stdout.strip("\n")
             print(out)
         raise exc
 
@@ -927,6 +1014,7 @@ async def _create_external_deployment(api_client, app_client, docker_images, tmp
 )
 async def test_flow_with_failing_executor(logger, docker_images, tmpdir):
     from kubernetes import client
+
     namespace = f'failing-flow-with-workspace'.lower()
     api_client = client.ApiClient()
     core_client = client.CoreV1Api(api_client=api_client)
@@ -968,7 +1056,9 @@ async def test_flow_with_failing_executor(logger, docker_images, tmpdir):
         await asyncio.sleep(0.5)
 
         pods = core_client.list_namespaced_pod(namespace=namespace).items
-        pod_restarts = [item.status.container_statuses[0].restart_count for item in pods]
+        pod_restarts = [
+            item.status.container_statuses[0].restart_count for item in pods
+        ]
         assert any([count for count in pod_restarts if count > 0])
 
         await asyncio.sleep(2)
@@ -981,22 +1071,35 @@ async def test_flow_with_failing_executor(logger, docker_images, tmpdir):
         logger.error(f' Exception raised {exc}')
         print(f' ############## GATEWAY LOGS #########################')
         import subprocess
+
         gateway_pods = core_client.list_namespaced_pod(
             namespace=namespace,
             label_selector=f'app=gateway',
         )
         for gateway_pod in gateway_pods.items:
-            out = subprocess.run(f'kubectl logs {gateway_pod.metadata.name} -n {namespace} gateway', shell=True, capture_output=True, text=True).stdout.strip("\n")
+            out = subprocess.run(
+                f'kubectl logs {gateway_pod.metadata.name} -n {namespace} gateway',
+                shell=True,
+                capture_output=True,
+                text=True,
+            ).stdout.strip("\n")
             print(out)
 
         for deployment in ['failing-executor']:
-            print(f' ############## EXECUTOR LOGS in {deployment} #########################')
+            print(
+                f' ############## EXECUTOR LOGS in {deployment} #########################'
+            )
             executor_pods = core_client.list_namespaced_pod(
                 namespace=namespace,
                 label_selector=f'app={deployment}',
             )
             for executor_pod in executor_pods.items:
-                out = subprocess.run(f'kubectl logs {executor_pod.metadata.name} -n {namespace} executor', shell=True, capture_output=True, text=True).stdout.strip("\n")
+                out = subprocess.run(
+                    f'kubectl logs {executor_pod.metadata.name} -n {namespace} executor',
+                    shell=True,
+                    capture_output=True,
+                    text=True,
+                ).stdout.strip("\n")
                 print(out)
         raise exc
 
@@ -1010,6 +1113,7 @@ async def test_flow_with_failing_executor(logger, docker_images, tmpdir):
 )
 async def test_flow_with_custom_gateway(logger, docker_images, tmpdir):
     from kubernetes import client
+
     namespace = 'flow-custom-gateway'.lower()
     api_client = client.ApiClient()
     core_client = client.CoreV1Api(api_client=api_client)
@@ -1019,13 +1123,13 @@ async def test_flow_with_custom_gateway(logger, docker_images, tmpdir):
             Flow(
                 name='flow_with_custom_gateway',
             )
-                .config_gateway(
+            .config_gateway(
                 port=9090,
                 protocol='http',
                 uses=f'docker://{docker_images[0]}',
                 uses_with={'arg1': 'overridden-hello'},
             )
-                .add(
+            .add(
                 name='test_executor',
                 uses=f'docker://{docker_images[1]}',
             )
@@ -1051,14 +1155,14 @@ async def test_flow_with_custom_gateway(logger, docker_images, tmpdir):
             core_client.list_namespaced_pod(
                 namespace=namespace, label_selector='app=gateway'
             )
-                .items[0]
-                .metadata.name
+            .items[0]
+            .metadata.name
         )
         config_path = os.environ['KUBECONFIG']
         import portforward
 
         with portforward.forward(
-                namespace, gateway_pod_name, flow.port, flow.port, config_path
+            namespace, gateway_pod_name, flow.port, flow.port, config_path
         ):
             _validate_dummy_custom_gateway_response(
                 flow.port,
@@ -1066,7 +1170,9 @@ async def test_flow_with_custom_gateway(logger, docker_images, tmpdir):
             )
             import requests
 
-            resp = requests.get(f'http://127.0.0.1:{flow.port}/stream?text=hello').json()
+            resp = requests.get(
+                f'http://127.0.0.1:{flow.port}/stream?text=hello'
+            ).json()
             assert resp['text'] == 'hello'
             tags = resp['tags']
             assert tags['traversed-executors'] == ['test_executor']
@@ -1078,22 +1184,35 @@ async def test_flow_with_custom_gateway(logger, docker_images, tmpdir):
         logger.error(f' Exception raised {exc}')
         print(f' ############## GATEWAY LOGS #########################')
         import subprocess
+
         gateway_pods = core_client.list_namespaced_pod(
             namespace=namespace,
             label_selector=f'app=gateway',
         )
         for gateway_pod in gateway_pods.items:
-            out = subprocess.run(f'kubectl logs {gateway_pod.metadata.name} -n {namespace} gateway', shell=True, capture_output=True, text=True).stdout.strip("\n")
+            out = subprocess.run(
+                f'kubectl logs {gateway_pod.metadata.name} -n {namespace} gateway',
+                shell=True,
+                capture_output=True,
+                text=True,
+            ).stdout.strip("\n")
             print(out)
 
         for deployment in ['test-executor']:
-            print(f' ############## EXECUTOR LOGS in {deployment} #########################')
+            print(
+                f' ############## EXECUTOR LOGS in {deployment} #########################'
+            )
             executor_pods = core_client.list_namespaced_pod(
                 namespace=namespace,
                 label_selector=f'app={deployment}',
             )
             for executor_pod in executor_pods.items:
-                out = subprocess.run(f'kubectl logs {executor_pod.metadata.name} -n {namespace} executor', shell=True, capture_output=True, text=True).stdout.strip("\n")
+                out = subprocess.run(
+                    f'kubectl logs {executor_pod.metadata.name} -n {namespace} executor',
+                    shell=True,
+                    capture_output=True,
+                    text=True,
+                ).stdout.strip("\n")
                 print(out)
         raise exc
 
@@ -1106,9 +1225,10 @@ async def test_flow_with_custom_gateway(logger, docker_images, tmpdir):
     indirect=True,
 )
 async def test_flow_multiple_protocols_gateway(
-        logger, docker_images, tmpdir, k8s_cluster
+    logger, docker_images, tmpdir, k8s_cluster
 ):
     from kubernetes import client
+
     namespace = 'flow-multiprotocol-gateway'.lower()
     api_client = client.ApiClient()
     core_client = client.CoreV1Api(api_client=api_client)
@@ -1142,8 +1262,8 @@ async def test_flow_multiple_protocols_gateway(
             core_client.list_namespaced_pod(
                 namespace=namespace, label_selector='app=gateway'
             )
-                .items[0]
-                .metadata.name
+            .items[0]
+            .metadata.name
         )
 
         # test portforwarding the gateway pod and service using http
@@ -1181,16 +1301,17 @@ async def test_flow_multiple_protocols_gateway(
 )
 @pytest.mark.parametrize('workspace_path', ['workspace_path'])
 async def test_flow_with_stateful_executor(
-        docker_images, tmpdir, logger, workspace_path
+    docker_images, tmpdir, logger, workspace_path
 ):
     from kubernetes import client
+
     namespace = f'test-flow-with-volumes'.lower()
     api_client = client.ApiClient()
     core_client = client.CoreV1Api(api_client=api_client)
     app_client = client.AppsV1Api(api_client=api_client)
     try:
         dump_path = os.path.join(str(tmpdir), 'test-flow-with-volumes')
-        flow = Flow(name='test-flow-with-volumes', port=9090, protocol='http', ).add(
+        flow = Flow(name='test-flow-with-volumes', port=9090, protocol='http',).add(
             name='statefulexecutor',
             uses=f'docker://{docker_images[0]}',
             workspace=f'{str(tmpdir)}/workspace_path',
@@ -1239,27 +1360,42 @@ async def test_flow_with_stateful_executor(
             endpoint='/len',
         )
         assert len(resp) == 1
-        assert resp[0].parameters == {'__results__': {'statefulexecutor': {'length': 10.0}}}
+        assert resp[0].parameters == {
+            '__results__': {'statefulexecutor': {'length': 10.0}}
+        }
     except Exception as exc:
         logger.error(f' Exception raised {exc}')
         print(f' ############## GATEWAY LOGS #########################')
         import subprocess
+
         gateway_pods = core_client.list_namespaced_pod(
             namespace=namespace,
             label_selector=f'app=gateway',
         )
         for gateway_pod in gateway_pods.items:
-            out = subprocess.run(f'kubectl logs {gateway_pod.metadata.name} -n {namespace} gateway', shell=True, capture_output=True, text=True).stdout.strip("\n")
+            out = subprocess.run(
+                f'kubectl logs {gateway_pod.metadata.name} -n {namespace} gateway',
+                shell=True,
+                capture_output=True,
+                text=True,
+            ).stdout.strip("\n")
             print(out)
 
         for deployment in ['statefulexecutor']:
-            print(f' ############## EXECUTOR LOGS in {deployment} #########################')
+            print(
+                f' ############## EXECUTOR LOGS in {deployment} #########################'
+            )
             executor_pods = core_client.list_namespaced_pod(
                 namespace=namespace,
                 label_selector=f'app={deployment}',
             )
             for executor_pod in executor_pods.items:
-                out = subprocess.run(f'kubectl logs {executor_pod.metadata.name} -n {namespace} executor', shell=True, capture_output=True, text=True).stdout.strip("\n")
+                out = subprocess.run(
+                    f'kubectl logs {executor_pod.metadata.name} -n {namespace} executor',
+                    shell=True,
+                    capture_output=True,
+                    text=True,
+                ).stdout.strip("\n")
                 print(out)
         raise exc
 
@@ -1270,6 +1406,7 @@ async def test_flow_with_stateful_executor(
 )
 async def test_really_slow_executor_liveness_probe_works(docker_images, tmpdir, logger):
     from kubernetes import client
+
     namespace = f'test-flow-slow-process-executor'.lower()
     api_client = client.ApiClient()
     core_client = client.CoreV1Api(api_client=api_client)
@@ -1295,7 +1432,7 @@ async def test_really_slow_executor_liveness_probe_works(docker_images, tmpdir, 
                 'gateway': 1,
                 'slow-process-executor': 2,
             },
-            logger=logger
+            logger=logger,
         )
 
         resp = await run_test(
@@ -1312,21 +1449,34 @@ async def test_really_slow_executor_liveness_probe_works(docker_images, tmpdir, 
         logger.error(f' Exception raised {exc}')
         print(f' ############## GATEWAY LOGS #########################')
         import subprocess
+
         gateway_pods = core_client.list_namespaced_pod(
             namespace=namespace,
             label_selector=f'app=gateway',
         )
         for gateway_pod in gateway_pods.items:
-            out = subprocess.run(f'kubectl logs {gateway_pod.metadata.name} -n {namespace} gateway', shell=True, capture_output=True, text=True).stdout.strip("\n")
+            out = subprocess.run(
+                f'kubectl logs {gateway_pod.metadata.name} -n {namespace} gateway',
+                shell=True,
+                capture_output=True,
+                text=True,
+            ).stdout.strip("\n")
             print(out)
 
         for deployment in ['slow-process-executor']:
-            print(f' ############## EXECUTOR LOGS in {deployment} #########################')
+            print(
+                f' ############## EXECUTOR LOGS in {deployment} #########################'
+            )
             executor_pods = core_client.list_namespaced_pod(
                 namespace=namespace,
                 label_selector=f'app={deployment}',
             )
             for executor_pod in executor_pods.items:
-                out = subprocess.run(f'kubectl logs {executor_pod.metadata.name} -n {namespace} executor', shell=True, capture_output=True, text=True).stdout.strip("\n")
+                out = subprocess.run(
+                    f'kubectl logs {executor_pod.metadata.name} -n {namespace} executor',
+                    shell=True,
+                    capture_output=True,
+                    text=True,
+                ).stdout.strip("\n")
                 print(out)
         raise exc

@@ -313,3 +313,25 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         for k, v in env_info.items():
             info_proto.envs[k] = str(v)
         return info_proto
+
+    async def Check(
+        self, request: health_pb2.HealthCheckRequest, context
+    ) -> health_pb2.HealthCheckResponse:
+        """Calls the underlying HealthServicer.Check method with the same arguments
+        :param request: grpc request
+        :param context: grpc request context
+        :returns: the grpc HealthCheckResponse
+        """
+        self.logger.debug(f'Receive Check request')
+        return await self._health_servicer.Check(request, context)
+
+    async def Watch(
+        self, request: health_pb2.HealthCheckRequest, context
+    ) -> health_pb2.HealthCheckResponse:
+        """Calls the underlying HealthServicer.Watch method with the same arguments
+        :param request: grpc request
+        :param context: grpc request context
+        :returns: the grpc HealthCheckResponse
+        """
+        self.logger.debug(f'Receive Watch request')
+        return await self._health_servicer.Watch(request, context)

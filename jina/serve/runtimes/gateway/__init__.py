@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Optional, Union
 from jina import __default_host__
 from jina.enums import GatewayProtocolType
 from jina.excepts import PortAlreadyUsed
-from jina.helper import is_port_free
+from jina.helper import is_port_free, send_telemetry_event
 from jina.parsers.helper import _update_gateway_args
 from jina.serve.gateway import BaseGateway
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
@@ -105,6 +105,21 @@ class GatewayRuntime(AsyncNewLoopRuntime):
 
         await self.gateway.setup_server()
 
+    def _send_telemetry_event(self):
+        is_custom_gateway = self.gateway.__class__ not in [
+            CompositeGateway,
+            GRPCGateway,
+            HTTPGateway,
+            WebSocketGateway,
+        ]
+        send_telemetry_event(
+            event='start',
+            obj=self,
+            entity_id=self._entity_id,
+            is_custom_gateway=is_custom_gateway,
+            protocol=self.args.protocol,
+        )
+
     async def _wait_for_cancel(self):
         """Do NOT override this method when inheriting from :class:`GatewayPod`"""
         # handle terminate signals
@@ -132,12 +147,18 @@ class GatewayRuntime(AsyncNewLoopRuntime):
         self.is_cancel.set()
 
     @staticmethod
-    def is_ready(ctrl_address: str, protocol: Optional[str] = 'grpc', **kwargs) -> bool:
+    def is_ready(
+        ctrl_address: str,
+        protocol: Optional[str] = 'grpc',
+        timeout: float = 1.0,
+        **kwargs,
+    ) -> bool:
         """
         Check if status is ready.
 
         :param ctrl_address: the address where the control request needs to be sent
         :param protocol: protocol of the gateway runtime
+        :param timeout: timeout of grpc call in seconds
         :param kwargs: extra keyword arguments
 
         :return: True if status is ready else False.
@@ -151,7 +172,9 @@ class GatewayRuntime(AsyncNewLoopRuntime):
             res = AsyncNewLoopRuntime.is_ready(ctrl_address)
         else:
             try:
-                conn = urllib.request.urlopen(url=f'http://{ctrl_address}')
+                conn = urllib.request.urlopen(
+                    url=f'http://{ctrl_address}', timeout=timeout
+                )
                 res = conn.code == HTTPStatus.OK
             except:
                 res = False

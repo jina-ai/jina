@@ -9,11 +9,11 @@ import grpc.aio
 
 from jina import __default_endpoint__
 from jina.excepts import InternalNetworkError
+from jina.logging.logger import JinaLogger
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.helper import _parse_specific_params
 from jina.serve.runtimes.worker.request_handling import WorkerRequestHandler
 from jina.types.request.data import DataRequest
-from jina.logging.logger import JinaLogger
 
 
 class TopologyGraph:
@@ -147,8 +147,9 @@ class TopologyGraph:
 
                     # avoid sending to executor which does not bind to this endpoint
                     if endpoint is not None and executor_endpoint_mapping is not None:
-                        if (self.name in executor_endpoint_mapping and
-                            endpoint not in executor_endpoint_mapping[self.name]
+                        if (
+                            self.name in executor_endpoint_mapping
+                            and endpoint not in executor_endpoint_mapping[self.name]
                             and __default_endpoint__
                             not in executor_endpoint_mapping[self.name]
                         ):
@@ -173,6 +174,7 @@ class TopologyGraph:
                             raise result
                         else:
                             resp, metadata = result
+
                         if WorkerRequestHandler._KEY_RESULT in resp.parameters:
                             # Accumulate results from each Node and then add them to the original
                             self.result_in_params_returned = resp.parameters[
@@ -184,7 +186,9 @@ class TopologyGraph:
                     except InternalNetworkError as err:
                         self._handle_internalnetworkerror(err)
                     except Exception as err:
-                        self.logger.error(f'Exception sending requests to {self.name}: {err}')
+                        self.logger.error(
+                            f'Exception sending requests to {self.name}: {err}'
+                        )
                         raise err
 
                     self.end_time = datetime.utcnow()
@@ -372,7 +376,7 @@ class TopologyGraph:
                 reduce=node_name not in deployments_no_reduce,
                 timeout_send=timeout_send,
                 retries=retries,
-                logger=self.logger
+                logger=self.logger,
             )
 
         for node_name, outgoing_node_names in graph_representation.items():

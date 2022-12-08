@@ -1,11 +1,11 @@
 <p align="center">
 <br><br><br>
-<a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/docs/_static/logo-light.svg?raw=true" alt="Jina logo: Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native" width="150px"></a>
+<a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/docs/_static/logo-light.svg?raw=true" alt="Jina logo: Build multimodal AI services via cloud native technologies · Neural Search · Generative AI · Cloud Native" width="150px"></a>
 <br><br><br>
 </p>
 
 <p align="center">
-<b>Build cross-modal and multi-modal applications<sup><a href="https://docs.jina.ai/get-started/what-is-cross-modal-multi-modal/">[?]</a></sup> on the cloud</b>
+<b>Build multimodal AI services via cloud native technologies</b>
 </p>
 
 
@@ -19,12 +19,12 @@
 
 <!-- start jina-description -->
 
-Jina is a MLOps framework that empowers anyone to build cross-modal and multi-modal applications on the cloud. It uplifts a PoC into a production-ready service. Jina handles the infrastructure complexity, making advanced solution engineering and cloud-native technologies accessible to every developer. 
+Jina is a MLOps framework that empowers anyone to build multimodal AI services via cloud native technologies. It uplifts a local PoC into a production-ready service. Jina handles the infrastructure complexity, making advanced solution engineering and cloud-native technologies accessible to every developer. 
 
 Applications built with Jina enjoy the following features out of the box:
 
 🌌 **Universal**
-  - Build applications that deliver fresh insights from multiple data types such as text, image, audio, video, 3D mesh, PDF with [Jina AI's DocArray](https://docarray.jina.ai).
+  - Build applications that deliver fresh insights from multiple data types such as text, image, audio, video, 3D mesh, PDF with [LF's DocArray](https://github.com/docarray/docarray).
   - Support all mainstream deep learning frameworks.
   - Polyglot gateway that supports gRPC, Websockets, HTTP, GraphQL protocols with TLS.
 
@@ -34,45 +34,25 @@ Applications built with Jina enjoy the following features out of the box:
   - Duplex streaming between client and server.
   - Async and non-blocking data processing over dynamic flows.
 
-☁️ **Cloud-native**
+☁️ **Cloud native**
   - Seamless Docker container integration: sharing, exploring, sandboxing, versioning and dependency control via [Executor Hub](https://cloud.jina.ai).
-  - Full observability via Prometheus and Grafana.
+  - Full observability via OpenTelemetry, Prometheus and Grafana.
   - Fast deployment to Kubernetes, Docker Compose.
 
 🍱 **Ecosystem**
   - Improved engineering efficiency thanks to the Jina AI ecosystem, so you can focus on innovating with the data applications you build.
-  - Free CPU/GPU hosting via [Jina Cloud](https://docs.jina.ai/fundamentals/jcloud/).
+  - Free CPU/GPU hosting via [Jina AI Cloud](https://cloud.jina.ai).
 
+<!-- end jina-description -->
 
 <p align="center">
 <a href="#"><img src="https://github.com/jina-ai/jina/blob/master/.github/readme/core-tree-graph.svg?raw=true" alt="Jina in Jina AI neural search ecosystem" width="100%"></a>
 </p>
 
-<!-- end jina-description -->
+
 
 
 ## [Documentation](https://docs.jina.ai)
-
-<table align=center>
-<thead>
-  <tr>
-    <th colspan="4">Understand Jina better</th>
-  </tr>
-</thead>
-<tbody>
-  <tr>
-    <td><a href="https://jina.ai/" target="_blank" rel="noopener noreferrer">📗 What is Jina?</a></td>
-    <td><a href="https://jina.ai/news/five-most-trending-open-source-mlops-tools-of-2022/" target="_blank" rel="noopener noreferrer">🔍 Is Jina MLOps for search?</a></td>
-    <td><a href="https://jina.ai/news/cloud-native-helps-you-build-multimodal-ai-in-production-here-is-how/" target="_blank" rel="noopener noreferrer">☁️ What is Cloud-Native?</a></td>
-  </tr>
-  <tr>
-    <td><a href="https://jina.ai/news/what-is-multimodal-deep-learning-and-what-are-the-applications/" target="_blank" rel="noopener noreferrer">🔮 What is cross-modal and multimodal？</a></td>
-    <td><a href="https://jina.ai/news/what-is-neural-search-and-learn-to-build-a-neural-search-engine/" target="_blank" rel="noopener noreferrer">🧬 What is neural search?</a></td>
-    <td><a href="https://jina.ai/news/paradigm-shift-towards-multimodal-ai/" target="_blank" rel="noopener noreferrer">🎨 What is creative AI?</a></td>
-  </tr>
-</tbody>
-</table>
-
 
 ## Install 
 
@@ -80,7 +60,7 @@ Applications built with Jina enjoy the following features out of the box:
 pip install jina
 ```
 
-[More install options on Apple Silicon and Windows can be found here](https://docs.jina.ai/get-started/install/).
+Find more install options on [Apple Silicon/Windows](https://docs.jina.ai/get-started/install/).
 
 
 ## Get Started
@@ -91,10 +71,10 @@ pip install jina
 Document, Executor and Flow are three fundamental concepts in Jina.
 
 - [**Document**](https://docarray.jina.ai/) is the fundamental data structure.
-- [**Executor**](https://docs.jina.ai/fundamentals/executor/) is a Python class with functions that use Documents as IO.
-- [**Flow**](https://docs.jina.ai/fundamentals/flow/) ties Executors together into a pipeline and exposes it with an API gateway.
+- [**Executor**](https://docs.jina.ai/concepts/executor/) is a Python class with functions that use Documents as IO.
+- [**Flow**](https://docs.jina.ai/concepts/flow/) ties Executors together into a pipeline and exposes it with an API gateway.
 
-[The full glossary is explained here.](https://docs.jina.ai/fundamentals/architecture-overview/)
+[The full glossary is explained here.](https://docs.jina.ai/concepts/architecture-overview/)
 
 
 ---
@@ -438,6 +418,5 @@ What cloud-native technology is still challenging to you? [Tell us](https://gith
 ## Join Us
 
 Jina is backed by [Jina AI](https://jina.ai) and licensed under [Apache-2.0](./LICENSE).
-[We are actively hiring](https://jobs.jina.ai) AI engineers, solution engineers to build the next neural search ecosystem in open source.
 
 <!-- end support-pitch -->

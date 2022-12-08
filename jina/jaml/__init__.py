@@ -719,7 +719,9 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
                 cls._override_yml_params(no_tag_yml, 'with', uses_with)
                 cls._override_yml_params(no_tag_yml, 'metas', uses_metas)
                 cls._override_yml_params(no_tag_yml, 'requests', uses_requests)
-                cls._override_yml_params(no_tag_yml, 'dynamic_batching', uses_dynamic_batching)
+                cls._override_yml_params(
+                    no_tag_yml, 'dynamic_batching', uses_dynamic_batching
+                )
 
             else:
                 raise BadConfigSource(
@@ -766,6 +768,9 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
                 raise BadConfigSource(
                     f'Can not construct {cls} object from {source}. Source might be an invalid configuration.'
                 )
+
+            if type(source) == str:
+                obj._config_loaded = source
             return obj
 
     @classmethod

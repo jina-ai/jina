@@ -1,7 +1,7 @@
 import asyncio
+import random
 
 import pytest
-import random
 
 from jina import Document, DocumentArray
 from jina.helper import Namespace, random_identity
@@ -14,7 +14,9 @@ from jina.types.request.data import DataRequest
 @pytest.mark.parametrize('num_requests', [1, 5, 13])
 @pytest.mark.parametrize('async_iterator', [False, True])
 @pytest.mark.parametrize('results_in_order', [False, True])
-async def test_request_streamer(prefetch, num_requests, async_iterator, results_in_order):
+async def test_request_streamer(
+    prefetch, num_requests, async_iterator, results_in_order
+):
     requests_handled = []
     results_handled = []
 

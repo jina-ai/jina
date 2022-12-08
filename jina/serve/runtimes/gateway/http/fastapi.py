@@ -1,10 +1,13 @@
 import logging
 import os
 from abc import abstractmethod
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 from jina.importer import ImportExtensions
 from jina.serve.gateway import BaseGateway
+
+if TYPE_CHECKING:
+    from fastapi import FastAPI
 
 
 class FastAPIBaseGateway(BaseGateway):
@@ -89,9 +92,12 @@ class FastAPIBaseGateway(BaseGateway):
             # Filter out healthcheck endpoint `GET /`
             logging.getLogger("uvicorn.access").addFilter(_EndpointFilter())
 
+        # app property will generate a new fastapi app each time called
+        app = self.app
+        _install_health_check(app, self.logger)
         self.server = UviServer(
             config=Config(
-                app=self.app,
+                app=app,
                 host=self.host,
                 port=self.port,
                 log_level=os.getenv('JINA_LOG_LEVEL', 'error').lower(),
@@ -111,3 +117,31 @@ class FastAPIBaseGateway(BaseGateway):
     async def run_server(self):
         """Run HTTP server forever"""
         await self.server.serve()
+
+
+def _install_health_check(app: 'FastAPI', logger):
+    health_check_exists = False
+    for route in app.routes:
+        if getattr(route, 'path', None) == '/' and 'GET' in getattr(
+            route, 'methods', None
+        ):
+            health_check_exists = True
+            logger.warning(
+                'endpoint GET on "/" is used for health checks, make sure it\'s still accessible'
+            )
+
+    if not health_check_exists:
+        from jina.serve.runtimes.gateway.http.models import JinaHealthModel
+
+        @app.get(
+            path='/',
+            summary='Get the health of Jina Gateway service',
+            response_model=JinaHealthModel,
+        )
+        async def _gateway_health():
+            """
+            Get the health of this Gateway service.
+            .. # noqa: DAR201
+
+            """
+            return {}
