@@ -1,4 +1,5 @@
 import asyncio
+import json
 from typing import TYPE_CHECKING, Dict, List, Optional, Tuple
 
 from docarray import DocumentArray
@@ -388,7 +389,7 @@ class WorkerRequestHandler:
         if exec_endpoint in self._batchqueue_config:
             assert len(requests) == 1, 'dynamic batching does not support no_reduce'
 
-            param_key = str(params)
+            param_key = json.dumps(params, sort_keys=True)
             if param_key not in self._batchqueue_instances[exec_endpoint]:
                 self._batchqueue_instances[exec_endpoint][param_key] = BatchQueue(
                     executor=self._executor,
