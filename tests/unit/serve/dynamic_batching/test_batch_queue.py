@@ -1,5 +1,4 @@
 import asyncio
-import time
 
 import pytest
 
@@ -34,6 +33,7 @@ async def test_batch_queue():
     # Test preferred batch size
     tasks = [await bq.push(req) for req in data_requests[:-1]]
     assert len(bq._requests) == 3
+    assert len(bq._big_doc) == 3
     assert all(not task.done() for task in tasks)
 
     tasks.append(await bq.push(data_requests[-1]))
@@ -70,105 +70,6 @@ async def test_batch_queue():
     await asyncio.sleep(0.5)
     assert single_task.done()
     assert data_requests[0].data.docs[0].text == 'Done'
-
-
-# TODO: check if this is different from other tests, if not, remove it
-@pytest.mark.asyncio
-async def test_batch_queue_max_batch_size():
-    class MockExecutor(Executor):
-        @requests
-        def foo(self, docs, **kwargs):
-            return DocumentArray([Document(text='Done') for _ in docs])
-
-    executor = MockExecutor()
-    args = executor.runtime_args
-    args.output_array_type = None
-
-    bq: BatchQueue = BatchQueue(
-        executor=executor,
-        exec_endpoint="/",
-        args=args,
-        preferred_batch_size=4,
-        max_batch_size=5,
-        timeout=600,
-    )
-
-    data_requests = [DataRequest() for _ in range(3)]
-    for req in data_requests:
-        req.data.docs = DocumentArray.empty(1)
-        assert req.data.docs[0].text == ''
-
-    # Test preferred batch size
-    tasks = [await bq.push(req) for req in data_requests]
-    assert len(bq._requests) == 3
-    assert len(bq._big_doc) == 3
-    assert all(not task.done() for task in tasks)
-    await asyncio.sleep(0.2)
-    assert len(bq._requests) == 3
-    assert len(bq._big_doc) == 3
-    assert all(not task.done() for task in tasks)
-
-    data_request_b = DataRequest()
-    data_request_b.data.docs = DocumentArray.empty(3)
-    taskb = await bq.push(data_request_b)
-
-    assert all(task.done() for task in tasks)
-
-    assert len(bq._requests) == 1
-    assert len(bq._big_doc) == 3
-    assert not taskb.done()
-    await asyncio.sleep(0.2)
-    assert not taskb.done()
-
-    data_request_c = DataRequest()
-    data_request_c.data.docs = DocumentArray.empty(2)
-    taskc = await bq.push(data_request_c)
-
-    await asyncio.sleep(0.2)
-    assert len(bq._requests) == 0
-    assert len(bq._big_doc) == 0
-    assert taskb.done()
-    assert taskc.done()
-
-
-# TODO: check if this is different from other tests, if not, remove it
-@pytest.mark.asyncio
-async def test_batch_queue_max_batch_size_exception():
-    class MockExecutor(Executor):
-        @requests
-        def foo(self, docs, **kwargs):
-            return DocumentArray([Document(text='Done') for _ in docs])
-
-    executor = MockExecutor()
-    args = executor.runtime_args
-    args.output_array_type = None
-
-    with pytest.raises(ValueError):
-        bq: BatchQueue = BatchQueue(
-            executor=executor,
-            exec_endpoint="/",
-            args=args,
-            preferred_batch_size=4,
-            max_batch_size=2,
-            timeout=500,
-        )
-
-    bq: BatchQueue = BatchQueue(
-        executor=executor,
-        exec_endpoint="/",
-        args=args,
-        preferred_batch_size=4,
-        max_batch_size=5,
-        timeout=600,
-    )
-
-    data_request_b = DataRequest()
-    data_request_b.data.docs = DocumentArray.empty(6)
-    taskb = await bq.push(data_request_b)
-
-    await asyncio.sleep(0.2)
-    assert taskb.done()
-    assert isinstance(taskb.exception(), ValueError)
 
 
 @pytest.mark.asyncio
