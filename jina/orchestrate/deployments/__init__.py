@@ -17,12 +17,9 @@ from jina import __default_executor__, __default_host__, __docker_host__, helper
 from jina.enums import DeploymentRoleType, PodRoleType, PollingType
 from jina.helper import (
     CatchAllCleanupContextManager,
-    _parse_hosts,
     _parse_ports,
-    make_iterable,
     parse_host_scheme,
 )
-from jina.jaml.helper import complete_path
 from jina.orchestrate.pods.factory import PodFactory
 from jina.parsers.helper import _update_gateway_args
 from jina.serve.networking import host_is_local, in_docker
@@ -107,6 +104,7 @@ class BaseDeployment(ExitStack):
         #     _head_args.port = args.port
         _head_args.port = args.port[0]
         _head_args.host = args.host[0]
+        _head_args.port_monitoring = args.port_monitoring[0]
         _head_args.uses = args.uses
         _head_args.pod_role = PodRoleType.HEAD
         _head_args.runtime_cls = 'HeadRuntime'
@@ -247,7 +245,7 @@ class Deployment(BaseDeployment):
         self.uses_after_pod = None
         self.head_pod = None
         self.shards = {}
-        self._update_port_monitoring_args()
+        # self._update_port_monitoring_args()
         self.update_pod_args()
         self._sandbox_deployed = False
 
@@ -264,6 +262,7 @@ class Deployment(BaseDeployment):
             if _hostname != _host:  # more than just hostname was passed to `host`
                 self.args.host[i] = _hostname
                 self.args.port[i] = port
+                self.args.scheme = scheme
                 self.args.tls = tls
         for i, repl_host in enumerate(self.ext_repl_hosts):
             _hostname, port, scheme, tls = parse_host_scheme(repl_host)
@@ -294,8 +293,6 @@ class Deployment(BaseDeployment):
                 f'Number of hosts ({len(ext_repl_hosts)}) does not match the number of ports ({len(ext_repl_ports)})'
             )
 
-        # TODO: check if this is needed somewhere else
-        # self.args.port, self.args.host = int(ext_repl_ports[0]), ext_repl_hosts[0]
         self.ext_repl_hosts, self.ext_repl_ports = ext_repl_hosts, ext_repl_ports
         # varying tls and schemes other than 'grpc' only implemented if the entire address is passed to `host`
         self.ext_repl_schemes = [
@@ -305,17 +302,11 @@ class Deployment(BaseDeployment):
             getattr(self.args, 'tls', None) for _ in self.ext_repl_ports
         ]
 
-    def _update_port_monitoring_args(self):
-        # TODO: update this when port_monitoring is changed
-        _all_port_monitoring = _parse_ports(self.args.port_monitoring)
-        self.args.all_port_monitoring = (
-            [_all_port_monitoring]
-            if not type(_all_port_monitoring) == list
-            else _all_port_monitoring
-        )
-        self.args.port_monitoring = int(
-            self.args.all_port_monitoring[0]
-        )  # this is for the head
+    # def _update_port_monitoring_args(self):
+    #     self.args.all_port_monitoring = self.args.port_monitoring
+    #     # self.args.port_monitoring = int(
+    #     #     self.args.all_port_monitoring[0]
+    #     # )  # this is for the head
 
     def update_pod_args(self):
         """Update args of all its pods based on Deployment args. Including head/tail"""
@@ -809,13 +800,14 @@ class Deployment(BaseDeployment):
                 # for gateway pods, the pod role shouldn't be changed
                 if _args.pod_role != PodRoleType.GATEWAY:
                     _args.pod_role = PodRoleType.WORKER
-
                     if len(args.host) == 1:
                         _args.host = args.host[0]
-                    else:
+                    elif len(args.host) == replicas:
                         _args.host = args.host[replica_id]
-                    # TODO raise error when two length donnot match
-
+                    else:
+                        raise ValueError(
+                            f'Number of hosts ({len(args.host)}) does not match the number of replicas ({replicas})'
+                        )
                 else:
                     _args.host = args.host
 
@@ -832,21 +824,21 @@ class Deployment(BaseDeployment):
                     _args.name = f'{replica_id}'
 
                 # the gateway needs to respect the assigned port
-                if args.deployment_role == DeploymentRoleType.GATEWAY or args.external:
-                    if args.deployment_role == DeploymentRoleType.GATEWAY:
-                        _args.port = args.port
-                    elif args.external:
-                        _args.port = args.port[0]  # TODO split at higher level
-                        
-                elif shards == 1 and replicas == 1:
+                if args.deployment_role == DeploymentRoleType.GATEWAY:
                     _args.port = args.port
-                    _args.port_monitoring = args.port_monitoring
+                
+                elif args.external:
+                    _args.port = args.port[0]
+                    
+                elif shards == 1 and replicas == 1: # TODO ??? shouldn't this be port[0]
+                    _args.port = args.port[0]
+                    _args.port_monitoring = args.port_monitoring[0]
 
                 elif shards == 1:
                     _args.port_monitoring = (
                         helper.random_port()
-                        if replica_id >= len(args.all_port_monitoring)
-                        else args.all_port_monitoring[replica_id]
+                        if replica_id >= len(args.port_monitoring)
+                        else args.port_monitoring[replica_id]
                     )
                     # if there are no shards/replicas, we dont need to distribute ports randomly
                     # we should rather use the pre assigned one
@@ -857,8 +849,8 @@ class Deployment(BaseDeployment):
                     )  # the first index is for the head
                     _args.port_monitoring = (
                         helper.random_port()
-                        if port_monitoring_index >= len(args.all_port_monitoring)
-                        else args.all_port_monitoring[
+                        if port_monitoring_index >= len(args.port_monitoring)
+                        else args.port_monitoring[
                             port_monitoring_index
                         ]  # we skip the head port here
                     )
