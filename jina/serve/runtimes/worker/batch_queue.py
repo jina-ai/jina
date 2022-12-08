@@ -12,7 +12,7 @@ class BatchQueue:
     def __init__(
         self,
         func: Callable,
-        args: Any,
+        output_array_type: Optional[str] = None,
         params: Optional[Dict] = None,
         preferred_batch_size: int = 4,
         timeout: int = 10_000,
@@ -21,7 +21,7 @@ class BatchQueue:
         if params is None:
             params = dict()
         self._is_closed = False
-        self.args = args
+        self._output_array_type = output_array_type
         self.params = params
 
         self._preferred_batch_size: int = preferred_batch_size
@@ -42,7 +42,7 @@ class BatchQueue:
         self._big_doc: DocumentArray = DocumentArray.empty()
 
         self._flush_trigger: Event = Event()
-        self._flush_task = asyncio.create_task(self._await_then_flush())
+        self._flush_task: Optional[Task] = None
         self._timer_task: Optional[Task] = None
 
     def _cancel_timer_if_pending(self):
@@ -75,7 +75,8 @@ class BatchQueue:
 
         :return: The task that will be set once the request has been processed.
         """
-
+        if not self._flush_task:
+            self._flush_task = asyncio.create_task(self._await_then_flush())
         if not self._timer_task:
             self._start_timer()
 
@@ -112,7 +113,7 @@ class BatchQueue:
                         f'Dynamic Batching requires input size to equal output size. Expected output size {input_len_before_call}, but got {len(return_data)}'
                     )
             elif return_data is None:
-                if len(self._big_doc) == input_len_before_call:
+                if not len(self._big_doc) == input_len_before_call:
                     raise ValueError(
                         f'Dynamic Batching requires input size to equal output size. Expected output size {input_len_before_call}, but got {len(self._big_doc)}'
                     )
@@ -134,11 +135,11 @@ class BatchQueue:
             right = consumed_count + request_len
             if return_data:
                 request.data.set_docs_convert_arrays(
-                    return_data[left:right], ndarray_type=self.args.output_array_type
+                    return_data[left:right], ndarray_type=self._output_array_type
                 )
             else:
                 request.data.set_docs_convert_arrays(
-                    self._big_doc[left:right], ndarray_type=self.args.output_array_type
+                    self._big_doc[left:right], ndarray_type=self._output_array_type
                 )
             consumed_count += request_len
 
@@ -147,7 +148,8 @@ class BatchQueue:
         if not self._is_closed:
             # debug print amount of requests to be processed.
             self._flush_trigger.set()
-            await self._flush_task
+            if self._flush_task:
+                await self._flush_task
             self._cancel_timer_if_pending()
             # await tasks here
             self._is_closed = True

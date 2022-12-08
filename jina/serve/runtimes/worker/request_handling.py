@@ -394,7 +394,7 @@ class WorkerRequestHandler:
             if param_key not in self._batchqueue_instances[exec_endpoint]:
                 self._batchqueue_instances[exec_endpoint][param_key] = BatchQueue(
                     functools.partial(self._executor.__acall__, exec_endpoint),
-                    args=self.args,
+                    output_array_type=self.args.output_array_type,
                     params=params,
                     **self._batchqueue_config[exec_endpoint],
                 )

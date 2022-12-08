@@ -10,17 +10,11 @@ from jina.types.request.data import DataRequest
 
 @pytest.mark.asyncio
 async def test_batch_queue():
-    class MockExecutor(Executor):
-        @requests
-        def foo(self, docs, **kwargs):
-            return DocumentArray([Document(text='Done') for _ in docs])
+    async def foo(docs, **kwargs):
+        return DocumentArray([Document(text='Done') for _ in docs])
 
-    executor = MockExecutor()
-    args = executor.runtime_args
-    args.output_array_type = None
     bq: BatchQueue = BatchQueue(
-        functools.partial(executor.__acall__, "/"),
-        args=args,
+        foo,
         preferred_batch_size=4,
         timeout=500,
     )
@@ -74,17 +68,11 @@ async def test_batch_queue():
 
 @pytest.mark.asyncio
 async def test_exception():
-    class MockExecutor(Executor):
-        @requests
-        def foo(self, docs, **kwargs):
-            return "Bad type"
+    async def foo(docs, **kwargs):
+        return "Bad type"
 
-    executor = MockExecutor()
-    args = executor.runtime_args
-    args.output_array_type = None
     bq: BatchQueue = BatchQueue(
-        functools.partial(executor.__acall__, "/"),
-        args=args,
+        foo,
         preferred_batch_size=4,
         timeout=500,
     )
@@ -107,17 +95,11 @@ async def test_exception():
 
 @pytest.mark.asyncio
 async def test_repr_and_str():
-    class MockExecutor(Executor):
-        @requests
-        def foo(self, docs, **kwargs):
-            return DocumentArray([Document(text='Done') for _ in docs])
+    async def foo(docs, **kwargs):
+        return DocumentArray([Document(text='Done') for _ in docs])
 
-    executor = MockExecutor()
-    args = executor.runtime_args
-    args.output_array_type = None
     bq: BatchQueue = BatchQueue(
-        functools.partial(executor.__acall__, "/"),
-        args=args,
+        foo,
         preferred_batch_size=4,
         timeout=500,
     )
