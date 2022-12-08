@@ -1654,36 +1654,6 @@ def is_port_free(host: Union[str, List[str]], port: Union[int, List[int]]) -> bo
             return _single_port_free(host, port)
         else:
             return all([_single_port_free(_h, port) for _h in host])
-
-# TODO check if not needed
-def _parse_ports(port: Union[str, List[str]]) -> Union[int, List[int]]:
-    """Parse port
-
-    EXAMPLE USAGE
-
-    .. code-block:: python
-
-
-        _parse_port('8000')
-        8000
-
-        _parse_port('8001,8002,8005')
-        [80001, 8002, 8005]
-        
-        _parse_port(['80001', '8002', '8005'])
-        [80001, 8002, 8005]
-
-    :param port: the string to parse
-    :return: the port or the iterable ports
-    """
-    if isinstance(port, list):
-        port = [int(port_) for port_ in port]
-    elif isinstance(port, str):
-        if ',' in port:
-            port = [int(port_) for port_ in port.split(',')]
-        else:
-            port = int(port)
-    return port
     
 
 def send_telemetry_event(event: str, obj: Any, **kwargs) -> None:
