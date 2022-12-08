@@ -153,7 +153,7 @@ JCloud supports two kinds of storage types: [efs](https://aws.amazon.com/efs/) (
 
 ````{hint}
 
-By default, we attach an `efs` to all Executors in a Flow. The benefits of doing so is - it can grow dynamically, so you don't need to shrink/grow volumes as and when necessary.
+By default, we attach an `efs` to all Executors in a Flow. This lets the `efs` grow dynamically, so you don't need to shrink/grow volumes as and when necessary.
 
 If your Executor needs high IO, you can use `ebs` instead. Please note that:
 
@@ -253,7 +253,7 @@ The JCloud gateway is different from Jina's gateway. In JCloud, a gateway works 
 
 ### Set timeout
 
-By default, the JCloud gateway will close connections that have been idle for over 600 seconds. If you want longer a connection timeout threshold, you can change the `timeout` parameter under `gateway.jcloud`.
+By default, the JCloud gateway will close connections that have been idle for over 600 seconds. If you want a longer connection timeout threshold, change the `timeout` parameter under `gateway.jcloud`.
 
 ```{code-block} yaml
 ---
@@ -270,7 +270,7 @@ executors:
 
 ### Control gateway resources
 
-If you'd like to customize the gateway's CPU or memory, you can specify the `memory` and/or `cpu` argument under `gateway.jcloud.resources`:
+To customize the gateway's CPU or memory, specify the `memory` and/or `cpu` arguments under `gateway.jcloud.resources`:
 
 ```{code-block} yaml
 ---
@@ -289,7 +289,7 @@ executors:
 
 ## Expose Executors
 
-A Flow deployment without a gateway is often used for {ref}`external-executors`, which can be shared over different Flows. You can expose an Executor by setting `expose: true` (and un-expose the Gateway by setting `expose: false`):
+A Flow deployment without a gateway is often used for {ref}`external-executors`, which can be shared between different Flows. You can expose an Executor by setting `expose: true` (and un-expose the Gateway by setting `expose: false`):
 
 ```{code-block} yaml
 ---
