@@ -11,6 +11,7 @@ from jina.excepts import BadClientInput, BadServerFlow, InternalNetworkError
 from jina.logging.profile import ProgressBar
 from jina.proto import jina_pb2, jina_pb2_grpc
 from jina.serve.networking import GrpcConnectionPool
+from jina.serve.stream.helper import AsyncRequestsIterator
 
 if TYPE_CHECKING:  # pragma: no cover
     from jina.clients.base import CallbackFnType, InputType
@@ -59,6 +60,69 @@ class GRPCBaseClient(BaseClient):
 
         return False
 
+    async def _stream_rpc(
+        self,
+        stub,
+        req_iter,
+        metadata,
+        on_error,
+        on_done,
+        on_always,
+        continue_on_error,
+        p_bar,
+        **kwargs,
+    ):
+        async for resp in stub.Call(
+            req_iter,
+            compression=self.compression,
+            metadata=metadata,
+            credentials=kwargs.get('credentials', None),
+            timeout=kwargs.get('timeout', None),
+        ):
+            callback_exec(
+                response=resp,
+                on_error=on_error,
+                on_done=on_done,
+                on_always=on_always,
+                continue_on_error=continue_on_error,
+                logger=self.logger,
+            )
+            if self.show_progress:
+                p_bar.update()
+            yield resp
+
+    async def _unary_rpc(
+        self,
+        stub,
+        req_iter,
+        metadata,
+        on_error,
+        on_done,
+        on_always,
+        continue_on_error,
+        p_bar,
+        **kwargs,
+    ):
+        async for req in AsyncRequestsIterator(req_iter):
+            resp = await stub.process_single_data(
+                req,
+                compression=self.compression,
+                metadata=metadata,
+                credentials=kwargs.get('credentials', None),
+                timeout=kwargs.get('timeout', None),
+            )
+            callback_exec(
+                response=resp,
+                on_error=on_error,
+                on_done=on_done,
+                on_always=on_always,
+                continue_on_error=continue_on_error,
+                logger=self.logger,
+            )
+            if self.show_progress:
+                p_bar.update()
+            yield resp
+
     async def _get_results(
         self,
         inputs: 'InputType',
@@ -71,6 +135,7 @@ class GRPCBaseClient(BaseClient):
         max_backoff: float = 0.1,
         backoff_multiplier: float = 1.5,
         results_in_order: bool = False,
+        stream: bool = True,
         **kwargs,
     ):
         try:
@@ -123,31 +188,41 @@ class GRPCBaseClient(BaseClient):
                 tls=self.args.tls,
                 aio_tracing_client_interceptors=self.aio_tracing_client_interceptors(),
             ) as channel:
-                stub = jina_pb2_grpc.JinaRPCStub(channel)
                 self.logger.debug(f'connected to {self.args.host}:{self.args.port}')
 
                 with ProgressBar(
                     total_length=self._inputs_length, disable=not self.show_progress
                 ) as p_bar:
                     try:
-                        async for resp in stub.Call(
-                            req_iter,
-                            compression=self.compression,
-                            metadata=metadata,
-                            credentials=kwargs.get('credentials', None),
-                            timeout=kwargs.get('timeout', None),
-                        ):
-                            callback_exec(
-                                response=resp,
-                                on_error=on_error,
-                                on_done=on_done,
-                                on_always=on_always,
-                                continue_on_error=continue_on_error,
-                                logger=self.logger,
-                            )
-                            if self.show_progress:
-                                p_bar.update()
-                            yield resp
+                        if stream:
+                            stub = jina_pb2_grpc.JinaRPCStub(channel)
+                            async for resp in self._stream_rpc(
+                                stub,
+                                req_iter,
+                                metadata,
+                                on_error,
+                                on_done,
+                                on_always,
+                                continue_on_error,
+                                p_bar,
+                                **kwargs,
+                            ):
+                                yield resp
+                        else:
+                            stub = jina_pb2_grpc.JinaSingleDataRequestRPCStub(channel)
+                            async for resp in self._unary_rpc(
+                                stub,
+                                req_iter,
+                                metadata,
+                                on_error,
+                                on_done,
+                                on_always,
+                                continue_on_error,
+                                p_bar,
+                                **kwargs,
+                            ):
+                                yield resp
+
                     except (grpc.aio._call.AioRpcError, InternalNetworkError) as err:
                         my_code = err.code()
                         my_details = err.details()
