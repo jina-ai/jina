@@ -1684,33 +1684,6 @@ def _parse_ports(port: Union[str, List[str]]) -> Union[int, List[int]]:
         else:
             port = int(port)
     return port
-
-# TODO check if not needed
-def _parse_hosts(host: Union[str, List[str]]) -> Union[str, List[str]]:
-    """Parse port
-
-    EXAMPLE USAGE
-
-    .. code-block:: python
-
-
-        _parse_hosts('localhost')
-        'localhost'
-
-        _parse_port('localhost,91.198.174.192')
-        ['localhost', '91.198.174.192']
-        
-        _parse_port(['localhost', '91.198.174.192'])
-        ['localhost', '91.198.174.192']
-
-    :param host: the string to parse
-    :return: the host or the iterable of hosts
-    """
-    if isinstance(host, List):
-        return host
-    else:
-        hosts = host.split(',')
-        return hosts[0] if len(hosts) == 1 else hosts
     
 
 def send_telemetry_event(event: str, obj: Any, **kwargs) -> None:
@@ -1745,35 +1718,3 @@ def send_telemetry_event(event: str, obj: Any, **kwargs) -> None:
 
     threading.Thread(target=_telemetry, daemon=True).start()
 
-
-def make_iterable(o: object) -> Iterable:
-    """
-    Make an object an iterable by wrapping it as a singleton list.
-    If the input is already an iterable (except str and bytes), it will be returned as is.
-    Str and bytes are treated as non-iterable, and thus wrapped in a list.
-
-    EXAMPLE USAGE
-
-    .. code-block:: python
-
-
-        make_iter(1)
-        [1]
-
-        make_iter('a')
-        ['a']
-
-        make_iter([1, 2, 3])
-        [1, 2, 3]
-
-        make_iter((1, 2, 3))
-        (1, 2, 3)
-
-
-    :param o: the object to be converted to an iterable
-    :return: the iterable
-    """
-    if isinstance(o, Iterable) and not isinstance(o, (str, bytes)):
-        return o
-    else:
-        return [o]
