@@ -153,7 +153,7 @@ JCloud supports two kinds of storage types: [efs](https://aws.amazon.com/efs/) (
 
 ````{hint}
 
-By default, we attach an `efs` to all Executors in a Flow. This lets the `efs` grow dynamically, so you don't need to shrink/grow volumes as and when necessary.
+By default, we attach an `efs` to all Executors in a Flow. This lets the `efs` resize dynamically, so you don't need to shrink/grow volumes manually.
 
 If your Executor needs high IO, you can use `ebs` instead. Please note that:
 
@@ -289,7 +289,7 @@ executors:
 
 ## Expose Executors
 
-A Flow deployment without a gateway is often used for {ref}`external-executors`, which can be shared between different Flows. You can expose an Executor by setting `expose: true` (and un-expose the Gateway by setting `expose: false`):
+A Flow deployment without a Gateway is often used for {ref}`external-executors`, which can be shared between different Flows. You can expose an Executor by setting `expose: true` (and un-expose the Gateway by setting `expose: false`):
 
 ```{code-block} yaml
 ---
