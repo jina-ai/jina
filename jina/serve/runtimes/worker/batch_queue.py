@@ -1,29 +1,26 @@
 import asyncio
 from asyncio import Event, Task
-from typing import Any, Dict, List, Optional
+from typing import Any, Callable, Dict, List, Optional
 
 from jina import DocumentArray
-from jina.serve.executors import BaseExecutor
 from jina.types.request.data import DataRequest
 
 
 class BatchQueue:
-    """A batch queue that holds the data request and the executor."""
+    """A batch queue that holds the data request and the callable to batch requests to."""
 
     def __init__(
         self,
-        executor: BaseExecutor,
-        exec_endpoint: str,
+        func: Callable,
         args: Any,
         params: Optional[Dict] = None,
         preferred_batch_size: int = 4,
         timeout: int = 10_000,
     ) -> None:
+        self.func = func
         if params is None:
             params = dict()
         self._is_closed = False
-        self._executor: BaseExecutor = executor
-        self._exec_endpoint: str = exec_endpoint
         self.args = args
         self.params = params
 
@@ -33,10 +30,7 @@ class BatchQueue:
         self._reset()
 
     def __repr__(self) -> str:
-        return (
-            f'{self.__class__.__name__}({self._executor}, {self._exec_endpoint},'
-            f'preferred_batch_size={self._preferred_batch_size}, timeout={self._timeout})'
-        )
+        return f'{self.__class__.__name__}(preferred_batch_size={self._preferred_batch_size}, timeout={self._timeout})'
 
     def __str__(self) -> str:
         return self.__repr__()
@@ -100,12 +94,11 @@ class BatchQueue:
         """Process all requests in the queue once flush_trigger event is set."""
         await self._flush_trigger.wait()
         try:
-            # The executor might accidentally change the size
+            # The function might accidentally change the size
             input_len_before_call: int = len(self._big_doc)
 
-            # We need to get the executor to process the big doc
-            return_data = await self._executor.__acall__(
-                req_endpoint=self._exec_endpoint,
+            # We need to get the function to process the big doc
+            return_data = await self.func(
                 docs=self._big_doc,
                 parameters=self.params,
                 docs_matrix=None,  # joining manually with batch queue is not supported right now
@@ -113,7 +106,6 @@ class BatchQueue:
             )
 
             # Output validation
-            # TODO: raise exception instead of using assert
             if isinstance(return_data, DocumentArray):
                 if not len(return_data) == input_len_before_call:
                     raise ValueError(
@@ -130,7 +122,7 @@ class BatchQueue:
                     f'but getting {return_data!r}'
                 )
 
-            # We need to reslice the big doc array into the original requests
+            # We need to re-slice the big doc array into the original requests
             self._fan_out_return_data(return_data)
         finally:
             self._reset()

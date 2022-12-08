@@ -1,4 +1,5 @@
 import asyncio
+import functools
 import json
 from typing import TYPE_CHECKING, Dict, List, Optional, Tuple
 
@@ -392,8 +393,7 @@ class WorkerRequestHandler:
             param_key = json.dumps(params, sort_keys=True)
             if param_key not in self._batchqueue_instances[exec_endpoint]:
                 self._batchqueue_instances[exec_endpoint][param_key] = BatchQueue(
-                    executor=self._executor,
-                    exec_endpoint=exec_endpoint,
+                    functools.partial(self._executor.__acall__, exec_endpoint),
                     args=self.args,
                     params=params,
                     **self._batchqueue_config[exec_endpoint],

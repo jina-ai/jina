@@ -1,4 +1,5 @@
 import asyncio
+import functools
 
 import pytest
 
@@ -18,8 +19,7 @@ async def test_batch_queue():
     args = executor.runtime_args
     args.output_array_type = None
     bq: BatchQueue = BatchQueue(
-        executor=executor,
-        exec_endpoint="/",
+        functools.partial(executor.__acall__, "/"),
         args=args,
         preferred_batch_size=4,
         timeout=500,
@@ -83,8 +83,7 @@ async def test_exception():
     args = executor.runtime_args
     args.output_array_type = None
     bq: BatchQueue = BatchQueue(
-        executor=executor,
-        exec_endpoint="/",
+        functools.partial(executor.__acall__, "/"),
         args=args,
         preferred_batch_size=4,
         timeout=500,
@@ -117,8 +116,7 @@ async def test_repr_and_str():
     args = executor.runtime_args
     args.output_array_type = None
     bq: BatchQueue = BatchQueue(
-        executor=executor,
-        exec_endpoint="/",
+        functools.partial(executor.__acall__, "/"),
         args=args,
         preferred_batch_size=4,
         timeout=500,
