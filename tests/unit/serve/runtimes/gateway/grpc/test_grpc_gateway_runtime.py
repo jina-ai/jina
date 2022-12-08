@@ -158,6 +158,20 @@ class DummyMockConnectionPool:
         return asyncio.create_task(task_wrapper())
 
 
+async def _test(streamer):
+    responses = []
+    req = request_generator('/', DocumentArray([Document(text='client0-Request')]))
+    async for resp in streamer.stream(request_iterator=req):
+        responses.append(resp)
+    for req in request_generator(
+        '/',
+        DocumentArray([Document(text='client0-Request')]),
+    ):
+        unary_response = await streamer.process_single_data(request=req)
+        responses.append(unary_response)
+    return responses
+
+
 def test_grpc_gateway_runtime_handle_messages_linear(linear_graph_dict, monkeypatch):
     def process_wrapper():
         monkeypatch.setattr(
@@ -184,23 +198,15 @@ def test_grpc_gateway_runtime_handle_messages_linear(linear_graph_dict, monkeypa
                 ]
             )
         ) as runtime:
+            responses = asyncio.run(_test(runtime.gateway.streamer))
 
-            async def _test():
-                r = []
-                req = request_generator(
-                    '/', DocumentArray([Document(text='client0-Request')])
-                )
-                async for resp in runtime.gateway.streamer.stream(request_iterator=req):
-                    r.append(resp)
-                return r
-
-            responses = asyncio.run(_test())
         assert len(responses) > 0
-        assert len(responses[0].docs) == 1
-        assert (
-            responses[0].docs[0].text
-            == f'client0-Request-client0-deployment0-client0-deployment1-client0-deployment2-client0-deployment3'
-        )
+        for i in range(2):
+            assert len(responses[i].docs) == 1
+            assert (
+                responses[i].docs[0].text
+                == f'client0-Request-client0-deployment0-client0-deployment1-client0-deployment2-client0-deployment3'
+            )
 
     p = Process(target=process_wrapper)
     p.start()
@@ -236,25 +242,17 @@ def test_grpc_gateway_runtime_handle_messages_bifurcation(
                 ]
             )
         ) as runtime:
+            responses = asyncio.run(_test(runtime.gateway.streamer))
 
-            async def _test():
-                responses = []
-                req = request_generator(
-                    '/', DocumentArray([Document(text='client0-Request')])
-                )
-                async for resp in runtime.gateway.streamer.stream(request_iterator=req):
-                    responses.append(resp)
-                return responses
-
-            responses = asyncio.run(_test())
         assert len(responses) > 0
-        assert len(responses[0].docs) == 1
-        assert (
-            responses[0].docs[0].text
-            == f'client0-Request-client0-deployment0-client0-deployment2-client0-deployment3'
-            or responses[0].docs[0].text
-            == f'client0-Request-client0-deployment4-client0-deployment5'
-        )
+        for i in range(2):
+            assert len(responses[i].docs) == 1
+            assert (
+                responses[i].docs[0].text
+                == f'client0-Request-client0-deployment0-client0-deployment2-client0-deployment3'
+                or responses[i].docs[0].text
+                == f'client0-Request-client0-deployment4-client0-deployment5'
+            )
 
     p = Process(target=process_wrapper)
     p.start()
@@ -290,28 +288,20 @@ def test_grpc_gateway_runtime_handle_messages_merge_in_gateway(
                 ]
             )
         ) as runtime:
+            responses = asyncio.run(_test(runtime.gateway.streamer))
 
-            async def _test():
-                responses = []
-                req = request_generator(
-                    '/', DocumentArray([Document(text='client0-Request')])
-                )
-                async for resp in runtime.gateway.streamer.stream(request_iterator=req):
-                    responses.append(resp)
-                return responses
-
-            responses = asyncio.run(_test())
         assert len(responses) > 0
-        assert len(responses[0].docs) == 1
-        deployment1_path = (
-            f'client0-Request-client0-deployment0-client0-deployment1-client0-merger'
-            in responses[0].docs[0].text
-        )
-        deployment2_path = (
-            f'client0-Request-client0-deployment0-client0-deployment2-client0-merger'
-            in responses[0].docs[0].text
-        )
-        assert deployment1_path or deployment2_path
+        for i in range(2):
+            assert len(responses[i].docs) == 1
+            deployment1_path = (
+                f'client0-Request-client0-deployment0-client0-deployment1-client0-merger'
+                in responses[i].docs[0].text
+            )
+            deployment2_path = (
+                f'client0-Request-client0-deployment0-client0-deployment2-client0-merger'
+                in responses[i].docs[0].text
+            )
+            assert deployment1_path or deployment2_path
 
     p = Process(target=process_wrapper)
     p.start()
@@ -347,28 +337,20 @@ def test_grpc_gateway_runtime_handle_messages_merge_in_last_deployment(
                 ]
             )
         ) as runtime:
+            responses = asyncio.run(_test(runtime.gateway.streamer))
 
-            async def _test():
-                responses = []
-                req = request_generator(
-                    '/', DocumentArray([Document(text='client0-Request')])
-                )
-                async for resp in runtime.gateway.streamer.stream(request_iterator=req):
-                    responses.append(resp)
-                return responses
-
-            responses = asyncio.run(_test())
         assert len(responses) > 0
-        assert len(responses[0].docs) == 1
-        deployment1_path = (
-            f'client0-Request-client0-deployment0-client0-deployment1-client0-merger-client0-deployment_last'
-            in responses[0].docs[0].text
-        )
-        deployment2_path = (
-            f'client0-Request-client0-deployment0-client0-deployment2-client0-merger-client0-deployment_last'
-            in responses[0].docs[0].text
-        )
-        assert deployment1_path or deployment2_path
+        for i in range(2):
+            assert len(responses[i].docs) == 1
+            deployment1_path = (
+                f'client0-Request-client0-deployment0-client0-deployment1-client0-merger-client0-deployment_last'
+                in responses[i].docs[0].text
+            )
+            deployment2_path = (
+                f'client0-Request-client0-deployment0-client0-deployment2-client0-merger-client0-deployment_last'
+                in responses[i].docs[0].text
+            )
+            assert deployment1_path or deployment2_path
 
     p = Process(target=process_wrapper)
     p.start()
@@ -404,33 +386,25 @@ def test_grpc_gateway_runtime_handle_messages_complete_graph_dict(
                 ]
             )
         ) as runtime:
+            responses = asyncio.run(_test(runtime.gateway.streamer))
 
-            async def _test():
-                responses = []
-                req = request_generator(
-                    '/', DocumentArray([Document(text='client0-Request')])
-                )
-                async for resp in runtime.gateway.streamer.stream(request_iterator=req):
-                    responses.append(resp)
-                return responses
-
-            responses = asyncio.run(_test())
         assert len(responses) > 0
-        assert len(responses[0].docs) == 1
-        deployment2_path = (
-            f'client0-Request-client0-deployment0-client0-deployment2-client0-deployment3-client0-merger-client0-deployment_last'
-            == responses[0].docs[0].text
-        )
-        deployment4_path = (
-            f'client0-Request-client0-deployment4-client0-deployment5-client0-merger-client0-deployment_last'
-            == responses[0].docs[0].text
-        )
-        assert (
-            f'client0-Request-client0-deployment0-client0-deployment1-client0-merger-client0-deployment_last'
-            == responses[0].docs[0].text
-            or deployment2_path
-            or deployment4_path
-        )
+        for i in range(2):
+            assert len(responses[i].docs) == 1
+            deployment2_path = (
+                f'client0-Request-client0-deployment0-client0-deployment2-client0-deployment3-client0-merger-client0-deployment_last'
+                == responses[i].docs[0].text
+            )
+            deployment4_path = (
+                f'client0-Request-client0-deployment4-client0-deployment5-client0-merger-client0-deployment_last'
+                == responses[i].docs[0].text
+            )
+            assert (
+                f'client0-Request-client0-deployment0-client0-deployment1-client0-merger-client0-deployment_last'
+                == responses[i].docs[0].text
+                or deployment2_path
+                or deployment4_path
+            )
 
     p = Process(target=process_wrapper)
     p.start()
@@ -454,20 +428,12 @@ def test_grpc_gateway_runtime_handle_empty_graph():
                 ]
             )
         ) as runtime:
+            responses = asyncio.run(_test(runtime.gateway.streamer))
 
-            async def _test():
-                responses = []
-                req = request_generator(
-                    '/', DocumentArray([Document(text='client0-Request')])
-                )
-                async for resp in runtime.gateway.streamer.stream(request_iterator=req):
-                    responses.append(resp)
-                return responses
-
-            responses = asyncio.run(_test())
         assert len(responses) > 0
-        assert len(responses[0].docs) == 1
-        assert responses[0].docs[0].text == f'client0-Request'
+        for i in range(2):
+            assert len(responses[i].docs) == 1
+            assert responses[i].docs[0].text == f'client0-Request'
 
     p = Process(target=process_wrapper)
     p.start()
@@ -508,7 +474,14 @@ async def test_grpc_gateway_runtime_reflection():
     async with grpc.aio.insecure_channel(f'127.0.0.1:{port}') as channel:
         service_names = await GrpcConnectionPool.get_available_services(channel)
 
-    assert all(service_name in service_names for service_name in ['jina.JinaRPC'])
+    assert all(
+        service_name in service_names
+        for service_name in [
+            'jina.JinaInfoRPC',
+            'jina.JinaRPC',
+            'jina.JinaSingleDataRequestRPC',
+        ]
+    )
 
     p.terminate()
     p.join()

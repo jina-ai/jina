@@ -9,6 +9,7 @@ from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.gateway.graph.topology_graph import TopologyGraph
 from jina.serve.runtimes.gateway.request_handling import GatewayRequestHandler
 from jina.serve.stream import RequestStreamer
+from jina.types.request.data import DataRequest
 
 __all__ = ['GatewayStreamer']
 
@@ -189,6 +190,16 @@ class GatewayStreamer:
         await self._connection_pool.close()
 
     Call = stream
+
+    async def process_single_data(
+        self, request: DataRequest, context=None
+    ) -> DataRequest:
+        """Implements request and response handling of a single DataRequest
+        :param request: DataRequest from Client
+        :param context: grpc context
+        :return: response DataRequest
+        """
+        return await self._streamer.process_single_data(request, context)
 
     @staticmethod
     def get_streamer():
