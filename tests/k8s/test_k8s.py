@@ -279,11 +279,6 @@ async def test_flow_with_monitoring(logger, tmpdir, docker_images, port_generato
 
         flow.to_kubernetes_yaml(dump_path, k8s_namespace=namespace)
 
-        from kubernetes import client
-
-        api_client = client.ApiClient()
-        core_client = client.CoreV1Api(api_client=api_client)
-        app_client = client.AppsV1Api(api_client=api_client)
         await create_all_flow_deployments_and_wait_ready(
             dump_path,
             namespace=namespace,

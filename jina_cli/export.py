@@ -1,6 +1,6 @@
 import argparse
 import os
-from typing import List
+from typing import List, Union
 
 
 def api_to_dict(show_all_args: bool = False):
@@ -58,7 +58,7 @@ def _export_parser_args(parser_fn, type_as_str: bool = False, **kwargs):
     from argparse import _StoreAction, _StoreTrueAction
 
     from jina.enums import BetterEnum
-    from jina.parsers.helper import _SHOW_ALL_ARGS, KVAppendAction
+    from jina.parsers.helper import _SHOW_ALL_ARGS, CastToIntAction, KVAppendAction
 
     port_attr = ('help', 'choices', 'default', 'required', 'option_strings', 'dest')
     parser = parser_fn(**kwargs)
@@ -68,7 +68,9 @@ def _export_parser_args(parser_fn, type_as_str: bool = False, **kwargs):
         if a.default != b.default:
             random_dest.add(a.dest)
     for a in parser._actions:
-        if isinstance(a, (_StoreAction, _StoreTrueAction, KVAppendAction)):
+        if isinstance(
+            a, (_StoreAction, _StoreTrueAction, KVAppendAction, CastToIntAction)
+        ):
             if not _SHOW_ALL_ARGS and a.help == argparse.SUPPRESS:
                 continue
             ddd = {p: getattr(a, p) for p in port_attr}
@@ -76,6 +78,8 @@ def _export_parser_args(parser_fn, type_as_str: bool = False, **kwargs):
                 ddd['type'] = bool
             elif isinstance(a, KVAppendAction):
                 ddd['type'] = dict
+            elif isinstance(a, CastToIntAction):
+                ddd['type'] = Union[int, List[int]]
             else:
                 ddd['type'] = a.type
             if ddd['choices']:

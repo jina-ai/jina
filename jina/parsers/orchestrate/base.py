@@ -105,6 +105,7 @@ def mixin_base_deployment_parser(parser, title='Base Deployment'):
         if _SHOW_ALL_ARGS
         else argparse.SUPPRESS,
     )
+
     return gp
 
 
@@ -137,7 +138,7 @@ def mixin_scalable_deployment_parser(parser):
         type=int,
         default=1,
         help='The number of shards in the deployment running at the same time. For more details check '
-        'https://docs.jina.ai/fundamentals/flow/create-flow/#complex-flow-topologies',
+        'https://docs.jina.ai/concepts/flow/create-flow/#complex-flow-topologies',
     )
 
     gp.add_argument(
