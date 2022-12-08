@@ -614,7 +614,7 @@ def test_dynamic_batching(inputs, expected_values):
         ),
         (
             dict(preferred_batch_size=4, timeout=5_000),
-            dict(preferred_batch_size=4, timeout=5_00),
+            dict(preferred_batch_size=4, timeout=5_000),
         ),
         (
             dict(preferred_batch_size=4),
