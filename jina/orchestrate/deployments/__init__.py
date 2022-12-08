@@ -322,19 +322,19 @@ class Deployment(BaseDeployment):
         else:
             self.pod_args = self._parse_args(self.args)
 
-        for shard_id in self.pod_args['pods']:
-            for pod, port, host, scheme, tls in zip(
-                self.pod_args['pods'][shard_id],
-                self.ext_repl_ports,
-                self.ext_repl_hosts,
-                self.ext_repl_schemes,
-                self.ext_repl_tls,
-            ):
-                pod.port = port
-                pod.host = host
-                if self.external:  # TODO: is this really needed ?
-                    pod.scheme = scheme
-                    pod.tls = tls
+        # if self.external:
+        #     for shard_id in self.pod_args['pods']:
+        #         for pod, port, host, scheme, tls in zip(
+        #             self.pod_args['pods'][shard_id],
+        #             self.ext_repl_ports,
+        #             self.ext_repl_hosts,
+        #             self.ext_repl_schemes,
+        #             self.ext_repl_tls,
+        #         ):
+        #             pod.port = port
+        #             pod.host = host
+        #             pod.scheme = scheme
+        #             pod.tls = tls
 
     def update_sandbox_args(self):
         """Update args of all its pods based on the host and port returned by Hubble"""
@@ -349,7 +349,7 @@ class Deployment(BaseDeployment):
 
     def update_worker_pod_args(self):
         """Update args of all its worker pods based on Deployment args. Does not touch head and tail"""
-        self.pod_args['pods'] = self._set_pod_args(self.args)
+        self.pod_args['pods'] = self._set_pod_args()
 
     @property
     def is_sandbox(self) -> bool:
@@ -793,37 +793,36 @@ class Deployment(BaseDeployment):
             _c = cycle(selected_devices)
             return {j: next(_c) for j in range(replicas)}
 
-    @staticmethod
-    def _set_pod_args(args: Namespace) -> Dict[int, List[Namespace]]:
+    def _set_pod_args(self) -> Dict[int, List[Namespace]]:
         result = {}
-        shards = getattr(args, 'shards', 1)
-        replicas = getattr(args, 'replicas', 1)
+        shards = getattr(self.args, 'shards', 1)
+        replicas = getattr(self.args, 'replicas', 1)
         sharding_enabled = shards and shards > 1
 
         cuda_device_map = None
-        if args.env:
+        if self.args.env:
             cuda_device_map = Deployment._roundrobin_cuda_device(
-                args.env.get('CUDA_VISIBLE_DEVICES'), replicas
+                self.args.env.get('CUDA_VISIBLE_DEVICES'), replicas
             )
 
         for shard_id in range(shards):
             replica_args = []
             for replica_id in range(replicas):
-                _args = copy.deepcopy(args)
+                _args = copy.deepcopy(self.args)
                 _args.shard_id = shard_id
                 # for gateway pods, the pod role shouldn't be changed
                 if _args.pod_role != PodRoleType.GATEWAY:
                     _args.pod_role = PodRoleType.WORKER
-                    if len(args.host) == 1:
-                        _args.host = args.host[0]
-                    elif len(args.host) == replicas:
-                        _args.host = args.host[replica_id]
+                    if len(self.args.host) == 1:
+                        _args.host = self.args.host[0]
+                    elif len(self.args.host) == replicas:
+                        _args.host = self.args.host[replica_id]
                     else:
                         raise ValueError(
-                            f'Number of hosts ({len(args.host)}) does not match the number of replicas ({replicas})'
+                            f'Number of hosts ({len(self.args.host)}) does not match the number of replicas ({replicas})'
                         )
                 else:
-                    _args.host = args.host
+                    _args.host = self.args.host
 
                 if cuda_device_map:
                     _args.env['CUDA_VISIBLE_DEVICES'] = str(cuda_device_map[replica_id])
@@ -838,44 +837,49 @@ class Deployment(BaseDeployment):
                     _args.name = f'{replica_id}'
 
                 # the gateway needs to respect the assigned port
-                if args.deployment_role == DeploymentRoleType.GATEWAY:
-                    _args.port = args.port
+                if self.args.deployment_role == DeploymentRoleType.GATEWAY:
+                    _args.port = self.args.port
                 
-                elif args.external:
-                    _args.port = args.port[0]
-                    
-                elif shards == 1 and replicas == 1: # TODO ??? shouldn't this be port[0]
-                    _args.port = args.port[0]
-                    _args.port_monitoring = args.port_monitoring
+                elif not self.external:
+                    if shards == 1 and replicas == 1: # TODO ??? shouldn't this be port[0]
+                        _args.port = self.args.port[0]
+                        _args.port_monitoring = self.args.port_monitoring
 
-                elif shards == 1:
-                    _args.port_monitoring = (
-                        helper.random_port()
-                        if replica_id >= len(args.all_port_monitoring)
-                        else args.all_port_monitoring[replica_id]
-                    )
-                    # if there are no shards/replicas, we dont need to distribute ports randomly
-                    # we should rather use the pre assigned one
-                    _args.port = helper.random_port()
-                elif shards > 1:
-                    port_monitoring_index = (
-                        replica_id + replicas * shard_id + 1
-                    )  # the first index is for the head
-                    _args.port_monitoring = (
-                        helper.random_port()
-                        if port_monitoring_index >= len(args.all_port_monitoring)
-                        else args.all_port_monitoring[
-                            port_monitoring_index
-                        ]  # we skip the head port here
-                    )
-                    _args.port = helper.random_port()
+                    elif shards == 1:
+                        _args.port_monitoring = (
+                            helper.random_port()
+                            if replica_id >= len(self.args.all_port_monitoring)
+                            else self.args.all_port_monitoring[replica_id]
+                        )
+                        # if there are no shards/replicas, we dont need to distribute ports randomly
+                        # we should rather use the pre assigned one
+                        _args.port = helper.random_port()
+                    elif shards > 1:
+                        port_monitoring_index = (
+                            replica_id + replicas * shard_id + 1
+                        )  # the first index is for the head
+                        _args.port_monitoring = (
+                            helper.random_port()
+                            if port_monitoring_index >= len(self.args.all_port_monitoring)
+                            else self.args.all_port_monitoring[
+                                port_monitoring_index
+                            ]  # we skip the head port here
+                        )
+                        _args.port = helper.random_port()
+                    else:
+                        _args.port = helper.random_port()
+                        _args.port_monitoring = helper.random_port()
+                
                 else:
-                    _args.port = helper.random_port()
-                    _args.port_monitoring = helper.random_port()
+                    _args.port = self.ext_repl_ports[replica_id]
+                    _args.host = self.ext_repl_hosts[replica_id]
+                    _args.scheme = self.ext_repl_schemes[replica_id]
+                    _args.tls = self.ext_repl_tls[replica_id]
+
 
                 # pod workspace if not set then derive from workspace
                 if not _args.workspace:
-                    _args.workspace = args.workspace
+                    _args.workspace = self.args.workspace
                 replica_args.append(_args)
                 print('_set_pod_args!!!', _args.host, _args.port)
             result[shard_id] = replica_args
@@ -947,7 +951,7 @@ class Deployment(BaseDeployment):
 
             parsed_args['head'] = BaseDeployment._copy_to_head_args(args)
 
-        parsed_args['pods'] = self._set_pod_args(args)
+        parsed_args['pods'] = self._set_pod_args()
 
         if parsed_args['head'] is not None:
             connection_list = defaultdict(list)
