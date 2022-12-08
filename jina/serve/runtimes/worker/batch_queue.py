@@ -51,13 +51,16 @@ class BatchQueue:
         self._flush_task = asyncio.create_task(self._await_then_flush())
         self._timer_task: Optional[Task] = None
 
-    def _start_timer(self):
+    def _cancel_timer_if_pending(self):
         if (
             self._timer_task
             and not self._timer_task.done()
             and not self._timer_task.cancelled()
         ):
             self._timer_task.cancel()
+
+    def _start_timer(self):
+        self._cancel_timer_if_pending()
         self._timer_task = asyncio.create_task(
             self._sleep_then_set(self._flush_trigger)
         )
@@ -106,22 +109,21 @@ class BatchQueue:
                 docs=self._big_doc,
                 parameters=self.params,
                 docs_matrix=None,  # joining manually with batch queue is not supported right now
-                # TO GIRISH: The tracing seems to work already.
-                # Do we need to pass this?
-                # The only difference I can see is that the nesting level is different.
                 tracing_context=None,
             )
 
             # Output validation
             # TODO: raise exception instead of using assert
             if isinstance(return_data, DocumentArray):
-                assert (
-                    len(return_data) == input_len_before_call
-                ), f'Dynamic Batching requires input size to equal output size. Expected output size {input_len_before_call}, but got {len(return_data)}'
+                if not len(return_data) == input_len_before_call:
+                    raise ValueError(
+                        f'Dynamic Batching requires input size to equal output size. Expected output size {input_len_before_call}, but got {len(return_data)}'
+                    )
             elif return_data is None:
-                assert (
-                    len(self._big_doc) == input_len_before_call
-                ), f'Dynamic Batching requires input size to equal output size. Expected output size {input_len_before_call}, but got {len(self._big_doc)}'
+                if len(self._big_doc) == input_len_before_call:
+                    raise ValueError(
+                        f'Dynamic Batching requires input size to equal output size. Expected output size {input_len_before_call}, but got {len(self._big_doc)}'
+                    )
             else:
                 raise TypeError(
                     f'The return type must be DocumentArray / `None` when using dynamic batching, '
@@ -130,14 +132,8 @@ class BatchQueue:
 
             # We need to reslice the big doc array into the original requests
             self._fan_out_return_data(return_data)
-
+        finally:
             self._reset()
-
-        except Exception as e:
-            # We need to reset the batch queue
-            # This needs to occur even if the executor fails otherwise it will block forever
-            self._reset()
-            raise e
 
     def _fan_out_return_data(self, return_data: Optional[DocumentArray]):
         consumed_count: int = 0
@@ -159,5 +155,7 @@ class BatchQueue:
         if not self._is_closed:
             # debug print amount of requests to be processed.
             self._flush_trigger.set()
+            await self._flush_task
+            self._cancel_timer_if_pending()
             # await tasks here
             self._is_closed = True
