@@ -7,16 +7,6 @@ from jina.serve.executors import BaseExecutor
 from jina.types.request.data import DataRequest
 
 
-async def sleep_then_set(time_seconds: float, event: Event):
-    """Sleep for time_seconds and then set the event
-
-    :param time_seconds: time to sleep
-    :param event: event to set
-    """
-    await asyncio.sleep(time_seconds)
-    event.set()
-
-
 class BatchQueue:
     """A batch queue that holds the data request and the executor."""
 
@@ -70,12 +60,27 @@ class BatchQueue:
         self._flush_task = asyncio.create_task(
             self.await_then_flush(self._flush_trigger)
         )
-        self._timer_started: bool = False
+        self._timer_task: Optional[Task] = None
 
     def _start_timer(self):
-        # TODO: make sure to cancel old timer task before starting the new one
-        asyncio.create_task(sleep_then_set(self._timeout / 1000, self._flush_trigger))
+        if (
+            self._timer_task
+            and not self._timer_task.done()
+            and not self._timer_task.cancelled()
+        ):
+            self._timer_task.cancel()
+        self._timer_task = asyncio.create_task(
+            self._sleep_then_set(self._flush_trigger)
+        )
         self._timer_started = True
+
+    async def _sleep_then_set(self, event: Event):
+        """Sleep and then set the event
+
+        :param event: event to set
+        """
+        await asyncio.sleep(self._timeout / 1000)
+        event.set()
 
     async def push(self, request: DataRequest) -> Task:
         """Append request to the queue. Once the request has been processed, the returned task will complete.
@@ -89,7 +94,7 @@ class BatchQueue:
                 self._flush_trigger.set()
                 await self._flush_task
 
-        if not self._timer_started:
+        if not self._timer_task:
             self._start_timer()
 
         docs = request.docs
