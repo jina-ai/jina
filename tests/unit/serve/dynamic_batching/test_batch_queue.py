@@ -4,38 +4,8 @@ import time
 import pytest
 
 from jina import Document, DocumentArray, Executor, requests
-from jina.serve.runtimes.worker.batch_queue import BatchQueue, sleep_then_set
+from jina.serve.runtimes.worker.batch_queue import BatchQueue
 from jina.types.request.data import DataRequest
-
-
-@pytest.mark.skip(reason="Sleep then set doesnt count normal sleep here")
-@pytest.mark.asyncio
-async def test_sleep_then_set():
-    event = asyncio.Event()
-    asyncio.create_task(sleep_then_set(0.1, event))
-    assert not event.is_set()
-    await asyncio.sleep(0)
-    assert not event.is_set()
-    await asyncio.sleep(0.2)
-    assert event.is_set()
-
-    event = asyncio.Event()
-    asyncio.create_task(sleep_then_set(0.1, event))
-    assert not event.is_set()
-    await asyncio.sleep(0)
-    assert not event.is_set()
-    time.sleep(0.2)
-    await asyncio.sleep(0)
-    assert event.is_set()
-
-    event = asyncio.Event()
-    asyncio.create_task(sleep_then_set(0.1, event))
-    for i in range(3):
-        assert not event.is_set()
-        time.sleep(0.1)
-    assert not event.is_set()
-    await asyncio.sleep(0)
-    assert event.is_set()
 
 
 @pytest.mark.asyncio
@@ -102,6 +72,7 @@ async def test_batch_queue():
     assert data_requests[0].data.docs[0].text == 'Done'
 
 
+# TODO: check if this is different from other tests, if not, remove it
 @pytest.mark.asyncio
 async def test_batch_queue_max_batch_size():
     class MockExecutor(Executor):
@@ -160,6 +131,7 @@ async def test_batch_queue_max_batch_size():
     assert taskc.done()
 
 
+# TODO: check if this is different from other tests, if not, remove it
 @pytest.mark.asyncio
 async def test_batch_queue_max_batch_size_exception():
     class MockExecutor(Executor):

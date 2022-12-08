@@ -237,7 +237,6 @@ def dynamic_batching(
     ] = None,
     *,
     preferred_batch_size: Optional[int] = None,
-    max_batch_size: Optional[int] = None,
     timeout: Optional[float] = 10_000,
 ):
     """
@@ -249,9 +248,7 @@ def dynamic_batching(
 
     :param func: the method to decorate
     :param preferred_batch_size: target number of Documents in a batch. The batcher will collect requests until `preferred_batch_size` is reached,
-        or until `timeout` is reached, or until `max_batch_size` is reached. Therefore, the actual batch size can be smaller or larger than `preferred_batch_size`.
-    :param max_batch_size: maximum number of Documents in a batch. The batcher will not create batches that are larger than `max_batch_size`.
-        However, if a single request contains more than `max_batch_size` Documents, all of these Documents will be passed to the Executor.
+        or until `timeout` is reached. Therefore, the actual batch size can be smaller or larger than `preferred_batch_size`.
     :param timeout: maximum time in milliseconds to wait for a request to be assigned to a batch.
         If the oldest request in the queue reaches a waiting time of `timeout`, the batch will be passed to the Executor,
         even if it contains fewer than `preferred_batch_size` Documents.
@@ -300,7 +297,6 @@ def dynamic_batching(
             owner.dynamic_batching[fn_name][
                 'preferred_batch_size'
             ] = preferred_batch_size
-            owner.dynamic_batching[fn_name]['max_batch_size'] = max_batch_size
             owner.dynamic_batching[fn_name]['timeout'] = timeout
             setattr(owner, name, self.fn)
 

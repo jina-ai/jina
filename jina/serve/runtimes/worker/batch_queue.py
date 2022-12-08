@@ -18,7 +18,6 @@ class BatchQueue:
         params: Optional[Dict] = None,
         preferred_batch_size: int = 4,
         timeout: int = 10_000,
-        max_batch_size: Optional[int] = None,
     ) -> None:
         if params is None:
             params = dict()
@@ -30,14 +29,6 @@ class BatchQueue:
 
         self._preferred_batch_size: int = preferred_batch_size
         self._timeout: int = timeout
-        self._max_batch_size: Optional[int] = max_batch_size
-        if self._max_batch_size:
-            if self._max_batch_size < self._preferred_batch_size:
-                raise ValueError(
-                    f'Max batch size must be greater than or equal to preferred batch size.'
-                    f'Got max batch size {self._max_batch_size} and preferred'
-                    f'batch size {self._preferred_batch_size}'
-                )
 
         self._reset()
 
@@ -57,9 +48,7 @@ class BatchQueue:
         self._big_doc: DocumentArray = DocumentArray.empty()
 
         self._flush_trigger: Event = Event()
-        self._flush_task = asyncio.create_task(
-            self.await_then_flush(self._flush_trigger)
-        )
+        self._flush_task = asyncio.create_task(self._await_then_flush())
         self._timer_task: Optional[Task] = None
 
     def _start_timer(self):
@@ -89,15 +78,12 @@ class BatchQueue:
 
         :return: The task that will be set once the request has been processed.
         """
-        if self._max_batch_size:
-            if len(self._big_doc) + len(request.docs) > self._max_batch_size:
-                self._flush_trigger.set()
-                await self._flush_task
 
         if not self._timer_task:
             self._start_timer()
 
         docs = request.docs
+        # TODO: is this protected/synchronous ?
         self._big_doc.extend(docs)
         self._requests.append(request)
         self._request_lens.append(len(docs))
@@ -107,23 +93,12 @@ class BatchQueue:
 
         return self._flush_task
 
-    async def await_then_flush(self, trigger_event: Event) -> None:
-        """Process all requests in the queue once event is set.
-
-        :param trigger_event: The event that will trigger the flush.
-        """
-        await trigger_event.wait()
+    async def _await_then_flush(self) -> None:
+        """Process all requests in the queue once flush_trigger event is set."""
+        await self._flush_trigger.wait()
         try:
             # The executor might accidentally change the size
             input_len_before_call: int = len(self._big_doc)
-
-            if self._max_batch_size:
-                if input_len_before_call > self._max_batch_size:
-                    # TODO: We might want to have the batch queue split the request up instead
-                    # TODO(johannes): update the docstring of the decorator to reflect this
-                    raise ValueError(
-                        f'Input length {input_len_before_call} is greater than max batch size {self._max_batch_size}'
-                    )
 
             # We need to get the executor to process the big doc
             return_data = await self._executor.__acall__(
