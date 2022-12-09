@@ -53,7 +53,6 @@ def test_container_pod_pass_envs(env_checker_docker_image_built):
                 'key2=value2',
             ]
         )
-    print(args)
     with ContainerPod(
         args
     ) as pod:

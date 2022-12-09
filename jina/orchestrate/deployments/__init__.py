@@ -296,7 +296,6 @@ class Deployment(BaseDeployment):
         ]
 
     def _update_port_monitoring_args(self):
-        # TODO: update this when port_monitoring is changed
         _all_port_monitoring = self.args.port_monitoring
         self.args.all_port_monitoring = (
             [_all_port_monitoring]
@@ -865,7 +864,6 @@ class Deployment(BaseDeployment):
                 if not _args.workspace:
                     _args.workspace = self.args.workspace
                 replica_args.append(_args)
-                print('_set_pod_args!!!', _args.host, _args.port)
             result[shard_id] = replica_args
         return result
 
@@ -875,7 +873,6 @@ class Deployment(BaseDeployment):
         _args = copy.deepcopy(args)
         _args.pod_role = PodRoleType.WORKER
         _args.host = _args.host[0] or __default_host__
-        print('uses_before_after _args.host = args.host[0]', _args.host)
         _args.port = helper.random_port()
 
         if _args.name:

@@ -169,7 +169,6 @@ class BaseGateway(JAMLCompatible, metaclass=GatewayType):
         """Gets the host from the runtime_args
         :return: The host where to bind the gateway
         """
-        print('property host', self.runtime_args.host)
         return self.runtime_args.host
 
     @abc.abstractmethod
