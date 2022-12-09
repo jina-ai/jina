@@ -386,7 +386,8 @@ def test_incoming_requests_while_flushing():
                     ],
                 )
             )
-            assert all([len(result) == 3 for result in results])
+            assert len(results[0]) == 4
+            assert len(results[1]) == 3
             assert [doc.text for doc in results[0]] == [
                 f'a{BAR_SUCCESS_MSG}',
                 f'b{BAR_SUCCESS_MSG}',
