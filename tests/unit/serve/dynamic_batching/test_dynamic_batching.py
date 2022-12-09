@@ -1,5 +1,6 @@
 import multiprocessing
 import multiprocessing as mp
+import os
 import time
 from collections import namedtuple
 
@@ -18,6 +19,8 @@ from jina.parsers import set_gateway_parser, set_pod_parser
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.gateway import GatewayRuntime
 from jina.serve.runtimes.worker import WorkerRuntime
+
+cur_dir = os.path.dirname(__file__)
 
 TIMEOUT_TOLERANCE = 1
 FOO_SUCCESS_MSG = 'Done through foo'
@@ -66,6 +69,95 @@ class PlaceholderExecutor(Executor):
             doc.text += 'long timeout'
 
 
+class PlaceholderExecutorWrongDecorator(Executor):
+    @requests(on=['/foo'])
+    @dynamic_batching(preferred_batch_size=1)
+    def foo_fun(self, docs, **kwargs):
+        for doc in docs:
+            doc.text += FOO_SUCCESS_MSG
+
+    @requests(on=['/bar', '/baz'])
+    @dynamic_batching(preferred_batch_size=1, timeout=1)
+    def bar_fun(self, docs, **kwargs):
+        for doc in docs:
+            doc.text += BAR_SUCCESS_MSG
+        return docs
+
+    @requests(on=['/wrongtype'])
+    @dynamic_batching(preferred_batch_size=1, timeout=1)
+    def wrong_return_type_fun(self, docs, **kwargs):
+        return 'Fail me!'
+
+    @requests(on=['/wronglenda'])
+    @dynamic_batching(preferred_batch_size=1, timeout=1)
+    def wrong_return_lenda_fun(self, docs, **kwargs):
+        return DocumentArray.empty(len(docs) + 1)
+
+    @requests(on=['/wronglennone'])
+    @dynamic_batching(preferred_batch_size=1, timeout=1)
+    def wrong_return_lennone_fun(self, docs, **kwargs):
+        docs.append(Document())
+
+    @requests(on=['/param'])
+    @dynamic_batching(preferred_batch_size=1, timeout=1)
+    def param_fun(self, docs, parameters, **kwargs):
+        for doc in docs:
+            doc.text += str(parameters)
+
+    @requests(on=['/long_timeout'])
+    @dynamic_batching(preferred_batch_size=1, timeout=1)
+    def long_timeout_fun(self, docs, parameters, **kwargs):
+        for doc in docs:
+            doc.text += 'long timeout'
+
+
+class PlaceholderExecutorNoDecorators(Executor):
+    @requests(on=['/foo'])
+    def foo_fun(self, docs, **kwargs):
+        for doc in docs:
+            doc.text += FOO_SUCCESS_MSG
+
+    @requests(on=['/bar', '/baz'])
+    def bar_fun(self, docs, **kwargs):
+        for doc in docs:
+            doc.text += BAR_SUCCESS_MSG
+        return docs
+
+    @requests(on=['/wrongtype'])
+    def wrong_return_type_fun(self, docs, **kwargs):
+        return 'Fail me!'
+
+    @requests(on=['/wronglenda'])
+    def wrong_return_lenda_fun(self, docs, **kwargs):
+        return DocumentArray.empty(len(docs) + 1)
+
+    @requests(on=['/wronglennone'])
+    def wrong_return_lennone_fun(self, docs, **kwargs):
+        docs.append(Document())
+
+    @requests(on=['/param'])
+    def param_fun(self, docs, parameters, **kwargs):
+        for doc in docs:
+            doc.text += str(parameters)
+
+    @requests(on=['/long_timeout'])
+    def long_timeout_fun(self, docs, parameters, **kwargs):
+        for doc in docs:
+            doc.text += 'long timeout'
+
+
+USES_DYNAMIC_BATCHING_PLACE_HOLDER_EXECUTOR = {
+    '/foo': {'preferred_batch_size': 2, 'timeout': 4000},
+    '/bar': {'preferred_batch_size': 4, 'timeout': 2000},
+    '/baz': {'preferred_batch_size': 4, 'timeout': 2000},
+    '/wrongtype': {'preferred_batch_size': 4, 'timeout': 2000},
+    '/wronglenda': {'preferred_batch_size': 4, 'timeout': 2000},
+    '/wronglennone': {'preferred_batch_size': 4, 'timeout': 2000},
+    '/param': {'preferred_batch_size': 4, 'timeout': 2000},
+    '/long_timeout': {'preferred_batch_size': 100, 'timeout': 20000000},
+}
+
+
 RequestStruct = namedtuple('RequestStruct', ['port', 'endpoint', 'iterator'])
 
 
@@ -91,8 +183,28 @@ def call_api_with_params(req: RequestStructParams):
     )
 
 
-def test_timeout():
-    f = Flow().add(uses=PlaceholderExecutor)
+@pytest.mark.parametrize(
+    'add_parameters',
+    [
+        {'uses': PlaceholderExecutor},
+        {
+            'uses': PlaceholderExecutorWrongDecorator,
+            'uses_dynamic_batching': USES_DYNAMIC_BATCHING_PLACE_HOLDER_EXECUTOR,
+        },
+        {
+            'uses': PlaceholderExecutorNoDecorators,
+            'uses_dynamic_batching': USES_DYNAMIC_BATCHING_PLACE_HOLDER_EXECUTOR,
+        },
+        {'uses': os.path.join(cur_dir, 'executor-dynamic-batching.yaml')},
+        {
+            'uses': os.path.join(
+                cur_dir, 'executor-dynamic-batching-wrong-decorator.yaml'
+            )
+        },
+    ],
+)
+def test_timeout(add_parameters):
+    f = Flow().add(**add_parameters)
     with f:
         start_time = time.time()
         f.post('/bar', inputs=DocumentArray.empty(2))
@@ -117,8 +229,28 @@ def test_timeout():
             assert time_taken < 2 + TIMEOUT_TOLERANCE, 'Timeout ended too slowly'
 
 
-def test_preferred_batch_size():
-    f = Flow().add(uses=PlaceholderExecutor)
+@pytest.mark.parametrize(
+    'add_parameters',
+    [
+        {'uses': PlaceholderExecutor},
+        {
+            'uses': PlaceholderExecutorWrongDecorator,
+            'uses_dynamic_batching': USES_DYNAMIC_BATCHING_PLACE_HOLDER_EXECUTOR,
+        },
+        {
+            'uses': PlaceholderExecutorNoDecorators,
+            'uses_dynamic_batching': USES_DYNAMIC_BATCHING_PLACE_HOLDER_EXECUTOR,
+        },
+        {'uses': os.path.join(cur_dir, 'executor-dynamic-batching.yaml')},
+        {
+            'uses': os.path.join(
+                cur_dir, 'executor-dynamic-batching-wrong-decorator.yaml'
+            )
+        },
+    ],
+)
+def test_preferred_batch_size(add_parameters):
+    f = Flow().add(**add_parameters)
     with f:
         with mp.Pool(2) as p:
             start_time = time.time()
@@ -338,10 +470,18 @@ def test_failure_propagation():
             )
 
 
-def test_specific_endpoint_batching():
+@pytest.mark.parametrize(
+    'uses',
+    [
+        PlaceholderExecutor,
+        os.path.join(cur_dir, 'executor-dynamic-batching.yaml'),
+        os.path.join(cur_dir, 'executor-dynamic-batching-wrong-decorator.yaml'),
+    ],
+)
+def test_specific_endpoint_batching(uses):
     f = Flow().add(
-        uses=PlaceholderExecutor,
         uses_dynamic_batching={'/baz': {'preferred_batch_size': 2, 'timeout': 1000}},
+        uses=uses,
     )
     with f:
         start_time = time.time()
@@ -361,13 +501,12 @@ def test_specific_endpoint_batching():
 ################
 
 
-def _create_worker_runtime(port, name='', executor=None):
+def _create_worker_runtime(port, executor, name=''):
     args = set_pod_parser().parse_args([])
     args.port = port
     args.uses = 'PlaceholderExecutor'
     args.name = name
-    if executor:
-        args.uses = executor
+    args.uses = executor
     with WorkerRuntime(args) as runtime:
         runtime.run_forever()
 
@@ -394,9 +533,15 @@ def _create_gateway_runtime(
         runtime.run_forever()
 
 
-def _create_worker(port):
+def _create_worker(port, executor):
     # create a single worker runtime
-    p = multiprocessing.Process(target=_create_worker_runtime, args=(port,))
+    p = multiprocessing.Process(
+        target=_create_worker_runtime,
+        args=(
+            port,
+            executor,
+        ),
+    )
     p.start()
     time.sleep(0.1)
     return p
@@ -433,15 +578,23 @@ def _assert_all_docs_processed(gateway_port, num_docs, endpoint):
 ################
 
 
-def test_sigterm_handling(port_generator):
+@pytest.mark.parametrize(
+    'uses',
+    [
+        PlaceholderExecutor,
+        os.path.join(cur_dir, 'executor-dynamic-batching.yaml'),
+        os.path.join(cur_dir, 'executor-dynamic-batching-wrong-decorator.yaml'),
+    ],
+)
+def test_sigterm_handling(port_generator, uses):
     try:
-        # setup flow by had
+        # setup flow by hand
         worker_port = port_generator()
         gateway_port = port_generator()
         graph_description = '{"start-gateway": ["pod0"], "pod0": ["end-gateway"]}'
         pod_addresses = f'{{"pod0": ["0.0.0.0:{worker_port}"]}}'
 
-        worker_process = _create_worker(worker_port)
+        worker_process = _create_worker(worker_port, uses)
         time.sleep(0.1)
         AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
             timeout=5.0,
