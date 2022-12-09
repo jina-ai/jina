@@ -93,7 +93,7 @@ class DockerComposeConfig:
             protocol = str(non_defaults.get('protocol', ['grpc'])[0]).lower()
 
             ports = cargs.port + (
-                [f'{cargs.port_monitoring}'] if cargs.monitoring else []
+                [cargs.port_monitoring] if cargs.monitoring else []
             )
 
             envs = [f'JINA_LOG_LEVEL={os.getenv("JINA_LOG_LEVEL", "INFO")}']

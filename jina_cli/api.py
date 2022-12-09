@@ -76,6 +76,7 @@ def executor(args: 'Namespace'):
     """
     args.host = args.host[0]
     args.port = args.port[0]
+    args.port_monitoring = args.port_monitoring[0]
         
     if args.native:
         return executor_native(args)
@@ -105,7 +106,8 @@ def gateway(args: 'Namespace'):
     :param args: arguments coming from the CLI.
     """
     from jina.serve.runtimes import get_runtime
-
+    
+    args.port_monitoring = args.port_monitoring[0]
     _update_gateway_args(args)
 
     runtime_cls = get_runtime('GatewayRuntime')
