@@ -95,12 +95,6 @@ class BaseDeployment(ExitStack):
 
         _head_args = copy.deepcopy(args)
         _head_args.polling = args.polling
-
-        # TODO: check if this is needed
-        # if not hasattr(args, 'port') or not args.port:
-        #     _head_args.port = helper.random_port()
-        # else:
-        #     _head_args.port = args.port
         _head_args.port = args.port[0]
         _head_args.host = args.host[0]
         _head_args.uses = args.uses
@@ -254,7 +248,6 @@ class Deployment(BaseDeployment):
     def _parse_addresses_into_host_and_port(self):
         # splits addresses passed to `host` into separate `host` and `port`
 
-        # TODO: verify if this is needed actually ?
         for i, _host in enumerate(self.args.host):
             _hostname, port, scheme, tls = parse_host_scheme(_host)
             if _hostname != _host:  # more than just hostname was passed to `host`
@@ -281,11 +274,13 @@ class Deployment(BaseDeployment):
                 len(ext_repl_hosts) == 1
             ):  # only one host given, assume replicas are on the same host
                 ext_repl_hosts = ext_repl_hosts * len(ext_repl_ports)
+                self.args.host = self.args.host * len(ext_repl_ports)
         elif len(ext_repl_hosts) > len(ext_repl_ports):
             if (
                 len(ext_repl_ports) == 1
             ):  # only one port given, assume replicas are on the same port
                 ext_repl_ports = ext_repl_ports * len(ext_repl_hosts)
+                self.args.port = self.args.port * len(ext_repl_hosts)
         if len(ext_repl_hosts) != len(ext_repl_ports):
             raise ValueError(
                 f'Number of hosts ({len(ext_repl_hosts)}) does not match the number of ports ({len(ext_repl_ports)})'
@@ -321,20 +316,6 @@ class Deployment(BaseDeployment):
             self.pod_args = self.args
         else:
             self.pod_args = self._parse_args(self.args)
-
-        # if self.external:
-        #     for shard_id in self.pod_args['pods']:
-        #         for pod, port, host, scheme, tls in zip(
-        #             self.pod_args['pods'][shard_id],
-        #             self.ext_repl_ports,
-        #             self.ext_repl_hosts,
-        #             self.ext_repl_schemes,
-        #             self.ext_repl_tls,
-        #         ):
-        #             pod.port = port
-        #             pod.host = host
-        #             pod.scheme = scheme
-        #             pod.tls = tls
 
     def update_sandbox_args(self):
         """Update args of all its pods based on the host and port returned by Hubble"""
@@ -841,7 +822,7 @@ class Deployment(BaseDeployment):
                     _args.port = self.args.port
                 
                 elif not self.external:
-                    if shards == 1 and replicas == 1: # TODO ??? shouldn't this be port[0]
+                    if shards == 1 and replicas == 1:
                         _args.port = self.args.port[0]
                         _args.port_monitoring = self.args.port_monitoring
 
@@ -871,11 +852,14 @@ class Deployment(BaseDeployment):
                         _args.port_monitoring = helper.random_port()
                 
                 else:
+                    # if shards > 1:
+                    #     raise ValueError(
+                    #         f'external deployment with multiple shards is not supported'
+                    #     )
                     _args.port = self.ext_repl_ports[replica_id]
                     _args.host = self.ext_repl_hosts[replica_id]
                     _args.scheme = self.ext_repl_schemes[replica_id]
                     _args.tls = self.ext_repl_tls[replica_id]
-
 
                 # pod workspace if not set then derive from workspace
                 if not _args.workspace:
