@@ -79,7 +79,7 @@ def _export_parser_args(parser_fn, type_as_str: bool = False, **kwargs):
             elif isinstance(a, KVAppendAction):
                 ddd['type'] = dict
             elif isinstance(a, CastToIntAction):
-                ddd['type'] = Union[int, List[int]]
+                ddd['type'] = int
             else:
                 ddd['type'] = a.type
             if ddd['choices']:
