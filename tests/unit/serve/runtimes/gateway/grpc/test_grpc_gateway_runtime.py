@@ -158,21 +158,26 @@ class DummyMockConnectionPool:
         return asyncio.create_task(task_wrapper())
 
 
-async def _test(streamer):
+async def _test(streamer, stream):
     responses = []
     req = request_generator('/', DocumentArray([Document(text='client0-Request')]))
-    async for resp in streamer.stream(request_iterator=req):
-        responses.append(resp)
-    for req in request_generator(
-        '/',
-        DocumentArray([Document(text='client0-Request')]),
-    ):
-        unary_response = await streamer.process_single_data(request=req)
-        responses.append(unary_response)
+    if stream:
+        async for resp in streamer.stream(request_iterator=req):
+            responses.append(resp)
+    else:
+        for req in request_generator(
+            '/',
+            DocumentArray([Document(text='client0-Request')]),
+        ):
+            unary_response = await streamer.process_single_data(request=req)
+            responses.append(unary_response)
     return responses
 
 
-def test_grpc_gateway_runtime_handle_messages_linear(linear_graph_dict, monkeypatch):
+@pytest.mark.parametrize('stream', [True, False])
+def test_grpc_gateway_runtime_handle_messages_linear(
+    linear_graph_dict, monkeypatch, stream
+):
     def process_wrapper():
         monkeypatch.setattr(
             networking.GrpcConnectionPool,
@@ -198,15 +203,14 @@ def test_grpc_gateway_runtime_handle_messages_linear(linear_graph_dict, monkeypa
                 ]
             )
         ) as runtime:
-            responses = asyncio.run(_test(runtime.gateway.streamer))
+            responses = asyncio.run(_test(runtime.gateway.streamer, stream))
 
         assert len(responses) > 0
-        for i in range(2):
-            assert len(responses[i].docs) == 1
-            assert (
-                responses[i].docs[0].text
-                == f'client0-Request-client0-deployment0-client0-deployment1-client0-deployment2-client0-deployment3'
-            )
+        assert len(responses[0].docs) == 1
+        assert (
+            responses[0].docs[0].text
+            == f'client0-Request-client0-deployment0-client0-deployment1-client0-deployment2-client0-deployment3'
+        )
 
     p = Process(target=process_wrapper)
     p.start()
@@ -214,8 +218,9 @@ def test_grpc_gateway_runtime_handle_messages_linear(linear_graph_dict, monkeypa
     assert p.exitcode == 0
 
 
+@pytest.mark.parametrize('stream', [True, False])
 def test_grpc_gateway_runtime_handle_messages_bifurcation(
-    bifurcation_graph_dict, monkeypatch
+    bifurcation_graph_dict, monkeypatch, stream
 ):
     def process_wrapper():
         monkeypatch.setattr(
@@ -242,17 +247,16 @@ def test_grpc_gateway_runtime_handle_messages_bifurcation(
                 ]
             )
         ) as runtime:
-            responses = asyncio.run(_test(runtime.gateway.streamer))
+            responses = asyncio.run(_test(runtime.gateway.streamer, stream))
 
         assert len(responses) > 0
-        for i in range(2):
-            assert len(responses[i].docs) == 1
-            assert (
-                responses[i].docs[0].text
-                == f'client0-Request-client0-deployment0-client0-deployment2-client0-deployment3'
-                or responses[i].docs[0].text
-                == f'client0-Request-client0-deployment4-client0-deployment5'
-            )
+        assert len(responses[0].docs) == 1
+        assert (
+            responses[0].docs[0].text
+            == f'client0-Request-client0-deployment0-client0-deployment2-client0-deployment3'
+            or responses[0].docs[0].text
+            == f'client0-Request-client0-deployment4-client0-deployment5'
+        )
 
     p = Process(target=process_wrapper)
     p.start()
@@ -260,8 +264,9 @@ def test_grpc_gateway_runtime_handle_messages_bifurcation(
     assert p.exitcode == 0
 
 
+@pytest.mark.parametrize('stream', [True, False])
 def test_grpc_gateway_runtime_handle_messages_merge_in_gateway(
-    merge_graph_dict_directly_merge_in_gateway, monkeypatch
+    merge_graph_dict_directly_merge_in_gateway, monkeypatch, stream
 ):
     def process_wrapper():
         monkeypatch.setattr(
@@ -288,20 +293,19 @@ def test_grpc_gateway_runtime_handle_messages_merge_in_gateway(
                 ]
             )
         ) as runtime:
-            responses = asyncio.run(_test(runtime.gateway.streamer))
+            responses = asyncio.run(_test(runtime.gateway.streamer, stream))
 
         assert len(responses) > 0
-        for i in range(2):
-            assert len(responses[i].docs) == 1
-            deployment1_path = (
-                f'client0-Request-client0-deployment0-client0-deployment1-client0-merger'
-                in responses[i].docs[0].text
-            )
-            deployment2_path = (
-                f'client0-Request-client0-deployment0-client0-deployment2-client0-merger'
-                in responses[i].docs[0].text
-            )
-            assert deployment1_path or deployment2_path
+        assert len(responses[0].docs) == 1
+        deployment1_path = (
+            f'client0-Request-client0-deployment0-client0-deployment1-client0-merger'
+            in responses[0].docs[0].text
+        )
+        deployment2_path = (
+            f'client0-Request-client0-deployment0-client0-deployment2-client0-merger'
+            in responses[0].docs[0].text
+        )
+        assert deployment1_path or deployment2_path
 
     p = Process(target=process_wrapper)
     p.start()
@@ -309,8 +313,9 @@ def test_grpc_gateway_runtime_handle_messages_merge_in_gateway(
     assert p.exitcode == 0
 
 
+@pytest.mark.parametrize('stream', [True, False])
 def test_grpc_gateway_runtime_handle_messages_merge_in_last_deployment(
-    merge_graph_dict_directly_merge_in_last_deployment, monkeypatch
+    merge_graph_dict_directly_merge_in_last_deployment, monkeypatch, stream
 ):
     def process_wrapper():
         monkeypatch.setattr(
@@ -337,20 +342,19 @@ def test_grpc_gateway_runtime_handle_messages_merge_in_last_deployment(
                 ]
             )
         ) as runtime:
-            responses = asyncio.run(_test(runtime.gateway.streamer))
+            responses = asyncio.run(_test(runtime.gateway.streamer, stream))
 
         assert len(responses) > 0
-        for i in range(2):
-            assert len(responses[i].docs) == 1
-            deployment1_path = (
-                f'client0-Request-client0-deployment0-client0-deployment1-client0-merger-client0-deployment_last'
-                in responses[i].docs[0].text
-            )
-            deployment2_path = (
-                f'client0-Request-client0-deployment0-client0-deployment2-client0-merger-client0-deployment_last'
-                in responses[i].docs[0].text
-            )
-            assert deployment1_path or deployment2_path
+        assert len(responses[0].docs) == 1
+        deployment1_path = (
+            f'client0-Request-client0-deployment0-client0-deployment1-client0-merger-client0-deployment_last'
+            in responses[0].docs[0].text
+        )
+        deployment2_path = (
+            f'client0-Request-client0-deployment0-client0-deployment2-client0-merger-client0-deployment_last'
+            in responses[0].docs[0].text
+        )
+        assert deployment1_path or deployment2_path
 
     p = Process(target=process_wrapper)
     p.start()
@@ -358,8 +362,9 @@ def test_grpc_gateway_runtime_handle_messages_merge_in_last_deployment(
     assert p.exitcode == 0
 
 
+@pytest.mark.parametrize('stream', [True, False])
 def test_grpc_gateway_runtime_handle_messages_complete_graph_dict(
-    complete_graph_dict, monkeypatch
+    complete_graph_dict, monkeypatch, stream
 ):
     def process_wrapper():
         monkeypatch.setattr(
@@ -386,25 +391,24 @@ def test_grpc_gateway_runtime_handle_messages_complete_graph_dict(
                 ]
             )
         ) as runtime:
-            responses = asyncio.run(_test(runtime.gateway.streamer))
+            responses = asyncio.run(_test(runtime.gateway.streamer, stream))
 
         assert len(responses) > 0
-        for i in range(2):
-            assert len(responses[i].docs) == 1
-            deployment2_path = (
-                f'client0-Request-client0-deployment0-client0-deployment2-client0-deployment3-client0-merger-client0-deployment_last'
-                == responses[i].docs[0].text
-            )
-            deployment4_path = (
-                f'client0-Request-client0-deployment4-client0-deployment5-client0-merger-client0-deployment_last'
-                == responses[i].docs[0].text
-            )
-            assert (
-                f'client0-Request-client0-deployment0-client0-deployment1-client0-merger-client0-deployment_last'
-                == responses[i].docs[0].text
-                or deployment2_path
-                or deployment4_path
-            )
+        assert len(responses[0].docs) == 1
+        deployment2_path = (
+            f'client0-Request-client0-deployment0-client0-deployment2-client0-deployment3-client0-merger-client0-deployment_last'
+            == responses[0].docs[0].text
+        )
+        deployment4_path = (
+            f'client0-Request-client0-deployment4-client0-deployment5-client0-merger-client0-deployment_last'
+            == responses[0].docs[0].text
+        )
+        assert (
+            f'client0-Request-client0-deployment0-client0-deployment1-client0-merger-client0-deployment_last'
+            == responses[0].docs[0].text
+            or deployment2_path
+            or deployment4_path
+        )
 
     p = Process(target=process_wrapper)
     p.start()
@@ -412,7 +416,8 @@ def test_grpc_gateway_runtime_handle_messages_complete_graph_dict(
     assert p.exitcode == 0
 
 
-def test_grpc_gateway_runtime_handle_empty_graph():
+@pytest.mark.parametrize('stream', [True, False])
+def test_grpc_gateway_runtime_handle_empty_graph(stream):
     def process_wrapper():
         port = random_port()
 
@@ -428,12 +433,11 @@ def test_grpc_gateway_runtime_handle_empty_graph():
                 ]
             )
         ) as runtime:
-            responses = asyncio.run(_test(runtime.gateway.streamer))
+            responses = asyncio.run(_test(runtime.gateway.streamer, stream))
 
         assert len(responses) > 0
-        for i in range(2):
-            assert len(responses[i].docs) == 1
-            assert responses[i].docs[0].text == f'client0-Request'
+        assert len(responses[0].docs) == 1
+        assert responses[0].docs[0].text == f'client0-Request'
 
     p = Process(target=process_wrapper)
     p.start()
