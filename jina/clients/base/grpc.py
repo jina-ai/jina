@@ -62,7 +62,7 @@ class GRPCBaseClient(BaseClient):
 
     async def _stream_rpc(
         self,
-        stub,
+        channel,
         req_iter,
         metadata,
         on_error,
@@ -72,6 +72,7 @@ class GRPCBaseClient(BaseClient):
         p_bar,
         **kwargs,
     ):
+        stub = jina_pb2_grpc.JinaRPCStub(channel)
         async for resp in stub.Call(
             req_iter,
             compression=self.compression,
@@ -93,7 +94,7 @@ class GRPCBaseClient(BaseClient):
 
     async def _unary_rpc(
         self,
-        stub,
+        channel,
         req_iter,
         metadata,
         on_error,
@@ -103,6 +104,7 @@ class GRPCBaseClient(BaseClient):
         p_bar,
         **kwargs,
     ):
+        stub = jina_pb2_grpc.JinaSingleDataRequestRPCStub(channel)
         async for req in AsyncRequestsIterator(req_iter):
             resp = await stub.process_single_data(
                 req,
@@ -195,9 +197,8 @@ class GRPCBaseClient(BaseClient):
                 ) as p_bar:
                     try:
                         if stream:
-                            stub = jina_pb2_grpc.JinaRPCStub(channel)
                             async for resp in self._stream_rpc(
-                                stub,
+                                channel,
                                 req_iter,
                                 metadata,
                                 on_error,
@@ -209,9 +210,8 @@ class GRPCBaseClient(BaseClient):
                             ):
                                 yield resp
                         else:
-                            stub = jina_pb2_grpc.JinaSingleDataRequestRPCStub(channel)
                             async for resp in self._unary_rpc(
-                                stub,
+                                channel,
                                 req_iter,
                                 metadata,
                                 on_error,
