@@ -89,7 +89,7 @@ def test_distributed_replicas(input_docs, hosts, ports):
 
 
 @pytest.mark.parametrize('hosts', [lambda port1,port2: f'localhost:{port1},localhost:{port2}', lambda port1,port2: [f'localhost:{port1}',f'localhost:{port2}']])
-@pytest.mark.parametrize('ports', [lambda port1,port2: f'{port1},{port2}', lambda port1,port2: [port1,port2]])
+@pytest.mark.parametrize('ports', [lambda port1,port2: f'{port1},{port2}', lambda port1,port2: [port1,port2], lambda port1,port2: None])
 def test_distributed_replicas_host_parsing(input_docs, hosts, ports):
     port1, port2 = random_port(), random_port()
     args1, args2 = _external_deployment_args(
