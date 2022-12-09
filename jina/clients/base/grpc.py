@@ -176,7 +176,7 @@ class GRPCBaseClient(BaseClient):
                 options.append(("grpc.enable_retries", 1))
                 options.append(("grpc.service_config", service_config_json))
 
-            metadata = kwargs.get('metadata', None)
+            metadata = kwargs.pop('metadata', None)
             if results_in_order:
                 metadata = metadata or ()
                 metadata = metadata + (('__results_in_order__', 'true'),)
