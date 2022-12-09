@@ -46,7 +46,6 @@ async def request_generator(
             with ImportExtensions(required=True):
                 import aiostream
 
-            # breakpoint()
             async with aiter(aiostream.stream.chunks(data, request_size)) as streamer:
                 async for batch in streamer:
                     yield _new_data_request_from_batch(
