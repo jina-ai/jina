@@ -1,3 +1,4 @@
+import asyncio
 import multiprocessing
 import multiprocessing as mp
 import os
@@ -28,15 +29,23 @@ BAR_SUCCESS_MSG = 'Done through bar'
 
 
 class PlaceholderExecutor(Executor):
+    def __init__(self, slow: bool = False, **kwargs):
+        super().__init__(**kwargs)
+        self.slow = slow
+
     @requests(on=['/foo'])
     @dynamic_batching(preferred_batch_size=4)
-    def foo_fun(self, docs, **kwargs):
+    async def foo_fun(self, docs, **kwargs):
+        if self.slow:
+            await asyncio.sleep(3)
         for doc in docs:
             doc.text += FOO_SUCCESS_MSG
 
     @requests(on=['/bar', '/baz'])
     @dynamic_batching(preferred_batch_size=4, timeout=2000)
-    def bar_fun(self, docs, **kwargs):
+    async def bar_fun(self, docs, **kwargs):
+        if self.slow:
+            await asyncio.sleep(3)
         for doc in docs:
             doc.text += BAR_SUCCESS_MSG
         return docs
@@ -58,7 +67,9 @@ class PlaceholderExecutor(Executor):
 
     @requests(on=['/param'])
     @dynamic_batching(preferred_batch_size=4, timeout=2000)
-    def param_fun(self, docs, parameters, **kwargs):
+    async def param_fun(self, docs, parameters, **kwargs):
+        if self.slow:
+            await asyncio.sleep(3)
         for doc in docs:
             doc.text += str(parameters)
 
@@ -358,6 +369,35 @@ def test_correctness():
             assert [doc.text for doc in results[0]] == [f'a{BAR_SUCCESS_MSG}']
             assert [doc.text for doc in results[1]] == [f'b{BAR_SUCCESS_MSG}']
             assert [doc.text for doc in results[2]] == [f'c{BAR_SUCCESS_MSG}']
+
+
+def test_incoming_requests_while_flushing():
+    f = Flow().add(uses=PlaceholderExecutor, uses_with={'slow': True})
+    with f:
+        with mp.Pool(2) as p:
+            # Send 2 concurrent requests. One of them should be flushing and the other one is incoming, but it should
+            # not affect the result of the other
+            results = list(
+                p.map(
+                    call_api,
+                    [
+                        RequestStruct(f.port, '/bar', 'abcd'),
+                        RequestStruct(f.port, '/bar', 'efg'),
+                    ],
+                )
+            )
+            assert all([len(result) == 3 for result in results])
+            assert [doc.text for doc in results[0]] == [
+                f'a{BAR_SUCCESS_MSG}',
+                f'b{BAR_SUCCESS_MSG}',
+                f'c{BAR_SUCCESS_MSG}',
+                f'd{BAR_SUCCESS_MSG}',
+            ]
+            assert [doc.text for doc in results[1]] == [
+                f'e{BAR_SUCCESS_MSG}',
+                f'f{BAR_SUCCESS_MSG}',
+                f'g{BAR_SUCCESS_MSG}',
+            ]
 
 
 def test_param_correctness():
