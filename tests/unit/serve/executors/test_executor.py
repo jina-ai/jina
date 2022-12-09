@@ -8,6 +8,7 @@ from threading import Event
 import pytest
 import yaml
 from docarray import Document, DocumentArray
+from pytest import FixtureRequest
 
 from jina import Client, Executor, Flow, __cache_path__, dynamic_batching, requests
 from jina.clients.request import request_generator
@@ -31,6 +32,10 @@ class MyServeExec(Executor):
     def foo(self, docs, **kwargs):
         docs.texts = ['foo' for _ in docs]
 
+    @requests(on='/bar')
+    def bar(self, docs, **kwargs):
+        docs.texts = ['bar' for _ in docs]
+
 
 @pytest.fixture()
 def exposed_port():
@@ -39,7 +44,7 @@ def exposed_port():
 
 
 @pytest.fixture(autouse=False)
-def served_exec(exposed_port):
+def served_exec(request: FixtureRequest, exposed_port):
     import threading
     import time
 
@@ -47,10 +52,16 @@ def served_exec(exposed_port):
         MyServeExec.serve(**kwargs)
 
     e = threading.Event()
+
+    kwargs = {'port_expose': exposed_port, 'stop_event': e}
+    enable_dynamic_batching = request.param
+    if enable_dynamic_batching:
+        kwargs['uses_dynamic_batching'] = {'preferred_batch_size': 4, 'timeout': 5000}
+
     t = threading.Thread(
         name='serve-exec',
         target=serve_exec,
-        kwargs={'port_expose': exposed_port, 'stop_event': e},
+        kwargs=kwargs,
     )
     t.start()
     time.sleep(3)  # allow Flow to start
@@ -388,6 +399,7 @@ async def test_async_apply():
     assert da1.texts == ['hello'] * N
 
 
+@pytest.mark.parametrize('served_exec', [False, True], indirect=True)
 def test_serve(served_exec, exposed_port):
     docs = Client(port=exposed_port).post(on='/foo', inputs=DocumentArray.empty(5))
 
