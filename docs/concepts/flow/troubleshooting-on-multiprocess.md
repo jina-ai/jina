@@ -127,7 +127,7 @@ Cannot re-initialize CUDA in forked subprocess. To use CUDA with multiprocessing
     ````{hint}
     Here are a few errors which indicates that you are using some code that is not pickable.
 
-    ```bash
+    ```text
     pickle.PicklingError: Can't pickle: it's not the same object
     AssertionError: can only join a started process
     ```
