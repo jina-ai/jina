@@ -56,7 +56,9 @@ def served_exec(request: FixtureRequest, exposed_port):
     kwargs = {'port_expose': exposed_port, 'stop_event': e}
     enable_dynamic_batching = request.param
     if enable_dynamic_batching:
-        kwargs['uses_dynamic_batching'] = {'preferred_batch_size': 4, 'timeout': 5000}
+        kwargs['uses_dynamic_batching'] = {
+            '/bar': {'preferred_batch_size': 4, 'timeout': 5000}
+        }
 
     t = threading.Thread(
         name='serve-exec',
@@ -401,9 +403,9 @@ async def test_async_apply():
 
 @pytest.mark.parametrize('served_exec', [False, True], indirect=True)
 def test_serve(served_exec, exposed_port):
-    docs = Client(port=exposed_port).post(on='/foo', inputs=DocumentArray.empty(5))
+    docs = Client(port=exposed_port).post(on='/bar', inputs=DocumentArray.empty(5))
 
-    assert docs.texts == ['foo' for _ in docs]
+    assert docs.texts == ['bar' for _ in docs]
 
 
 def test_set_workspace(tmpdir):
