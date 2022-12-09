@@ -14,12 +14,11 @@ def mixin_remote_runtime_parser(parser):
     gp.add_argument(
         '--host',
         '--host-in',
-        # type=str,
         nargs='+',
         default=[__default_host__],
         action=CastHostAction,
         help=f'The host of the Gateway, which the client should connect to, by default it is {__default_host__}.'
-        ' In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts, separated by commas.'
+        ' In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts. '
         ' Then, every resulting address will be considered as one replica of the Executor.',
     )
 
