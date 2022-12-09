@@ -32,8 +32,7 @@ def _create_worker_runtime(port, name='', executor=None, port_monitoring=None):
 def _create_gateway_runtime(
     graph_description, pod_addresses, port, port_monitoring, protocol, retries=-1
 ):
-    with GatewayRuntime(
-        set_gateway_parser().parse_args(
+    args = set_gateway_parser().parse_args(
             [
                 '--graph-description',
                 graph_description,
@@ -50,6 +49,9 @@ def _create_gateway_runtime(
                 protocol,
             ]
         )
+    args.port_monitoring = port_monitoring
+    with GatewayRuntime(
+        args
     ) as runtime:
         runtime.run_forever()
 
