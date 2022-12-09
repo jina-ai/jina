@@ -28,7 +28,7 @@ def pod(args: 'Namespace'):
     :param args: arguments coming from the CLI.
     """
     from jina.orchestrate.pods.factory import PodFactory
-    
+
     try:
         with PodFactory.build_pod(args) as p:
             p.join()
@@ -42,7 +42,7 @@ def executor_native(args: 'Namespace'):
 
     :param args: arguments coming from the CLI.
     """
-    
+
     if args.runtime_cls == 'WorkerRuntime':
         from jina.serve.runtimes.worker import WorkerRuntime
 
@@ -106,7 +106,7 @@ def gateway(args: 'Namespace'):
     :param args: arguments coming from the CLI.
     """
     from jina.serve.runtimes import get_runtime
-    
+
     args.port_monitoring = args.port_monitoring[0]
     _update_gateway_args(args)
 

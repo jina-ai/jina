@@ -142,8 +142,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
             self._health_servicer, self._grpc_server
         )
 
-        reflection.enable_server_reflection(service_names, self._grpc_server)
-        
+        reflection.enable_server_reflection(service_names, self._grpc_server)     
         bind_addr = f'{self.args.host}:{self.args.port}'
         self.logger.debug(f'start listening on {bind_addr}')
         self._grpc_server.add_insecure_port(bind_addr)

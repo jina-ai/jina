@@ -27,11 +27,6 @@ class PodFactory:
         :return: the created BaseDeployment
         """
         # copy to update but forward original
-        
-        # if isinstance(args.port, list):
-        #     args.port = args.port[0]
-        # if isinstance(args.host, list):
-        #     args.host = args.host[0]
             
         cargs = deepcopy(args)
 

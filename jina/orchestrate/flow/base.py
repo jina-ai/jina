@@ -168,7 +168,7 @@ class Flow(
         graph_conditions: Optional[str] = '{}', 
         graph_description: Optional[str] = '{}', 
         grpc_server_options: Optional[dict] = None, 
-        host: Optional[str] = '0.0.0.0', 
+        host: Optional[Union[str, List[str]]] = ['0.0.0.0'], 
         log_config: Optional[str] = None, 
         metrics: Optional[bool] = False, 
         metrics_exporter_host: Optional[str] = None, 
@@ -222,7 +222,7 @@ class Flow(
         :param graph_conditions: Dictionary stating which filtering conditions each Executor in the graph requires to receive Documents.
         :param graph_description: Routing graph for the gateway
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
-        :param host: The host address of the runtime, by default it is 0.0.0.0.
+        :param host: The host address of the runtime, by default it is 0.0.0.0. In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts. Then, every resulting address will be considered as one replica of the Executor.
         :param log_config: The YAML config of the logger used in this object.
         :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.
         :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.
@@ -242,7 +242,7 @@ class Flow(
                   Any executor that has `@requests(on=...)` bound with those values will receive data requests.
         :param no_debug_endpoints: If set, `/status` `/post` endpoints are removed from HTTP interface.
         :param port: The port for input data to bind the gateway server to, by default, random ports between range [49152, 65535] will be assigned. The port argument can be either 1 single value in case only 1 protocol is used or multiple values when many protocols are used.
-        :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]
+        :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]. 'In the case of an external Executor (`--external` or `external=True`) this can be a list of ports. '
         :param prefetch: Number of requests fetched from the client before feeding into the first Executor. 
               
               Used to control the speed of data input into a Flow. 0 disables prefetch (1000 requests is the default)
@@ -392,7 +392,7 @@ class Flow(
         :param graph_conditions: Dictionary stating which filtering conditions each Executor in the graph requires to receive Documents.
         :param graph_description: Routing graph for the gateway
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
-        :param host: The host address of the runtime, by default it is 0.0.0.0.
+        :param host: The host address of the runtime, by default it is 0.0.0.0. In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts. Then, every resulting address will be considered as one replica of the Executor.
         :param log_config: The YAML config of the logger used in this object.
         :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.
         :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.
@@ -412,7 +412,7 @@ class Flow(
                   Any executor that has `@requests(on=...)` bound with those values will receive data requests.
         :param no_debug_endpoints: If set, `/status` `/post` endpoints are removed from HTTP interface.
         :param port: The port for input data to bind the gateway server to, by default, random ports between range [49152, 65535] will be assigned. The port argument can be either 1 single value in case only 1 protocol is used or multiple values when many protocols are used.
-        :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]
+        :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]. 'In the case of an external Executor (`--external` or `external=True`) this can be a list of ports. '
         :param prefetch: Number of requests fetched from the client before feeding into the first Executor. 
               
               Used to control the speed of data input into a Flow. 0 disables prefetch (1000 requests is the default)
@@ -679,7 +679,6 @@ class Flow(
             if node == GATEWAY_NAME:
                 continue
 
-            # TODO: check this
             if v.external:
                 deployment_k8s_address = f'{v.host}'
             elif v.head_args:
@@ -716,7 +715,6 @@ class Flow(
             if node == GATEWAY_NAME:
                 continue
 
-            # TODO: check this
             if v.external:
                 deployment_docker_compose_address = [
                     f'{v.protocol}://{v.host}:{v.port}'
@@ -1386,7 +1384,7 @@ class Flow(
         :param graph_conditions: Dictionary stating which filtering conditions each Executor in the graph requires to receive Documents.
         :param graph_description: Routing graph for the gateway
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
-        :param host: The host address of the runtime, by default it is 0.0.0.0.
+        :param host: The host of the Gateway, by default it is 0.0.0.0.
         :param log_config: The YAML config of the logger used in this object.
         :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.
         :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.
@@ -1406,7 +1404,7 @@ class Flow(
                   Any executor that has `@requests(on=...)` bound with those values will receive data requests.
         :param no_debug_endpoints: If set, `/status` `/post` endpoints are removed from HTTP interface.
         :param port: The port for input data to bind the gateway server to, by default, random ports between range [49152, 65535] will be assigned. The port argument can be either 1 single value in case only 1 protocol is used or multiple values when many protocols are used.
-        :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]
+        :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535].
         :param prefetch: Number of requests fetched from the client before feeding into the first Executor. 
               
               Used to control the speed of data input into a Flow. 0 disables prefetch (1000 requests is the default)
