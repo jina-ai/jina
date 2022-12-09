@@ -12,7 +12,8 @@ for s in ('flow', 'gateway', 'executor'):
             v[
                 'default'
             ] = 'random in [49152, 65535]'  # avoid random numbers cause devbot forever committing
-        table.append(f'| `{k}` | {desc} | `{v["type"]}` | `{v["default"]}` |')
+        type = None if v['type'] == 'null' else v['type']
+        table.append(f'| `{k}` | {desc} | `{type}` | `{v["default"]}` |')
 
     with open(f'../docs/concepts/flow/{s}-args.md', 'w') as fp:
         fp.write('\n'.join(table))
