@@ -267,8 +267,8 @@ class Deployment(BaseDeployment):
 
     def _parse_external_replica_hosts_and_ports(self):
         # splits user provided lists of hosts and ports into a host and port for every distributed replica
-        ext_repl_ports: List = self.args.port
-        ext_repl_hosts: List = self.args.host
+        ext_repl_ports: List = self.args.port.copy()
+        ext_repl_hosts: List = self.args.host.copy()
         if len(ext_repl_hosts) < len(ext_repl_ports):
             if (
                 len(ext_repl_hosts) == 1
