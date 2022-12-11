@@ -222,7 +222,7 @@ class PostMixin:
         max_backoff: float = 0.1,
         backoff_multiplier: float = 1.5,
         results_in_order: bool = False,
-        stream: bool = True,
+        stream: bool = False,
         **kwargs,
     ) -> Optional[Union['DocumentArray', List['Response']]]:
         """Post a general data request to the Flow.
@@ -243,7 +243,7 @@ class PostMixin:
         :param max_backoff: The maximum accepted backoff after the exponential incremental delay
         :param backoff_multiplier: The n-th attempt will occur at random(0, min(initialBackoff*backoffMultiplier**(n-1), maxBackoff))
         :param results_in_order: return the results in the same order as the inputs
-        :param stream: Applicable only to grpc client. If True, the requests are sent to the target using the gRPC streaming interface otherwise the gRPC unary interface will be used. The value is True by default.
+        :param stream: Applicable only to grpc client. If True, the requests are sent to the target using the gRPC streaming interface otherwise the gRPC unary interface will be used. The value is False by default.
         :param kwargs: additional parameters
         :return: None or DocumentArray containing all response Documents
 
@@ -319,7 +319,7 @@ class AsyncPostMixin:
         max_backoff: float = 0.1,
         backoff_multiplier: float = 1.5,
         results_in_order: bool = False,
-        stream: bool = True,
+        stream: bool = False,
         **kwargs,
     ) -> AsyncGenerator[None, Union['DocumentArray', 'Response']]:
         """Async Post a general data request to the Flow.
@@ -340,7 +340,7 @@ class AsyncPostMixin:
         :param max_backoff: The maximum accepted backoff after the exponential incremental delay
         :param backoff_multiplier: The n-th attempt will occur at random(0, min(initialBackoff*backoffMultiplier**(n-1), maxBackoff))
         :param results_in_order: return the results in the same order as the inputs
-        :param stream: Applicable only to grpc client. If True, the requests are sent to the target using the gRPC streaming interface otherwise the gRPC unary interface will be used. The value is True by default.
+        :param stream: Applicable only to grpc client. If True, the requests are sent to the target using the gRPC streaming interface otherwise the gRPC unary interface will be used. The value is False by default.
         :param kwargs: additional parameters, can be used to pass metadata or authentication information in the server call
         :yield: Response object
 
