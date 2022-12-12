@@ -157,7 +157,6 @@ ac_table = {
             '--noblock-on-start',
             '--floating',
             '--restart',
-            '--install-requirements',
             '--port',
             '--port-expose',
             '--port-in',
