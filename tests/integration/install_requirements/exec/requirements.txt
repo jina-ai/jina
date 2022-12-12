@@ -1,2 +1,1 @@
 sklearn
-git+https://github.com/docarray/docarray
