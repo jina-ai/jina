@@ -133,6 +133,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         requests: Optional[Dict] = None,
         runtime_args: Optional[Dict] = None,
         workspace: Optional[str] = None,
+        dynamic_batching: Optional[Dict] = None,
         **kwargs,
     ):
         """`metas` and `requests` are always auto-filled with values from YAML config.
@@ -142,9 +143,11 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         :param runtime_args: a dict of arguments injected from :class:`Runtime` during runtime
         :param kwargs: additional extra keyword arguments to avoid failing when extra params ara passed that are not expected
         :param workspace: the workspace of the executor. Only used if a workspace is not already provided in `metas` or `runtime_args`
+        :param dynamic_batching: a dict of endpoint-dynamic_batching config mapping
         """
         self._add_metas(metas)
         self._add_requests(requests)
+        self._add_dynamic_batching(dynamic_batching)
         self._add_runtime_args(runtime_args)
         self._init_instrumentation(runtime_args)
         self._init_monitoring()
@@ -267,6 +270,11 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                     raise TypeError(
                         f'expect {typename(self)}.{func} to be a function, but receiving {typename(_func)}'
                     )
+
+    def _add_dynamic_batching(self, _dynamic_batching: Optional[Dict]):
+        if _dynamic_batching:
+            self.dynamic_batching = getattr(self, 'dynamic_batching', {})
+            self.dynamic_batching.update(_dynamic_batching)
 
     def _add_metas(self, _metas: Optional[Dict]):
         from jina.serve.executors.metas import get_default_metas
@@ -461,6 +469,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         uses_with: Optional[Dict] = None,
         uses_metas: Optional[Dict] = None,
         uses_requests: Optional[Dict] = None,
+        uses_dynamic_batching: Optional[Dict] = None,
         **kwargs,
     ) -> T:
         """Construct an Executor from Hub.
@@ -470,6 +479,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         :param uses_with: dictionary of parameters to overwrite from the default config's with field
         :param uses_metas: dictionary of parameters to overwrite from the default config's metas field
         :param uses_requests: dictionary of parameters to overwrite from the default config's requests field
+        :param uses_dynamic_batching: dictionary of parameters to overwrite from the default config's dynamic_batching field
         :param kwargs: other kwargs accepted by the CLI ``jina hub pull``
         :return: the Hub Executor object.
 
@@ -509,17 +519,19 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             uses_with=uses_with,
             uses_metas=uses_metas,
             uses_requests=uses_requests,
+            uses_dynamic_batching=uses_dynamic_batching,
         )
 
     @classmethod
     def serve(
-            cls,
-            uses_with: Optional[Dict] = None,
-            uses_metas: Optional[Dict] = None,
-            uses_requests: Optional[Dict] = None,
-            stop_event: Optional[Union[threading.Event, multiprocessing.Event]] = None,
-            reload: bool = False,
-            **kwargs,
+        cls,
+        uses_with: Optional[Dict] = None,
+        uses_metas: Optional[Dict] = None,
+        uses_requests: Optional[Dict] = None,
+        stop_event: Optional[Union[threading.Event, multiprocessing.Event]] = None,
+        uses_dynamic_batching: Optional[Dict] = None,
+        reload: bool = False,
+        **kwargs,
     ):
         """Serve this Executor in a temporary Flow. Useful in testing an Executor in remote settings.
 
@@ -528,6 +540,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         :param uses_requests: dictionary of parameters to overwrite from the default config's requests field
         :param stop_event: a threading event or a multiprocessing event that once set will resume the control Flow
             to main thread.
+        :param uses_dynamic_batching: dictionary of parameters to overwrite from the default config's dynamic_batching field
         :param reload: a flag indicating if the Executor should watch the Python files of its implementation to reload the code live while serving.
         :param kwargs: other kwargs accepted by the Flow, full list can be found `here <https://docs.jina.ai/api/jina.orchestrate.flow.base/>`
 
@@ -539,7 +552,8 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             uses_with=uses_with,
             uses_metas=uses_metas,
             uses_requests=uses_requests,
-            reload=reload
+            uses_dynamic_batching=uses_dynamic_batching,
+            reload=reload,
         )
         with f:
             f.block(stop_event)
@@ -563,6 +577,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         uses_with: Optional[Dict] = None,
         uses_metas: Optional[Dict] = None,
         uses_requests: Optional[Dict] = None,
+        uses_dynamic_batching: Optional[Dict] = None,
         **kwargs,
     ):
         """
@@ -578,6 +593,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         :param uses_with: dictionary of parameters to overwrite from the default config's with field
         :param uses_metas: dictionary of parameters to overwrite from the default config's metas field
         :param uses_requests: dictionary of parameters to overwrite from the default config's requests field
+        :param uses_dynamic_batching: dictionary of parameters to overwrite from the default config's dynamic_batching field
         :param kwargs: other kwargs accepted by the Flow, full list can be found `here <https://docs.jina.ai/api/jina.orchestrate.flow.base/>`
         """
         from jina import Flow
@@ -587,6 +603,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             uses_with=uses_with,
             uses_metas=uses_metas,
             uses_requests=uses_requests,
+            uses_dynamic_batching=uses_dynamic_batching,
         ).to_kubernetes_yaml(
             output_base_path=output_base_path,
             k8s_namespace=k8s_namespace,
@@ -607,6 +624,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         uses_with: Optional[Dict] = None,
         uses_metas: Optional[Dict] = None,
         uses_requests: Optional[Dict] = None,
+        uses_dynamic_batching: Optional[Dict] = None,
         **kwargs,
     ):
         """
@@ -618,6 +636,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         :param uses_with: dictionary of parameters to overwrite from the default config's with field
         :param uses_metas: dictionary of parameters to overwrite from the default config's metas field
         :param uses_requests: dictionary of parameters to overwrite from the default config's requests field
+        :param uses_dynamic_batching: dictionary of parameters to overwrite from the default config's requests field
         :param kwargs: other kwargs accepted by the Flow, full list can be found `here <https://docs.jina.ai/api/jina.orchestrate.flow.base/>`
         """
         from jina import Flow
@@ -627,6 +646,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             uses_with=uses_with,
             uses_metas=uses_metas,
             uses_requests=uses_requests,
+            uses_dynamic_batching=uses_dynamic_batching,
         )
         f.to_docker_compose_yaml(
             output_path=output_path,

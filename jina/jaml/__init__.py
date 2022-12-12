@@ -615,6 +615,7 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
         extra_search_paths: Optional[List[str]] = None,
         py_modules: Optional[str] = None,
         runtime_args: Optional[Dict[str, Any]] = None,
+        uses_dynamic_batching: Optional[Dict] = None,
         **kwargs,
     ) -> 'JAMLCompatible':
         """A high-level interface for loading configuration with features
@@ -667,7 +668,7 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
         :param extra_search_paths: extra paths used when looking for executor yaml files
         :param py_modules: Optional py_module from which the object need to be loaded
         :param runtime_args: Optional dictionary of parameters runtime_args to be directly passed without being parsed into a yaml config
-        :param : runtime_args that need to be passed to the yaml
+        :param uses_dynamic_batching: dictionary of parameters to overwrite from the default config's dynamic_batching field
 
         :param kwargs: kwargs for parse_config_source
         :return: :class:`JAMLCompatible` object
@@ -713,9 +714,14 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
                     _delitem(no_tag_yml, key='uses_metas')
                 if uses_requests is not None:
                     _delitem(no_tag_yml, key='uses_requests')
+                if uses_dynamic_batching is not None:
+                    _delitem(no_tag_yml, key='uses_dynamic_batching')
                 cls._override_yml_params(no_tag_yml, 'with', uses_with)
                 cls._override_yml_params(no_tag_yml, 'metas', uses_metas)
                 cls._override_yml_params(no_tag_yml, 'requests', uses_requests)
+                cls._override_yml_params(
+                    no_tag_yml, 'dynamic_batching', uses_dynamic_batching
+                )
 
             else:
                 raise BadConfigSource(
