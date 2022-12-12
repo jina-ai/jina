@@ -67,9 +67,8 @@ class WorkerRequestHandler:
         # So we store the config for each endpoint in the initialization
         self._batchqueue_config: Dict[str, Dict] = {}
         # the below is of "shape" exec_endpoint_name -> parameters_key -> batch_queue
-        self._batchqueue_instances: Dict[
-            str, Dict[str, BatchQueue]
-        ] = self._init_batchqueue_dict()
+        self._batchqueue_instances: Dict[str, Dict[str, BatchQueue]] = {}
+        self._init_batchqueue_dict()
 
     def _all_batch_queues(self) -> List[BatchQueue]:
         """Returns a list of all batch queue instances
@@ -81,10 +80,11 @@ class WorkerRequestHandler:
             for batch_queue in param_to_queue.values()
         ]
 
-    def _init_batchqueue_dict(self) -> Dict[str, Dict[str, BatchQueue]]:
-        """Determines how endpoints and method names map to batch queues, without instantiating them.
-        :return: a dictionary of "shape" exec_endpoint_name -> parameters_key -> batch_queue.
-            The `exec_endpoint_name` keys are filled in, the rest is empty.
+    def _init_batchqueue_dict(self):
+        """Determines how endpoints and method names map to batch queues. Afterwards, this method initializes the
+        dynamic batching state of the request handler:
+            * _batchqueue_instances of "shape" exec_endpoint_name -> parameters_key -> batch_queue
+            * _batchqueue_config mapping each exec_endpoint_name to a dynamic batching configuration
         """
         if getattr(self._executor, 'dynamic_batching', None) is not None:
             # We need to sort the keys into endpoints and functions
@@ -119,7 +119,9 @@ class WorkerRequestHandler:
                 f'Endpoint Batch Queue Configs: {self._batchqueue_config}'
             )
 
-            return {endpoint: {} for endpoint in self._batchqueue_config.keys()}
+            self._batchqueue_instances = {
+                endpoint: {} for endpoint in self._batchqueue_config.keys()
+            }
 
     def _init_monitoring(
         self,
