@@ -73,9 +73,12 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, InstrumentationMixin, AB
             metrics_exporter_host=self.args.metrics_exporter_host,
             metrics_exporter_port=self.args.metrics_exporter_port,
         )
-        send_telemetry_event(event='start', obj=self, entity_id=self._entity_id)
         self._start_time = time.time()
         self._loop.run_until_complete(self.async_setup())
+        self._send_telemetry_event()
+
+    def _send_telemetry_event(self):
+        send_telemetry_event(event='start', obj=self, entity_id=self._entity_id)
 
     def run_forever(self):
         """
@@ -161,34 +164,25 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, InstrumentationMixin, AB
     # Static methods used by the Pod to communicate with the `Runtime` in the separate process
 
     @staticmethod
-    def activate(**kwargs):
-        """
-        Activate the runtime, does not apply to these runtimes
-
-        :param kwargs: extra keyword arguments
-        """
-        # does not apply to this types of runtimes
-        pass
-
-    @staticmethod
-    def is_ready(ctrl_address: str, **kwargs) -> bool:
+    def is_ready(ctrl_address: str, timeout: float = 1.0, **kwargs) -> bool:
         """
         Check if status is ready.
 
         :param ctrl_address: the address where the control request needs to be sent
+        :param timeout: timeout of the health check in seconds
         :param kwargs: extra keyword arguments
 
         :return: True if status is ready else False.
         """
-
         try:
             from grpc_health.v1 import health_pb2, health_pb2_grpc
 
             response = GrpcConnectionPool.send_health_check_sync(
-                ctrl_address, timeout=1.0
+                ctrl_address, timeout=timeout
             )
-            # TODO: Get the proper value of the ServingStatus SERVING KEY
-            return response.status == 1
+            return (
+                response.status == health_pb2.HealthCheckResponse.ServingStatus.SERVING
+            )
         except RpcError:
             return False
 

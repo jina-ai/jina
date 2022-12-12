@@ -37,7 +37,6 @@ from rich.progress import (
 from rich.table import Table
 
 from jina import __default_host__, __docker_host__, __windows__, helper
-from jina.importer import ImportExtensions
 from jina.clients import Client
 from jina.clients.mixin import AsyncPostMixin, HealthCheckMixin, PostMixin, ProfileMixin
 from jina.enums import (
@@ -63,6 +62,7 @@ from jina.helper import (
     send_telemetry_event,
     typename,
 )
+from jina.importer import ImportExtensions
 from jina.jaml import JAMLCompatible
 from jina.logging.logger import JinaLogger
 from jina.orchestrate.deployments import Deployment
@@ -178,6 +178,7 @@ class Flow(
         name: Optional[str] = 'gateway', 
         no_crud_endpoints: Optional[bool] = False, 
         no_debug_endpoints: Optional[bool] = False, 
+        port: Optional[Union[int, List[int]]] = None, 
         port_monitoring: Optional[str] = None, 
         prefetch: Optional[int] = 1000, 
         protocol: Optional[Union[str, List[str]]] = ['GRPC'], 
@@ -242,6 +243,7 @@ class Flow(
           
                   Any executor that has `@requests(on=...)` bound with those values will receive data requests.
         :param no_debug_endpoints: If set, `/status` `/post` endpoints are removed from HTTP interface.
+        :param port: The port for input data to bind the gateway server to, by default, random ports between range [49152, 65535] will be assigned. The port argument can be either 1 single value in case only 1 protocol is used or multiple values when many protocols are used.
         :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]
         :param prefetch: Number of requests fetched from the client before feeding into the first Executor. 
               
@@ -412,6 +414,7 @@ class Flow(
           
                   Any executor that has `@requests(on=...)` bound with those values will receive data requests.
         :param no_debug_endpoints: If set, `/status` `/post` endpoints are removed from HTTP interface.
+        :param port: The port for input data to bind the gateway server to, by default, random ports between range [49152, 65535] will be assigned. The port argument can be either 1 single value in case only 1 protocol is used or multiple values when many protocols are used.
         :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]
         :param prefetch: Number of requests fetched from the client before feeding into the first Executor. 
               
@@ -852,6 +855,7 @@ class Flow(
         no_reduce: Optional[bool] = False, 
         output_array_type: Optional[str] = None, 
         polling: Optional[str] = 'ANY', 
+        port: Optional[Union[int, List[int]]] = None, 
         port_monitoring: Optional[str] = None, 
         py_modules: Optional[List[str]] = None, 
         quiet: Optional[bool] = False, 
@@ -937,13 +941,14 @@ class Flow(
               Define per Endpoint:
               JSON dict, {endpoint: PollingType}
               {'/custom': 'ALL', '/search': 'ANY', '*': 'ANY'}
+        :param port: The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (`--external` or `external=True`) this can be a list of ports, separated by commas. Then, every resulting address will be considered as one replica of the Executor.
         :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]
         :param py_modules: The customized python modules need to be imported before loading the executor
           
           Note that the recommended way is to only import a single module - a simple python file, if your
           executor can be defined in a single file, or an ``__init__.py`` file if you have multiple files,
           which should be structured as a python package. For more details, please see the
-          `Executor cookbook <https://docs.jina.ai/fundamentals/executor/executor-files/>`__
+          `Executor cookbook <https://docs.jina.ai/concepts/executor/executor-files/>`__
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
         :param reload: If set, the Executor reloads the modules as they change
@@ -951,7 +956,7 @@ class Flow(
         :param restart: If set, the Executor will restart while serving if the YAML configuration source is changed. This differs from `reload` argument in that this will restart the server and more configuration can be changed, like number of replicas.
         :param retries: Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
         :param runtime_cls: The runtime class to run inside the Pod
-        :param shards: The number of shards in the deployment running at the same time. For more details check https://docs.jina.ai/fundamentals/flow/create-flow/#complex-flow-topologies
+        :param shards: The number of shards in the deployment running at the same time. For more details check https://docs.jina.ai/concepts/flow/create-flow/#complex-flow-topologies
         :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever
         :param timeout_ready: The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting forever
         :param timeout_send: The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default
@@ -1082,13 +1087,14 @@ class Flow(
               Define per Endpoint:
               JSON dict, {endpoint: PollingType}
               {'/custom': 'ALL', '/search': 'ANY', '*': 'ANY'}
+        :param port: The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (`--external` or `external=True`) this can be a list of ports, separated by commas. Then, every resulting address will be considered as one replica of the Executor.
         :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]
         :param py_modules: The customized python modules need to be imported before loading the executor
           
           Note that the recommended way is to only import a single module - a simple python file, if your
           executor can be defined in a single file, or an ``__init__.py`` file if you have multiple files,
           which should be structured as a python package. For more details, please see the
-          `Executor cookbook <https://docs.jina.ai/fundamentals/executor/executor-files/>`__
+          `Executor cookbook <https://docs.jina.ai/concepts/executor/executor-files/>`__
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
         :param reload: If set, the Executor reloads the modules as they change
@@ -1096,7 +1102,7 @@ class Flow(
         :param restart: If set, the Executor will restart while serving if the YAML configuration source is changed. This differs from `reload` argument in that this will restart the server and more configuration can be changed, like number of replicas.
         :param retries: Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
         :param runtime_cls: The runtime class to run inside the Pod
-        :param shards: The number of shards in the deployment running at the same time. For more details check https://docs.jina.ai/fundamentals/flow/create-flow/#complex-flow-topologies
+        :param shards: The number of shards in the deployment running at the same time. For more details check https://docs.jina.ai/concepts/flow/create-flow/#complex-flow-topologies
         :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever
         :param timeout_ready: The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting forever
         :param timeout_send: The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default
@@ -1250,6 +1256,7 @@ class Flow(
         name: Optional[str] = 'gateway', 
         no_crud_endpoints: Optional[bool] = False, 
         no_debug_endpoints: Optional[bool] = False, 
+        port: Optional[Union[int, List[int]]] = None, 
         port_monitoring: Optional[str] = None, 
         prefetch: Optional[int] = 1000, 
         protocol: Optional[Union[str, List[str]]] = ['GRPC'], 
@@ -1314,6 +1321,7 @@ class Flow(
           
                   Any executor that has `@requests(on=...)` bound with those values will receive data requests.
         :param no_debug_endpoints: If set, `/status` `/post` endpoints are removed from HTTP interface.
+        :param port: The port for input data to bind the gateway server to, by default, random ports between range [49152, 65535] will be assigned. The port argument can be either 1 single value in case only 1 protocol is used or multiple values when many protocols are used.
         :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]
         :param prefetch: Number of requests fetched from the client before feeding into the first Executor. 
               
@@ -1409,6 +1417,7 @@ class Flow(
           
                   Any executor that has `@requests(on=...)` bound with those values will receive data requests.
         :param no_debug_endpoints: If set, `/status` `/post` endpoints are removed from HTTP interface.
+        :param port: The port for input data to bind the gateway server to, by default, random ports between range [49152, 65535] will be assigned. The port argument can be either 1 single value in case only 1 protocol is used or multiple values when many protocols are used.
         :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]
         :param prefetch: Number of requests fetched from the client before feeding into the first Executor. 
               
@@ -2422,9 +2431,7 @@ class Flow(
 
                 new_stop_event = stop_event or threading.Event()
                 if len(watch_files_list) > 0:
-                    for changes in watch(
-                        *watch_files_list, stop_event=new_stop_event
-                    ):
+                    for changes in watch(*watch_files_list, stop_event=new_stop_event):
                         for _, changed_file in changes:
                             if changed_file not in watch_files_from_deployments:
                                 # maybe changed_file is the absolute path of one in watch_files_from_deployments
