@@ -77,12 +77,6 @@ class PlaceholderExecutor(Executor):
         for doc in docs:
             doc.text += str(parameters)
 
-    @requests(on=['/long_timeout'])
-    @dynamic_batching(preferred_batch_size=100, timeout=20000000)
-    def long_timeout_fun(self, docs, parameters, **kwargs):
-        for doc in docs:
-            doc.text += 'long timeout'
-
 
 class PlaceholderExecutorWrongDecorator(Executor):
     @requests(on=['/foo'])
@@ -119,12 +113,6 @@ class PlaceholderExecutorWrongDecorator(Executor):
         for doc in docs:
             doc.text += str(parameters)
 
-    @requests(on=['/long_timeout'])
-    @dynamic_batching(preferred_batch_size=1, timeout=1)
-    def long_timeout_fun(self, docs, parameters, **kwargs):
-        for doc in docs:
-            doc.text += 'long timeout'
-
 
 class PlaceholderExecutorNoDecorators(Executor):
     @requests(on=['/foo'])
@@ -155,8 +143,17 @@ class PlaceholderExecutorNoDecorators(Executor):
         for doc in docs:
             doc.text += str(parameters)
 
+
+class TimeoutExecutor(Executor):
+    def __init__(self, sleep: bool = False, **kwargs):
+        super(TimeoutExecutor, self).__init__(**kwargs)
+        self.sleep = sleep
+
     @requests(on=['/long_timeout'])
-    def long_timeout_fun(self, docs, parameters, **kwargs):
+    @dynamic_batching(preferred_batch_size=100, timeout=20000000)
+    async def long_timeout_fun(self, docs, parameters, **kwargs):
+        if self.sleep:
+            await asyncio.sleep(5)
         for doc in docs:
             doc.text += 'long timeout'
 
@@ -169,9 +166,7 @@ USES_DYNAMIC_BATCHING_PLACE_HOLDER_EXECUTOR = {
     '/wronglenda': {'preferred_batch_size': 4, 'timeout': 2000},
     '/wronglennone': {'preferred_batch_size': 4, 'timeout': 2000},
     '/param': {'preferred_batch_size': 4, 'timeout': 2000},
-    '/long_timeout': {'preferred_batch_size': 100, 'timeout': 20000000},
 }
-
 
 RequestStruct = namedtuple('RequestStruct', ['port', 'endpoint', 'iterator'])
 
@@ -559,21 +554,21 @@ def _create_test_data_message(num_docs, endpoint: str = '/'):
 @pytest.mark.asyncio
 @pytest.mark.parametrize('signal', [signal.SIGTERM, signal.SIGINT])
 @pytest.mark.parametrize(
-    'uses',
+    'uses_with',
     [
-        'PlaceholderExecutor',
-        os.path.join(cur_dir, 'executor-dynamic-batching.yaml'),
-        os.path.join(cur_dir, 'executor-dynamic-batching-wrong-decorator.yaml'),
+        {'sleep': True},
+        {'sleep': False},
     ],
 )
-async def test_sigterm_handling(signal, uses):
+async def test_sigterm_handling(signal, uses_with):
     import time
 
     args = set_pod_parser().parse_args([])
 
     def run(args):
 
-        args.uses = uses
+        args.uses = 'TimeoutExecutor'
+        args.uses_with = uses_with
         executor_native(args)
 
     try:
@@ -589,24 +584,27 @@ async def test_sigterm_handling(signal, uses):
 
         # send request with only 2 docs, not enough to trigger flushing
         # doing this in a new process bc of some pytest vs gRPC weirdness
-        assert_all_docs_process = multiprocessing.Process(
-            target=_assert_all_docs_processed, args=(args.port, 2, '/long_timeout')
-        )
-        assert_all_docs_process.start()
-        time.sleep(0.5)
+        with mp.Pool(3) as p:
+            results = [
+                p.apply_async(
+                    _assert_all_docs_processed, (args.port, req_size, '/long_timeout')
+                )
+                for req_size in [10, 20, 30]
+            ]
 
-        # send sigterm signal to worker process. This should trigger flushing
-        os.kill(process.pid, signal)
+            time.sleep(0.5)
 
-        assert_all_docs_process.join()
+            # send sigterm signal to worker process. This should trigger flushing
+            os.kill(process.pid, signal)
 
-        # now check that all docs were processed
-        assert (
-            assert_all_docs_process.exitcode == 0
-        )  # no error -> test in the process passed
+            for res in results:
+                # wait for results to come
+                res.wait()
+
+                # now check that all docs were processed
+                assert res.successful()  # no error -> test in each process passed
+
     finally:
-        assert_all_docs_process.kill()
-        assert_all_docs_process.join()
         process.join()
 
         time.sleep(0.1)

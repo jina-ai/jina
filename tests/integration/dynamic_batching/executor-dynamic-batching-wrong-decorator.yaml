@@ -21,6 +21,3 @@ dynamic_batching:
   /param:
     preferred_batch_size: 4
     timeout: 2000
-  /long_timeout:
-    preferred_batch_size: 100
-    timeout: 20000000
