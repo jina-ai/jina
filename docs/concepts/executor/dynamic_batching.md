@@ -8,9 +8,11 @@ This feature is especially relevant for inference tasks where model inference is
 ## Overview
 Enabling dynamic batching on Executor endpoints that perform inference typically results in better hardware usage and thus, in increased throughput. 
 
-When Dynamic Batching is enabled requests incoming to an Executor endpoints with the same {ref}`request parameters<client-executor-parameters>`
-will be queued together. The Executor endpoint will be executed on the queue requests when the number of documents 
-accumulated exceeds the {ref}`preferred_batch_size<executor-dynamic-batching-parameters>` parameter or when the {ref}`timeout<executor-dynamic-batching-parameters` parameter is exceeded.
+When you enable dynamic batching, incoming requests to Executor endpoints with the same {ref}`request parameters<client-executor-parameters>`
+are queued together. The Executor endpoint is executed on the queue requests when either:
+
+- the number of accumulated Documents exceeds the {ref}`preferred_batch_size<executor-dynamic-batching-parameters>` parameter
+- or the {ref}`timeout<executor-dynamic-batching-parameters` parameter is exceeded.
 
 Although this feature can work on {ref}`parametrized requests<client-executor-parameters>`, it is best used for endpoints
 that do not receive different parameters often.
