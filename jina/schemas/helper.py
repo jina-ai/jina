@@ -10,7 +10,7 @@ def _python_type_to_schema_type(p):
     elif p == 'dict':
         dtype = 'object'
     else:
-        dtype = None
+        dtype = 'null'
         # raise TypeError(f'{p} is not supported')
 
     return dtype
