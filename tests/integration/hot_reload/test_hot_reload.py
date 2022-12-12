@@ -45,6 +45,34 @@ def test_reload_simple_executor(tmpdir):
             assert doc.text == 'MyExecutorBeforeReload'
 
 
+def test_reload_with_dynamic_batching(tmpdir):
+    from tests.integration.hot_reload.exec1.my_executor1 import MyExecutorToReload1
+
+    f = Flow().add(
+        uses=MyExecutorToReload1,
+        reload=True,
+        uses_dynamic_batching={'/bar': {'preferred_batch_size': 1, 'timeout': 1000}},
+    )
+    with f:
+        res = f.post(on='/bar', inputs=DocumentArray.empty(10))
+        assert len(res) == 10
+        for doc in res:
+            assert doc.text == 'MyExecutorBeforeReloadBar'
+        with _update_file(
+            os.path.join(cur_dir, 'my_executor_1_new.py'),
+            os.path.join(cur_dir, 'exec1/my_executor1.py'),
+            str(tmpdir),
+        ):
+            res = f.post(on='/bar', inputs=DocumentArray.empty(10))
+            assert len(res) == 10
+            for doc in res:
+                assert doc.text == 'MyExecutorAfterReloadBar'
+        res = f.post(on='/bar', inputs=DocumentArray.empty(10))
+        assert len(res) == 10
+        for doc in res:
+            assert doc.text == 'MyExecutorBeforeReloadBar'
+
+
 def test_reload_helper(tmpdir):
     from tests.integration.hot_reload.exec2.my_executor2 import MyExecutorToReload2
 

@@ -58,6 +58,15 @@ def mixin_worker_runtime_parser(parser):
         ''',
     )
     gp.add_argument(
+        '--uses-dynamic-batching',
+        action=KVAppendAction,
+        metavar='KEY: VALUE',
+        nargs='*',
+        help='''
+        Dictionary of keyword arguments that will override the `dynamic_batching` configuration in `uses`
+        ''',
+    )
+    gp.add_argument(
         '--py-modules',
         type=str,
         nargs='*',
