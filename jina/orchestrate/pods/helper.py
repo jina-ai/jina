@@ -287,7 +287,7 @@ def install_package_dependencies(
     # install the dependencies included in requirements.txt
     if pkg_path:
         requirements_file = pkg_path / 'requirements.txt'
-    
+
         if requirements_file.exists():
             _install_requirements(requirements_file)
 
@@ -295,6 +295,7 @@ def install_package_dependencies(
 def _get_package_path_from_uses(uses: str) -> Optional['Path']:
     try:
         from jina.jaml.helper import parse_config_source
+        from pathlib import Path
         return Path(os.path.dirname(os.path.abspath(uses)))
     except Exception as e:
         # it may be a class or module
