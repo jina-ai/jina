@@ -293,12 +293,10 @@ def install_package_dependencies(
 
 
 def _get_package_path_from_uses(uses: str) -> Optional['Path']:
-    try:
-        from jina.jaml.helper import parse_config_source
+    if isinstance(uses, str) and os.path.exists(uses):
         from pathlib import Path
         return Path(os.path.dirname(os.path.abspath(uses)))
-    except Exception as e:
-        # it may be a class or module
+    else:
         from jina.logging.predefined import default_logger
         default_logger.warning(f'Error getting the directory name from {uses}: Exception {e}. `--install-requirements` option is only valid when `uses` is a configuration file.')
         return None
