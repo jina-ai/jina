@@ -278,38 +278,26 @@ def _install_requirements(requirements_file: 'Path', timeout: int = 1000):
 
 
 def install_package_dependencies(
-        pkg_path: 'Path'
+        pkg_path: Optional['Path']
 ) -> None:
     """
 
     :param pkg_path: package path
     """
     # install the dependencies included in requirements.txt
-    requirements_file = pkg_path / 'requirements.txt'
+    if pkg_path:
+        requirements_file = pkg_path / 'requirements.txt'
+    
+        if requirements_file.exists():
+            _install_requirements(requirements_file)
 
-    if requirements_file.exists():
-        _install_requirements(requirements_file)
 
-
-def _get_package_path_from_args(args) -> 'Path':
-    from jina.serve.executors import BaseExecutor
-    import inspect
-    _executor = BaseExecutor.load_config(
-        args.uses,
-        uses_with=args.uses_with,
-        uses_metas=args.uses_metas,
-        uses_requests=args.uses_requests,
-        runtime_args={  # these are not parsed to the yaml config file but are pass directly during init
-            'workspace': args.workspace,
-            'shard_id': args.shard_id,
-            'shards': args.shards,
-            'replicas': args.replicas,
-            'name': args.name,
-        },
-        py_modules=args.py_modules,
-        extra_search_paths=args.extra_search_paths,
-    )
-    executor_file = inspect.getfile(_executor.__class__)
-    executor_base_path = os.path.dirname(os.path.abspath(executor_file))
-    del _executor
-    return Path(executor_base_path)
+def _get_package_path_from_uses(uses: str) -> Optional['Path']:
+    try:
+        from jina.jaml.helper import parse_config_source
+        return Path(os.path.dirname(os.path.abspath(uses)))
+    except Exception as e:
+        # it may be a class or module
+        from jina.logging.predefined import default_logger
+        default_logger.warning(f'Error getting the directory name from {uses}: Exception {e}. `--install-requirements` option is only valid when `uses` is a configuration file.')
+        return None
