@@ -106,7 +106,7 @@ class BatchQueue:
                 input_len_before_call: int = len(self._big_doc)
 
                 # We need to get the function to process the big doc
-                return_data = await self.func(
+                return_docs = await self.func(
                     docs=self._big_doc,
                     parameters=self.params,
                     docs_matrix=None,  # joining manually with batch queue is not supported right now
@@ -114,12 +114,12 @@ class BatchQueue:
                 )
 
                 # Output validation
-                if isinstance(return_data, DocumentArray):
-                    if not len(return_data) == input_len_before_call:
+                if isinstance(return_docs, DocumentArray):
+                    if not len(return_docs) == input_len_before_call:
                         raise ValueError(
-                            f'Dynamic Batching requires input size to equal output size. Expected output size {input_len_before_call}, but got {len(return_data)}'
+                            f'Dynamic Batching requires input size to equal output size. Expected output size {input_len_before_call}, but got {len(return_docs)}'
                         )
-                elif return_data is None:
+                elif return_docs is None:
                     if not len(self._big_doc) == input_len_before_call:
                         raise ValueError(
                             f'Dynamic Batching requires input size to equal output size. Expected output size {input_len_before_call}, but got {len(self._big_doc)}'
@@ -127,22 +127,22 @@ class BatchQueue:
                 else:
                     raise TypeError(
                         f'The return type must be DocumentArray / `None` when using dynamic batching, '
-                        f'but getting {return_data!r}'
+                        f'but getting {return_docs!r}'
                     )
 
                 # We need to re-slice the big doc array into the original requests
-                self._fan_out_return_data(return_data)
+                self._apply_return_docs_to_requests(return_docs)
             finally:
                 self._reset()
 
-    def _fan_out_return_data(self, return_data: Optional[DocumentArray]):
+    def _apply_return_docs_to_requests(self, return_docs: Optional[DocumentArray]):
         consumed_count: int = 0
         for request, request_len in zip(self._requests, self._request_lens):
             left = consumed_count
             right = consumed_count + request_len
-            if return_data:
+            if return_docs:
                 request.data.set_docs_convert_arrays(
-                    return_data[left:right], ndarray_type=self._output_array_type
+                    return_docs[left:right], ndarray_type=self._output_array_type
                 )
             else:
                 request.data.set_docs_convert_arrays(
