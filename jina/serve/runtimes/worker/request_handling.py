@@ -272,7 +272,7 @@ class WorkerRequestHandler:
 
     @staticmethod
     def _parse_params(parameters: Dict, executor_name: str):
-        parsed_params = parameters  # TODO: Copy? This still points to the same object
+        parsed_params = parameters
         specific_parameters = parameters.get(executor_name, None)
         if specific_parameters:
             parsed_params.update(**specific_parameters)
