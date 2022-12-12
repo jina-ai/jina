@@ -226,7 +226,10 @@ class GRPCBaseClient(BaseClient):
                     except (grpc.aio._call.AioRpcError, InternalNetworkError) as err:
                         my_code = err.code()
                         my_details = err.details()
+                        trailing_metadata = err.trailing_metadata()
                         msg = f'gRPC error: {my_code} {my_details}'
+                        if len(trailing_metadata):
+                            msg = f'gRPC error: {my_code} {my_details}\n{trailing_metadata}'
 
                         if my_code == grpc.StatusCode.UNAVAILABLE:
                             self.logger.error(

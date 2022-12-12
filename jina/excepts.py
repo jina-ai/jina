@@ -3,6 +3,8 @@ from typing import Set, Union
 
 import grpc.aio
 
+from jina.serve.helper import format_grpc_error
+
 
 class BaseJinaException(BaseException):
     """A base class for all exceptions raised by Jina"""
@@ -135,4 +137,12 @@ class InternalNetworkError(grpc.aio.AioRpcError, BaseJinaException):
         """
         :return: details of this exception
         """
-        return self._details if self._details else self.og_exception.details()
+        details = self._details if self._details else self.og_exception.details()
+        trailing_metadata = self.og_exception.trailing_metadata()
+        if len(trailing_metadata):
+            return f'''
+                details={details}\n
+                trailing metadata={trailing_metadata}\n
+            '''
+
+        return details
