@@ -107,6 +107,12 @@ def mixin_pod_parser(parser, pod_type: str = 'worker'):
             default=False,
             help='If set, the Executor will restart while serving if the YAML configuration source is changed. This differs from `reload` argument in that this will restart the server and more configuration can be changed, like number of replicas.'
         )
+        gp.add_argument(
+            '--install-requirements',
+            action='store_true',
+            default=False,
+            help='If set, try to install `requirements.txt` from the local Executor if exists in the Executor folder. If using Hub, install `requirements.txt` in the Hub Executor bundle to local.'
+        )
     else:
         gp.add_argument(
             '--restart',
@@ -114,12 +120,6 @@ def mixin_pod_parser(parser, pod_type: str = 'worker'):
             default=False,
             help='If set, the Gateway will restart while serving if the YAML configuration source is changed.'
         )
-    gp.add_argument(
-        '--install-requirements',
-        action='store_true',
-        default=False,
-        help='If set, try to install `requirements.txt` from the local Executor if exists in the Executor folder. If using Hub, install `requirements.txt` in the Hub Executor bundle to local.'
-    )
     mixin_pod_runtime_args_parser(gp, pod_type=pod_type)
 
 
