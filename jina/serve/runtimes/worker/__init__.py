@@ -194,11 +194,11 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         self.logger.debug('cancel WorkerRuntime')
         if self._hot_reload_task is not None:
             self._hot_reload_task.cancel()
-        await self._request_handler.close()  # allow pending requests to be processed
         self.logger.debug('closing the server')
         # 0.5 gives the runtime some time to complete outstanding responses
         # this should be handled better, 1.0 is a rather random number
         await self._health_servicer.enter_graceful_shutdown()
+        await self._request_handler.close()  # allow pending requests to be processed
         await self._grpc_server.stop(1.0)
         self.logger.debug('stopped GRPC Server')
 
