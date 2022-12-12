@@ -114,6 +114,12 @@ def mixin_pod_parser(parser, pod_type: str = 'worker'):
             default=False,
             help='If set, the Gateway will restart while serving if the YAML configuration source is changed.'
         )
+    gp.add_argument(
+        '--install-requirements',
+        action='store_true',
+        default=False,
+        help='If set, try to install `requirements.txt` from the local Executor if exists in the Executor folder. If using Hub, install `requirements.txt` in the Hub Executor bundle to local.'
+    )
     mixin_pod_runtime_args_parser(gp, pod_type=pod_type)
 
 
@@ -226,4 +232,18 @@ def mixin_pod_runtime_args_parser(arg_group, pod_type='worker'):
         type=int,
         default=None,
         help='If tracing is enabled, this port will be used to configure the metrics exporter agent.',
+    )
+
+def mixin_hub_pull_options_parser(parser):
+    """Add the arguments for hub pull options to the parser
+    :param parser: the parser configure
+    """
+
+    gp = add_arg_group(parser, title='Pull')
+    gp.add_argument(
+        '--force-update',
+        '--force',
+        action='store_true',
+        default=False,
+        help='If set, always pull the latest Hub Executor bundle even it exists on local',
     )
