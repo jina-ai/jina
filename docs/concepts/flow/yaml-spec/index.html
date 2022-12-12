@@ -527,12 +527,17 @@
 <td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">env</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">restart</span></code></p></td>
+<td><p>If set, the Flow will restart while blocked if the YAML configuration source is changed.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">boolean</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">env</span></code></p></td>
 <td><p>The map of environment variables that are available inside runtime</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">object</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">inspect</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">inspect</span></code></p></td>
 <td><p>The strategy on those inspect deployments in the flow.<br><br>    If <code class="docutils literal notranslate"><span class="pre">REMOVE</span></code> is given then all inspect deployments are removed when building the flow.</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">COLLECT</span></code></p></td>
@@ -737,6 +742,16 @@
 <td><p>If set, the current Pod/Deployment can not be further chained, and the next <code class="docutils literal notranslate"><span class="pre">.add()</span></code> will chain after the last Pod/Deployment not this current one.</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">boolean</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">restart</span></code></p></td>
+<td><p>If set, the Gateway will restart while serving if the YAML configuration source is changed.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">boolean</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">port</span></code></p></td>
+<td><p>The port for input data to bind the gateway server to, by default, random ports between range [49152, 65535] will be assigned. The port argument can be either 1 single value in case only 1 protocol is used or multiple values when many protocols are used.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">random</span> <span class="pre">in</span> <span class="pre">[49152,</span> <span class="pre">65535]</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">monitoring</span></code></p></td>
 <td><p>If set, spawn an http server with a prometheus endpoint to expose metrics</p></td>
@@ -948,6 +963,16 @@ Each item in the collection corresponds to on <a class="reference internal" href
 <td><p><code class="docutils literal notranslate"><span class="pre">boolean</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
 </tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">restart</span></code></p></td>
+<td><p>If set, the Executor will restart while serving if the YAML configuration source is changed. This differs from <code class="docutils literal notranslate"><span class="pre">reload</span></code> argument in that this will restart the server and more configuration can be changed, like number of replicas.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">boolean</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">port</span></code></p></td>
+<td><p>The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (<code class="docutils literal notranslate"><span class="pre">--external</span></code> or <code class="docutils literal notranslate"><span class="pre">external=True</span></code>) this can be a list of ports, separated by commas. Then, every resulting address will be considered as one replica of the Executor.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">random</span> <span class="pre">in</span> <span class="pre">[49152,</span> <span class="pre">65535]</span></code></p></td>
+</tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">reload</span></code></p></td>
 <td><p>If set, the Executor reloads the modules as they change</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">boolean</span></code></p></td>
@@ -1089,7 +1114,7 @@ Note that the only difference between environment variable syntax and relative p
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 07, 2022</div>
+                            Last updated on Dec 12, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

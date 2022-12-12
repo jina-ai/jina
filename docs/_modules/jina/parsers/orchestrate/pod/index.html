@@ -497,6 +497,20 @@
         <span class="n">help</span><span class="o">=</span><span class="s1">&#39;If set, the current Pod/Deployment can not be further chained, &#39;</span>
         <span class="s1">&#39;and the next `.add()` will chain after the last Pod/Deployment not this current one.&#39;</span><span class="p">,</span>
     <span class="p">)</span>
+    <span class="k">if</span> <span class="n">pod_type</span> <span class="o">!=</span> <span class="s1">&#39;gateway&#39;</span><span class="p">:</span>
+        <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+            <span class="s1">&#39;--restart&#39;</span><span class="p">,</span>
+            <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
+            <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">help</span><span class="o">=</span><span class="s1">&#39;If set, the Executor will restart while serving if the YAML configuration source is changed. This differs from `reload` argument in that this will restart the server and more configuration can be changed, like number of replicas.&#39;</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+            <span class="s1">&#39;--restart&#39;</span><span class="p">,</span>
+            <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
+            <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">help</span><span class="o">=</span><span class="s1">&#39;If set, the Gateway will restart while serving if the YAML configuration source is changed.&#39;</span>
+        <span class="p">)</span>
     <span class="n">mixin_pod_runtime_args_parser</span><span class="p">(</span><span class="n">gp</span><span class="p">,</span> <span class="n">pod_type</span><span class="o">=</span><span class="n">pod_type</span><span class="p">)</span></div>
 
 
@@ -624,7 +638,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 07, 2022</div>
+                            Last updated on Dec 12, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

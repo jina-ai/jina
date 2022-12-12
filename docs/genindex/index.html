@@ -408,16 +408,6 @@
           <li><a href="../api/jina.logging.logger/#jina.logging.logger.SysLogHandlerWrapper.acquire">(jina.logging.logger.SysLogHandlerWrapper method)</a>
 </li>
         </ul></li>
-        <li><a href="../api/jina.serve.runtimes.asyncio/#jina.serve.runtimes.asyncio.AsyncNewLoopRuntime.activate">activate() (jina.serve.runtimes.asyncio.AsyncNewLoopRuntime static method)</a>
-
-        <ul>
-          <li><a href="../api/jina.serve.runtimes.gateway/#jina.serve.runtimes.gateway.GatewayRuntime.activate">(jina.serve.runtimes.gateway.GatewayRuntime static method)</a>
-</li>
-          <li><a href="../api/jina.serve.runtimes.head/#jina.serve.runtimes.head.HeadRuntime.activate">(jina.serve.runtimes.head.HeadRuntime static method)</a>
-</li>
-          <li><a href="../api/jina.serve.runtimes.worker/#jina.serve.runtimes.worker.WorkerRuntime.activate">(jina.serve.runtimes.worker.WorkerRuntime static method)</a>
-</li>
-        </ul></li>
         <li><a href="../api/jina/#jina.AsyncFlow.add">add() (jina.AsyncFlow method)</a>
 
         <ul>
@@ -618,8 +608,6 @@
 </li>
         <li><a href="../api/jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.CustomConfig.alias_generator">alias_generator (jina.serve.runtimes.gateway.http.models.CustomConfig attribute)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaEndpointRequestModel.Config.alias_generator">alias_generator() (jina.serve.runtimes.gateway.http.models.JinaEndpointRequestModel.Config method)</a>
 
         <ul>
@@ -630,6 +618,8 @@
           <li><a href="../api/jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaResponseModel.Config.alias_generator">(jina.serve.runtimes.gateway.http.models.JinaResponseModel.Config method)</a>
 </li>
         </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.enums/#jina.enums.PollingType.ALL">ALL (jina.enums.PollingType attribute)</a>
 </li>
         <li><a href="../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.Deployment.all_args">all_args (jina.orchestrate.deployments.Deployment property)</a>
@@ -959,6 +949,8 @@
         <li><a href="../api/jina.helper/#jina.helper.CatchAllCleanupContextManager">CatchAllCleanupContextManager (class in jina.helper)</a>
 </li>
         <li><a href="../api/jina.excepts/#jina.excepts.BadConfigSource.characters_written">characters_written (jina.excepts.BadConfigSource attribute)</a>
+</li>
+        <li><a href="../api/jina.serve.runtimes.worker/#jina.serve.runtimes.worker.WorkerRuntime.Check">Check() (jina.serve.runtimes.worker.WorkerRuntime method)</a>
 </li>
         <li><a href="../api/jina.jaml.helper/#jina.jaml.helper.JinaLoader.check_block_entry">check_block_entry() (jina.jaml.helper.JinaLoader method)</a>
 </li>
@@ -1612,8 +1604,6 @@
 </li>
         <li><a href="../api/jina.enums/#jina.enums.DataInputType.DICT">DICT (jina.enums.DataInputType attribute)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaEndpointRequestModel.dict">dict() (jina.serve.runtimes.gateway.http.models.JinaEndpointRequestModel method)</a>
 
         <ul>
@@ -1636,15 +1626,21 @@
           <li><a href="../api/jina.types.request.status/#jina.types.request.status.StatusMessage.dict">(jina.types.request.status.StatusMessage method)</a>
 </li>
         </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.orchestrate.deployments.config.k8slib.kubernetes_deployment/#jina.orchestrate.deployments.config.k8slib.kubernetes_deployment.dictionary_to_cli_param">dictionary_to_cli_param() (in module jina.orchestrate.deployments.config.k8slib.kubernetes_deployment)</a>
 </li>
         <li><a href="../api/jina/#jina.Document.display">display() (jina.Document method)</a>
 </li>
-        <li><a href="../api/jina/#jina.Document.display_3d">display_3d() (jina.Document method)</a>
+        <li><a href="../api/jina/#jina.Document.display_point_cloud_tensor">display_point_cloud_tensor() (jina.Document method)</a>
+</li>
+        <li><a href="../api/jina/#jina.Document.display_rgbd_tensor">display_rgbd_tensor() (jina.Document method)</a>
 </li>
         <li><a href="../api/jina/#jina.Document.display_tensor">display_tensor() (jina.Document method)</a>
 </li>
         <li><a href="../api/jina/#jina.Document.display_uri">display_uri() (jina.Document method)</a>
+</li>
+        <li><a href="../api/jina/#jina.Document.display_vertices_and_faces">display_vertices_and_faces() (jina.Document method)</a>
 </li>
         <li><a href="../api/jina.jaml.helper/#jina.jaml.helper.JinaLoader.dispose">dispose() (jina.jaml.helper.JinaLoader method)</a>
 </li>
@@ -4002,6 +3998,8 @@
     <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina/#jina.Document.load_uri_to_video_tensor">load_uri_to_video_tensor() (jina.Document method)</a>
 </li>
+        <li><a href="../api/jina/#jina.Document.load_uris_to_rgbd_tensor">load_uris_to_rgbd_tensor() (jina.Document method)</a>
+</li>
         <li><a href="../api/jina/#jina.Document.load_vertices_and_faces_to_point_cloud">load_vertices_and_faces_to_point_cloud() (jina.Document method)</a>
 </li>
         <li><a href="../api/jina/#jina.Document.location">location (jina.Document property)</a>
@@ -6093,6 +6091,8 @@
         </ul></li>
         <li><a href="../api/jina.enums/#jina.enums.LogVerbosity.WARNING">WARNING (jina.enums.LogVerbosity attribute)</a>
 </li>
+        <li><a href="../api/jina.serve.runtimes.worker/#jina.serve.runtimes.worker.WorkerRuntime.Watch">Watch() (jina.serve.runtimes.worker.WorkerRuntime method)</a>
+</li>
         <li><a href="../api/jina.enums/#jina.enums.GatewayProtocolType.WEBSOCKET">WEBSOCKET (jina.enums.GatewayProtocolType attribute)</a>
 </li>
         <li><a href="../api/jina.clients.base.websocket/#jina.clients.base.websocket.WebSocketBaseClient">WebSocketBaseClient (class in jina.clients.base.websocket)</a>
@@ -6249,7 +6249,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 07, 2022</div>
+                            Last updated on Dec 12, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

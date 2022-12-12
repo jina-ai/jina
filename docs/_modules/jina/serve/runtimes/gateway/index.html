@@ -404,7 +404,7 @@
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__default_host__</span>
 <span class="kn">from</span> <span class="nn">jina.enums</span> <span class="kn">import</span> <span class="n">GatewayProtocolType</span>
 <span class="kn">from</span> <span class="nn">jina.excepts</span> <span class="kn">import</span> <span class="n">PortAlreadyUsed</span>
-<span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">is_port_free</span>
+<span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">is_port_free</span><span class="p">,</span> <span class="n">send_telemetry_event</span>
 <span class="kn">from</span> <span class="nn">jina.parsers.helper</span> <span class="kn">import</span> <span class="n">_update_gateway_args</span>
 <span class="kn">from</span> <span class="nn">jina.serve.gateway</span> <span class="kn">import</span> <span class="n">BaseGateway</span>
 <span class="kn">from</span> <span class="nn">jina.serve.runtimes.asyncio</span> <span class="kn">import</span> <span class="n">AsyncNewLoopRuntime</span>
@@ -502,6 +502,21 @@
 
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">gateway</span><span class="o">.</span><span class="n">setup_server</span><span class="p">()</span></div>
 
+    <span class="k">def</span> <span class="nf">_send_telemetry_event</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">is_custom_gateway</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gateway</span><span class="o">.</span><span class="vm">__class__</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span>
+            <span class="n">CompositeGateway</span><span class="p">,</span>
+            <span class="n">GRPCGateway</span><span class="p">,</span>
+            <span class="n">HTTPGateway</span><span class="p">,</span>
+            <span class="n">WebSocketGateway</span><span class="p">,</span>
+        <span class="p">]</span>
+        <span class="n">send_telemetry_event</span><span class="p">(</span>
+            <span class="n">event</span><span class="o">=</span><span class="s1">&#39;start&#39;</span><span class="p">,</span>
+            <span class="n">obj</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
+            <span class="n">entity_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_entity_id</span><span class="p">,</span>
+            <span class="n">is_custom_gateway</span><span class="o">=</span><span class="n">is_custom_gateway</span><span class="p">,</span>
+            <span class="n">protocol</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">protocol</span><span class="p">,</span>
+        <span class="p">)</span>
+
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_wait_for_cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Do NOT override this method when inheriting from :class:`GatewayPod`&quot;&quot;&quot;</span>
         <span class="c1"># handle terminate signals</span>
@@ -529,12 +544,18 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">is_cancel</span><span class="o">.</span><span class="n">set</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="GatewayRuntime.is_ready"><a class="viewcode-back" href="../../../../../api/jina.serve.runtimes.gateway/#jina.serve.runtimes.gateway.GatewayRuntime.is_ready">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">is_ready</span><span class="p">(</span><span class="n">ctrl_address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">protocol</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;grpc&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">is_ready</span><span class="p">(</span>
+        <span class="n">ctrl_address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">protocol</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;grpc&#39;</span><span class="p">,</span>
+        <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check if status is ready.</span>
 
 <span class="sd">        :param ctrl_address: the address where the control request needs to be sent</span>
 <span class="sd">        :param protocol: protocol of the gateway runtime</span>
+<span class="sd">        :param timeout: timeout of grpc call in seconds</span>
 <span class="sd">        :param kwargs: extra keyword arguments</span>
 
 <span class="sd">        :return: True if status is ready else False.</span>
@@ -548,7 +569,9 @@
             <span class="n">res</span> <span class="o">=</span> <span class="n">AsyncNewLoopRuntime</span><span class="o">.</span><span class="n">is_ready</span><span class="p">(</span><span class="n">ctrl_address</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">conn</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;http://</span><span class="si">{</span><span class="n">ctrl_address</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+                <span class="n">conn</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span>
+                    <span class="n">url</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;http://</span><span class="si">{</span><span class="n">ctrl_address</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span>
+                <span class="p">)</span>
                 <span class="n">res</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">code</span> <span class="o">==</span> <span class="n">HTTPStatus</span><span class="o">.</span><span class="n">OK</span>
             <span class="k">except</span><span class="p">:</span>
                 <span class="n">res</span> <span class="o">=</span> <span class="kc">False</span>
@@ -594,7 +617,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 07, 2022</div>
+                            Last updated on Dec 12, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

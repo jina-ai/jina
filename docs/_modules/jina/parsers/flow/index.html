@@ -418,6 +418,13 @@
     <span class="p">)</span>
 
     <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;--restart&#39;</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;If set, the Flow will restart while blocked if the YAML configuration source is changed.&#39;</span>
+    <span class="p">)</span>
+
+    <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--env&#39;</span><span class="p">,</span>
         <span class="n">action</span><span class="o">=</span><span class="n">KVAppendAction</span><span class="p">,</span>
         <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;KEY: VALUE&#39;</span><span class="p">,</span>
@@ -466,7 +473,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 07, 2022</div>
+                            Last updated on Dec 12, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

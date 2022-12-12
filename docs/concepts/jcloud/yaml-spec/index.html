@@ -8,7 +8,7 @@
 <meta property="og:url" content="https://docs.jina.ai/concepts/jcloud/yaml-spec/" />
 <meta property="og:site_name" content="Jina 3.12.1 Documentation" />
 <meta property="og:description" content="YAML specification: JCloud extends Jina’s Flow YAML specification by introducing the special field jcloud. This lets you define resources and scaling policies for each Executor and gateway. Here’s a Flow with two Executors that have specific resource needs. indexer demands 10G ebs disk, whereas e..." />
-<meta property="og:image" content="https://docs.jina.ai/_images/external-executor.png" />
+<meta property="og:image" content="https://docs.jina.ai/_images/expose-executor.png" />
 <meta property="og:image:alt" content="Jina 3.12.1 Documentation" />
 <meta name="description" content="YAML specification: JCloud extends Jina’s Flow YAML specification by introducing the special field jcloud. This lets you define resources and scaling policies for each Executor and gateway. Here’s a Flow with two Executors that have specific resource needs. indexer demands 10G ebs disk, whereas e..." />
 <meta name="twitter:card" content="summary_large_image">
@@ -459,10 +459,10 @@
 <span class="nt">executors</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executor1</span><span class="w"></span>
 <span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinaai+docker://&lt;username&gt;/Executor1</span><span class="w"></span>
-<span class="w">    </span><span class="nt">jcloud</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">resources</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.5</span><span class="w"></span>
-</pre></div>
+<span class="hll"><span class="w">    </span><span class="nt">jcloud</span><span class="p">:</span><span class="w"></span>
+</span><span class="hll"><span class="w">      </span><span class="nt">resources</span><span class="p">:</span><span class="w"></span>
+</span><span class="hll"><span class="w">        </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.5</span><span class="w"></span>
+</span></pre></div>
 </div>
 </section>
 <section id="gpu">
@@ -481,10 +481,10 @@ This enables time-slicing, which allows workloads that land on oversubscribed GP
 <span class="nt">executors</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executor1</span><span class="w"></span>
 <span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinaai+docker://&lt;username&gt;/Executor1</span><span class="w"></span>
-<span class="w">    </span><span class="nt">jcloud</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">resources</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">gpu</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">shared</span><span class="w"></span>
-</pre></div>
+<span class="hll"><span class="w">    </span><span class="nt">jcloud</span><span class="p">:</span><span class="w"></span>
+</span><span class="hll"><span class="w">      </span><span class="nt">resources</span><span class="p">:</span><span class="w"></span>
+</span><span class="hll"><span class="w">        </span><span class="nt">gpu</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">shared</span><span class="w"></span>
+</span></pre></div>
 </div>
 <div class="admonition caution">
 <p class="admonition-title">Caution</p>
@@ -498,10 +498,10 @@ This enables time-slicing, which allows workloads that land on oversubscribed GP
 <span class="nt">executors</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executor1</span><span class="w"></span>
 <span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinaai+docker://&lt;username&gt;/Executor1</span><span class="w"></span>
-<span class="w">    </span><span class="nt">jcloud</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">resources</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">gpu</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span><span class="w"></span>
-</pre></div>
+<span class="hll"><span class="w">    </span><span class="nt">jcloud</span><span class="p">:</span><span class="w"></span>
+</span><span class="hll"><span class="w">      </span><span class="nt">resources</span><span class="p">:</span><span class="w"></span>
+</span><span class="hll"><span class="w">        </span><span class="nt">gpu</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span><span class="w"></span>
+</span></pre></div>
 </div>
 </section>
 </section>
@@ -512,9 +512,10 @@ This enables time-slicing, which allows workloads that land on oversubscribed GP
 <span class="nt">executors</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executor1</span><span class="w"></span>
 <span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinaai+docker://&lt;username&gt;/Executor1</span><span class="w"></span>
-<span class="w">    </span><span class="nt">jcloud</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">capacity</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">on-demand</span><span class="w"></span>
-</pre></div>
+<span class="hll"><span class="w">    </span><span class="nt">jcloud</span><span class="p">:</span><span class="w"></span>
+</span><span class="hll"><span class="w">      </span><span class="nt">resources</span><span class="p">:</span><span class="w"></span>
+</span><span class="hll"><span class="w">        </span><span class="nt">capacity</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">on-demand</span><span class="w"></span>
+</span></pre></div>
 </div>
 </section>
 <section id="memory">
@@ -528,10 +529,10 @@ This enables time-slicing, which allows workloads that land on oversubscribed GP
 <span class="nt">executors</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executor1</span><span class="w"></span>
 <span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinaai+docker://&lt;username&gt;/Executor1</span><span class="w"></span>
-<span class="w">    </span><span class="nt">jcloud</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">resources</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8G</span><span class="w"></span>
-</pre></div>
+<span class="hll"><span class="w">    </span><span class="nt">jcloud</span><span class="p">:</span><span class="w"></span>
+</span><span class="hll"><span class="w">      </span><span class="nt">resources</span><span class="p">:</span><span class="w"></span>
+</span><span class="hll"><span class="w">        </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8G</span><span class="w"></span>
+</span></pre></div>
 </div>
 </section>
 <section id="storage">
@@ -539,15 +540,7 @@ This enables time-slicing, which allows workloads that land on oversubscribed GP
 <p>JCloud supports two kinds of storage types: <a class="reference external" href="https://aws.amazon.com/efs/">efs</a> (default) and <a class="reference external" href="https://aws.amazon.com/ebs/">ebs</a>. The former is a network file storage, whereas the latter is a block device.</p>
 <div class="admonition hint">
 <p class="admonition-title">Hint</p>
-<p>By default, we attach an <code class="docutils literal notranslate"><span class="pre">efs</span></code> to all Executors in a Flow. The benefits of doing so are:</p>
-<ul class="simple">
-<li><p>It can grow dynamically, so you don’t need to shrink/grow volumes as and when necessary.</p></li>
-<li><p>All Executors in the Flow can share a disk.</p></li>
-<li><p>The same disk can also be shared with another Flow by passing a workspace-id while deploying a Flow.</p></li>
-</ul>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc deploy flow.yml --workspace-id &lt;prev-flow-id&gt;
-</pre></div>
-</div>
+<p>By default, we attach an <code class="docutils literal notranslate"><span class="pre">efs</span></code> to all Executors in a Flow. This lets the <code class="docutils literal notranslate"><span class="pre">efs</span></code> resize dynamically, so you don’t need to shrink/grow volumes manually.</p>
 <p>If your Executor needs high IO, you can use <code class="docutils literal notranslate"><span class="pre">ebs</span></code> instead. Please note that:</p>
 <ul class="simple">
 <li><p>The disk cannot be shared with other Executors or Flows.</p></li>
@@ -558,18 +551,18 @@ This enables time-slicing, which allows workloads that land on oversubscribed GP
 <span class="nt">executors</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executor1</span><span class="w"></span>
 <span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinaai+docker://&lt;username&gt;/Executor1</span><span class="w"></span>
-<span class="w">    </span><span class="nt">jcloud</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">resources</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">storage</span><span class="p">:</span><span class="w"></span>
-<span class="w">          </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ebs</span><span class="w"></span>
-<span class="w">          </span><span class="nt">size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10G</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executor2</span><span class="w"></span>
+<span class="hll"><span class="w">    </span><span class="nt">jcloud</span><span class="p">:</span><span class="w"></span>
+</span><span class="hll"><span class="w">      </span><span class="nt">resources</span><span class="p">:</span><span class="w"></span>
+</span><span class="hll"><span class="w">        </span><span class="nt">storage</span><span class="p">:</span><span class="w"></span>
+</span><span class="hll"><span class="w">          </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ebs</span><span class="w"></span>
+</span><span class="hll"><span class="w">          </span><span class="nt">size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10G</span><span class="w"></span>
+</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executor2</span><span class="w"></span>
 <span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinaai+docker://&lt;username&gt;/Executor2</span><span class="w"></span>
-<span class="w">    </span><span class="nt">jcloud</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">resources</span><span class="p">:</span><span class="w"></span>
+<span class="hll"><span class="w">    </span><span class="nt">jcloud</span><span class="p">:</span><span class="w"></span>
+</span><span class="w">      </span><span class="nt">resources</span><span class="p">:</span><span class="w"></span>
 <span class="w">        </span><span class="nt">storage</span><span class="p">:</span><span class="w"></span>
-<span class="w">          </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">efs</span><span class="w"></span>
-</pre></div>
+<span class="hll"><span class="w">          </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">efs</span><span class="w"></span>
+</span></pre></div>
 </div>
 </section>
 </section>
@@ -591,8 +584,8 @@ This enables time-slicing, which allows workloads that land on oversubscribed GP
 <p>For more information about the Knative autoscaling configurations, please visit <a class="reference external" href="https://knative.dev/docs/serving/autoscaling/">Knative autoscaling</a>.</p>
 </div>
 </section>
-<section id="scale-out-manually">
-<h3>Scale-out manually<a class="headerlink" href="#scale-out-manually" title="Permalink to this heading">#</a></h3>
+<section id="autoscaling-with-custom-args">
+<h3>Autoscaling with custom args<a class="headerlink" href="#autoscaling-with-custom-args" title="Permalink to this heading">#</a></h3>
 <p>If <code class="docutils literal notranslate"><span class="pre">jinaai+serverless://</span></code> doesn’t meet your requirements, you can further customize autoscaling configurations by using the <code class="docutils literal notranslate"><span class="pre">autoscale</span></code> argument on a per-Executor basis in the Flow YAML, such as:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
 <span class="nt">executors</span><span class="p">:</span><span class="w"></span>
@@ -653,12 +646,12 @@ This enables time-slicing, which allows workloads that land on oversubscribed GP
 </div>
 <section id="set-timeout">
 <h3>Set timeout<a class="headerlink" href="#set-timeout" title="Permalink to this heading">#</a></h3>
-<p>By default, the JCloud gateway will close connections that have been idle for over 600 seconds. If you want longer a connection timeout threshold, you can change the <code class="docutils literal notranslate"><span class="pre">timeout</span></code> parameter under <code class="docutils literal notranslate"><span class="pre">gateway</span></code>.</p>
+<p>By default, the JCloud gateway will close connections that have been idle for over 600 seconds. If you want a longer connection timeout threshold, change the <code class="docutils literal notranslate"><span class="pre">timeout</span></code> parameter under <code class="docutils literal notranslate"><span class="pre">gateway.jcloud</span></code>.</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
-<span class="nt">jcloud</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">gateway</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">timeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">600</span><span class="w"></span>
-<span class="nt">executors</span><span class="p">:</span><span class="w"></span>
+<span class="hll"><span class="nt">gateway</span><span class="p">:</span><span class="w"></span>
+</span><span class="hll"><span class="w">  </span><span class="nt">jcloud</span><span class="p">:</span><span class="w"></span>
+</span><span class="hll"><span class="w">    </span><span class="nt">timeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">600</span><span class="w"></span>
+</span><span class="nt">executors</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executor1</span><span class="w"></span>
 <span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinaai+docker://&lt;username&gt;/Executor1</span><span class="w"></span>
 </pre></div>
@@ -666,48 +659,52 @@ This enables time-slicing, which allows workloads that land on oversubscribed GP
 </section>
 <section id="control-gateway-resources">
 <h3>Control gateway resources<a class="headerlink" href="#control-gateway-resources" title="Permalink to this heading">#</a></h3>
-<p>If you’d like to customize the gateway’s CPU or memory, you can specify the <code class="docutils literal notranslate"><span class="pre">memory</span></code> and/or <code class="docutils literal notranslate"><span class="pre">cpu</span></code> argument under <code class="docutils literal notranslate"><span class="pre">jcloud.gateway.resources</span></code>:</p>
+<p>To customize the gateway’s CPU or memory, specify the <code class="docutils literal notranslate"><span class="pre">memory</span></code> and/or <code class="docutils literal notranslate"><span class="pre">cpu</span></code> arguments under <code class="docutils literal notranslate"><span class="pre">gateway.jcloud.resources</span></code>:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
-<span class="nt">jcloud</span><span class="p">:</span><span class="w"></span>
-<span class="hll"><span class="w">  </span><span class="nt">gateway</span><span class="p">:</span><span class="w"></span>
+<span class="hll"><span class="nt">gateway</span><span class="p">:</span><span class="w"></span>
+</span><span class="hll"><span class="w">  </span><span class="nt">jcloud</span><span class="p">:</span><span class="w"></span>
 </span><span class="hll"><span class="w">    </span><span class="nt">resources</span><span class="p">:</span><span class="w"></span>
 </span><span class="hll"><span class="w">      </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">800M</span><span class="w"></span>
 </span><span class="hll"><span class="w">      </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.4</span><span class="w"></span>
-</span><span class="hll"><span class="nt">executors</span><span class="p">:</span><span class="w"></span>
-</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">encoder</span><span class="w"></span>
+</span><span class="nt">executors</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">encoder</span><span class="w"></span>
 <span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinaai+docker://&lt;username&gt;/Encoder</span><span class="w"></span>
 </pre></div>
 </div>
 </section>
-<section id="disable-gateway">
-<h3>Disable gateway<a class="headerlink" href="#disable-gateway" title="Permalink to this heading">#</a></h3>
-<p>A Flow deployment without a gateway is often used for <a class="reference internal" href="../../flow/add-executors/#external-executors"><span class="std std-ref">Add external Executors</span></a>, which can be shared over different Flows. You can disable a gateway by setting <code class="docutils literal notranslate"><span class="pre">expose_gateway:</span> <span class="pre">false</span></code>:</p>
+</section>
+<section id="expose-executors">
+<h2>Expose Executors<a class="headerlink" href="#expose-executors" title="Permalink to this heading">#</a></h2>
+<p>A Flow deployment without a Gateway is often used for <a class="reference internal" href="../../flow/add-executors/#external-executors"><span class="std std-ref">Add external Executors</span></a>, which can be shared between different Flows. You can expose an Executor by setting <code class="docutils literal notranslate"><span class="pre">expose:</span> <span class="pre">true</span></code> (and un-expose the Gateway by setting <code class="docutils literal notranslate"><span class="pre">expose:</span> <span class="pre">false</span></code>):</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
-<span class="nt">jcloud</span><span class="p">:</span><span class="w"></span>
-<span class="hll"><span class="w">  </span><span class="nt">expose_gateway</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span><span class="w"></span>
+<span class="hll"><span class="nt">gateway</span><span class="p">:</span><span class="w"></span>
+</span><span class="hll"><span class="w">  </span><span class="nt">jcloud</span><span class="p">:</span><span class="w"></span>
+</span><span class="hll"><span class="w">    </span><span class="nt">expose</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span><span class="w">       </span><span class="c1"># don&#39;t expose the Gateway</span><span class="w"></span>
 </span><span class="nt">executors</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">custom</span><span class="w"></span>
 <span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinaai+docker://&lt;username&gt;/CustomExecutor</span><span class="w"></span>
-</pre></div>
+<span class="hll"><span class="w">    </span><span class="nt">jcloud</span><span class="p">:</span><span class="w"></span>
+</span><span class="hll"><span class="w">      </span><span class="nt">expose</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w">    </span><span class="c1"># expose the Executor</span><span class="w"></span>
+</span></pre></div>
 </div>
 <figure class="align-default">
-<a class="reference internal image-reference" href="../../../_images/external-executor.png"><img alt="../../../_images/external-executor.png" src="../../../_images/external-executor.png" style="width: 70%;" /></a>
+<a class="reference internal image-reference" href="../../../_images/expose-executor.png"><img alt="../../../_images/expose-executor.png" src="../../../_images/expose-executor.png" style="width: 70%;" /></a>
 </figure>
-<p>You can also deploy and expose multiple external Executors:</p>
+<p>You can expose the Gateway along with Executors:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
-<span class="nt">jcloud</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">expose_gateway</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span><span class="w"></span>
-<span class="nt">executors</span><span class="p">:</span><span class="w"></span>
+<span class="hll"><span class="nt">gateway</span><span class="p">:</span><span class="w"></span>
+</span><span class="hll"><span class="w">  </span><span class="nt">jcloud</span><span class="p">:</span><span class="w"></span>
+</span><span class="hll"><span class="w">    </span><span class="nt">expose</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+</span><span class="nt">executors</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">custom1</span><span class="w"></span>
 <span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinaai+docker://&lt;username&gt;/CustomExecutor1</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">custom2</span><span class="w"></span>
-<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinaai+docker://&lt;username&gt;/CustomExecutor2</span><span class="w"></span>
-</pre></div>
+<span class="hll"><span class="w">    </span><span class="nt">jcloud</span><span class="p">:</span><span class="w"></span>
+</span><span class="hll"><span class="w">      </span><span class="nt">expose</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w">    </span><span class="c1"># expose the Executor</span><span class="w"></span>
+</span></pre></div>
 </div>
 <figure class="align-default">
-<a class="reference internal image-reference" href="../../../_images/external-executors-multiple.png"><img alt="../../../_images/external-executors-multiple.png" src="../../../_images/external-executors-multiple.png" style="width: 70%;" /></a>
+<a class="reference internal image-reference" href="../../../_images/gateway-and-executors.png"><img alt="../../../_images/gateway-and-executors.png" src="../../../_images/gateway-and-executors.png" style="width: 70%;" /></a>
 </figure>
-</section>
 </section>
 <section id="other-deployment-options">
 <h2>Other deployment options<a class="headerlink" href="#other-deployment-options" title="Permalink to this heading">#</a></h2>
@@ -715,9 +712,9 @@ This enables time-slicing, which allows workloads that land on oversubscribed GP
 <h3>Specify Jina version<a class="headerlink" href="#specify-jina-version" title="Permalink to this heading">#</a></h3>
 <p>To control Jina’s version while deploying a Flow to <code class="docutils literal notranslate"><span class="pre">jcloud</span></code>, you can pass the <code class="docutils literal notranslate"><span class="pre">version</span></code> argument in the Flow YAML:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
-<span class="nt">jcloud</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3.4.11</span><span class="w"></span>
-<span class="nt">executors</span><span class="p">:</span><span class="w"></span>
+<span class="hll"><span class="nt">jcloud</span><span class="p">:</span><span class="w"></span>
+</span><span class="hll"><span class="w">  </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3.10.0</span><span class="w"></span>
+</span><span class="nt">executors</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executor1</span><span class="w"></span>
 <span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinaai+docker://&lt;username&gt;/Executor1</span><span class="w"></span>
 </pre></div>
@@ -727,11 +724,11 @@ This enables time-slicing, which allows workloads that land on oversubscribed GP
 <h3>Add Labels<a class="headerlink" href="#add-labels" title="Permalink to this heading">#</a></h3>
 <p>You can use <code class="docutils literal notranslate"><span class="pre">labels</span></code> (as key-value pairs) to attach metadata to your Flows:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
-<span class="nt">jcloud</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">labels</span><span class="p">:</span><span class="w"> </span>
-<span class="w">    </span><span class="nt">username</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">johndoe</span><span class="w"></span>
-<span class="w">    </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">fashion-search</span><span class="w"></span>
-<span class="nt">executors</span><span class="p">:</span><span class="w"></span>
+<span class="hll"><span class="nt">jcloud</span><span class="p">:</span><span class="w"></span>
+</span><span class="hll"><span class="w">  </span><span class="nt">labels</span><span class="p">:</span><span class="w"> </span>
+</span><span class="hll"><span class="w">    </span><span class="nt">username</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">johndoe</span><span class="w"></span>
+</span><span class="hll"><span class="w">    </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">fashion-search</span><span class="w"></span>
+</span><span class="nt">executors</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executor1</span><span class="w"></span>
 <span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinaai+docker://&lt;username&gt;/Executor1</span><span class="w"></span>
 </pre></div>
@@ -746,7 +743,6 @@ This enables time-slicing, which allows workloads that land on oversubscribed GP
 <ul>
 <li><p><code class="docutils literal notranslate"><span class="pre">user</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">jina</span></code>-version</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">retention</span></code>-days</p></li>
 </ul>
 </li>
 </ul>
@@ -786,7 +782,7 @@ This enables time-slicing, which allows workloads that land on oversubscribed GP
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 07, 2022</div>
+                            Last updated on Dec 12, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -833,15 +829,15 @@ This enables time-slicing, which allows workloads that land on oversubscribed GP
 </li>
 <li><a class="reference internal" href="#scale-out-executors">Scale out Executors</a><ul>
 <li><a class="reference internal" href="#autoscaling-with-jinahub-serveless">Autoscaling with <code class="docutils literal notranslate"><span class="pre">jinahub+serveless://</span></code></a></li>
-<li><a class="reference internal" href="#scale-out-manually">Scale-out manually</a></li>
+<li><a class="reference internal" href="#autoscaling-with-custom-args">Autoscaling with custom args</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#configure-gateway">Configure gateway</a><ul>
 <li><a class="reference internal" href="#set-timeout">Set timeout</a></li>
 <li><a class="reference internal" href="#control-gateway-resources">Control gateway resources</a></li>
-<li><a class="reference internal" href="#disable-gateway">Disable gateway</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#expose-executors">Expose Executors</a></li>
 <li><a class="reference internal" href="#other-deployment-options">Other deployment options</a><ul>
 <li><a class="reference internal" href="#specify-jina-version">Specify Jina version</a></li>
 <li><a class="reference internal" href="#add-labels">Add Labels</a></li>

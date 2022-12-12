@@ -571,6 +571,7 @@
                             <span class="k">raise</span> <span class="n">result</span>
                         <span class="k">else</span><span class="p">:</span>
                             <span class="n">resp</span><span class="p">,</span> <span class="n">metadata</span> <span class="o">=</span> <span class="n">result</span>
+
                         <span class="k">if</span> <span class="n">WorkerRequestHandler</span><span class="o">.</span><span class="n">_KEY_RESULT</span> <span class="ow">in</span> <span class="n">resp</span><span class="o">.</span><span class="n">parameters</span><span class="p">:</span>
                             <span class="c1"># Accumulate results from each Node and then add them to the original</span>
                             <span class="bp">self</span><span class="o">.</span><span class="n">result_in_params_returned</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span>
@@ -859,7 +860,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 07, 2022</div>
+                            Last updated on Dec 12, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

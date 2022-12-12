@@ -409,11 +409,13 @@
     <span class="kn">from</span> <span class="nn">docarray.array.weaviate</span> <span class="kn">import</span> <span class="n">DocumentArrayWeaviate</span>
     <span class="kn">from</span> <span class="nn">docarray.array.elastic</span> <span class="kn">import</span> <span class="n">DocumentArrayElastic</span>
     <span class="kn">from</span> <span class="nn">docarray.array.redis</span> <span class="kn">import</span> <span class="n">DocumentArrayRedis</span>
+    <span class="kn">from</span> <span class="nn">docarray.array.milvus</span> <span class="kn">import</span> <span class="n">DocumentArrayMilvus</span>
     <span class="kn">from</span> <span class="nn">docarray.array.storage.sqlite</span> <span class="kn">import</span> <span class="n">SqliteConfig</span>
     <span class="kn">from</span> <span class="nn">docarray.array.storage.annlite</span> <span class="kn">import</span> <span class="n">AnnliteConfig</span>
     <span class="kn">from</span> <span class="nn">docarray.array.storage.weaviate</span> <span class="kn">import</span> <span class="n">WeaviateConfig</span>
     <span class="kn">from</span> <span class="nn">docarray.array.storage.elastic</span> <span class="kn">import</span> <span class="n">ElasticConfig</span>
     <span class="kn">from</span> <span class="nn">docarray.array.storage.redis</span> <span class="kn">import</span> <span class="n">RedisConfig</span>
+    <span class="kn">from</span> <span class="nn">docarray.array.storage.milvus</span> <span class="kn">import</span> <span class="n">MilvusConfig</span>
 
 
 <div class="viewcode-block" id="DocumentArray"><a class="viewcode-back" href="../../../../api/jina/#jina.DocumentArray">[docs]</a><span class="k">class</span> <span class="nc">DocumentArray</span><span class="p">(</span><span class="n">AllMixins</span><span class="p">,</span> <span class="n">BaseDocumentArray</span><span class="p">):</span>
@@ -537,6 +539,16 @@
         <span class="sd">&quot;&quot;&quot;Create a Redis-powered DocumentArray object.&quot;&quot;&quot;</span>
         <span class="o">...</span>
 
+    <span class="nd">@overload</span>
+    <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span>
+        <span class="n">_docs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;DocumentArraySourceType&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">storage</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;milvus&#39;</span><span class="p">,</span>
+        <span class="n">config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="s1">&#39;MilvusConfig&#39;</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;DocumentArrayMilvus&#39;</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Create a Milvus-powered DocumentArray object.&quot;&quot;&quot;</span>
+        <span class="o">...</span>
+
     <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_exit_stack</span> <span class="o">=</span> <span class="n">ExitStack</span><span class="p">()</span>
         <span class="c1"># Ensure that we sync the data to the storage backend when exiting the context manager</span>
@@ -581,6 +593,10 @@
                 <span class="kn">from</span> <span class="nn">.redis</span> <span class="kn">import</span> <span class="n">DocumentArrayRedis</span>
 
                 <span class="n">instance</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="n">DocumentArrayRedis</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">storage</span> <span class="o">==</span> <span class="s1">&#39;milvus&#39;</span><span class="p">:</span>
+                <span class="kn">from</span> <span class="nn">.milvus</span> <span class="kn">import</span> <span class="n">DocumentArrayMilvus</span>
+
+                <span class="n">instance</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="n">DocumentArrayMilvus</span><span class="p">)</span>
 
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;storage=`</span><span class="si">{</span><span class="n">storage</span><span class="si">}</span><span class="s1">` is not supported.&#39;</span><span class="p">)</span>
@@ -601,7 +617,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 07, 2022</div>
+                            Last updated on Dec 12, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

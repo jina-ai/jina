@@ -576,6 +576,16 @@
 <td><p><code class="docutils literal notranslate"><span class="pre">boolean</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
 </tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">restart</span></code></p></td>
+<td><p>If set, the Executor will restart while serving if the YAML configuration source is changed. This differs from <code class="docutils literal notranslate"><span class="pre">reload</span></code> argument in that this will restart the server and more configuration can be changed, like number of replicas.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">boolean</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">port</span></code></p></td>
+<td><p>The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (<code class="docutils literal notranslate"><span class="pre">--external</span></code> or <code class="docutils literal notranslate"><span class="pre">external=True</span></code>) this can be a list of ports, separated by commas. Then, every resulting address will be considered as one replica of the Executor.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">random</span> <span class="pre">in</span> <span class="pre">[49152,</span> <span class="pre">65535]</span></code></p></td>
+</tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">reload</span></code></p></td>
 <td><p>If set, the Executor reloads the modules as they change</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">boolean</span></code></p></td>
@@ -678,7 +688,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 07, 2022</div>
+                            Last updated on Dec 12, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

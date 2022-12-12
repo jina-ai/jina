@@ -709,7 +709,29 @@
             <span class="n">info_proto</span><span class="o">.</span><span class="n">jina</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">env_info</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">info_proto</span><span class="o">.</span><span class="n">envs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">info_proto</span></div>
+        <span class="k">return</span> <span class="n">info_proto</span>
+
+<div class="viewcode-block" id="WorkerRuntime.Check"><a class="viewcode-back" href="../../../../../api/jina.serve.runtimes.worker/#jina.serve.runtimes.worker.WorkerRuntime.Check">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">Check</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">health_pb2</span><span class="o">.</span><span class="n">HealthCheckRequest</span><span class="p">,</span> <span class="n">context</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">health_pb2</span><span class="o">.</span><span class="n">HealthCheckResponse</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Calls the underlying HealthServicer.Check method with the same arguments</span>
+<span class="sd">        :param request: grpc request</span>
+<span class="sd">        :param context: grpc request context</span>
+<span class="sd">        :returns: the grpc HealthCheckResponse</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Receive Check request&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_health_servicer</span><span class="o">.</span><span class="n">Check</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="WorkerRuntime.Watch"><a class="viewcode-back" href="../../../../../api/jina.serve.runtimes.worker/#jina.serve.runtimes.worker.WorkerRuntime.Watch">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">Watch</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">health_pb2</span><span class="o">.</span><span class="n">HealthCheckRequest</span><span class="p">,</span> <span class="n">context</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">health_pb2</span><span class="o">.</span><span class="n">HealthCheckResponse</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Calls the underlying HealthServicer.Watch method with the same arguments</span>
+<span class="sd">        :param request: grpc request</span>
+<span class="sd">        :param context: grpc request context</span>
+<span class="sd">        :returns: the grpc HealthCheckResponse</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Receive Watch request&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_health_servicer</span><span class="o">.</span><span class="n">Watch</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span></div></div>
 </pre></div>
                 </article>
             </div>
@@ -724,7 +746,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 07, 2022</div>
+                            Last updated on Dec 12, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

@@ -673,6 +673,87 @@ You can control the access mode, storage class name and capacity of the attached
 </div>
 </section>
 </section>
+<section id="restart">
+<span id="restart-flow"></span><h2>Restart<a class="headerlink" href="#restart" title="Permalink to this heading">#</a></h2>
+<p>While developing your Flow, it can be useful to have it restart automatically as you change the Flow YAML.</p>
+<p>For this you can use the Flow’s <code class="docutils literal notranslate"><span class="pre">restart</span></code> argument to restart it with the updated configuration every time you change the YAML configuration.</p>
+<div class="caution admonition">
+<p class="admonition-title">Caution</p>
+<p>This feature aims to let developers iterate faster while developing, but is not intended for production use.</p>
+</div>
+<div class="note admonition">
+<p class="admonition-title">Note</p>
+<p>This feature requires watchfiles&gt;=0.18 package to be installed.</p>
+</div>
+<p>To see how this works, let’s define a Flow in <code class="docutils literal notranslate"><span class="pre">flow.yml</span></code> with a restart option.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
+<span class="nt">with</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">12345</span><span class="w"></span>
+<span class="w">  </span><span class="nt">restart</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True</span><span class="w"></span>
+<span class="nt">executors</span><span class="p">:</span><span class="w"></span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">exec1</span><span class="w"></span>
+<span class="w">  </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ConcatenateTextExecutor</span><span class="w"></span>
+</pre></div>
+</div>
+<p>We build a Flow and expose it:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
+
+
+<span class="k">class</span> <span class="nc">ConcatenateTextExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+   <span class="nd">@requests</span>
+   <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+       <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
+          <span class="n">doc</span><span class="o">.</span><span class="n">text</span> <span class="o">+=</span> <span class="s1">&#39;add text &#39;</span>
+
+<span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;JINA_LOG_LEVEL&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;DEBUG&#39;</span>
+
+
+<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="o">.</span><span class="n">load_config</span><span class="p">(</span><span class="s1">&#39;flow.yml&#39;</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">block</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>We can see that the Flow is running and serving:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span><span class="p">,</span> <span class="n">DocumentArray</span>
+
+<span class="n">c</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">DocumentArray</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">1</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>add text
+</pre></div>
+</div>
+<p>We can edit the Flow YAML file and save the changes:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
+<span class="nt">with</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">12345</span><span class="w"></span>
+<span class="w">  </span><span class="nt">restart</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True</span><span class="w"></span>
+<span class="nt">executors</span><span class="p">:</span><span class="w"></span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">exec1</span><span class="w"></span>
+<span class="w">  </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ConcatenateTextExecutor</span><span class="w"></span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">exec2</span><span class="w"></span>
+<span class="w">  </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ConcatenateTextExecutor</span><span class="w"></span>
+</pre></div>
+</div>
+<p>You should see the following in the Flow’s logs:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>INFO   Flow@28301 change in Flow YAML XXX/flow.yml observed, restarting Flow                                                   
+</pre></div>
+</div>
+<p>After this, the Flow will have two Executors with the new topology:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span><span class="p">,</span> <span class="n">DocumentArray</span>
+
+<span class="n">c</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">DocumentArray</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">1</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>add text add text
+</pre></div>
+</div>
+</section>
 </section>
 
                 </article>
@@ -706,7 +787,7 @@ You can control the access mode, storage class name and capacity of the attached
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 07, 2022</div>
+                            Last updated on Dec 12, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -758,6 +839,7 @@ You can control the access mode, storage class name and capacity of the attached
 <li><a class="reference internal" href="#kubernetes">Kubernetes</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#restart">Restart</a></li>
 </ul>
 </li>
 </ul>

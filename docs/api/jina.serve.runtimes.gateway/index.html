@@ -622,13 +622,14 @@ running/terminating the Gateway object.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.serve.runtimes.gateway.GatewayRuntime.is_ready">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_ready</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctrl_address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">protocol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'grpc'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/gateway/#GatewayRuntime.is_ready"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.gateway.GatewayRuntime.is_ready" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_ready</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctrl_address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">protocol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'grpc'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/gateway/#GatewayRuntime.is_ready"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.gateway.GatewayRuntime.is_ready" title="Permalink to this definition">#</a></dt>
 <dd><p>Check if status is ready.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>ctrl_address</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the address where the control request needs to be sent</p></li>
 <li><p><strong>protocol</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – protocol of the gateway runtime</p></li>
+<li><p><strong>timeout</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – timeout of grpc call in seconds</p></li>
 <li><p><strong>kwargs</strong> – extra keyword arguments</p></li>
 </ul>
 </dd>
@@ -657,17 +658,6 @@ running/terminating the Gateway object.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>True if is ready or it needs to be shutdown</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.GatewayRuntime.activate">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">activate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.GatewayRuntime.activate" title="Permalink to this definition">#</a></dt>
-<dd><p>Activate the runtime, does not apply to these runtimes</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>kwargs</strong> – extra keyword arguments</p>
 </dd>
 </dl>
 </dd></dl>
@@ -732,7 +722,7 @@ running/terminating the Gateway object.</p>
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 07, 2022</div>
+                            Last updated on Dec 12, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -775,7 +765,6 @@ running/terminating the Gateway object.</p>
 <li><a class="reference internal" href="#jina.serve.runtimes.gateway.GatewayRuntime.async_run_forever"><code class="docutils literal notranslate"><span class="pre">GatewayRuntime.async_run_forever()</span></code></a></li>
 <li><a class="reference internal" href="#jina.serve.runtimes.gateway.GatewayRuntime.is_ready"><code class="docutils literal notranslate"><span class="pre">GatewayRuntime.is_ready()</span></code></a></li>
 <li><a class="reference internal" href="#jina.serve.runtimes.gateway.GatewayRuntime.wait_for_ready_or_shutdown"><code class="docutils literal notranslate"><span class="pre">GatewayRuntime.wait_for_ready_or_shutdown()</span></code></a></li>
-<li><a class="reference internal" href="#jina.serve.runtimes.gateway.GatewayRuntime.activate"><code class="docutils literal notranslate"><span class="pre">GatewayRuntime.activate()</span></code></a></li>
 <li><a class="reference internal" href="#jina.serve.runtimes.gateway.GatewayRuntime.aio_tracing_client_interceptors"><code class="docutils literal notranslate"><span class="pre">GatewayRuntime.aio_tracing_client_interceptors()</span></code></a></li>
 <li><a class="reference internal" href="#jina.serve.runtimes.gateway.GatewayRuntime.aio_tracing_server_interceptors"><code class="docutils literal notranslate"><span class="pre">GatewayRuntime.aio_tracing_server_interceptors()</span></code></a></li>
 <li><a class="reference internal" href="#jina.serve.runtimes.gateway.GatewayRuntime.run_forever"><code class="docutils literal notranslate"><span class="pre">GatewayRuntime.run_forever()</span></code></a></li>

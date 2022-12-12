@@ -910,12 +910,13 @@
 
 <div class="viewcode-block" id="BaseExecutor.serve"><a class="viewcode-back" href="../../../../api/jina.serve.executors/#jina.serve.executors.BaseExecutor.serve">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">serve</span><span class="p">(</span>
-        <span class="bp">cls</span><span class="p">,</span>
-        <span class="n">uses_with</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">uses_metas</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">uses_requests</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">stop_event</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">,</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Event</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+            <span class="bp">cls</span><span class="p">,</span>
+            <span class="n">uses_with</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">uses_metas</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">uses_requests</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">stop_event</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">,</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Event</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">reload</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Serve this Executor in a temporary Flow. Useful in testing an Executor in remote settings.</span>
 
@@ -924,6 +925,7 @@
 <span class="sd">        :param uses_requests: dictionary of parameters to overwrite from the default config&#39;s requests field</span>
 <span class="sd">        :param stop_event: a threading event or a multiprocessing event that once set will resume the control Flow</span>
 <span class="sd">            to main thread.</span>
+<span class="sd">        :param reload: a flag indicating if the Executor should watch the Python files of its implementation to reload the code live while serving.</span>
 <span class="sd">        :param kwargs: other kwargs accepted by the Flow, full list can be found `here &lt;https://docs.jina.ai/api/jina.orchestrate.flow.base/&gt;`</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -934,6 +936,7 @@
             <span class="n">uses_with</span><span class="o">=</span><span class="n">uses_with</span><span class="p">,</span>
             <span class="n">uses_metas</span><span class="o">=</span><span class="n">uses_metas</span><span class="p">,</span>
             <span class="n">uses_requests</span><span class="o">=</span><span class="n">uses_requests</span><span class="p">,</span>
+            <span class="n">reload</span><span class="o">=</span><span class="n">reload</span>
         <span class="p">)</span>
         <span class="k">with</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">f</span><span class="o">.</span><span class="n">block</span><span class="p">(</span><span class="n">stop_event</span><span class="p">)</span></div>
@@ -1086,7 +1089,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 07, 2022</div>
+                            Last updated on Dec 12, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

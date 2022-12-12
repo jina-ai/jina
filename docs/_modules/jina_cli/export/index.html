@@ -397,7 +397,7 @@
                     <h1>Source code for jina_cli.export</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">argparse</span>
 <span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span>
 
 
 <div class="viewcode-block" id="api_to_dict"><a class="viewcode-back" href="../../../api/jina_cli.export/#jina_cli.export.api_to_dict">[docs]</a><span class="k">def</span> <span class="nf">api_to_dict</span><span class="p">(</span><span class="n">show_all_args</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
@@ -455,7 +455,7 @@
     <span class="kn">from</span> <span class="nn">argparse</span> <span class="kn">import</span> <span class="n">_StoreAction</span><span class="p">,</span> <span class="n">_StoreTrueAction</span>
 
     <span class="kn">from</span> <span class="nn">jina.enums</span> <span class="kn">import</span> <span class="n">BetterEnum</span>
-    <span class="kn">from</span> <span class="nn">jina.parsers.helper</span> <span class="kn">import</span> <span class="n">_SHOW_ALL_ARGS</span><span class="p">,</span> <span class="n">KVAppendAction</span>
+    <span class="kn">from</span> <span class="nn">jina.parsers.helper</span> <span class="kn">import</span> <span class="n">_SHOW_ALL_ARGS</span><span class="p">,</span> <span class="n">CastToIntAction</span><span class="p">,</span> <span class="n">KVAppendAction</span>
 
     <span class="n">port_attr</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;help&#39;</span><span class="p">,</span> <span class="s1">&#39;choices&#39;</span><span class="p">,</span> <span class="s1">&#39;default&#39;</span><span class="p">,</span> <span class="s1">&#39;required&#39;</span><span class="p">,</span> <span class="s1">&#39;option_strings&#39;</span><span class="p">,</span> <span class="s1">&#39;dest&#39;</span><span class="p">)</span>
     <span class="n">parser</span> <span class="o">=</span> <span class="n">parser_fn</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
@@ -465,7 +465,9 @@
         <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">default</span> <span class="o">!=</span> <span class="n">b</span><span class="o">.</span><span class="n">default</span><span class="p">:</span>
             <span class="n">random_dest</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">dest</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">parser</span><span class="o">.</span><span class="n">_actions</span><span class="p">:</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="p">(</span><span class="n">_StoreAction</span><span class="p">,</span> <span class="n">_StoreTrueAction</span><span class="p">,</span> <span class="n">KVAppendAction</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span>
+            <span class="n">a</span><span class="p">,</span> <span class="p">(</span><span class="n">_StoreAction</span><span class="p">,</span> <span class="n">_StoreTrueAction</span><span class="p">,</span> <span class="n">KVAppendAction</span><span class="p">,</span> <span class="n">CastToIntAction</span><span class="p">)</span>
+        <span class="p">):</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">_SHOW_ALL_ARGS</span> <span class="ow">and</span> <span class="n">a</span><span class="o">.</span><span class="n">help</span> <span class="o">==</span> <span class="n">argparse</span><span class="o">.</span><span class="n">SUPPRESS</span><span class="p">:</span>
                 <span class="k">continue</span>
             <span class="n">ddd</span> <span class="o">=</span> <span class="p">{</span><span class="n">p</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">port_attr</span><span class="p">}</span>
@@ -473,6 +475,8 @@
                 <span class="n">ddd</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">bool</span>
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">KVAppendAction</span><span class="p">):</span>
                 <span class="n">ddd</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">CastToIntAction</span><span class="p">):</span>
+                <span class="n">ddd</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">ddd</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">type</span>
             <span class="k">if</span> <span class="n">ddd</span><span class="p">[</span><span class="s1">&#39;choices&#39;</span><span class="p">]:</span>
@@ -517,7 +521,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 07, 2022</div>
+                            Last updated on Dec 12, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

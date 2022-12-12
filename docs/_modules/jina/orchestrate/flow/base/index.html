@@ -459,6 +459,7 @@
     <span class="n">send_telemetry_event</span><span class="p">,</span>
     <span class="n">typename</span><span class="p">,</span>
 <span class="p">)</span>
+<span class="kn">from</span> <span class="nn">jina.importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
 <span class="kn">from</span> <span class="nn">jina.jaml</span> <span class="kn">import</span> <span class="n">JAMLCompatible</span>
 <span class="kn">from</span> <span class="nn">jina.logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
 <span class="kn">from</span> <span class="nn">jina.orchestrate.deployments</span> <span class="kn">import</span> <span class="n">Deployment</span>
@@ -510,22 +511,20 @@
     <span class="c1"># overload_inject_start_client_flow</span>
     <span class="nd">@overload</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="o">*</span><span class="p">,</span>
-        <span class="n">asyncio</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">host</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;0.0.0.0&#39;</span><span class="p">,</span>
-        <span class="n">metrics</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">metrics_exporter_host</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">metrics_exporter_port</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">port</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">protocol</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="s1">&#39;GRPC&#39;</span><span class="p">,</span>
-        <span class="n">proxy</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">tls</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">traces_exporter_host</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">traces_exporter_port</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">tracing</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-    <span class="p">):</span>
+        <span class="bp">self</span><span class="p">,</span><span class="o">*</span><span class="p">,</span>
+        <span class="n">asyncio</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
+        <span class="n">host</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;0.0.0.0&#39;</span><span class="p">,</span> 
+        <span class="n">metrics</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
+        <span class="n">metrics_exporter_host</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">metrics_exporter_port</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">port</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">protocol</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="s1">&#39;GRPC&#39;</span><span class="p">,</span> 
+        <span class="n">proxy</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
+        <span class="n">tls</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
+        <span class="n">traces_exporter_host</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">traces_exporter_port</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">tracing</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Create a Flow. Flow is how Jina streamlines and scales Executors. This overloaded method provides arguments from `jina client` CLI.</span>
 
 <span class="sd">        :param asyncio: If set, then the input and output of this Client work in an asynchronous manner.</span>
@@ -545,62 +544,61 @@
 <span class="sd">        .. # noqa: DAR101</span>
 <span class="sd">        .. # noqa: DAR003</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-
     <span class="c1"># overload_inject_end_client_flow</span>
 
     <span class="c1"># overload_inject_start_gateway_flow</span>
     <span class="nd">@overload</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="o">*</span><span class="p">,</span>
-        <span class="n">compression</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">cors</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">deployments_addresses</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">&#39;</span><span class="p">,</span>
-        <span class="n">deployments_metadata</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">&#39;</span><span class="p">,</span>
-        <span class="n">deployments_no_reduce</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;[]&#39;</span><span class="p">,</span>
-        <span class="n">description</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">docker_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">entrypoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">env</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">expose_endpoints</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">expose_graphql_endpoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">floating</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">graph_conditions</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">&#39;</span><span class="p">,</span>
-        <span class="n">graph_description</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">&#39;</span><span class="p">,</span>
-        <span class="n">grpc_server_options</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">host</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;0.0.0.0&#39;</span><span class="p">,</span>
-        <span class="n">log_config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">metrics</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">metrics_exporter_host</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">metrics_exporter_port</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">monitoring</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;gateway&#39;</span><span class="p">,</span>
-        <span class="n">no_crud_endpoints</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">no_debug_endpoints</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">port_monitoring</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">prefetch</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span>
-        <span class="n">protocol</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;GRPC&#39;</span><span class="p">],</span>
-        <span class="n">proxy</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">py_modules</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">quiet</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">quiet_error</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">retries</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
-        <span class="n">runtime_cls</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;GatewayRuntime&#39;</span><span class="p">,</span>
-        <span class="n">ssl_certfile</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">ssl_keyfile</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">timeout_ctrl</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">60</span><span class="p">,</span>
-        <span class="n">timeout_ready</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">600000</span><span class="p">,</span>
-        <span class="n">timeout_send</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">title</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">traces_exporter_host</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">traces_exporter_port</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">tracing</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">uses</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Type</span><span class="p">[</span><span class="s1">&#39;BaseExecutor&#39;</span><span class="p">],</span> <span class="nb">dict</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">uses_with</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">uvicorn_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">workspace</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-    <span class="p">):</span>
+        <span class="bp">self</span><span class="p">,</span><span class="o">*</span><span class="p">,</span>
+        <span class="n">compression</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">cors</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
+        <span class="n">deployments_addresses</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">&#39;</span><span class="p">,</span> 
+        <span class="n">deployments_metadata</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">&#39;</span><span class="p">,</span> 
+        <span class="n">deployments_no_reduce</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;[]&#39;</span><span class="p">,</span> 
+        <span class="n">description</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">docker_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">entrypoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">env</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">expose_endpoints</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">expose_graphql_endpoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
+        <span class="n">floating</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
+        <span class="n">graph_conditions</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">&#39;</span><span class="p">,</span> 
+        <span class="n">graph_description</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">&#39;</span><span class="p">,</span> 
+        <span class="n">grpc_server_options</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">host</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;0.0.0.0&#39;</span><span class="p">,</span> 
+        <span class="n">log_config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">metrics</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
+        <span class="n">metrics_exporter_host</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">metrics_exporter_port</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">monitoring</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
+        <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;gateway&#39;</span><span class="p">,</span> 
+        <span class="n">no_crud_endpoints</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
+        <span class="n">no_debug_endpoints</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
+        <span class="n">port</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">port_monitoring</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">prefetch</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span> 
+        <span class="n">protocol</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;GRPC&#39;</span><span class="p">],</span> 
+        <span class="n">proxy</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
+        <span class="n">py_modules</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">quiet</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
+        <span class="n">quiet_error</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
+        <span class="n">restart</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
+        <span class="n">retries</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> 
+        <span class="n">runtime_cls</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;GatewayRuntime&#39;</span><span class="p">,</span> 
+        <span class="n">ssl_certfile</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">ssl_keyfile</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">timeout_ctrl</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">60</span><span class="p">,</span> 
+        <span class="n">timeout_ready</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">600000</span><span class="p">,</span> 
+        <span class="n">timeout_send</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">title</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">traces_exporter_host</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">traces_exporter_port</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">tracing</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
+        <span class="n">uses</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Type</span><span class="p">[</span><span class="s1">&#39;BaseExecutor&#39;</span><span class="p">],</span> <span class="nb">dict</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">uses_with</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">uvicorn_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">workspace</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Create a Flow. Flow is how Jina streamlines and scales Executors. This overloaded method provides arguments from `jina gateway` CLI.</span>
 
 <span class="sd">        :param compression: The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.</span>
@@ -610,8 +608,8 @@
 <span class="sd">        :param deployments_no_reduce: list JSON disabling the built-in merging mechanism for each Deployment listed</span>
 <span class="sd">        :param description: The description of this HTTP server. It will be used in automatics docs such as Swagger UI.</span>
 <span class="sd">        :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker &#39;</span>
-<span class="sd">          container.</span>
-
+<span class="sd">          container. </span>
+<span class="sd">          </span>
 <span class="sd">          More details can be found in the Docker SDK docs:  https://docker-py.readthedocs.io/en/stable/</span>
 <span class="sd">        :param entrypoint: The entrypoint command overrides the ENTRYPOINT in Docker image. when not set then the Docker image ENTRYPOINT takes effective.</span>
 <span class="sd">        :param env: The map of environment variables that are available inside runtime</span>
@@ -628,31 +626,33 @@
 <span class="sd">        :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.</span>
 <span class="sd">        :param monitoring: If set, spawn an http server with a prometheus endpoint to expose metrics</span>
 <span class="sd">        :param name: The name of this object.</span>
-
+<span class="sd">          </span>
 <span class="sd">              This will be used in the following places:</span>
 <span class="sd">              - how you refer to this object in Python/YAML/CLI</span>
 <span class="sd">              - visualization</span>
 <span class="sd">              - log message header</span>
 <span class="sd">              - ...</span>
-
+<span class="sd">          </span>
 <span class="sd">              When not given, then the default naming strategy will apply.</span>
 <span class="sd">        :param no_crud_endpoints: If set, `/index`, `/search`, `/update`, `/delete` endpoints are removed from HTTP interface.</span>
-
+<span class="sd">          </span>
 <span class="sd">                  Any executor that has `@requests(on=...)` bound with those values will receive data requests.</span>
 <span class="sd">        :param no_debug_endpoints: If set, `/status` `/post` endpoints are removed from HTTP interface.</span>
+<span class="sd">        :param port: The port for input data to bind the gateway server to, by default, random ports between range [49152, 65535] will be assigned. The port argument can be either 1 single value in case only 1 protocol is used or multiple values when many protocols are used.</span>
 <span class="sd">        :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</span>
-<span class="sd">        :param prefetch: Number of requests fetched from the client before feeding into the first Executor.</span>
-
+<span class="sd">        :param prefetch: Number of requests fetched from the client before feeding into the first Executor. </span>
+<span class="sd">              </span>
 <span class="sd">              Used to control the speed of data input into a Flow. 0 disables prefetch (1000 requests is the default)</span>
 <span class="sd">        :param protocol: Communication protocol of the server exposed by the Gateway. This can be a single value or a list of protocols, depending on your chosen Gateway. Choose the convenient protocols from: [&#39;GRPC&#39;, &#39;HTTP&#39;, &#39;WEBSOCKET&#39;].</span>
 <span class="sd">        :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</span>
 <span class="sd">        :param py_modules: The customized python modules need to be imported before loading the gateway</span>
-
+<span class="sd">          </span>
 <span class="sd">          Note that the recommended way is to only import a single module - a simple python file, if your</span>
 <span class="sd">          gateway can be defined in a single file, or an ``__init__.py`` file if you have multiple files,</span>
 <span class="sd">          which should be structured as a python package.</span>
 <span class="sd">        :param quiet: If set, then no log will be emitted from this object.</span>
 <span class="sd">        :param quiet_error: If set, then exception stack information will not be added to the log</span>
+<span class="sd">        :param restart: If set, the Gateway will restart while serving if the YAML configuration source is changed.</span>
 <span class="sd">        :param retries: Number of retries per gRPC call. If &lt;0 it defaults to max(3, num_replicas)</span>
 <span class="sd">        :param runtime_cls: The runtime class to run inside the Pod</span>
 <span class="sd">        :param ssl_certfile: the path to the certificate file</span>
@@ -670,13 +670,13 @@
 <span class="sd">                  * a docker image (must start with `docker://`)</span>
 <span class="sd">                  * the string literal of a YAML config (must start with `!` or `jtype: `)</span>
 <span class="sd">                  * the string literal of a JSON config</span>
-
+<span class="sd">          </span>
 <span class="sd">                  When use it under Python, one can use the following values additionally:</span>
 <span class="sd">                  - a Python dict that represents the config</span>
 <span class="sd">                  - a text file stream has `.read()` interface</span>
 <span class="sd">        :param uses_with: Dictionary of keyword arguments that will override the `with` configuration in `uses`</span>
 <span class="sd">        :param uvicorn_kwargs: Dictionary of kwargs arguments that will be passed to Uvicorn server when starting the server</span>
-
+<span class="sd">          </span>
 <span class="sd">          More details can be found in Uvicorn docs: https://www.uvicorn.org/settings/</span>
 <span class="sd">        :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.</span>
 
@@ -684,41 +684,40 @@
 <span class="sd">        .. # noqa: DAR101</span>
 <span class="sd">        .. # noqa: DAR003</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-
     <span class="c1"># overload_inject_end_gateway_flow</span>
     <span class="c1"># overload_inject_start_flow</span>
     <span class="nd">@overload</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="o">*</span><span class="p">,</span>
-        <span class="n">env</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">inspect</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;COLLECT&#39;</span><span class="p">,</span>
-        <span class="n">log_config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">quiet</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">quiet_error</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">uses</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">workspace</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-    <span class="p">):</span>
+        <span class="bp">self</span><span class="p">,</span><span class="o">*</span><span class="p">,</span>
+        <span class="n">env</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">inspect</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;COLLECT&#39;</span><span class="p">,</span> 
+        <span class="n">log_config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">quiet</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
+        <span class="n">quiet_error</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
+        <span class="n">restart</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
+        <span class="n">uses</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">workspace</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Create a Flow. Flow is how Jina streamlines and scales Executors. This overloaded method provides arguments from `jina flow` CLI.</span>
 
 <span class="sd">        :param env: The map of environment variables that are available inside runtime</span>
 <span class="sd">        :param inspect: The strategy on those inspect deployments in the flow.</span>
-
+<span class="sd">          </span>
 <span class="sd">              If `REMOVE` is given then all inspect deployments are removed when building the flow.</span>
 <span class="sd">        :param log_config: The YAML config of the logger used in this object.</span>
 <span class="sd">        :param name: The name of this object.</span>
-
+<span class="sd">          </span>
 <span class="sd">              This will be used in the following places:</span>
 <span class="sd">              - how you refer to this object in Python/YAML/CLI</span>
 <span class="sd">              - visualization</span>
 <span class="sd">              - log message header</span>
 <span class="sd">              - ...</span>
-
+<span class="sd">          </span>
 <span class="sd">              When not given, then the default naming strategy will apply.</span>
 <span class="sd">        :param quiet: If set, then no log will be emitted from this object.</span>
 <span class="sd">        :param quiet_error: If set, then exception stack information will not be added to the log</span>
+<span class="sd">        :param restart: If set, the Flow will restart while blocked if the YAML configuration source is changed.</span>
 <span class="sd">        :param uses: The YAML path represents a flow. It can be either a local file path or a URL.</span>
 <span class="sd">        :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.</span>
 
@@ -726,7 +725,6 @@
 <span class="sd">        .. # noqa: DAR101</span>
 <span class="sd">        .. # noqa: DAR003</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-
     <span class="c1"># overload_inject_end_flow</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -734,7 +732,7 @@
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="c1"># implementation_stub_inject_start_flow</span>
-
+    
         <span class="sd">&quot;&quot;&quot;Create a Flow. Flow is how Jina streamlines and scales Executors.</span>
 
 <span class="sd">        EXAMPLE USAGE</span>
@@ -780,8 +778,8 @@
 <span class="sd">        :param deployments_no_reduce: list JSON disabling the built-in merging mechanism for each Deployment listed</span>
 <span class="sd">        :param description: The description of this HTTP server. It will be used in automatics docs such as Swagger UI.</span>
 <span class="sd">        :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker &#39;</span>
-<span class="sd">          container.</span>
-
+<span class="sd">          container. </span>
+<span class="sd">          </span>
 <span class="sd">          More details can be found in the Docker SDK docs:  https://docker-py.readthedocs.io/en/stable/</span>
 <span class="sd">        :param entrypoint: The entrypoint command overrides the ENTRYPOINT in Docker image. when not set then the Docker image ENTRYPOINT takes effective.</span>
 <span class="sd">        :param env: The map of environment variables that are available inside runtime</span>
@@ -798,31 +796,33 @@
 <span class="sd">        :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.</span>
 <span class="sd">        :param monitoring: If set, spawn an http server with a prometheus endpoint to expose metrics</span>
 <span class="sd">        :param name: The name of this object.</span>
-
+<span class="sd">          </span>
 <span class="sd">              This will be used in the following places:</span>
 <span class="sd">              - how you refer to this object in Python/YAML/CLI</span>
 <span class="sd">              - visualization</span>
 <span class="sd">              - log message header</span>
 <span class="sd">              - ...</span>
-
+<span class="sd">          </span>
 <span class="sd">              When not given, then the default naming strategy will apply.</span>
 <span class="sd">        :param no_crud_endpoints: If set, `/index`, `/search`, `/update`, `/delete` endpoints are removed from HTTP interface.</span>
-
+<span class="sd">          </span>
 <span class="sd">                  Any executor that has `@requests(on=...)` bound with those values will receive data requests.</span>
 <span class="sd">        :param no_debug_endpoints: If set, `/status` `/post` endpoints are removed from HTTP interface.</span>
+<span class="sd">        :param port: The port for input data to bind the gateway server to, by default, random ports between range [49152, 65535] will be assigned. The port argument can be either 1 single value in case only 1 protocol is used or multiple values when many protocols are used.</span>
 <span class="sd">        :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</span>
-<span class="sd">        :param prefetch: Number of requests fetched from the client before feeding into the first Executor.</span>
-
+<span class="sd">        :param prefetch: Number of requests fetched from the client before feeding into the first Executor. </span>
+<span class="sd">              </span>
 <span class="sd">              Used to control the speed of data input into a Flow. 0 disables prefetch (1000 requests is the default)</span>
 <span class="sd">        :param protocol: Communication protocol of the server exposed by the Gateway. This can be a single value or a list of protocols, depending on your chosen Gateway. Choose the convenient protocols from: [&#39;GRPC&#39;, &#39;HTTP&#39;, &#39;WEBSOCKET&#39;].</span>
 <span class="sd">        :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</span>
 <span class="sd">        :param py_modules: The customized python modules need to be imported before loading the gateway</span>
-
+<span class="sd">          </span>
 <span class="sd">          Note that the recommended way is to only import a single module - a simple python file, if your</span>
 <span class="sd">          gateway can be defined in a single file, or an ``__init__.py`` file if you have multiple files,</span>
 <span class="sd">          which should be structured as a python package.</span>
 <span class="sd">        :param quiet: If set, then no log will be emitted from this object.</span>
 <span class="sd">        :param quiet_error: If set, then exception stack information will not be added to the log</span>
+<span class="sd">        :param restart: If set, the Gateway will restart while serving if the YAML configuration source is changed.</span>
 <span class="sd">        :param retries: Number of retries per gRPC call. If &lt;0 it defaults to max(3, num_replicas)</span>
 <span class="sd">        :param runtime_cls: The runtime class to run inside the Pod</span>
 <span class="sd">        :param ssl_certfile: the path to the certificate file</span>
@@ -840,31 +840,32 @@
 <span class="sd">                  * a docker image (must start with `docker://`)</span>
 <span class="sd">                  * the string literal of a YAML config (must start with `!` or `jtype: `)</span>
 <span class="sd">                  * the string literal of a JSON config</span>
-
+<span class="sd">          </span>
 <span class="sd">                  When use it under Python, one can use the following values additionally:</span>
 <span class="sd">                  - a Python dict that represents the config</span>
 <span class="sd">                  - a text file stream has `.read()` interface</span>
 <span class="sd">        :param uses_with: Dictionary of keyword arguments that will override the `with` configuration in `uses`</span>
 <span class="sd">        :param uvicorn_kwargs: Dictionary of kwargs arguments that will be passed to Uvicorn server when starting the server</span>
-
+<span class="sd">          </span>
 <span class="sd">          More details can be found in Uvicorn docs: https://www.uvicorn.org/settings/</span>
 <span class="sd">        :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.</span>
 <span class="sd">        :param env: The map of environment variables that are available inside runtime</span>
 <span class="sd">        :param inspect: The strategy on those inspect deployments in the flow.</span>
-
+<span class="sd">          </span>
 <span class="sd">              If `REMOVE` is given then all inspect deployments are removed when building the flow.</span>
 <span class="sd">        :param log_config: The YAML config of the logger used in this object.</span>
 <span class="sd">        :param name: The name of this object.</span>
-
+<span class="sd">          </span>
 <span class="sd">              This will be used in the following places:</span>
 <span class="sd">              - how you refer to this object in Python/YAML/CLI</span>
 <span class="sd">              - visualization</span>
 <span class="sd">              - log message header</span>
 <span class="sd">              - ...</span>
-
+<span class="sd">          </span>
 <span class="sd">              When not given, then the default naming strategy will apply.</span>
 <span class="sd">        :param quiet: If set, then no log will be emitted from this object.</span>
 <span class="sd">        :param quiet_error: If set, then exception stack information will not be added to the log</span>
+<span class="sd">        :param restart: If set, the Flow will restart while blocked if the YAML configuration source is changed.</span>
 <span class="sd">        :param uses: The YAML path represents a flow. It can be either a local file path or a URL.</span>
 <span class="sd">        :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.</span>
 
@@ -873,7 +874,7 @@
 <span class="sd">        .. # noqa: DAR101</span>
 <span class="sd">        .. # noqa: DAR003</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># implementation_stub_inject_end_flow</span>
+    <span class="c1"># implementation_stub_inject_end_flow</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_version</span> <span class="o">=</span> <span class="s1">&#39;1&#39;</span>  <span class="c1">#: YAML version number, this will be later overridden if YAML config says the other way</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_deployment_nodes</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>  <span class="c1"># type: Dict[str, Deployment]</span>
@@ -1222,70 +1223,70 @@
     <span class="c1"># overload_inject_start_deployment</span>
     <span class="nd">@overload</span>
     <span class="k">def</span> <span class="nf">add</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="o">*</span><span class="p">,</span>
-        <span class="n">compression</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">connection_list</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">disable_auto_volume</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">docker_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">entrypoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">env</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">exit_on_exceptions</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">]</span> <span class="o">=</span> <span class="p">[],</span>
-        <span class="n">external</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">floating</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">force_update</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">gpus</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">grpc_metadata</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">grpc_server_options</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">host</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;0.0.0.0&#39;</span><span class="p">,</span>
-        <span class="n">install_requirements</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">log_config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">metrics</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">metrics_exporter_host</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">metrics_exporter_port</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">monitoring</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">native</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">no_reduce</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">output_array_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">polling</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;ANY&#39;</span><span class="p">,</span>
-        <span class="n">port_monitoring</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">py_modules</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">quiet</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">quiet_error</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">reload</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">replicas</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
-        <span class="n">retries</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
-        <span class="n">runtime_cls</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;WorkerRuntime&#39;</span><span class="p">,</span>
-        <span class="n">shards</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
-        <span class="n">timeout_ctrl</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">60</span><span class="p">,</span>
-        <span class="n">timeout_ready</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">600000</span><span class="p">,</span>
-        <span class="n">timeout_send</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">tls</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">traces_exporter_host</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">traces_exporter_port</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">tracing</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">uses</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Type</span><span class="p">[</span><span class="s1">&#39;BaseExecutor&#39;</span><span class="p">],</span> <span class="nb">dict</span><span class="p">]]</span> <span class="o">=</span> <span class="s1">&#39;BaseExecutor&#39;</span><span class="p">,</span>
-        <span class="n">uses_after</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Type</span><span class="p">[</span><span class="s1">&#39;BaseExecutor&#39;</span><span class="p">],</span> <span class="nb">dict</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">uses_after_address</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">uses_before</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Type</span><span class="p">[</span><span class="s1">&#39;BaseExecutor&#39;</span><span class="p">],</span> <span class="nb">dict</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">uses_before_address</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">uses_metas</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">uses_requests</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">uses_with</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">volumes</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">when</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">workspace</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="s1">&#39;Flow&#39;</span><span class="p">,</span> <span class="s1">&#39;AsyncFlow&#39;</span><span class="p">]:</span>
+        <span class="bp">self</span><span class="p">,</span><span class="o">*</span><span class="p">,</span>
+        <span class="n">compression</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">connection_list</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">disable_auto_volume</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
+        <span class="n">docker_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">entrypoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">env</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">exit_on_exceptions</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[],</span> 
+        <span class="n">external</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
+        <span class="n">floating</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
+        <span class="n">force_update</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
+        <span class="n">gpus</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">grpc_metadata</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">grpc_server_options</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">host</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;0.0.0.0&#39;</span><span class="p">,</span> 
+        <span class="n">install_requirements</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
+        <span class="n">log_config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">metrics</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
+        <span class="n">metrics_exporter_host</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">metrics_exporter_port</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">monitoring</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
+        <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">native</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
+        <span class="n">no_reduce</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
+        <span class="n">output_array_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">polling</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;ANY&#39;</span><span class="p">,</span> 
+        <span class="n">port</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">port_monitoring</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">py_modules</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">quiet</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
+        <span class="n">quiet_error</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
+        <span class="n">reload</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
+        <span class="n">replicas</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> 
+        <span class="n">restart</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
+        <span class="n">retries</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> 
+        <span class="n">runtime_cls</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;WorkerRuntime&#39;</span><span class="p">,</span> 
+        <span class="n">shards</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> 
+        <span class="n">timeout_ctrl</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">60</span><span class="p">,</span> 
+        <span class="n">timeout_ready</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">600000</span><span class="p">,</span> 
+        <span class="n">timeout_send</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">tls</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
+        <span class="n">traces_exporter_host</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">traces_exporter_port</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">tracing</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
+        <span class="n">uses</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Type</span><span class="p">[</span><span class="s1">&#39;BaseExecutor&#39;</span><span class="p">],</span> <span class="nb">dict</span><span class="p">]]</span> <span class="o">=</span> <span class="s1">&#39;BaseExecutor&#39;</span><span class="p">,</span> 
+        <span class="n">uses_after</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Type</span><span class="p">[</span><span class="s1">&#39;BaseExecutor&#39;</span><span class="p">],</span> <span class="nb">dict</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">uses_after_address</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">uses_before</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Type</span><span class="p">[</span><span class="s1">&#39;BaseExecutor&#39;</span><span class="p">],</span> <span class="nb">dict</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">uses_before_address</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">uses_metas</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">uses_requests</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">uses_with</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">volumes</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">when</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">workspace</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="s1">&#39;Flow&#39;</span><span class="p">,</span> <span class="s1">&#39;AsyncFlow&#39;</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;Add an Executor to the current Flow object.</span>
 
 <span class="sd">        :param compression: The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.</span>
 <span class="sd">        :param connection_list: dictionary JSON with a list of connections to configure</span>
 <span class="sd">        :param disable_auto_volume: Do not automatically mount a volume for dockerized Executors.</span>
 <span class="sd">        :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker &#39;</span>
-<span class="sd">          container.</span>
-
+<span class="sd">          container. </span>
+<span class="sd">          </span>
 <span class="sd">          More details can be found in the Docker SDK docs:  https://docker-py.readthedocs.io/en/stable/</span>
 <span class="sd">        :param entrypoint: The entrypoint command overrides the ENTRYPOINT in Docker image. when not set then the Docker image ENTRYPOINT takes effective.</span>
 <span class="sd">        :param env: The map of environment variables that are available inside runtime</span>
@@ -1294,8 +1295,8 @@
 <span class="sd">        :param floating: If set, the current Pod/Deployment can not be further chained, and the next `.add()` will chain after the last Pod/Deployment not this current one.</span>
 <span class="sd">        :param force_update: If set, always pull the latest Hub Executor bundle even it exists on local</span>
 <span class="sd">        :param gpus: This argument allows dockerized Jina Executors to discover local gpu devices.</span>
-
-<span class="sd">              Note,</span>
+<span class="sd">              </span>
+<span class="sd">              Note, </span>
 <span class="sd">              - To access all gpus, use `--gpus all`.</span>
 <span class="sd">              - To access multiple gpus, e.g. make use of 2 gpus, use `--gpus 2`.</span>
 <span class="sd">              - To access specified gpus based on device id, use `--gpus device=[YOUR-GPU-DEVICE-ID]`</span>
@@ -1311,19 +1312,19 @@
 <span class="sd">        :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.</span>
 <span class="sd">        :param monitoring: If set, spawn an http server with a prometheus endpoint to expose metrics</span>
 <span class="sd">        :param name: The name of this object.</span>
-
+<span class="sd">          </span>
 <span class="sd">              This will be used in the following places:</span>
 <span class="sd">              - how you refer to this object in Python/YAML/CLI</span>
 <span class="sd">              - visualization</span>
 <span class="sd">              - log message header</span>
 <span class="sd">              - ...</span>
-
+<span class="sd">          </span>
 <span class="sd">              When not given, then the default naming strategy will apply.</span>
 <span class="sd">        :param native: If set, only native Executors is allowed, and the Executor is always run inside WorkerRuntime.</span>
 <span class="sd">        :param no_reduce: Disable the built-in reduction mechanism. Set this if the reduction is to be handled by the Executor itself by operating on a `docs_matrix` or `docs_map`</span>
 <span class="sd">        :param output_array_type: The type of array `tensor` and `embedding` will be serialized to.</span>
-
-<span class="sd">          Supports the same types as `docarray.to_protobuf(.., ndarray_type=...)`, which can be found</span>
+<span class="sd">          </span>
+<span class="sd">          Supports the same types as `docarray.to_protobuf(.., ndarray_type=...)`, which can be found </span>
 <span class="sd">          `here &lt;https://docarray.jina.ai/fundamentals/document/serialization/#from-to-protobuf&gt;`.</span>
 <span class="sd">          Defaults to retaining whatever type is returned by the Executor.</span>
 <span class="sd">        :param polling: The polling strategy of the Deployment and its endpoints (when `shards&gt;1`).</span>
@@ -1334,20 +1335,22 @@
 <span class="sd">              Define per Endpoint:</span>
 <span class="sd">              JSON dict, {endpoint: PollingType}</span>
 <span class="sd">              {&#39;/custom&#39;: &#39;ALL&#39;, &#39;/search&#39;: &#39;ANY&#39;, &#39;*&#39;: &#39;ANY&#39;}</span>
+<span class="sd">        :param port: The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (`--external` or `external=True`) this can be a list of ports, separated by commas. Then, every resulting address will be considered as one replica of the Executor.</span>
 <span class="sd">        :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</span>
 <span class="sd">        :param py_modules: The customized python modules need to be imported before loading the executor</span>
-
+<span class="sd">          </span>
 <span class="sd">          Note that the recommended way is to only import a single module - a simple python file, if your</span>
 <span class="sd">          executor can be defined in a single file, or an ``__init__.py`` file if you have multiple files,</span>
 <span class="sd">          which should be structured as a python package. For more details, please see the</span>
-<span class="sd">          `Executor cookbook &lt;https://docs.jina.ai/fundamentals/executor/executor-files/&gt;`__</span>
+<span class="sd">          `Executor cookbook &lt;https://docs.jina.ai/concepts/executor/executor-files/&gt;`__</span>
 <span class="sd">        :param quiet: If set, then no log will be emitted from this object.</span>
 <span class="sd">        :param quiet_error: If set, then exception stack information will not be added to the log</span>
 <span class="sd">        :param reload: If set, the Executor reloads the modules as they change</span>
 <span class="sd">        :param replicas: The number of replicas in the deployment</span>
+<span class="sd">        :param restart: If set, the Executor will restart while serving if the YAML configuration source is changed. This differs from `reload` argument in that this will restart the server and more configuration can be changed, like number of replicas.</span>
 <span class="sd">        :param retries: Number of retries per gRPC call. If &lt;0 it defaults to max(3, num_replicas)</span>
 <span class="sd">        :param runtime_cls: The runtime class to run inside the Pod</span>
-<span class="sd">        :param shards: The number of shards in the deployment running at the same time. For more details check https://docs.jina.ai/fundamentals/flow/create-flow/#complex-flow-topologies</span>
+<span class="sd">        :param shards: The number of shards in the deployment running at the same time. For more details check https://docs.jina.ai/concepts/flow/create-flow/#complex-flow-topologies</span>
 <span class="sd">        :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever</span>
 <span class="sd">        :param timeout_ready: The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting forever</span>
 <span class="sd">        :param timeout_send: The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default</span>
@@ -1362,7 +1365,7 @@
 <span class="sd">                  * a docker image (must start with `docker://`)</span>
 <span class="sd">                  * the string literal of a YAML config (must start with `!` or `jtype: `)</span>
 <span class="sd">                  * the string literal of a JSON config</span>
-
+<span class="sd">          </span>
 <span class="sd">                  When use it under Python, one can use the following values additionally:</span>
 <span class="sd">                  - a Python dict that represents the config</span>
 <span class="sd">                  - a text file stream has `.read()` interface</span>
@@ -1373,11 +1376,11 @@
 <span class="sd">        :param uses_metas: Dictionary of keyword arguments that will override the `metas` configuration in `uses`</span>
 <span class="sd">        :param uses_requests: Dictionary of keyword arguments that will override the `requests` configuration in `uses`</span>
 <span class="sd">        :param uses_with: Dictionary of keyword arguments that will override the `with` configuration in `uses`</span>
-<span class="sd">        :param volumes: The path on the host to be mounted inside the container.</span>
-
-<span class="sd">          Note,</span>
-<span class="sd">          - If separated by `:`, then the first part will be considered as the local host path and the second part is the path in the container system.</span>
-<span class="sd">          - If no split provided, then the basename of that directory will be mounted into container&#39;s root path, e.g. `--volumes=&quot;/user/test/my-workspace&quot;` will be mounted into `/my-workspace` inside the container.</span>
+<span class="sd">        :param volumes: The path on the host to be mounted inside the container. </span>
+<span class="sd">          </span>
+<span class="sd">          Note, </span>
+<span class="sd">          - If separated by `:`, then the first part will be considered as the local host path and the second part is the path in the container system. </span>
+<span class="sd">          - If no split provided, then the basename of that directory will be mounted into container&#39;s root path, e.g. `--volumes=&quot;/user/test/my-workspace&quot;` will be mounted into `/my-workspace` inside the container. </span>
 <span class="sd">          - All volumes are mounted with read-write mode.</span>
 <span class="sd">        :param when: The condition that the documents need to fulfill before reaching the Executor.The condition can be defined in the form of a `DocArray query condition &lt;https://docarray.jina.ai/fundamentals/documentarray/find/#query-by-conditions&gt;`</span>
 <span class="sd">        :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.</span>
@@ -1387,7 +1390,6 @@
 <span class="sd">        .. # noqa: DAR101</span>
 <span class="sd">        .. # noqa: DAR003</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-
     <span class="c1"># overload_inject_end_deployment</span>
     <span class="nd">@overload</span>
     <span class="k">def</span> <span class="nf">add</span><span class="p">(</span>
@@ -1421,7 +1423,7 @@
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="s1">&#39;Flow&#39;</span><span class="p">,</span> <span class="s1">&#39;AsyncFlow&#39;</span><span class="p">]:</span>
         <span class="c1"># implementation_stub_inject_start_add</span>
-
+    
         <span class="sd">&quot;&quot;&quot;Add a Deployment to the current Flow object and return the new modified Flow object.</span>
 <span class="sd">        The attribute of the Deployment can be later changed with :py:meth:`set` or deleted with :py:meth:`remove`</span>
 
@@ -1429,8 +1431,8 @@
 <span class="sd">        :param connection_list: dictionary JSON with a list of connections to configure</span>
 <span class="sd">        :param disable_auto_volume: Do not automatically mount a volume for dockerized Executors.</span>
 <span class="sd">        :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker &#39;</span>
-<span class="sd">          container.</span>
-
+<span class="sd">          container. </span>
+<span class="sd">          </span>
 <span class="sd">          More details can be found in the Docker SDK docs:  https://docker-py.readthedocs.io/en/stable/</span>
 <span class="sd">        :param entrypoint: The entrypoint command overrides the ENTRYPOINT in Docker image. when not set then the Docker image ENTRYPOINT takes effective.</span>
 <span class="sd">        :param env: The map of environment variables that are available inside runtime</span>
@@ -1439,8 +1441,8 @@
 <span class="sd">        :param floating: If set, the current Pod/Deployment can not be further chained, and the next `.add()` will chain after the last Pod/Deployment not this current one.</span>
 <span class="sd">        :param force_update: If set, always pull the latest Hub Executor bundle even it exists on local</span>
 <span class="sd">        :param gpus: This argument allows dockerized Jina Executors to discover local gpu devices.</span>
-
-<span class="sd">              Note,</span>
+<span class="sd">              </span>
+<span class="sd">              Note, </span>
 <span class="sd">              - To access all gpus, use `--gpus all`.</span>
 <span class="sd">              - To access multiple gpus, e.g. make use of 2 gpus, use `--gpus 2`.</span>
 <span class="sd">              - To access specified gpus based on device id, use `--gpus device=[YOUR-GPU-DEVICE-ID]`</span>
@@ -1456,19 +1458,19 @@
 <span class="sd">        :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.</span>
 <span class="sd">        :param monitoring: If set, spawn an http server with a prometheus endpoint to expose metrics</span>
 <span class="sd">        :param name: The name of this object.</span>
-
+<span class="sd">          </span>
 <span class="sd">              This will be used in the following places:</span>
 <span class="sd">              - how you refer to this object in Python/YAML/CLI</span>
 <span class="sd">              - visualization</span>
 <span class="sd">              - log message header</span>
 <span class="sd">              - ...</span>
-
+<span class="sd">          </span>
 <span class="sd">              When not given, then the default naming strategy will apply.</span>
 <span class="sd">        :param native: If set, only native Executors is allowed, and the Executor is always run inside WorkerRuntime.</span>
 <span class="sd">        :param no_reduce: Disable the built-in reduction mechanism. Set this if the reduction is to be handled by the Executor itself by operating on a `docs_matrix` or `docs_map`</span>
 <span class="sd">        :param output_array_type: The type of array `tensor` and `embedding` will be serialized to.</span>
-
-<span class="sd">          Supports the same types as `docarray.to_protobuf(.., ndarray_type=...)`, which can be found</span>
+<span class="sd">          </span>
+<span class="sd">          Supports the same types as `docarray.to_protobuf(.., ndarray_type=...)`, which can be found </span>
 <span class="sd">          `here &lt;https://docarray.jina.ai/fundamentals/document/serialization/#from-to-protobuf&gt;`.</span>
 <span class="sd">          Defaults to retaining whatever type is returned by the Executor.</span>
 <span class="sd">        :param polling: The polling strategy of the Deployment and its endpoints (when `shards&gt;1`).</span>
@@ -1479,20 +1481,22 @@
 <span class="sd">              Define per Endpoint:</span>
 <span class="sd">              JSON dict, {endpoint: PollingType}</span>
 <span class="sd">              {&#39;/custom&#39;: &#39;ALL&#39;, &#39;/search&#39;: &#39;ANY&#39;, &#39;*&#39;: &#39;ANY&#39;}</span>
+<span class="sd">        :param port: The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (`--external` or `external=True`) this can be a list of ports, separated by commas. Then, every resulting address will be considered as one replica of the Executor.</span>
 <span class="sd">        :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</span>
 <span class="sd">        :param py_modules: The customized python modules need to be imported before loading the executor</span>
-
+<span class="sd">          </span>
 <span class="sd">          Note that the recommended way is to only import a single module - a simple python file, if your</span>
 <span class="sd">          executor can be defined in a single file, or an ``__init__.py`` file if you have multiple files,</span>
 <span class="sd">          which should be structured as a python package. For more details, please see the</span>
-<span class="sd">          `Executor cookbook &lt;https://docs.jina.ai/fundamentals/executor/executor-files/&gt;`__</span>
+<span class="sd">          `Executor cookbook &lt;https://docs.jina.ai/concepts/executor/executor-files/&gt;`__</span>
 <span class="sd">        :param quiet: If set, then no log will be emitted from this object.</span>
 <span class="sd">        :param quiet_error: If set, then exception stack information will not be added to the log</span>
 <span class="sd">        :param reload: If set, the Executor reloads the modules as they change</span>
 <span class="sd">        :param replicas: The number of replicas in the deployment</span>
+<span class="sd">        :param restart: If set, the Executor will restart while serving if the YAML configuration source is changed. This differs from `reload` argument in that this will restart the server and more configuration can be changed, like number of replicas.</span>
 <span class="sd">        :param retries: Number of retries per gRPC call. If &lt;0 it defaults to max(3, num_replicas)</span>
 <span class="sd">        :param runtime_cls: The runtime class to run inside the Pod</span>
-<span class="sd">        :param shards: The number of shards in the deployment running at the same time. For more details check https://docs.jina.ai/fundamentals/flow/create-flow/#complex-flow-topologies</span>
+<span class="sd">        :param shards: The number of shards in the deployment running at the same time. For more details check https://docs.jina.ai/concepts/flow/create-flow/#complex-flow-topologies</span>
 <span class="sd">        :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever</span>
 <span class="sd">        :param timeout_ready: The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting forever</span>
 <span class="sd">        :param timeout_send: The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default</span>
@@ -1507,7 +1511,7 @@
 <span class="sd">                  * a docker image (must start with `docker://`)</span>
 <span class="sd">                  * the string literal of a YAML config (must start with `!` or `jtype: `)</span>
 <span class="sd">                  * the string literal of a JSON config</span>
-
+<span class="sd">          </span>
 <span class="sd">                  When use it under Python, one can use the following values additionally:</span>
 <span class="sd">                  - a Python dict that represents the config</span>
 <span class="sd">                  - a text file stream has `.read()` interface</span>
@@ -1518,11 +1522,11 @@
 <span class="sd">        :param uses_metas: Dictionary of keyword arguments that will override the `metas` configuration in `uses`</span>
 <span class="sd">        :param uses_requests: Dictionary of keyword arguments that will override the `requests` configuration in `uses`</span>
 <span class="sd">        :param uses_with: Dictionary of keyword arguments that will override the `with` configuration in `uses`</span>
-<span class="sd">        :param volumes: The path on the host to be mounted inside the container.</span>
-
-<span class="sd">          Note,</span>
-<span class="sd">          - If separated by `:`, then the first part will be considered as the local host path and the second part is the path in the container system.</span>
-<span class="sd">          - If no split provided, then the basename of that directory will be mounted into container&#39;s root path, e.g. `--volumes=&quot;/user/test/my-workspace&quot;` will be mounted into `/my-workspace` inside the container.</span>
+<span class="sd">        :param volumes: The path on the host to be mounted inside the container. </span>
+<span class="sd">          </span>
+<span class="sd">          Note, </span>
+<span class="sd">          - If separated by `:`, then the first part will be considered as the local host path and the second part is the path in the container system. </span>
+<span class="sd">          - If no split provided, then the basename of that directory will be mounted into container&#39;s root path, e.g. `--volumes=&quot;/user/test/my-workspace&quot;` will be mounted into `/my-workspace` inside the container. </span>
 <span class="sd">          - All volumes are mounted with read-write mode.</span>
 <span class="sd">        :param when: The condition that the documents need to fulfill before reaching the Executor.The condition can be defined in the form of a `DocArray query condition &lt;https://docarray.jina.ai/fundamentals/documentarray/find/#query-by-conditions&gt;`</span>
 <span class="sd">        :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.</span>
@@ -1538,7 +1542,7 @@
 <span class="sd">        .. # noqa: DAR101</span>
 <span class="sd">        .. # noqa: DAR003</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># implementation_stub_inject_end_add</span>
+    <span class="c1"># implementation_stub_inject_end_add</span>
 
         <span class="n">needs</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;needs&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="n">copy_flow</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;copy_flow&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
@@ -1620,56 +1624,56 @@
     <span class="c1"># overload_inject_start_config_gateway</span>
     <span class="nd">@overload</span>
     <span class="k">def</span> <span class="nf">config_gateway</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="o">*</span><span class="p">,</span>
-        <span class="n">compression</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">cors</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">deployments_addresses</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">&#39;</span><span class="p">,</span>
-        <span class="n">deployments_metadata</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">&#39;</span><span class="p">,</span>
-        <span class="n">deployments_no_reduce</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;[]&#39;</span><span class="p">,</span>
-        <span class="n">description</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">docker_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">entrypoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">env</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">expose_endpoints</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">expose_graphql_endpoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">floating</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">graph_conditions</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">&#39;</span><span class="p">,</span>
-        <span class="n">graph_description</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">&#39;</span><span class="p">,</span>
-        <span class="n">grpc_server_options</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">host</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;0.0.0.0&#39;</span><span class="p">,</span>
-        <span class="n">log_config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">metrics</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">metrics_exporter_host</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">metrics_exporter_port</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">monitoring</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;gateway&#39;</span><span class="p">,</span>
-        <span class="n">no_crud_endpoints</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">no_debug_endpoints</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">port_monitoring</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">prefetch</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span>
-        <span class="n">protocol</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;GRPC&#39;</span><span class="p">],</span>
-        <span class="n">proxy</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">py_modules</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">quiet</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">quiet_error</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">retries</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
-        <span class="n">runtime_cls</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;GatewayRuntime&#39;</span><span class="p">,</span>
-        <span class="n">ssl_certfile</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">ssl_keyfile</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">timeout_ctrl</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">60</span><span class="p">,</span>
-        <span class="n">timeout_ready</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">600000</span><span class="p">,</span>
-        <span class="n">timeout_send</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">title</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">traces_exporter_host</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">traces_exporter_port</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">tracing</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">uses</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Type</span><span class="p">[</span><span class="s1">&#39;BaseExecutor&#39;</span><span class="p">],</span> <span class="nb">dict</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">uses_with</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">uvicorn_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">workspace</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-    <span class="p">):</span>
+        <span class="bp">self</span><span class="p">,</span><span class="o">*</span><span class="p">,</span>
+        <span class="n">compression</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">cors</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
+        <span class="n">deployments_addresses</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">&#39;</span><span class="p">,</span> 
+        <span class="n">deployments_metadata</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">&#39;</span><span class="p">,</span> 
+        <span class="n">deployments_no_reduce</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;[]&#39;</span><span class="p">,</span> 
+        <span class="n">description</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">docker_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">entrypoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">env</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">expose_endpoints</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">expose_graphql_endpoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
+        <span class="n">floating</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
+        <span class="n">graph_conditions</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">&#39;</span><span class="p">,</span> 
+        <span class="n">graph_description</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">&#39;</span><span class="p">,</span> 
+        <span class="n">grpc_server_options</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">host</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;0.0.0.0&#39;</span><span class="p">,</span> 
+        <span class="n">log_config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">metrics</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
+        <span class="n">metrics_exporter_host</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">metrics_exporter_port</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">monitoring</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
+        <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;gateway&#39;</span><span class="p">,</span> 
+        <span class="n">no_crud_endpoints</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
+        <span class="n">no_debug_endpoints</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
+        <span class="n">port</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">port_monitoring</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">prefetch</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span> 
+        <span class="n">protocol</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;GRPC&#39;</span><span class="p">],</span> 
+        <span class="n">proxy</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
+        <span class="n">py_modules</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">quiet</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
+        <span class="n">quiet_error</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
+        <span class="n">restart</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
+        <span class="n">retries</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> 
+        <span class="n">runtime_cls</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;GatewayRuntime&#39;</span><span class="p">,</span> 
+        <span class="n">ssl_certfile</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">ssl_keyfile</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">timeout_ctrl</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">60</span><span class="p">,</span> 
+        <span class="n">timeout_ready</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">600000</span><span class="p">,</span> 
+        <span class="n">timeout_send</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">title</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">traces_exporter_host</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">traces_exporter_port</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">tracing</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
+        <span class="n">uses</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Type</span><span class="p">[</span><span class="s1">&#39;BaseExecutor&#39;</span><span class="p">],</span> <span class="nb">dict</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">uses_with</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">uvicorn_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">workspace</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Configure the Gateway inside a Flow. The Gateway exposes your Flow logic as a service to the internet according to the protocol and configuration you choose.</span>
 
 <span class="sd">        :param compression: The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.</span>
@@ -1679,8 +1683,8 @@
 <span class="sd">        :param deployments_no_reduce: list JSON disabling the built-in merging mechanism for each Deployment listed</span>
 <span class="sd">        :param description: The description of this HTTP server. It will be used in automatics docs such as Swagger UI.</span>
 <span class="sd">        :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker &#39;</span>
-<span class="sd">          container.</span>
-
+<span class="sd">          container. </span>
+<span class="sd">          </span>
 <span class="sd">          More details can be found in the Docker SDK docs:  https://docker-py.readthedocs.io/en/stable/</span>
 <span class="sd">        :param entrypoint: The entrypoint command overrides the ENTRYPOINT in Docker image. when not set then the Docker image ENTRYPOINT takes effective.</span>
 <span class="sd">        :param env: The map of environment variables that are available inside runtime</span>
@@ -1697,31 +1701,33 @@
 <span class="sd">        :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.</span>
 <span class="sd">        :param monitoring: If set, spawn an http server with a prometheus endpoint to expose metrics</span>
 <span class="sd">        :param name: The name of this object.</span>
-
+<span class="sd">          </span>
 <span class="sd">              This will be used in the following places:</span>
 <span class="sd">              - how you refer to this object in Python/YAML/CLI</span>
 <span class="sd">              - visualization</span>
 <span class="sd">              - log message header</span>
 <span class="sd">              - ...</span>
-
+<span class="sd">          </span>
 <span class="sd">              When not given, then the default naming strategy will apply.</span>
 <span class="sd">        :param no_crud_endpoints: If set, `/index`, `/search`, `/update`, `/delete` endpoints are removed from HTTP interface.</span>
-
+<span class="sd">          </span>
 <span class="sd">                  Any executor that has `@requests(on=...)` bound with those values will receive data requests.</span>
 <span class="sd">        :param no_debug_endpoints: If set, `/status` `/post` endpoints are removed from HTTP interface.</span>
+<span class="sd">        :param port: The port for input data to bind the gateway server to, by default, random ports between range [49152, 65535] will be assigned. The port argument can be either 1 single value in case only 1 protocol is used or multiple values when many protocols are used.</span>
 <span class="sd">        :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</span>
-<span class="sd">        :param prefetch: Number of requests fetched from the client before feeding into the first Executor.</span>
-
+<span class="sd">        :param prefetch: Number of requests fetched from the client before feeding into the first Executor. </span>
+<span class="sd">              </span>
 <span class="sd">              Used to control the speed of data input into a Flow. 0 disables prefetch (1000 requests is the default)</span>
 <span class="sd">        :param protocol: Communication protocol of the server exposed by the Gateway. This can be a single value or a list of protocols, depending on your chosen Gateway. Choose the convenient protocols from: [&#39;GRPC&#39;, &#39;HTTP&#39;, &#39;WEBSOCKET&#39;].</span>
 <span class="sd">        :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</span>
 <span class="sd">        :param py_modules: The customized python modules need to be imported before loading the gateway</span>
-
+<span class="sd">          </span>
 <span class="sd">          Note that the recommended way is to only import a single module - a simple python file, if your</span>
 <span class="sd">          gateway can be defined in a single file, or an ``__init__.py`` file if you have multiple files,</span>
 <span class="sd">          which should be structured as a python package.</span>
 <span class="sd">        :param quiet: If set, then no log will be emitted from this object.</span>
 <span class="sd">        :param quiet_error: If set, then exception stack information will not be added to the log</span>
+<span class="sd">        :param restart: If set, the Gateway will restart while serving if the YAML configuration source is changed.</span>
 <span class="sd">        :param retries: Number of retries per gRPC call. If &lt;0 it defaults to max(3, num_replicas)</span>
 <span class="sd">        :param runtime_cls: The runtime class to run inside the Pod</span>
 <span class="sd">        :param ssl_certfile: the path to the certificate file</span>
@@ -1739,13 +1745,13 @@
 <span class="sd">                  * a docker image (must start with `docker://`)</span>
 <span class="sd">                  * the string literal of a YAML config (must start with `!` or `jtype: `)</span>
 <span class="sd">                  * the string literal of a JSON config</span>
-
+<span class="sd">          </span>
 <span class="sd">                  When use it under Python, one can use the following values additionally:</span>
 <span class="sd">                  - a Python dict that represents the config</span>
 <span class="sd">                  - a text file stream has `.read()` interface</span>
 <span class="sd">        :param uses_with: Dictionary of keyword arguments that will override the `with` configuration in `uses`</span>
 <span class="sd">        :param uvicorn_kwargs: Dictionary of kwargs arguments that will be passed to Uvicorn server when starting the server</span>
-
+<span class="sd">          </span>
 <span class="sd">          More details can be found in Uvicorn docs: https://www.uvicorn.org/settings/</span>
 <span class="sd">        :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.</span>
 
@@ -1753,7 +1759,6 @@
 <span class="sd">        .. # noqa: DAR101</span>
 <span class="sd">        .. # noqa: DAR003</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-
     <span class="c1"># overload_inject_end_config_gateway</span>
 
 <div class="viewcode-block" id="Flow.config_gateway"><a class="viewcode-back" href="../../../../../api/jina.orchestrate.flow.base/#jina.Flow.config_gateway">[docs]</a>    <span class="nd">@allowed_levels</span><span class="p">([</span><span class="n">FlowBuildLevel</span><span class="o">.</span><span class="n">EMPTY</span><span class="p">])</span>
@@ -1763,7 +1768,7 @@
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="s1">&#39;Flow&#39;</span><span class="p">,</span> <span class="s1">&#39;AsyncFlow&#39;</span><span class="p">]:</span>
         <span class="c1"># implementation_stub_inject_start_config_gateway</span>
-
+    
         <span class="sd">&quot;&quot;&quot;Configure the Gateway inside a Flow. The Gateway exposes your Flow logic as a service to the internet according to the protocol and configuration you choose.</span>
 
 <span class="sd">        :param compression: The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.</span>
@@ -1773,8 +1778,8 @@
 <span class="sd">        :param deployments_no_reduce: list JSON disabling the built-in merging mechanism for each Deployment listed</span>
 <span class="sd">        :param description: The description of this HTTP server. It will be used in automatics docs such as Swagger UI.</span>
 <span class="sd">        :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker &#39;</span>
-<span class="sd">          container.</span>
-
+<span class="sd">          container. </span>
+<span class="sd">          </span>
 <span class="sd">          More details can be found in the Docker SDK docs:  https://docker-py.readthedocs.io/en/stable/</span>
 <span class="sd">        :param entrypoint: The entrypoint command overrides the ENTRYPOINT in Docker image. when not set then the Docker image ENTRYPOINT takes effective.</span>
 <span class="sd">        :param env: The map of environment variables that are available inside runtime</span>
@@ -1791,31 +1796,33 @@
 <span class="sd">        :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.</span>
 <span class="sd">        :param monitoring: If set, spawn an http server with a prometheus endpoint to expose metrics</span>
 <span class="sd">        :param name: The name of this object.</span>
-
+<span class="sd">          </span>
 <span class="sd">              This will be used in the following places:</span>
 <span class="sd">              - how you refer to this object in Python/YAML/CLI</span>
 <span class="sd">              - visualization</span>
 <span class="sd">              - log message header</span>
 <span class="sd">              - ...</span>
-
+<span class="sd">          </span>
 <span class="sd">              When not given, then the default naming strategy will apply.</span>
 <span class="sd">        :param no_crud_endpoints: If set, `/index`, `/search`, `/update`, `/delete` endpoints are removed from HTTP interface.</span>
-
+<span class="sd">          </span>
 <span class="sd">                  Any executor that has `@requests(on=...)` bound with those values will receive data requests.</span>
 <span class="sd">        :param no_debug_endpoints: If set, `/status` `/post` endpoints are removed from HTTP interface.</span>
+<span class="sd">        :param port: The port for input data to bind the gateway server to, by default, random ports between range [49152, 65535] will be assigned. The port argument can be either 1 single value in case only 1 protocol is used or multiple values when many protocols are used.</span>
 <span class="sd">        :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</span>
-<span class="sd">        :param prefetch: Number of requests fetched from the client before feeding into the first Executor.</span>
-
+<span class="sd">        :param prefetch: Number of requests fetched from the client before feeding into the first Executor. </span>
+<span class="sd">              </span>
 <span class="sd">              Used to control the speed of data input into a Flow. 0 disables prefetch (1000 requests is the default)</span>
 <span class="sd">        :param protocol: Communication protocol of the server exposed by the Gateway. This can be a single value or a list of protocols, depending on your chosen Gateway. Choose the convenient protocols from: [&#39;GRPC&#39;, &#39;HTTP&#39;, &#39;WEBSOCKET&#39;].</span>
 <span class="sd">        :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</span>
 <span class="sd">        :param py_modules: The customized python modules need to be imported before loading the gateway</span>
-
+<span class="sd">          </span>
 <span class="sd">          Note that the recommended way is to only import a single module - a simple python file, if your</span>
 <span class="sd">          gateway can be defined in a single file, or an ``__init__.py`` file if you have multiple files,</span>
 <span class="sd">          which should be structured as a python package.</span>
 <span class="sd">        :param quiet: If set, then no log will be emitted from this object.</span>
 <span class="sd">        :param quiet_error: If set, then exception stack information will not be added to the log</span>
+<span class="sd">        :param restart: If set, the Gateway will restart while serving if the YAML configuration source is changed.</span>
 <span class="sd">        :param retries: Number of retries per gRPC call. If &lt;0 it defaults to max(3, num_replicas)</span>
 <span class="sd">        :param runtime_cls: The runtime class to run inside the Pod</span>
 <span class="sd">        :param ssl_certfile: the path to the certificate file</span>
@@ -1833,13 +1840,13 @@
 <span class="sd">                  * a docker image (must start with `docker://`)</span>
 <span class="sd">                  * the string literal of a YAML config (must start with `!` or `jtype: `)</span>
 <span class="sd">                  * the string literal of a JSON config</span>
-
+<span class="sd">          </span>
 <span class="sd">                  When use it under Python, one can use the following values additionally:</span>
 <span class="sd">                  - a Python dict that represents the config</span>
 <span class="sd">                  - a text file stream has `.read()` interface</span>
 <span class="sd">        :param uses_with: Dictionary of keyword arguments that will override the `with` configuration in `uses`</span>
 <span class="sd">        :param uvicorn_kwargs: Dictionary of kwargs arguments that will be passed to Uvicorn server when starting the server</span>
-
+<span class="sd">          </span>
 <span class="sd">          More details can be found in Uvicorn docs: https://www.uvicorn.org/settings/</span>
 <span class="sd">        :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.</span>
 <span class="sd">        :return: the new Flow object</span>
@@ -1849,7 +1856,7 @@
 <span class="sd">        .. # noqa: DAR101</span>
 <span class="sd">        .. # noqa: DAR003</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># implementation_stub_inject_end_config_gateway</span>
+    <span class="c1"># implementation_stub_inject_end_config_gateway</span>
 
         <span class="n">copy_flow</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;copy_flow&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
 
@@ -2765,24 +2772,92 @@
 <span class="sd">        :param stop_event: a threading event or a multiprocessing event that onces set will resume the control Flow</span>
 <span class="sd">            to main thread.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">def</span> <span class="nf">_restart_flow</span><span class="p">(</span><span class="n">changed_file</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;change in Flow YAML </span><span class="si">{</span><span class="n">changed_file</span><span class="si">}</span><span class="s1"> observed, restarting Flow&#39;</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="fm">__exit__</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="n">new_flow</span> <span class="o">=</span> <span class="n">Flow</span><span class="o">.</span><span class="n">load_config</span><span class="p">(</span><span class="n">changed_file</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span> <span class="o">=</span> <span class="n">new_flow</span><span class="o">.</span><span class="vm">__dict__</span>
+            <span class="bp">self</span><span class="o">.</span><span class="fm">__enter__</span><span class="p">()</span>
+
+        <span class="k">def</span> <span class="nf">_restart_deployment</span><span class="p">(</span><span class="n">deployment</span><span class="p">,</span> <span class="n">changed_file</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;change in Executor configuration YAML </span><span class="si">{</span><span class="n">changed_file</span><span class="si">}</span><span class="s1"> observed, restarting Executor deployment&#39;</span>
+            <span class="p">)</span>
+            <span class="n">deployment</span><span class="o">.</span><span class="fm">__exit__</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="n">old_args</span><span class="p">,</span> <span class="n">old_needs</span> <span class="o">=</span> <span class="n">deployment</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="n">deployment</span><span class="o">.</span><span class="n">needs</span>
+            <span class="n">new_deployment</span> <span class="o">=</span> <span class="n">Deployment</span><span class="p">(</span><span class="n">old_args</span><span class="p">,</span> <span class="n">old_needs</span><span class="p">)</span>
+            <span class="n">deployment</span><span class="o">.</span><span class="vm">__dict__</span> <span class="o">=</span> <span class="n">new_deployment</span><span class="o">.</span><span class="vm">__dict__</span>
+            <span class="n">deployment</span><span class="o">.</span><span class="fm">__enter__</span><span class="p">()</span>
+
         <span class="k">try</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">stop_event</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_stop_event</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
-                <span class="p">)</span>  <span class="c1">#: this allows `.close` to close the Flow from another thread/proc</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">__windows__</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_stop_event</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
-                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stop_event</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
-                            <span class="k">break</span>
-                        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+            <span class="n">watch_changes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">restart</span> <span class="ow">or</span> <span class="nb">any</span><span class="p">(</span>
+                <span class="p">[</span>
+                    <span class="n">deployment</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">restart</span>
+                    <span class="k">for</span> <span class="n">deployment</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_deployment_nodes</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+                <span class="p">]</span>
+            <span class="p">)</span>
+            <span class="n">watch_files_from_deployments</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">deployment</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deployment_nodes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">deployment</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">restart</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">deployment</span><span class="o">.</span><span class="n">_is_executor_from_yaml</span><span class="p">:</span>
+                        <span class="n">watch_files_from_deployments</span><span class="p">[</span><span class="n">deployment</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uses</span><span class="p">]</span> <span class="o">=</span> <span class="n">name</span>
+            <span class="n">watch_files_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">watch_files_from_deployments</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+
+            <span class="n">config_loaded</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_config_loaded&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">config_loaded</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;yml&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">config_loaded</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;yaml&#39;</span><span class="p">):</span>
+                <span class="n">watch_files_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">config_loaded</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">watch_changes</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">watch_files_list</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+
+                <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span>
+                    <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span>
+                    <span class="n">help_text</span><span class="o">=</span><span class="s1">&#39;&#39;&#39;restart requires watchfiles dependency to be installed. You can do `pip install </span>
+<span class="s1">                    watchfiles&#39;&#39;&#39;</span><span class="p">,</span>
+                <span class="p">):</span>
+                    <span class="kn">from</span> <span class="nn">watchfiles</span> <span class="kn">import</span> <span class="n">watch</span>
+
+                <span class="n">new_stop_event</span> <span class="o">=</span> <span class="n">stop_event</span> <span class="ow">or</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">watch_files_list</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">changes</span> <span class="ow">in</span> <span class="n">watch</span><span class="p">(</span><span class="o">*</span><span class="n">watch_files_list</span><span class="p">,</span> <span class="n">stop_event</span><span class="o">=</span><span class="n">new_stop_event</span><span class="p">):</span>
+                        <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">changed_file</span> <span class="ow">in</span> <span class="n">changes</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="n">changed_file</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">watch_files_from_deployments</span><span class="p">:</span>
+                                <span class="c1"># maybe changed_file is the absolute path of one in watch_files_from_deployments</span>
+                                <span class="n">is_absolute_path</span> <span class="o">=</span> <span class="kc">False</span>
+                                <span class="k">for</span> <span class="p">(</span>
+                                    <span class="n">file</span><span class="p">,</span>
+                                    <span class="n">deployment_name</span><span class="p">,</span>
+                                <span class="p">)</span> <span class="ow">in</span> <span class="n">watch_files_from_deployments</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                                    <span class="k">if</span> <span class="n">changed_file</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">file</span><span class="p">):</span>
+                                        <span class="n">is_absolute_path</span> <span class="o">=</span> <span class="kc">True</span>
+                                        <span class="n">_restart_deployment</span><span class="p">(</span>
+                                            <span class="bp">self</span><span class="o">.</span><span class="n">_deployment_nodes</span><span class="p">[</span><span class="n">deployment_name</span><span class="p">],</span>
+                                            <span class="n">changed_file</span><span class="p">,</span>
+                                        <span class="p">)</span>
+                                        <span class="k">break</span>
+
+                                <span class="k">if</span> <span class="ow">not</span> <span class="n">is_absolute_path</span><span class="p">:</span>
+                                    <span class="n">_restart_flow</span><span class="p">(</span><span class="n">changed_file</span><span class="p">)</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="n">_restart_deployment</span><span class="p">(</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">_deployment_nodes</span><span class="p">[</span>
+                                        <span class="n">watch_files_from_deployments</span><span class="p">[</span><span class="n">changed_file</span><span class="p">]</span>
+                                    <span class="p">],</span>
+                                    <span class="n">changed_file</span><span class="p">,</span>
+                                <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
+                <span class="n">wait_event</span> <span class="o">=</span> <span class="n">stop_event</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">wait_event</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_stop_event</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
+                    <span class="n">wait_event</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stop_event</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">__windows__</span><span class="p">:</span>
-                    <span class="n">stop_event</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+                    <span class="n">wait_event</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
-                        <span class="k">if</span> <span class="n">stop_event</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
+                        <span class="k">if</span> <span class="n">wait_event</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
                             <span class="k">break</span>
                         <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
@@ -3169,7 +3244,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 07, 2022</div>
+                            Last updated on Dec 12, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

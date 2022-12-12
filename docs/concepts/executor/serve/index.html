@@ -512,7 +512,7 @@ the Executor, and <code class="docutils literal notranslate"><span class="pre">*
 <li><p>A shared Executor has no Gateway.</p></li>
 </ul>
 <p>Both types of Executor <span class="xref std std-ref">can be used directly in any Flow</span>.
-Having a Gateway may be useful if you want to be able to access your Executor with the <a class="reference internal" href="../../client/#client"><span class="std std-ref">Client</span></a> without an additional Flow. If the Executor is only used inside other Flows, you should define a shared Executor to save the costs of running the Gateway Pod in Kubernetes.</p>
+Having a Gateway may be useful if you want to access your Executor with the <a class="reference internal" href="../../client/#client"><span class="std std-ref">Client</span></a> without an additional Flow. If the Executor is only used inside other Flows, you should define a shared Executor to save the costs of running the Gateway in Kubernetes.</p>
 </section>
 </section>
 <section id="serve-via-docker-compose">
@@ -534,6 +534,158 @@ Having a Gateway may be useful if you want to be able to access your Executor wi
 <div class="hint admonition">
 <p class="admonition-title">Hint</p>
 <p>The Executor you use needs to be already containerized and stored in an accessible registry. We recommend Executor Hub for this.</p>
+</div>
+</section>
+<section id="reload-executor">
+<span id="id1"></span><h2>Reload Executor<a class="headerlink" href="#reload-executor" title="Permalink to this heading">#</a></h2>
+<p>While developing your Executor, it can be useful to have the Executor be refreshed from the source code while you are working on it, without needing to restart the complete server.</p>
+<p>For this you can use the Executor’s <code class="docutils literal notranslate"><span class="pre">reload</span></code> argument so that it watches changes in the source code and ensures changes are applied live to the served Executor.</p>
+<p>The Executor will keep track in changes inside the Executor source file, every file passed in <code class="docutils literal notranslate"><span class="pre">py_modules</span></code> argument from <a class="reference internal" href="../../../api/jina/#jina.Flow.add" title="jina.Flow.add"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add()</span></code></a> and all Python files in the folder (and its subfolders) where the Executor class is defined.</p>
+<div class="caution admonition">
+<p class="admonition-title">Caution</p>
+<p>This feature aims to let developers iterate faster while developing or improving the Executor, but is not intended to be used in production.</p>
+</div>
+<div class="note admonition">
+<p class="admonition-title">Note</p>
+<p>This feature requires watchfiles&gt;=0.18 package to be installed.</p>
+</div>
+<p>To see how this works, let’s define an Executor in a file <code class="docutils literal notranslate"><span class="pre">my_executor.py</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
+
+
+<span class="k">class</span> <span class="nc">MyExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+    <span class="nd">@requests</span>
+    <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
+            <span class="n">doc</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s1">&#39;I am coming from the first version of MyExecutor&#39;</span>
+</pre></div>
+</div>
+<p>Build a Flow and expose it:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
+
+<span class="kn">from</span> <span class="nn">my_executor</span> <span class="kn">import</span> <span class="n">MyExecutor</span>
+<span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;JINA_LOG_LEVEL&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;DEBUG&#39;</span>
+
+
+<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">MyExecutor</span><span class="p">,</span> <span class="n">reload</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">block</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>You can see that the Executor is successfully serving:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span><span class="p">,</span> <span class="n">DocumentArray</span>
+
+<span class="n">c</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">DocumentArray</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">1</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>I am coming from the first version of MyExecutor
+</pre></div>
+</div>
+<p>You can edit the Executor file and save the changes:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
+
+
+<span class="k">class</span> <span class="nc">MyExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+    <span class="nd">@requests</span>
+    <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
+            <span class="n">doc</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s1">&#39;I am coming from a new version of MyExecutor&#39;</span>
+</pre></div>
+</div>
+<p>You should see in the logs of the serving Executor</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>INFO   executor0/rep-0@11606 detected changes in: [&#39;XXX/XXX/XXX/my_executor.py&#39;]. Refreshing the Executor                                                             
+</pre></div>
+</div>
+<p>And after this, the Executor will start serving with the renewed code.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span><span class="p">,</span> <span class="n">DocumentArray</span>
+
+<span class="n">c</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">DocumentArray</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">1</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>&#39;I am coming from a new version of MyExecutor&#39;
+</pre></div>
+</div>
+</section>
+<section id="automatic-restart-executor-in-the-flow">
+<span id="restart-executor"></span><h2>Automatic restart Executor in the Flow<a class="headerlink" href="#automatic-restart-executor-in-the-flow" title="Permalink to this heading">#</a></h2>
+<p>Sometimes, you don’t just want to change the Python files where the Executor logic is implemented, but you also want to change the Executor’s YAML configuration.
+For this you can use the <code class="docutils literal notranslate"><span class="pre">restart</span></code> argument for the Executor in the Flow. When <code class="docutils literal notranslate"><span class="pre">restart</span></code> is set, the Executor deployment automatically restarts whenever a change in its YAML configuration file is detected.</p>
+<p>Compared to <a class="reference internal" href="#reload-executor"><span class="std std-ref">reload</span></a>, where the Executor class is reloaded with the new Python files, in this case you can change the exact Executor class being used which is not possible with the <a class="reference internal" href="#reload-executor"><span class="std std-ref">reload</span></a> option.</p>
+<div class="caution admonition">
+<p class="admonition-title">Caution</p>
+<p>This feature aims to let developers iterate faster during development, but is not intended to for use in in production.</p>
+</div>
+<div class="note admonition">
+<p class="admonition-title">Note</p>
+<p>This feature requires watchfiles&gt;=0.18 package to be installed.</p>
+</div>
+<p>To see how this works, let’s define an Executor configuration in <code class="docutils literal notranslate"><span class="pre">executor.yml</span></code>.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MyExecutorBeforeRestart</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Build a Flow with the Executor in it and expose it:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
+<span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;JINA_LOG_LEVEL&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;DEBUG&#39;</span>
+
+
+<span class="k">class</span> <span class="nc">MyExecutorBeforeRestart</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+   <span class="nd">@requests</span>
+   <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+       <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
+          <span class="n">doc</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s1">&#39;MyExecutorBeforeRestart&#39;</span>
+
+
+<span class="k">class</span> <span class="nc">MyExecutorAfterRestart</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+   <span class="nd">@requests</span>
+   <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+       <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
+          <span class="n">doc</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s1">&#39;MyExecutorAfterRestart&#39;</span>
+
+<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="s1">&#39;executor.yml&#39;</span><span class="p">,</span> <span class="n">restart</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">block</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>You can see that the Executor is running and serving:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span><span class="p">,</span> <span class="n">DocumentArray</span>
+
+<span class="n">c</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">DocumentArray</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">1</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>MyExecutorBeforeRestart
+</pre></div>
+</div>
+<p>You can edit the Executor YAML file and save the changes:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MyExecutorAfterRestart</span><span class="w"></span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>
+In the Flow&#39;s logs we should see:
+
+```text
+INFO   Flow@1843 change in Executor configuration YAML /home/joan/jina/jina/exec.yml observed, restarting Executor deployment  
+</pre></div>
+</div>
+<p>And after this, you can see the restarted Executor being served:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span><span class="p">,</span> <span class="n">DocumentArray</span>
+
+<span class="n">c</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">DocumentArray</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">1</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MyExecutorAfterRestart</span><span class="w"></span>
+</pre></div>
 </div>
 </section>
 </section>
@@ -569,7 +721,7 @@ Having a Gateway may be useful if you want to be able to access your Executor wi
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 07, 2022</div>
+                            Last updated on Dec 12, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -608,6 +760,8 @@ Having a Gateway may be useful if you want to be able to access your Executor wi
 </ul>
 </li>
 <li><a class="reference internal" href="#serve-via-docker-compose">Serve via Docker Compose</a></li>
+<li><a class="reference internal" href="#reload-executor">Reload Executor</a></li>
+<li><a class="reference internal" href="#automatic-restart-executor-in-the-flow">Automatic restart Executor in the Flow</a></li>
 </ul>
 </li>
 </ul>

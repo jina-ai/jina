@@ -488,7 +488,7 @@ jc -h
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
 <p>The best practice of creating a JCloud project is to use:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jc</span> <span class="n">new</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc new
 </pre></div>
 </div>
 <p>This ensures the correct project structure accepted by JCloud.</p>
@@ -519,36 +519,71 @@ jc -h
 <figure class="align-default">
 <a class="reference internal image-reference" href="../../_images/deploy.png"><img alt="../../_images/deploy.png" src="../../_images/deploy.png" style="width: 70%;" /></a>
 </figure>
-<p>You will get a Flow ID, say <code class="docutils literal notranslate"><span class="pre">173503c192</span></code>. This ID is required to manage, view logs and remove the Flow.</p>
+<hr class="docutils" />
+<p>You will get a Flow ID, say <code class="docutils literal notranslate"><span class="pre">merry-magpie-82b9c0897f</span></code>. This ID is required to manage, view logs and remove the Flow.</p>
 <p>As this Flow is deployed with the default gRPC gateway (feel free to change it to <code class="docutils literal notranslate"><span class="pre">http</span></code> or <code class="docutils literal notranslate"><span class="pre">websocket</span></code>), you can use <code class="docutils literal notranslate"><span class="pre">jina.Client</span></code> to access it:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span><span class="p">,</span> <span class="n">Document</span>
 
-<span class="n">c</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;https://173503c192.wolf.jina.ai&#39;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;hello&#39;</span><span class="p">)))</span>
+<span class="nb">print</span><span class="p">(</span>
+    <span class="n">Client</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;grpcs://merry-magpie-82b9c0897f.wolf.jina.ai&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+        <span class="n">on</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;hello&#39;</span><span class="p">)</span>
+    <span class="p">)</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 </section>
 </section>
-<section id="view-logs">
-<h3>View logs<a class="headerlink" href="#view-logs" title="Permalink to this heading">#</a></h3>
-<p>To watch the logs in real time:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc logs 173503c192
+<section id="get-status">
+<span id="jcloud-flow-status"></span><h3>Get status<a class="headerlink" href="#get-status" title="Permalink to this heading">#</a></h3>
+<p>To get the status of a Flow:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc status merry-magpie-82b9c0897f
 </pre></div>
 </div>
-<p>You can also stream logs for a particular Executor by passing its name:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc logs 173503c192 --executor sentencizer
+<figure class="align-default">
+<a class="reference internal image-reference" href="../../_images/status.png"><img alt="../../_images/status.png" src="../../_images/status.png" style="width: 70%;" /></a>
+</figure>
+</section>
+<section id="monitoring">
+<h3>Monitoring<a class="headerlink" href="#monitoring" title="Permalink to this heading">#</a></h3>
+<p>Basic monitoring is provided to Flows deployed on Jina AI Cloud.</p>
+<p>To access the <a class="reference external" href="https://grafana.com/">Grafana</a>-powered dashboard, first get <a class="reference internal" href="#jcloud-flow-status"><span class="std std-ref">the status of the Flow</span></a>. The <code class="docutils literal notranslate"><span class="pre">Grafana</span> <span class="pre">Dashboard</span></code> link is displayed at the bottom of the pane. Visit the URL to find basic metrics like ‘Number of Request Gateway Received’ and ‘Time elapsed between receiving a request and sending back the response’:</p>
+<figure class="align-default">
+<a class="reference internal image-reference" href="../../_images/monitoring.png"><img alt="../../_images/monitoring.png" src="../../_images/monitoring.png" style="width: 80%;" /></a>
+</figure>
+</section>
+<section id="list-flows">
+<h3>List Flows<a class="headerlink" href="#list-flows" title="Permalink to this heading">#</a></h3>
+<p>To list all of your “Serving” Flows:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc list
 </pre></div>
 </div>
+<figure class="align-default">
+<a class="reference internal image-reference" href="../../_images/list.png"><img alt="../../_images/list.png" src="../../_images/list.png" style="width: 90%;" /></a>
+</figure>
+<p>You can also filter your Flows by passing a phase:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc list --phase Deleted
+</pre></div>
+</div>
+<figure class="align-default">
+<a class="reference internal image-reference" href="../../_images/list_deleted.png"><img alt="../../_images/list_deleted.png" src="../../_images/list_deleted.png" style="width: 90%;" /></a>
+</figure>
+<p>Or see all Flows:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc list --phase all
+</pre></div>
+</div>
+<figure class="align-default">
+<a class="reference internal image-reference" href="../../_images/list_all.png"><img alt="../../_images/list_all.png" src="../../_images/list_all.png" style="width: 90%;" /></a>
+</figure>
 </section>
 <section id="remove-flows">
 <h3>Remove Flows<a class="headerlink" href="#remove-flows" title="Permalink to this heading">#</a></h3>
 <p>You can remove a single Flow, multiple Flows or even all Flows by passing different identifiers.</p>
 <p>To remove a single Flow:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc remove 173503c192
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc remove merry-magpie-82b9c0897f
 </pre></div>
 </div>
 <p>To remove multiple Flows:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc remove 173503c192 887f6313e5 ddb8a2c4ef
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc remove merry-magpie-82b9c0897f wondrous-kiwi-b02db6a066
 </pre></div>
 </div>
 <p>To remove all Flows:</p>
@@ -560,80 +595,6 @@ jc -h
 </pre></div>
 </div>
 </section>
-<section id="get-status">
-<span id="jcloud-flow-status"></span><h3>Get status<a class="headerlink" href="#get-status" title="Permalink to this heading">#</a></h3>
-<p>To get the status of a Flow:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc status 15937a10bd
-</pre></div>
-</div>
-<figure class="align-default">
-<a class="reference internal image-reference" href="../../_images/status.png"><img alt="../../_images/status.png" src="../../_images/status.png" style="width: 70%;" /></a>
-</figure>
-</section>
-<section id="monitoring">
-<h3>Monitoring<a class="headerlink" href="#monitoring" title="Permalink to this heading">#</a></h3>
-<p>Basic monitoring is provided to Flows deployed on Jina AI Cloud.</p>
-<p>To access the <a class="reference external" href="https://grafana.com/">Grafana</a>-powered dashboard, first get <a class="reference internal" href="#jcloud-flow-status"><span class="std std-ref">the status of the Flow</span></a>. The <code class="docutils literal notranslate"><span class="pre">dashboards</span></code> link is displayed at the bottom of the pane. Visit the URL to find basic metrics like ‘Number of Request Gateway Received’ and ‘Time elapsed between receiving a request and sending back the response’:</p>
-<figure class="align-default">
-<a class="reference internal image-reference" href="../../_images/monitoring.png"><img alt="../../_images/monitoring.png" src="../../_images/monitoring.png" style="width: 70%;" /></a>
-</figure>
-</section>
-<section id="list-flows">
-<h3>List Flows<a class="headerlink" href="#list-flows" title="Permalink to this heading">#</a></h3>
-<p>To list all of your “ALIVE” Flows:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc list
-</pre></div>
-</div>
-<figure class="align-default">
-<a class="reference internal image-reference" href="../../_images/list.png"><img alt="../../_images/list.png" src="../../_images/list.png" style="width: 70%;" /></a>
-</figure>
-<p>You can also filter your Flows by passing a status:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc list --status FAILED
-</pre></div>
-</div>
-<figure class="align-default">
-<a class="reference internal image-reference" href="../../_images/list_failed.png"><img alt="../../_images/list_failed.png" src="../../_images/list_failed.png" style="width: 70%;" /></a>
-</figure>
-<p>Or see all Flows:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc list --status ALL
-</pre></div>
-</div>
-<figure class="align-default">
-<a class="reference internal image-reference" href="../../_images/list_all.png"><img alt="../../_images/list_all.png" src="../../_images/list_all.png" style="width: 70%;" /></a>
-</figure>
-</section>
-<section id="pass-environment-variables">
-<h3>Pass environment variables<a class="headerlink" href="#pass-environment-variables" title="Permalink to this heading">#</a></h3>
-<section id="single-yaml">
-<h4>Single YAML<a class="headerlink" href="#single-yaml" title="Permalink to this heading">#</a></h4>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc deploy flow.yml --env-file flow.env
-</pre></div>
-</div>
-</section>
-<section id="id1">
-<h4>Project folder<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h4>
-<ul>
-<li><p>You can include your environment variables in the <code class="docutils literal notranslate"><span class="pre">.env</span></code> file in the local project and Jina AI Cloud manages them.</p></li>
-<li><p>You can optionally pass a <code class="docutils literal notranslate"><span class="pre">custom.env</span></code>.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc deploy ./hello --env-file ./hello/custom.env
-</pre></div>
-</div>
-</li>
-</ul>
-</section>
-</section>
-</section>
-<section id="troubleshooting">
-<h2>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permalink to this heading">#</a></h2>
-<p>If your deployment failed, enable verbose logging and redeploy it. You can add <code class="docutils literal notranslate"><span class="pre">--loglevel</span> <span class="pre">DEBUG</span></code> <em>before</em> each CLI subcommand:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc --loglevel DEBUG deploy flow.yml
-</pre></div>
-</div>
-<p>Alternatively, you can configure it by using environment variable <code class="docutils literal notranslate"><span class="pre">JCLOUD_LOGLEVEL</span></code>:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">JCLOUD_LOGLEVEL</span><span class="o">=</span>DEBUG jc deploy flow.yml
-</pre></div>
-</div>
-<p>If you don’t see any obvious errors, please raise an issue in <a class="reference external" href="https://github.com/jina-ai/jcloud/issues/new/choose">the JCloud repository</a>.</p>
 </section>
 <section id="restrictions">
 <h2>Restrictions<a class="headerlink" href="#restrictions" title="Permalink to this heading">#</a></h2>
@@ -682,7 +643,7 @@ jc -h
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 07, 2022</div>
+                            Last updated on Dec 12, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -721,19 +682,12 @@ jc -h
 <li><a class="reference internal" href="#project-folder">Project folder</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#view-logs">View logs</a></li>
-<li><a class="reference internal" href="#remove-flows">Remove Flows</a></li>
 <li><a class="reference internal" href="#get-status">Get status</a></li>
 <li><a class="reference internal" href="#monitoring">Monitoring</a></li>
 <li><a class="reference internal" href="#list-flows">List Flows</a></li>
-<li><a class="reference internal" href="#pass-environment-variables">Pass environment variables</a><ul>
-<li><a class="reference internal" href="#single-yaml">Single YAML</a></li>
-<li><a class="reference internal" href="#id1">Project folder</a></li>
+<li><a class="reference internal" href="#remove-flows">Remove Flows</a></li>
 </ul>
 </li>
-</ul>
-</li>
-<li><a class="reference internal" href="#troubleshooting">Troubleshooting</a></li>
 <li><a class="reference internal" href="#restrictions">Restrictions</a></li>
 </ul>
 </li>

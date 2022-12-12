@@ -1159,6 +1159,9 @@
                 <span class="k">raise</span> <span class="n">BadConfigSource</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s1">&#39;Can not construct </span><span class="si">{</span><span class="bp">cls</span><span class="si">}</span><span class="s1"> object from </span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s1">. Source might be an invalid configuration.&#39;</span>
                 <span class="p">)</span>
+
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">source</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span><span class="p">:</span>
+                <span class="n">obj</span><span class="o">.</span><span class="n">_config_loaded</span> <span class="o">=</span> <span class="n">source</span>
             <span class="k">return</span> <span class="n">obj</span></div>
 
     <span class="nd">@classmethod</span>
@@ -1210,7 +1213,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 07, 2022</div>
+                            Last updated on Dec 12, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

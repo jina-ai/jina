@@ -768,6 +768,16 @@
         <span class="k">return</span> <span class="n">is_valid_docker_uri</span><span class="p">(</span><span class="n">uses</span><span class="p">)</span>
 
     <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">_is_executor_from_yaml</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if this deployment is to be run from YAML configuration.</span>
+
+<span class="sd">        :return: True if this deployment is to be run from YAML configuration</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">uses</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">&#39;uses&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">uses</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;yml&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">uses</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;yaml&#39;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">tls_enabled</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Checks whether secure connection via tls is enabled for this Deployment.</span>
@@ -1428,7 +1438,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 07, 2022</div>
+                            Last updated on Dec 12, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

@@ -470,9 +470,12 @@
             <span class="n">metrics_exporter_host</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">metrics_exporter_host</span><span class="p">,</span>
             <span class="n">metrics_exporter_port</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">metrics_exporter_port</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="n">send_telemetry_event</span><span class="p">(</span><span class="n">event</span><span class="o">=</span><span class="s1">&#39;start&#39;</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_entity_id</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_loop</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">async_setup</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_send_telemetry_event</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_send_telemetry_event</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">send_telemetry_event</span><span class="p">(</span><span class="n">event</span><span class="o">=</span><span class="s1">&#39;start&#39;</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_entity_id</span><span class="p">)</span>
 
 <div class="viewcode-block" id="AsyncNewLoopRuntime.run_forever"><a class="viewcode-back" href="../../../../../api/jina.serve.runtimes.asyncio/#jina.serve.runtimes.asyncio.AsyncNewLoopRuntime.run_forever">[docs]</a>    <span class="k">def</span> <span class="nf">run_forever</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -557,35 +560,26 @@
 
     <span class="c1"># Static methods used by the Pod to communicate with the `Runtime` in the separate process</span>
 
-<div class="viewcode-block" id="AsyncNewLoopRuntime.activate"><a class="viewcode-back" href="../../../../../api/jina.serve.runtimes.asyncio/#jina.serve.runtimes.asyncio.AsyncNewLoopRuntime.activate">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">activate</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Activate the runtime, does not apply to these runtimes</span>
-
-<span class="sd">        :param kwargs: extra keyword arguments</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># does not apply to this types of runtimes</span>
-        <span class="k">pass</span></div>
-
 <div class="viewcode-block" id="AsyncNewLoopRuntime.is_ready"><a class="viewcode-back" href="../../../../../api/jina.serve.runtimes.asyncio/#jina.serve.runtimes.asyncio.AsyncNewLoopRuntime.is_ready">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">is_ready</span><span class="p">(</span><span class="n">ctrl_address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">is_ready</span><span class="p">(</span><span class="n">ctrl_address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check if status is ready.</span>
 
 <span class="sd">        :param ctrl_address: the address where the control request needs to be sent</span>
+<span class="sd">        :param timeout: timeout of the health check in seconds</span>
 <span class="sd">        :param kwargs: extra keyword arguments</span>
 
 <span class="sd">        :return: True if status is ready else False.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-
         <span class="k">try</span><span class="p">:</span>
             <span class="kn">from</span> <span class="nn">grpc_health.v1</span> <span class="kn">import</span> <span class="n">health_pb2</span><span class="p">,</span> <span class="n">health_pb2_grpc</span>
 
             <span class="n">response</span> <span class="o">=</span> <span class="n">GrpcConnectionPool</span><span class="o">.</span><span class="n">send_health_check_sync</span><span class="p">(</span>
-                <span class="n">ctrl_address</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mf">1.0</span>
+                <span class="n">ctrl_address</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span>
             <span class="p">)</span>
-            <span class="c1"># TODO: Get the proper value of the ServingStatus SERVING KEY</span>
-            <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="mi">1</span>
+            <span class="k">return</span> <span class="p">(</span>
+                <span class="n">response</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="n">health_pb2</span><span class="o">.</span><span class="n">HealthCheckResponse</span><span class="o">.</span><span class="n">ServingStatus</span><span class="o">.</span><span class="n">SERVING</span>
+            <span class="p">)</span>
         <span class="k">except</span> <span class="n">RpcError</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span></div>
 
@@ -644,7 +638,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 07, 2022</div>
+                            Last updated on Dec 12, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

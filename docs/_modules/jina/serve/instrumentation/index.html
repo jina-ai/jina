@@ -459,7 +459,6 @@
             <span class="n">processor</span> <span class="o">=</span> <span class="n">BatchSpanProcessor</span><span class="p">(</span>
                 <span class="n">OTLPSpanExporter</span><span class="p">(</span>
                     <span class="n">endpoint</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">traces_exporter_host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">traces_exporter_port</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
-                    <span class="n">insecure</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                 <span class="p">)</span>
             <span class="p">)</span>
             <span class="n">provider</span><span class="o">.</span><span class="n">add_span_processor</span><span class="p">(</span><span class="n">processor</span><span class="p">)</span>
@@ -482,7 +481,6 @@
             <span class="n">metric_reader</span> <span class="o">=</span> <span class="n">PeriodicExportingMetricReader</span><span class="p">(</span>
                 <span class="n">OTLPMetricExporter</span><span class="p">(</span>
                     <span class="n">endpoint</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">metrics_exporter_host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">metrics_exporter_port</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
-                    <span class="n">insecure</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                 <span class="p">)</span>
             <span class="p">)</span>
             <span class="n">meter_provider</span> <span class="o">=</span> <span class="n">MeterProvider</span><span class="p">(</span>
@@ -608,7 +606,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 07, 2022</div>
+                            Last updated on Dec 12, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
