@@ -25,7 +25,7 @@ def test_save_dynamic_batching_config(tmpdir):
         name='exec0',
         uses_dynamic_batching={'/foo': {'preferred_batch_size': 2, 'timeout': 4000}},
     )
-    f.save_config(str(TMPDIR / 'flow0.yml'))
+    f.save_config(str(TMPDIR / 'flow0.yaml'))
 
     f1 = Flow.load_config(str(TMPDIR / 'flow0.yaml'))
     assert (
