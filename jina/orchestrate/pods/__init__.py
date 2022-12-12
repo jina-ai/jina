@@ -12,7 +12,7 @@ from jina.excepts import RuntimeFailToStart, RuntimeRunForeverEarlyError
 from jina.helper import typename
 from jina.jaml import JAML
 from jina.logging.logger import JinaLogger
-from jina.orchestrate.pods.helper import ConditionalEvent, _get_event, install_package_dependencies, get_package_path_from_uses
+from jina.orchestrate.pods.helper import ConditionalEvent, _get_event, install_package_dependencies, _get_package_path_from_args
 from jina.parsers.helper import _update_gateway_args
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.gateway import GatewayRuntime
@@ -72,11 +72,11 @@ def run(
             os.environ.update({k: str(v) for k, v in envs.items()})
 
     try:
-        if args.install_requirements:
-            install_package_dependencies(get_package_path_from_uses(args.uses))
-            # detect the path of uses and see if `requirements.txt` can be found there.
-
         _set_envs()
+
+        if args.install_requirements:
+            install_package_dependencies(_get_package_path_from_args(args))
+
         runtime = runtime_cls(
             args=args,
         )

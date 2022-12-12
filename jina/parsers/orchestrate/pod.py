@@ -51,7 +51,7 @@ def mixin_pod_parser(parser, pod_type: str = 'worker'):
         type=int,
         default=600000,
         help='The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting '
-        'forever',
+             'forever',
     )
 
     gp.add_argument(
@@ -88,7 +88,7 @@ def mixin_pod_parser(parser, pod_type: str = 'worker'):
         action='store_true',
         default=False,
         help='If set, starting a Pod/Deployment does not block the thread/process. It then relies on '
-        '`wait_start_success` at outer function for the postpone check.'
+             '`wait_start_success` at outer function for the postpone check.'
         if _SHOW_ALL_ARGS
         else argparse.SUPPRESS,
     )
@@ -98,7 +98,7 @@ def mixin_pod_parser(parser, pod_type: str = 'worker'):
         action='store_true',
         default=False,
         help='If set, the current Pod/Deployment can not be further chained, '
-        'and the next `.add()` will chain after the last Pod/Deployment not this current one.',
+             'and the next `.add()` will chain after the last Pod/Deployment not this current one.',
     )
     if pod_type != 'gateway':
         gp.add_argument(
@@ -195,7 +195,7 @@ def mixin_pod_runtime_args_parser(arg_group, pod_type='worker'):
         action='store_true',
         default=False,
         help='If set, the sdk implementation of the OpenTelemetry tracer will be available and will be enabled for automatic tracing of requests and customer span creation. '
-        'Otherwise a no-op implementation will be provided.',
+             'Otherwise a no-op implementation will be provided.',
     )
 
     arg_group.add_argument(
@@ -217,7 +217,7 @@ def mixin_pod_runtime_args_parser(arg_group, pod_type='worker'):
         action='store_true',
         default=False,
         help='If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. '
-        'Otherwise a no-op implementation will be provided.',
+             'Otherwise a no-op implementation will be provided.',
     )
 
     arg_group.add_argument(
@@ -233,6 +233,7 @@ def mixin_pod_runtime_args_parser(arg_group, pod_type='worker'):
         default=None,
         help='If tracing is enabled, this port will be used to configure the metrics exporter agent.',
     )
+
 
 def mixin_hub_pull_options_parser(parser):
     """Add the arguments for hub pull options to the parser

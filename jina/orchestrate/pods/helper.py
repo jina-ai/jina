@@ -291,9 +291,25 @@ def install_package_dependencies(
         _install_requirements(requirements_file)
 
 
-def get_package_path_from_uses(uses: str) -> Optional['Path']:
-    try:
-        return Path(os.path.dirname(os.path.abspath(uses)))
-    except:
-        # it may be a class or module
-        return None
+def _get_package_path_from_args(args) -> 'Path':
+    from jina.serve.executors import BaseExecutor
+    import inspect
+    _executor = BaseExecutor.load_config(
+        args.uses,
+        uses_with=args.uses_with,
+        uses_metas=args.uses_metas,
+        uses_requests=args.uses_requests,
+        runtime_args={  # these are not parsed to the yaml config file but are pass directly during init
+            'workspace': args.workspace,
+            'shard_id': args.shard_id,
+            'shards': args.shards,
+            'replicas': args.replicas,
+            'name': args.name,
+        },
+        py_modules=args.py_modules,
+        extra_search_paths=args.extra_search_paths,
+    )
+    executor_file = inspect.getfile(_executor.__class__)
+    executor_base_path = os.path.dirname(os.path.abspath(executor_file))
+    del _executor
+    return Path(executor_base_path)
