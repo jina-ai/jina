@@ -46,11 +46,16 @@ class GRPCGateway(BaseGateway):
             self.streamer._streamer, self.server
         )
 
+        jina_pb2_grpc.add_JinaSingleDataRequestRPCServicer_to_server(
+            self.streamer._streamer, self.server
+        )
+
         jina_pb2_grpc.add_JinaGatewayDryRunRPCServicer_to_server(self, self.server)
         jina_pb2_grpc.add_JinaInfoRPCServicer_to_server(self, self.server)
 
         service_names = (
             jina_pb2.DESCRIPTOR.services_by_name['JinaRPC'].full_name,
+            jina_pb2.DESCRIPTOR.services_by_name['JinaSingleDataRequestRPC'].full_name,
             jina_pb2.DESCRIPTOR.services_by_name['JinaGatewayDryRunRPC'].full_name,
             jina_pb2.DESCRIPTOR.services_by_name['JinaInfoRPC'].full_name,
             reflection.SERVICE_NAME,
@@ -109,7 +114,7 @@ class GRPCGateway(BaseGateway):
         :param context: grpc context
         :returns: the response request
         """
-        from docarray import DocumentArray, Document
+        from docarray import Document, DocumentArray
 
         from jina.serve.executors import __dry_run_endpoint__
 

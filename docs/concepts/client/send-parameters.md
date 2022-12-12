@@ -1,3 +1,4 @@
+(client-executor-parameters)=
 # Send Parameters
 
 The {class}`~jina.Client` can send key-value pairs as parameters to {class}`~jina.Executor`s as shown below:
