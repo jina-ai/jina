@@ -132,7 +132,7 @@ def update_runtime_cls(args, copy=False) -> 'Namespace':
 
 
 def _parse_fragment(fragment_string: str) -> Dict[str, str]:
-    """Takes a fragment string nd returns a dict of the components
+    """Takes a fragment string and returns a dict of the components
 
     :param fragment_string: a fragment string
     :return: a dict of components
