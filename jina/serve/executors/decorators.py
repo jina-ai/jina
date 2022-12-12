@@ -158,6 +158,8 @@ def requests(
 
     class FunctionMapper:
         def __init__(self, fn):
+            self._batching_decorator = None
+            fn = self._unwrap_batching_decorator(fn)
             arg_spec = inspect.getfullargspec(fn)
             if not arg_spec.varkw and not __args_executor_func__.issubset(
                 arg_spec.args
@@ -186,9 +188,16 @@ def requests(
 
                 self.fn = arg_wrapper
 
-        def __set_name__(self, owner, name):
-            _init_requests_by_class(owner)
-            self.fn.class_name = owner.__name__
+        def _unwrap_batching_decorator(self, fn):
+            if type(fn).__name__ == 'DynamicBatchingDecorator':
+                self._batching_decorator = fn
+                return fn.fn
+            else:
+                return fn
+
+        def _inject_owner_attrs(self, owner, name):
+            if not hasattr(owner, 'requests'):
+                owner.requests = {}
             if isinstance(on, (list, tuple)):
                 for o in on:
                     owner.requests_by_class[owner.__name__][o] = self.fn
@@ -199,10 +208,114 @@ def requests(
 
             setattr(owner, name, self.fn)
 
+        def __set_name__(self, owner, name):
+            _init_requests_by_class(owner)
+            if self._batching_decorator:
+                self._batching_decorator._inject_owner_attrs(owner, name)
+            self.fn.class_name = owner.__name__
+            self._inject_owner_attrs(owner, name)
+
+        def __call__(self, *args, **kwargs):
+            # this is needed to make this decorator work in combination with `@requests`
+            return self.fn(*args, **kwargs)
+
     if func:
         return FunctionMapper(func)
     else:
         return FunctionMapper
+
+
+def dynamic_batching(
+    func: Callable[
+        [
+            'DocumentArray',
+            Dict,
+            'DocumentArray',
+            List['DocumentArray'],
+            List['DocumentArray'],
+        ],
+        Optional[Union['DocumentArray', Dict]],
+    ] = None,
+    *,
+    preferred_batch_size: Optional[int] = None,
+    timeout: Optional[float] = 10_000,
+):
+    """
+    `@dynamic_batching` defines the dynamic batching behavior of an Executor.
+    Dynamic batching works by collecting Documents from multiple requests in a queue, and passing them to the Executor
+    in batches of specified size.
+    This can improve throughput and resource utilization at the cost of increased latency.
+    TODO(johannes) add docstring example
+
+    :param func: the method to decorate
+    :param preferred_batch_size: target number of Documents in a batch. The batcher will collect requests until `preferred_batch_size` is reached,
+        or until `timeout` is reached. Therefore, the actual batch size can be smaller or larger than `preferred_batch_size`.
+    :param timeout: maximum time in milliseconds to wait for a request to be assigned to a batch.
+        If the oldest request in the queue reaches a waiting time of `timeout`, the batch will be passed to the Executor,
+        even if it contains fewer than `preferred_batch_size` Documents.
+        Default is 10_000ms (10 seconds).
+    :return: decorated function
+    """
+
+    class DynamicBatchingDecorator:
+        def __init__(self, fn):
+            self._requests_decorator = None
+            fn = self._unwrap_requests_decorator(fn)
+            if iscoroutinefunction(fn):
+
+                @functools.wraps(fn)
+                async def arg_wrapper(
+                    executor_instance, *args, **kwargs
+                ):  # we need to get the summary from the executor, so we need to access the self
+                    return await fn(executor_instance, *args, **kwargs)
+
+                self.fn = arg_wrapper
+            else:
+
+                @functools.wraps(fn)
+                def arg_wrapper(
+                    executor_instance, *args, **kwargs
+                ):  # we need to get the summary from the executor, so we need to access the self
+                    return fn(executor_instance, *args, **kwargs)
+
+                self.fn = arg_wrapper
+
+        def _unwrap_requests_decorator(self, fn):
+            if type(fn).__name__ == 'FunctionMapper':
+                self._requests_decorator = fn
+                return fn.fn
+            else:
+                return fn
+
+        def _inject_owner_attrs(self, owner, name):
+            if not hasattr(owner, 'dynamic_batching'):
+                owner.dynamic_batching = {}
+
+            fn_name = self.fn.__name__
+            if not owner.dynamic_batching.get(fn_name):
+                owner.dynamic_batching[fn_name] = {}
+
+            owner.dynamic_batching[fn_name][
+                'preferred_batch_size'
+            ] = preferred_batch_size
+            owner.dynamic_batching[fn_name]['timeout'] = timeout
+            setattr(owner, name, self.fn)
+
+        def __set_name__(self, owner, name):
+            _init_requests_by_class(owner)
+            if self._requests_decorator:
+                self._requests_decorator._inject_owner_attrs(owner, name)
+            self.fn.class_name = owner.__name__
+            self._inject_owner_attrs(owner, name)
+
+        def __call__(self, *args, **kwargs):
+            # this is needed to make this decorator work in combination with `@requests`
+            return self.fn(*args, **kwargs)
+
+    if func:
+        return DynamicBatchingDecorator(func)
+    else:
+        return DynamicBatchingDecorator
 
 
 def monitor(

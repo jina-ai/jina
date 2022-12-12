@@ -1,12 +1,13 @@
+from typing import Dict, List, Tuple
+
 import pytest
-from typing import Tuple, List, Dict
+from opentelemetry.metrics import Meter
 from opentelemetry.sdk.metrics import MeterProvider
 from opentelemetry.sdk.metrics.export import (
+    HistogramDataPoint,
     InMemoryMetricReader,
     Metric,
-    HistogramDataPoint,
 )
-from opentelemetry.metrics import Meter
 
 from jina.serve.networking import _NetworkingHistograms
 

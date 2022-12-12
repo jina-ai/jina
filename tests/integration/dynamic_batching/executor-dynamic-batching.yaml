@@ -1,0 +1,23 @@
+!PlaceholderExecutorNoDecorators
+dynamic_batching:
+  /foo:
+    preferred_batch_size: 2
+    timeout: 4000
+  /bar:
+    preferred_batch_size: 4
+    timeout: 2000
+  /baz:
+    preferred_batch_size: 4
+    timeout: 2000
+  /wrongtype:
+    preferred_batch_size: 4
+    timeout: 2000
+  /wronglenda:
+    preferred_batch_size: 4
+    timeout: 2000
+  /wronglennone:
+    preferred_batch_size: 4
+    timeout: 2000
+  /param:
+    preferred_batch_size: 4
+    timeout: 2000

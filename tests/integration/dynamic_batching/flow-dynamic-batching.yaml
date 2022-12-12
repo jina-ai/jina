@@ -1,0 +1,9 @@
+jtype: Flow
+version: '1'
+executors:
+- name: exec0
+  uses: MyExecutor
+  uses_dynamic_batching:
+    /foo:
+      preferred_batch_size: 2
+      timeout: 4000

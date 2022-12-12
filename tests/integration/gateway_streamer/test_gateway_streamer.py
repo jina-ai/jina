@@ -5,6 +5,7 @@ from jina import DocumentArray, Executor, requests
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.worker import WorkerRuntime
 from jina.serve.streamer import GatewayStreamer
+from jina.types.request.data import DataRequest
 
 from tests.helper import _generate_args
 
@@ -94,6 +95,12 @@ async def test_custom_gateway(
         assert len(resp) == 60
         for doc in resp:
             assert doc.text == expected_text
+
+        request = DataRequest()
+        request.data.docs = DocumentArray.empty(60)
+        unary_response = await gateway_streamer.process_single_data(request=request)
+        assert len(unary_response.docs) == 60
+
     except Exception:
         assert False
     finally:  # clean up runtimes

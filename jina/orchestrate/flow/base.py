@@ -874,6 +874,7 @@ class Flow(
         uses_after_address: Optional[str] = None, 
         uses_before: Optional[Union[str, Type['BaseExecutor'], dict]] = None, 
         uses_before_address: Optional[str] = None, 
+        uses_dynamic_batching: Optional[dict] = None, 
         uses_metas: Optional[dict] = None, 
         uses_requests: Optional[dict] = None, 
         uses_with: Optional[dict] = None, 
@@ -974,6 +975,7 @@ class Flow(
         :param uses_after_address: The address of the uses-before runtime
         :param uses_before: The executor attached before the Pods described by --uses, typically before sending to all shards, accepted type follows `--uses`. This argument only applies for sharded Deployments (shards > 1).
         :param uses_before_address: The address of the uses-before runtime
+        :param uses_dynamic_batching: Dictionary of keyword arguments that will override the `dynamic_batching` configuration in `uses`
         :param uses_metas: Dictionary of keyword arguments that will override the `metas` configuration in `uses`
         :param uses_requests: Dictionary of keyword arguments that will override the `requests` configuration in `uses`
         :param uses_with: Dictionary of keyword arguments that will override the `with` configuration in `uses`
@@ -1119,6 +1121,7 @@ class Flow(
         :param uses_after_address: The address of the uses-before runtime
         :param uses_before: The executor attached before the Pods described by --uses, typically before sending to all shards, accepted type follows `--uses`. This argument only applies for sharded Deployments (shards > 1).
         :param uses_before_address: The address of the uses-before runtime
+        :param uses_dynamic_batching: Dictionary of keyword arguments that will override the `dynamic_batching` configuration in `uses`
         :param uses_metas: Dictionary of keyword arguments that will override the `metas` configuration in `uses`
         :param uses_requests: Dictionary of keyword arguments that will override the `requests` configuration in `uses`
         :param uses_with: Dictionary of keyword arguments that will override the `with` configuration in `uses`

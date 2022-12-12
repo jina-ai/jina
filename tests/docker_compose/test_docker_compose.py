@@ -383,7 +383,8 @@ async def test_flow_with_custom_gateway(logger, docker_images, tmpdir):
     [['multiprotocol-gateway']],
     indirect=True,
 )
-def test_flow_with_multiprotocol_gateway(logger, docker_images, tmpdir):
+@pytest.mark.parametrize('stream', [False, True])
+def test_flow_with_multiprotocol_gateway(logger, docker_images, tmpdir, stream):
     http_port = random_port()
     grpc_port = random_port()
     flow = Flow().config_gateway(
@@ -401,7 +402,7 @@ def test_flow_with_multiprotocol_gateway(logger, docker_images, tmpdir):
         import requests
 
         grpc_client = Client(protocol='grpc', port=grpc_port)
-        grpc_client.post('/', inputs=Document())
+        grpc_client.post('/', inputs=Document(), stream=stream)
         resp = requests.get(f'http://localhost:{http_port}').json()
         assert resp['protocol'] == 'http'
         assert AsyncNewLoopRuntime.is_ready(f'localhost:{grpc_port}')

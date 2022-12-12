@@ -8,7 +8,9 @@ from threading import Event
 import pytest
 import yaml
 from docarray import Document, DocumentArray
-from jina import Client, Executor, Flow, __cache_path__, requests
+from pytest import FixtureRequest
+
+from jina import Client, Executor, Flow, __cache_path__, dynamic_batching, requests
 from jina.clients.request import request_generator
 from jina.excepts import RuntimeFailToStart
 from jina.helper import random_port
@@ -31,6 +33,10 @@ class MyServeExec(Executor):
     def foo(self, docs, **kwargs):
         docs.texts = ['foo' for _ in docs]
 
+    @requests(on='/bar')
+    def bar(self, docs, **kwargs):
+        docs.texts = ['bar' for _ in docs]
+
 
 @pytest.fixture()
 def exposed_port():
@@ -39,7 +45,7 @@ def exposed_port():
 
 
 @pytest.fixture(autouse=False)
-def served_exec(exposed_port):
+def served_exec(request: FixtureRequest, exposed_port):
     import threading
     import time
 
@@ -47,10 +53,18 @@ def served_exec(exposed_port):
         MyServeExec.serve(**kwargs)
 
     e = threading.Event()
+
+    kwargs = {'port_expose': exposed_port, 'stop_event': e}
+    enable_dynamic_batching = request.param
+    if enable_dynamic_batching:
+        kwargs['uses_dynamic_batching'] = {
+            '/bar': {'preferred_batch_size': 4, 'timeout': 5000}
+        }
+
     t = threading.Thread(
         name='serve-exec',
         target=serve_exec,
-        kwargs={'port_expose': exposed_port, 'stop_event': e},
+        kwargs=kwargs,
     )
     t.start()
     time.sleep(3)  # allow Flow to start
@@ -388,10 +402,11 @@ async def test_async_apply():
     assert da1.texts == ['hello'] * N
 
 
+@pytest.mark.parametrize('served_exec', [False, True], indirect=True)
 def test_serve(served_exec, exposed_port):
-    docs = Client(port=exposed_port).post(on='/foo', inputs=DocumentArray.empty(5))
+    docs = Client(port=exposed_port).post(on='/bar', inputs=DocumentArray.empty(5))
 
-    assert docs.texts == ['foo' for _ in docs]
+    assert docs.texts == ['bar' for _ in docs]
 
 
 def test_set_workspace(tmpdir):
@@ -576,3 +591,67 @@ def test_executors_inheritance_binding():
     assert set(C().requests.keys()) == {'/index', '/default', '_jina_dry_run_'}
     assert C().requests['/index'] == B.b
     assert C().requests['/default'] == A.default_a
+
+
+@pytest.mark.parametrize(
+    'inputs,expected_values',
+    [
+        (
+            dict(preferred_batch_size=4, timeout=5_000),
+            dict(preferred_batch_size=4, timeout=5_000),
+        ),
+        (
+            dict(preferred_batch_size=4, timeout=5_000),
+            dict(preferred_batch_size=4, timeout=5_000),
+        ),
+        (
+            dict(preferred_batch_size=4),
+            dict(preferred_batch_size=4, timeout=10_000),
+        ),
+    ],
+)
+def test_dynamic_batching(inputs, expected_values):
+    class MyExec(Executor):
+        @dynamic_batching(**inputs)
+        def foo(self, docs, **kwargs):
+            pass
+
+    exec = MyExec()
+    assert exec.dynamic_batching['foo'] == expected_values
+
+
+@pytest.mark.parametrize(
+    'inputs,expected_values',
+    [
+        (
+            dict(preferred_batch_size=4, timeout=5_000),
+            dict(preferred_batch_size=4, timeout=5_000),
+        ),
+        (
+            dict(preferred_batch_size=4, timeout=5_000),
+            dict(preferred_batch_size=4, timeout=5_000),
+        ),
+        (
+            dict(preferred_batch_size=4),
+            dict(preferred_batch_size=4, timeout=10_000),
+        ),
+    ],
+)
+def test_combined_decorators(inputs, expected_values):
+    class MyExecutor(Executor):
+        @dynamic_batching(**inputs)
+        @requests(on='/foo')
+        def foo(self, docs, **kwargs):
+            pass
+
+    exec = MyExecutor()
+    assert exec.dynamic_batching['foo'] == expected_values
+
+    class MyExecutor2(Executor):
+        @requests(on='/foo')
+        @dynamic_batching(**inputs)
+        def foo(self, docs, **kwargs):
+            pass
+
+    exec = MyExecutor2()
+    assert exec.dynamic_batching['foo'] == expected_values

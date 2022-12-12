@@ -9,6 +9,8 @@ from typing import (
     Union,
 )
 
+from aiostream.aiter_utils import anext
+
 from jina.excepts import InternalNetworkError
 from jina.logging.logger import JinaLogger
 from jina.serve.stream.helper import AsyncRequestsIterator, _RequestsCounter
@@ -248,3 +250,13 @@ class RequestStreamer:
         """
         while self.total_num_floating_tasks_alive > 0:
             await asyncio.sleep(0)
+
+    async def process_single_data(
+        self, request: DataRequest, context=None
+    ) -> DataRequest:
+        """Implements request and response handling of a single DataRequest
+        :param request: DataRequest from Client
+        :param context: grpc context
+        :return: response DataRequest
+        """
+        return await anext(self.stream(iter([request]), context=context))
