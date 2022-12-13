@@ -140,7 +140,12 @@ def validate_uses(uses: str):
 
     try:
         scheme, _, _, _ = parse_hub_uri(uses)
-        if scheme in {'jinahub+docker', 'jinahub+sandbox'}:
+        if scheme in {
+            'jinahub+docker',
+            'jinahub+sandbox',
+            'jinaai+docker',
+            'jinaai+sandbox',
+        }:
             return True
     except ValueError:
         return False
