@@ -18,7 +18,7 @@ from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.gateway import GatewayRuntime
 from jina.serve.runtimes.head import HeadRuntime
 from jina.serve.runtimes.worker import WorkerRuntime
-from tests.helper import _generate_args
+from tests.helper import _generate_pod_args
 
 
 @pytest.mark.asyncio
@@ -684,7 +684,7 @@ async def _create_worker(pod, port_generator, type='worker', executor=None):
 
 
 def _create_worker_runtime(port, name='', executor=None):
-    args = _generate_args()
+    args = _generate_pod_args()
     args.port = port
     args.name = name
     if executor:
@@ -702,7 +702,7 @@ def _create_head_runtime(
     uses_after=None,
     retries=-1,
 ):
-    args = _generate_args()
+    args = _generate_pod_args()
     args.port = port
     args.name = name
     args.retries = retries

@@ -4,13 +4,16 @@ import os
 import time
 
 import pytest
+
 from jina.helper import random_port
 from jina.parsers import set_gateway_parser
 from jina.serve.runtimes.gateway import GatewayRuntime
 from jina.serve.runtimes.worker import WorkerRuntime
-
-from tests.helper import (_generate_args, _validate_custom_gateway_process,
-                          _validate_dummy_custom_gateway_response)
+from tests.helper import (
+    _generate_pod_args,
+    _validate_custom_gateway_process,
+    _validate_dummy_custom_gateway_response,
+)
 from tests.unit.yaml.dummy_gateway import DummyGateway
 from tests.unit.yaml.dummy_gateway_get_streamer import DummyGatewayGetStreamer
 
@@ -60,7 +63,7 @@ def _start_gateway_runtime(uses, uses_with, worker_port):
 
 
 def _create_worker_runtime(port, uses):
-    args = _generate_args(['--uses', uses, '--port', str(port)])
+    args = _generate_pod_args(['--uses', uses, '--port', str(port)])
 
     with WorkerRuntime(args) as runtime:
         runtime.run_forever()

@@ -7,7 +7,7 @@ from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.worker import WorkerRuntime
 from jina.serve.streamer import GatewayStreamer
 from jina.types.request.data import DataRequest
-from tests.helper import _generate_args
+from tests.helper import _generate_pod_args
 
 
 class StreamerTestExecutor(Executor):
@@ -19,7 +19,7 @@ class StreamerTestExecutor(Executor):
 
 
 def _create_worker_runtime(port, name=''):
-    args = _generate_args()
+    args = _generate_pod_args()
     args.port = port
     args.name = name
     args.uses = 'StreamerTestExecutor'

@@ -95,18 +95,11 @@ def test_distributed_replicas(input_docs, hosts, as_list):
 
 @pytest.mark.parametrize(
     'hosts_as_list',
-    [
-        lambda port1, port2: f'localhost:{port1},localhost:{port2}',
-        lambda port1, port2: [f'localhost:{port1}', f'localhost:{port2}'],
-    ],
+    [True, False],
 )
 @pytest.mark.parametrize(
     'ports_as_list',
-    [
-        lambda port1, port2: f'{port1},{port2}',
-        lambda port1, port2: [port1, port2],
-        lambda port1, port2: None,
-    ],
+    [True, False],
 )
 def test_distributed_replicas_host_parsing(input_docs, hosts_as_list, ports_as_list):
     port1, port2 = random_port(), random_port()
@@ -142,11 +135,11 @@ def test_distributed_replicas_host_parsing(input_docs, hosts_as_list, ports_as_l
     'hosts', ['localhost,localhost', ['localhost', 'localhost'], 'localhost']
 )
 @pytest.mark.parametrize(
-    'ports',
-    [lambda port1, port2: f'{port1},{port2}', lambda port1, port2: [port1, port2]],
+    'ports_as_list',
+    [True, False],
 )
 def test_distributed_replicas_docker(
-    input_docs, hosts, ports, replica_docker_image_built
+    input_docs, hosts, ports_as_list, replica_docker_image_built
 ):
     port1, port2 = random_port(), random_port()
     args1, args2 = _external_deployment_args_docker(
@@ -154,10 +147,15 @@ def test_distributed_replicas_docker(
     ), _external_deployment_args_docker(num_shards=1, port=port2)
     depl1 = Deployment(args1)
     depl2 = Deployment(args2)
+
+    if ports_as_list:
+        ports = [port1, port2]
+    else:
+        ports = f'{port1},{port2}'
     with depl1, depl2:
         flow = Flow().add(
             host=hosts,
-            port=ports(port1, port2),
+            port=ports,
             external=True,
         )
         with flow:

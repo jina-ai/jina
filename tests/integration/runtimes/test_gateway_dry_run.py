@@ -7,11 +7,11 @@ from jina.parsers import set_gateway_parser
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.gateway import GatewayRuntime
 from jina.serve.runtimes.worker import WorkerRuntime
-from tests.helper import _generate_args
+from tests.helper import _generate_pod_args
 
 
 def _create_worker_runtime(port, name='', executor=None):
-    args = _generate_args()
+    args = _generate_pod_args()
     args.port = port
     args.name = name
     if executor:

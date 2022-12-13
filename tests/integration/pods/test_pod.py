@@ -10,11 +10,13 @@ from jina import Client, Document, Executor, requests
 from jina.enums import PodRoleType, PollingType
 from jina.orchestrate.pods import Pod
 from jina.parsers import set_gateway_parser
-from jina.resources.health_check.gateway import (check_health_http,
-                                                 check_health_websocket)
+from jina.resources.health_check.gateway import (
+    check_health_http,
+    check_health_websocket,
+)
 from jina.resources.health_check.pod import check_health_pod
 from jina.serve.networking import GrpcConnectionPool
-from tests.helper import _generate_args
+from tests.helper import _generate_pod_args
 
 
 @pytest.mark.asyncio
@@ -513,7 +515,7 @@ async def _start_create_pod(pod, port_generator, type='worker', executor=None):
 
 
 def _create_worker_pod(port, name='', executor=None):
-    args = _generate_args()
+    args = _generate_pod_args()
     args.port = port
     args.name = name
     args.no_block_on_start = True
@@ -530,7 +532,7 @@ def _create_head_pod(
     uses_before=None,
     uses_after=None,
 ):
-    args = _generate_args()
+    args = _generate_pod_args()
     args.port = port
     args.name = name
     args.pod_cls = 'HeadRuntime'

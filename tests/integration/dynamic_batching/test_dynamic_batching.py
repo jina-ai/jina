@@ -8,15 +8,22 @@ from collections import namedtuple
 
 import pytest
 
-from jina import (Client, Document, DocumentArray, Executor, Flow,
-                  dynamic_batching, requests)
+from jina import (
+    Client,
+    Document,
+    DocumentArray,
+    Executor,
+    Flow,
+    dynamic_batching,
+    requests,
+)
 from jina.clients.request import request_generator
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.gateway import GatewayRuntime
 from jina.serve.runtimes.worker import WorkerRuntime
 from jina_cli.api import executor_native
-from tests.helper import _generate_args
+from tests.helper import _generate_pod_args
 
 cur_dir = os.path.dirname(__file__)
 
@@ -556,7 +563,7 @@ def _create_test_data_message(num_docs, endpoint: str = '/'):
 async def test_sigterm_handling(signal, uses_with):
     import time
 
-    args = _generate_args()
+    args = _generate_pod_args()
 
     def run(args):
 

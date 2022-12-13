@@ -10,7 +10,7 @@ from jina.clients.request import request_generator
 from jina.parsers import set_gateway_parser
 from jina.serve.networking import GrpcConnectionPool
 from jina_cli.api import executor_native, gateway
-from tests.helper import _generate_args
+from tests.helper import _generate_pod_args
 
 
 class DummyExecutor(Executor):
@@ -43,7 +43,7 @@ def _create_test_data_message():
 def test_executor_runtimes(signal, tmpdir):
     import time
 
-    args = _generate_args()
+    args = _generate_pod_args()
 
     def run(args):
 

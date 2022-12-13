@@ -10,8 +10,7 @@ import yaml
 from docarray import Document, DocumentArray
 from pytest import FixtureRequest
 
-from jina import (Client, Executor, Flow, __cache_path__, dynamic_batching,
-                  requests)
+from jina import Client, Executor, Flow, __cache_path__, dynamic_batching, requests
 from jina.clients.request import request_generator
 from jina.excepts import RuntimeFailToStart
 from jina.helper import random_port
@@ -19,7 +18,7 @@ from jina.serve.executors.metas import get_default_metas
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.worker import WorkerRuntime
-from tests.helper import _generate_args
+from tests.helper import _generate_pod_args
 
 
 class WorkspaceExec(Executor):
@@ -520,7 +519,7 @@ async def test_blocking_sync_exec():
                 doc.text = 'BlockingExecutor'
             return docs
 
-    args = _generate_args(['--uses', 'BlockingExecutor'])
+    args = _generate_pod_args(['--uses', 'BlockingExecutor'])
 
     cancel_event = multiprocessing.Event()
 

@@ -8,7 +8,7 @@ from jina.orchestrate.pods import Pod
 from jina.parsers import set_gateway_parser
 from jina.serve import runtimes
 from jina.serve.executors import BaseExecutor
-from tests.helper import _generate_args
+from tests.helper import _generate_pod_args
 
 
 @pytest.fixture()
@@ -30,7 +30,7 @@ class EnvChecker1(BaseExecutor):
 
 def test_pod_runtime_env_setting(fake_env):
     with Pod(
-        _generate_args(
+        _generate_pod_args(
             [
                 '--uses',
                 'EnvChecker1',
@@ -101,7 +101,7 @@ def test_gateway_runtimes(protocol, expected):
     ['WorkerRuntime', 'HeadRuntime'],
 )
 def test_non_gateway_runtimes(runtime_cls):
-    args = _generate_args(
+    args = _generate_pod_args(
         [
             '--runtime-cls',
             runtime_cls,
@@ -119,7 +119,7 @@ class RaisingExecutor(BaseExecutor):
 
 
 def test_failing_executor():
-    args = _generate_args(
+    args = _generate_pod_args(
         [
             '--uses',
             'RaisingExecutor',
@@ -157,7 +157,7 @@ def test_failing_gateway_runtimes(protocol, expected):
 
 
 def test_failing_head():
-    args = _generate_args(
+    args = _generate_pod_args(
         [
             '--runtime-cls',
             'HeadRuntime',
@@ -190,7 +190,7 @@ def test_close_before_start(monkeypatch):
         'get_runtime',
         lambda *args, **kwargs: SlowFakeRuntime,
     )
-    pod = Pod(_generate_args(['--noblock-on-start']))
+    pod = Pod(_generate_pod_args(['--noblock-on-start']))
     pod.start()
     pod.close()
 
@@ -215,6 +215,6 @@ def test_close_before_start_slow_enter(monkeypatch):
         'get_runtime',
         lambda *args, **kwargs: SlowFakeRuntime,
     )
-    pod = Pod(_generate_args(['--noblock-on-start']))
+    pod = Pod(_generate_pod_args(['--noblock-on-start']))
     pod.start()
     pod.close()
