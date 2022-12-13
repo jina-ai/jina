@@ -69,7 +69,6 @@ def test_load_dump_load(tmpdir):
     'yaml_file', ['yaml/flow-gateway.yml', 'yaml/flow-gateway-api.yml']
 )
 def test_load_modify_dump_load(tmpdir, yaml_file):
-    # TODO: later fix loading ports from flow yaml
     f: Flow = Flow.load_config(yaml_file)
     # assert vars inside `with`
     assert f._kwargs['name'] == 'abc'
