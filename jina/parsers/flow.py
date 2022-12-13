@@ -21,10 +21,12 @@ def mixin_flow_features_parser(parser):
     )
 
     gp.add_argument(
-        '--restart',
+        '--reload',
         action='store_true',
         default=False,
-        help='If set, the Flow will restart while blocked if the YAML configuration source is changed.'
+        help='If set, auto-reloading on file changes is enabled: the flow will restart while blocked if the YAML '
+        'configuration source is changed. This also applies apply to the underlying Executors, if their source '
+        'code or YAML configuration has changed.',
     )
 
     gp.add_argument(
