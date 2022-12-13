@@ -73,9 +73,12 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, InstrumentationMixin, AB
             metrics_exporter_host=self.args.metrics_exporter_host,
             metrics_exporter_port=self.args.metrics_exporter_port,
         )
-        send_telemetry_event(event='start', obj=self, entity_id=self._entity_id)
         self._start_time = time.time()
         self._loop.run_until_complete(self.async_setup())
+        self._send_telemetry_event()
+
+    def _send_telemetry_event(self):
+        send_telemetry_event(event='start', obj=self, entity_id=self._entity_id)
 
     def run_forever(self):
         """

@@ -212,7 +212,7 @@ from jina.orchestrate.flow.base import Flow
 
 # Executor
 from jina.serve.executors import BaseExecutor as Executor
-from jina.serve.executors.decorators import monitor, requests
+from jina.serve.executors.decorators import dynamic_batching, monitor, requests
 
 # Custom Gateway
 from jina.serve.gateway import BaseGateway as Gateway

@@ -40,9 +40,13 @@ class MultiProtocolGateway(Gateway):
         jina_pb2_grpc.add_JinaRPCServicer_to_server(
             self.streamer._streamer, self.grpc_server
         )
+        jina_pb2_grpc.add_JinaSingleDataRequestRPCServicer_to_server(
+            self.streamer._streamer, self.grpc_server
+        )
 
         service_names = (
             jina_pb2.DESCRIPTOR.services_by_name['JinaRPC'].full_name,
+            jina_pb2.DESCRIPTOR.services_by_name['JinaSingleDataRequestRPC'].full_name,
             reflection.SERVICE_NAME,
         )
         # Mark all services as healthy.
