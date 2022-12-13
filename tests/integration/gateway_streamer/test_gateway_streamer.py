@@ -1,12 +1,12 @@
 import multiprocessing
 
 import pytest
+
 from jina import DocumentArray, Executor, requests
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.worker import WorkerRuntime
 from jina.serve.streamer import GatewayStreamer
 from jina.types.request.data import DataRequest
-
 from tests.helper import _generate_args
 
 

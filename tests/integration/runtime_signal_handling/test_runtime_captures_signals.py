@@ -4,12 +4,12 @@ import signal
 import time
 
 import pytest
+
 from jina import Document, DocumentArray, Executor, requests
 from jina.clients.request import request_generator
 from jina.parsers import set_gateway_parser
 from jina.serve.networking import GrpcConnectionPool
 from jina_cli.api import executor_native, gateway
-
 from tests.helper import _generate_args
 
 

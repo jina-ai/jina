@@ -3,6 +3,7 @@ import os
 import subprocess
 
 import pytest
+
 from jina.checker import NetworkChecker
 from jina.jaml import JAML
 from jina.orchestrate.pods.factory import PodFactory
@@ -11,7 +12,6 @@ from jina.parsers.ping import set_ping_parser
 from jina_cli.autocomplete import ac_table
 from jina_cli.export import api_to_dict
 from jina_cli.lookup import _build_lookup_table, lookup_and_print
-
 from tests.helper import _generate_args
 
 

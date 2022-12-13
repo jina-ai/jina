@@ -7,6 +7,7 @@ from collections import defaultdict
 
 import grpc
 import pytest
+
 from jina import Client, Document, DocumentArray, Executor, requests
 from jina.clients.request import request_generator
 from jina.enums import PollingType
@@ -17,7 +18,6 @@ from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.gateway import GatewayRuntime
 from jina.serve.runtimes.head import HeadRuntime
 from jina.serve.runtimes.worker import WorkerRuntime
-
 from tests.helper import _generate_args
 
 

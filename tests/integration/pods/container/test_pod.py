@@ -4,6 +4,7 @@ import os
 import time
 
 import pytest
+
 from jina import Client, Document
 from jina.enums import PodRoleType, PollingType
 from jina.helper import random_port
@@ -12,7 +13,6 @@ from jina.orchestrate.pods.container import ContainerPod
 from jina.parsers import set_gateway_parser
 from jina.serve.runtimes.head import HeadRuntime
 from jina.serve.runtimes.worker import WorkerRuntime
-
 from tests.helper import _generate_args
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))

@@ -4,12 +4,12 @@ import uuid
 
 import pytest
 from docarray import DocumentArray
+
 from jina import Client, Executor, requests
 from jina.parsers import set_gateway_parser
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.gateway import GatewayRuntime
 from jina.serve.runtimes.worker import WorkerRuntime
-
 from tests.helper import _generate_args
 
 from .test_runtimes import _create_gateway_runtime, _create_head_runtime

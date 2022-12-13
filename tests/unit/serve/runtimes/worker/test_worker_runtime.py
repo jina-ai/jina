@@ -9,6 +9,7 @@ import grpc
 import pytest
 import requests as req
 from docarray import Document
+
 from jina import DocumentArray, Executor, requests
 from jina.clients.request import request_generator
 from jina.proto import jina_pb2, jina_pb2_grpc
@@ -16,7 +17,6 @@ from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.worker import WorkerRuntime
 from jina.serve.runtimes.worker.request_handling import WorkerRequestHandler
-
 from tests.helper import _generate_args
 
 

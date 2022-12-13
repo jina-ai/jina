@@ -4,11 +4,11 @@ import time
 import grpc
 import pytest
 import requests
+
 from jina import __jina_env__, __version__
 from jina.proto import jina_pb2, jina_pb2_grpc
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.worker import WorkerRuntime
-
 from tests.helper import _generate_args
 
 from .test_runtimes import _create_gateway_runtime, _create_head_runtime

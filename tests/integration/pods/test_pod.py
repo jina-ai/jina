@@ -5,6 +5,7 @@ import time
 from collections import defaultdict
 
 import pytest
+
 from jina import Client, Document, Executor, requests
 from jina.enums import PodRoleType, PollingType
 from jina.orchestrate.pods import Pod
@@ -13,7 +14,6 @@ from jina.resources.health_check.gateway import (check_health_http,
                                                  check_health_websocket)
 from jina.resources.health_check.pod import check_health_pod
 from jina.serve.networking import GrpcConnectionPool
-
 from tests.helper import _generate_args
 
 
