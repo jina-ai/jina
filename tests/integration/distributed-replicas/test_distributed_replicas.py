@@ -93,6 +93,30 @@ def test_distributed_replicas(input_docs, hosts, as_list):
         assert any([depl1_id != depl_id for depl_id in resp[1:, 'tags__uuid']])
 
 
+def test_distributed_replicas_hosts_mismatch(input_docs):
+    port1, port2 = random_port(), random_port()
+    ports = [port1, port2]
+    args1, args2 = _external_deployment_args(
+        num_shards=1, port=port1
+    ), _external_deployment_args(num_shards=1, port=port2)
+    depl1 = Deployment(args1)
+    depl2 = Deployment(args2)
+    with depl1, depl2:
+        flow = Flow().add(
+            host=['localhost', 'localhost', 'localhost'],
+            port=ports,
+            external=True,
+            replicas=2,
+        )
+        with pytest.raises(ValueError) as err_info:
+            with flow:
+                pass
+    assert (
+        'Number of hosts (3) does not match the number of replicas (2)'
+        in err_info.value.args[0]
+    )
+
+
 @pytest.mark.parametrize(
     'hosts_as_list',
     [True, False],
