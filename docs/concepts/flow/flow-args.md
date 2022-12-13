@@ -6,6 +6,6 @@
 | `quiet` | If set, then no log will be emitted from this object. | `boolean` | `False` |
 | `quiet_error` | If set, then exception stack information will not be added to the log | `boolean` | `False` |
 | `uses` | The YAML path represents a flow. It can be either a local file path or a URL. | `string` | `None` |
-| `restart` | If set, the Flow will restart while blocked if the YAML configuration source is changed. | `boolean` | `False` |
+| `reload` | If set, auto-reloading on file changes is enabled: the flow will restart while blocked if the YAML configuration source is changed. This also applies apply to the underlying Executors, if their source code or YAML configuration has changed. | `boolean` | `False` |
 | `env` | The map of environment variables that are available inside runtime | `object` | `None` |
 | `inspect` | The strategy on those inspect deployments in the flow.<br><br>    If `REMOVE` is given then all inspect deployments are removed when building the flow. | `string` | `COLLECT` |
