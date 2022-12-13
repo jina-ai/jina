@@ -55,25 +55,28 @@ flow = Flow().add(uses=MyExecutor)
 
 ````{tab} Using uses_dynamic_batching argument
 This argument is a dictionnary mapping each endpoint to its corresponding configuration:
-```{code-block} python
----
-emphasize-lines: 12
----
+```python
 from jina import requests, dynamic_batching, Executor, DocumentArray
+
 
 class MyExecutor(Executor):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        
+
         # initialize model
         import torch
+
         self.model = torch.nn.Linear(in_features=128, out_features=128)
-    
+
     @requests(on='/bar')
     def embed(self, docs: DocumentArray):
         docs.embeddings = self.model(docs.tensors)
-        
-flow = Flow().add(uses=MyExecutor, uses_dynamic_batching={'/bar': {'preferred_batch_size': 10, 'timeout': 200}})
+
+
+flow = Flow().add(
+    uses=MyExecutor,
+    uses_dynamic_batching={'/bar': {'preferred_batch_size': 10, 'timeout': 200}},
+)
 ```
 ````
 
@@ -81,20 +84,19 @@ flow = Flow().add(uses=MyExecutor, uses_dynamic_batching={'/bar': {'preferred_ba
 If you use YAML to enable dynamic batching on an Executor, you can use the `dynamic_batching` section in the 
 Executor section. Suppose the Executor is implemented like this:
 `my_executor.py`:
-```{code-block} python
----
-emphasize-lines: 12
----
+```python
 from jina import requests, dynamic_batching, Executor, DocumentArray
+
 
 class MyExecutor(Executor):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        
+
         # initialize model
         import torch
+
         self.model = torch.nn.Linear(in_features=128, out_features=128)
-    
+
     @requests(on='/bar')
     def embed(self, docs: DocumentArray):
         docs.embeddings = self.model(docs.tensors)
