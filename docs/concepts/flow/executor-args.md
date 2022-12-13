@@ -30,9 +30,8 @@
 | `timeout_ready` | The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting forever | `number` | `600000` |
 | `env` | The map of environment variables that are available inside runtime | `object` | `None` |
 | `floating` | If set, the current Pod/Deployment can not be further chained, and the next `.add()` will chain after the last Pod/Deployment not this current one. | `boolean` | `False` |
-| `restart` | If set, the Executor will restart while serving if the YAML configuration source is changed. This differs from `reload` argument in that this will restart the server and more configuration can be changed, like number of replicas. | `boolean` | `False` |
+| `reload` | If set, the Executor will restart while serving if the YAML configuration source or Executor modules are changed. If the YAML configuration is changed, the whole deployment is reloaded and new processes will be restarted. If only python modules of the Executor have changed, they will be reloaded to the interpreter without restarting process. | `boolean` | `False` |
 | `port` | The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (`--external` or `external=True`) this can be a list of ports, separated by commas. Then, every resulting address will be considered as one replica of the Executor. | `number` | `random in [49152, 65535]` |
-| `reload` | If set, the Executor reloads the modules as they change | `boolean` | `False` |
 | `monitoring` | If set, spawn an http server with a prometheus endpoint to expose metrics | `boolean` | `False` |
 | `port_monitoring` | The port on which the prometheus server is exposed, default is a random port between [49152, 65535] | `string` | `random in [49152, 65535]` |
 | `retries` | Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas) | `number` | `-1` |
