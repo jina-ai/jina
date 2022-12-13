@@ -87,6 +87,7 @@ class RequestStreamer:
             ):  # inside GrpcGateway we can handle the error directly here through the grpc context
                 context.set_details(err.details())
                 context.set_code(err.code())
+                context.set_trailing_metadata(err.trailing_metadata())
                 self.logger.error(
                     f'Error while getting responses from deployments: {err.details()}'
                 )
