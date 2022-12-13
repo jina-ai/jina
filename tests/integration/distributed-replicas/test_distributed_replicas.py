@@ -130,14 +130,3 @@ def test_distributed_replicas_docker(input_docs, hosts, ports, replica_docker_im
 
         depl1_id = resp[0].tags['uuid']
         assert any([depl1_id != depl_id for depl_id in resp[1:, 'tags__uuid']])
-
-
-def test_multiple_shards_and_replicas():
-    port1, port2 = random_port(), random_port()
-    with pytest.raises(ValueError):
-        flow = Flow().add(
-            host=['localhost', 'localhost'],
-            port=f'{port1},{port2}',
-            external=True,
-            shards=2,
-        )

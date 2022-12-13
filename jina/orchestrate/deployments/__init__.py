@@ -851,10 +851,6 @@ class Deployment(BaseDeployment):
                         _args.port_monitoring = helper.random_port()
                 
                 else:
-                    if shards > 1:
-                        raise ValueError(
-                            f'external deployment with multiple shards is not supported'
-                        )
                     _args.port = self.ext_repl_ports[replica_id]
                     _args.host = self.ext_repl_hosts[replica_id]
                     _args.scheme = self.ext_repl_schemes[replica_id]
