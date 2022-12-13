@@ -93,3 +93,94 @@ print(c.post(on='/', inputs=DocumentArray.empty(1))[0].text)
 'I am coming from a new version of MyExecutor'
 ```
 
+(restart-executor)=
+
+Sometimes, you don't just want to change the Python files where the Executor logic is implemented, but you also want to change the Executor's YAML configuration.
+For this you can use the `restart` argument for the Executor in the Flow. When `restart` is set, the Executor deployment automatically restarts whenever a change in its YAML configuration file is detected.
+
+Compared to {ref}`reload <reload-executor>`, where the Executor class is reloaded with the new Python files, in this case you can change the exact Executor class being used which is not possible with the {ref}`reload <reload-executor>` option.
+
+````{admonition} Caution
+:class: caution
+This feature aims to let developers iterate faster during development, but is not intended to for use in in production.
+````
+
+````{admonition} Note
+:class: note
+This feature requires watchfiles>=0.18 package to be installed.
+````
+
+To see how this works, let's define an Executor configuration in `executor.yml`.
+```yaml
+jtype: MyExecutorBeforeRestart
+```
+
+Build a Flow with the Executor in it and expose it:
+
+```python
+import os
+from jina import Flow, Executor, requests
+
+os.environ['JINA_LOG_LEVEL'] = 'DEBUG'
+
+
+class MyExecutorBeforeRestart(Executor):
+    @requests
+    def foo(self, docs, **kwargs):
+        for doc in docs:
+            doc.text = 'MyExecutorBeforeRestart'
+
+
+class MyExecutorAfterRestart(Executor):
+    @requests
+    def foo(self, docs, **kwargs):
+        for doc in docs:
+            doc.text = 'MyExecutorAfterRestart'
+
+
+f = Flow(port=12345).add(uses='executor.yml', restart=True)
+
+with f:
+    f.block()
+```
+
+You can see that the Executor is running and serving:
+
+```python
+from jina import Client, DocumentArray
+
+c = Client(port=12345)
+
+print(c.post(on='/', inputs=DocumentArray.empty(1))[0].text)
+```
+
+```text
+MyExecutorBeforeRestart
+```
+
+You can edit the Executor YAML file and save the changes:
+
+```yaml
+jtype: MyExecutorAfterRestart
+```
+```
+
+In the Flow's logs we should see:
+
+```text
+INFO   Flow@1843 change in Executor configuration YAML /home/joan/jina/jina/exec.yml observed, restarting Executor deployment  
+```
+
+And after this, you can see the restarted Executor being served:
+
+```python
+from jina import Client, DocumentArray
+
+c = Client(port=12345)
+
+print(c.post(on='/', inputs=DocumentArray.empty(1))[0].text)
+```
+
+```yaml
+jtype: MyExecutorAfterRestart
+```

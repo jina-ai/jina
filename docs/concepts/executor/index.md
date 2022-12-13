@@ -40,6 +40,7 @@ basics
 add-endpoints
 run
 serve
+dynamic-batching
 health-check
 hot-reload
 file-structure

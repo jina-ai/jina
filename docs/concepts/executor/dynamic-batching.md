@@ -22,7 +22,7 @@ You can enable and configure dynamic batching on an Executor endpoint using seve
 * `uses_dynamic_batching` Executor parameter
 * `dynamic_batching` section in Executor YAML
 
-## Example:
+## Example
 The following examples show how to enable dynamic batching on an Executor Endpoint:
 
 ````{tab} Using dynamic_batching Decorator
@@ -102,7 +102,7 @@ class MyExecutor(Executor):
 
 Then, in your `config.yaml` file, you can enable dynamic batching on the `/bar` endpoint like so:
 ``` yaml
-!MyExecutor
+jtype: MyExecutor
 py_modules:
     - my_executor.yaml
 dynamic_batching:
@@ -113,7 +113,7 @@ dynamic_batching:
 ````
 
 (executor-dynamic-batching-parameters)=
-## Dynamic Batching Parameters
+## Parameters
 The following parameters allow you to configure the dynamic batching behavior on each Executor endpoint:
 * `preferred_batch_size`: Target number of Documents in a batch. The batcher collects requests until 
 `preferred_batch_size` is reached, or until `timeout` is reached. Therefore, the actual batch size could be smaller or 
