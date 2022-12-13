@@ -149,7 +149,6 @@ You can edit the Executor YAML file and save the changes:
 ```yaml
 jtype: MyExecutorAfterReload
 ```
-```
 
 In the Flow's logs we should see:
 
