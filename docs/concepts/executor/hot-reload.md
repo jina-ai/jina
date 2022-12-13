@@ -3,9 +3,9 @@
 
 While developing your Executor, it can be useful to have the Executor be refreshed from the source code while you are working on it, without needing to restart the Flow server.
 
-For this you can use the `reload` argument for the Executor so that it watches changes in the source code and the Executor YAML configuration file and makes sure that the changes are applied to the served Executor.
+For this you can use the Executor's `reload` argument to watch changes in the source code and the Executor YAML configuration and ensure changes are applied to the served Executor.
 
-The Executor will keep track in changes inside the Executor source file, the Executor YAML configuration file, every file passed in `py_modules` argument from {meth}`~jina.Flow.add` and all the Python files inside the folder where the Executor class is defined and its sub-folders.
+The Executor will keep track of changes inside the Executor source and YAML files, every file passed in `py_modules` argument from {meth}`~jina.Flow.add` and all the Python files in the Executor's folder and sub-folders).
 
 ````{admonition} Caution
 :class: caution
@@ -93,10 +93,9 @@ print(c.post(on='/', inputs=DocumentArray.empty(1))[0].text)
 'I am coming from a new version of MyExecutor'
 ```
 
-Reloading will also be applied in case the Executor's YAML configuration file is changed. In this case, the Executor 
-deployment restarts.
+Reloading is also applied when the Executor's YAML configuration file is changed. In this case, the Executor deployment restarts.
 
-To see how this works, let's define an Executor configuration in `executor.yml`.
+To see how this works, let's define an Executor configuration in `executor.yml`:
 ```yaml
 jtype: MyExecutorBeforeReload
 ```
@@ -150,7 +149,7 @@ You can edit the Executor YAML file and save the changes:
 jtype: MyExecutorAfterReload
 ```
 
-In the Flow's logs we should see:
+In the Flow's logs you should see:
 
 ```text
 INFO   Flow@1843 change in Executor configuration YAML /home/joan/jina/jina/exec.yml observed, restarting Executor deployment  

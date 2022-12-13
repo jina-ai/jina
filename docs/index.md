@@ -32,7 +32,7 @@ Now that you’re set up, let’s create a project:
 jina new hello-jina && jina flow --uses hello-jina/flow.yml
 ```
 ````
-````{tab} In the Docker container
+````{tab} In a Docker container
 ```shell
 docker run jinaai/jina:latest -v "$(pwd)/j:/j" new hello-jina
 docker run -v "$(pwd)/j:/j" -p 54321:54321 jinaai/jina:latest flow --uses /j/hello-jina/flow.yml
@@ -59,7 +59,7 @@ da = c.post('/', DocumentArray.empty(2))
 print(da.texts)
 ```
 ````
-````{tab} via Websocket in Python
+````{tab} via WebSocket in Python
 ```python
 from jina import Client, DocumentArray
 

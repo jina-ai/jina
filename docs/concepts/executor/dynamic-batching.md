@@ -54,7 +54,7 @@ flow = Flow().add(uses=MyExecutor)
 ````
 
 ````{tab} Using uses_dynamic_batching argument
-This argument is a dictionnary mapping each endpoint to its corresponding configuration:
+This argument is a dictionary mapping each endpoint to its corresponding configuration:
 ```python
 from jina import requests, dynamic_batching, Executor, DocumentArray
 
