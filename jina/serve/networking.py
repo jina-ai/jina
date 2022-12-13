@@ -970,7 +970,7 @@ class GrpcConnectionPool:
         # requests usually gets cancelled when the server shuts down
         # retries for cancelled requests will hit another replica in K8s
         self._logger.debug(
-            f'GRPC call to {current_deployment} errored, getting error {format_grpc_error(error)} for the {retry_i + 1}th time.'
+            f'GRPC call to {current_deployment} errored, with error {format_grpc_error(error)} and for the {retry_i + 1}th time.'
         )
         if (
             error.code() != grpc.StatusCode.UNAVAILABLE
@@ -1003,13 +1003,8 @@ class GrpcConnectionPool:
                 details=error.details(),
             )
         else:
-            trailing_metadata = (
-                f', {format_grpc_error(error)}'
-                if type(error) == grpc.aio._call.AioRpcError
-                else ''
-            )
             self._logger.debug(
-                f'GRPC call to deployment {current_deployment} failed with code {error.code()} {trailing_metadata}, retry attempt {retry_i + 1}/{total_num_tries - 1}.'
+                f'GRPC call to deployment {current_deployment} failed with error {format_grpc_error(error)}, for retry attempt {retry_i + 1}/{total_num_tries - 1}.'
                 f' Trying next replica, if available.'
             )
             return None

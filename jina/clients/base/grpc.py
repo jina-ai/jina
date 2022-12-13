@@ -10,6 +10,7 @@ from jina.clients.helper import callback_exec
 from jina.excepts import BadClientInput, BadServerFlow, InternalNetworkError
 from jina.logging.profile import ProgressBar
 from jina.proto import jina_pb2, jina_pb2_grpc
+from jina.serve.helper import extract_trailing_metadata
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.stream.helper import AsyncRequestsIterator
 
@@ -226,9 +227,9 @@ class GRPCBaseClient(BaseClient):
                     except (grpc.aio._call.AioRpcError, InternalNetworkError) as err:
                         my_code = err.code()
                         my_details = err.details()
-                        trailing_metadata = err.trailing_metadata()
+                        trailing_metadata = extract_trailing_metadata(err)
                         msg = f'gRPC error: {my_code} {my_details}'
-                        if len(trailing_metadata):
+                        if trailing_metadata:
                             msg = f'gRPC error: {my_code} {my_details}\n{trailing_metadata}'
 
                         if my_code == grpc.StatusCode.UNAVAILABLE:

@@ -3,7 +3,7 @@ from typing import Set, Union
 
 import grpc.aio
 
-from jina.serve.helper import format_grpc_error
+from jina.serve.helper import extract_trailing_metadata
 
 
 class BaseJinaException(BaseException):
@@ -137,12 +137,11 @@ class InternalNetworkError(grpc.aio.AioRpcError, BaseJinaException):
         """
         :return: details of this exception
         """
-        details = self._details if self._details else self.og_exception.details()
-        trailing_metadata = self.og_exception.trailing_metadata()
-        if len(trailing_metadata):
-            return f'''
-                details={details}\n
-                trailing metadata={trailing_metadata}\n
-            '''
+        if self._details:
+            trailing_metadata = extract_trailing_metadata(self.og_exception)
+            if trailing_metadata:
+                return f'{self._details}\n{trailing_metadata}'
+            else:
+                return self._details
 
-        return details
+        return self.og_exception.details()
