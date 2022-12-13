@@ -3,9 +3,9 @@
 
 While developing your Executor, it can be useful to have the Executor be refreshed from the source code while you are working on it, without needing to restart the Flow server.
 
-For this you can use the `reload` argument for the Executor so that it watches changes in the source code and makes sure that the changes are applied live to the served Executor.
+For this you can use the `reload` argument for the Executor so that it watches changes in the source code and the Executor YAML configuration file and makes sure that the changes are applied to the served Executor.
 
-The Executor will keep track in changes inside the Executor source file, every file passed in `py_modules` argument from {meth}`~jina.Flow.add` and all the Python files inside the folder where the Executor class is defined and its subfolders.
+The Executor will keep track in changes inside the Executor source file, the Executor YAML configuration file, every file passed in `py_modules` argument from {meth}`~jina.Flow.add` and all the Python files inside the folder where the Executor class is defined and its sub-folders.
 
 ````{admonition} Caution
 :class: caution
@@ -93,26 +93,12 @@ print(c.post(on='/', inputs=DocumentArray.empty(1))[0].text)
 'I am coming from a new version of MyExecutor'
 ```
 
-(restart-executor)=
-
-Sometimes, you don't just want to change the Python files where the Executor logic is implemented, but you also want to change the Executor's YAML configuration.
-For this you can use the `restart` argument for the Executor in the Flow. When `restart` is set, the Executor deployment automatically restarts whenever a change in its YAML configuration file is detected.
-
-Compared to {ref}`reload <reload-executor>`, where the Executor class is reloaded with the new Python files, in this case you can change the exact Executor class being used which is not possible with the {ref}`reload <reload-executor>` option.
-
-````{admonition} Caution
-:class: caution
-This feature aims to let developers iterate faster during development, but is not intended to for use in in production.
-````
-
-````{admonition} Note
-:class: note
-This feature requires watchfiles>=0.18 package to be installed.
-````
+Reloading will also be applied in case the Executor's YAML configuration file is changed. In this case, the Executor 
+deployment restarts.
 
 To see how this works, let's define an Executor configuration in `executor.yml`.
 ```yaml
-jtype: MyExecutorBeforeRestart
+jtype: MyExecutorBeforeReload
 ```
 
 Build a Flow with the Executor in it and expose it:
@@ -124,18 +110,18 @@ from jina import Flow, Executor, requests
 os.environ['JINA_LOG_LEVEL'] = 'DEBUG'
 
 
-class MyExecutorBeforeRestart(Executor):
+class MyExecutorBeforeReload(Executor):
     @requests
     def foo(self, docs, **kwargs):
         for doc in docs:
-            doc.text = 'MyExecutorBeforeRestart'
+            doc.text = 'MyExecutorBeforeReload'
 
 
-class MyExecutorAfterRestart(Executor):
+class MyExecutorAfterReload(Executor):
     @requests
     def foo(self, docs, **kwargs):
         for doc in docs:
-            doc.text = 'MyExecutorAfterRestart'
+            doc.text = 'MyExecutorAfterReload'
 
 
 f = Flow(port=12345).add(uses='executor.yml', restart=True)
@@ -155,13 +141,13 @@ print(c.post(on='/', inputs=DocumentArray.empty(1))[0].text)
 ```
 
 ```text
-MyExecutorBeforeRestart
+MyExecutorBeforeReload
 ```
 
 You can edit the Executor YAML file and save the changes:
 
 ```yaml
-jtype: MyExecutorAfterRestart
+jtype: MyExecutorAfterReload
 ```
 ```
 
@@ -182,5 +168,5 @@ print(c.post(on='/', inputs=DocumentArray.empty(1))[0].text)
 ```
 
 ```yaml
-jtype: MyExecutorAfterRestart
+jtype: MyExecutorAfterReload
 ```
