@@ -124,7 +124,7 @@ class MyExecutorAfterReload(Executor):
             doc.text = 'MyExecutorAfterReload'
 
 
-f = Flow(port=12345).add(uses='executor.yml', restart=True)
+f = Flow(port=12345).add(uses='executor.yml', reload=True)
 
 with f:
     f.block()
@@ -157,7 +157,7 @@ In the Flow's logs we should see:
 INFO   Flow@1843 change in Executor configuration YAML /home/joan/jina/jina/exec.yml observed, restarting Executor deployment  
 ```
 
-And after this, you can see the restarted Executor being served:
+And after this, you can see the reloaded Executor being served:
 
 ```python
 from jina import Client, DocumentArray

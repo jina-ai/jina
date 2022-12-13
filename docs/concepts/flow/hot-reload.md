@@ -1,9 +1,8 @@
-(restart-flow)=
 # Hot Reload
 
-While developing your Flow, it can be useful to have it restart automatically as you change the Flow YAML.
+While developing your Flow, it can be useful to have it reload automatically as you change the Flow YAML.
 
-For this you can use the Flow's `restart` argument to restart it with the updated configuration every time you change the YAML configuration.
+For this you can use the Flow's `reload` argument to reload it with the updated configuration every time you change the YAML configuration.
 
 ````{admonition} Caution
 :class: caution
@@ -15,12 +14,12 @@ This feature aims to let developers iterate faster while developing, but is not 
 This feature requires watchfiles>=0.18 package to be installed.
 ````
 
-To see how this works, let's define a Flow in `flow.yml` with a restart option.
+To see how this works, let's define a Flow in `flow.yml` with a `reload` option.
 ```yaml
 jtype: Flow
 with:
   port: 12345
-  restart: True
+  reload: True
 executors:
 - name: exec1
   uses: ConcatenateTextExecutor
@@ -69,7 +68,7 @@ We can edit the Flow YAML file and save the changes:
 jtype: Flow
 with:
   port: 12345
-  restart: True
+  reload: True
 executors:
 - name: exec1
   uses: ConcatenateTextExecutor
