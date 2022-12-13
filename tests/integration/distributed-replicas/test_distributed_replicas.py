@@ -66,10 +66,15 @@ def _external_deployment_args_docker(num_shards, port=None):
     return set_deployment_parser().parse_args(args)
 
 
-@pytest.mark.parametrize('hosts', ['localhost,localhost', ['localhost','localhost'], 'localhost'])
-@pytest.mark.parametrize('ports', [lambda port1,port2: f'{port1},{port2}', lambda port1,port2: [port1,port2]])
-def test_distributed_replicas(input_docs, hosts, ports):
+@pytest.mark.parametrize(
+    'hosts', ['localhost,localhost', ['localhost', 'localhost'], 'localhost']
+)
+@pytest.mark.parametrize('as_list', [True, False])
+def test_distributed_replicas(input_docs, hosts, as_list):
     port1, port2 = random_port(), random_port()
+    ports = [port1, port2]
+    if not as_list:
+        ports = f'{port1},{port2}'
     args1, args2 = _external_deployment_args(
         num_shards=1, port=port1
     ), _external_deployment_args(num_shards=1, port=port2)
@@ -78,7 +83,7 @@ def test_distributed_replicas(input_docs, hosts, ports):
     with depl1, depl2:
         flow = Flow().add(
             host=hosts,
-            port=ports(port1, port2),
+            port=ports,
             external=True,
         )
         with flow:
@@ -88,8 +93,21 @@ def test_distributed_replicas(input_docs, hosts, ports):
         assert any([depl1_id != depl_id for depl_id in resp[1:, 'tags__uuid']])
 
 
-@pytest.mark.parametrize('hosts', [lambda port1,port2: f'localhost:{port1},localhost:{port2}', lambda port1,port2: [f'localhost:{port1}',f'localhost:{port2}']])
-@pytest.mark.parametrize('ports', [lambda port1,port2: f'{port1},{port2}', lambda port1,port2: [port1,port2], lambda port1,port2: None])
+@pytest.mark.parametrize(
+    'hosts',
+    [
+        lambda port1, port2: f'localhost:{port1},localhost:{port2}',
+        lambda port1, port2: [f'localhost:{port1}', f'localhost:{port2}'],
+    ],
+)
+@pytest.mark.parametrize(
+    'ports',
+    [
+        lambda port1, port2: f'{port1},{port2}',
+        lambda port1, port2: [port1, port2],
+        lambda port1, port2: None,
+    ],
+)
 def test_distributed_replicas_host_parsing(input_docs, hosts, ports):
     port1, port2 = random_port(), random_port()
     args1, args2 = _external_deployment_args(
@@ -110,9 +128,16 @@ def test_distributed_replicas_host_parsing(input_docs, hosts, ports):
         assert any([depl1_id != depl_id for depl_id in resp[1:, 'tags__uuid']])
 
 
-@pytest.mark.parametrize('hosts', ['localhost,localhost', ['localhost','localhost'], 'localhost'])
-@pytest.mark.parametrize('ports', [lambda port1,port2: f'{port1},{port2}', lambda port1,port2: [port1,port2]])
-def test_distributed_replicas_docker(input_docs, hosts, ports, replica_docker_image_built):
+@pytest.mark.parametrize(
+    'hosts', ['localhost,localhost', ['localhost', 'localhost'], 'localhost']
+)
+@pytest.mark.parametrize(
+    'ports',
+    [lambda port1, port2: f'{port1},{port2}', lambda port1, port2: [port1, port2]],
+)
+def test_distributed_replicas_docker(
+    input_docs, hosts, ports, replica_docker_image_built
+):
     port1, port2 = random_port(), random_port()
     args1, args2 = _external_deployment_args_docker(
         num_shards=1, port=port1
