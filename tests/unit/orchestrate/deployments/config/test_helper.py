@@ -42,7 +42,10 @@ def test_to_compatible_name():
     assert to_compatible_name('executor/hey-ha_HO') == 'executor-hey-ha-ho'
 
 
-def test_get_image_name(mocker, monkeypatch):
+@pytest.mark.parametrize(
+    'uses', ['jinahub://DummyExecutor', 'jinaai://jina-ai/DummyExecutor']
+)
+def test_get_image_name(mocker, monkeypatch, uses):
     mock = mocker.Mock()
 
     def _mock_fetch(
@@ -70,8 +73,6 @@ def test_get_image_name(mocker, monkeypatch):
         )
 
     monkeypatch.setattr(HubIO, 'fetch_meta', _mock_fetch)
-
-    uses = 'jinahub://DummyExecutor'
 
     image_name = get_image_name(uses)
 

@@ -575,11 +575,16 @@ def test_raise_exception_invalid_executor(tmpdir):
         f.to_kubernetes_yaml(str(tmpdir))
 
 
-def test_flow_to_k8s_yaml_sandbox(tmpdir):
+@pytest.mark.parametrize(
+    'uses',
+    [
+        'jinahub+sandbox://DummyHubExecutor',
+        f'jinaai+sandbox://jina-ai/DummyHubExecutor',
+    ],
+)
+def test_flow_to_k8s_yaml_sandbox(tmpdir, uses):
 
-    flow = Flow(name='test-flow', port=8080).add(
-        uses=f'jinahub+sandbox://DummyHubExecutor'
-    )
+    flow = Flow(name='test-flow', port=8080).add(uses=uses)
 
     dump_path = os.path.join(str(tmpdir), 'test_flow_k8s')
 

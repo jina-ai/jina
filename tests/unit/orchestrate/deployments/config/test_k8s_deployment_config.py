@@ -28,7 +28,14 @@ def namespace_equal(
 
 
 @pytest.mark.parametrize('shards', [1, 5])
-@pytest.mark.parametrize('uses_before', [None, 'jinahub+docker://HubBeforeExecutor'])
+@pytest.mark.parametrize(
+    'uses_before',
+    [
+        None,
+        'jinahub+docker://HubBeforeExecutor',
+        'jinaai+docker://jina-ai/HubBeforeExecutor',
+    ],
+)
 @pytest.mark.parametrize('uses_after', [None, 'docker://docker_after_image:latest'])
 @pytest.mark.parametrize('uses_with', ['{"paramkey": "paramvalue"}', None])
 @pytest.mark.parametrize('uses_metas', ['{"workspace": "workspacevalue"}', None])
@@ -373,10 +380,29 @@ def assert_port_config(port_dict: Dict, name: str, port: int):
 
 @pytest.mark.parametrize('shards', [3, 1])
 @pytest.mark.parametrize(
-    'uses', ['jinahub+docker://HubExecutor', 'docker://docker_image:latest']
+    'uses',
+    [
+        'jinahub+docker://HubExecutor',
+        'docker://docker_image:latest',
+        'jinaai+docker://jina-ai/HubExecutor',
+    ],
 )
-@pytest.mark.parametrize('uses_before', [None, 'jinahub+docker://HubBeforeExecutor'])
-@pytest.mark.parametrize('uses_after', [None, 'jinahub+docker://HubAfterExecutor'])
+@pytest.mark.parametrize(
+    'uses_before',
+    [
+        None,
+        'jinahub+docker://HubBeforeExecutor',
+        'jinaai+docker://jina-ai/HubBeforeExecutor',
+    ],
+)
+@pytest.mark.parametrize(
+    'uses_after',
+    [
+        None,
+        'jinahub+docker://HubAfterExecutor',
+        'jinaai+docker://jina-ai/HubAfterExecutor',
+    ],
+)
 @pytest.mark.parametrize('uses_with', ['{"paramkey": "paramvalue"}', None])
 @pytest.mark.parametrize('uses_metas', ['{"workspace": "workspacevalue"}', None])
 @pytest.mark.parametrize('polling', ['ANY', 'ALL'])

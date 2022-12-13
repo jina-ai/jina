@@ -39,11 +39,14 @@ def test_cli_help():
     subprocess.check_call(['jina', 'help', 'deployment'])
 
 
-def test_cli_hub():
+@pytest.mark.parametrize(
+    'uses', ['jinahub://DummyHubExecutor', 'jinaai://jina-ai/DummyHubExecutor']
+)
+def test_cli_hub(uses):
     subprocess.check_call(['jina', 'hub', '--help'])
     for cmd in ['new', 'status', 'pull', 'push']:
         subprocess.check_call(['jina', 'hub', cmd, '--help'])
-    subprocess.check_call(['jina', 'hub', 'pull', 'jinahub://DummyHubExecutor'])
+    subprocess.check_call(['jina', 'hub', 'pull', uses])
 
 
 def test_cli_warn_unknown_args():
