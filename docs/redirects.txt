@@ -50,3 +50,5 @@ fundamentals/jcloud/yaml-spec.md concepts/jcloud/yaml-spec.md
 fundamentals/clean-code.md concepts/preliminaries/clean-code.md
 fundamentals/preliminaries/coding-in-python-yaml.md concepts/preliminaries/coding-in-python-yaml.md
 fundamentals/architecture-overview.md concepts/preliminaries/index.md
+fundamentals/executor/hub.md concepts/executor/hub
+fundamentals/flow.md concepts/flow
