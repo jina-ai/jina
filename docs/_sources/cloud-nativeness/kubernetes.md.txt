@@ -51,12 +51,8 @@ from jina import Flow
 
 f = (
     Flow(port=8080)
-    .add(name='encoder', uses='jinaai+docker://jina-ai/CLIPEncoder')
-    .add(
-        name='indexer',
-        uses='jinaai+docker://jina-ai/AnnLiteIndexer',
-        uses_with={'dim': 512},
-    )
+    .add(name='encoder', uses='jinahub+docker://CLIPEncoder')
+    .add(name='indexer', uses='jinahub+docker://AnnLiteIndexer', uses_with={'dim': 512})
 )
 ```
 
@@ -166,10 +162,10 @@ from jina import Flow
 
 f = (
     Flow(port=8080)
-    .add(name='encoder', uses='jinaai+docker://jina-ai/CLIPEncoder', replicas=2)
+    .add(name='encoder', uses='jinahub+docker://CLIPEncoder', replicas=2)
     .add(
         name='indexer',
-        uses='jinaai+docker://jina-ai/ANNLiteIndexer',
+        uses='jinahub+docker://ANNLiteIndexer',
         uses_with={'dim': 512},
         shards=2,
     )
