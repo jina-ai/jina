@@ -135,6 +135,7 @@ class GRPCBaseClient(BaseClient):
             request_handler=_request_handler,
             result_handler=_result_handler,
             prefetch=getattr(self.args, 'prefetch', 0),
+            iterate_sync_in_thread=False,
             logger=self.logger,
             **vars(self.args),
         )
