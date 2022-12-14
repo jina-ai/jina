@@ -1,7 +1,7 @@
 import os
 from typing import Dict
 
-from hubble.executor.helper import parse_hub_uri
+from hubble.executor.helper import is_valid_docker_uri, parse_hub_uri
 from hubble.executor.hubio import HubIO
 
 from jina import (
@@ -139,13 +139,6 @@ def validate_uses(uses: str):
         return True
 
     try:
-        scheme, _, _, _ = parse_hub_uri(uses)
-        if scheme in {
-            'jinahub+docker',
-            'jinahub+sandbox',
-            'jinaai+docker',
-            'jinaai+sandbox',
-        }:
-            return True
+        return is_valid_docker_uri(uses)
     except ValueError:
         return False
