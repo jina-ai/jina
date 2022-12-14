@@ -74,9 +74,6 @@ def run(
     try:
         _set_envs()
 
-        if getattr(args, 'install_requirements', False):
-            install_package_dependencies(_get_package_path_from_uses(args.uses))
-
         runtime = runtime_cls(
             args=args,
         )
