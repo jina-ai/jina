@@ -1,6 +1,6 @@
 import asyncio
 import json
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Optional, Tuple
 
 import grpc
 from grpc import RpcError
@@ -13,6 +13,7 @@ from jina.proto import jina_pb2, jina_pb2_grpc
 from jina.serve.helper import extract_trailing_metadata
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.stream import RequestStreamer
+from jina.types.request.data import Request
 
 if TYPE_CHECKING:  # pragma: no cover
     from jina.clients.base import CallbackFnType, InputType
@@ -103,18 +104,21 @@ class GRPCBaseClient(BaseClient):
             on_always,
             continue_on_error,
             p_bar,
+            results_in_order,
             **kwargs,
     ):
         stub = jina_pb2_grpc.JinaSingleDataRequestRPCStub(channel)
 
-        def _request_handler(req):
+        def _request_handler(
+                request: 'Request',
+        ) -> 'Tuple[asyncio.Future, Optional[asyncio.Future]]':
             return asyncio.ensure_future(stub.process_single_data(
-                req,
+                request,
                 compression=self.compression,
                 metadata=metadata,
                 credentials=kwargs.get('credentials', None),
                 timeout=kwargs.get('timeout', None),
-            ))
+            )), None
 
         def _result_handler(resp):
             callback_exec(
@@ -125,6 +129,7 @@ class GRPCBaseClient(BaseClient):
                 continue_on_error=continue_on_error,
                 logger=self.logger,
             )
+            return resp
 
         streamer = RequestStreamer(
             request_handler=_request_handler,
@@ -134,7 +139,7 @@ class GRPCBaseClient(BaseClient):
             **vars(self.args),
         )
         async for response in streamer.stream(
-                request_iterator=req_iter, results_in_order=self.args.requests_in_order
+                request_iterator=req_iter, results_in_order=results_in_order
         ):
             if self.show_progress:
                 p_bar.update()
@@ -213,27 +218,28 @@ class GRPCBaseClient(BaseClient):
                     try:
                         if stream:
                             async for resp in self._stream_rpc(
-                                    channel,
-                                    req_iter,
-                                    metadata,
-                                    on_error,
-                                    on_done,
-                                    on_always,
-                                    continue_on_error,
-                                    p_bar,
+                                    channel=channel,
+                                    req_iter=req_iter,
+                                    metadata=metadata,
+                                    on_error=on_error,
+                                    on_done=on_done,
+                                    on_always=on_always,
+                                    continue_on_error=continue_on_error,
+                                    p_bar=p_bar,
                                     **kwargs,
                             ):
                                 yield resp
                         else:
                             async for resp in self._unary_rpc(
-                                    channel,
-                                    req_iter,
-                                    metadata,
-                                    on_error,
-                                    on_done,
-                                    on_always,
-                                    continue_on_error,
-                                    p_bar,
+                                    channel=channel,
+                                    req_iter=req_iter,
+                                    metadata=metadata,
+                                    on_error=on_error,
+                                    on_done=on_done,
+                                    on_always=on_always,
+                                    continue_on_error=continue_on_error,
+                                    p_bar=p_bar,
+                                    results_in_order=results_in_order,
                                     **kwargs,
                             ):
                                 yield resp
