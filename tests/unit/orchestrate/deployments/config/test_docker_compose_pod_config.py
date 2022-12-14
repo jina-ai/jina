@@ -556,7 +556,10 @@ def test_docker_compose_yaml_regular_deployment(
         if uses_before is not None:
             uses_before_name, uses_before_config = yaml_configs[1]
             assert uses_before_name == 'executor-uses-before'
-            assert uses_before_config['image'] == 'jinahub/HubBeforeExecutor'
+            assert uses_before_config['image'] in {
+                'jinahub/HubBeforeExecutor',
+                'jinahub/jina-ai/HubBeforeExecutor',
+            }
             assert uses_before_config['entrypoint'] == ['jina']
             uses_before_args = uses_before_config['command']
             assert uses_before_args[0] == 'executor'
@@ -577,7 +580,10 @@ def test_docker_compose_yaml_regular_deployment(
                 yaml_configs[1] if uses_before is None else yaml_configs[2]
             )
             assert uses_after_name == 'executor-uses-after'
-            assert uses_after_config['image'] == 'jinahub/HubAfterExecutor'
+            assert uses_after_config['image'] in {
+                'jinahub/HubAfterExecutor',
+                'jinahub/jina-ai/HubAfterExecutor',
+            }
             assert uses_after_config['entrypoint'] == ['jina']
             uses_after_args = uses_after_config['command']
             assert uses_after_args[0] == 'executor'
@@ -609,11 +615,11 @@ def test_docker_compose_yaml_regular_deployment(
                 expected_name += f'-rep-{i_replica}'
                 expected_arg_name += f'/rep-{i_replica}'
             assert replica_name == expected_name
-            assert (
-                replica_config['image'] == 'docker_image:latest'
-                if uses == 'docker_image:latest'
-                else 'jinahub/HubExecutor'
-            )
+            assert replica_config['image'] in {
+                'docker_image:latest',
+                'jinahub/HubExecutor',
+                'jinahub/jina-ai/HubExecutor',
+            }
             assert replica_config['entrypoint'] == ['jina']
             replica_args = replica_config['command']
             assert replica_args[0] == 'executor'

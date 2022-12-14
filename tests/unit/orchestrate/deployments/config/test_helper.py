@@ -76,7 +76,7 @@ def test_get_image_name(mocker, monkeypatch, uses):
 
     image_name = get_image_name(uses)
 
-    assert image_name == 'jinahub/DummyExecutor'
+    assert image_name in {'jinahub/DummyExecutor', 'jinahub/jina-ai/DummyExecutor'}
 
     _, mock_kwargs = mock.call_args_list[0]
     assert mock_kwargs['rebuild_image'] is True  # default value must be True
