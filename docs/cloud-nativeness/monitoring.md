@@ -8,7 +8,7 @@ The Prometheus-only based feature will soon be deprecated in favor of the OpenTe
 Refer to the {ref}`OpenTelemetry migration guide <opentelemetry-migration>` for updating your existing Prometheus and Grafana configurations.
 ```
 
-We recommend the Prometheus/Grafana stack to leverage the {ref}`metrics <monitoring-flow>` exposed by Jina. In this setup, Jina exposes different {ref}`metrics endpoints <monitoring-flow>`, and Prometheus scrapes these endpoints, as well as
+We recommend the Prometheus/Grafana stack to leverage the metrics exposed by Jina. In this setup, Jina exposes different metrics, and Prometheus scrapes these endpoints, as well as
 collecting, aggregating, and storing the metrics. 
 
 External entities (like Grafana) can access these aggregated metrics via the query language [PromQL](https://prometheus.io/docs/prometheus/latest/querying/basics/) and let users visualize the metrics with dashboards.
@@ -204,6 +204,5 @@ client.search(inputs=DocumentArray.empty(size=4))
 
 ## See also
 
-- {ref}`List of available metrics <monitoring-flow>`
 - [Using Grafana to visualize Prometheus metrics](https://grafana.com/docs/grafana/latest/getting-started/getting-started-prometheus/)
 - {ref}`Defining custom metrics in an Executor <monitoring-executor>`

@@ -178,4 +178,4 @@ To update your existing Prometheus and Grafana configurations, refer to the {ref
 
 ## JCloud Support
 
-JCloud doesn't currently support OpenTelemetry. We'll make these features available soon. Until then, you can use the deprecated Prometheus-based {ref}`monitoring setup <monitoring-flow>`.
+JCloud doesn't currently support OpenTelemetry. We'll make these features available soon. Until then, you can use the deprecated Prometheus-based {ref}`monitoring setup <monitoring>`.
