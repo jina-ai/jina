@@ -51,4 +51,5 @@ fundamentals/clean-code.md concepts/preliminaries/clean-code.md
 fundamentals/preliminaries/coding-in-python-yaml.md concepts/preliminaries/coding-in-python-yaml.md
 fundamentals/architecture-overview.md concepts/preliminaries/index.md
 fundamentals/executor/hub/index.md concepts/executor/hub/index.md
+fundamentals/flow/index.md concepts/flow/index.md
 
