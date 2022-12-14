@@ -102,17 +102,20 @@ def mixin_pod_parser(parser, pod_type: str = 'worker'):
     )
     if pod_type != 'gateway':
         gp.add_argument(
-            '--restart',
+            '--reload',
             action='store_true',
             default=False,
-            help='If set, the Executor will restart while serving if the YAML configuration source is changed. This differs from `reload` argument in that this will restart the server and more configuration can be changed, like number of replicas.'
+            help='If set, the Executor will restart while serving if YAML configuration source or Executor modules '
+            'are changed. If YAML configuration is changed, the whole deployment is reloaded and new '
+            'processes will be restarted. If only Python modules of the Executor have changed, they will be '
+            'reloaded to the interpreter without restarting process.',
         )
     else:
         gp.add_argument(
-            '--restart',
+            '--reload',
             action='store_true',
             default=False,
-            help='If set, the Gateway will restart while serving if the YAML configuration source is changed.'
+            help='If set, the Gateway will restart while serving if YAML configuration source is changed.',
         )
     mixin_pod_runtime_args_parser(gp, pod_type=pod_type)
 
@@ -137,12 +140,6 @@ def mixin_pod_runtime_args_parser(arg_group, pod_type='worker'):
             default=[helper.random_port()],
             action=CastToIntAction,
             help=port_description,
-        )
-        arg_group.add_argument(
-            '--reload',
-            action='store_true',
-            default=False,
-            help='If set, the Executor reloads the modules as they change',
         )
     else:
         port_description = (

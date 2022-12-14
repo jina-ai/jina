@@ -3,9 +3,9 @@
 
 While developing your Executor, it can be useful to have the Executor be refreshed from the source code while you are working on it, without needing to restart the Flow server.
 
-For this you can use the `reload` argument for the Executor so that it watches changes in the source code and makes sure that the changes are applied live to the served Executor.
+For this you can use the Executor's `reload` argument to watch changes in the source code and the Executor YAML configuration and ensure changes are applied to the served Executor.
 
-The Executor will keep track in changes inside the Executor source file, every file passed in `py_modules` argument from {meth}`~jina.Flow.add` and all the Python files inside the folder where the Executor class is defined and its subfolders.
+The Executor will keep track of changes inside the Executor source and YAML files, every file passed in `py_modules` argument from {meth}`~jina.Flow.add` and all the Python files in the Executor's folder and sub-folders).
 
 ````{admonition} Caution
 :class: caution
@@ -93,3 +93,78 @@ print(c.post(on='/', inputs=DocumentArray.empty(1))[0].text)
 'I am coming from a new version of MyExecutor'
 ```
 
+Reloading is also applied when the Executor's YAML configuration file is changed. In this case, the Executor deployment restarts.
+
+To see how this works, let's define an Executor configuration in `executor.yml`:
+```yaml
+jtype: MyExecutorBeforeReload
+```
+
+Build a Flow with the Executor in it and expose it:
+
+```python
+import os
+from jina import Flow, Executor, requests
+
+os.environ['JINA_LOG_LEVEL'] = 'DEBUG'
+
+
+class MyExecutorBeforeReload(Executor):
+    @requests
+    def foo(self, docs, **kwargs):
+        for doc in docs:
+            doc.text = 'MyExecutorBeforeReload'
+
+
+class MyExecutorAfterReload(Executor):
+    @requests
+    def foo(self, docs, **kwargs):
+        for doc in docs:
+            doc.text = 'MyExecutorAfterReload'
+
+
+f = Flow(port=12345).add(uses='executor.yml', reload=True)
+
+with f:
+    f.block()
+```
+
+You can see that the Executor is running and serving:
+
+```python
+from jina import Client, DocumentArray
+
+c = Client(port=12345)
+
+print(c.post(on='/', inputs=DocumentArray.empty(1))[0].text)
+```
+
+```text
+MyExecutorBeforeReload
+```
+
+You can edit the Executor YAML file and save the changes:
+
+```yaml
+jtype: MyExecutorAfterReload
+```
+
+In the Flow's logs you should see:
+
+```text
+INFO   Flow@1843 change in Executor configuration YAML /home/joan/jina/jina/exec.yml observed, restarting Executor deployment  
+```
+
+And after this, you can see the reloaded Executor being served:
+
+```python
+from jina import Client, DocumentArray
+
+c = Client(port=12345)
+
+print(c.post(on='/', inputs=DocumentArray.empty(1))[0].text)
+```
+
+```yaml
+jtype: MyExecutorAfterReload
+```
