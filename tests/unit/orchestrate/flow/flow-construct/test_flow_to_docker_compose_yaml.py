@@ -391,10 +391,12 @@ def test_disable_auto_volume(tmpdir):
     assert 'volumes' not in services['executor0']
 
 
-def test_flow_to_docker_compose_sandbox(tmpdir):
-    flow = Flow(name='test-flow', port=8080).add(
-        uses=f'jinahub+sandbox://DummyHubExecutor'
-    )
+@pytest.mark.parametrize(
+    'uses',
+    ['jinaai+sandbox://jina-ai/DummyHubExecutor'],
+)
+def test_flow_to_docker_compose_sandbox(tmpdir, uses):
+    flow = Flow(name='test-flow', port=8080).add(uses=uses)
 
     dump_path = os.path.join(str(tmpdir), 'test_flow_docker_compose.yml')
 

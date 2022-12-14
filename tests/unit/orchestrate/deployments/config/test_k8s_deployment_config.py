@@ -28,7 +28,13 @@ def namespace_equal(
 
 
 @pytest.mark.parametrize('shards', [1, 5])
-@pytest.mark.parametrize('uses_before', [None, 'jinahub+docker://HubBeforeExecutor'])
+@pytest.mark.parametrize(
+    'uses_before',
+    [
+        None,
+        'jinaai+docker://jina-ai/HubBeforeExecutor',
+    ],
+)
 @pytest.mark.parametrize('uses_after', [None, 'docker://docker_after_image:latest'])
 @pytest.mark.parametrize('uses_with', ['{"paramkey": "paramvalue"}', None])
 @pytest.mark.parametrize('uses_metas', ['{"workspace": "workspacevalue"}', None])
@@ -376,10 +382,26 @@ def assert_port_config(port_dict: Dict, name: str, port: int):
 
 @pytest.mark.parametrize('shards', [3, 1])
 @pytest.mark.parametrize(
-    'uses', ['jinahub+docker://HubExecutor', 'docker://docker_image:latest']
+    'uses',
+    [
+        'docker://docker_image:latest',
+        'jinaai+docker://jina-ai/HubExecutor',
+    ],
 )
-@pytest.mark.parametrize('uses_before', [None, 'jinahub+docker://HubBeforeExecutor'])
-@pytest.mark.parametrize('uses_after', [None, 'jinahub+docker://HubAfterExecutor'])
+@pytest.mark.parametrize(
+    'uses_before',
+    [
+        None,
+        'jinaai+docker://jina-ai/HubBeforeExecutor',
+    ],
+)
+@pytest.mark.parametrize(
+    'uses_after',
+    [
+        None,
+        'jinaai+docker://jina-ai/HubAfterExecutor',
+    ],
+)
 @pytest.mark.parametrize('uses_with', ['{"paramkey": "paramvalue"}', None])
 @pytest.mark.parametrize('uses_metas', ['{"workspace": "workspacevalue"}', None])
 @pytest.mark.parametrize('polling', ['ANY', 'ALL'])
@@ -580,7 +602,10 @@ def test_k8s_yaml_regular_deployment(
         if uses_before is not None:
             uses_before_container = head_containers[1]
             assert uses_before_container['name'] == 'uses-before'
-            assert uses_before_container['image'] == 'jinahub/HubBeforeExecutor'
+            assert uses_before_container['image'] in {
+                'jinahub/HubBeforeExecutor',
+                'jinahub/jina-ai/HubBeforeExecutor',
+            }
             assert uses_before_container['imagePullPolicy'] == 'IfNotPresent'
             assert uses_before_container['command'] == ['jina']
             uses_before_runtime_container_args = uses_before_container['args']
@@ -614,7 +639,10 @@ def test_k8s_yaml_regular_deployment(
         if uses_after is not None:
             uses_after_container = head_containers[-1]
             assert uses_after_container['name'] == 'uses-after'
-            assert uses_after_container['image'] == 'jinahub/HubAfterExecutor'
+            assert uses_after_container['image'] in {
+                'jinahub/HubAfterExecutor',
+                'jinahub/jina-ai/HubAfterExecutor',
+            }
             assert uses_after_container['imagePullPolicy'] == 'IfNotPresent'
             assert uses_after_container['command'] == ['jina']
             uses_after_runtime_container_args = uses_after_container['args']
@@ -708,6 +736,7 @@ def test_k8s_yaml_regular_deployment(
         assert shard_container['name'] == 'executor'
         assert shard_container['image'] in {
             'jinahub/HubExecutor',
+            'jinahub/jina-ai/HubExecutor',
             'docker_image:latest',
         }
         assert shard_container['imagePullPolicy'] == 'IfNotPresent'
