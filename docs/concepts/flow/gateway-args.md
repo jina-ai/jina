@@ -20,7 +20,7 @@
 | `ssl_keyfile` | the path to the key file | `string` | `None` |
 | `expose_graphql_endpoint` | If set, /graphql endpoint is added to HTTP interface. | `boolean` | `False` |
 | `protocol` | Communication protocol of the server exposed by the Gateway. This can be a single value or a list of protocols, depending on your chosen Gateway. Choose the convenient protocols from: ['GRPC', 'HTTP', 'WEBSOCKET']. | `array` | `[<GatewayProtocolType.GRPC: 0>]` |
-| `host` | The host address of the runtime, by default it is 0.0.0.0. In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts, separated by commas. Then, every resulting address will be considered as one replica of the Executor. | `string` | `0.0.0.0` |
+| `host` | The host address of the runtime, by default it is 0.0.0.0. | `string` | `0.0.0.0` |
 | `proxy` | If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy | `boolean` | `False` |
 | `uses` | The config of the gateway, it could be one of the followings:<br>        * the string literal of an Gateway class name<br>        * a Gateway YAML file (.yml, .yaml, .jaml)<br>        * a docker image (must start with `docker://`)<br>        * the string literal of a YAML config (must start with `!` or `jtype: `)<br>        * the string literal of a JSON config<br><br>        When use it under Python, one can use the following values additionally:<br>        - a Python dict that represents the config<br>        - a text file stream has `.read()` interface | `string` | `None` |
 | `uses_with` | Dictionary of keyword arguments that will override the `with` configuration in `uses` | `object` | `None` |
@@ -37,10 +37,10 @@
 | `timeout_ready` | The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting forever | `number` | `600000` |
 | `env` | The map of environment variables that are available inside runtime | `object` | `None` |
 | `floating` | If set, the current Pod/Deployment can not be further chained, and the next `.add()` will chain after the last Pod/Deployment not this current one. | `boolean` | `False` |
-| `restart` | If set, the Gateway will restart while serving if the YAML configuration source is changed. | `boolean` | `False` |
+| `reload` | If set, the Gateway will restart while serving if YAML configuration source is changed. | `boolean` | `False` |
 | `port` | The port for input data to bind the gateway server to, by default, random ports between range [49152, 65535] will be assigned. The port argument can be either 1 single value in case only 1 protocol is used or multiple values when many protocols are used. | `number` | `random in [49152, 65535]` |
 | `monitoring` | If set, spawn an http server with a prometheus endpoint to expose metrics | `boolean` | `False` |
-| `port_monitoring` | The port on which the prometheus server is exposed, default is a random port between [49152, 65535] | `string` | `random in [49152, 65535]` |
+| `port_monitoring` | The port on which the prometheus server is exposed, default is a random port between [49152, 65535] | `number` | `random in [49152, 65535]` |
 | `retries` | Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas) | `number` | `-1` |
 | `tracing` | If set, the sdk implementation of the OpenTelemetry tracer will be available and will be enabled for automatic tracing of requests and customer span creation. Otherwise a no-op implementation will be provided. | `boolean` | `False` |
 | `traces_exporter_host` | If tracing is enabled, this hostname will be used to configure the trace exporter agent. | `string` | `None` |

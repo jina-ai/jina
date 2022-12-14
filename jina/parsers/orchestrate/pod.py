@@ -51,7 +51,7 @@ def mixin_pod_parser(parser, pod_type: str = 'worker'):
         type=int,
         default=600000,
         help='The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting '
-        'forever',
+             'forever',
     )
 
     gp.add_argument(
@@ -88,7 +88,7 @@ def mixin_pod_parser(parser, pod_type: str = 'worker'):
         action='store_true',
         default=False,
         help='If set, starting a Pod/Deployment does not block the thread/process. It then relies on '
-        '`wait_start_success` at outer function for the postpone check.'
+             '`wait_start_success` at outer function for the postpone check.'
         if _SHOW_ALL_ARGS
         else argparse.SUPPRESS,
     )
@@ -98,21 +98,30 @@ def mixin_pod_parser(parser, pod_type: str = 'worker'):
         action='store_true',
         default=False,
         help='If set, the current Pod/Deployment can not be further chained, '
-        'and the next `.add()` will chain after the last Pod/Deployment not this current one.',
+             'and the next `.add()` will chain after the last Pod/Deployment not this current one.',
     )
     if pod_type != 'gateway':
         gp.add_argument(
-            '--restart',
+            '--reload',
             action='store_true',
             default=False,
-            help='If set, the Executor will restart while serving if the YAML configuration source is changed. This differs from `reload` argument in that this will restart the server and more configuration can be changed, like number of replicas.'
+            help='If set, the Executor will restart while serving if YAML configuration source or Executor modules '
+            'are changed. If YAML configuration is changed, the whole deployment is reloaded and new '
+            'processes will be restarted. If only Python modules of the Executor have changed, they will be '
+            'reloaded to the interpreter without restarting process.',
+        )
+        gp.add_argument(
+            '--install-requirements',
+            action='store_true',
+            default=False,
+            help='If set, try to install `requirements.txt` from the local Executor if exists in the Executor folder. If using Hub, install `requirements.txt` in the Hub Executor bundle to local.'
         )
     else:
         gp.add_argument(
-            '--restart',
+            '--reload',
             action='store_true',
             default=False,
-            help='If set, the Gateway will restart while serving if the YAML configuration source is changed.'
+            help='If set, the Gateway will restart while serving if YAML configuration source is changed.',
         )
     mixin_pod_runtime_args_parser(gp, pod_type=pod_type)
 
@@ -124,7 +133,7 @@ def mixin_pod_runtime_args_parser(arg_group, pod_type='worker'):
     """
     port_description = (
         'The port for input data to bind to, default is a random port between [49152, 65535]. '
-        'In the case of an external Executor (`--external` or `external=True`) this can be a list of ports, separated by commas. '
+        'In the case of an external Executor (`--external` or `external=True`) this can be a list of ports. '
         'Then, every resulting address will be considered as one replica of the Executor.'
     )
 
@@ -133,15 +142,10 @@ def mixin_pod_runtime_args_parser(arg_group, pod_type='worker'):
             '--port',
             '--port-in',
             type=str,
-            default=helper.random_port(),
+            nargs='+',
+            default=[helper.random_port()],
             action=CastToIntAction,
             help=port_description,
-        )
-        arg_group.add_argument(
-            '--reload',
-            action='store_true',
-            default=False,
-            help='If set, the Executor reloads the modules as they change',
         )
     else:
         port_description = (
@@ -171,7 +175,9 @@ def mixin_pod_runtime_args_parser(arg_group, pod_type='worker'):
     arg_group.add_argument(
         '--port-monitoring',
         type=str,
-        default=str(helper.random_port()),
+        nargs='+',
+        default=[helper.random_port()],
+        action=CastToIntAction,
         dest='port_monitoring',
         help=f'The port on which the prometheus server is exposed, default is a random port between [49152, 65535]',
     )
@@ -189,7 +195,7 @@ def mixin_pod_runtime_args_parser(arg_group, pod_type='worker'):
         action='store_true',
         default=False,
         help='If set, the sdk implementation of the OpenTelemetry tracer will be available and will be enabled for automatic tracing of requests and customer span creation. '
-        'Otherwise a no-op implementation will be provided.',
+             'Otherwise a no-op implementation will be provided.',
     )
 
     arg_group.add_argument(
@@ -211,7 +217,7 @@ def mixin_pod_runtime_args_parser(arg_group, pod_type='worker'):
         action='store_true',
         default=False,
         help='If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. '
-        'Otherwise a no-op implementation will be provided.',
+             'Otherwise a no-op implementation will be provided.',
     )
 
     arg_group.add_argument(
@@ -226,4 +232,19 @@ def mixin_pod_runtime_args_parser(arg_group, pod_type='worker'):
         type=int,
         default=None,
         help='If tracing is enabled, this port will be used to configure the metrics exporter agent.',
+    )
+
+
+def mixin_hub_pull_options_parser(parser):
+    """Add the arguments for hub pull options to the parser
+    :param parser: the parser configure
+    """
+
+    gp = add_arg_group(parser, title='Pull')
+    gp.add_argument(
+        '--force-update',
+        '--force',
+        action='store_true',
+        default=False,
+        help='If set, always pull the latest Hub Executor bundle even it exists on local',
     )

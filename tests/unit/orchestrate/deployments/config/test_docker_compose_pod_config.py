@@ -29,7 +29,13 @@ def namespace_equal(
 
 @pytest.mark.parametrize('shards', [1, 5])
 @pytest.mark.parametrize('replicas', [1, 5])
-@pytest.mark.parametrize('uses_before', [None, 'jinahub+docker://HubBeforeExecutor'])
+@pytest.mark.parametrize(
+    'uses_before',
+    [
+        None,
+        'jinaai+docker://jina-ai/HubBeforeExecutor',
+    ],
+)
 @pytest.mark.parametrize('uses_after', [None, 'docker://docker_after_image:latest'])
 @pytest.mark.parametrize('uses_with', ['{"paramkey": "paramvalue"}', None])
 @pytest.mark.parametrize('uses_metas', ['{"workspace": "workspacevalue"}', None])
@@ -62,6 +68,7 @@ def test_parse_args(
         args_list.extend(['--uses-metas', uses_metas])
     args = set_deployment_parser().parse_args(args_list)
     deployment_config = DockerComposeConfig(args)
+    args.host = args.host[0]
 
     assert namespace_equal(
         deployment_config.services_args['head_service'],
@@ -244,6 +251,7 @@ def test_parse_args_custom_executor(shards: int, replicas: int):
         ]
     )
     deployment_config = DockerComposeConfig(args)
+    args.host = args.host[0]
 
     if shards > 1:
         assert (
@@ -344,6 +352,7 @@ def test_parse_args_custom_executor(shards: int, replicas: int):
 def test_worker_services(name: str, shards: str):
     args = set_deployment_parser().parse_args(['--name', name, '--shards', shards])
     deployment_config = DockerComposeConfig(args)
+    args.host = args.host[0]
 
     actual_services = deployment_config.worker_services
 
@@ -396,10 +405,26 @@ def test_docker_compose_gateway(deployments_addresses, custom_gateway):
 @pytest.mark.parametrize('shards', [3, 1])
 @pytest.mark.parametrize('replicas', [3, 1])
 @pytest.mark.parametrize(
-    'uses', ['jinahub+docker://HubExecutor', 'docker://docker_image:latest']
+    'uses',
+    [
+        'docker://docker_image:latest',
+        'jinaai+docker://jina-ai/HubExecutor',
+    ],
 )
-@pytest.mark.parametrize('uses_before', [None, 'jinahub+docker://HubBeforeExecutor'])
-@pytest.mark.parametrize('uses_after', [None, 'jinahub+docker://HubAfterExecutor'])
+@pytest.mark.parametrize(
+    'uses_before',
+    [
+        None,
+        'jinaai+docker://jina-ai/HubBeforeExecutor',
+    ],
+)
+@pytest.mark.parametrize(
+    'uses_after',
+    [
+        None,
+        'jinaai+docker://jina-ai/HubAfterExecutor',
+    ],
+)
 @pytest.mark.parametrize('uses_with', ['{"paramkey": "paramvalue"}', None])
 @pytest.mark.parametrize('uses_metas', ['{"workspace": "workspacevalue"}', None])
 @pytest.mark.parametrize('polling', ['ANY', 'ALL'])
@@ -530,7 +555,10 @@ def test_docker_compose_yaml_regular_deployment(
         if uses_before is not None:
             uses_before_name, uses_before_config = yaml_configs[1]
             assert uses_before_name == 'executor-uses-before'
-            assert uses_before_config['image'] == 'jinahub/HubBeforeExecutor'
+            assert uses_before_config['image'] in {
+                'jinahub/HubBeforeExecutor',
+                'jinahub/jina-ai/HubBeforeExecutor',
+            }
             assert uses_before_config['entrypoint'] == ['jina']
             uses_before_args = uses_before_config['command']
             assert uses_before_args[0] == 'executor'
@@ -551,7 +579,10 @@ def test_docker_compose_yaml_regular_deployment(
                 yaml_configs[1] if uses_before is None else yaml_configs[2]
             )
             assert uses_after_name == 'executor-uses-after'
-            assert uses_after_config['image'] == 'jinahub/HubAfterExecutor'
+            assert uses_after_config['image'] in {
+                'jinahub/HubAfterExecutor',
+                'jinahub/jina-ai/HubAfterExecutor',
+            }
             assert uses_after_config['entrypoint'] == ['jina']
             uses_after_args = uses_after_config['command']
             assert uses_after_args[0] == 'executor'
@@ -583,11 +614,11 @@ def test_docker_compose_yaml_regular_deployment(
                 expected_name += f'-rep-{i_replica}'
                 expected_arg_name += f'/rep-{i_replica}'
             assert replica_name == expected_name
-            assert (
-                replica_config['image'] == 'docker_image:latest'
-                if uses == 'docker_image:latest'
-                else 'jinahub/HubExecutor'
-            )
+            assert replica_config['image'] in {
+                'docker_image:latest',
+                'jinahub/HubExecutor',
+                'jinahub/jina-ai/HubExecutor',
+            }
             assert replica_config['entrypoint'] == ['jina']
             replica_args = replica_config['command']
             assert replica_args[0] == 'executor'

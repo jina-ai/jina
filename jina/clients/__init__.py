@@ -33,7 +33,7 @@ def Client(*,
     """Create a Client. Client is how user interact with Flow
 
     :param asyncio: If set, then the input and output of this Client work in an asynchronous manner.
-    :param host: The host address of the runtime, by default it is 0.0.0.0. In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts, separated by commas. Then, every resulting address will be considered as one replica of the Executor.
+    :param host: The host of the Gateway, which the client should connect to, by default it is 0.0.0.0.
     :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.
     :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.
     :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.
@@ -83,7 +83,7 @@ def Client(
         c.post(on='/index', inputs=Document(text='hello!'))
 
     :param asyncio: If set, then the input and output of this Client work in an asynchronous manner.
-    :param host: The host address of the runtime, by default it is 0.0.0.0. In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts, separated by commas. Then, every resulting address will be considered as one replica of the Executor.
+    :param host: The host of the Gateway, which the client should connect to, by default it is 0.0.0.0.
     :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.
     :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.
     :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.

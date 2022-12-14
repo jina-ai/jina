@@ -1,3 +1,0 @@
-jtype: MyExecutorBeforeRestart
-py_modules:
-  - exec1.py

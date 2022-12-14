@@ -14,11 +14,11 @@ from jina import Client, Executor, Flow, __cache_path__, dynamic_batching, reque
 from jina.clients.request import request_generator
 from jina.excepts import RuntimeFailToStart
 from jina.helper import random_port
-from jina.parsers import set_pod_parser
 from jina.serve.executors.metas import get_default_metas
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.worker import WorkerRuntime
+from tests.helper import _generate_pod_args
 
 
 class WorkspaceExec(Executor):
@@ -74,10 +74,11 @@ def served_exec(request: FixtureRequest, exposed_port):
     t.join()
 
 
-def test_executor_load_from_hub():
-    exec = Executor.from_hub(
-        'jinahub://DummyHubExecutor', uses_metas={'name': 'hello123'}
-    )
+@pytest.mark.parametrize(
+    'uses', ['jinaai://jina-ai/DummyHubExecutor']
+)
+def test_executor_load_from_hub(uses):
+    exec = Executor.from_hub(uses, uses_metas={'name': 'hello123'})
     da = DocumentArray([Document()])
     exec.foo(da)
     assert da.texts == ['hello']
@@ -438,11 +439,15 @@ def test_default_workspace(tmpdir):
     'exec_type',
     [Executor.StandaloneExecutorType.EXTERNAL, Executor.StandaloneExecutorType.SHARED],
 )
-def test_to_k8s_yaml(tmpdir, exec_type):
+@pytest.mark.parametrize(
+    'uses',
+    ['jinahub+docker://DummyHubExecutor', 'jinaai+docker://jina-ai/DummyHubExecutor'],
+)
+def test_to_k8s_yaml(tmpdir, exec_type, uses):
     Executor.to_kubernetes_yaml(
         output_base_path=tmpdir,
         port_expose=2020,
-        uses='jinahub+docker://DummyHubExecutor',
+        uses=uses,
         executor_type=exec_type,
     )
 
@@ -480,12 +485,16 @@ def test_to_k8s_yaml(tmpdir, exec_type):
     'exec_type',
     [Executor.StandaloneExecutorType.EXTERNAL, Executor.StandaloneExecutorType.SHARED],
 )
-def test_to_docker_compose_yaml(tmpdir, exec_type):
+@pytest.mark.parametrize(
+    'uses',
+    ['jinaai+docker://jina-ai/DummyHubExecutor'],
+)
+def test_to_docker_compose_yaml(tmpdir, exec_type, uses):
     compose_file = os.path.join(tmpdir, 'compose.yml')
     Executor.to_docker_compose_yaml(
         output_path=compose_file,
         port_expose=2020,
-        uses='jinahub+docker://DummyHubExecutor',
+        uses=uses,
         executor_type=exec_type,
     )
 
@@ -519,7 +528,7 @@ async def test_blocking_sync_exec():
                 doc.text = 'BlockingExecutor'
             return docs
 
-    args = set_pod_parser().parse_args(['--uses', 'BlockingExecutor'])
+    args = _generate_pod_args(['--uses', 'BlockingExecutor'])
 
     cancel_event = multiprocessing.Event()
 

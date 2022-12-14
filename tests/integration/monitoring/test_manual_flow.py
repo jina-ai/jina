@@ -6,14 +6,15 @@ import requests as req
 from docarray import Document, DocumentArray
 
 from jina import Executor, Flow, requests
-from jina.parsers import set_gateway_parser, set_pod_parser
+from jina.parsers import set_gateway_parser
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.gateway import GatewayRuntime
 from jina.serve.runtimes.worker import WorkerRuntime
+from tests.helper import _generate_pod_args
 
 
 def _create_worker_runtime(port, name='', executor=None, port_monitoring=None):
-    args = set_pod_parser().parse_args([])
+    args = _generate_pod_args()
     args.port = port
     args.name = name
 
@@ -31,25 +32,25 @@ def _create_worker_runtime(port, name='', executor=None, port_monitoring=None):
 def _create_gateway_runtime(
     graph_description, pod_addresses, port, port_monitoring, protocol, retries=-1
 ):
-    with GatewayRuntime(
-        set_gateway_parser().parse_args(
-            [
-                '--graph-description',
-                graph_description,
-                '--deployments-addresses',
-                pod_addresses,
-                '--port',
-                str(port),
-                '--retries',
-                str(retries),
-                '--monitoring',
-                '--port-monitoring',
-                str(port_monitoring),
-                '--protocol',
-                protocol,
-            ]
-        )
-    ) as runtime:
+    args = set_gateway_parser().parse_args(
+        [
+            '--graph-description',
+            graph_description,
+            '--deployments-addresses',
+            pod_addresses,
+            '--port',
+            str(port),
+            '--retries',
+            str(retries),
+            '--monitoring',
+            '--port-monitoring',
+            str(port_monitoring),
+            '--protocol',
+            protocol,
+        ]
+    )
+    args.port_monitoring = port_monitoring
+    with GatewayRuntime(args) as runtime:
         runtime.run_forever()
 
 

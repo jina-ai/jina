@@ -10,7 +10,7 @@ from jina.types.request.data import DataRequest
 
 
 class RequestStreamerWrapper:
-    def __init__(self, num_requests, prefetch):
+    def __init__(self, num_requests, prefetch, iterate_sync_in_thread):
         self.num_requests = num_requests
         self.requests_handled = []
         self.results_handled = []
@@ -24,6 +24,7 @@ class RequestStreamerWrapper:
             result_handler=self.result_handle_fn,
             end_of_iter_handler=self.end_of_iter_fn,
             prefetch=getattr(args, 'prefetch', 0),
+            iterate_sync_in_thread=iterate_sync_in_thread
         )
 
     def request_handler_fn(self, request):
@@ -76,11 +77,12 @@ class RequestStreamerWrapper:
 @pytest.mark.parametrize('num_requests', [1, 5, 13])
 @pytest.mark.parametrize('async_iterator', [False, True])
 @pytest.mark.parametrize('results_in_order', [False, True])
+@pytest.mark.parametrize('iterate_sync_in_thread', [False, True])
 async def test_request_streamer(
-    prefetch, num_requests, async_iterator, results_in_order
+    prefetch, num_requests, async_iterator, results_in_order, iterate_sync_in_thread
 ):
 
-    test_streamer = RequestStreamerWrapper(num_requests, prefetch)
+    test_streamer = RequestStreamerWrapper(num_requests, prefetch, iterate_sync_in_thread)
     streamer = test_streamer.streamer
 
     it = (
@@ -110,8 +112,9 @@ async def test_request_streamer(
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize('num_requests', [1, 5, 13])
-async def test_request_streamer_process_single_data(monkeypatch, num_requests):
-    test_streamer = RequestStreamerWrapper(num_requests, 0)
+@pytest.mark.parametrize('iterate_sync_in_thread', [False, True])
+async def test_request_streamer_process_single_data(monkeypatch, num_requests, iterate_sync_in_thread):
+    test_streamer = RequestStreamerWrapper(num_requests, 0, iterate_sync_in_thread)
     streamer = test_streamer.streamer
 
     def end_of_iter_fn():

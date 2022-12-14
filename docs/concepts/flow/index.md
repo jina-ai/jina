@@ -132,6 +132,7 @@ basics
 add-executors
 add-conditioning
 scale-out
+hot-reload
 handle-exceptions
 readiness
 health-check
