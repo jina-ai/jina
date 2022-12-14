@@ -12,7 +12,7 @@ from jina.excepts import RuntimeFailToStart, RuntimeRunForeverEarlyError
 from jina.helper import typename
 from jina.jaml import JAML
 from jina.logging.logger import JinaLogger
-from jina.orchestrate.pods.helper import ConditionalEvent, _get_event, install_package_dependencies, _get_package_path_from_uses
+from jina.orchestrate.pods.helper import ConditionalEvent, _get_event
 from jina.parsers.helper import _update_gateway_args
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.gateway import GatewayRuntime
