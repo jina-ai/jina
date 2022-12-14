@@ -93,7 +93,7 @@ class DockerComposeConfig:
             protocol = str(non_defaults.get('protocol', ['grpc'])[0]).lower()
 
             ports = cargs.port + (
-                [f'{cargs.port_monitoring}'] if cargs.monitoring else []
+                [cargs.port_monitoring] if cargs.monitoring else []
             )
 
             envs = [f'JINA_LOG_LEVEL={os.getenv("JINA_LOG_LEVEL", "INFO")}']
@@ -351,6 +351,7 @@ class DockerComposeConfig:
             uses_before_cargs.uses_with = None
             uses_before_cargs.uses_metas = None
             uses_before_cargs.env = None
+            uses_before_cargs.host = args.host[0]
             uses_before_cargs.port = port
             uses_before_cargs.uses_before_address = None
             uses_before_cargs.uses_after_address = None
@@ -374,6 +375,7 @@ class DockerComposeConfig:
             uses_after_cargs.uses_with = None
             uses_after_cargs.uses_metas = None
             uses_after_cargs.env = None
+            uses_after_cargs.host = args.host[0]
             uses_after_cargs.port = port
             uses_after_cargs.uses_before_address = None
             uses_after_cargs.uses_after_address = None
@@ -400,6 +402,7 @@ class DockerComposeConfig:
                 cargs.pod_role = PodRoleType.GATEWAY
             else:
                 cargs.port = port
+                cargs.host = args.host[0]
             parsed_args['services'].append(cargs)
 
         return parsed_args

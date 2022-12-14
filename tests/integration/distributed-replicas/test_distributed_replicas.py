@@ -66,9 +66,15 @@ def _external_deployment_args_docker(num_shards, port=None):
     return set_deployment_parser().parse_args(args)
 
 
-@pytest.mark.parametrize('hosts', ['localhost,localhost', 'localhost'])
-def test_distributed_replicas(input_docs, hosts):
+@pytest.mark.parametrize(
+    'hosts', ['localhost,localhost', ['localhost', 'localhost'], 'localhost']
+)
+@pytest.mark.parametrize('as_list', [True, False])
+def test_distributed_replicas(input_docs, hosts, as_list):
     port1, port2 = random_port(), random_port()
+    ports = [port1, port2]
+    if not as_list:
+        ports = f'{port1},{port2}'
     args1, args2 = _external_deployment_args(
         num_shards=1, port=port1
     ), _external_deployment_args(num_shards=1, port=port2)
@@ -77,7 +83,7 @@ def test_distributed_replicas(input_docs, hosts):
     with depl1, depl2:
         flow = Flow().add(
             host=hosts,
-            port=f'{port1},{port2}',
+            port=ports,
             external=True,
         )
         with flow:
@@ -87,18 +93,58 @@ def test_distributed_replicas(input_docs, hosts):
         assert any([depl1_id != depl_id for depl_id in resp[1:, 'tags__uuid']])
 
 
-def test_distributed_replicas_host_parsing(input_docs):
+def test_distributed_replicas_hosts_mismatch(input_docs):
+    ports = [random_port(), random_port()]
+    args1, args2 = _external_deployment_args(
+        num_shards=1, port=ports[0]
+    ), _external_deployment_args(num_shards=1, port=ports[1])
+    depl1 = Deployment(args1)
+    depl2 = Deployment(args2)
+    with depl1, depl2:
+        with pytest.raises(ValueError) as err_info:
+            flow = Flow().add(
+                host=['localhost', 'localhost'],
+                port=ports,
+                external=True,
+                replicas=3,
+            )
+            with flow:
+                pass
+    assert (
+        'Number of hosts (2) does not match the number of replicas (3)'
+        in err_info.value.args[0]
+    )
+
+
+@pytest.mark.parametrize(
+    'hosts_as_list',
+    [True, False],
+)
+@pytest.mark.parametrize(
+    'ports_as_list',
+    [True, False],
+)
+def test_distributed_replicas_host_parsing(input_docs, hosts_as_list, ports_as_list):
     port1, port2 = random_port(), random_port()
     args1, args2 = _external_deployment_args(
         num_shards=1, port=port1
     ), _external_deployment_args(num_shards=1, port=port2)
     depl1 = Deployment(args1)
     depl2 = Deployment(args2)
-    hosts = f'localhost:{port1},localhost:{port2}'
+    if ports_as_list:
+        ports = [port1, port2]
+    else:
+        ports = f'{port1},{port2}'
+
+    if hosts_as_list:
+        hosts = [f'localhost:{port1}', f'localhost:{port2}']
+    else:
+        hosts = f'localhost:{port1},localhost:{port2}'
+
     with depl1, depl2:
         flow = Flow().add(
             host=hosts,
-            port=f'{port1},{port2}',
+            port=ports,
             external=True,
         )
         with flow:
@@ -108,18 +154,31 @@ def test_distributed_replicas_host_parsing(input_docs):
         assert any([depl1_id != depl_id for depl_id in resp[1:, 'tags__uuid']])
 
 
-@pytest.mark.parametrize('hosts', ['localhost,localhost', 'localhost'])
-def test_distributed_replicas_docker(input_docs, hosts, replica_docker_image_built):
+@pytest.mark.parametrize(
+    'hosts', ['localhost,localhost', ['localhost', 'localhost'], 'localhost']
+)
+@pytest.mark.parametrize(
+    'ports_as_list',
+    [True, False],
+)
+def test_distributed_replicas_docker(
+    input_docs, hosts, ports_as_list, replica_docker_image_built
+):
     port1, port2 = random_port(), random_port()
     args1, args2 = _external_deployment_args_docker(
         num_shards=1, port=port1
     ), _external_deployment_args_docker(num_shards=1, port=port2)
     depl1 = Deployment(args1)
     depl2 = Deployment(args2)
+
+    if ports_as_list:
+        ports = [port1, port2]
+    else:
+        ports = f'{port1},{port2}'
     with depl1, depl2:
         flow = Flow().add(
             host=hosts,
-            port=f'{port1},{port2}',
+            port=ports,
             external=True,
         )
         with flow:

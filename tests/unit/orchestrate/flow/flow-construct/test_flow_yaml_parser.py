@@ -77,7 +77,7 @@ def test_load_modify_dump_load(tmpdir, yaml_file):
     # assert executor args
     assert f._deployment_nodes['custom1'].args.uses == 'jinahub://CustomExecutor1'
     assert f._deployment_nodes['custom2'].args.uses == 'CustomExecutor2'
-    assert int(f._deployment_nodes['custom2'].args.port) == 23456
+    assert f._deployment_nodes['custom2'].args.port == [23456]
 
     # change args inside the gateway configuration
     f.port = 12346
@@ -97,7 +97,7 @@ def test_load_modify_dump_load(tmpdir, yaml_file):
     # assert args modified in code
     assert f1.port == 12346
     assert f1.protocol == GatewayProtocolType.WEBSOCKET
-    assert int(f1._deployment_nodes['custom2'].args.port) == 23457
+    assert f1._deployment_nodes['custom2'].args.port == [23457]
 
 
 def test_dump_load_build(monkeypatch):
@@ -125,15 +125,15 @@ def test_dump_load_build(monkeypatch):
     # these were passed by the user
     assert f.port == f1.port
     assert f.protocol == f1.protocol
-    assert int(f['executor1'].args.port) == int(f1['executor1'].args.port)
+    assert f['executor1'].args.port == f1['executor1'].args.port
     assert f['executor2'].args.host == f1['executor2'].args.host
     # this was set during `load_config`
-    assert int(f['executor2'].args.port) == int(f1['executor2'].args.port)
+    assert f['executor2'].args.port == f1['executor2'].args.port
 
     monkeypatch.setenv('JINA_FULL_CLI', 'true')
     f2: Flow = Flow.load_config(JAML.dump(f)).build()
     # these were passed by the user
-    assert int(f.port) == int(f2.port)
+    assert f.port == f2.port
     # validate gateway args (set during build)
     assert f['gateway'].args.port == f2['gateway'].args.port
 
@@ -141,14 +141,14 @@ def test_dump_load_build(monkeypatch):
 def test_load_flow_with_port():
     f = Flow.load_config('yaml/test-flow-port.yml')
     with f:
-        assert int(f.port) == 12345
+        assert f.port == 12345
 
 
 def test_load_flow_from_cli():
     a = set_flow_parser().parse_args(['--uses', 'yaml/test-flow-port.yml'])
     f = Flow.load_config(a.uses)
     with f:
-        assert int(f.port) == 12345
+        assert f.port == 12345
 
 
 def test_load_flow_from_yaml():

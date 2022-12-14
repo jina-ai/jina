@@ -9,8 +9,6 @@ from jina import Executor, Flow, __default_endpoint__
 from jina.clients.helper import _safe_callback, pprint_routes
 from jina.excepts import BadClientCallback, NotSupportedError
 from jina.helper import (
-    _parse_hosts,
-    _parse_ports,
     cached_property,
     convert_tuple_to_list,
     deprecated_alias,
@@ -19,7 +17,6 @@ from jina.helper import (
     get_ci_vendor,
     is_port_free,
     is_yaml_filepath,
-    make_iterable,
     parse_arg,
     random_port,
     reset_ports,
@@ -362,35 +359,6 @@ def test_run_async():
 
     end_fd_count = p.num_fds()
     assert first_fd_count == end_fd_count
-
-
-@pytest.mark.parametrize(
-    'port, output',
-    [('8080', 8080), ('1,2,6', [1, 2, 6])],
-)
-def test_parse_port(port, output):
-    assert _parse_ports(port) == output
-
-
-@pytest.mark.parametrize(
-    'host, output',
-    [('1234', '1234'), ('1,2,6', ['1', '2', '6'])],
-)
-def test_parse_host(host, output):
-    assert _parse_hosts(host) == output
-
-
-@pytest.mark.parametrize(
-    'o, expected',
-    [
-        (1, [1]),
-        ('a', ['a']),
-        (bytes('hello', 'utf-8'), [bytes('hello', 'utf-8')]),
-        ([1, 2], [1, 2]),
-    ],
-)
-def test_make_iterable(o, expected):
-    assert make_iterable(o) == expected
 
 
 @pytest.mark.parametrize(

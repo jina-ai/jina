@@ -132,11 +132,11 @@ If you have external Executors with multiple replicas running elsewhere, you can
 ```python
 from jina import Flow
 
-replica_hosts, replica_ports = 'localhost,91.198.174.192', '12345,12346'
+replica_hosts, replica_ports = ['localhost','91.198.174.192'], ['12345','12346']
 Flow().add(host=replica_hosts, port=replica_ports, external=True)
 
 # alternative syntax
-Flow().add(host='localhost:12345,91.198.174.192:12346', external=True)
+Flow().add(host=['localhost:12345','91.198.174.192:12346'], external=True)
 ```
 
 This connects to `grpc://localhost:12345` and `grpc://91.198.174.192:12346` as two replicas of the external Executor.

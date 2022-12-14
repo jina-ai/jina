@@ -530,7 +530,7 @@ def test_pod_remote_pod_replicas_host(num_shards, num_replicas):
             __default_host__,
         ]
     )
-    assert args.host == __default_host__
+    assert args.host == [__default_host__]
     with Deployment(args) as pod:
         assert pod.num_pods == num_shards * num_replicas + (1 if num_shards > 1 else 0)
         pod_args = dict(pod.pod_args['pods'])

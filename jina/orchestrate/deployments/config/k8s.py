@@ -330,6 +330,7 @@ class K8sDeploymentConfig:
 
         for i in range(shards):
             cargs = copy.deepcopy(args)
+            cargs.host = args.host[0]
             cargs.shard_id = i
             cargs.uses_before = None
             cargs.uses_after = None

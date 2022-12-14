@@ -62,6 +62,7 @@ def test_parse_args(
         args_list.extend(['--uses-metas', uses_metas])
     args = set_deployment_parser().parse_args(args_list)
     deployment_config = DockerComposeConfig(args)
+    args.host = args.host[0]
 
     assert namespace_equal(
         deployment_config.services_args['head_service'],
@@ -244,6 +245,7 @@ def test_parse_args_custom_executor(shards: int, replicas: int):
         ]
     )
     deployment_config = DockerComposeConfig(args)
+    args.host = args.host[0]
 
     if shards > 1:
         assert (
@@ -344,6 +346,7 @@ def test_parse_args_custom_executor(shards: int, replicas: int):
 def test_worker_services(name: str, shards: str):
     args = set_deployment_parser().parse_args(['--name', name, '--shards', shards])
     deployment_config = DockerComposeConfig(args)
+    args.host = args.host[0]
 
     actual_services = deployment_config.worker_services
 

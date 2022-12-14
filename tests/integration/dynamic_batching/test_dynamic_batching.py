@@ -18,12 +18,12 @@ from jina import (
     requests,
 )
 from jina.clients.request import request_generator
-from jina.parsers import set_gateway_parser, set_pod_parser
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.gateway import GatewayRuntime
 from jina.serve.runtimes.worker import WorkerRuntime
 from jina_cli.api import executor_native
+from tests.helper import _generate_pod_args
 
 cur_dir = os.path.dirname(__file__)
 
@@ -563,7 +563,7 @@ def _create_test_data_message(num_docs, endpoint: str = '/'):
 async def test_sigterm_handling(signal, uses_with):
     import time
 
-    args = set_pod_parser().parse_args([])
+    args = _generate_pod_args()
 
     def run(args):
 
