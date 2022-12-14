@@ -1012,6 +1012,7 @@
         <span class="n">extra_search_paths</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">py_modules</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">runtime_args</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">uses_dynamic_batching</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;JAMLCompatible&#39;</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;A high-level interface for loading configuration with features</span>
@@ -1064,7 +1065,7 @@
 <span class="sd">        :param extra_search_paths: extra paths used when looking for executor yaml files</span>
 <span class="sd">        :param py_modules: Optional py_module from which the object need to be loaded</span>
 <span class="sd">        :param runtime_args: Optional dictionary of parameters runtime_args to be directly passed without being parsed into a yaml config</span>
-<span class="sd">        :param : runtime_args that need to be passed to the yaml</span>
+<span class="sd">        :param uses_dynamic_batching: dictionary of parameters to overwrite from the default config&#39;s dynamic_batching field</span>
 
 <span class="sd">        :param kwargs: kwargs for parse_config_source</span>
 <span class="sd">        :return: :class:`JAMLCompatible` object</span>
@@ -1110,9 +1111,14 @@
                     <span class="n">_delitem</span><span class="p">(</span><span class="n">no_tag_yml</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s1">&#39;uses_metas&#39;</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">uses_requests</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="n">_delitem</span><span class="p">(</span><span class="n">no_tag_yml</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s1">&#39;uses_requests&#39;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">uses_dynamic_batching</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">_delitem</span><span class="p">(</span><span class="n">no_tag_yml</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s1">&#39;uses_dynamic_batching&#39;</span><span class="p">)</span>
                 <span class="bp">cls</span><span class="o">.</span><span class="n">_override_yml_params</span><span class="p">(</span><span class="n">no_tag_yml</span><span class="p">,</span> <span class="s1">&#39;with&#39;</span><span class="p">,</span> <span class="n">uses_with</span><span class="p">)</span>
                 <span class="bp">cls</span><span class="o">.</span><span class="n">_override_yml_params</span><span class="p">(</span><span class="n">no_tag_yml</span><span class="p">,</span> <span class="s1">&#39;metas&#39;</span><span class="p">,</span> <span class="n">uses_metas</span><span class="p">)</span>
                 <span class="bp">cls</span><span class="o">.</span><span class="n">_override_yml_params</span><span class="p">(</span><span class="n">no_tag_yml</span><span class="p">,</span> <span class="s1">&#39;requests&#39;</span><span class="p">,</span> <span class="n">uses_requests</span><span class="p">)</span>
+                <span class="bp">cls</span><span class="o">.</span><span class="n">_override_yml_params</span><span class="p">(</span>
+                    <span class="n">no_tag_yml</span><span class="p">,</span> <span class="s1">&#39;dynamic_batching&#39;</span><span class="p">,</span> <span class="n">uses_dynamic_batching</span>
+                <span class="p">)</span>
 
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">BadConfigSource</span><span class="p">(</span>
@@ -1213,7 +1219,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 12, 2022</div>
+                            Last updated on Dec 14, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

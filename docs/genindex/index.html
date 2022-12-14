@@ -854,9 +854,11 @@
 </li>
         <li><a href="../api/jina/#jina.DocumentArray.batch_ids">batch_ids() (jina.DocumentArray method)</a>
 </li>
+        <li><a href="../api/jina.helper/#jina.helper.batch_iterator">batch_iterator() (in module jina.helper)</a>
+</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="../api/jina.helper/#jina.helper.batch_iterator">batch_iterator() (in module jina.helper)</a>
+        <li><a href="../api/jina.serve.runtimes.worker.batch_queue/#jina.serve.runtimes.worker.batch_queue.BatchQueue">BatchQueue (class in jina.serve.runtimes.worker.batch_queue)</a>
 </li>
         <li><a href="../api/jina.enums/#jina.enums.BetterEnum">BetterEnum (class in jina.enums)</a>
 </li>
@@ -1119,6 +1121,8 @@
 </li>
           <li><a href="../api/jina.serve.networking/#jina.serve.networking.ReplicaList.close">(jina.serve.networking.ReplicaList method)</a>
 </li>
+          <li><a href="../api/jina.serve.runtimes.worker.batch_queue/#jina.serve.runtimes.worker.batch_queue.BatchQueue.close">(jina.serve.runtimes.worker.batch_queue.BatchQueue method)</a>
+</li>
           <li><a href="../api/jina.serve.runtimes.worker.request_handling/#jina.serve.runtimes.worker.request_handling.WorkerRequestHandler.close">(jina.serve.runtimes.worker.request_handling.WorkerRequestHandler method)</a>
 </li>
           <li><a href="../api/jina.serve.streamer/#jina.serve.streamer.GatewayStreamer.close">(jina.serve.streamer.GatewayStreamer method)</a>
@@ -1166,10 +1170,10 @@
           <li><a href="../api/jina.serve.runtimes.gateway.composite.gateway/#jina.serve.runtimes.gateway.composite.gateway.CompositeGateway">(class in jina.serve.runtimes.gateway.composite.gateway)</a>
 </li>
         </ul></li>
-        <li><a href="../api/jina.orchestrate.pods.helper/#jina.orchestrate.pods.helper.ConditionalEvent">ConditionalEvent (class in jina.orchestrate.pods.helper)</a>
-</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="../api/jina.orchestrate.pods.helper/#jina.orchestrate.pods.helper.ConditionalEvent">ConditionalEvent (class in jina.orchestrate.pods.helper)</a>
+</li>
         <li><a href="../api/jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaHealthModel.Config">Config (jina.serve.runtimes.gateway.http.models.JinaHealthModel attribute)</a>
 </li>
         <li><a href="../api/jina/#jina.AsyncFlow.config_gateway">config_gateway() (jina.AsyncFlow method)</a>
@@ -1726,6 +1730,12 @@
           <li><a href="../api/jina.jaml.parsers.gateway.legacy/#jina.jaml.parsers.gateway.legacy.GatewayLegacyParser.dump">(jina.jaml.parsers.gateway.legacy.GatewayLegacyParser method)</a>
 </li>
         </ul></li>
+        <li><a href="../api/jina/#jina.dynamic_batching">dynamic_batching() (in module jina)</a>
+
+        <ul>
+          <li><a href="../api/jina.serve.executors.decorators/#jina.serve.executors.decorators.dynamic_batching">(in module jina.serve.executors.decorators)</a>
+</li>
+        </ul></li>
     </ul></td>
   </tr></table>
 </section>
@@ -1869,6 +1879,8 @@
         <li><a href="../api/jina.serve.executors/#jina.serve.executors.BaseExecutor.StandaloneExecutorType.EXTERNAL">EXTERNAL (jina.serve.executors.BaseExecutor.StandaloneExecutorType attribute)</a>
 </li>
         <li><a href="../api/jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.CustomConfig.extra">extra (jina.serve.runtimes.gateway.http.models.CustomConfig attribute)</a>
+</li>
+        <li><a href="../api/jina.serve.helper/#jina.serve.helper.extract_trailing_metadata">extract_trailing_metadata() (in module jina.serve.helper)</a>
 </li>
     </ul></td>
   </tr></table>
@@ -2023,6 +2035,8 @@
           <li><a href="../api/jina.logging.logger/#jina.logging.logger.SysLogHandlerWrapper.format">(jina.logging.logger.SysLogHandlerWrapper method)</a>
 </li>
         </ul></li>
+        <li><a href="../api/jina.serve.helper/#jina.serve.helper.format_grpc_error">format_grpc_error() (in module jina.serve.helper)</a>
+</li>
         <li><a href="../api/jina.logging.formatter/#jina.logging.formatter.JsonFormatter.formatException">formatException() (jina.logging.formatter.JsonFormatter method)</a>
 
         <ul>
@@ -3594,6 +3608,13 @@
 </li>
         </ul></li>
         <li>
+    jina.serve.runtimes.worker.batch_queue
+
+        <ul>
+          <li><a href="../api/jina.serve.runtimes.worker.batch_queue/#module-jina.serve.runtimes.worker.batch_queue">module</a>
+</li>
+        </ul></li>
+        <li>
     jina.serve.runtimes.worker.request_handling
 
         <ul>
@@ -4424,6 +4445,8 @@
 </li>
           <li><a href="../api/jina.serve.runtimes.worker/#module-jina.serve.runtimes.worker">jina.serve.runtimes.worker</a>
 </li>
+          <li><a href="../api/jina.serve.runtimes.worker.batch_queue/#module-jina.serve.runtimes.worker.batch_queue">jina.serve.runtimes.worker.batch_queue</a>
+</li>
           <li><a href="../api/jina.serve.runtimes.worker.request_handling/#module-jina.serve.runtimes.worker.request_handling">jina.serve.runtimes.worker.request_handling</a>
 </li>
           <li><a href="../api/jina.serve.stream/#module-jina.serve.stream">jina.serve.stream</a>
@@ -4950,6 +4973,10 @@
 </li>
           <li><a href="../api/jina.serve.runtimes.worker/#jina.serve.runtimes.worker.WorkerRuntime.process_single_data">(jina.serve.runtimes.worker.WorkerRuntime method)</a>
 </li>
+          <li><a href="../api/jina.serve.stream/#jina.serve.stream.RequestStreamer.process_single_data">(jina.serve.stream.RequestStreamer method)</a>
+</li>
+          <li><a href="../api/jina.serve.streamer/#jina.serve.streamer.GatewayStreamer.process_single_data">(jina.serve.streamer.GatewayStreamer method)</a>
+</li>
         </ul></li>
         <li><a href="../api/jina.logging.formatter/#jina.logging.formatter.ProfileFormatter">ProfileFormatter (class in jina.logging.formatter)</a>
 </li>
@@ -5061,6 +5088,8 @@
           <li><a href="../api/jina.orchestrate.flow.asyncio/#jina.orchestrate.flow.asyncio.AsyncFlow.push">(jina.orchestrate.flow.asyncio.AsyncFlow method)</a>
 </li>
           <li><a href="../api/jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.push">(jina.orchestrate.flow.base.Flow method)</a>
+</li>
+          <li><a href="../api/jina.serve.runtimes.worker.batch_queue/#jina.serve.runtimes.worker.batch_queue.BatchQueue.push">(jina.serve.runtimes.worker.batch_queue.BatchQueue method)</a>
 </li>
         </ul></li>
         <li><a href="../concepts/preliminaries/coding-in-python-yaml/#term-Pythonic"><strong>Pythonic</strong></a>
@@ -6249,7 +6278,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 12, 2022</div>
+                            Last updated on Dec 14, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

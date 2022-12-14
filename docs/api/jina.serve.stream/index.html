@@ -484,6 +484,17 @@
 <dd><p>Await this coroutine to make sure that all the floating tasks that the request handler may bring are properly consumed</p>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.serve.stream.RequestStreamer.process_single_data">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">process_single_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/stream/#RequestStreamer.process_single_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.stream.RequestStreamer.process_single_data" title="Permalink to this definition">#</a></dt>
+<dd><p>Implements request and response handling of a single DataRequest
+:type request: <a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.DataRequest" title="jina.types.request.data.DataRequest"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataRequest</span></code></a>
+:param request: DataRequest from Client
+:param context: grpc context
+:rtype: <a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.DataRequest" title="jina.types.request.data.DataRequest"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataRequest</span></code></a>
+:return: response DataRequest</p>
+</dd></dl>
+
 </dd></dl>
 
 </section>
@@ -502,7 +513,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 12, 2022</div>
+                            Last updated on Dec 14, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -540,6 +551,7 @@
 <li><a class="reference internal" href="#jina.serve.stream.RequestStreamer"><code class="docutils literal notranslate"><span class="pre">RequestStreamer</span></code></a><ul>
 <li><a class="reference internal" href="#jina.serve.stream.RequestStreamer.stream"><code class="docutils literal notranslate"><span class="pre">RequestStreamer.stream()</span></code></a></li>
 <li><a class="reference internal" href="#jina.serve.stream.RequestStreamer.wait_floating_requests_end"><code class="docutils literal notranslate"><span class="pre">RequestStreamer.wait_floating_requests_end()</span></code></a></li>
+<li><a class="reference internal" href="#jina.serve.stream.RequestStreamer.process_single_data"><code class="docutils literal notranslate"><span class="pre">RequestStreamer.process_single_data()</span></code></a></li>
 </ul>
 </li>
 </ul>

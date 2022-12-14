@@ -406,6 +406,8 @@
     <span class="n">Union</span><span class="p">,</span>
 <span class="p">)</span>
 
+<span class="kn">from</span> <span class="nn">aiostream.aiter_utils</span> <span class="kn">import</span> <span class="n">anext</span>
+
 <span class="kn">from</span> <span class="nn">jina.excepts</span> <span class="kn">import</span> <span class="n">InternalNetworkError</span>
 <span class="kn">from</span> <span class="nn">jina.logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
 <span class="kn">from</span> <span class="nn">jina.serve.stream.helper</span> <span class="kn">import</span> <span class="n">AsyncRequestsIterator</span><span class="p">,</span> <span class="n">_RequestsCounter</span>
@@ -482,6 +484,7 @@
             <span class="p">):</span>  <span class="c1"># inside GrpcGateway we can handle the error directly here through the grpc context</span>
                 <span class="n">context</span><span class="o">.</span><span class="n">set_details</span><span class="p">(</span><span class="n">err</span><span class="o">.</span><span class="n">details</span><span class="p">())</span>
                 <span class="n">context</span><span class="o">.</span><span class="n">set_code</span><span class="p">(</span><span class="n">err</span><span class="o">.</span><span class="n">code</span><span class="p">())</span>
+                <span class="n">context</span><span class="o">.</span><span class="n">set_trailing_metadata</span><span class="p">(</span><span class="n">err</span><span class="o">.</span><span class="n">trailing_metadata</span><span class="p">())</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s1">&#39;Error while getting responses from deployments: </span><span class="si">{</span><span class="n">err</span><span class="o">.</span><span class="n">details</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span>
                 <span class="p">)</span>
@@ -644,7 +647,17 @@
 <span class="sd">        Await this coroutine to make sure that all the floating tasks that the request handler may bring are properly consumed</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">total_num_floating_tasks_alive</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span></div></div>
+            <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RequestStreamer.process_single_data"><a class="viewcode-back" href="../../../../api/jina.serve.stream/#jina.serve.stream.RequestStreamer.process_single_data">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">process_single_data</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">DataRequest</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataRequest</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Implements request and response handling of a single DataRequest</span>
+<span class="sd">        :param request: DataRequest from Client</span>
+<span class="sd">        :param context: grpc context</span>
+<span class="sd">        :return: response DataRequest</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="n">anext</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stream</span><span class="p">(</span><span class="nb">iter</span><span class="p">([</span><span class="n">request</span><span class="p">]),</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">))</span></div></div>
 </pre></div>
                 </article>
             </div>
@@ -659,7 +672,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 12, 2022</div>
+                            Last updated on Dec 14, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

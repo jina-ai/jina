@@ -488,6 +488,11 @@
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">grpcio</span></code> requires building the wheels, it will take some time.</p>
+<p>Note: If the previous step fails, adding the environment variables below might solve the problem:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">GRPC_PYTHON_BUILD_SYSTEM_OPENSSL</span><span class="o">=</span><span class="m">1</span>
+<span class="nb">export</span> <span class="nv">GRPC_PYTHON_BUILD_SYSTEM_ZLIB</span><span class="o">=</span><span class="m">1</span>
+</pre></div>
+</div>
 <p>After all the dependencies are installed, you can run Jina CLI and check the system information.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina -vf
 </pre></div>
@@ -572,7 +577,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 12, 2022</div>
+                            Last updated on Dec 14, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

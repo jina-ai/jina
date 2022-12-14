@@ -7,10 +7,10 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/api/jina.serve.runtimes.worker/" />
 <meta property="og:site_name" content="Jina 3.12.1 Documentation" />
-<meta property="og:description" content="Submodules: jina.serve.runtimes.worker.request_handling module- WorkerRequestHandler- WorkerRequestHandler.handle(), WorkerRequestHandler.replace_docs(), WorkerRequestHandler.replace_parameters(), WorkerRequestHandler.merge_routes(), WorkerRequestHandler.close(), WorkerRequestHandler.get_paramete..." />
+<meta property="og:description" content="Submodules: jina.serve.runtimes.worker.batch_queue module- BatchQueue- BatchQueue.push(), BatchQueue.close().., jina.serve.runtimes.worker.request_handling module- WorkerRequestHandler- WorkerRequestHandler.handle(), WorkerRequestHandler.replace_docs(), WorkerRequestHandler.replace_parameters(), ..." />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
 <meta property="og:image:alt" content="Jina 3.12.1 Documentation" />
-<meta name="description" content="Submodules: jina.serve.runtimes.worker.request_handling module- WorkerRequestHandler- WorkerRequestHandler.handle(), WorkerRequestHandler.replace_docs(), WorkerRequestHandler.replace_parameters(), WorkerRequestHandler.merge_routes(), WorkerRequestHandler.close(), WorkerRequestHandler.get_paramete..." />
+<meta name="description" content="Submodules: jina.serve.runtimes.worker.batch_queue module- BatchQueue- BatchQueue.push(), BatchQueue.close().., jina.serve.runtimes.worker.request_handling module- WorkerRequestHandler- WorkerRequestHandler.handle(), WorkerRequestHandler.replace_docs(), WorkerRequestHandler.replace_parameters(), ..." />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
@@ -427,6 +427,14 @@
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading">#</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../jina.serve.runtimes.worker.batch_queue/">jina.serve.runtimes.worker.batch_queue module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../jina.serve.runtimes.worker.batch_queue/#jina.serve.runtimes.worker.batch_queue.BatchQueue"><code class="docutils literal notranslate"><span class="pre">BatchQueue</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.worker.batch_queue/#jina.serve.runtimes.worker.batch_queue.BatchQueue.push"><code class="docutils literal notranslate"><span class="pre">BatchQueue.push()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.worker.batch_queue/#jina.serve.runtimes.worker.batch_queue.BatchQueue.close"><code class="docutils literal notranslate"><span class="pre">BatchQueue.close()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../jina.serve.runtimes.worker.request_handling/">jina.serve.runtimes.worker.request_handling module</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../jina.serve.runtimes.worker.request_handling/#jina.serve.runtimes.worker.request_handling.WorkerRequestHandler"><code class="docutils literal notranslate"><span class="pre">WorkerRequestHandler</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.worker.request_handling/#jina.serve.runtimes.worker.request_handling.WorkerRequestHandler.handle"><code class="docutils literal notranslate"><span class="pre">WorkerRequestHandler.handle()</span></code></a></li>
@@ -662,7 +670,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 12, 2022</div>
+                            Last updated on Dec 14, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

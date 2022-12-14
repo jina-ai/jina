@@ -196,6 +196,19 @@ with f:  # Using it as a Context Manager will start the Flow
 This will send the request to all Executors whose names start with 'bar', such as 'barExecutor'.
 In the simplest case, you can specify a precise Executor name, and the request will be sent only to that single Executor.
 
+## Use Unary or Streaming gRPC
+
+The Flow with **gRPC** protocol implements the unary and the streaming RPC lifecycle for communicating with the clients. When sending more than one request using the batching or the iterator mechanism, the RPC lifecycle for the {meth}`~jina.clients.mixin.PostMixin.post` method can be controlled using the `stream` boolean method argument. By default the stream option is set to `True` which uses the streaming RPC to send the data to the Flow. If the stream option is set to `False`, the unary RPC is used to send the data to the Flow.
+Both RPC lifecycles are implemented to provide the flexibility for the clients. 
+
+Currently the unary RPC option will always return results in order of the input request iterator and the `results_in_order` argument is ignored. There might be performance penalties when using the streaming RPC in the Python gRPC implementation.
+
+
+```{hint}
+This option is only valid for **gRPC** protocol.
+
+Refer to the gRPC [Performance Best Practices](https://grpc.io/docs/guides/performance/#general) guide for more implementations details and considerations.
+```
 
 ## Returns
 

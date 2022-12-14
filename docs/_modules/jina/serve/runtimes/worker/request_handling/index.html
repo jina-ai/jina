@@ -395,7 +395,10 @@
                 </div>
                 <article role="main">
                     <h1>Source code for jina.serve.runtimes.worker.request_handling</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
+<span></span><span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">import</span> <span class="nn">functools</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
 
 <span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
 
@@ -403,6 +406,7 @@
 <span class="kn">from</span> <span class="nn">jina.excepts</span> <span class="kn">import</span> <span class="n">BadConfigSource</span>
 <span class="kn">from</span> <span class="nn">jina.importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
 <span class="kn">from</span> <span class="nn">jina.serve.executors</span> <span class="kn">import</span> <span class="n">BaseExecutor</span>
+<span class="kn">from</span> <span class="nn">jina.serve.runtimes.worker.batch_queue</span> <span class="kn">import</span> <span class="n">BatchQueue</span>
 <span class="kn">from</span> <span class="nn">jina.types.request.data</span> <span class="kn">import</span> <span class="n">DataRequest</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
@@ -456,6 +460,65 @@
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_init_monitoring</span><span class="p">(</span><span class="n">metrics_registry</span><span class="p">,</span> <span class="n">meter</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">deployment_name</span> <span class="o">=</span> <span class="n">deployment_name</span>
+        <span class="c1"># In order to support batching parameters separately, we have to lazily create batch queues</span>
+        <span class="c1"># So we store the config for each endpoint in the initialization</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_batchqueue_config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="c1"># the below is of &quot;shape&quot; exec_endpoint_name -&gt; parameters_key -&gt; batch_queue</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_batchqueue_instances</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">BatchQueue</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_init_batchqueue_dict</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_all_batch_queues</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">BatchQueue</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Returns a list of all batch queue instances</span>
+<span class="sd">        :return: List of all batch queues for this request handler</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="n">batch_queue</span>
+            <span class="k">for</span> <span class="n">param_to_queue</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_batchqueue_instances</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">batch_queue</span> <span class="ow">in</span> <span class="n">param_to_queue</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+        <span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_init_batchqueue_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Determines how endpoints and method names map to batch queues. Afterwards, this method initializes the</span>
+<span class="sd">        dynamic batching state of the request handler:</span>
+<span class="sd">            * _batchqueue_instances of &quot;shape&quot; exec_endpoint_name -&gt; parameters_key -&gt; batch_queue</span>
+<span class="sd">            * _batchqueue_config mapping each exec_endpoint_name to a dynamic batching configuration</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_executor</span><span class="p">,</span> <span class="s1">&#39;dynamic_batching&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># We need to sort the keys into endpoints and functions</span>
+            <span class="c1"># Endpoints allow specific configurations while functions allow configs to be applied to all endpoints of the function</span>
+            <span class="n">dbatch_endpoints</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">dbatch_functions</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">dbatch_config</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_executor</span><span class="o">.</span><span class="n">dynamic_batching</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">):</span>
+                    <span class="n">dbatch_endpoints</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">key</span><span class="p">,</span> <span class="n">dbatch_config</span><span class="p">))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">dbatch_functions</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">key</span><span class="p">,</span> <span class="n">dbatch_config</span><span class="p">))</span>
+
+            <span class="c1"># Specific endpoint configs take precedence over function configs</span>
+            <span class="k">for</span> <span class="n">endpoint</span><span class="p">,</span> <span class="n">dbatch_config</span> <span class="ow">in</span> <span class="n">dbatch_endpoints</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_batchqueue_config</span><span class="p">[</span><span class="n">endpoint</span><span class="p">]</span> <span class="o">=</span> <span class="n">dbatch_config</span>
+
+            <span class="c1"># Process function configs</span>
+            <span class="n">func_endpoints</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="p">:</span> <span class="p">[]</span> <span class="k">for</span> <span class="n">func</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_executor</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+            <span class="p">}</span>
+            <span class="k">for</span> <span class="n">endpoint</span><span class="p">,</span> <span class="n">func</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_executor</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">func_endpoints</span><span class="p">[</span><span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">endpoint</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">func_name</span><span class="p">,</span> <span class="n">dbatch_config</span> <span class="ow">in</span> <span class="n">dbatch_functions</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">endpoint</span> <span class="ow">in</span> <span class="n">func_endpoints</span><span class="p">[</span><span class="n">func_name</span><span class="p">]:</span>
+                    <span class="k">if</span> <span class="n">endpoint</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_batchqueue_config</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_batchqueue_config</span><span class="p">[</span><span class="n">endpoint</span><span class="p">]</span> <span class="o">=</span> <span class="n">dbatch_config</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;Executor Dynamic Batching configs: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_executor</span><span class="o">.</span><span class="n">dynamic_batching</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;Endpoint Batch Queue Configs: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_batchqueue_config</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_batchqueue_instances</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="n">endpoint</span><span class="p">:</span> <span class="p">{}</span> <span class="k">for</span> <span class="n">endpoint</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_batchqueue_config</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+            <span class="p">}</span>
 
     <span class="k">def</span> <span class="nf">_init_monitoring</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -540,6 +603,7 @@
                 <span class="n">uses_with</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uses_with</span><span class="p">,</span>
                 <span class="n">uses_metas</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uses_metas</span><span class="p">,</span>
                 <span class="n">uses_requests</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uses_requests</span><span class="p">,</span>
+                <span class="n">uses_dynamic_batching</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uses_dynamic_batching</span><span class="p">,</span>
                 <span class="n">runtime_args</span><span class="o">=</span><span class="p">{</span>  <span class="c1"># these are not parsed to the yaml config file but are pass directly during init</span>
                     <span class="s1">&#39;workspace&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">workspace</span><span class="p">,</span>
                     <span class="s1">&#39;shard_id&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">shard_id</span><span class="p">,</span>
@@ -579,6 +643,14 @@
 
             <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">changed_files</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">sys_mod_files_modules</span><span class="p">:</span>
+                    <span class="n">file_module</span> <span class="o">=</span> <span class="n">sys_mod_files_modules</span><span class="p">[</span><span class="n">file</span><span class="p">]</span>
+                    <span class="c1"># TODO: unable to reload main module (for instance, Executor implementation and Executor.serve are</span>
+                    <span class="c1">#  in the same file). Raising a warning for now</span>
+                    <span class="k">if</span> <span class="n">file_module</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                            <span class="s1">&#39;The main module file was changed, cannot reload Executor, please restart &#39;</span>
+                            <span class="s1">&#39;the application&#39;</span>
+                        <span class="p">)</span>
                     <span class="n">importlib</span><span class="o">.</span><span class="n">reload</span><span class="p">(</span><span class="n">sys_mod_files_modules</span><span class="p">[</span><span class="n">file</span><span class="p">])</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
@@ -703,43 +775,65 @@
 <span class="sd">        :param tracing_context: Optional OpenTelemetry tracing context from the originating request.</span>
 <span class="sd">        :returns: the processed message</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="c1"># skip executor if endpoints mismatch</span>
-        <span class="k">if</span> <span class="p">(</span>
-            <span class="n">requests</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">exec_endpoint</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_executor</span><span class="o">.</span><span class="n">requests</span>
-            <span class="ow">and</span> <span class="n">__default_endpoint__</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_executor</span><span class="o">.</span><span class="n">requests</span>
-        <span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">&#39;skip executor: mismatch request, exec_endpoint: </span><span class="si">{</span><span class="n">requests</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">exec_endpoint</span><span class="si">}</span><span class="s1">, requests: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_executor</span><span class="o">.</span><span class="n">requests</span><span class="si">}</span><span class="s1">&#39;</span>
-            <span class="p">)</span>
-            <span class="k">return</span> <span class="n">requests</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">exec_endpoint</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">requests</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">exec_endpoint</span>
+        <span class="k">if</span> <span class="n">exec_endpoint</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_executor</span><span class="o">.</span><span class="n">requests</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">__default_endpoint__</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_executor</span><span class="o">.</span><span class="n">requests</span><span class="p">:</span>
+                <span class="n">exec_endpoint</span> <span class="o">=</span> <span class="n">__default_endpoint__</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">&#39;skip executor: endpoint mismatch. &#39;</span>
+                    <span class="sa">f</span><span class="s1">&#39;Request endpoint: `</span><span class="si">{</span><span class="n">exec_endpoint</span><span class="si">}</span><span class="s1">`. &#39;</span>
+                    <span class="s1">&#39;Available endpoints: &#39;</span>
+                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_executor</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span><span class="si">}</span><span class="s1">&#39;</span>
+                <span class="p">)</span>
+                <span class="k">return</span> <span class="n">requests</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_record_request_size_monitoring</span><span class="p">(</span><span class="n">requests</span><span class="p">)</span>
 
         <span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_params</span><span class="p">(</span><span class="n">requests</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">parameters</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_executor</span><span class="o">.</span><span class="n">metas</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-        <span class="n">docs</span> <span class="o">=</span> <span class="n">WorkerRequestHandler</span><span class="o">.</span><span class="n">get_docs_from_request</span><span class="p">(</span>
-            <span class="n">requests</span><span class="p">,</span>
-            <span class="n">field</span><span class="o">=</span><span class="s1">&#39;docs&#39;</span><span class="p">,</span>
-        <span class="p">)</span>
 
-        <span class="c1"># executor logic</span>
-        <span class="n">docs_matrix</span><span class="p">,</span> <span class="n">docs_map</span> <span class="o">=</span> <span class="n">WorkerRequestHandler</span><span class="o">.</span><span class="n">_get_docs_matrix_from_request</span><span class="p">(</span>
-            <span class="n">requests</span>
-        <span class="p">)</span>
-        <span class="n">return_data</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_executor</span><span class="o">.</span><span class="n">__acall__</span><span class="p">(</span>
-            <span class="n">req_endpoint</span><span class="o">=</span><span class="n">requests</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">exec_endpoint</span><span class="p">,</span>
-            <span class="n">docs</span><span class="o">=</span><span class="n">docs</span><span class="p">,</span>
-            <span class="n">parameters</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>
-            <span class="n">docs_matrix</span><span class="o">=</span><span class="n">docs_matrix</span><span class="p">,</span>
-            <span class="n">docs_map</span><span class="o">=</span><span class="n">docs_map</span><span class="p">,</span>
-            <span class="n">tracing_context</span><span class="o">=</span><span class="n">tracing_context</span><span class="p">,</span>
-        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">exec_endpoint</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_batchqueue_config</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">requests</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;dynamic batching does not support no_reduce&#39;</span>
 
-        <span class="n">docs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_set_result</span><span class="p">(</span><span class="n">requests</span><span class="p">,</span> <span class="n">return_data</span><span class="p">,</span> <span class="n">docs</span><span class="p">)</span>
+            <span class="n">param_key</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">sort_keys</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">param_key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_batchqueue_instances</span><span class="p">[</span><span class="n">exec_endpoint</span><span class="p">]:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_batchqueue_instances</span><span class="p">[</span><span class="n">exec_endpoint</span><span class="p">][</span><span class="n">param_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">BatchQueue</span><span class="p">(</span>
+                    <span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_executor</span><span class="o">.</span><span class="n">__acall__</span><span class="p">,</span> <span class="n">exec_endpoint</span><span class="p">),</span>
+                    <span class="n">output_array_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">output_array_type</span><span class="p">,</span>
+                    <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>
+                    <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_batchqueue_config</span><span class="p">[</span><span class="n">exec_endpoint</span><span class="p">],</span>
+                <span class="p">)</span>
+            <span class="c1"># This is necessary because push might need to await for the queue to be emptied</span>
+            <span class="n">task</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_batchqueue_instances</span><span class="p">[</span><span class="n">exec_endpoint</span><span class="p">][</span><span class="n">param_key</span><span class="p">]</span><span class="o">.</span><span class="n">push</span><span class="p">(</span>
+                <span class="n">requests</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="p">)</span>
+            <span class="k">await</span> <span class="n">task</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">docs</span> <span class="o">=</span> <span class="n">WorkerRequestHandler</span><span class="o">.</span><span class="n">get_docs_from_request</span><span class="p">(</span>
+                <span class="n">requests</span><span class="p">,</span>
+                <span class="n">field</span><span class="o">=</span><span class="s1">&#39;docs&#39;</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="n">docs_matrix</span><span class="p">,</span> <span class="n">docs_map</span> <span class="o">=</span> <span class="n">WorkerRequestHandler</span><span class="o">.</span><span class="n">_get_docs_matrix_from_request</span><span class="p">(</span>
+                <span class="n">requests</span>
+            <span class="p">)</span>
+            <span class="n">return_data</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_executor</span><span class="o">.</span><span class="n">__acall__</span><span class="p">(</span>
+                <span class="n">req_endpoint</span><span class="o">=</span><span class="n">requests</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">exec_endpoint</span><span class="p">,</span>
+                <span class="n">docs</span><span class="o">=</span><span class="n">docs</span><span class="p">,</span>
+                <span class="n">parameters</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>
+                <span class="n">docs_matrix</span><span class="o">=</span><span class="n">docs_matrix</span><span class="p">,</span>
+                <span class="n">docs_map</span><span class="o">=</span><span class="n">docs_map</span><span class="p">,</span>
+                <span class="n">tracing_context</span><span class="o">=</span><span class="n">tracing_context</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_set_result</span><span class="p">(</span><span class="n">requests</span><span class="p">,</span> <span class="n">return_data</span><span class="p">,</span> <span class="n">docs</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">req</span> <span class="ow">in</span> <span class="n">requests</span><span class="p">:</span>
             <span class="n">req</span><span class="o">.</span><span class="n">add_executor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">deployment_name</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_record_docs_processed_monitoring</span><span class="p">(</span><span class="n">requests</span><span class="p">,</span> <span class="n">docs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_record_docs_processed_monitoring</span><span class="p">(</span><span class="n">requests</span><span class="p">,</span> <span class="n">requests</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">docs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_record_response_size_monitoring</span><span class="p">(</span><span class="n">requests</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">requests</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
@@ -780,9 +874,10 @@
                     <span class="n">requests</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">routes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">route</span><span class="p">)</span>
                     <span class="n">existing_executor_routes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">route</span><span class="o">.</span><span class="n">executor</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="WorkerRequestHandler.close"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.worker.request_handling/#jina.serve.runtimes.worker.request_handling.WorkerRequestHandler.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Close the data request handler, by closing the executor&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="WorkerRequestHandler.close"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.worker.request_handling/#jina.serve.runtimes.worker.request_handling.WorkerRequestHandler.close">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Close the data request handler, by closing the executor and the batch queues.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_closed</span><span class="p">:</span>
+            <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">q</span><span class="o">.</span><span class="n">close</span><span class="p">()</span> <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_all_batch_queues</span><span class="p">()])</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_executor</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_is_closed</span> <span class="o">=</span> <span class="kc">True</span></div>
 
@@ -921,7 +1016,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 12, 2022</div>
+                            Last updated on Dec 14, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

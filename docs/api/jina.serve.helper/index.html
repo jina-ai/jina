@@ -449,6 +449,26 @@
 :return: the wrapped function</p>
 </dd></dl>
 
+<dl class="py function">
+<dt class="sig sig-object py" id="jina.serve.helper.extract_trailing_metadata">
+<span class="sig-prename descclassname"><span class="pre">jina.serve.helper.</span></span><span class="sig-name descname"><span class="pre">extract_trailing_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">error</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/helper/#extract_trailing_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.helper.extract_trailing_metadata" title="Permalink to this definition">#</a></dt>
+<dd><p>Return formatted string of the trailing metadata if exists otherwise return None
+:type error: <code class="xref py py-class docutils literal notranslate"><span class="pre">AioRpcError</span></code>
+:param error: AioRpcError
+:rtype: <code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]
+:return: string of Metadata or None</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="jina.serve.helper.format_grpc_error">
+<span class="sig-prename descclassname"><span class="pre">jina.serve.helper.</span></span><span class="sig-name descname"><span class="pre">format_grpc_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">error</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/helper/#format_grpc_error"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.helper.format_grpc_error" title="Permalink to this definition">#</a></dt>
+<dd><p>Adds grpc context trainling metadata if available
+:type error: <code class="xref py py-class docutils literal notranslate"><span class="pre">AioRpcError</span></code>
+:param error: AioRpcError
+:rtype: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
+:return: formatted error</p>
+</dd></dl>
+
 </section>
 
                 </article>
@@ -464,7 +484,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 12, 2022</div>
+                            Last updated on Dec 14, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -499,6 +519,8 @@
 <li><a class="reference internal" href="#">jina.serve.helper module</a><ul>
 <li><a class="reference internal" href="#jina.serve.helper.wrap_func"><code class="docutils literal notranslate"><span class="pre">wrap_func()</span></code></a></li>
 <li><a class="reference internal" href="#jina.serve.helper.store_init_kwargs"><code class="docutils literal notranslate"><span class="pre">store_init_kwargs()</span></code></a></li>
+<li><a class="reference internal" href="#jina.serve.helper.extract_trailing_metadata"><code class="docutils literal notranslate"><span class="pre">extract_trailing_metadata()</span></code></a></li>
+<li><a class="reference internal" href="#jina.serve.helper.format_grpc_error"><code class="docutils literal notranslate"><span class="pre">format_grpc_error()</span></code></a></li>
 </ul>
 </li>
 </ul>

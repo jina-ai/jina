@@ -14,6 +14,7 @@
 | `uses_with` | Dictionary of keyword arguments that will override the `with` configuration in `uses` | `object` | `None` |
 | `uses_metas` | Dictionary of keyword arguments that will override the `metas` configuration in `uses` | `object` | `None` |
 | `uses_requests` | Dictionary of keyword arguments that will override the `requests` configuration in `uses` | `object` | `None` |
+| `uses_dynamic_batching` | Dictionary of keyword arguments that will override the `dynamic_batching` configuration in `uses` | `object` | `None` |
 | `py_modules` | The customized python modules need to be imported before loading the executor<br><br>Note that the recommended way is to only import a single module - a simple python file, if your<br>executor can be defined in a single file, or an ``__init__.py`` file if you have multiple files,<br>which should be structured as a python package. For more details, please see the<br>`Executor cookbook <https://docs.jina.ai/concepts/executor/executor-files/>`__ | `array` | `None` |
 | `output_array_type` | The type of array `tensor` and `embedding` will be serialized to.<br><br>Supports the same types as `docarray.to_protobuf(.., ndarray_type=...)`, which can be found <br>`here <https://docarray.jina.ai/fundamentals/document/serialization/#from-to-protobuf>`.<br>Defaults to retaining whatever type is returned by the Executor. | `string` | `None` |
 | `exit_on_exceptions` | List of exceptions that will cause the Executor to shut down. | `array` | `[]` |
@@ -30,7 +31,7 @@
 | `env` | The map of environment variables that are available inside runtime | `object` | `None` |
 | `floating` | If set, the current Pod/Deployment can not be further chained, and the next `.add()` will chain after the last Pod/Deployment not this current one. | `boolean` | `False` |
 | `restart` | If set, the Executor will restart while serving if the YAML configuration source is changed. This differs from `reload` argument in that this will restart the server and more configuration can be changed, like number of replicas. | `boolean` | `False` |
-| `port` | The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (`--external` or `external=True`) this can be a list of ports, separated by commas. Then, every resulting address will be considered as one replica of the Executor. | `None` | `random in [49152, 65535]` |
+| `port` | The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (`--external` or `external=True`) this can be a list of ports, separated by commas. Then, every resulting address will be considered as one replica of the Executor. | `number` | `random in [49152, 65535]` |
 | `reload` | If set, the Executor reloads the modules as they change | `boolean` | `False` |
 | `monitoring` | If set, spawn an http server with a prometheus endpoint to expose metrics | `boolean` | `False` |
 | `port_monitoring` | The port on which the prometheus server is exposed, default is a random port between [49152, 65535] | `string` | `random in [49152, 65535]` |

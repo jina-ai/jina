@@ -486,6 +486,32 @@ That means, it is the fallback handler for endpoints that are not found.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="jina.serve.executors.decorators.dynamic_batching">
+<span class="sig-prename descclassname"><span class="pre">jina.serve.executors.decorators.</span></span><span class="sig-name descname"><span class="pre">dynamic_batching</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">preferred_batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10000</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/executors/decorators/#dynamic_batching"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.executors.decorators.dynamic_batching" title="Permalink to this definition">#</a></dt>
+<dd><p><cite>&#64;dynamic_batching</cite> defines the dynamic batching behavior of an Executor.
+Dynamic batching works by collecting Documents from multiple requests in a queue, and passing them to the Executor
+in batches of specified size.
+This can improve throughput and resource utilization at the cost of increased latency.
+TODO(johannes) add docstring example</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>func</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>[[<a class="reference internal" href="../jina/#jina.DocumentArray" title="docarray.array.document.DocumentArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>, <a class="reference internal" href="../jina/#jina.DocumentArray" title="docarray.array.document.DocumentArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="../jina/#jina.DocumentArray" title="docarray.array.document.DocumentArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code></a>], <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="../jina/#jina.DocumentArray" title="docarray.array.document.DocumentArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code></a>]], <code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<a class="reference internal" href="../jina/#jina.DocumentArray" title="docarray.array.document.DocumentArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]]]) – the method to decorate</p></li>
+<li><p><strong>preferred_batch_size</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – target number of Documents in a batch. The batcher will collect requests until <cite>preferred_batch_size</cite> is reached,
+or until <cite>timeout</cite> is reached. Therefore, the actual batch size can be smaller or larger than <cite>preferred_batch_size</cite>.</p></li>
+<li><p><strong>timeout</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) – maximum time in milliseconds to wait for a request to be assigned to a batch.
+If the oldest request in the queue reaches a waiting time of <cite>timeout</cite>, the batch will be passed to the Executor,
+even if it contains fewer than <cite>preferred_batch_size</cite> Documents.
+Default is 10_000ms (10 seconds).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>decorated function</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="jina.serve.executors.decorators.monitor">
 <span class="sig-prename descclassname"><span class="pre">jina.serve.executors.decorators.</span></span><span class="sig-name descname"><span class="pre">monitor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">documentation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/executors/decorators/#monitor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.executors.decorators.monitor" title="Permalink to this definition">#</a></dt>
 <dd><p>Decorator and context manager that allows monitoring of an Executor.</p>
@@ -566,7 +592,7 @@ called. Under the hood it will create a prometheus Summary : <a class="reference
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 12, 2022</div>
+                            Last updated on Dec 14, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -601,6 +627,7 @@ called. Under the hood it will create a prometheus Summary : <a class="reference
 <li><a class="reference internal" href="#">jina.serve.executors.decorators module</a><ul>
 <li><a class="reference internal" href="#jina.serve.executors.decorators.avoid_concurrent_lock_cls"><code class="docutils literal notranslate"><span class="pre">avoid_concurrent_lock_cls()</span></code></a></li>
 <li><a class="reference internal" href="#jina.serve.executors.decorators.requests"><code class="docutils literal notranslate"><span class="pre">requests()</span></code></a></li>
+<li><a class="reference internal" href="#jina.serve.executors.decorators.dynamic_batching"><code class="docutils literal notranslate"><span class="pre">dynamic_batching()</span></code></a></li>
 <li><a class="reference internal" href="#jina.serve.executors.decorators.monitor"><code class="docutils literal notranslate"><span class="pre">monitor()</span></code></a></li>
 </ul>
 </li>

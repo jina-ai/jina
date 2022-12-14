@@ -573,6 +573,17 @@ This means you can iterate over Responses one by one, as they come in.</p>
 <p>This will send the request to all Executors whose names start with ‘bar’, such as ‘barExecutor’.
 In the simplest case, you can specify a precise Executor name, and the request will be sent only to that single Executor.</p>
 </section>
+<section id="use-unary-or-streaming-grpc">
+<h2>Use Unary or Streaming gRPC<a class="headerlink" href="#use-unary-or-streaming-grpc" title="Permalink to this heading">#</a></h2>
+<p>The Flow with <strong>gRPC</strong> protocol implements the unary and the streaming RPC lifecycle for communicating with the clients. When sending more than one request using the batching or the iterator mechanism, the RPC lifecycle for the <a class="reference internal" href="../../../api/jina.clients.mixin/#jina.clients.mixin.PostMixin.post" title="jina.clients.mixin.PostMixin.post"><code class="xref py py-meth docutils literal notranslate"><span class="pre">post()</span></code></a> method can be controlled using the <code class="docutils literal notranslate"><span class="pre">stream</span></code> boolean method argument. By default the stream option is set to <code class="docutils literal notranslate"><span class="pre">True</span></code> which uses the streaming RPC to send the data to the Flow. If the stream option is set to <code class="docutils literal notranslate"><span class="pre">False</span></code>, the unary RPC is used to send the data to the Flow.
+Both RPC lifecycles are implemented to provide the flexibility for the clients.</p>
+<p>Currently the unary RPC option will always return results in order of the input request iterator and the <code class="docutils literal notranslate"><span class="pre">results_in_order</span></code> argument is ignored. There might be performance penalties when using the streaming RPC in the Python gRPC implementation.</p>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>This option is only valid for <strong>gRPC</strong> protocol.</p>
+<p>Refer to the gRPC <a class="reference external" href="https://grpc.io/docs/guides/performance/#general">Performance Best Practices</a> guide for more implementations details and considerations.</p>
+</div>
+</section>
 <section id="returns">
 <h2>Returns<a class="headerlink" href="#returns" title="Permalink to this heading">#</a></h2>
 <p><a class="reference internal" href="../../../api/jina.clients.mixin/#jina.clients.mixin.PostMixin.post" title="jina.clients.mixin.PostMixin.post"><code class="xref py py-meth docutils literal notranslate"><span class="pre">post()</span></code></a> returns a <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> containing all Documents flattened over all Requests. When setting <code class="docutils literal notranslate"><span class="pre">return_responses=True</span></code>, this behavior is changed to returning a list of <code class="xref py py-class docutils literal notranslate"><span class="pre">Response</span></code> objects.</p>
@@ -695,7 +706,7 @@ This means you will not receive results until all Requests have been processed, 
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 12, 2022</div>
+                            Last updated on Dec 14, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -731,6 +742,7 @@ This means you will not receive results until all Requests have been processed, 
 <li><a class="reference internal" href="#send-data-in-batches">Send data in batches</a></li>
 <li><a class="reference internal" href="#send-data-asynchronously">Send data asynchronously</a></li>
 <li><a class="reference internal" href="#send-data-to-specific-executors">Send data to specific Executors</a></li>
+<li><a class="reference internal" href="#use-unary-or-streaming-grpc">Use Unary or Streaming gRPC</a></li>
 <li><a class="reference internal" href="#returns">Returns</a><ul>
 <li><a class="reference internal" href="#callbacks-vs-returns">Callbacks vs returns</a></li>
 <li><a class="reference internal" href="#force-the-order-of-responses">Force the order of responses</a></li>

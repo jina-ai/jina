@@ -443,11 +443,16 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">streamer</span><span class="o">.</span><span class="n">_streamer</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span>
         <span class="p">)</span>
 
+        <span class="n">jina_pb2_grpc</span><span class="o">.</span><span class="n">add_JinaSingleDataRequestRPCServicer_to_server</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">streamer</span><span class="o">.</span><span class="n">_streamer</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span>
+        <span class="p">)</span>
+
         <span class="n">jina_pb2_grpc</span><span class="o">.</span><span class="n">add_JinaGatewayDryRunRPCServicer_to_server</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="p">)</span>
         <span class="n">jina_pb2_grpc</span><span class="o">.</span><span class="n">add_JinaInfoRPCServicer_to_server</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="p">)</span>
 
         <span class="n">service_names</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">jina_pb2</span><span class="o">.</span><span class="n">DESCRIPTOR</span><span class="o">.</span><span class="n">services_by_name</span><span class="p">[</span><span class="s1">&#39;JinaRPC&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">full_name</span><span class="p">,</span>
+            <span class="n">jina_pb2</span><span class="o">.</span><span class="n">DESCRIPTOR</span><span class="o">.</span><span class="n">services_by_name</span><span class="p">[</span><span class="s1">&#39;JinaSingleDataRequestRPC&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">full_name</span><span class="p">,</span>
             <span class="n">jina_pb2</span><span class="o">.</span><span class="n">DESCRIPTOR</span><span class="o">.</span><span class="n">services_by_name</span><span class="p">[</span><span class="s1">&#39;JinaGatewayDryRunRPC&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">full_name</span><span class="p">,</span>
             <span class="n">jina_pb2</span><span class="o">.</span><span class="n">DESCRIPTOR</span><span class="o">.</span><span class="n">services_by_name</span><span class="p">[</span><span class="s1">&#39;JinaInfoRPC&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">full_name</span><span class="p">,</span>
             <span class="n">reflection</span><span class="o">.</span><span class="n">SERVICE_NAME</span><span class="p">,</span>
@@ -506,7 +511,7 @@
 <span class="sd">        :param context: grpc context</span>
 <span class="sd">        :returns: the response request</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Document</span>
+        <span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span>
 
         <span class="kn">from</span> <span class="nn">jina.serve.executors</span> <span class="kn">import</span> <span class="n">__dry_run_endpoint__</span>
 
@@ -553,7 +558,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 12, 2022</div>
+                            Last updated on Dec 14, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

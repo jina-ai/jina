@@ -436,6 +436,7 @@
                 <span class="o">**</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;with&#39;</span><span class="p">,</span> <span class="p">{}),</span>
                 <span class="n">metas</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;metas&#39;</span><span class="p">,</span> <span class="p">{}),</span>
                 <span class="n">requests</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;requests&#39;</span><span class="p">,</span> <span class="p">{}),</span>
+                <span class="n">dynamic_batching</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;dynamic_batching&#39;</span><span class="p">,</span> <span class="p">{}),</span>
                 <span class="n">runtime_args</span><span class="o">=</span><span class="n">runtime_args</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -443,6 +444,7 @@
                 <span class="o">**</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;with&#39;</span><span class="p">,</span> <span class="p">{}),</span>
                 <span class="n">metas</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;metas&#39;</span><span class="p">,</span> <span class="p">{}),</span>
                 <span class="n">requests</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;requests&#39;</span><span class="p">,</span> <span class="p">{}),</span>
+                <span class="n">dynamic_batching</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;dynamic_batching&#39;</span><span class="p">,</span> <span class="p">{}),</span>
                 <span class="n">runtime_args</span><span class="o">=</span><span class="n">runtime_args</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="bp">cls</span><span class="o">.</span><span class="n">_init_from_yaml</span> <span class="o">=</span> <span class="kc">False</span>
@@ -510,6 +512,9 @@
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s1">&#39;requests&#39;</span><span class="p">):</span>
             <span class="n">r</span><span class="p">[</span><span class="s1">&#39;requests&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="vm">__name__</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
 
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s1">&#39;dynamic_batching&#39;</span><span class="p">):</span>
+            <span class="n">r</span><span class="p">[</span><span class="s1">&#39;dynamic_batching&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">dynamic_batching</span>
+
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s1">&#39;components&#39;</span><span class="p">):</span>
             <span class="n">r</span><span class="p">[</span><span class="s1">&#39;components&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">components</span>
         <span class="k">return</span> <span class="n">r</span></div></div>
@@ -527,7 +532,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 12, 2022</div>
+                            Last updated on Dec 14, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

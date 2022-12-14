@@ -457,6 +457,7 @@
               <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="k">with</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
               <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">metas</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
               <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">requests</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
+              <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">dynamic</span><span class="o">-</span><span class="n">batching</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
               <span class="p">[</span><span class="o">--</span><span class="n">py</span><span class="o">-</span><span class="n">modules</span> <span class="p">[</span><span class="n">PATH</span> <span class="p">[</span><span class="n">PATH</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">output</span><span class="o">-</span><span class="n">array</span><span class="o">-</span><span class="nb">type</span><span class="p">]</span>
               <span class="p">[</span><span class="o">--</span><span class="n">exit</span><span class="o">-</span><span class="n">on</span><span class="o">-</span><span class="n">exceptions</span> <span class="p">[[</span><span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">reduce</span><span class="p">]</span>
               <span class="p">[</span><span class="o">--</span><span class="n">grpc</span><span class="o">-</span><span class="n">server</span><span class="o">-</span><span class="n">options</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
@@ -571,6 +572,11 @@ JSON dict, {endpoint: PollingType}
 <div><p>Dictionary of keyword arguments that will override the <cite>requests</cite> configuration in <cite>uses</cite></p>
 </div></blockquote>
 </dd>
+<dt><kbd>--uses-dynamic-batching</kbd></dt>
+<dd><blockquote>
+<div><p>Dictionary of keyword arguments that will override the <cite>dynamic_batching</cite> configuration in <cite>uses</cite></p>
+</div></blockquote>
+</dd>
 <dt><kbd>--py-modules</kbd></dt>
 <dd><p>The customized python modules need to be imported before loading the executor</p>
 <p>Note that the recommended way is to only import a single module - a simple python file, if your
@@ -665,7 +671,7 @@ container.</p>
 </dd>
 <dt><kbd>--port, --port-in</kbd></dt>
 <dd><p>The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (<cite>–external</cite> or <cite>external=True</cite>) this can be a list of ports, separated by commas. Then, every resulting address will be considered as one replica of the Executor.</p>
-<p>Default: 52298</p>
+<p>Default: 49388</p>
 </dd>
 <dt><kbd>--reload</kbd></dt>
 <dd><p>If set, the Executor reloads the modules as they change</p>
@@ -677,7 +683,7 @@ container.</p>
 </dd>
 <dt><kbd>--port-monitoring</kbd></dt>
 <dd><p>The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</p>
-<p>Default: “54206”</p>
+<p>Default: “58963”</p>
 </dd>
 <dt><kbd>--retries</kbd></dt>
 <dd><p>Number of retries per gRPC call. If &lt;0 it defaults to max(3, num_replicas)</p>
@@ -1235,7 +1241,7 @@ which should be structured as a python package.</p>
 </dd>
 <dt><kbd>--port-monitoring</kbd></dt>
 <dd><p>The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</p>
-<p>Default: “56679”</p>
+<p>Default: “55885”</p>
 </dd>
 <dt><kbd>--retries</kbd></dt>
 <dd><p>Number of retries per gRPC call. If &lt;0 it defaults to max(3, num_replicas)</p>
@@ -1745,6 +1751,7 @@ which should be structured as a python package.</p>
          <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="k">with</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
          <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">metas</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
          <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">requests</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">dynamic</span><span class="o">-</span><span class="n">batching</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
          <span class="p">[</span><span class="o">--</span><span class="n">py</span><span class="o">-</span><span class="n">modules</span> <span class="p">[</span><span class="n">PATH</span> <span class="p">[</span><span class="n">PATH</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">output</span><span class="o">-</span><span class="n">array</span><span class="o">-</span><span class="nb">type</span><span class="p">]</span>
          <span class="p">[</span><span class="o">--</span><span class="n">exit</span><span class="o">-</span><span class="n">on</span><span class="o">-</span><span class="n">exceptions</span> <span class="p">[[</span><span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">reduce</span><span class="p">]</span>
          <span class="p">[</span><span class="o">--</span><span class="n">grpc</span><span class="o">-</span><span class="n">server</span><span class="o">-</span><span class="n">options</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">entrypoint</span><span class="p">]</span>
@@ -1859,6 +1866,11 @@ JSON dict, {endpoint: PollingType}
 <div><p>Dictionary of keyword arguments that will override the <cite>requests</cite> configuration in <cite>uses</cite></p>
 </div></blockquote>
 </dd>
+<dt><kbd>--uses-dynamic-batching</kbd></dt>
+<dd><blockquote>
+<div><p>Dictionary of keyword arguments that will override the <cite>dynamic_batching</cite> configuration in <cite>uses</cite></p>
+</div></blockquote>
+</dd>
 <dt><kbd>--py-modules</kbd></dt>
 <dd><p>The customized python modules need to be imported before loading the executor</p>
 <p>Note that the recommended way is to only import a single module - a simple python file, if your
@@ -1953,7 +1965,7 @@ container.</p>
 </dd>
 <dt><kbd>--port, --port-in</kbd></dt>
 <dd><p>The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (<cite>–external</cite> or <cite>external=True</cite>) this can be a list of ports, separated by commas. Then, every resulting address will be considered as one replica of the Executor.</p>
-<p>Default: 65307</p>
+<p>Default: 57032</p>
 </dd>
 <dt><kbd>--reload</kbd></dt>
 <dd><p>If set, the Executor reloads the modules as they change</p>
@@ -1965,7 +1977,7 @@ container.</p>
 </dd>
 <dt><kbd>--port-monitoring</kbd></dt>
 <dd><p>The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</p>
-<p>Default: “59042”</p>
+<p>Default: “52311”</p>
 </dd>
 <dt><kbd>--retries</kbd></dt>
 <dd><p>Number of retries per gRPC call. If &lt;0 it defaults to max(3, num_replicas)</p>
@@ -2037,6 +2049,7 @@ container.</p>
                 <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="k">with</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
                 <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">metas</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
                 <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">requests</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
+                <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">dynamic</span><span class="o">-</span><span class="n">batching</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
                 <span class="p">[</span><span class="o">--</span><span class="n">py</span><span class="o">-</span><span class="n">modules</span> <span class="p">[</span><span class="n">PATH</span> <span class="p">[</span><span class="n">PATH</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">output</span><span class="o">-</span><span class="n">array</span><span class="o">-</span><span class="nb">type</span><span class="p">]</span>
                 <span class="p">[</span><span class="o">--</span><span class="n">exit</span><span class="o">-</span><span class="n">on</span><span class="o">-</span><span class="n">exceptions</span> <span class="p">[[</span><span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">reduce</span><span class="p">]</span>
                 <span class="p">[</span><span class="o">--</span><span class="n">grpc</span><span class="o">-</span><span class="n">server</span><span class="o">-</span><span class="n">options</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
@@ -2155,6 +2168,11 @@ JSON dict, {endpoint: PollingType}
 <div><p>Dictionary of keyword arguments that will override the <cite>requests</cite> configuration in <cite>uses</cite></p>
 </div></blockquote>
 </dd>
+<dt><kbd>--uses-dynamic-batching</kbd></dt>
+<dd><blockquote>
+<div><p>Dictionary of keyword arguments that will override the <cite>dynamic_batching</cite> configuration in <cite>uses</cite></p>
+</div></blockquote>
+</dd>
 <dt><kbd>--py-modules</kbd></dt>
 <dd><p>The customized python modules need to be imported before loading the executor</p>
 <p>Note that the recommended way is to only import a single module - a simple python file, if your
@@ -2249,7 +2267,7 @@ container.</p>
 </dd>
 <dt><kbd>--port, --port-in</kbd></dt>
 <dd><p>The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (<cite>–external</cite> or <cite>external=True</cite>) this can be a list of ports, separated by commas. Then, every resulting address will be considered as one replica of the Executor.</p>
-<p>Default: 54910</p>
+<p>Default: 51149</p>
 </dd>
 <dt><kbd>--reload</kbd></dt>
 <dd><p>If set, the Executor reloads the modules as they change</p>
@@ -2261,7 +2279,7 @@ container.</p>
 </dd>
 <dt><kbd>--port-monitoring</kbd></dt>
 <dd><p>The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</p>
-<p>Default: “65397”</p>
+<p>Default: “50219”</p>
 </dd>
 <dt><kbd>--retries</kbd></dt>
 <dd><p>Number of retries per gRPC call. If &lt;0 it defaults to max(3, num_replicas)</p>
@@ -2447,7 +2465,7 @@ container.</p>
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 12, 2022</div>
+                            Last updated on Dec 14, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

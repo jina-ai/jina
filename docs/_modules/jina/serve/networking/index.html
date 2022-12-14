@@ -415,6 +415,7 @@
 <span class="kn">from</span> <span class="nn">jina.importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
 <span class="kn">from</span> <span class="nn">jina.logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
 <span class="kn">from</span> <span class="nn">jina.proto</span> <span class="kn">import</span> <span class="n">jina_pb2</span><span class="p">,</span> <span class="n">jina_pb2_grpc</span>
+<span class="kn">from</span> <span class="nn">jina.serve.helper</span> <span class="kn">import</span> <span class="n">format_grpc_error</span>
 <span class="kn">from</span> <span class="nn">jina.serve.instrumentation</span> <span class="kn">import</span> <span class="n">MetricsTimer</span>
 <span class="kn">from</span> <span class="nn">jina.types.request</span> <span class="kn">import</span> <span class="n">Request</span>
 <span class="kn">from</span> <span class="nn">jina.types.request.data</span> <span class="kn">import</span> <span class="n">DataRequest</span>
@@ -1366,7 +1367,7 @@
         <span class="c1"># requests usually gets cancelled when the server shuts down</span>
         <span class="c1"># retries for cancelled requests will hit another replica in K8s</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s1">&#39;GRPC call to </span><span class="si">{</span><span class="n">current_deployment</span><span class="si">}</span><span class="s1"> errored, getting error </span><span class="si">{</span><span class="n">error</span><span class="si">}</span><span class="s1"> for the </span><span class="si">{</span><span class="n">retry_i</span> <span class="o">+</span> <span class="mi">1</span><span class="si">}</span><span class="s1">th time.&#39;</span>
+            <span class="sa">f</span><span class="s1">&#39;GRPC call to </span><span class="si">{</span><span class="n">current_deployment</span><span class="si">}</span><span class="s1"> errored, with error </span><span class="si">{</span><span class="n">format_grpc_error</span><span class="p">(</span><span class="n">error</span><span class="p">)</span><span class="si">}</span><span class="s1"> and for the </span><span class="si">{</span><span class="n">retry_i</span> <span class="o">+</span> <span class="mi">1</span><span class="si">}</span><span class="s1">th time.&#39;</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="p">(</span>
             <span class="n">error</span><span class="o">.</span><span class="n">code</span><span class="p">()</span> <span class="o">!=</span> <span class="n">grpc</span><span class="o">.</span><span class="n">StatusCode</span><span class="o">.</span><span class="n">UNAVAILABLE</span>
@@ -1400,7 +1401,7 @@
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">&#39;GRPC call to deployment </span><span class="si">{</span><span class="n">current_deployment</span><span class="si">}</span><span class="s1"> failed with code </span><span class="si">{</span><span class="n">error</span><span class="o">.</span><span class="n">code</span><span class="p">()</span><span class="si">}</span><span class="s1">, retry attempt </span><span class="si">{</span><span class="n">retry_i</span> <span class="o">+</span> <span class="mi">1</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">total_num_tries</span> <span class="o">-</span> <span class="mi">1</span><span class="si">}</span><span class="s1">.&#39;</span>
+                <span class="sa">f</span><span class="s1">&#39;GRPC call to deployment </span><span class="si">{</span><span class="n">current_deployment</span><span class="si">}</span><span class="s1"> failed with error </span><span class="si">{</span><span class="n">format_grpc_error</span><span class="p">(</span><span class="n">error</span><span class="p">)</span><span class="si">}</span><span class="s1">, for retry attempt </span><span class="si">{</span><span class="n">retry_i</span> <span class="o">+</span> <span class="mi">1</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">total_num_tries</span> <span class="o">-</span> <span class="mi">1</span><span class="si">}</span><span class="s1">.&#39;</span>
                 <span class="sa">f</span><span class="s1">&#39; Trying next replica, if available.&#39;</span>
             <span class="p">)</span>
             <span class="k">return</span> <span class="kc">None</span>
@@ -1873,7 +1874,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 12, 2022</div>
+                            Last updated on Dec 14, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
