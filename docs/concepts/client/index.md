@@ -175,7 +175,7 @@ client.post(..., compression='Gzip')
 
 Note that this setting is only effective the communication between the client and the Flow's gateway.
 
-One can also specify the compression of the internal communication {ref}`as described here<serve-compress>`.
+One can also specify the compression of the internal communication {ref}`as described here<server-compress>`.
 
 
 

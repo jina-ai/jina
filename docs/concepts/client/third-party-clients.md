@@ -15,6 +15,7 @@ A big thanks to our community member [Jonathan Rowley](https://jina-ai.slack.com
 
 A big thanks to our community member [Peter Willemsen](https://jina-ai.slack.com/team/U03R0KNBK98) for developing a [Kotlin client](https://github.com/peterwilli/JinaKotlin) for Jina!
 
+(http-interface)=
 ## HTTP
 
 ```{admonition} Available Protocols
@@ -29,6 +30,7 @@ You can always use `post` to interact with a Flow, using the `/post` HTTP endpoi
 
 With the help of [OpenAPI schema](https://swagger.io/specification/), one can send data requests to a Flow via `cURL`, JavaScript, [Postman](https://www.postman.com/), or any other HTTP client or programming library. 
 
+(http-arguments)=
 ### Arguments
 
 Your HTTP request can include the following parameters:
@@ -239,7 +241,7 @@ Below, in `Responses`, you can see the reply, together with a visual representat
 
 We provide a [suite of templates for Jina Flow](https://github.com/jina-ai/jina/tree/master/.github/Jina.postman_collection.json). You can import it in Postman in **Collections**, with the **Import** button. It provides templates for the main operations. You need to create an Environment to define the `{{url}}` and `{{port}}` environment variables. These would be the hostname and the port where the Flow is listening. 
 
-This contribution was made by [Jonathan Rowley](https://jina-ai.slack.com/archives/C0169V26ATY/p1649689443888779?thread_ts=1649428823.420879&cid=C0169V26ATY), in our [community Slack](slack.jina.ai).
+This contribution was made by [Jonathan Rowley](https://jina-ai.slack.com/archives/C0169V26ATY/p1649689443888779?thread_ts=1649428823.420879&cid=C0169V26ATY), in our [community Slack](https://slack.jina.ai).
 
 ## gRPC
 
