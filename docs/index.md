@@ -27,28 +27,64 @@ docker pull jinaai/jina:latest
 
 Now that you’re set up, let’s create a project:
 
-````{tab} In host
+````{tab} Natively on the host
 ```shell
-jina new hello-jina
-cd hello-jina
-jina flow --uses flow.yml
+jina new hello-jina && jina flow --uses hello-jina/flow.yml
 ```
 ````
-````{tab} Inside Docker
+````{tab} In a Docker container
 ```shell
-docker run -it --entrypoint=/bin/bash jinaai/jina:latest -p 54321:54321
-jina new hello-jina
-cd hello-jina
-jina flow --uses flow.yml
+docker run jinaai/jina:latest -v "$(pwd)/j:/j" new hello-jina
+docker run -v "$(pwd)/j:/j" -p 54321:54321 jinaai/jina:latest flow --uses /j/hello-jina/flow.yml
 ```
 ````
 
 Run the client on your machine and observe the results from your terminal.
 
-```shell
-python client.py
-['hello, world!', 'goodbye, world!']
+````{tab} via gRPC in Python
+```python
+from jina import Client, DocumentArray
+
+c = Client(host='grpc://0.0.0.0:54321')
+da = c.post('/', DocumentArray.empty(2))
+print(da.texts)
 ```
+````
+````{tab} via HTTP in Python
+```python
+from jina import Client, DocumentArray
+
+c = Client(host='http://0.0.0.0:54322')
+da = c.post('/', DocumentArray.empty(2))
+print(da.texts)
+```
+````
+````{tab} via WebSocket in Python
+```python
+from jina import Client, DocumentArray
+
+c = Client(host='ws://0.0.0.0:54323')
+da = c.post('/', DocumentArray.empty(2))
+print(da.texts)
+```
+````
+````{tab} via HTTP using Javascript
+```javascript
+fetch('http://localhost:54322/post', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json'
+    },
+    body: {}
+}).then(response => response.json()).then(data => console.log(data));
+```
+````
+````{tab} via HTTP using curl
+```bash
+curl --request POST 'http://localhost:54323/post' --header 'Content-Type: application/json' -d '{}'
+```
+````
+
 
 
 ## Next steps
