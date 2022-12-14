@@ -293,7 +293,7 @@ response = endpoint(mut)
 
 WebSocket uses persistent connections between the client and Flow, hence allowing streaming use cases. 
 While you can always use the Python client to stream requests like any other protocol, WebSocket allows streaming JSON from anywhere (CLI / Postman / any other programming language). 
-You can use the same set of arguments as [HTTP](#arguments) in the payload.
+You can use the same set of arguments as {ref}`HTTP <http-arguments>` in the payload.
 
 We use [subprotocols](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API/Writing_WebSocket_servers#subprotocols) to separate streaming JSON vs bytes. 
 The Flow defaults to `json` if you don't specify a sub-protocol while establishing the connection (Our Python client uses `bytes` streaming by using [jina.proto](../../proto/docs.md) definition).
