@@ -7,6 +7,7 @@ from typing import (
     Iterator,
     Optional,
     Union,
+    Tuple
 )
 
 from aiostream.aiter_utils import anext
@@ -34,7 +35,7 @@ class RequestStreamer:
 
     def __init__(
         self,
-        request_handler: Callable[['Request'], 'Awaitable[Request]'],
+        request_handler: Callable[['Request'], Tuple[Awaitable['Request'], Optional[Awaitable['Request']]]],
         result_handler: Callable[['Request'], Optional['Request']],
         prefetch: int = 0,
         end_of_iter_handler: Optional[Callable[[], None]] = None,
