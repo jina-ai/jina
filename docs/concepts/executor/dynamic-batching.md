@@ -34,8 +34,10 @@ batching enabled.
 ---
 emphasize-lines: 12
 ---
-from jina import requests, dynamic_batching, Executor, DocumentArray, Flow
+import numpy as np
+from jina import Executor, requests, dynamic_batching, Flow, DocumentArray, Document
 import torch
+
 
 class MyExecutor(Executor):
     def __init__(self, **kwargs):
