@@ -322,8 +322,7 @@ def _create_regular_deployment(
     shards=None,
     replicas=None,
 ):
-    args = set_deployment_parser().parse_args([])
-    args.port = port
+    args = set_deployment_parser().parse_args(['--port', str(port)])
     args.name = name
     if shards:
         args.shards = shards

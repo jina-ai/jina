@@ -1643,60 +1643,18 @@ def _single_port_free(host: str, port: int) -> bool:
             return True
 
 
-def is_port_free(host: str, port: Union[int, List[int]]) -> bool:
+def is_port_free(host: Union[str, List[str]], port: Union[int, List[int]]) -> bool:
     if isinstance(port, list):
-        return all([_single_port_free(host, _p) for _p in port])
+        if isinstance(host, str):
+            return all([_single_port_free(host, _p) for _p in port])
+        else:
+            return all([all([_single_port_free(_h, _p) for _p in port]) for _h in host])
     else:
-        return _single_port_free(host, port)
-
-
-def _parse_ports(port: str) -> Union[int, List]:
-    """Parse port
-
-    EXAMPLE USAGE
-
-    .. code-block:: python
-
-
-        _parse_port('8000')
-        8000
-
-        _parse_port('8001,8002,8005')
-        [80001, 8002, 8005]
-
-    :param port: the string to parse
-    :return: the port or the iterable ports
-    """
-    try:
-        port = int(port)
-    except ValueError as e:
-        if ',' in port:
-            port = [int(port_) for port_ in port.split(',')]
-        elif not isinstance(port, list):
-            raise e
-    return port
-
-
-def _parse_hosts(host: str) -> Union[str, List[str]]:
-    """Parse port
-
-    EXAMPLE USAGE
-
-    .. code-block:: python
-
-
-        _parse_hosts('localhost')
-        'localhost'
-
-        _parse_port('localhost,91.198.174.192')
-        ['localhost', '91.198.174.192']
-
-    :param host: the string to parse
-    :return: the host or the iterable of hosts
-    """
-    hosts = host.split(',')
-    return hosts[0] if len(hosts) == 1 else hosts
-
+        if isinstance(host, str):
+            return _single_port_free(host, port)
+        else:
+            return all([_single_port_free(_h, port) for _h in host])
+    
 
 def send_telemetry_event(event: str, obj: Any, **kwargs) -> None:
     """Sends in a thread a request with telemetry for a given event
@@ -1730,35 +1688,3 @@ def send_telemetry_event(event: str, obj: Any, **kwargs) -> None:
 
     threading.Thread(target=_telemetry, daemon=True).start()
 
-
-def make_iterable(o: object) -> Iterable:
-    """
-    Make an object an iterable by wrapping it as a singleton list.
-    If the input is already an iterable (except str and bytes), it will be returned as is.
-    Str and bytes are treated as non-iterable, and thus wrapped in a list.
-
-    EXAMPLE USAGE
-
-    .. code-block:: python
-
-
-        make_iter(1)
-        [1]
-
-        make_iter('a')
-        ['a']
-
-        make_iter([1, 2, 3])
-        [1, 2, 3]
-
-        make_iter((1, 2, 3))
-        (1, 2, 3)
-
-
-    :param o: the object to be converted to an iterable
-    :return: the iterable
-    """
-    if isinstance(o, Iterable) and not isinstance(o, (str, bytes)):
-        return o
-    else:
-        return [o]

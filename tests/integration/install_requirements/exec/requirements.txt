@@ -1,1 +1,2 @@
-sklearn
+scikit-learn
+tiny
