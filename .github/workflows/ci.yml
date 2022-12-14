@@ -23,10 +23,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2.5.0
-      - name: Set up Python 3.7
+      - name: Set up Python 3.8
         uses: actions/setup-python@v4
         with:
-          python-version: 3.7
+          python-version: 3.8
       - name: Lint with flake8
         run: |
           pip install flake8
@@ -41,10 +41,10 @@ jobs:
       - uses: actions/checkout@v2.5.0
         with:
           fetch-depth: 0
-      - name: Set up Python 3.7
+      - name: Set up Python 3.8
         uses: actions/setup-python@v1
         with:
-          python-version: 3.7
+          python-version: 3.8
       - id: file_changes
         uses: Ana06/get-changed-files@v1.2
       - name: docstring check with darglint and pydocstyle
@@ -58,10 +58,10 @@ jobs:
       - uses: actions/checkout@v2.5.0
         with:
           fetch-depth: 0
-      - name: Set up Python 3.7
+      - name: Set up Python 3.8
         uses: actions/setup-python@v4
         with:
-          python-version: 3.7
+          python-version: 3.8
       - id: file_changes
         uses: Ana06/get-changed-files@v1.2
       - name: check black
@@ -77,11 +77,11 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           ref: ${{ github.event.pull_request.head.sha }}
-      - name: Set up Python 3.7
+      - name: Set up Python 3.8
         uses: actions/setup-python@v4
         if: ${{ !github.event.pull_request.head.repo.fork }}
         with:
-          python-version: 3.7
+          python-version: 3.8
       - name: Styling
         id: styling
         if: ${{ !github.event.pull_request.head.repo.fork }}
@@ -158,10 +158,10 @@ jobs:
 #        with:
 #          access_token: ${{ github.token }}
       - uses: actions/checkout@v2.5.0
-      - name: Set up Python 3.7
+      - name: Set up Python 3.8
         uses: actions/setup-python@v4
         with:
-          python-version: 3.7
+          python-version: 3.8
       - name: Test hubapp with hubpods
         run: |
           ./tests/jinahub/test_integration.sh
@@ -175,10 +175,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2.5.0
-      - name: Set up Python 3.7
+      - name: Set up Python 3.8
         uses: actions/setup-python@v4
         with:
-          python-version: 3.7
+          python-version: 3.8
       - name: Prepare enviroment
         run: |
           docker build -f Dockerfiles/test-pip.Dockerfile -t jinaai/jina:test-pip .
@@ -204,7 +204,7 @@ jobs:
           files: "coverage.xml"
       - name: Upload coverage from test to Codecov
         uses: codecov/codecov-action@v3.1.1
-        if: steps.check_files.outputs.files_exists == 'true' && ${{ matrix.python-version }} == '3.7'
+        if: steps.check_files.outputs.files_exists == 'true' && ${{ matrix.python-version }} == '3.8'
         with:
           file: coverage.xml
           name: ${{ matrix.test-path }}-codecov
@@ -216,10 +216,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2.5.0
-      - name: Set up Python 3.7
+      - name: Set up Python 3.8
         uses: actions/setup-python@v4
         with:
-          python-version: 3.7
+          python-version: 3.8
       - name: Prepare enviroment
         run: |
           docker build -f Dockerfiles/test-pip.Dockerfile -t jinaai/jina:test-pip .
@@ -246,7 +246,7 @@ jobs:
           files: "coverage.xml"
       - name: Upload coverage from test to Codecov
         uses: codecov/codecov-action@v3.1.1
-        if: steps.check_files.outputs.files_exists == 'true' && ${{ matrix.python-version }} == '3.7'
+        if: steps.check_files.outputs.files_exists == 'true' && ${{ matrix.python-version }} == '3.8'
         with:
           file: coverage.xml
           name: ${{ matrix.test-path }}-codecov
@@ -258,10 +258,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2.5.0
-      - name: Set up Python 3.7
+      - name: Set up Python 3.8
         uses: actions/setup-python@v4
         with:
-          python-version: 3.7
+          python-version: 3.8
       - name: Prepare enviroment
         run: |
           docker build -f Dockerfiles/test-pip.Dockerfile -t jinaai/jina:test-pip .
@@ -285,7 +285,7 @@ jobs:
           files: "coverage.xml"
       - name: Upload coverage from test to Codecov
         uses: codecov/codecov-action@v3.1.1
-        if: steps.check_files.outputs.files_exists == 'true' && ${{ matrix.python-version }} == '3.7'
+        if: steps.check_files.outputs.files_exists == 'true' && ${{ matrix.python-version }} == '3.8'
         with:
           file: coverage.xml
           name: ${{ matrix.test-path }}-codecov
@@ -298,10 +298,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2.5.0
-      - name: Set up Python 3.7
+      - name: Set up Python 3.8
         uses: actions/setup-python@v4
         with:
-          python-version: 3.7
+          python-version: 3.8
       - name: Prepare enviroment
         run: |
           docker build -f Dockerfiles/test-pip.Dockerfile -t jinaai/jina:test-pip .
@@ -323,7 +323,7 @@ jobs:
           files: "coverage.xml"
       - name: Upload coverage from test to Codecov
         uses: codecov/codecov-action@v3.1.1
-        if: steps.check_files.outputs.files_exists == 'true' && ${{ matrix.python-version }} == '3.7'
+        if: steps.check_files.outputs.files_exists == 'true' && ${{ matrix.python-version }} == '3.8'
         with:
           file: coverage.xml
           name: ${{ matrix.test-path }}-codecov
@@ -351,7 +351,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [3.7]
+        python-version: [3.8]
         test-path: ${{fromJson(needs.prep-testbed.outputs.matrix)}}
     steps:
       - uses: actions/checkout@v2.5.0
@@ -384,7 +384,7 @@ jobs:
           files: "coverage.xml"
       - name: Upload coverage from test to Codecov
         uses: codecov/codecov-action@v3.1.1
-        if: steps.check_files.outputs.files_exists == 'true' && ${{ matrix.python-version }} == '3.7'
+        if: steps.check_files.outputs.files_exists == 'true' && ${{ matrix.python-version }} == '3.8'
         with:
           file: coverage.xml
           name: ${{ matrix.test-path }}-codecov
@@ -399,15 +399,16 @@ jobs:
       matrix:
         core: ['', 'true']
         perf: ['', 'true']
+        python-env: [3.8, 3.9, '3.10', '3.11']
         exclude:
           - core: 'true'
             perf: 'true'
     steps:
       - uses: actions/checkout@v2.5.0
-      - name: Set up Python 3.7
+      - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: 3.7
+          python-version: ${{ matrix.python-env }}
       - name: Prepare enviroment
         run: |
           python -m pip install --upgrade pip
@@ -428,10 +429,10 @@ jobs:
       fail-fast: false
     steps:
       - uses: actions/checkout@v2.5.0
-      - name: Set up Python 3.7
+      - name: Set up Python 3.8
         uses: actions/setup-python@v4
         with:
-          python-version: 3.7
+          python-version: 3.8
       - name: Prepare enviroment
         run: |
           python -m pip install --upgrade pip
