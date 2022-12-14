@@ -4,7 +4,6 @@ import re
 from typing import TYPE_CHECKING, Tuple, Dict, Optional, cast
 from pkg_resources import Requirement
 
-
 if TYPE_CHECKING:  # pragma: no cover
     from pathlib import Path
 
@@ -44,6 +43,7 @@ ENV_VAR_RE = re.compile(r"(?P<var>\$\{(?P<name>[A-Z0-9_]+)\})")
 ENV_VAR_RE_ONLY_MATCH_UPPERCASE_UNDERLINE = re.compile(r"^[A-Z0-9_]+$")
 
 extras_require_search = re.compile(r'(?P<name>.+)\[(?P<extras>[^\]]+)\]')
+
 
 def _parse_fragment(fragment_string: str) -> Dict[str, str]:
     """Takes a fragment string and returns a dict of the components
@@ -212,5 +212,6 @@ def _get_package_path_from_uses(uses: str) -> Optional['Path']:
         return Path(os.path.dirname(os.path.abspath(uses)))
     else:
         from jina.logging.predefined import default_logger
-        default_logger.warning(f'Error getting the directory name from {uses}. `--install-requirements` option is only valid when `uses` is a configuration file.')
+        default_logger.warning(
+            f'Error getting the directory name from {uses}. `--install-requirements` option is only valid when `uses` is a configuration file.')
         return None

@@ -22,7 +22,7 @@ from jina.helper import (
     make_iterable,
     parse_host_scheme,
 )
-from jina.orchestrate.deployments.helper import install_package_dependencies, _get_package_path_from_uses
+from jina.orchestrate.deployments.install_requirements_helper import install_package_dependencies, _get_package_path_from_uses
 from jina.orchestrate.pods.factory import PodFactory
 from jina.parsers.helper import _update_gateway_args
 from jina.serve.networking import host_is_local, in_docker
