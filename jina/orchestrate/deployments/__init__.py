@@ -800,10 +800,7 @@ class Deployment(BaseDeployment):
                 # for gateway pods, the pod role shouldn't be changed
                 if _args.pod_role != PodRoleType.GATEWAY:
                     _args.pod_role = PodRoleType.WORKER
-                    if len(self.args.host) == 1:
-                        _args.host = self.args.host[0]
-                    elif len(self.args.host) == replicas:
-                        _args.host = self.args.host[replica_id]
+                    _args.host = self.args.host[replica_id]
                 else:
                     _args.host = self.args.host
 
