@@ -130,7 +130,7 @@ def mixin_pod_runtime_args_parser(arg_group, pod_type='worker'):
     """
     port_description = (
         'The port for input data to bind to, default is a random port between [49152, 65535]. '
-        'In the case of an external Executor (`--external` or `external=True`) this can be a list of ports, separated by commas. '
+        'In the case of an external Executor (`--external` or `external=True`) this can be a list of ports. '
         'Then, every resulting address will be considered as one replica of the Executor.'
     )
 
@@ -139,7 +139,8 @@ def mixin_pod_runtime_args_parser(arg_group, pod_type='worker'):
             '--port',
             '--port-in',
             type=str,
-            default=helper.random_port(),
+            nargs='+',
+            default=[helper.random_port()],
             action=CastToIntAction,
             help=port_description,
         )
@@ -177,7 +178,9 @@ def mixin_pod_runtime_args_parser(arg_group, pod_type='worker'):
     arg_group.add_argument(
         '--port-monitoring',
         type=str,
-        default=str(helper.random_port()),
+        nargs='+',
+        default=[helper.random_port()],
+        action=CastToIntAction,
         dest='port_monitoring',
         help=f'The port on which the prometheus server is exposed, default is a random port between [49152, 65535]',
     )

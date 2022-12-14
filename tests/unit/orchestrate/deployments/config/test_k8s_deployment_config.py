@@ -53,6 +53,7 @@ def test_parse_args(
         args_list.extend(['--uses-metas', uses_metas])
     args = set_deployment_parser().parse_args(args_list)
     deployment_config = K8sDeploymentConfig(args, 'default-namespace')
+    args.host = args.host[0]
 
     if shards > 1:
         assert namespace_equal(
@@ -166,6 +167,7 @@ def test_parse_args_custom_executor(shards: int):
         ]
     )
     deployment_config = K8sDeploymentConfig(args, 'default-namespace')
+    args.host = args.host[0]
 
     if shards > 1:
         assert (
@@ -237,6 +239,7 @@ def test_deployments(name: str, shards: str, gpus):
         ['--name', name, '--shards', shards, '--gpus', gpus]
     )
     deployment_config = K8sDeploymentConfig(args, 'ns')
+    args.host = args.host[0]
 
     if name != 'gateway' and int(shards) > int(1):
         head_deployment = deployment_config.head_deployment
