@@ -1,6 +1,6 @@
 # Hot Reload
 
-While developing your Flow, it can be useful to have it reload automatically as you change the Flow YAML.
+While developing your Flow, you may want it to reload automatically as you change the Flow YAML.
 
 For this you can use the Flow's `reload` argument to reload it with the updated configuration every time you change the YAML configuration.
 
@@ -14,7 +14,7 @@ This feature aims to let developers iterate faster while developing, but is not 
 This feature requires watchfiles>=0.18 package to be installed.
 ````
 
-To see how this works, let's define a Flow in `flow.yml` with a `reload` option.
+To see how this works, let's define a Flow in `flow.yml` with a `reload` option:
 ```yaml
 jtype: Flow
 with:
@@ -25,7 +25,7 @@ executors:
   uses: ConcatenateTextExecutor
 ```
 
-We build a Flow and expose it:
+Build a Flow and expose it:
 
 ```python
 import os
@@ -48,7 +48,7 @@ with f:
     f.block()
 ```
 
-We can see that the Flow is running and serving:
+You can see that the Flow is running and serving:
 
 ```python
 from jina import Client, DocumentArray
@@ -62,7 +62,7 @@ print(c.post(on='/', inputs=DocumentArray.empty(1))[0].text)
 add text
 ```
 
-We can edit the Flow YAML file and save the changes:
+You can edit the Flow YAML file and save the changes:
 
 ```yaml
 jtype: Flow
