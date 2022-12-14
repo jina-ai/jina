@@ -38,6 +38,7 @@ class RequestStreamer:
         request_handler: Callable[['Request'], Tuple[Awaitable['Request'], Optional[Awaitable['Request']]]],
         result_handler: Callable[['Request'], Optional['Request']],
         prefetch: int = 0,
+        iterate_sync_in_thread: bool = True,
         end_of_iter_handler: Optional[Callable[[], None]] = None,
         logger: Optional['JinaLogger'] = None,
         **logger_kwargs,
@@ -47,6 +48,7 @@ class RequestStreamer:
         :param result_handler: The callable responsible for handling the response.
         :param end_of_iter_handler: Optional callable to handle the end of iteration if some special action needs to be taken.
         :param prefetch: How many Requests are processed from the Client at the same time.
+        :param iterate_sync_in_thread: if True, blocking iterators will call __next__ in a Thread.
         :param logger: Optional logger that can be used for logging
         :param logger_kwargs: Extra keyword arguments that may be passed to the internal logger constructor if none is provided
 
@@ -56,6 +58,7 @@ class RequestStreamer:
         self._request_handler = request_handler
         self._result_handler = result_handler
         self._end_of_iter_handler = end_of_iter_handler
+        self._iterate_sync_in_thread = iterate_sync_in_thread
         self.total_num_floating_tasks_alive = 0
 
     async def stream(
@@ -164,6 +167,7 @@ class RequestStreamer:
                 iterator=request_iterator,
                 request_counter=requests_to_handle,
                 prefetch=self._prefetch,
+                iterate_sync_in_thread=self._iterate_sync_in_thread
             ):
                 num_reqs += 1
                 requests_to_handle.count += 1
