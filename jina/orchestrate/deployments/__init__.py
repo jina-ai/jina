@@ -231,7 +231,14 @@ class Deployment(BaseDeployment):
             self._parse_external_replica_hosts_and_ports()
             self._parse_addresses_into_host_and_port()
         if len(self.ext_repl_ports) > 1:
-            self.args.replicas = len(self.ext_repl_ports)
+            if self.args.replicas != 1 and self.args.replicas != len(
+                self.ext_repl_ports
+            ):
+                raise ValueError(
+                    f'Number of hosts ({len(self.args.host)}) does not match the number of replicas ({self.args.replicas})'
+                )
+            else:
+                self.args.replicas = len(self.ext_repl_ports)
 
         self.uses_before_pod = None
         self.uses_after_pod = None
@@ -797,16 +804,12 @@ class Deployment(BaseDeployment):
                         _args.host = self.args.host[0]
                     elif len(self.args.host) == replicas:
                         _args.host = self.args.host[replica_id]
-                    else:
-                        raise ValueError(
-                            f'Number of hosts ({len(self.args.host)}) does not match the number of replicas ({replicas})'
-                        )
                 else:
                     _args.host = self.args.host
 
                 if cuda_device_map:
                     _args.env['CUDA_VISIBLE_DEVICES'] = str(cuda_device_map[replica_id])
-                
+
                 if _args.name:
                     _args.name += (
                         f'/shard-{shard_id}/rep-{replica_id}'
@@ -819,7 +822,7 @@ class Deployment(BaseDeployment):
                 # the gateway needs to respect the assigned port
                 if self.args.deployment_role == DeploymentRoleType.GATEWAY:
                     _args.port = self.args.port
-                
+
                 elif not self.external:
                     if shards == 1 and replicas == 1:
                         _args.port = self.args.port[0]
@@ -849,7 +852,7 @@ class Deployment(BaseDeployment):
                     else:
                         _args.port = helper.random_port()
                         _args.port_monitoring = helper.random_port()
-                
+
                 else:
                     _args.port = self.ext_repl_ports[replica_id]
                     _args.host = self.ext_repl_hosts[replica_id]
