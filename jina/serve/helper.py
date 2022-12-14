@@ -3,6 +3,8 @@ import inspect
 import typing
 from typing import Optional, Union
 
+import grpc
+
 from jina.helper import convert_tuple_to_list
 
 if typing.TYPE_CHECKING:
@@ -72,3 +74,29 @@ def store_init_kwargs(
         return f
 
     return arg_wrapper
+
+
+def extract_trailing_metadata(error: grpc.aio.AioRpcError) -> Optional[str]:
+    '''Return formatted string of the trailing metadata if exists otherwise return None
+    :param error: AioRpcError
+    :return: string of Metadata or None
+    '''
+    if type(error) == grpc.aio.AioRpcError:
+        trailing_metadata = error.trailing_metadata()
+        if trailing_metadata and len(trailing_metadata):
+            return f'trailing_metadata={trailing_metadata}'
+
+    return None
+
+
+def format_grpc_error(error: grpc.aio.AioRpcError) -> str:
+    '''Adds grpc context trainling metadata if available
+    :param error: AioRpcError
+    :return: formatted error
+    '''
+    default_string = str(error)
+    trailing_metadata = extract_trailing_metadata(error)
+    if trailing_metadata:
+        return f'{default_string}\n{trailing_metadata}'
+
+    return default_string
