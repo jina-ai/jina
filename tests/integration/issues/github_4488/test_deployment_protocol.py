@@ -34,7 +34,7 @@ def key_pem(cert_prefix):
 @pytest.mark.parametrize('tls', [True, False])
 @pytest.mark.parametrize(
     'uses',
-    ['jinahub+sandbox://DummyHubExecutor', 'jinaai+sandbox://jina-ai/DummyHubExecutor'],
+    ['jinaai+sandbox://jina-ai/DummyHubExecutor'],
 )
 def test_deployment_protocol(protocol, tls, cert_pem, key_pem, uses):
     cert = cert_pem if tls else None

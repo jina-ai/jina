@@ -32,7 +32,6 @@ def namespace_equal(
     'uses_before',
     [
         None,
-        'jinahub+docker://HubBeforeExecutor',
         'jinaai+docker://jina-ai/HubBeforeExecutor',
     ],
 )
@@ -382,7 +381,6 @@ def assert_port_config(port_dict: Dict, name: str, port: int):
 @pytest.mark.parametrize(
     'uses',
     [
-        'jinahub+docker://HubExecutor',
         'docker://docker_image:latest',
         'jinaai+docker://jina-ai/HubExecutor',
     ],
@@ -391,7 +389,6 @@ def assert_port_config(port_dict: Dict, name: str, port: int):
     'uses_before',
     [
         None,
-        'jinahub+docker://HubBeforeExecutor',
         'jinaai+docker://jina-ai/HubBeforeExecutor',
     ],
 )
@@ -399,7 +396,6 @@ def assert_port_config(port_dict: Dict, name: str, port: int):
     'uses_after',
     [
         None,
-        'jinahub+docker://HubAfterExecutor',
         'jinaai+docker://jina-ai/HubAfterExecutor',
     ],
 )

@@ -393,7 +393,7 @@ def test_disable_auto_volume(tmpdir):
 
 @pytest.mark.parametrize(
     'uses',
-    ['jinahub+sandbox://DummyHubExecutor', 'jinaai+sandbox://jina-ai/DummyHubExecutor'],
+    ['jinaai+sandbox://jina-ai/DummyHubExecutor'],
 )
 def test_flow_to_docker_compose_sandbox(tmpdir, uses):
     flow = Flow(name='test-flow', port=8080).add(uses=uses)

@@ -5,7 +5,7 @@ from jina import Document, Flow
 
 @pytest.mark.parametrize('endpoint', ['foo', 'bar'])
 @pytest.mark.parametrize(
-    'uses', ['jinahub+sandbox://Hello', 'jinaai+sandbox://jina-ai/Hello']
+    'uses', ['jinaai+sandbox://jina-ai/Hello']
 )
 def test_sandbox(endpoint, uses):
     with Flow().add(uses=uses) as f:

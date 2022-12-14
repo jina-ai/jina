@@ -43,7 +43,7 @@ def test_to_compatible_name():
 
 
 @pytest.mark.parametrize(
-    'uses', ['jinahub://DummyExecutor', 'jinaai://jina-ai/DummyExecutor']
+    'uses', ['jinaai://jina-ai/DummyExecutor']
 )
 def test_get_image_name(mocker, monkeypatch, uses):
     mock = mocker.Mock()

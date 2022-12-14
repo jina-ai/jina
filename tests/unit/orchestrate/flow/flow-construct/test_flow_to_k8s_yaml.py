@@ -578,7 +578,6 @@ def test_raise_exception_invalid_executor(tmpdir):
 @pytest.mark.parametrize(
     'uses',
     [
-        'jinahub+sandbox://DummyHubExecutor',
         f'jinaai+sandbox://jina-ai/DummyHubExecutor',
     ],
 )

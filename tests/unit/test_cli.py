@@ -40,7 +40,7 @@ def test_cli_help():
 
 
 @pytest.mark.parametrize(
-    'uses', ['jinahub://DummyHubExecutor', 'jinaai://jina-ai/DummyHubExecutor']
+    'uses', ['jinaai://jina-ai/DummyHubExecutor']
 )
 def test_cli_hub(uses):
     subprocess.check_call(['jina', 'hub', '--help'])

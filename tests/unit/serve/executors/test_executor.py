@@ -75,7 +75,7 @@ def served_exec(request: FixtureRequest, exposed_port):
 
 
 @pytest.mark.parametrize(
-    'uses', ['jinahub://DummyHubExecutor', 'jinaai://jina-ai/DummyHubExecutor']
+    'uses', ['jinaai://jina-ai/DummyHubExecutor']
 )
 def test_executor_load_from_hub(uses):
     exec = Executor.from_hub(uses, uses_metas={'name': 'hello123'})
@@ -487,7 +487,7 @@ def test_to_k8s_yaml(tmpdir, exec_type, uses):
 )
 @pytest.mark.parametrize(
     'uses',
-    ['jinahub+docker://DummyHubExecutor', 'jinaai+docker://jina-ai/DummyHubExecutor'],
+    ['jinaai+docker://jina-ai/DummyHubExecutor'],
 )
 def test_to_docker_compose_yaml(tmpdir, exec_type, uses):
     compose_file = os.path.join(tmpdir, 'compose.yml')

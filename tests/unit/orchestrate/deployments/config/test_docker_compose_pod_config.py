@@ -33,7 +33,6 @@ def namespace_equal(
     'uses_before',
     [
         None,
-        'jinahub+docker://HubBeforeExecutor',
         'jinaai+docker://jina-ai/HubBeforeExecutor',
     ],
 )
@@ -405,7 +404,6 @@ def test_docker_compose_gateway(deployments_addresses, custom_gateway):
 @pytest.mark.parametrize(
     'uses',
     [
-        'jinahub+docker://HubExecutor',
         'docker://docker_image:latest',
         'jinaai+docker://jina-ai/HubExecutor',
     ],
@@ -414,7 +412,6 @@ def test_docker_compose_gateway(deployments_addresses, custom_gateway):
     'uses_before',
     [
         None,
-        'jinahub+docker://HubBeforeExecutor',
         'jinaai+docker://jina-ai/HubBeforeExecutor',
     ],
 )
@@ -422,7 +419,6 @@ def test_docker_compose_gateway(deployments_addresses, custom_gateway):
     'uses_after',
     [
         None,
-        'jinahub+docker://HubAfterExecutor',
         'jinaai+docker://jina-ai/HubAfterExecutor',
     ],
 )
