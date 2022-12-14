@@ -351,10 +351,12 @@ def test_return_results_sync_flow(protocol, on_done):
 @pytest.mark.parametrize(
     'input,expected_host,expected_port',
     [
-        ('0.0.0.0', '0.0.0.0', None),
-        ('0.0.0.0:12345', '0.0.0.0', '12345'),
-        ('123.124.125.0:45678', '123.124.125.0', '45678'),
-        ('api.jina.ai:45678', 'api.jina.ai', '45678'),
+        ('0.0.0.0', ['0.0.0.0'], None),
+        ('0.0.0.0:12345', ['0.0.0.0'], ['12345']),
+        ('123.124.125.0:45678', ['123.124.125.0'], ['45678']),
+        ('api.jina.ai:45678', ['api.jina.ai'], ['45678']),
+        (['api.jina.ai','123.124.125.0'], ['api.jina.ai','123.124.125.0'], None),
+        (['api.jina.ai:12345','123.124.125.0:45678'], ['api.jina.ai','123.124.125.0'], ['12345','45678']),
     ],
 )
 def test_flow_host_expose_shortcut(input, expected_host, expected_port):

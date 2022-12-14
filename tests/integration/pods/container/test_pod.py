@@ -10,9 +10,10 @@ from jina.enums import PodRoleType, PollingType
 from jina.helper import random_port
 from jina.orchestrate.pods import Pod
 from jina.orchestrate.pods.container import ContainerPod
-from jina.parsers import set_gateway_parser, set_pod_parser
+from jina.parsers import set_gateway_parser
 from jina.serve.runtimes.head import HeadRuntime
 from jina.serve.runtimes.worker import WorkerRuntime
+from tests.helper import _generate_pod_args
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -102,7 +103,7 @@ async def test_pods_trivial_topology(
 
 
 def _create_worker_pod(port):
-    args = set_pod_parser().parse_args([])
+    args = _generate_pod_args()
     args.port = port
     args.name = 'worker'
     args.uses = 'docker://worker-runtime'
@@ -110,7 +111,7 @@ def _create_worker_pod(port):
 
 
 def _create_head_pod(port, connection_list_dict):
-    args = set_pod_parser().parse_args([])
+    args = _generate_pod_args()
     args.port = port
     args.name = 'head'
     args.pod_role = PodRoleType.HEAD

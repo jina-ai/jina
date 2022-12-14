@@ -2,6 +2,8 @@ import argparse
 import os
 from typing import List, Union
 
+from jina.parsers.helper import CastHostAction
+
 
 def api_to_dict(show_all_args: bool = False):
     """Convert Jina API to a dict
@@ -69,7 +71,14 @@ def _export_parser_args(parser_fn, type_as_str: bool = False, **kwargs):
             random_dest.add(a.dest)
     for a in parser._actions:
         if isinstance(
-            a, (_StoreAction, _StoreTrueAction, KVAppendAction, CastToIntAction)
+            a,
+            (
+                _StoreAction,
+                _StoreTrueAction,
+                KVAppendAction,
+                CastToIntAction,
+                CastHostAction,
+            ),
         ):
             if not _SHOW_ALL_ARGS and a.help == argparse.SUPPRESS:
                 continue
@@ -80,6 +89,8 @@ def _export_parser_args(parser_fn, type_as_str: bool = False, **kwargs):
                 ddd['type'] = dict
             elif isinstance(a, CastToIntAction):
                 ddd['type'] = int
+            elif isinstance(a, CastHostAction):
+                ddd['type'] = str
             else:
                 ddd['type'] = a.type
             if ddd['choices']:

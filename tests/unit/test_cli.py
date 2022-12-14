@@ -7,11 +7,12 @@ import pytest
 from jina.checker import NetworkChecker
 from jina.jaml import JAML
 from jina.orchestrate.pods.factory import PodFactory
-from jina.parsers import set_deployment_parser, set_pod_parser
+from jina.parsers import set_deployment_parser
 from jina.parsers.ping import set_ping_parser
 from jina_cli.autocomplete import ac_table
 from jina_cli.export import api_to_dict
 from jina_cli.lookup import _build_lookup_table, lookup_and_print
+from tests.helper import _generate_pod_args
 
 
 def test_export_api(tmpdir):
@@ -96,7 +97,7 @@ def test_parse_env_map():
 
 @pytest.mark.slow
 def test_ping():
-    a1 = set_pod_parser().parse_args([])
+    a1 = _generate_pod_args()
     a2 = set_ping_parser().parse_args(['executor', f'0.0.0.0:{a1.port}'])
 
     a3 = set_ping_parser().parse_args(

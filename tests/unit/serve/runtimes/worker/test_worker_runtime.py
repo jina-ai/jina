@@ -8,22 +8,22 @@ from threading import Event
 import grpc
 import pytest
 import requests as req
-
 from docarray import Document
+
 from jina import DocumentArray, Executor, requests
 from jina.clients.request import request_generator
-from jina.parsers import set_pod_parser
 from jina.proto import jina_pb2, jina_pb2_grpc
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.worker import WorkerRuntime
 from jina.serve.runtimes.worker.request_handling import WorkerRequestHandler
+from tests.helper import _generate_pod_args
 
 
 @pytest.mark.slow
 @pytest.mark.timeout(5)
 def test_worker_runtime():
-    args = set_pod_parser().parse_args([])
+    args = _generate_pod_args()
 
     cancel_event = multiprocessing.Event()
 
@@ -93,7 +93,7 @@ class SlowNewDocsExecutor(Executor):
 @pytest.mark.asyncio
 @pytest.mark.parametrize('uses', ['AsyncSlowNewDocsExecutor', 'SlowNewDocsExecutor'])
 async def test_worker_runtime_slow_async_exec(uses):
-    args = set_pod_parser().parse_args(['--uses', uses])
+    args = _generate_pod_args(['--uses', uses])
 
     cancel_event = multiprocessing.Event()
 
@@ -146,7 +146,7 @@ async def test_worker_runtime_slow_async_exec(uses):
 @pytest.mark.slow
 @pytest.mark.timeout(10)
 def test_error_in_worker_runtime(monkeypatch):
-    args = set_pod_parser().parse_args([])
+    args = _generate_pod_args()
 
     cancel_event = multiprocessing.Event()
 
@@ -204,7 +204,7 @@ class SlowInitExecutor(Executor):
 @pytest.mark.asyncio
 @pytest.mark.skip
 async def test_worker_runtime_slow_init_exec():
-    args = set_pod_parser().parse_args(['--uses', 'SlowInitExecutor'])
+    args = _generate_pod_args(['--uses', 'SlowInitExecutor'])
 
     cancel_event = multiprocessing.Event()
 
@@ -257,7 +257,7 @@ async def test_worker_runtime_slow_init_exec():
 
 @pytest.mark.asyncio
 async def test_worker_runtime_reflection():
-    args = set_pod_parser().parse_args([])
+    args = _generate_pod_args()
 
     cancel_event = multiprocessing.Event()
 
@@ -320,7 +320,7 @@ async def test_decorator_monitoring(port_generator):
             ...
 
     port = port_generator()
-    args = set_pod_parser().parse_args(
+    args = _generate_pod_args(
         ['--monitoring', '--port-monitoring', str(port), '--uses', 'DummyExecutor']
     )
 
@@ -388,7 +388,7 @@ async def test_decorator_monitoring(port_generator):
             ...
 
     port = port_generator()
-    args = set_pod_parser().parse_args(
+    args = _generate_pod_args(
         ['--monitoring', '--port-monitoring', str(port), '--uses', 'DummyExecutor']
     )
 
@@ -433,7 +433,7 @@ async def test_decorator_monitoring(port_generator):
 @pytest.mark.slow
 @pytest.mark.timeout(10)
 async def test_error_in_worker_runtime_with_exit_on_exceptions(monkeypatch):
-    args = set_pod_parser().parse_args(['--exit-on-exceptions', 'RuntimeError'])
+    args = _generate_pod_args(['--exit-on-exceptions', 'RuntimeError'])
 
     cancel_event = multiprocessing.Event()
 
