@@ -603,7 +603,10 @@ def test_k8s_yaml_regular_deployment(
         if uses_before is not None:
             uses_before_container = head_containers[1]
             assert uses_before_container['name'] == 'uses-before'
-            assert uses_before_container['image'] == 'jinahub/HubBeforeExecutor'
+            assert uses_before_container['image'] in {
+                'jinahub/HubBeforeExecutor',
+                'jinahub/jina-ai/HubBeforeExecutor',
+            }
             assert uses_before_container['imagePullPolicy'] == 'IfNotPresent'
             assert uses_before_container['command'] == ['jina']
             uses_before_runtime_container_args = uses_before_container['args']
@@ -637,7 +640,10 @@ def test_k8s_yaml_regular_deployment(
         if uses_after is not None:
             uses_after_container = head_containers[-1]
             assert uses_after_container['name'] == 'uses-after'
-            assert uses_after_container['image'] == 'jinahub/HubAfterExecutor'
+            assert uses_after_container['image'] in {
+                'jinahub/HubAfterExecutor',
+                'jinahub/jina-ai/HubAfterExecutor',
+            }
             assert uses_after_container['imagePullPolicy'] == 'IfNotPresent'
             assert uses_after_container['command'] == ['jina']
             uses_after_runtime_container_args = uses_after_container['args']
@@ -731,6 +737,7 @@ def test_k8s_yaml_regular_deployment(
         assert shard_container['name'] == 'executor'
         assert shard_container['image'] in {
             'jinahub/HubExecutor',
+            'jinahub/jina-ai/HubExecutor',
             'docker_image:latest',
         }
         assert shard_container['imagePullPolicy'] == 'IfNotPresent'
