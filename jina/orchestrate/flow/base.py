@@ -1,4 +1,5 @@
 import argparse
+import asyncio
 import base64
 import copy
 import inspect
@@ -334,9 +335,9 @@ class Flow(
         """
     # overload_inject_end_flow
     def __init__(
-        self,
-        args: Optional['argparse.Namespace'] = None,
-        **kwargs,
+            self,
+            args: Optional['argparse.Namespace'] = None,
+            **kwargs,
     ):
         # implementation_stub_inject_start_flow
     
@@ -529,7 +530,7 @@ class Flow(
         )  #: for yaml dump
 
         if self._common_kwargs.get('asyncio', False) and not isinstance(
-            self, AsyncPostMixin
+                self, AsyncPostMixin
         ):
             from jina.orchestrate.flow.asyncio import AsyncFlow
 
@@ -537,7 +538,7 @@ class Flow(
 
     @staticmethod
     def _parse_endpoints(
-        op_flow, deployment_name, endpoint, connect_to_last_deployment=False
+            op_flow, deployment_name, endpoint, connect_to_last_deployment=False
     ) -> Set:
         # parsing needs
         if isinstance(endpoint, str):
@@ -596,14 +597,14 @@ class Flow(
 
     @allowed_levels([FlowBuildLevel.EMPTY])
     def _add_gateway(
-        self,
-        needs: Union[str, Set[str]],
-        graph_description: Dict[str, List[str]],
-        deployments_addresses: Dict[str, List[str]],
-        deployments_metadata: Dict[str, Dict[str, str]],
-        graph_conditions: Dict[str, Dict],
-        deployments_no_reduce: List[str],
-        **kwargs,
+            self,
+            needs: Union[str, Set[str]],
+            graph_description: Dict[str, List[str]],
+            deployments_addresses: Dict[str, List[str]],
+            deployments_metadata: Dict[str, Dict[str, str]],
+            graph_conditions: Dict[str, Dict],
+            deployments_no_reduce: List[str],
+            **kwargs,
     ):
         kwargs.update(
             dict(
@@ -623,7 +624,7 @@ class Flow(
 
         # We need to check later if the port was manually set or randomly
         args.default_port = (
-            kwargs.get('port', None) is None and kwargs.get('port_expose', None) is None
+                kwargs.get('port', None) is None and kwargs.get('port_expose', None) is None
         )
 
         if not args.port:
@@ -663,8 +664,8 @@ class Flow(
                 hosts = [
                     __docker_host__
                     if host_is_local(host)
-                    and in_docker()
-                    and deployment.dockerized_uses
+                       and in_docker()
+                       and deployment.dockerized_uses
                     else host
                     for host in deployment.hosts
                 ]
@@ -676,7 +677,7 @@ class Flow(
         return graph_dict
 
     def _get_k8s_deployments_addresses(
-        self, k8s_namespace: str
+            self, k8s_namespace: str
     ) -> Dict[str, List[str]]:
         graph_dict = {}
         from jina.orchestrate.deployments.config.helper import to_compatible_name
@@ -789,7 +790,7 @@ class Flow(
 
     @allowed_levels([FlowBuildLevel.EMPTY])
     def needs(
-        self, needs: Union[Tuple[str], List[str]], name: str = 'joiner', *args, **kwargs
+            self, needs: Union[Tuple[str], List[str]], name: str = 'joiner', *args, **kwargs
     ) -> 'Flow':
         """
         Add a blocker to the Flow, wait until all pods defined in **needs** completed.
@@ -1003,12 +1004,12 @@ class Flow(
     # overload_inject_end_deployment
     @overload
     def add(
-        self,
-        *,
-        needs: Optional[Union[str, Tuple[str], List[str]]] = None,
-        copy_flow: bool = True,
-        deployment_role: 'DeploymentRoleType' = DeploymentRoleType.DEPLOYMENT,
-        **kwargs,
+            self,
+            *,
+            needs: Optional[Union[str, Tuple[str], List[str]]] = None,
+            copy_flow: bool = True,
+            deployment_role: 'DeploymentRoleType' = DeploymentRoleType.DEPLOYMENT,
+            **kwargs,
     ) -> Union['Flow', 'AsyncFlow']:
         """
         Add a Deployment to the current Flow object and return the new modified Flow object.
@@ -1029,8 +1030,8 @@ class Flow(
 
     @allowed_levels([FlowBuildLevel.EMPTY])
     def add(
-        self,
-        **kwargs,
+            self,
+            **kwargs,
     ) -> Union['Flow', 'AsyncFlow']:
         # implementation_stub_inject_start_add
     
@@ -1368,9 +1369,9 @@ class Flow(
 
     @allowed_levels([FlowBuildLevel.EMPTY])
     def config_gateway(
-        self,
-        args: Optional['argparse.Namespace'] = None,
-        **kwargs,
+            self,
+            args: Optional['argparse.Namespace'] = None,
+            **kwargs,
     ) -> Union['Flow', 'AsyncFlow']:
         # implementation_stub_inject_start_config_gateway
     
@@ -1529,11 +1530,11 @@ class Flow(
 
     @allowed_levels([FlowBuildLevel.EMPTY])
     def gather_inspect(
-        self,
-        name: str = 'gather_inspect',
-        include_last_deployment: bool = True,
-        *args,
-        **kwargs,
+            self,
+            name: str = 'gather_inspect',
+            include_last_deployment: bool = True,
+            *args,
+            **kwargs,
     ) -> 'Flow':
         """Gather all inspect Deployments output into one Deployment. When the Flow has no inspect Deployment then the Flow itself
         is returned.
@@ -1587,7 +1588,7 @@ class Flow(
 
     @allowed_levels([FlowBuildLevel.EMPTY])
     def build(
-        self, copy_flow: bool = False, disable_build_sandbox: bool = False
+            self, copy_flow: bool = False, disable_build_sandbox: bool = False
     ) -> 'Flow':
         """
         Build the current Flow and make it ready to use
@@ -1656,9 +1657,9 @@ class Flow(
                 v: k for k, v in op_flow._inspect_deployments.items()
             }
             while (
-                len(op_flow._last_changed_deployment) > 0
-                and len(removed_deployments) > 0
-                and op_flow._last_deployment in removed_deployments
+                    len(op_flow._last_changed_deployment) > 0
+                    and len(removed_deployments) > 0
+                    and op_flow._last_deployment in removed_deployments
             ):
                 op_flow._last_changed_deployment.pop()
 
@@ -1760,7 +1761,7 @@ class Flow(
         host_gateway = self._deployment_nodes[GATEWAY_NAME].args.host
 
         if not (
-            is_port_free(host_gateway, port_gateway)
+                is_port_free(host_gateway, port_gateway)
         ):  # we check if the port is not used at parsing time as well for robustness
             raise PortAlreadyUsed(f'port:{port_gateway}')
 
@@ -1784,6 +1785,15 @@ class Flow(
     def _wait_until_all_ready(self):
         results = {}
         threads = []
+
+        async def _async_wait_ready(_deployment_name, _deployment):
+            try:
+                if not _deployment.external:
+                    results[_deployment_name] = 'pending'
+                    await _deployment.async_wait_start_success()
+                    results[_deployment_name] = 'done'
+            except Exception as ex:
+                results[_deployment_name] = repr(ex)
 
         def _wait_ready(_deployment_name, _deployment):
             try:
@@ -1821,6 +1831,13 @@ class Flow(
                     break
                 time.sleep(0.1)
 
+        wait_for_ready_coros = []
+        for k, v in self:
+            wait_for_ready_coros.append(_async_wait_ready(k, v))
+
+        async def _async_wait_all():
+            await asyncio.gather(*wait_for_ready_coros)
+
         progress = Progress(
             SpinnerColumn(),
             TextColumn('Waiting [b]{task.fields[pending_str]}[/]...', justify='right'),
@@ -1831,20 +1848,8 @@ class Flow(
         )
         with progress:
             task = progress.add_task(
-                'wait', total=len(threads), pending_str='', start=False
+                'wait', total=len(wait_for_ready_coros), pending_str='', start=False
             )
-
-            # kick off all deployments wait-ready threads
-            for k, v in self:
-                t = threading.Thread(
-                    target=_wait_ready,
-                    args=(
-                        k,
-                        v,
-                    ),
-                    daemon=True,
-                )
-                threads.append(t)
 
             # kick off ip getter thread, address, http, graphq
             all_panels = []
@@ -1862,6 +1867,34 @@ class Flow(
 
             for t in threads:
                 t.start()
+
+            # kick off all deployments wait-ready tasks
+            try:
+                _ = asyncio.get_event_loop()
+            except Exception as e:
+                loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(loop)
+
+            async def _f():
+                pass
+
+            running_in_event_loop = False
+            try:
+                asyncio.get_event_loop().run_until_complete(_f())
+            except:
+                running_in_event_loop = True
+
+            if not running_in_event_loop:
+                asyncio.get_event_loop().run_until_complete(_async_wait_all())
+            else:
+                new_threads = []
+                for k, v in self:
+                    new_threads.append(threading.Thread(
+                        target=_wait_ready, args=(k, v), daemon=True
+                    ))
+                threads.extend(new_threads)
+                for t in new_threads:
+                    t.start()
 
             for t in threads:
                 t.join()
@@ -1982,8 +2015,8 @@ class Flow(
                     _e_role = 'EXTERNAL'
                 line_st = '-->'
                 if (
-                    _s_role == DeploymentRoleType.INSPECT
-                    or _e_role == DeploymentRoleType.INSPECT
+                        _s_role == DeploymentRoleType.INSPECT
+                        or _e_role == DeploymentRoleType.INSPECT
                 ):
                     line_st = '-.->'
                 mermaid_graph.append(
@@ -2010,12 +2043,12 @@ class Flow(
         return '\n'.join(mermaid_graph)
 
     def plot(
-        self,
-        output: Optional[str] = None,
-        vertical_layout: bool = False,
-        inline_display: bool = False,
-        build: bool = True,
-        copy_flow: bool = True,
+            self,
+            output: Optional[str] = None,
+            vertical_layout: bool = False,
+            inline_display: bool = False,
+            build: bool = True,
+            copy_flow: bool = True,
     ) -> 'Flow':
         """
         Visualize the Flow up to the current point
@@ -2370,7 +2403,7 @@ class Flow(
 
     @allowed_levels([FlowBuildLevel.RUNNING])
     def block(
-        self, stop_event: Optional[Union[threading.Event, multiprocessing.Event]] = None
+            self, stop_event: Optional[Union[threading.Event, multiprocessing.Event]] = None
     ):
         """Block the Flow until `stop_event` is set or user hits KeyboardInterrupt
 
@@ -2418,9 +2451,9 @@ class Flow(
             if watch_changes and len(watch_files_list) > 0:
 
                 with ImportExtensions(
-                    required=True,
-                    logger=self.logger,
-                    help_text='''reload requires watchfiles dependency to be installed. You can do `pip install 
+                        required=True,
+                        logger=self.logger,
+                        help_text='''reload requires watchfiles dependency to be installed. You can do `pip install 
                     watchfiles''',
                 ):
                     from watchfiles import watch
@@ -2433,8 +2466,8 @@ class Flow(
                                 # maybe changed_file is the absolute path of one in watch_files_from_deployments
                                 is_absolute_path = False
                                 for (
-                                    file,
-                                    deployment_name,
+                                        file,
+                                        deployment_name,
                                 ) in watch_files_from_deployments.items():
                                     if changed_file.endswith(file):
                                         is_absolute_path = True
@@ -2475,9 +2508,9 @@ class Flow(
         :return: the protocol of this Flow, if only 1 protocol is supported otherwise returns the list of protocols
         """
         v = (
-            self._gateway_kwargs.get('protocol', None)
-            or self._gateway_kwargs.get('protocols', None)
-            or [GatewayProtocolType.GRPC]
+                self._gateway_kwargs.get('protocol', None)
+                or self._gateway_kwargs.get('protocols', None)
+                or [GatewayProtocolType.GRPC]
         )
         if not isinstance(v, list):
             v = [v]
@@ -2489,8 +2522,8 @@ class Flow(
 
     @protocol.setter
     def protocol(
-        self,
-        value: Union[str, GatewayProtocolType, List[str], List[GatewayProtocolType]],
+            self,
+            value: Union[str, GatewayProtocolType, List[str], List[GatewayProtocolType]],
     ):
         """Set the protocol of this Flow, can only be set before the Flow has been started
 
@@ -2616,24 +2649,24 @@ class Flow(
 
     @overload
     def expose_endpoint(
-        self,
-        exec_endpoint: str,
-        *,
-        path: Optional[str] = None,
-        status_code: int = 200,
-        tags: Optional[List[str]] = None,
-        summary: Optional[str] = None,
-        description: Optional[str] = None,
-        response_description: str = 'Successful Response',
-        deprecated: Optional[bool] = None,
-        methods: Optional[List[str]] = None,
-        operation_id: Optional[str] = None,
-        response_model_by_alias: bool = True,
-        response_model_exclude_unset: bool = False,
-        response_model_exclude_defaults: bool = False,
-        response_model_exclude_none: bool = False,
-        include_in_schema: bool = True,
-        name: Optional[str] = None,
+            self,
+            exec_endpoint: str,
+            *,
+            path: Optional[str] = None,
+            status_code: int = 200,
+            tags: Optional[List[str]] = None,
+            summary: Optional[str] = None,
+            description: Optional[str] = None,
+            response_description: str = 'Successful Response',
+            deprecated: Optional[bool] = None,
+            methods: Optional[List[str]] = None,
+            operation_id: Optional[str] = None,
+            response_model_by_alias: bool = True,
+            response_model_exclude_unset: bool = False,
+            response_model_exclude_defaults: bool = False,
+            response_model_exclude_none: bool = False,
+            include_in_schema: bool = True,
+            name: Optional[str] = None,
     ):
         """Expose an Executor's endpoint (defined by `@requests(on=...)`) to HTTP endpoint for easier access.
 
@@ -2661,10 +2694,10 @@ class Flow(
         self._endpoints_mapping[exec_endpoint] = kwargs
 
     def to_kubernetes_yaml(
-        self,
-        output_base_path: str,
-        k8s_namespace: Optional[str] = None,
-        include_gateway: bool = True,
+            self,
+            output_base_path: str,
+            k8s_namespace: Optional[str] = None,
+            include_gateway: bool = True,
     ):
         """
         Converts the Flow into a set of yaml deployments to deploy in Kubernetes.
@@ -2731,10 +2764,10 @@ class Flow(
     to_k8s_yaml = to_kubernetes_yaml
 
     def to_docker_compose_yaml(
-        self,
-        output_path: Optional[str] = None,
-        network_name: Optional[str] = None,
-        include_gateway: bool = True,
+            self,
+            output_path: Optional[str] = None,
+            network_name: Optional[str] = None,
+            include_gateway: bool = True,
     ):
         """
         Converts the Flow into a yaml file to run with `docker-compose up`
@@ -2819,7 +2852,7 @@ class Flow(
         obj = super().__getattribute__(item)
 
         if (
-            item == 'load_config' and inspect.ismethod(obj) and obj.__self__ is Flow
+                item == 'load_config' and inspect.ismethod(obj) and obj.__self__ is Flow
         ):  # check if obj load config call from an instance and not the Class
             warnings.warn(
                 "Calling `load_config` from a Flow instance will override all of the instance's initial parameters. We recommend to use `Flow.load_config(...)` instead"
