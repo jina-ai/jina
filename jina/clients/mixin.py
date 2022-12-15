@@ -222,7 +222,7 @@ class PostMixin:
         max_backoff: float = 0.1,
         backoff_multiplier: float = 1.5,
         results_in_order: bool = False,
-        stream: bool = True,
+        stream: bool = False,
         **kwargs,
     ) -> Optional[Union['DocumentArray', List['Response']]]:
         """Post a general data request to the Flow.
@@ -319,7 +319,7 @@ class AsyncPostMixin:
         max_backoff: float = 0.1,
         backoff_multiplier: float = 1.5,
         results_in_order: bool = False,
-        stream: bool = True,
+        stream: bool = False,
         **kwargs,
     ) -> AsyncGenerator[None, Union['DocumentArray', 'Response']]:
         """Async Post a general data request to the Flow.
