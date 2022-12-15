@@ -179,7 +179,7 @@ class ProfileMixin:
         from jina import Document
 
         st = time.perf_counter()
-        r = self.client.post('/', Document, return_responses=True)
+        r = self.client.post(on='/', inputs=Document(), return_responses=True)
         ed = time.perf_counter()
         return _render_response_table(r[0], st, ed, show_table=show_table)
 
@@ -196,7 +196,7 @@ class AsyncProfileMixin:
         from jina import Document
 
         st = time.perf_counter()
-        async for r in self.client.post('/', Document, return_responses=True):
+        async for r in self.client.post(on='/', inputs=Document(), return_responses=True):
             ed = time.perf_counter()
             return _render_response_table(r, st, ed, show_table=show_table)
 
