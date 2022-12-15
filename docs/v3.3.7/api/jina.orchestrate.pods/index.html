@@ -7,10 +7,10 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/api/jina.orchestrate.pods/" />
 <meta property="og:site_name" content="Jina 3.3.7 Documentation" />
-<meta property="og:description" content="Submodules: jina.orchestrate.pods.container module, jina.orchestrate.pods.container_helper module, jina.orchestrate.pods.factory module, jina.orchestrate.pods.helper module. Module contents:" />
+<meta property="og:description" content="Submodules: jina.orchestrate.pods.container module- run(), ContainerPod- ContainerPod.start(), ContainerPod.join().., jina.orchestrate.pods.container_helper module- get_docker_network(), get_gpu_device_requests()., jina.orchestrate.pods.factory module- PodFactory- PodFactory.build_pod().., jina.o..." />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
 <meta property="og:image:alt" content="Jina 3.3.7 Documentation" />
-<meta name="description" content="Submodules: jina.orchestrate.pods.container module, jina.orchestrate.pods.container_helper module, jina.orchestrate.pods.factory module, jina.orchestrate.pods.helper module. Module contents:" />
+<meta name="description" content="Submodules: jina.orchestrate.pods.container module- run(), ContainerPod- ContainerPod.start(), ContainerPod.join().., jina.orchestrate.pods.container_helper module- get_docker_network(), get_gpu_device_requests()., jina.orchestrate.pods.factory module- PodFactory- PodFactory.build_pod().., jina.o..." />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
@@ -32,10 +32,10 @@
 <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="jina.orchestrate.pods.container module" href="../jina.orchestrate.pods.container/" /><link rel="prev" title="jina.orchestrate.flow.builder module" href="../jina.orchestrate.flow.builder/" />
         <link rel="canonical" href="https://docs.jina.ai/api/jina.orchestrate.pods.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.09.29"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
         <title>jina.orchestrate.pods package - Jina 3.3.7 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
@@ -238,7 +238,7 @@
     <option value="/">latest</option>
   </select>
 </div><form class="sidebar-search-container" method="get" action="../../search/" role="search">
-  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form>
@@ -601,24 +601,47 @@
                     </label>
                 </div>
                 <section id="jina-orchestrate-pods-package">
-<h1>jina.orchestrate.pods package<a class="headerlink" href="#jina-orchestrate-pods-package" title="Permalink to this headline">#</a></h1>
+<h1>jina.orchestrate.pods package<a class="headerlink" href="#jina-orchestrate-pods-package" title="Permalink to this heading">#</a></h1>
 <section id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">#</a></h2>
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading">#</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../jina.orchestrate.pods.container/">jina.orchestrate.pods.container module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../jina.orchestrate.pods.container_helper/">jina.orchestrate.pods.container_helper module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../jina.orchestrate.pods.factory/">jina.orchestrate.pods.factory module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../jina.orchestrate.pods.helper/">jina.orchestrate.pods.helper module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../jina.orchestrate.pods.container/">jina.orchestrate.pods.container module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../jina.orchestrate.pods.container/#jina.orchestrate.pods.container.run"><code class="docutils literal notranslate"><span class="pre">run()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.orchestrate.pods.container/#jina.orchestrate.pods.container.ContainerPod"><code class="docutils literal notranslate"><span class="pre">ContainerPod</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.pods.container/#jina.orchestrate.pods.container.ContainerPod.start"><code class="docutils literal notranslate"><span class="pre">ContainerPod.start()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.pods.container/#jina.orchestrate.pods.container.ContainerPod.join"><code class="docutils literal notranslate"><span class="pre">ContainerPod.join()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../jina.orchestrate.pods.container_helper/">jina.orchestrate.pods.container_helper module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../jina.orchestrate.pods.container_helper/#jina.orchestrate.pods.container_helper.get_docker_network"><code class="docutils literal notranslate"><span class="pre">get_docker_network()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.orchestrate.pods.container_helper/#jina.orchestrate.pods.container_helper.get_gpu_device_requests"><code class="docutils literal notranslate"><span class="pre">get_gpu_device_requests()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../jina.orchestrate.pods.factory/">jina.orchestrate.pods.factory module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../jina.orchestrate.pods.factory/#jina.orchestrate.pods.factory.PodFactory"><code class="docutils literal notranslate"><span class="pre">PodFactory</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.pods.factory/#jina.orchestrate.pods.factory.PodFactory.build_pod"><code class="docutils literal notranslate"><span class="pre">PodFactory.build_pod()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../jina.orchestrate.pods.helper/">jina.orchestrate.pods.helper module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../jina.orchestrate.pods.helper/#jina.orchestrate.pods.helper.ConditionalEvent"><code class="docutils literal notranslate"><span class="pre">ConditionalEvent</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.orchestrate.pods.helper/#jina.orchestrate.pods.helper.update_runtime_cls"><code class="docutils literal notranslate"><span class="pre">update_runtime_cls()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.orchestrate.pods.helper/#jina.orchestrate.pods.helper.is_ready"><code class="docutils literal notranslate"><span class="pre">is_ready()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </div>
 </section>
 <section id="module-jina.orchestrate.pods">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-jina.orchestrate.pods" title="Permalink to this headline">#</a></h2>
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-jina.orchestrate.pods" title="Permalink to this heading">#</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="jina.orchestrate.pods.BasePod">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.orchestrate.pods.</span></span><span class="sig-name descname"><span class="pre">BasePod</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/orchestrate/pods/#BasePod"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.orchestrate.pods.BasePod" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
 <p><a class="reference internal" href="#jina.orchestrate.pods.BasePod" title="jina.orchestrate.pods.BasePod"><code class="xref py py-class docutils literal notranslate"><span class="pre">BasePod</span></code></a> is an interface from which all the classes managing the lifetime of a Runtime inside a local process,
 container must inherit.</p>
 <p>It exposes the required APIs so that the <cite>BasePod</cite> can be handled by the <cite>cli</cite> api as a context manager or by a <cite>Deployment</cite>.</p>
@@ -650,7 +673,7 @@ container must inherit.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="jina.orchestrate.pods.BasePod.role">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">role</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../jina.enums/#jina.enums.PodRoleType" title="jina.enums.PodRoleType"><span class="pre">jina.enums.PodRoleType</span></a></em><a class="headerlink" href="#jina.orchestrate.pods.BasePod.role" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">role</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../jina.enums/#jina.enums.PodRoleType" title="jina.enums.PodRoleType"><span class="pre">PodRoleType</span></a></em><a class="headerlink" href="#jina.orchestrate.pods.BasePod.role" title="Permalink to this definition">#</a></dt>
 <dd><p>Get the role of this pod in a deployment
 .. #noqa: DAR201</p>
 <dl class="field-list simple">
@@ -687,7 +710,7 @@ This method calls <a class="reference internal" href="#jina.orchestrate.pods.Bas
 <dl class="py class">
 <dt class="sig sig-object py" id="jina.orchestrate.pods.Pod">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.orchestrate.pods.</span></span><span class="sig-name descname"><span class="pre">Pod</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/orchestrate/pods/#Pod"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.orchestrate.pods.Pod" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#jina.orchestrate.pods.BasePod" title="jina.orchestrate.pods.BasePod"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.orchestrate.pods.BasePod</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#jina.orchestrate.pods.BasePod" title="jina.orchestrate.pods.BasePod"><code class="xref py py-class docutils literal notranslate"><span class="pre">BasePod</span></code></a></p>
 <p><a class="reference internal" href="#jina.orchestrate.pods.Pod" title="jina.orchestrate.pods.Pod"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pod</span></code></a> is a thread/process- container of <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseRuntime</span></code>. It leverages <code class="xref py py-class docutils literal notranslate"><span class="pre">threading.Thread</span></code>
 or <code class="xref py py-class docutils literal notranslate"><span class="pre">multiprocessing.Process</span></code> to manage the lifecycle of a <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseRuntime</span></code> object in a robust way.</p>
 <p>A <a class="reference internal" href="#jina.orchestrate.pods.Pod" title="jina.orchestrate.pods.Pod"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pod</span></code></a> must be equipped with a proper <code class="xref py py-class docutils literal notranslate"><span class="pre">Runtime</span></code> class to work.</p>
@@ -751,7 +774,7 @@ This method calls <a class="reference internal" href="#jina.orchestrate.pods.Pod
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Nov 25, 2022.
+                    Last updated on Dec 15, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -778,7 +801,23 @@ This method calls <a class="reference internal" href="#jina.orchestrate.pods.Pod
                         <ul>
 <li><a class="reference internal" href="#">jina.orchestrate.pods package</a><ul>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-jina.orchestrate.pods">Module contents</a></li>
+<li><a class="reference internal" href="#module-jina.orchestrate.pods">Module contents</a><ul>
+<li><a class="reference internal" href="#jina.orchestrate.pods.BasePod"><code class="docutils literal notranslate"><span class="pre">BasePod</span></code></a><ul>
+<li><a class="reference internal" href="#jina.orchestrate.pods.BasePod.close"><code class="docutils literal notranslate"><span class="pre">BasePod.close()</span></code></a></li>
+<li><a class="reference internal" href="#jina.orchestrate.pods.BasePod.wait_start_success"><code class="docutils literal notranslate"><span class="pre">BasePod.wait_start_success()</span></code></a></li>
+<li><a class="reference internal" href="#jina.orchestrate.pods.BasePod.async_wait_start_success"><code class="docutils literal notranslate"><span class="pre">BasePod.async_wait_start_success()</span></code></a></li>
+<li><a class="reference internal" href="#jina.orchestrate.pods.BasePod.role"><code class="docutils literal notranslate"><span class="pre">BasePod.role</span></code></a></li>
+<li><a class="reference internal" href="#jina.orchestrate.pods.BasePod.start"><code class="docutils literal notranslate"><span class="pre">BasePod.start()</span></code></a></li>
+<li><a class="reference internal" href="#jina.orchestrate.pods.BasePod.join"><code class="docutils literal notranslate"><span class="pre">BasePod.join()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#jina.orchestrate.pods.Pod"><code class="docutils literal notranslate"><span class="pre">Pod</span></code></a><ul>
+<li><a class="reference internal" href="#jina.orchestrate.pods.Pod.start"><code class="docutils literal notranslate"><span class="pre">Pod.start()</span></code></a></li>
+<li><a class="reference internal" href="#jina.orchestrate.pods.Pod.join"><code class="docutils literal notranslate"><span class="pre">Pod.join()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -808,7 +847,9 @@ This method calls <a class="reference internal" href="#jina.orchestrate.pods.Pod
 <img referrerpolicy="no-referrer-when-downgrade" src="https://static.scarf.sh/a.png?x-pxid=1b470c1d-3b55-4d38-baa8-989bfba2a218" /><script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
     <script src="../../_static/scripts/furo.js"></script>
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>

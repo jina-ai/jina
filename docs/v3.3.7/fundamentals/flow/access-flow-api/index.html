@@ -32,10 +32,10 @@
 <link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" /><link rel="next" title="Python Client" href="../client/" /><link rel="prev" title="Configure Flow" href="../flow-api/" />
         <link rel="canonical" href="https://docs.jina.ai/fundamentals/flow/access-flow-api.html" />
 
-    <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.09.29"/>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
         <title>Access Flow - Jina 3.3.7 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/tabs.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
@@ -238,7 +238,7 @@
     <option value="/">latest</option>
   </select>
 </div><form class="sidebar-search-container" method="get" action="../../../search/" role="search">
-  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form>
@@ -601,7 +601,7 @@
                     </label>
                 </div>
                 <section class="tex2jax_ignore mathjax_ignore" id="access-flow">
-<span id="access-flow-api"></span><h1>Access Flow<a class="headerlink" href="#access-flow" title="Permalink to this headline">#</a></h1>
+<span id="access-flow-api"></span><h1>Access Flow<a class="headerlink" href="#access-flow" title="Permalink to this heading">#</a></h1>
 <p>Once you have <span class="xref std std-ref">configured your Flow API</span> you can access it over the network.
 There are multiple ways of doing this.</p>
 <div class="seealso admonition">
@@ -612,7 +612,7 @@ It supports all the protocols listed here under a convenient, simple API.
 Check its dedicated <a class="reference internal" href="../client/#client"><span class="std std-ref">documentation page</span></a>.</p>
 </div>
 <section id="http-access">
-<h2>HTTP access<a class="headerlink" href="#http-access" title="Permalink to this headline">#</a></h2>
+<h2>HTTP access<a class="headerlink" href="#http-access" title="Permalink to this heading">#</a></h2>
 <div class="caution admonition">
 <p class="admonition-title">Available Protocols</p>
 <p>Jina Flows can use one of <a class="reference internal" href="../flow-api/#flow-protocol"><span class="std std-ref">three protocols</span></a>: gRPC, HTTP, or Websocket.
@@ -621,7 +621,7 @@ Only Flows that use HTTP can be accessed via the methods described below.</p>
 <p>Apart from using the <a class="reference internal" href="../client/#client"><span class="std std-ref">Jina Client</span></a>, the most common way of interacting with your deployed Flow is via HTTP.</p>
 <p>You can always use <code class="docutils literal notranslate"><span class="pre">post</span></code> to interact with a Flow, using the <code class="docutils literal notranslate"><span class="pre">/post</span></code> HTTP endpoint.</p>
 <section id="use-http-client-to-send-request">
-<h3>Use HTTP client to send request<a class="headerlink" href="#use-http-client-to-send-request" title="Permalink to this headline">#</a></h3>
+<h3>Use HTTP client to send request<a class="headerlink" href="#use-http-client-to-send-request" title="Permalink to this heading">#</a></h3>
 <p>With the help of <a class="reference external" href="https://swagger.io/specification/">OpenAPI schema</a>, one can send data requests to a Flow via <code class="docutils literal notranslate"><span class="pre">cURL</span></code>, JavaScript, <a class="reference external" href="https://www.postman.com/">Postman</a>, or any other HTTP client or programming library.</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">via cURL</label><div class="tab-content docutils">
@@ -740,7 +740,7 @@ Output<div class="sd-summary-down docutils">
 </div>
 </section>
 <section id="arguments">
-<h3>Arguments<a class="headerlink" href="#arguments" title="Permalink to this headline">#</a></h3>
+<h3>Arguments<a class="headerlink" href="#arguments" title="Permalink to this heading">#</a></h3>
 <p>Your HTTP request can include the following parameters:</p>
 <table border="1" class="docutils">
 <thead>
@@ -822,7 +822,7 @@ Example<div class="sd-summary-down docutils">
 </div>
 </section>
 <section id="use-swagger-ui-to-send-http-request">
-<span id="swagger-ui"></span><h3>Use Swagger UI to send HTTP request<a class="headerlink" href="#use-swagger-ui-to-send-http-request" title="Permalink to this headline">#</a></h3>
+<span id="swagger-ui"></span><h3>Use Swagger UI to send HTTP request<a class="headerlink" href="#use-swagger-ui-to-send-http-request" title="Permalink to this heading">#</a></h3>
 <p>Flows provide a customized <a class="reference external" href="https://swagger.io/tools/swagger-ui/">Swagger UI</a> which can be used to interact with the Flow
 visually, through a web browser.</p>
 <div class="caution admonition">
@@ -840,14 +840,14 @@ You can again use the <a class="reference external" href="https://api.jina.ai/re
 <p>Below, in <code class="docutils literal notranslate"><span class="pre">Responses</span></code>, you can see the reply, together with a visual representation of the returned Documents.</p>
 </section>
 <section id="postman-collection">
-<h3>Postman Collection<a class="headerlink" href="#postman-collection" title="Permalink to this headline">#</a></h3>
+<h3>Postman Collection<a class="headerlink" href="#postman-collection" title="Permalink to this heading">#</a></h3>
 <p><a class="reference external" href="https://www.postman.com/">Postman</a> is an application that allows the testing of web APIs from a graphical interface. You can store all the templates for your REST APIs in it, using Collections.</p>
 <p>We provide a suite of templates for the Jina Flow, in this <a class="reference external" href="https://github.com/jina-ai/jina/tree/master/.github/Jina.postman_collection.json">collection</a>. You can import it in Postman in <strong>Collections</strong>, with the <strong>Import</strong> button. It provides templates for the main operations. You need to create an Environment to define the <code class="docutils literal notranslate"><span class="pre">{{url}}</span></code> and <code class="docutils literal notranslate"><span class="pre">{{port}}</span></code> environment variables. These would be the hostname and the port where the Flow is listening.</p>
 <p>This contribution was made by <a class="reference external" href="https://jina-ai.slack.com/archives/C0169V26ATY/p1649689443888779?thread_ts=1649428823.420879&amp;cid=C0169V26ATY">Jonathan Rowley</a>, in our <span class="xref myst">community Slack</span>.</p>
 </section>
 </section>
 <section id="graphql-interface">
-<span id="flow-graphql"></span><h2>GraphQL Interface<a class="headerlink" href="#graphql-interface" title="Permalink to this headline">#</a></h2>
+<span id="flow-graphql"></span><h2>GraphQL Interface<a class="headerlink" href="#graphql-interface" title="Permalink to this heading">#</a></h2>
 <div class="seealso admonition">
 <p class="admonition-title">See Also</p>
 <p>This article does not serve as the introduction to GraphQL.
@@ -877,7 +877,7 @@ This is especially useful when the user does not need potentially large fields, 
 </pre></div>
 </div>
 <section id="mutations-and-arguments">
-<h3>Mutations and arguments<a class="headerlink" href="#mutations-and-arguments" title="Permalink to this headline">#</a></h3>
+<h3>Mutations and arguments<a class="headerlink" href="#mutations-and-arguments" title="Permalink to this heading">#</a></h3>
 <p>The Flow GraphQL API exposes the mutation <code class="docutils literal notranslate"><span class="pre">docs</span></code>, which sends its inputs to the Flow’s Executors,
 just like HTTP <code class="docutils literal notranslate"><span class="pre">post</span></code> as described <span class="xref std std-ref">above</span>.</p>
 <p>A GraphQL mutation takes same set of arguments used in <a class="reference external" href="#arguments">HTTP</a>.</p>
@@ -889,18 +889,18 @@ or the <a class="reference external" href="https://docarray.jina.ai/api/docarray
 </div>
 </section>
 <section id="fields">
-<h3>Fields<a class="headerlink" href="#fields" title="Permalink to this headline">#</a></h3>
+<h3>Fields<a class="headerlink" href="#fields" title="Permalink to this heading">#</a></h3>
 <p>The available fields in the GraphQL API are defined by the <a class="reference external" href="https://docarray.jina.ai/advanced/graphql-support/?highlight=graphql">Document Strawberry type</a>.</p>
 <p>Essentially, you can ask for any property of a Document, including <code class="docutils literal notranslate"><span class="pre">embedding</span></code>, <code class="docutils literal notranslate"><span class="pre">text</span></code>, <code class="docutils literal notranslate"><span class="pre">tensor</span></code>, <code class="docutils literal notranslate"><span class="pre">id</span></code>, <code class="docutils literal notranslate"><span class="pre">matches</span></code>, <code class="docutils literal notranslate"><span class="pre">tags</span></code>,
 and more.</p>
 </section>
 </section>
 <section id="grpc">
-<h2>gRPC<a class="headerlink" href="#grpc" title="Permalink to this headline">#</a></h2>
+<h2>gRPC<a class="headerlink" href="#grpc" title="Permalink to this heading">#</a></h2>
 <p>If you want to create a gRPC client in another language, you will need to compile the <a class="reference internal" href="../../../proto/docs/"><span class="doc std std-doc">Protobuf definitions</span></a>. In Python, you can use our <a class="reference internal" href="../client/#client"><span class="std std-ref">own client</span></a>.</p>
 </section>
 <section id="websocket">
-<h2>Websocket<a class="headerlink" href="#websocket" title="Permalink to this headline">#</a></h2>
+<h2>Websocket<a class="headerlink" href="#websocket" title="Permalink to this heading">#</a></h2>
 <p>Websocket uses persistent connections between the client &amp; Flow, hence allowing streaming use cases.
 While you can always use the Python client to stream requests like any other protocol, websocket allows streaming JSON from anywhere (CLI / Postman / any other programming language).
 The same set of arguments as <a class="reference external" href="#arguments">HTTP</a> can be used in the payload.</p>
@@ -921,7 +921,7 @@ The Flow defaults to <code class="docutils literal notranslate"><span class="pre
 </div>
 </section>
 <section id="see-further">
-<h2>See further<a class="headerlink" href="#see-further" title="Permalink to this headline">#</a></h2>
+<h2>See further<a class="headerlink" href="#see-further" title="Permalink to this heading">#</a></h2>
 <ul class="simple">
 <li><p><a class="reference internal" href="../client/#client"><span class="std std-ref">Access a Flow with the Client</span></a></p></li>
 <li><p><a class="reference internal" href="../flow-api/#flow"><span class="std std-ref">Configure Flow</span></a></p></li>
@@ -962,7 +962,7 @@ The Flow defaults to <code class="docutils literal notranslate"><span class="pre
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Nov 25, 2022.
+                    Last updated on Dec 15, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -1032,7 +1032,9 @@ The Flow defaults to <code class="docutils literal notranslate"><span class="pre
 <img referrerpolicy="no-referrer-when-downgrade" src="https://static.scarf.sh/a.png?x-pxid=1b470c1d-3b55-4d38-baa8-989bfba2a218" /><script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
     <script src="../../../_static/scripts/furo.js"></script>
     <script src="../../../_static/clipboard.min.js"></script>
     <script src="../../../_static/copybutton.js"></script>

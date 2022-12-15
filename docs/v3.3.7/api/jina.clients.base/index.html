@@ -7,10 +7,10 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/api/jina.clients.base/" />
 <meta property="og:site_name" content="Jina 3.3.7 Documentation" />
-<meta property="og:description" content="Submodules: jina.clients.base.grpc module, jina.clients.base.helper module, jina.clients.base.http module, jina.clients.base.websocket module. Module contents: Module containing the Base Client for Jina." />
+<meta property="og:description" content="Submodules: jina.clients.base.grpc module- GRPCBaseClient., jina.clients.base.helper module- AioHttpClientlet- AioHttpClientlet.send_message(), AioHttpClientlet.recv_message(), AioHttpClientlet.start(), AioHttpClientlet.close()., HTTPClientlet- HTTPClientlet.send_message(), HTTPClientlet.recv_mes..." />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
 <meta property="og:image:alt" content="Jina 3.3.7 Documentation" />
-<meta name="description" content="Submodules: jina.clients.base.grpc module, jina.clients.base.helper module, jina.clients.base.http module, jina.clients.base.websocket module. Module contents: Module containing the Base Client for Jina." />
+<meta name="description" content="Submodules: jina.clients.base.grpc module- GRPCBaseClient., jina.clients.base.helper module- AioHttpClientlet- AioHttpClientlet.send_message(), AioHttpClientlet.recv_message(), AioHttpClientlet.start(), AioHttpClientlet.close()., HTTPClientlet- HTTPClientlet.send_message(), HTTPClientlet.recv_mes..." />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
@@ -32,10 +32,10 @@
 <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="jina.clients.base.grpc module" href="../jina.clients.base.grpc/" /><link rel="prev" title="jina.clients package" href="../jina.clients/" />
         <link rel="canonical" href="https://docs.jina.ai/api/jina.clients.base.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.09.29"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
         <title>jina.clients.base package - Jina 3.3.7 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
@@ -238,7 +238,7 @@
     <option value="/">latest</option>
   </select>
 </div><form class="sidebar-search-container" method="get" action="../../search/" role="search">
-  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form>
@@ -601,25 +601,54 @@
                     </label>
                 </div>
                 <section id="jina-clients-base-package">
-<h1>jina.clients.base package<a class="headerlink" href="#jina-clients-base-package" title="Permalink to this headline">#</a></h1>
+<h1>jina.clients.base package<a class="headerlink" href="#jina-clients-base-package" title="Permalink to this heading">#</a></h1>
 <section id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">#</a></h2>
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading">#</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../jina.clients.base.grpc/">jina.clients.base.grpc module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../jina.clients.base.helper/">jina.clients.base.helper module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../jina.clients.base.http/">jina.clients.base.http module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../jina.clients.base.websocket/">jina.clients.base.websocket module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../jina.clients.base.grpc/">jina.clients.base.grpc module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../jina.clients.base.grpc/#jina.clients.base.grpc.GRPCBaseClient"><code class="docutils literal notranslate"><span class="pre">GRPCBaseClient</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../jina.clients.base.helper/">jina.clients.base.helper module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../jina.clients.base.helper/#jina.clients.base.helper.AioHttpClientlet"><code class="docutils literal notranslate"><span class="pre">AioHttpClientlet</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.helper/#jina.clients.base.helper.AioHttpClientlet.send_message"><code class="docutils literal notranslate"><span class="pre">AioHttpClientlet.send_message()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.helper/#jina.clients.base.helper.AioHttpClientlet.recv_message"><code class="docutils literal notranslate"><span class="pre">AioHttpClientlet.recv_message()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.helper/#jina.clients.base.helper.AioHttpClientlet.start"><code class="docutils literal notranslate"><span class="pre">AioHttpClientlet.start()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.helper/#jina.clients.base.helper.AioHttpClientlet.close"><code class="docutils literal notranslate"><span class="pre">AioHttpClientlet.close()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.clients.base.helper/#jina.clients.base.helper.HTTPClientlet"><code class="docutils literal notranslate"><span class="pre">HTTPClientlet</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.helper/#jina.clients.base.helper.HTTPClientlet.send_message"><code class="docutils literal notranslate"><span class="pre">HTTPClientlet.send_message()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.helper/#jina.clients.base.helper.HTTPClientlet.recv_message"><code class="docutils literal notranslate"><span class="pre">HTTPClientlet.recv_message()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.clients.base.helper/#jina.clients.base.helper.WebsocketClientlet"><code class="docutils literal notranslate"><span class="pre">WebsocketClientlet</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.helper/#jina.clients.base.helper.WebsocketClientlet.send_message"><code class="docutils literal notranslate"><span class="pre">WebsocketClientlet.send_message()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.helper/#jina.clients.base.helper.WebsocketClientlet.send_eoi"><code class="docutils literal notranslate"><span class="pre">WebsocketClientlet.send_eoi()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.helper/#jina.clients.base.helper.WebsocketClientlet.recv_message"><code class="docutils literal notranslate"><span class="pre">WebsocketClientlet.recv_message()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../jina.clients.base.http/">jina.clients.base.http module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../jina.clients.base.http/#jina.clients.base.http.HTTPBaseClient"><code class="docutils literal notranslate"><span class="pre">HTTPBaseClient</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../jina.clients.base.websocket/">jina.clients.base.websocket module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../jina.clients.base.websocket/#jina.clients.base.websocket.WebSocketBaseClient"><code class="docutils literal notranslate"><span class="pre">WebSocketBaseClient</span></code></a></li>
+</ul>
+</li>
 </ul>
 </div>
 </section>
 <section id="module-jina.clients.base">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-jina.clients.base" title="Permalink to this headline">#</a></h2>
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-jina.clients.base" title="Permalink to this heading">#</a></h2>
 <p>Module containing the Base Client for Jina.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="jina.clients.base.BaseClient">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.clients.base.</span></span><span class="sig-name descname"><span class="pre">BaseClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/base/#BaseClient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.base.BaseClient" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
 <p>A base client for connecting to the Flow Gateway.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -663,7 +692,7 @@
 
 <dl class="py property">
 <dt class="sig sig-object py" id="jina.clients.base.BaseClient.client">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">client</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">jina.helper.T</span></em><a class="headerlink" href="#jina.clients.base.BaseClient.client" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">client</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">T</span></em><a class="headerlink" href="#jina.clients.base.BaseClient.client" title="Permalink to this definition">#</a></dt>
 <dd><p>Return the client object itself</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
@@ -712,7 +741,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Nov 25, 2022.
+                    Last updated on Dec 15, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -739,7 +768,15 @@
                         <ul>
 <li><a class="reference internal" href="#">jina.clients.base package</a><ul>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-jina.clients.base">Module contents</a></li>
+<li><a class="reference internal" href="#module-jina.clients.base">Module contents</a><ul>
+<li><a class="reference internal" href="#jina.clients.base.BaseClient"><code class="docutils literal notranslate"><span class="pre">BaseClient</span></code></a><ul>
+<li><a class="reference internal" href="#jina.clients.base.BaseClient.check_input"><code class="docutils literal notranslate"><span class="pre">BaseClient.check_input()</span></code></a></li>
+<li><a class="reference internal" href="#jina.clients.base.BaseClient.inputs"><code class="docutils literal notranslate"><span class="pre">BaseClient.inputs</span></code></a></li>
+<li><a class="reference internal" href="#jina.clients.base.BaseClient.client"><code class="docutils literal notranslate"><span class="pre">BaseClient.client</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -769,7 +806,9 @@
 <img referrerpolicy="no-referrer-when-downgrade" src="https://static.scarf.sh/a.png?x-pxid=1b470c1d-3b55-4d38-baa8-989bfba2a218" /><script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
     <script src="../../_static/scripts/furo.js"></script>
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>

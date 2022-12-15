@@ -32,10 +32,10 @@
 <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="Migration to Jina 3" href="../../get-started/migrate/" /><link rel="prev" title="How to build switches in a Flow" href="../flow-switch/" />
         <link rel="canonical" href="https://docs.jina.ai/how-to/debug-executor.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.09.29"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
         <title>How to debug an Executor - Jina 3.3.7 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
@@ -238,7 +238,7 @@
     <option value="/">latest</option>
   </select>
 </div><form class="sidebar-search-container" method="get" action="../../search/" role="search">
-  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form>
@@ -601,7 +601,7 @@
                     </label>
                 </div>
                 <section class="tex2jax_ignore mathjax_ignore" id="how-to-debug-an-executor">
-<span id="debug-executor"></span><h1>How to debug an Executor<a class="headerlink" href="#how-to-debug-an-executor" title="Permalink to this headline">#</a></h1>
+<span id="debug-executor"></span><h1>How to debug an Executor<a class="headerlink" href="#how-to-debug-an-executor" title="Permalink to this heading">#</a></h1>
 <div class="caution admonition">
 <p class="admonition-title">Caution</p>
 <p>To debug an Executor, you need to look under the hood of Jina. This means things are not straightforward and might change in the future.</p>
@@ -612,7 +612,7 @@
 </div>
 <p>It’s very easy to debug Jina Executors. In this How-To, you will learn how to debug <a class="reference external" href="https://hub.jina.ai/executor/9o9yjq1q">Hello Executor</a> step by step.</p>
 <section id="step-1-pull-the-executor">
-<h2>Step 1: Pull the Executor<a class="headerlink" href="#step-1-pull-the-executor" title="Permalink to this headline">#</a></h2>
+<h2>Step 1: Pull the Executor<a class="headerlink" href="#step-1-pull-the-executor" title="Permalink to this heading">#</a></h2>
 <p>Pull the source code of the Executor you want to debug. There are two ways to do that.</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">via Command Line Interface</label><div class="tab-content docutils">
@@ -630,12 +630,12 @@
 </div>
 </section>
 <section id="step-2-set-the-breakpoints">
-<h2>Step 2: Set the Breakpoints<a class="headerlink" href="#step-2-set-the-breakpoints" title="Permalink to this headline">#</a></h2>
+<h2>Step 2: Set the Breakpoints<a class="headerlink" href="#step-2-set-the-breakpoints" title="Permalink to this heading">#</a></h2>
 <p>Go to <code class="docutils literal notranslate"><span class="pre">~/.jina/hub-package</span></code> directory. In this folder, there will be one subdirectory for each Executor that you pulled, named by the Executor id. You can find the source files of the Executor in this directory.</p>
 <p>Once you locate the source, you can set the breakpoints as you always do.</p>
 </section>
 <section id="step-3-debug-your-code">
-<h2>Step 3: Debug Your Code<a class="headerlink" href="#step-3-debug-your-code" title="Permalink to this headline">#</a></h2>
+<h2>Step 3: Debug Your Code<a class="headerlink" href="#step-3-debug-your-code" title="Permalink to this heading">#</a></h2>
 <p>Now you can debug your Executor like any Python code. You can either use the Executor on its own or use it inside a Flow.</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--1-input--1" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--1">Executor on its own</label><div class="tab-content docutils">
@@ -696,7 +696,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Nov 25, 2022.
+                    Last updated on Dec 15, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -754,7 +754,9 @@
 <img referrerpolicy="no-referrer-when-downgrade" src="https://static.scarf.sh/a.png?x-pxid=1b470c1d-3b55-4d38-baa8-989bfba2a218" /><script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
     <script src="../../_static/scripts/furo.js"></script>
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>

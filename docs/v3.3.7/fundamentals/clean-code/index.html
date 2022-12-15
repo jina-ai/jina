@@ -32,10 +32,10 @@
 <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="Deploy" href="../../how-to/deploy/" /><link rel="prev" title="Remarks" href="../flow/remarks/" />
         <link rel="canonical" href="https://docs.jina.ai/fundamentals/clean-code.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.09.29"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
         <title>Clean &amp; Efficient Code - Jina 3.3.7 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
@@ -238,7 +238,7 @@
     <option value="/">latest</option>
   </select>
 </div><form class="sidebar-search-container" method="get" action="../../search/" role="search">
-  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form>
@@ -601,11 +601,11 @@
                     </label>
                 </div>
                 <section class="tex2jax_ignore mathjax_ignore" id="clean-efficient-code">
-<h1>Clean &amp; Efficient Code<a class="headerlink" href="#clean-efficient-code" title="Permalink to this headline">#</a></h1>
+<h1>Clean &amp; Efficient Code<a class="headerlink" href="#clean-efficient-code" title="Permalink to this heading">#</a></h1>
 <p>Jina is designed as a lean and efficient framework. Solutions built on top of Jina also mean to be so. Here are some
 tips to help you write beautiful and efficient code.</p>
 <section id="clean-import">
-<h2>Clean import<a class="headerlink" href="#clean-import" title="Permalink to this headline">#</a></h2>
+<h2>Clean import<a class="headerlink" href="#clean-import" title="Permalink to this heading">#</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span>
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">requests</span>
 </pre></div>
@@ -613,7 +613,7 @@ tips to help you write beautiful and efficient code.</p>
 <p>is often all you need. Copy-paste it as the first line of your code.</p>
 </section>
 <section id="generator-as-flow-input">
-<h2>Generator as Flow input<a class="headerlink" href="#generator-as-flow-input" title="Permalink to this headline">#</a></h2>
+<h2>Generator as Flow input<a class="headerlink" href="#generator-as-flow-input" title="Permalink to this heading">#</a></h2>
 <p>Use a <a class="reference external" href="https://docs.python.org/3/glossary.html#term-generator">Python generator</a> as the input to the Flow. A generator can lazily build <code class="docutils literal notranslate"><span class="pre">Document</span></code>s one at a time, instead of building them all at once. This can greatly speed up overall performance and reduce the memory footprint.</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">✅ Do</label><div class="tab-content docutils">
@@ -645,7 +645,7 @@ tips to help you write beautiful and efficient code.</p>
 </div>
 </section>
 <section id="set-request-size">
-<h2>Set <code class="docutils literal notranslate"><span class="pre">request_size</span></code><a class="headerlink" href="#set-request-size" title="Permalink to this headline">#</a></h2>
+<h2>Set <code class="docutils literal notranslate"><span class="pre">request_size</span></code><a class="headerlink" href="#set-request-size" title="Permalink to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">request_size</span></code> defines how many Documents to send in each request. When combined with a Generator, <code class="docutils literal notranslate"><span class="pre">request_size</span></code> determines how long it will take before sending the first request. You can change <code class="docutils literal notranslate"><span class="pre">request_size</span></code> to overlap the time of request generation and Flow computation.</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--1-input--1" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--1">✅ Do</label><div class="tab-content docutils">
@@ -681,7 +681,7 @@ tips to help you write beautiful and efficient code.</p>
 </div>
 </section>
 <section id="skip-unnecessary-init">
-<h2>Skip unnecessary <code class="docutils literal notranslate"><span class="pre">__init__</span></code><a class="headerlink" href="#skip-unnecessary-init" title="Permalink to this headline">#</a></h2>
+<h2>Skip unnecessary <code class="docutils literal notranslate"><span class="pre">__init__</span></code><a class="headerlink" href="#skip-unnecessary-init" title="Permalink to this heading">#</a></h2>
 <p>No need to implement <code class="docutils literal notranslate"><span class="pre">__init__</span></code> if your <code class="docutils literal notranslate"><span class="pre">Executor</span></code> does not contain initial states.</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--2-input--1" name="tab-set--2" type="radio"><label class="tab-label" for="tab-set--2-input--1">✅ Do</label><div class="tab-content docutils">
@@ -709,7 +709,7 @@ tips to help you write beautiful and efficient code.</p>
 </div>
 </section>
 <section id="skip-unnecessary-requests-on">
-<h2>Skip unnecessary <code class="docutils literal notranslate"><span class="pre">&#64;requests(on=...)</span></code><a class="headerlink" href="#skip-unnecessary-requests-on" title="Permalink to this headline">#</a></h2>
+<h2>Skip unnecessary <code class="docutils literal notranslate"><span class="pre">&#64;requests(on=...)</span></code><a class="headerlink" href="#skip-unnecessary-requests-on" title="Permalink to this heading">#</a></h2>
 <p>Use <code class="docutils literal notranslate"><span class="pre">&#64;requests</span></code> without specifying <code class="docutils literal notranslate"><span class="pre">on=</span></code> if your function is meant to work on all requests. You can use it for catching all requests that are not for this Executor.</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--3-input--1" name="tab-set--3" type="radio"><label class="tab-label" for="tab-set--3-input--1">✅ Do</label><div class="tab-content docutils">
@@ -740,7 +740,7 @@ tips to help you write beautiful and efficient code.</p>
 </div>
 </section>
 <section id="skip-unnecessary-kwargs">
-<h2>Skip unnecessary <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code><a class="headerlink" href="#skip-unnecessary-kwargs" title="Permalink to this headline">#</a></h2>
+<h2>Skip unnecessary <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code><a class="headerlink" href="#skip-unnecessary-kwargs" title="Permalink to this heading">#</a></h2>
 <p>Fold unnecessary arguments into <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code>, only get what you need.</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--4-input--1" name="tab-set--4" type="radio"><label class="tab-label" for="tab-set--4-input--1">✅ Do</label><div class="tab-content docutils">
@@ -768,7 +768,7 @@ tips to help you write beautiful and efficient code.</p>
 </div>
 </section>
 <section id="debug-executor-outside-of-a-flow">
-<span id="debug-executor"></span><h2>Debug Executor outside of a Flow<a class="headerlink" href="#debug-executor-outside-of-a-flow" title="Permalink to this headline">#</a></h2>
+<span id="debug-executor"></span><h2>Debug Executor outside of a Flow<a class="headerlink" href="#debug-executor-outside-of-a-flow" title="Permalink to this heading">#</a></h2>
 <p>To debug an <code class="docutils literal notranslate"><span class="pre">Executor</span></code>, there is no need to use it in the Flow. Simply initiate it as an object and call its method.</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--5-input--1" name="tab-set--5" type="radio"><label class="tab-label" for="tab-set--5-input--1">✅ Do</label><div class="tab-content docutils">
@@ -812,7 +812,7 @@ tips to help you write beautiful and efficient code.</p>
 </div>
 </section>
 <section id="send-parameters-only-request">
-<h2>Send <code class="docutils literal notranslate"><span class="pre">parameters</span></code>-only request<a class="headerlink" href="#send-parameters-only-request" title="Permalink to this headline">#</a></h2>
+<h2>Send <code class="docutils literal notranslate"><span class="pre">parameters</span></code>-only request<a class="headerlink" href="#send-parameters-only-request" title="Permalink to this heading">#</a></h2>
 <p>Send a <code class="docutils literal notranslate"><span class="pre">parameters</span></code>-only request to a Flow if you don’t need <code class="docutils literal notranslate"><span class="pre">docs</span></code>.</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--6-input--1" name="tab-set--6" type="radio"><label class="tab-label" for="tab-set--6-input--1">✅ Do</label><div class="tab-content docutils">
@@ -851,7 +851,7 @@ tips to help you write beautiful and efficient code.</p>
 </div>
 </section>
 <section id="heavy-lifting-in-the-flow-not-in-the-client">
-<h2>Heavy lifting in the Flow, not in the Client<a class="headerlink" href="#heavy-lifting-in-the-flow-not-in-the-client" title="Permalink to this headline">#</a></h2>
+<h2>Heavy lifting in the Flow, not in the Client<a class="headerlink" href="#heavy-lifting-in-the-flow-not-in-the-client" title="Permalink to this heading">#</a></h2>
 <p>Heavy-lifting jobs should be put into an <code class="docutils literal notranslate"><span class="pre">Executor</span></code> if possible.
 For instance, sending high-resolution images to the Flow
 can be time-consuming. Putting it into an Executor can leverage the Flow to scale it.
@@ -910,7 +910,7 @@ It also reduces the network overhead.</p>
 </div>
 </section>
 <section id="keep-only-necessary-fields">
-<h2>Keep only necessary fields<a class="headerlink" href="#keep-only-necessary-fields" title="Permalink to this headline">#</a></h2>
+<h2>Keep only necessary fields<a class="headerlink" href="#keep-only-necessary-fields" title="Permalink to this heading">#</a></h2>
 <p>Sometimes you do not want to pass the full Document to subsequent Executors for reasons of efficiency.
 You can simply use the <code class="docutils literal notranslate"><span class="pre">.pop</span></code> method to remove those fields.</p>
 <p>When using Jina with an HTTP frontend, the frontend often does not need <code class="docutils literal notranslate"><span class="pre">ndarray</span></code> or binary content. Hence,
@@ -989,7 +989,7 @@ fields such as <code class="docutils literal notranslate"><span class="pre">blob
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Nov 25, 2022.
+                    Last updated on Dec 15, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -1054,7 +1054,9 @@ fields such as <code class="docutils literal notranslate"><span class="pre">blob
 <img referrerpolicy="no-referrer-when-downgrade" src="https://static.scarf.sh/a.png?x-pxid=1b470c1d-3b55-4d38-baa8-989bfba2a218" /><script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
     <script src="../../_static/scripts/furo.js"></script>
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>

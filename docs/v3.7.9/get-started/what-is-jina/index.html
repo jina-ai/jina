@@ -1,0 +1,733 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+<meta property="og:title" content="What is Jina?" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://docs.jina.ai/get-started/what-is-jina/" />
+<meta property="og:site_name" content="Jina 3.7.9 Documentation" />
+<meta property="og:description" content="Jina is the framework for helping you to build cross-modal and multi-modal systems on the cloud. With Jina, developers can easily build high performant cloud native applications, services and systems in production. But at this point, you are not buying those campaign words. That’s okay and that’s..." />
+<meta property="og:image" content="https://docs.jina.ai/_images/7-layers.png" />
+<meta property="og:image:alt" content="Jina 3.7.9 Documentation" />
+<meta name="description" content="Jina is the framework for helping you to build cross-modal and multi-modal systems on the cloud. With Jina, developers can easily build high performant cloud native applications, services and systems in production. But at this point, you are not buying those campaign words. That’s okay and that’s..." />
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@JinaAI_">
+<meta name="twitter:creator" content="@JinaAI_">
+<meta name="description" content="Build cross-modal and multi-modal applications on the cloud">
+<meta property="og:description" content="Build cross-modal and multi-modal applications on the cloud">
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-48ZDWC8GT6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-48ZDWC8GT6');
+</script>
+
+<script async defer src="https://buttons.github.io/buttons.js"></script>
+    
+<link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="Basic Concepts" href="../../fundamentals/architecture-overview/" /><link rel="prev" title="What is Cross-Modal &amp; Multi-Modal?" href="../what-is-cross-modal-multi-modal/" />
+        <link rel="canonical" href="https://docs.jina.ai/get-started/what-is-jina.html" />
+
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
+        <title>What is Jina? - Jina 3.7.9 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/main.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/docbot.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #ffffff;
+  --color-code-foreground: #4d4d4d;
+  --color-brand-primary: #009191;
+  --color-brand-content: #009191;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #FBCB67;
+  --color-brand-content: #FBCB67;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #FBCB67;
+  --color-brand-content: #FBCB67;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+    <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+    <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<div class="announcement">
+    <aside class="announcement-content">
+         
+    <a href="https://www.meetup.com/jina-community-meetup/events/287738538/?isFirstPublish=true">Join our Office Hours Special Edition on August 25th at 19:00 CET to talk about Career Development at Jina AI</a>
+     
+    </aside>
+</div>
+
+<div class="page">
+    <header class="mobile-header">
+        <div class="header-left">
+            <label class="nav-overlay-icon" for="__navigation">
+                <div class="visually-hidden">Toggle site navigation sidebar</div>
+                <i class="icon">
+                    <svg>
+                        <use href="#svg-menu"></use>
+                    </svg>
+                </i>
+            </label>
+        </div>
+        <div class="header-center">
+            <a href="../../">
+                <div class="brand">Jina 3.7.9 documentation</div>
+            </a>
+        </div>
+        <div class="header-right">
+            <div class="theme-toggle-container theme-toggle-header">
+                <button class="theme-toggle">
+                    <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+                    <svg class="theme-icon-when-auto">
+                        <use href="#svg-sun-half"></use>
+                    </svg>
+                    <svg class="theme-icon-when-dark">
+                        <use href="#svg-moon"></use>
+                    </svg>
+                    <svg class="theme-icon-when-light">
+                        <use href="#svg-sun"></use>
+                    </svg>
+                </button>
+            </div>
+            <label class="toc-overlay-icon toc-header-icon" for="__toc">
+                <div class="visually-hidden">Toggle table of contents sidebar</div>
+                <i class="icon">
+                    <svg>
+                        <use href="#svg-toc"></use>
+                    </svg>
+                </i>
+            </label>
+        </div>
+    </header>
+    <aside class="sidebar-drawer">
+        <div class="sidebar-container">
+            
+            <div class="sidebar-sticky"><a class="sidebar-brand" href="../../">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo only-light" src="../../_static/logo-light.svg" alt="Light Logo" />
+    <img class="sidebar-logo only-dark" src="../../_static/logo-dark.svg" alt="Dark Logo" />
+  </div>
+  
+  
+</a>
+<script>
+  function setPrefix(prefix){
+    window.location.href = prefix
+  }
+</script>
+<script defer>
+  fetch(`https://${window.location.host}/_versions.json`)
+  .then((resp) => resp.json())
+  .then((data) => {
+    var versionSelector = document.getElementsByClassName("version-select")[0];
+    var currentPrefix = window.location.href.toString().split(window.location.host)[1].split('/')[1];
+
+    for(var i = 0; i < data.length; i++){
+      var option = document.createElement("option");
+      option.innerHTML = data[i].version;
+      option.value = "/" + data[i].version;
+      versionSelector.appendChild(option);
+      if(currentPrefix === data[i].version){
+        versionSelector.selectedIndex = i + 1;
+      }
+    }
+  })
+  .catch((err) => console.log(err));
+</script>
+<div class="sd-d-flex-row sd-align-major-spaced">
+  <a class="github-button" href="https://github.com/jina-ai/jina" data-icon="octicon-star" data-show-count="true" aria-label="Star jina-ai/jina on GitHub" style="opacity: 0;">Star</a>
+  <select onChange="setPrefix(this.value)" class="version-select">
+    <option value="/">latest</option>
+  </select>
+</div><form class="sidebar-search-container" method="get" action="../../search/" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+    <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../what-is-cross-modal-multi-modal/">What is Cross-Modal &amp; Multi-Modal?</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">What is Jina?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../fundamentals/architecture-overview/">Basic Concepts</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../install/">Install</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../install/docker/">Docker image</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../install/windows/">On Windows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../install/troubleshooting/">Troubleshooting</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../create-app/">Create Project</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/executor/">Executor</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-api/">Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-methods/"><code class="docutils literal notranslate"><span class="pre">@requests</span></code> methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/monitoring-executor/">Monitor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-run/">Run</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-serve/">Serve</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/yaml-spec/">YAML specification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-files/">File structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/containerize-executor/">Containerize</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/flow/">Flow</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/create-flow/">Basic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/add-executors/">Add Executors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/topologies/">Topology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/monitoring-flow/">Monitor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/health-check/">Readiness &amp; health check</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/when-things-go-wrong/">Handle exceptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/yaml-spec/">YAML specification</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../fundamentals/gateway/">Gateway</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/client/client/">Client</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/client/third-party-client/">Third-party clients</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/executor/hub/">Hub</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/hub/hub-portal/">Portal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/hub/create-hub-executor/">Create</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/hub/push-executor/">Publish</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/hub/use-hub-executor/">Use</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/sandbox/">Sandbox</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/debug-executor/">Debug</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/hub/executor-best-practices/">Best practices</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/jcloud/">JCloud</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/jcloud/resources/">Resources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/jcloud/autoscale/">Autoscaling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/jcloud/advanced/">Advanced</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/jcloud/faq/">FAQ</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../how-to/"><svg aria-hidden="true" class="sd-octicon sd-octicon-book" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M0 1.75A.75.75 0 01.75 1h4.253c1.227 0 2.317.59 3 1.501A3.744 3.744 0 0111.006 1h4.245a.75.75 0 01.75.75v10.5a.75.75 0 01-.75.75h-4.507a2.25 2.25 0 00-1.591.659l-.622.621a.75.75 0 01-1.06 0l-.622-.621A2.25 2.25 0 005.258 13H.75a.75.75 0 01-.75-.75V1.75zm8.755 3a2.25 2.25 0 012.25-2.25H14.5v9h-3.757c-.71 0-1.4.201-1.992.572l.004-7.322zm-1.504 7.324l.004-5.073-.002-2.253A2.25 2.25 0 005.003 2.5H1.5v9h3.757a3.75 3.75 0 011.994.574z" fill-rule="evenodd"></path></svg> How-To</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/google-colab/">Use Jina on Colab with GPU/TPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/clean-code/">Write clean &amp; efficient code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/async-executors/">Use async coroutines in Executors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/scale-out/">Scale out your Executor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/gpu-executor/">Run Executors on GPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/external-executor/">Use external Executors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/flow-switch/">Add selection control to a Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/docker-compose/">Deploy with Docker Compose</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/kubernetes/">Deploy with Kubernetes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/monitoring/">Use monitoring with Jina in Kubernetes</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer References</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api-rst/"><span class="fab fa-python"></span> Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cli/"><svg aria-hidden="true" class="sd-octicon sd-octicon-terminal" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M0 2.75C0 1.784.784 1 1.75 1h12.5c.966 0 1.75.784 1.75 1.75v10.5A1.75 1.75 0 0114.25 15H1.75A1.75 1.75 0 010 13.25V2.75zm1.75-.25a.25.25 0 00-.25.25v10.5c0 .138.112.25.25.25h12.5a.25.25 0 00.25-.25V2.75a.25.25 0 00-.25-.25H1.75zM7.25 8a.75.75 0 01-.22.53l-2.25 2.25a.75.75 0 11-1.06-1.06L5.44 8 3.72 6.28a.75.75 0 111.06-1.06l2.25 2.25c.141.14.22.331.22.53zm1.5 1.5a.75.75 0 000 1.5h3a.75.75 0 000-1.5h-3z" fill-rule="evenodd"></path></svg> Command-Line Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../proto/docs/">Protocol Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../envs/">Environment Variables</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Legacy Support</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../migrate/">Migrate Jina 2 to Jina 3</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://docs2.jina.ai/">Jina 2 Documentation</a></li>
+</ul>
+
+    <p class="caption" role="heading"><span class="caption-text">Ecosystem</span></p>
+    <ul>
+        <li class="toctree-l1">
+            <a class="reference internal" href="#">
+                <img class="sidebar-ecosys-logo only-light-line" src="../../_static/search-light.svg">
+                <img class="sidebar-ecosys-logo only-dark-line" src="../../_static/search-dark.svg">
+                Jina</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://hub.jina.ai">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../_static/hub-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../_static/hub-dark.svg">
+            Jina Hub</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://finetuner.jina.ai">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../_static/finetuner-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../_static/finetuner-dark.svg">
+            Finetuner</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://docarray.jina.ai">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../_static/docarray-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../_static/docarray-dark.svg">
+            DocArray</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://clip-as-service.jina.ai">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../_static/cas-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../_static/cas-dark.svg">
+            CLIP-as-service</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://github.com/jina-ai/jcloud">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../_static/JCloud-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../_static/JCloud-dark.svg">
+            JCloud</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://now.jina.ai">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../_static/now-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../_static/now-dark.svg">
+            NOW</a></li>
+    </ul>
+</div>
+
+</div>
+
+            </div>
+            
+        </div>
+    </aside>
+    <div class="main">
+        <div class="content">
+            <div class="article-container">
+                <a href="#" class="back-to-top muted-link">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+                    </svg>
+                    <span>Back to top</span>
+                </a>
+                <div class="content-icon-container"><div class="theme-toggle-container theme-toggle-content">
+                        <button class="theme-toggle">
+                            <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+                            <svg class="theme-icon-when-auto">
+                                <use href="#svg-sun-half"></use>
+                            </svg>
+                            <svg class="theme-icon-when-dark">
+                                <use href="#svg-moon"></use>
+                            </svg>
+                            <svg class="theme-icon-when-light">
+                                <use href="#svg-sun"></use>
+                            </svg>
+                        </button>
+                    </div>
+                    <label class="toc-overlay-icon toc-content-icon"
+                           for="__toc">
+                        <div class="visually-hidden">Toggle table of contents sidebar</div>
+                        <i class="icon">
+                            <svg>
+                                <use href="#svg-toc"></use>
+                            </svg>
+                        </i>
+                    </label>
+                </div>
+                <article role="main">
+                    <section class="tex2jax_ignore mathjax_ignore" id="what-is-jina">
+<span id="id1"></span><h1>What is Jina?<a class="headerlink" href="#what-is-jina" title="Permalink to this heading">#</a></h1>
+<p>Jina is the framework for helping you to build cross-modal and multi-modal systems on the cloud. With Jina, developers can easily build high performant cloud native applications, services and systems in production. But at this point, you are not buying those campaign words. That’s okay and that’s what this chapter is about: to tell you what Jina is and to convince you about it.</p>
+<p>In the <a class="reference internal" href="../what-is-cross-modal-multi-modal/#intro-cm"><span class="std std-ref">last chapter</span></a>, you already learned the idea of cross-modal and multi-modal from the machine learning perspective. This chapter will talk more from the system and engineering side. Let’s start with an example and understand why Jina is needed.</p>
+<section id="motivation-example">
+<span id="motivate-example"></span><h2>Motivation example<a class="headerlink" href="#motivation-example" title="Permalink to this heading">#</a></h2>
+<p>Why do you need Jina? Let’s first see an example that describes a life without Jina.</p>
+<p>Imagine you are a <strong>machine learning engineer</strong> whose task is to build a shop-the-look service for an e-commerce company, i.e. allowing users to upload a photo and search visually similar items from the stock. Sounds cool and deep learning related, exactly what your expertise is, so let’s get started.</p>
+<section id="prototype">
+<h3>Prototype<a class="headerlink" href="#prototype" title="Permalink to this heading">#</a></h3>
+<p>There are two mode of the system, one is <strong>indexing</strong>, which is to create the visual representation of all stock items, the other is <strong>search</strong>, which is to take a user-uploaded photo and find the visually similar items from stock.</p>
+<p>The indexing part is to create a visual representation of all the stock items. In order to do this, you need to first extract features from the images to create the visual representation. The features could be extracted using a convolutional neural network, and then be stored in a database.</p>
+<p>The search part is to take a user-uploaded photo and find the visually similar items from stock. You first need to extract features from the user-uploaded photo using a convolutional neural network. Then, you can use the similarity metric to find the visually similar items from the stock. The similarity metric could be cosine similarity.</p>
+<p>At this point, you need a deep learning framework such as PyTorch, some key-value database such as MongoDB, and possibly some vector search engine such as FAISS or Elasticsearch. As a machine learning engineer, you are mostly familiar with PyTorch and prototyping. You are smart and full of energy so nothing you can’t learn. You easily glue them together as the first <em>proof of concept</em> (POC).</p>
+</section>
+<section id="as-a-service">
+<h3>As a service<a class="headerlink" href="#as-a-service" title="Permalink to this heading">#</a></h3>
+<p>Are we done? We just start. Instead of some Python functions, your goal is to make it as a web service so that its IO goes through network. To do that, you need to <em>refactor</em> the above logic in some web framework with some API so that it can be called by other services.</p>
+<p>There are many ways to do this, one example would be to use the Django web framework. You would create an endpoint that accepts user-uploaded photos, then use the above logic to find the visually similar items from stock. Finally, you would return the results to the user in the form of a JSON object.</p>
+<p>At this point, you learned a few new things such as REST API, web service, web framework, which seems to go beyond your scope of a “machine learning engineer”. You started to wonder whether it is worth it to learn them. But a machine learning <strong>engineer</strong> is an engineer after all, and learning new things is always good. But deep down you feel that your engineering may not be sufficient to make it into production. After some time, you managed to glue everything together.</p>
+</section>
+<section id="deployment">
+<h3>Deployment<a class="headerlink" href="#deployment" title="Permalink to this heading">#</a></h3>
+<p>The product team is impressed by the progress and asks you to deploy it on AWS to serve some real traffic. This is exciting because it means your POC will face the public and have real users. You encountered many problems while migrating from local to the cloud, mostly because of dependencies issues, CUDA driver and GPU issues. You finally solved all of them by wrapping everything in a 30GB Docker image. It is a <em>big</em> monolith container, but it is easy to deploy and manage for you.</p>
+</section>
+<section id="scalability-and-performance">
+<h3>Scalability and performance<a class="headerlink" href="#scalability-and-performance" title="Permalink to this heading">#</a></h3>
+<p>Are we done now? Not yet. The product team wants to ensure certain scalability of the service in practice, meaning that the feature extraction should be parallelized and concurrent user requests should be handled without lagging. Certain QPS (query per second) is required from the product team.</p>
+<p>You tried the straightforward <code class="docutils literal notranslate"><span class="pre">multiprocessing</span></code> and <code class="docutils literal notranslate"><span class="pre">threading</span></code>, but nothing works out of the box with your deep learning stacks. You decided to learn more high-performance computing frameworks such as Dask or Ray and try to adopt them. After some trial and error, you finally glued everything together and made them work. At this point you feel exhausted as it diverges too far from your expertise.</p>
+</section>
+<section id="availability-and-downtime">
+<h3>Availability and downtime<a class="headerlink" href="#availability-and-downtime" title="Permalink to this heading">#</a></h3>
+<p><em>“What if our database is down (due to update) for a short-time?”</em></p>
+<p>So you designed some naive failsafe mechanism that you just learned from a blog post. You also picked up some AWS service in a rush to ensure the availability of the service, hoping it can be fire-and-forget.</p>
+</section>
+<section id="observability">
+<h3>Observability<a class="headerlink" href="#observability" title="Permalink to this heading">#</a></h3>
+<p><em>“How can I see the incoming traffic?”</em></p>
+<p>You changed all <code class="docutils literal notranslate"><span class="pre">print</span></code> to <code class="docutils literal notranslate"><span class="pre">logger.info</span></code> and impatiently spun up a dashboard.</p>
+</section>
+<section id="security">
+<h3>Security<a class="headerlink" href="#security" title="Permalink to this heading">#</a></h3>
+<p><em>“Can we add some authentication header to it?”</em></p>
+<p><em>“Is this service prone to attack?”</em></p>
+<p>At this point, you are burnt out. It goes too far away from your expertise. You decided to hand over the project to a senior backend engineer, who is a new hire but has a lot of experience in infrastructure engineering and cloud services. He knows what he is doing and is willing to help you.</p>
+<p>So you sit down with him, scrolling over your glued code and justifying all your tricks, design decisions and explaining all the caveats. He kept nodding and you see it as some kind of recognition. Soon after he took a slow and thoughtful sip of his coffee, he said:</p>
+<p><em>“Why don’t we start to rewrite it?”</em></p>
+</section>
+</section>
+<section id="problems-and-jina-s-solution">
+<h2>Problems and Jina’s solution<a class="headerlink" href="#problems-and-jina-s-solution" title="Permalink to this heading">#</a></h2>
+<p>The above example is quite real, and it reveals some gaps when developing a cross-modal/multi-modal system in production:</p>
+<p><strong>First is the lack of design pattern for such system.</strong> It is unclear how should one represent, compute, store, and transit the data with different modalities in a consistent way; and how can one switch between different tools and avoid glue code.</p>
+<p><strong>Second is the large gap of between a proof-of-concept and a production system.</strong> For a production system, cloud native techniques are often required to ensure the professionalism and scalability of the system. In particular, microservices, orchestration, containerization and observability are four pillars of such system. However, the learning curve is too steep for many machine learning engineers, preventing them to build production ready system.</p>
+<p><strong>Third is the long go-to-market time</strong>. If a company chooses a wrong tech stack, it will take longer to bring the product to market. This is because the company will have to spend more time and resources on developing the product, refactoring it, going back and forth. In addition, a wrong stack can cause problems with the product itself, raising the risk of the product being unsuccessful.</p>
+<p>Jina is a solution to address above problems by providing a consistent design pattern for cross-modal/multi-modal systems with the latest cloud native technologies.</p>
+<section id="why-cloud-native">
+<h3>Why cloud native?<a class="headerlink" href="#why-cloud-native" title="Permalink to this heading">#</a></h3>
+<p>At first cloud native seems pretty irrelevant: why a cross-modal/multi-modal system is any related to cloud native?</p>
+<p>Cloud native is a term that refers to a system that is designed to run on the cloud. It consists of a group of concepts:</p>
+<ul class="simple">
+<li><p><strong>Microservices</strong>: Microservices are the building blocks of a cloud native system.</p></li>
+<li><p><strong>Orchestration</strong>: Orchestration is the process of managing the microservices.</p></li>
+<li><p><strong>Containerization</strong>: Containerization is the process of packaging the microservices into containers.</p></li>
+<li><p><strong>Observability</strong>: Observability is the process of monitoring the system.</p></li>
+<li><p><strong>DevOps and CI/CD</strong>: DevOps and CI/CD are the process of automating the integration of the system.</p></li>
+</ul>
+<p>Sounds cool but irrelevant, so do we really need them?</p>
+<p>Yes!</p>
+<table border="1" class="docutils">
+<thead>
+<tr>
+<th>Characteristics of a cross-modal/multi-modal system</th>
+<th>How would Cloud-native help</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cross-modal/multi-modal system is not a single task, it usually consists of multiple components and forms a workflow or multiple workflows (e.g. indexing and search)</td>
+<td><strong>Microservice</strong> each task, then <strong>orchestrate</strong> them into workflows.</td>
+</tr>
+<tr>
+<td>Cross-modal/multi-modal system involves complicated package dependencies.</td>
+<td><strong>Containerization</strong> comes to help to ensure the reproducibility and isolation.</td>
+</tr>
+<tr>
+<td>Cross-modal/multi-modal system is often a backend/infrastructure service that requires extra stablilty.</td>
+<td><strong>DevOps and CI/CD</strong> guarantees the integration and <strong>Observability</strong> provides the health information of the system.</td>
+</tr>
+</tbody>
+</table>
+<p>With that, let me reiterate what Jina is: Jina is a framework that provides a unified, cloud native solution for building cross-modal/multi-modal systems from day one. It provides the best developer experience from day one POC to production. It smooths your journey by resolving every challenge mentioned in all subsections of <a class="reference internal" href="#motivate-example"><span class="std std-ref">Motivation example</span></a>. No more tech debt, no more refactoring and back and forth between different systems.</p>
+<p>Now it starts to make sense, right? Let’s get our first taste on how a Jina project looks like and how does it work.</p>
+</section>
+</section>
+<section id="taste-of-jina">
+<h2>Taste of Jina<a class="headerlink" href="#taste-of-jina" title="Permalink to this heading">#</a></h2>
+<p>Let’s look at a simple Jina hello world example. We write a function that appends <code class="docutils literal notranslate"><span class="pre">&quot;hello,</span> <span class="pre">world&quot;</span></code> to a Document, we apply the function twice for the two Documents, then return and print their texts.</p>
+<div class="tab-set docutils">
+<input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">With Jina</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">requests</span>
+
+
+<span class="k">class</span> <span class="nc">MyExec</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+    <span class="nd">@requests</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
+            <span class="n">d</span><span class="o">.</span><span class="n">text</span> <span class="o">+=</span> <span class="s1">&#39;hello, world!&#39;</span>
+
+
+<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">MyExec</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">MyExec</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">DocumentArray</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">texts</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">────────────────────────── 🎉 Flow is ready to serve! ──────────────────────────</span>
+<span class="go">╭────────────── 🔗 Endpoint ───────────────╮</span>
+<span class="go">│  ⛓     Protocol                    GRPC  │</span>
+<span class="go">│  🏠       Local           0.0.0.0:52570  │</span>
+<span class="go">│  🔒     Private     192.168.1.126:52570  │</span>
+<span class="go">│  🌍      Public    87.191.159.105:52570  │</span>
+<span class="go">╰──────────────────────────────────────────╯</span>
+
+<span class="go">[&#39;hello, world!hello, world!&#39;, &#39;hello, world!hello, world!&#39;]</span>
+</pre></div>
+</div>
+</div>
+<input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--2">Plain Python</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Document</span><span class="p">:</span>
+    <span class="n">text</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+
+
+<span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="n">docs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
+        <span class="n">d</span><span class="o">.</span><span class="n">text</span> <span class="o">+=</span> <span class="s1">&#39;hello, world!&#39;</span>
+
+
+<span class="n">docs</span> <span class="o">=</span> <span class="p">[</span><span class="n">Document</span><span class="p">(),</span> <span class="n">Document</span><span class="p">()]</span>
+<span class="n">foo</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span>
+<span class="n">foo</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">[&#39;hello, world!hello, world!&#39;, &#39;hello, world!hello, world!&#39;]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>It is a pretty straightforward program. It abstracts away the complexity of a real cross-modal &amp; multi-modal system, leaving only the basic logics: make a data structure, operate on it, and return the result.</p>
+<p>In fact, one can achieve the same in 14 lines of code (<code class="docutils literal notranslate"><span class="pre">black</span></code>ed) with pure Python.</p>
+<p>So does using Jina mean learning some weird design pattern that needs one extra line of code to achieve the same result with pure Python? What’s the deal?</p>
+<p>Here is the deal. The features below come out of the box with the above 15 lines of code:</p>
+<ul class="simple">
+<li><p>Replicas, sharding, scalability in just one line of code;</p></li>
+<li><p>Client/server architecture with duplex streaming;</p></li>
+<li><p>Async non-blocking data workflow;</p></li>
+<li><p>gRPC, Websockets, HTTP, GraphQL gateway support;</p></li>
+<li><p>Microservice from day one, Docker containerization seamlessly;</p></li>
+<li><p>Explicit version and dependency control;</p></li>
+<li><p>Reuse building blocks from Hub marketplace;</p></li>
+<li><p>Immediate observability via Prometheus and Grafana;</p></li>
+<li><p>Kubernetes seamless integration.</p></li>
+</ul>
+<p>If you think that’s a lot of over-promises, it is not. In fact, they barely scratch the surface of Jina’s capability.</p>
+</section>
+<section id="design-principles">
+<h2>Design principles<a class="headerlink" href="#design-principles" title="Permalink to this heading">#</a></h2>
+<p>With so many powerful features, the learning curve of Jina must be very steep, you might think. But it is not. In fact, you only need to know three concepts to master Jina. They are Document, Executor and Flow, which are introduced in <a class="reference internal" href="../../fundamentals/architecture-overview/#architecture-overview"><span class="std std-ref">Basic Concepts</span></a>.</p>
+<p>A full-fledged cross-modal/multi-modal system is a combination of the following seven layers:</p>
+<figure class="align-default">
+<a class="reference internal image-reference" href="../../_images/7-layers.png"><img alt="../../_images/7-layers.png" src="../../_images/7-layers.png" style="width: 309.6px; height: 566.0px;" /></a>
+</figure>
+<p>This illustration is not exaggerating, it is a real-world example of a cross-modal/multi-modal system in production.</p>
+<p>Fortunately, as a Jina developer, you don’t need to understand all of them. You only need to know what are relevant to your product logic and let Jina handles the rest. In particular,</p>
+<ul class="simple">
+<li><p><strong>The data type</strong>: represents the common data structure across the system; this corresponds to “<strong>Document</strong>” in Jina.</p></li>
+<li><p><strong>The logic</strong>: represents the product logic of each component; this corresponds to “<strong>Executor</strong>” in Jina.</p></li>
+<li><p><strong>The orchestration</strong>: represents the workflow of all components; this corresponds to “<strong>Flow</strong>” in Jina.</p></li>
+</ul>
+<p>are all you need.</p>
+<figure class="align-default">
+<a class="reference internal image-reference" href="../../_images/3-layers.png"><img alt="../../_images/3-layers.png" src="../../_images/3-layers.png" style="width: 747.5px; height: 419.5px;" /></a>
+</figure>
+<p>Patterns are nice, cloud native features are cool. But what’s the point if you need to spend months to learn them? Jina’s design principles are simple and clear: flatten the learning curve of cloud native techniques and make all awesome production-level features easily accessible.</p>
+</section>
+<section id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="Permalink to this heading">#</a></h2>
+<p>Before Jina, building a cross-modal/multi-modal system was a tedious and time-consuming process. It involved a lot of glue code, back and forth refactoring and after months you eventually end up with a fragile system that is unsustainable. With Jina, you are doing it professionally from day one: from POC to production; from deployment to scaling; from monitoring to analytics; everything is taken care of by Jina. We know the pain, we have the lessons learned and that’s why we build Jina: to make developing cross-modal and multi-modal system an easier, productive and enjoyable experience for you.</p>
+</section>
+</section>
+
+                </article>
+            </div>
+            <footer>
+                
+                <div class="related-pages">
+                    <a class="next-page" href="../../fundamentals/architecture-overview/">
+                        <div class="page-info">
+                            <div class="context">
+                                <span>Next</span>
+                            </div>
+                            <div class="title">Basic Concepts</div>
+                        </div>
+                        <svg>
+                            <use href="#svg-arrow-right"></use>
+                        </svg>
+                    </a>
+                    <a class="prev-page" href="../what-is-cross-modal-multi-modal/">
+                        <svg>
+                            <use href="#svg-arrow-right"></use>
+                        </svg>
+                        <div class="page-info">
+                            <div class="context">
+                                <span>Previous</span>
+                            </div>
+                            
+                            <div class="title">What is Cross-Modal &amp; Multi-Modal?</div>
+                            
+                        </div>
+                    </a>
+                </div>
+                <div class="bottom-of-page">
+                    <div class="left-details">
+                        <div class="copyright">
+                            Copyright &#169; Jina AI Limited. All rights reserved.
+                        </div><div class="last-updated">
+                            Last updated on Dec 15, 2022</div>
+                    </div>
+                    <div class="right-details">
+                        <div class="social-btns">
+                            <a class='social-btn' href="https://github.com/jina-ai/jina" aria-label="GitHub"
+                               target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
+                            <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank"
+                               rel="noreferrer"> <i class="fab fa-slack"></i></a>
+                            <a class='social-btn' href="https://youtube.com/c/jina-ai" aria-label="YouTube"
+                               target="_blank" rel="noreferrer"> <i class="fab fa-youtube"></i></a>
+                            <a class='social-btn' href="https://twitter.com/JinaAI_" aria-label="Twitter"
+                               target="_blank" rel="noreferrer"> <i class="fab fa-twitter"></i></a>
+                            <a class='social-btn' href="https://www.linkedin.com/company/jinaai/" aria-label="LinkedIn"
+                               target="_blank" rel="noreferrer"> <i class="fab fa-linkedin"></i></a>
+                        </div>
+                    </div>
+                </div>
+                
+            </footer>
+        </div>
+        <aside class="toc-drawer">
+            
+            
+            <div class="toc-sticky toc-scroll">
+                <div class="toc-title-container">
+          <span class="toc-title">
+            Contents
+          </span>
+                </div>
+                <div class="toc-tree-container">
+                    <div class="toc-tree">
+                        <ul>
+<li><a class="reference internal" href="#">What is Jina?</a><ul>
+<li><a class="reference internal" href="#motivation-example">Motivation example</a><ul>
+<li><a class="reference internal" href="#prototype">Prototype</a></li>
+<li><a class="reference internal" href="#as-a-service">As a service</a></li>
+<li><a class="reference internal" href="#deployment">Deployment</a></li>
+<li><a class="reference internal" href="#scalability-and-performance">Scalability and performance</a></li>
+<li><a class="reference internal" href="#availability-and-downtime">Availability and downtime</a></li>
+<li><a class="reference internal" href="#observability">Observability</a></li>
+<li><a class="reference internal" href="#security">Security</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#problems-and-jina-s-solution">Problems and Jina’s solution</a><ul>
+<li><a class="reference internal" href="#why-cloud-native">Why cloud native?</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#taste-of-jina">Taste of Jina</a></li>
+<li><a class="reference internal" href="#design-principles">Design principles</a></li>
+<li><a class="reference internal" href="#summary">Summary</a></li>
+</ul>
+</li>
+</ul>
+
+                    </div>
+                </div>
+            </div>
+            
+            
+        </aside>
+    </div>
+    <qa-bot
+            title="Jina Bot"
+            description="Build cross-modal and multi-modal applications on the cloud"
+    >
+        <template>
+            <dl>
+                <dt>You can ask questions about our docs. Try:</dt>
+                <dd>Does Jina support Kubernetes?</dd>
+                <dd>What are the basic concepts in Jina?</dd>
+                <dd>How to share my Executor?</dd>
+            </dl>
+        </template>
+    </qa-bot>
+</div>
+<img referrerpolicy="no-referrer-when-downgrade"
+     src="https://static.scarf.sh/a.png?x-pxid=2823e771-0e1e-4320-8fde-48bc48e53262"/><script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/scripts/furo.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script src="../../_static/tabs.js"></script>
+    <script src="../../_static/design-tabs.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() { 
+            document.querySelector('qa-bot').setAttribute('server', 'https://jina-ai-jina.docsqa.jina.ai');
+        });
+        </script>
+    <script src="https://cdn.jsdelivr.net/npm/qabot@0.4"></script>
+    </body>
+</html>

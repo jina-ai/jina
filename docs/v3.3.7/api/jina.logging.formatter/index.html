@@ -30,10 +30,10 @@
 <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="jina.logging.logger module" href="../jina.logging.logger/" /><link rel="prev" title="jina.logging package" href="../jina.logging/" />
         <link rel="canonical" href="https://docs.jina.ai/api/jina.logging.formatter.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.09.29"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
         <title>jina.logging.formatter module - Jina 3.3.7 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
@@ -184,7 +184,7 @@
                     </svg>
                 </button>
             </div>
-            <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+            <label class="toc-overlay-icon toc-header-icon" for="__toc">
                 <div class="visually-hidden">Toggle table of contents sidebar</div>
                 <i class="icon">
                     <svg>
@@ -236,7 +236,7 @@
     <option value="/">latest</option>
   </select>
 </div><form class="sidebar-search-container" method="get" action="../../search/" role="search">
-  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form>
@@ -599,11 +599,11 @@
                     </label>
                 </div>
                 <section id="module-jina.logging.formatter">
-<span id="jina-logging-formatter-module"></span><h1>jina.logging.formatter module<a class="headerlink" href="#module-jina.logging.formatter" title="Permalink to this headline">#</a></h1>
+<span id="jina-logging-formatter-module"></span><h1>jina.logging.formatter module<a class="headerlink" href="#module-jina.logging.formatter" title="Permalink to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="jina.logging.formatter.ColorFormatter">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.logging.formatter.</span></span><span class="sig-name descname"><span class="pre">ColorFormatter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/logging/formatter/#ColorFormatter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.logging.formatter.ColorFormatter" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">logging.Formatter</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Formatter</span></code></p>
 <p>Format the log into colored logs based on the log-level.</p>
 <p>Initialize the formatter with specified format strings.</p>
 <p>Initialize the formatter either with the specified format string, or a
@@ -641,7 +641,7 @@ use one of %-formatting, <code class="xref py py-meth docutils literal notransla
 <dl class="py class">
 <dt class="sig sig-object py" id="jina.logging.formatter.PlainFormatter">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.logging.formatter.</span></span><span class="sig-name descname"><span class="pre">PlainFormatter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fmt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datefmt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">style</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'%'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/logging/formatter/#PlainFormatter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.logging.formatter.PlainFormatter" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">logging.Formatter</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Formatter</span></code></p>
 <p>Remove all control chars from the log and format it as plain text, also restrict the max-length of msg to 512.</p>
 <p>Initialize the formatter with specified format strings.</p>
 <p>Initialize the formatter either with the specified format string, or a
@@ -673,7 +673,7 @@ use one of %-formatting, <code class="xref py py-meth docutils literal notransla
 <dl class="py class">
 <dt class="sig sig-object py" id="jina.logging.formatter.JsonFormatter">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.logging.formatter.</span></span><span class="sig-name descname"><span class="pre">JsonFormatter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fmt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datefmt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">style</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'%'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/logging/formatter/#JsonFormatter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.logging.formatter.JsonFormatter" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">logging.Formatter</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Formatter</span></code></p>
 <p>Format the log message as a JSON object so that it can be later used/parsed in browser with javascript.</p>
 <p>Initialize the formatter with specified format strings.</p>
 <p>Initialize the formatter either with the specified format string, or a
@@ -711,7 +711,7 @@ use one of %-formatting, <code class="xref py py-meth docutils literal notransla
 <dl class="py class">
 <dt class="sig sig-object py" id="jina.logging.formatter.ProfileFormatter">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.logging.formatter.</span></span><span class="sig-name descname"><span class="pre">ProfileFormatter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fmt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datefmt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">style</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'%'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/logging/formatter/#ProfileFormatter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.logging.formatter.ProfileFormatter" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">logging.Formatter</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Formatter</span></code></p>
 <p>Format the log message as JSON object and add the current used memory into it.</p>
 <p>Initialize the formatter with specified format strings.</p>
 <p>Initialize the formatter either with the specified format string, or a
@@ -774,7 +774,7 @@ use one of %-formatting, <code class="xref py py-meth docutils literal notransla
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Nov 25, 2022.
+                    Last updated on Dec 15, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -790,6 +790,40 @@ use one of %-formatting, <code class="xref py py-meth docutils literal notransla
             
 
             <div class="toc-sticky toc-scroll">
+                
+                <div class="toc-title-container">
+          <span class="toc-title">
+            Contents
+          </span>
+                </div>
+                <div class="toc-tree-container">
+                    <div class="toc-tree">
+                        <ul>
+<li><a class="reference internal" href="#">jina.logging.formatter module</a><ul>
+<li><a class="reference internal" href="#jina.logging.formatter.ColorFormatter"><code class="docutils literal notranslate"><span class="pre">ColorFormatter</span></code></a><ul>
+<li><a class="reference internal" href="#jina.logging.formatter.ColorFormatter.MAPPING"><code class="docutils literal notranslate"><span class="pre">ColorFormatter.MAPPING</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.formatter.ColorFormatter.format"><code class="docutils literal notranslate"><span class="pre">ColorFormatter.format()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#jina.logging.formatter.PlainFormatter"><code class="docutils literal notranslate"><span class="pre">PlainFormatter</span></code></a><ul>
+<li><a class="reference internal" href="#jina.logging.formatter.PlainFormatter.format"><code class="docutils literal notranslate"><span class="pre">PlainFormatter.format()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#jina.logging.formatter.JsonFormatter"><code class="docutils literal notranslate"><span class="pre">JsonFormatter</span></code></a><ul>
+<li><a class="reference internal" href="#jina.logging.formatter.JsonFormatter.KEYS"><code class="docutils literal notranslate"><span class="pre">JsonFormatter.KEYS</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.formatter.JsonFormatter.format"><code class="docutils literal notranslate"><span class="pre">JsonFormatter.format()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#jina.logging.formatter.ProfileFormatter"><code class="docutils literal notranslate"><span class="pre">ProfileFormatter</span></code></a><ul>
+<li><a class="reference internal" href="#jina.logging.formatter.ProfileFormatter.format"><code class="docutils literal notranslate"><span class="pre">ProfileFormatter.format()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+                    </div>
+                </div>
                 
             </div>
 
@@ -813,7 +847,9 @@ use one of %-formatting, <code class="xref py py-meth docutils literal notransla
 <img referrerpolicy="no-referrer-when-downgrade" src="https://static.scarf.sh/a.png?x-pxid=1b470c1d-3b55-4d38-baa8-989bfba2a218" /><script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
     <script src="../../_static/scripts/furo.js"></script>
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>

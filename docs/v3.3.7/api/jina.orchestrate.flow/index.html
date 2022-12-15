@@ -7,10 +7,10 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/api/jina.orchestrate.flow/" />
 <meta property="og:site_name" content="Jina 3.3.7 Documentation" />
-<meta property="og:description" content="Submodules: jina.orchestrate.flow.asyncio module, jina.orchestrate.flow.base module, jina.orchestrate.flow.builder module. Module contents:" />
+<meta property="og:description" content="Submodules: jina.orchestrate.flow.asyncio module- AsyncFlow., jina.orchestrate.flow.base module- Flow- Flow.last_deployment, Flow.needs(), Flow.needs_all(), Flow.add(), Flow.inspect(), Flow.gather_inspect(), Flow.build(), Flow.start(), Flow.num_deployments, Flow.num_pods, Flow.client, Flow.plot()..." />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
 <meta property="og:image:alt" content="Jina 3.3.7 Documentation" />
-<meta name="description" content="Submodules: jina.orchestrate.flow.asyncio module, jina.orchestrate.flow.base module, jina.orchestrate.flow.builder module. Module contents:" />
+<meta name="description" content="Submodules: jina.orchestrate.flow.asyncio module- AsyncFlow., jina.orchestrate.flow.base module- Flow- Flow.last_deployment, Flow.needs(), Flow.needs_all(), Flow.add(), Flow.inspect(), Flow.gather_inspect(), Flow.build(), Flow.start(), Flow.num_deployments, Flow.num_pods, Flow.client, Flow.plot()..." />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
@@ -32,10 +32,10 @@
 <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="jina.orchestrate.flow.asyncio module" href="../jina.orchestrate.flow.asyncio/" /><link rel="prev" title="jina.orchestrate.deployments.config.k8s module" href="../jina.orchestrate.deployments.config.k8s/" />
         <link rel="canonical" href="https://docs.jina.ai/api/jina.orchestrate.flow.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.09.29"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
         <title>jina.orchestrate.flow package - Jina 3.3.7 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
@@ -238,7 +238,7 @@
     <option value="/">latest</option>
   </select>
 </div><form class="sidebar-search-container" method="get" action="../../search/" role="search">
-  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form>
@@ -601,19 +601,60 @@
                     </label>
                 </div>
                 <section id="jina-orchestrate-flow-package">
-<h1>jina.orchestrate.flow package<a class="headerlink" href="#jina-orchestrate-flow-package" title="Permalink to this headline">#</a></h1>
+<h1>jina.orchestrate.flow package<a class="headerlink" href="#jina-orchestrate-flow-package" title="Permalink to this heading">#</a></h1>
 <section id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">#</a></h2>
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading">#</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../jina.orchestrate.flow.asyncio/">jina.orchestrate.flow.asyncio module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../jina.orchestrate.flow.base/">jina.orchestrate.flow.base module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../jina.orchestrate.flow.builder/">jina.orchestrate.flow.builder module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../jina.orchestrate.flow.asyncio/">jina.orchestrate.flow.asyncio module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../jina.orchestrate.flow.asyncio/#jina.orchestrate.flow.asyncio.AsyncFlow"><code class="docutils literal notranslate"><span class="pre">AsyncFlow</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../jina.orchestrate.flow.base/">jina.orchestrate.flow.base module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow"><code class="docutils literal notranslate"><span class="pre">Flow</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.last_deployment"><code class="docutils literal notranslate"><span class="pre">Flow.last_deployment</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.needs"><code class="docutils literal notranslate"><span class="pre">Flow.needs()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.needs_all"><code class="docutils literal notranslate"><span class="pre">Flow.needs_all()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.add"><code class="docutils literal notranslate"><span class="pre">Flow.add()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.inspect"><code class="docutils literal notranslate"><span class="pre">Flow.inspect()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.gather_inspect"><code class="docutils literal notranslate"><span class="pre">Flow.gather_inspect()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.build"><code class="docutils literal notranslate"><span class="pre">Flow.build()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.start"><code class="docutils literal notranslate"><span class="pre">Flow.start()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.num_deployments"><code class="docutils literal notranslate"><span class="pre">Flow.num_deployments</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.num_pods"><code class="docutils literal notranslate"><span class="pre">Flow.num_pods</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.client"><code class="docutils literal notranslate"><span class="pre">Flow.client</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.plot"><code class="docutils literal notranslate"><span class="pre">Flow.plot()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.port"><code class="docutils literal notranslate"><span class="pre">Flow.port</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.host"><code class="docutils literal notranslate"><span class="pre">Flow.host</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.monitoring"><code class="docutils literal notranslate"><span class="pre">Flow.monitoring</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.port_monitoring"><code class="docutils literal notranslate"><span class="pre">Flow.port_monitoring</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.address_private"><code class="docutils literal notranslate"><span class="pre">Flow.address_private</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.address_public"><code class="docutils literal notranslate"><span class="pre">Flow.address_public</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.block"><code class="docutils literal notranslate"><span class="pre">Flow.block()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.protocol"><code class="docutils literal notranslate"><span class="pre">Flow.protocol</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.workspace"><code class="docutils literal notranslate"><span class="pre">Flow.workspace</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.workspace_id"><code class="docutils literal notranslate"><span class="pre">Flow.workspace_id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.env"><code class="docutils literal notranslate"><span class="pre">Flow.env</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.expose_endpoint"><code class="docutils literal notranslate"><span class="pre">Flow.expose_endpoint()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.join"><code class="docutils literal notranslate"><span class="pre">Flow.join()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.to_k8s_yaml"><code class="docutils literal notranslate"><span class="pre">Flow.to_k8s_yaml()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.to_docker_compose_yaml"><code class="docutils literal notranslate"><span class="pre">Flow.to_docker_compose_yaml()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.client_args"><code class="docutils literal notranslate"><span class="pre">Flow.client_args</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.gateway_args"><code class="docutils literal notranslate"><span class="pre">Flow.gateway_args</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.update_network_interface"><code class="docutils literal notranslate"><span class="pre">Flow.update_network_interface()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../jina.orchestrate.flow.builder/">jina.orchestrate.flow.builder module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../jina.orchestrate.flow.builder/#jina.orchestrate.flow.builder.allowed_levels"><code class="docutils literal notranslate"><span class="pre">allowed_levels()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </div>
 </section>
 <section id="module-jina.orchestrate.flow">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-jina.orchestrate.flow" title="Permalink to this headline">#</a></h2>
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-jina.orchestrate.flow" title="Permalink to this heading">#</a></h2>
 </section>
 </section>
 
@@ -649,7 +690,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Nov 25, 2022.
+                    Last updated on Dec 15, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -706,7 +747,9 @@
 <img referrerpolicy="no-referrer-when-downgrade" src="https://static.scarf.sh/a.png?x-pxid=1b470c1d-3b55-4d38-baa8-989bfba2a218" /><script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
     <script src="../../_static/scripts/furo.js"></script>
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>

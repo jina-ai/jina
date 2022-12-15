@@ -32,10 +32,10 @@
 <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="Best Practices" href="../../fundamentals/executor/hub/executor-best-practices/" /><link rel="prev" title="Use Hub Executors Locally" href="../../fundamentals/executor/hub/use-hub-executor/" />
         <link rel="canonical" href="https://docs.jina.ai/how-to/sandbox.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.09.29"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
         <title>Use Hub Executor Remotely - Jina 3.3.7 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
@@ -238,7 +238,7 @@
     <option value="/">latest</option>
   </select>
 </div><form class="sidebar-search-container" method="get" action="../../search/" role="search">
-  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form>
@@ -601,7 +601,7 @@
                     </label>
                 </div>
                 <section class="tex2jax_ignore mathjax_ignore" id="use-hub-executor-remotely">
-<span id="sandbox"></span><h1>Use Hub Executor Remotely<a class="headerlink" href="#use-hub-executor-remotely" title="Permalink to this headline">#</a></h1>
+<span id="sandbox"></span><h1>Use Hub Executor Remotely<a class="headerlink" href="#use-hub-executor-remotely" title="Permalink to this heading">#</a></h1>
 <p>A Jina Executor is often just a Docker image that contains some logic to process Documents. Therefore, you can run it locally if you have Docker installed. But that Docker image could be huge, and you need to download it first then run it afterwards. That would be annoying in many cases.</p>
 <p>Jina Sandbox provides a way to download and run in a cloud environment. It will give you a host and port to connect with. Jina automatically takes care of this connection.</p>
 <p>It saves a lot of time when you just want to try out one Executor. In addition, it also saves a lot of computing resources for your local machine.</p>
@@ -610,7 +610,7 @@
 <img alt="../../_images/sandbox-advantage.png" src="../../_images/sandbox-advantage.png" />
 </figure>
 <section id="start-a-flow-using-jina-sandbox">
-<h2>Start a Flow using Jina Sandbox<a class="headerlink" href="#start-a-flow-using-jina-sandbox" title="Permalink to this headline">#</a></h2>
+<h2>Start a Flow using Jina Sandbox<a class="headerlink" href="#start-a-flow-using-jina-sandbox" title="Permalink to this heading">#</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">Document</span>
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
 
@@ -624,7 +624,7 @@
 <p>This starts a Flow that only has one Executor, and sends a Document to it. The Document is processed by the Executor and the result is returned.</p>
 </section>
 <section id="sandbox-lifecycle">
-<h2>Sandbox Lifecycle<a class="headerlink" href="#sandbox-lifecycle" title="Permalink to this headline">#</a></h2>
+<h2>Sandbox Lifecycle<a class="headerlink" href="#sandbox-lifecycle" title="Permalink to this heading">#</a></h2>
 <p>Sandbox is serverless. It will not be removed immediately after the Flow is closed but kept alive for several minutes. If there is no traffic, it will automatically scale down to 0 to save resources, but it will restart again and give the response whenever a new request is sent to the same Sandbox.</p>
 <p><strong>Sandbox will be shared with other users</strong>. Sometimes you will start the sandbox very quickly because the other users already started it.</p>
 <p>It will find the existing sandbox by three factors:</p>
@@ -640,11 +640,11 @@
 </div>
 </section>
 <section id="version-consistency">
-<h2>Version consistency<a class="headerlink" href="#version-consistency" title="Permalink to this headline">#</a></h2>
+<h2>Version consistency<a class="headerlink" href="#version-consistency" title="Permalink to this heading">#</a></h2>
 <p>The Jina version inside the Sandbox will be the same as the one in the place where the Flow was run. For example, if you run the Flow in your local machine, then it’s the version of Jina in your local pip packages.</p>
 </section>
 <section id="mixed-with-non-sandbox-executors">
-<h2>Mixed with non-sandbox Executors<a class="headerlink" href="#mixed-with-non-sandbox-executors" title="Permalink to this headline">#</a></h2>
+<h2>Mixed with non-sandbox Executors<a class="headerlink" href="#mixed-with-non-sandbox-executors" title="Permalink to this heading">#</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">Document</span>
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
 
@@ -665,16 +665,16 @@
 </div>
 </section>
 <section id="caveats">
-<h2>Caveats<a class="headerlink" href="#caveats" title="Permalink to this headline">#</a></h2>
+<h2>Caveats<a class="headerlink" href="#caveats" title="Permalink to this heading">#</a></h2>
 <p>There are some caveats when using Sandbox Executors with respect to other Executors.</p>
 <section id="uncontrolled-by-flow">
-<h3>1. Uncontrolled by Flow<a class="headerlink" href="#uncontrolled-by-flow" title="Permalink to this headline">#</a></h3>
+<h3>1. Uncontrolled by Flow<a class="headerlink" href="#uncontrolled-by-flow" title="Permalink to this heading">#</a></h3>
 <p>Since the lifetime of these Executors is not handled by the Flow and is handled by the Hub infrastructure, there is no way
 to override its default configurations, therefore <code class="docutils literal notranslate"><span class="pre">uses_with</span></code>, <code class="docutils literal notranslate"><span class="pre">uses_metas</span></code>, etc … will not apply.</p>
 <p>You can consider a Sandbox Executor as an external Executor where you have no control over its initialization or configuration.</p>
 </section>
 <section id="no-gpu-support">
-<h3>2. No GPU support<a class="headerlink" href="#no-gpu-support" title="Permalink to this headline">#</a></h3>
+<h3>2. No GPU support<a class="headerlink" href="#no-gpu-support" title="Permalink to this heading">#</a></h3>
 <p>Computation using GPU is most likely several times faster than using CPU in many use cases. However we don’t yet support using a GPU for computation in Sandbox containers.</p>
 </section>
 </section>
@@ -712,7 +712,7 @@ to override its default configurations, therefore <code class="docutils literal 
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Nov 25, 2022.
+                    Last updated on Dec 15, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -776,7 +776,9 @@ to override its default configurations, therefore <code class="docutils literal 
 <img referrerpolicy="no-referrer-when-downgrade" src="https://static.scarf.sh/a.png?x-pxid=1b470c1d-3b55-4d38-baa8-989bfba2a218" /><script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
     <script src="../../_static/scripts/furo.js"></script>
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>

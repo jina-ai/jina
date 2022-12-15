@@ -32,10 +32,10 @@
 <link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" /><link rel="next" title="Share Executors via Jina Hub" href="../hub/" /><link rel="prev" title="Executors inside a Flow" href="../executor-in-flow/" />
         <link rel="canonical" href="https://docs.jina.ai/fundamentals/executor/repository-structure.html" />
 
-    <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.09.29"/>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
         <title>Executor File Structure - Jina 3.3.7 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/tabs.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
@@ -238,7 +238,7 @@
     <option value="/">latest</option>
   </select>
 </div><form class="sidebar-search-container" method="get" action="../../../search/" role="search">
-  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form>
@@ -601,7 +601,7 @@
                     </label>
                 </div>
                 <section class="tex2jax_ignore mathjax_ignore" id="executor-file-structure">
-<h1>Executor File Structure<a class="headerlink" href="#executor-file-structure" title="Permalink to this headline">#</a></h1>
+<h1>Executor File Structure<a class="headerlink" href="#executor-file-structure" title="Permalink to this heading">#</a></h1>
 <p>Besides organizing your Executor code inline (i.e. with <code class="docutils literal notranslate"><span class="pre">Flow.add()</span></code> in the same file), you can also write it as an “external” module and then use it via YAML. This is useful when your Executor’s logic is too complicated to fit into a single file.</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">Separate module</label><div class="tab-content docutils">
@@ -681,7 +681,7 @@ flow.py<div class="sd-summary-down docutils">
 </div>
 </div>
 <section id="best-practice">
-<h2>Best practice<a class="headerlink" href="#best-practice" title="Permalink to this headline">#</a></h2>
+<h2>Best practice<a class="headerlink" href="#best-practice" title="Permalink to this heading">#</a></h2>
 <p>Use</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina hub new
 </pre></div>
@@ -689,7 +689,7 @@ flow.py<div class="sd-summary-down docutils">
 <p>in the terminal to create an Executor bundle.</p>
 </section>
 <section id="single-python-file">
-<h2>Single Python file<a class="headerlink" href="#single-python-file" title="Permalink to this headline">#</a></h2>
+<h2>Single Python file<a class="headerlink" href="#single-python-file" title="Permalink to this heading">#</a></h2>
 <p>When you are only working with a single python file (let’s call it <code class="docutils literal notranslate"><span class="pre">my_executor.py</span></code>), you can simply put it at the root of the repository, and import it directly in <code class="docutils literal notranslate"><span class="pre">config.yml</span></code></p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MyExecutor</span><span class="w"></span>
 <span class="nt">metas</span><span class="p">:</span><span class="w"></span>
@@ -699,7 +699,7 @@ flow.py<div class="sd-summary-down docutils">
 </div>
 </section>
 <section id="multiple-python-files">
-<h2>Multiple Python files<a class="headerlink" href="#multiple-python-files" title="Permalink to this headline">#</a></h2>
+<h2>Multiple Python files<a class="headerlink" href="#multiple-python-files" title="Permalink to this heading">#</a></h2>
 <p>When you are working with multiple python files, you should organize them as a <strong>Python package</strong> and put them in a special folder inside
 your repository (as you would normally do with Python packages). Specifically, you should do the following:</p>
 <ul class="simple">
@@ -797,7 +797,7 @@ your repository (as you would normally do with Python packages). Specifically, y
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Nov 25, 2022.
+                    Last updated on Dec 15, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -855,7 +855,9 @@ your repository (as you would normally do with Python packages). Specifically, y
 <img referrerpolicy="no-referrer-when-downgrade" src="https://static.scarf.sh/a.png?x-pxid=1b470c1d-3b55-4d38-baa8-989bfba2a218" /><script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
     <script src="../../../_static/scripts/furo.js"></script>
     <script src="../../../_static/clipboard.min.js"></script>
     <script src="../../../_static/copybutton.js"></script>

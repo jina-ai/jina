@@ -32,10 +32,10 @@
 <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="Python API" href="../../api/" /><link rel="prev" title="How to debug an Executor" href="../../how-to/debug-executor/" />
         <link rel="canonical" href="https://docs.jina.ai/get-started/migrate.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.09.29"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
         <title>Migration to Jina 3 - Jina 3.3.7 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
@@ -238,7 +238,7 @@
     <option value="/">latest</option>
   </select>
 </div><form class="sidebar-search-container" method="get" action="../../search/" role="search">
-  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form>
@@ -601,7 +601,7 @@
                     </label>
                 </div>
                 <section class="tex2jax_ignore mathjax_ignore" id="migration-to-jina-3">
-<h1>Migration to Jina 3<a class="headerlink" href="#migration-to-jina-3" title="Permalink to this headline">#</a></h1>
+<h1>Migration to Jina 3<a class="headerlink" href="#migration-to-jina-3" title="Permalink to this heading">#</a></h1>
 <p>Jina 3 comes with many improvements but to be able to enjoy them, you will also have to make some
 tweaks to your existing Jina 2 code.</p>
 <p>One of the major changes in Jina 3 is <a class="reference external" href="https://docarray.jina.ai/">DocArray</a> being an external dependency:
@@ -618,7 +618,7 @@ underpin neural search apps as well as the Jina ecosystem, including <a class="r
 <p>In general, the breaking changes are aiming for increased simplicity and consistency, making your life easier in the
 long run. Here you can find out what exactly you will have to adapt.</p>
 <section id="simple-changes-at-a-glance">
-<h2>Simple changes at a glance<a class="headerlink" href="#simple-changes-at-a-glance" title="Permalink to this headline">#</a></h2>
+<h2>Simple changes at a glance<a class="headerlink" href="#simple-changes-at-a-glance" title="Permalink to this heading">#</a></h2>
 <p>Many of the changes introduced in Jina 3 are easily adapted to a Jina 2 codebase.
 The modifications in the following table should, in most cases, be safe to perform without further thought or effort.</p>
 <table border="1" class="docutils">
@@ -671,7 +671,7 @@ The modifications in the following table should, in most cases, be safe to perfo
 These are outlined below.</p>
 </section>
 <section id="document-more-natural-attribute-names-and-pythonic-serialization">
-<h2>Document: More natural attribute names and Pythonic serialization<a class="headerlink" href="#document-more-natural-attribute-names-and-pythonic-serialization" title="Permalink to this headline">#</a></h2>
+<h2>Document: More natural attribute names and Pythonic serialization<a class="headerlink" href="#document-more-natural-attribute-names-and-pythonic-serialization" title="Permalink to this heading">#</a></h2>
 <p>Docarray introduces more natural naming conventions for <code class="docutils literal notranslate"><span class="pre">Document</span></code> and <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> attributes.</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">doc.blob</span></code> is renamed to <code class="docutils literal notranslate"><span class="pre">doc.tensor</span></code>, to align with external libraries like PyTorch and Tensorflow</p></li>
@@ -682,7 +682,7 @@ These are outlined below.</p>
 </ul>
 </section>
 <section id="documentarray-simplified-attribute-element-access-and-new-storage-options">
-<h2>DocumentArray: Simplified attribute, element access and new storage options<a class="headerlink" href="#documentarray-simplified-attribute-element-access-and-new-storage-options" title="Permalink to this headline">#</a></h2>
+<h2>DocumentArray: Simplified attribute, element access and new storage options<a class="headerlink" href="#documentarray-simplified-attribute-element-access-and-new-storage-options" title="Permalink to this heading">#</a></h2>
 <div class="seealso admonition">
 <p class="admonition-title">DocArray library</p>
 <p>Take a look at the <a class="reference external" href="https://docarray.jina.ai/fundamentals/documentarray/access-attributes/">DocArray documentation</a>
@@ -876,14 +876,14 @@ in-memory storage. Furthermore, some Document Stores offer fast Nearest Neighbor
 production.</p>
 </section>
 <section id="flow-and-client-simplified-post-behavior">
-<h2>Flow and Client: Simplified <code class="docutils literal notranslate"><span class="pre">.post()</span></code> behavior<a class="headerlink" href="#flow-and-client-simplified-post-behavior" title="Permalink to this headline">#</a></h2>
+<h2>Flow and Client: Simplified <code class="docutils literal notranslate"><span class="pre">.post()</span></code> behavior<a class="headerlink" href="#flow-and-client-simplified-post-behavior" title="Permalink to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">client.post()</span></code> and <code class="docutils literal notranslate"><span class="pre">flow.post()</span></code> now return a flattened <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> instead of a list of <code class="docutils literal notranslate"><span class="pre">Response</span></code>s when no
 callback function is specified.</p>
 <p><code class="docutils literal notranslate"><span class="pre">.post()</span></code> can still be configured to return a list of Responses, by passing <code class="docutils literal notranslate"><span class="pre">return_responses=True</span></code> to the Client or Flow
 constructors.</p>
 </section>
 <section id="consistent-yaml-parsing-syntax">
-<h2>Consistent YAML parsing syntax<a class="headerlink" href="#consistent-yaml-parsing-syntax" title="Permalink to this headline">#</a></h2>
+<h2>Consistent YAML parsing syntax<a class="headerlink" href="#consistent-yaml-parsing-syntax" title="Permalink to this heading">#</a></h2>
 <p>In Jina 3, YAML syntax is aligned with <a class="reference external" href="https://docs.github.com/en/actions/learn-github-actions/environment-variables">Github Actions notation</a>,
 which leads to the following changes:</p>
 <ul class="simple">
@@ -900,7 +900,7 @@ the former (<code class="docutils literal notranslate"><span class="pre">${{</sp
 </div>
 </section>
 <section id="common-errors-and-solutions">
-<h2>Common errors and solutions<a class="headerlink" href="#common-errors-and-solutions" title="Permalink to this headline">#</a></h2>
+<h2>Common errors and solutions<a class="headerlink" href="#common-errors-and-solutions" title="Permalink to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">AttributeError:</span> <span class="pre">'Document'</span> <span class="pre">object</span> <span class="pre">has</span> <span class="pre">no</span> <span class="pre">attribute</span> <span class="pre">'buffer'</span></code></p>
 <details>
   <summary>Solution</summary>
@@ -976,7 +976,7 @@ the former (<code class="docutils literal notranslate"><span class="pre">${{</sp
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Nov 25, 2022.
+                    Last updated on Dec 15, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -1037,7 +1037,9 @@ the former (<code class="docutils literal notranslate"><span class="pre">${{</sp
 <img referrerpolicy="no-referrer-when-downgrade" src="https://static.scarf.sh/a.png?x-pxid=1b470c1d-3b55-4d38-baa8-989bfba2a218" /><script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
     <script src="../../_static/scripts/furo.js"></script>
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>

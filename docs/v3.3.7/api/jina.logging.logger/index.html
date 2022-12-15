@@ -30,10 +30,10 @@
 <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="jina.logging.predefined module" href="../jina.logging.predefined/" /><link rel="prev" title="jina.logging.formatter module" href="../jina.logging.formatter/" />
         <link rel="canonical" href="https://docs.jina.ai/api/jina.logging.logger.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.09.29"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
         <title>jina.logging.logger module - Jina 3.3.7 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
@@ -184,7 +184,7 @@
                     </svg>
                 </button>
             </div>
-            <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+            <label class="toc-overlay-icon toc-header-icon" for="__toc">
                 <div class="visually-hidden">Toggle table of contents sidebar</div>
                 <i class="icon">
                     <svg>
@@ -236,7 +236,7 @@
     <option value="/">latest</option>
   </select>
 </div><form class="sidebar-search-container" method="get" action="../../search/" role="search">
-  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form>
@@ -599,11 +599,11 @@
                     </label>
                 </div>
                 <section id="module-jina.logging.logger">
-<span id="jina-logging-logger-module"></span><h1>jina.logging.logger module<a class="headerlink" href="#module-jina.logging.logger" title="Permalink to this headline">#</a></h1>
+<span id="jina-logging-logger-module"></span><h1>jina.logging.logger module<a class="headerlink" href="#module-jina.logging.logger" title="Permalink to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="jina.logging.logger.SysLogHandlerWrapper">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.logging.logger.</span></span><span class="sig-name descname"><span class="pre">SysLogHandlerWrapper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">('localhost',</span> <span class="pre">514)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">facility</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">socktype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/logging/logger/#SysLogHandlerWrapper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.logging.logger.SysLogHandlerWrapper" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">logging.handlers.SysLogHandler</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">SysLogHandler</span></code></p>
 <p>Override the priority_map <code class="xref py py-class docutils literal notranslate"><span class="pre">SysLogHandler</span></code>.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
@@ -713,7 +713,7 @@ back to socket.SOCK_STREAM.</p>
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Nov 25, 2022.
+                    Last updated on Dec 15, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -729,6 +729,33 @@ back to socket.SOCK_STREAM.</p>
             
 
             <div class="toc-sticky toc-scroll">
+                
+                <div class="toc-title-container">
+          <span class="toc-title">
+            Contents
+          </span>
+                </div>
+                <div class="toc-tree-container">
+                    <div class="toc-tree">
+                        <ul>
+<li><a class="reference internal" href="#">jina.logging.logger module</a><ul>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper</span></code></a><ul>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.priority_map"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.priority_map</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#jina.logging.logger.JinaLogger"><code class="docutils literal notranslate"><span class="pre">JinaLogger</span></code></a><ul>
+<li><a class="reference internal" href="#jina.logging.logger.JinaLogger.supported"><code class="docutils literal notranslate"><span class="pre">JinaLogger.supported</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.JinaLogger.handlers"><code class="docutils literal notranslate"><span class="pre">JinaLogger.handlers</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.JinaLogger.close"><code class="docutils literal notranslate"><span class="pre">JinaLogger.close()</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.JinaLogger.add_handlers"><code class="docutils literal notranslate"><span class="pre">JinaLogger.add_handlers()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+                    </div>
+                </div>
                 
             </div>
 
@@ -752,7 +779,9 @@ back to socket.SOCK_STREAM.</p>
 <img referrerpolicy="no-referrer-when-downgrade" src="https://static.scarf.sh/a.png?x-pxid=1b470c1d-3b55-4d38-baa8-989bfba2a218" /><script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
     <script src="../../_static/scripts/furo.js"></script>
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>

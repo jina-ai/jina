@@ -1,0 +1,1051 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+<meta property="og:title" content="Comparing to Alternatives" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://docs.jina.ai/get-started/comparing-alternatives/" />
+<meta property="og:site_name" content="Jina 3.8.2 Documentation" />
+<meta property="og:description" content="There is no alternative to Jina. Let me explain it with two example applications. Multi-user video streaming: Imagine your goal is to build a video streaming service, which allows multiple users to join and share their webcam. In the end, everybody can see each other’s video in real-time. How wou..." />
+<meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
+<meta property="og:image:alt" content="Jina 3.8.2 Documentation" />
+<meta name="description" content="There is no alternative to Jina. Let me explain it with two example applications. Multi-user video streaming: Imagine your goal is to build a video streaming service, which allows multiple users to join and share their webcam. In the end, everybody can see each other’s video in real-time. How wou..." />
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@JinaAI_">
+<meta name="twitter:creator" content="@JinaAI_">
+<meta name="description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native · MLOps">
+<meta property="og:description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native · MLOps">
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-48ZDWC8GT6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-48ZDWC8GT6');
+</script>
+
+<script async defer src="https://buttons.github.io/buttons.js"></script>
+    
+<link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="Install" href="../install/" /><link rel="prev" title="What is Jina?" href="../what-is-jina/" />
+        <link rel="canonical" href="https://docs.jina.ai/get-started/comparing-alternatives.html" />
+
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
+        <title>Comparing to Alternatives - Jina 3.8.2 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/main.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/docbot.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #ffffff;
+  --color-code-foreground: #4d4d4d;
+  --color-brand-primary: #009191;
+  --color-brand-content: #009191;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #FBCB67;
+  --color-brand-content: #FBCB67;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #FBCB67;
+  --color-brand-content: #FBCB67;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+    <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+    <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<div class="announcement">
+    <aside class="announcement-content">
+         
+    <a href="https://www.meetup.com/jina-community-meetup/events/288131091/?isFirstPublish=true">Learn more about how to build a Discord bot on Jina's platform on September 13th at 18:00 CET together with Peter Willemsen</a>
+     
+    </aside>
+</div>
+
+<div class="page">
+    <header class="mobile-header">
+        <div class="header-left">
+            <label class="nav-overlay-icon" for="__navigation">
+                <div class="visually-hidden">Toggle site navigation sidebar</div>
+                <i class="icon">
+                    <svg>
+                        <use href="#svg-menu"></use>
+                    </svg>
+                </i>
+            </label>
+        </div>
+        <div class="header-center">
+            <a href="../../">
+                <div class="brand">Jina 3.8.2 documentation</div>
+            </a>
+        </div>
+        <div class="header-right">
+            <div class="theme-toggle-container theme-toggle-header">
+                <button class="theme-toggle">
+                    <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+                    <svg class="theme-icon-when-auto">
+                        <use href="#svg-sun-half"></use>
+                    </svg>
+                    <svg class="theme-icon-when-dark">
+                        <use href="#svg-moon"></use>
+                    </svg>
+                    <svg class="theme-icon-when-light">
+                        <use href="#svg-sun"></use>
+                    </svg>
+                </button>
+            </div>
+            <label class="toc-overlay-icon toc-header-icon" for="__toc">
+                <div class="visually-hidden">Toggle table of contents sidebar</div>
+                <i class="icon">
+                    <svg>
+                        <use href="#svg-toc"></use>
+                    </svg>
+                </i>
+            </label>
+        </div>
+    </header>
+    <aside class="sidebar-drawer">
+        <div class="sidebar-container">
+            
+            <div class="sidebar-sticky"><a class="sidebar-brand" href="../../">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo only-light" src="../../_static/logo-light.svg" alt="Light Logo" />
+    <img class="sidebar-logo only-dark" src="../../_static/logo-dark.svg" alt="Dark Logo" />
+  </div>
+  
+  
+</a>
+<script>
+  function setPrefix(prefix){
+    window.location.href = prefix
+  }
+</script>
+<script defer>
+  fetch(`https://${window.location.host}/_versions.json`)
+  .then((resp) => resp.json())
+  .then((data) => {
+    var versionSelector = document.getElementsByClassName("version-select")[0];
+    var currentPrefix = window.location.href.toString().split(window.location.host)[1].split('/')[1];
+
+    for(var i = 0; i < data.length; i++){
+      var option = document.createElement("option");
+      option.innerHTML = data[i].version;
+      option.value = "/" + data[i].version;
+      versionSelector.appendChild(option);
+      if(currentPrefix === data[i].version){
+        versionSelector.selectedIndex = i + 1;
+      }
+    }
+  })
+  .catch((err) => console.log(err));
+</script>
+<div class="sd-d-flex-row sd-align-major-spaced">
+  <a class="github-button" href="https://github.com/jina-ai/jina" data-icon="octicon-star" data-show-count="true" aria-label="Star jina-ai/jina on GitHub" style="opacity: 0;">Star</a>
+  <select onChange="setPrefix(this.value)" class="version-select">
+    <option value="/">latest</option>
+  </select>
+</div><form class="sidebar-search-container" method="get" action="../../search/" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+    <p class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../what-is-cross-modal-multi-modal/">What is Cross-Modal &amp; Multi-Modal?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../what-is-jina/">What is Jina?</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Comparing to Alternatives</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../install/">Install</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../install/docker/">Docker image</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../install/apple-silicon-m1-m2/">On Apple Silicon</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../install/windows/">On Windows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../install/troubleshooting/">Troubleshooting</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../create-app/"><svg aria-hidden="true" class="sd-octicon sd-octicon-milestone" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M7.75 0a.75.75 0 01.75.75V3h3.634c.414 0 .814.147 1.13.414l2.07 1.75a1.75 1.75 0 010 2.672l-2.07 1.75a1.75 1.75 0 01-1.13.414H8.5v5.25a.75.75 0 11-1.5 0V10H2.75A1.75 1.75 0 011 8.25v-3.5C1 3.784 1.784 3 2.75 3H7V.75A.75.75 0 017.75 0zm0 8.5h4.384a.25.25 0 00.161-.06l2.07-1.75a.25.25 0 000-.38l-2.07-1.75a.25.25 0 00-.161-.06H2.75a.25.25 0 00-.25.25v3.5c0 .138.112.25.25.25h5z" fill-rule="evenodd"></path></svg> Create First Project</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../fundamentals/architecture-overview/">Basic Concepts</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/executor/">Executor</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-api/">Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-methods/"><code class="docutils literal notranslate"><span class="pre">@requests</span></code> methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/monitoring-executor/">Monitor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-run/">Run</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-serve/">Serve</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-files/">File structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/containerize-executor/">Containerize</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/flow/">Flow</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/create-flow/">Basic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/add-executors/">Add Executors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/topologies/">Topology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/monitoring-flow/">Monitor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/health-check/">Readiness &amp; health check</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/when-things-go-wrong/">Handle exceptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/gateway/">Gateway</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/gateway/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/client/client/">Client</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/client/third-party-client/">Third-party clients</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/executor/hub/">Hub</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/hub/hub-portal/">Portal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/hub/create-hub-executor/">Create</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/hub/push-executor/">Publish</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/hub/use-hub-executor/">Use</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/sandbox/">Sandbox</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/debug-executor/">Debug</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/hub/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/jcloud/">JCloud</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/jcloud/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../how-to/"><svg aria-hidden="true" class="sd-octicon sd-octicon-book" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M0 1.75A.75.75 0 01.75 1h4.253c1.227 0 2.317.59 3 1.501A3.744 3.744 0 0111.006 1h4.245a.75.75 0 01.75.75v10.5a.75.75 0 01-.75.75h-4.507a2.25 2.25 0 00-1.591.659l-.622.621a.75.75 0 01-1.06 0l-.622-.621A2.25 2.25 0 005.258 13H.75a.75.75 0 01-.75-.75V1.75zm8.755 3a2.25 2.25 0 012.25-2.25H14.5v9h-3.757c-.71 0-1.4.201-1.992.572l.004-7.322zm-1.504 7.324l.004-5.073-.002-2.253A2.25 2.25 0 005.003 2.5H1.5v9h3.757a3.75 3.75 0 011.994.574z" fill-rule="evenodd"></path></svg> How-To</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/realtime-streaming/">Build real-time streaming service</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/flow-switch/">Conditional route request inside a Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/scale-out/">Scale out with replicas and shards</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/clean-code/">Write clean &amp; efficient code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/google-colab/">Run on Google Colab with GPU/TPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/gpu-executor/">Build a GPU Executor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/external-executor/">Include external Executors in a Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/docker-compose/">Deploy with Docker Compose</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/kubernetes/">Deploy with Kubernetes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/monitoring/">Monitor via Prometheus and Grafana</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer References</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api-rst/"><span class="fab fa-python"></span> Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cli/"><svg aria-hidden="true" class="sd-octicon sd-octicon-terminal" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M0 2.75C0 1.784.784 1 1.75 1h12.5c.966 0 1.75.784 1.75 1.75v10.5A1.75 1.75 0 0114.25 15H1.75A1.75 1.75 0 010 13.25V2.75zm1.75-.25a.25.25 0 00-.25.25v10.5c0 .138.112.25.25.25h12.5a.25.25 0 00.25-.25V2.75a.25.25 0 00-.25-.25H1.75zM7.25 8a.75.75 0 01-.22.53l-2.25 2.25a.75.75 0 11-1.06-1.06L5.44 8 3.72 6.28a.75.75 0 111.06-1.06l2.25 2.25c.141.14.22.331.22.53zm1.5 1.5a.75.75 0 000 1.5h3a.75.75 0 000-1.5h-3z" fill-rule="evenodd"></path></svg> Command-Line Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML Specification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../proto/docs/">Protocol Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../envs/">Environment Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../telemetry/">Telemetry</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Legacy Support</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../migrate/">Migrate Jina 2 to Jina 3</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://docs2.jina.ai/">Jina 2 Documentation</a></li>
+</ul>
+
+    <p class="caption" role="heading"><span class="caption-text">Ecosystem</span></p>
+    <ul>
+        <li class="toctree-l1">
+            <a class="reference internal" href="#">
+                <img class="sidebar-ecosys-logo only-light-line" src="../../_static/search-light.svg">
+                <img class="sidebar-ecosys-logo only-dark-line" src="../../_static/search-dark.svg">
+                Jina</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://hub.jina.ai">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../_static/hub-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../_static/hub-dark.svg">
+            Jina Hub</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://finetuner.jina.ai">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../_static/finetuner-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../_static/finetuner-dark.svg">
+            Finetuner</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://docarray.jina.ai">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../_static/docarray-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../_static/docarray-dark.svg">
+            DocArray</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://clip-as-service.jina.ai">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../_static/cas-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../_static/cas-dark.svg">
+            CLIP-as-service</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://github.com/jina-ai/jcloud">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../_static/JCloud-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../_static/JCloud-dark.svg">
+            JCloud</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://now.jina.ai">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../_static/now-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../_static/now-dark.svg">
+            NOW</a></li>
+    </ul>
+</div>
+
+</div>
+
+            </div>
+            
+        </div>
+    </aside>
+    <div class="main">
+        <div class="content">
+            <div class="article-container">
+                <a href="#" class="back-to-top muted-link">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+                    </svg>
+                    <span>Back to top</span>
+                </a>
+                <div class="content-icon-container"><div class="theme-toggle-container theme-toggle-content">
+                        <button class="theme-toggle">
+                            <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+                            <svg class="theme-icon-when-auto">
+                                <use href="#svg-sun-half"></use>
+                            </svg>
+                            <svg class="theme-icon-when-dark">
+                                <use href="#svg-moon"></use>
+                            </svg>
+                            <svg class="theme-icon-when-light">
+                                <use href="#svg-sun"></use>
+                            </svg>
+                        </button>
+                    </div>
+                    <label class="toc-overlay-icon toc-content-icon"
+                           for="__toc">
+                        <div class="visually-hidden">Toggle table of contents sidebar</div>
+                        <i class="icon">
+                            <svg>
+                                <use href="#svg-toc"></use>
+                            </svg>
+                        </i>
+                    </label>
+                </div>
+                <article role="main">
+                    <section id="comparing-to-alternatives">
+<h1>Comparing to Alternatives<a class="headerlink" href="#comparing-to-alternatives" title="Permalink to this heading">#</a></h1>
+<p>There is no alternative to Jina. Let me explain it with two example applications.</p>
+<section id="multi-user-video-streaming">
+<h2>Multi-user video streaming<a class="headerlink" href="#multi-user-video-streaming" title="Permalink to this heading">#</a></h2>
+<p>Imagine your goal is to build a video streaming service, which allows multiple users to join and share their webcam. In the end, everybody can see each other’s video in real-time. How would you implement it?</p>
+<figure class="align-default">
+<a class="reference internal image-reference" href="../../_images/webcam.svg"><img alt="../../_images/webcam.svg" src="../../_images/webcam.svg" width="50%" /></a>
+</figure>
+<p>Think about it for few minutes. Think about the tech stack, the library, and the architecture. How much time do you need for the first working POC?</p>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3 sd-fade-in-slide-down">
+<summary class="sd-summary-title sd-card-header sd-bg-primary sd-bg-text-primary">
+<span class="sd-summary-icon"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-light-bulb" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M8 1.5c-2.363 0-4 1.69-4 3.75 0 .984.424 1.625.984 2.304l.214.253c.223.264.47.556.673.848.284.411.537.896.621 1.49a.75.75 0 01-1.484.211c-.04-.282-.163-.547-.37-.847a8.695 8.695 0 00-.542-.68c-.084-.1-.173-.205-.268-.32C3.201 7.75 2.5 6.766 2.5 5.25 2.5 2.31 4.863 0 8 0s5.5 2.31 5.5 5.25c0 1.516-.701 2.5-1.328 3.259-.095.115-.184.22-.268.319-.207.245-.383.453-.541.681-.208.3-.33.565-.37.847a.75.75 0 01-1.485-.212c.084-.593.337-1.078.621-1.489.203-.292.45-.584.673-.848.075-.088.147-.173.213-.253.561-.679.985-1.32.985-2.304 0-2.06-1.637-3.75-4-3.75zM6 15.25a.75.75 0 01.75-.75h2.5a.75.75 0 010 1.5h-2.5a.75.75 0 01-.75-.75zM5.75 12a.75.75 0 000 1.5h4.5a.75.75 0 000-1.5h-4.5z"></path></svg></span>Expand to see Jina’s solution in 30 lines of code <div class="sd-summary-down docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
+<div class="sd-summary-up docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
+</summary><div class="sd-summary-content sd-card-body docutils">
+<p class="sd-card-text">Source code <a class="reference external" href="https://github.com/jina-ai/jina-video-chat">can be found here</a>.</p>
+<div class="tab-set docutils">
+<input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">Server</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">Flow</span>
+
+
+<span class="k">class</span> <span class="nc">VideoChatExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+    <span class="n">last_user_frames</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="nd">@requests</span>
+    <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">last_user_frames</span><span class="p">[</span><span class="n">d</span><span class="o">.</span><span class="n">tags</span><span class="p">[</span><span class="s1">&#39;user&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">tensor</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">last_user_frames</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">d</span><span class="o">.</span><span class="n">tensor</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">last_user_frames</span><span class="o">.</span><span class="n">values</span><span class="p">()),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+
+<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">VideoChatExecutor</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">block</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--2">Client</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="ch">#!pip install opencv-python</span>
+<span class="kn">import</span> <span class="nn">cv2</span>
+
+
+<span class="k">def</span> <span class="nf">render_recv</span><span class="p">(</span><span class="n">resp</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">resp</span><span class="o">.</span><span class="n">docs</span><span class="p">:</span>
+        <span class="n">cv2</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="s1">&#39;output&#39;</span><span class="p">,</span> <span class="n">d</span><span class="o">.</span><span class="n">tensor</span><span class="p">)</span>
+
+
+<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span><span class="p">,</span> <span class="n">Document</span>
+
+<span class="n">c</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="n">server_address</span><span class="p">)</span>
+<span class="n">c</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+    <span class="s1">&#39;/&#39;</span><span class="p">,</span>
+    <span class="n">Document</span><span class="o">.</span><span class="n">generator_from_webcam</span><span class="p">(</span>
+        <span class="n">tags</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;user&#39;</span><span class="p">:</span> <span class="s1">&#39;han&#39;</span><span class="p">},</span> <span class="n">show_window</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">height_width</span><span class="o">=</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="mi">300</span><span class="p">)</span>
+    <span class="p">),</span>
+    <span class="n">on_done</span><span class="o">=</span><span class="n">render_recv</span><span class="p">,</span>
+    <span class="n">request_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p class="sd-card-text">That’s it.</p>
+<p class="sd-card-text"><img alt="" src="https://user-images.githubusercontent.com/2041322/185625220-40c1f887-3be4-49df-9318-c49e0fb7365e.gif" /></p>
+</div>
+</details></section>
+<section id="index-and-query-with-sharding">
+<h2>Index and query with sharding<a class="headerlink" href="#index-and-query-with-sharding" title="Permalink to this heading">#</a></h2>
+<p>Imagine your goal is to build a semantic search system for sentences. User inputs a sentence and the system searches over the index and returns the top 10 sentences that are semantically similar to the input. How would you implement it?</p>
+<p>Now let’s spice up a bit. Let’s add sharding to the index. Sharding is the process of splitting up a database or a table across multiple instances to improve the manageability, performance, and availability of a database. Introducing sharding means at the index time you have to split up the data into multiple shards and store them separately. At the query time, you can query from every shard and merge the results. How would you implement it?</p>
+<figure class="align-default">
+<a class="reference internal image-reference" href="../../_images/index-query.svg"><img alt="../../_images/index-query.svg" src="../../_images/index-query.svg" width="50%" /></a>
+</figure>
+<p>Think about it for few minutes. Think about the tech stack, the library and the architecture. Think about how to maintain the index/query time data consistency with sharding. How much time do you need for the first working POC?</p>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3 sd-fade-in-slide-down">
+<summary class="sd-summary-title sd-card-header sd-bg-primary sd-bg-text-primary">
+<span class="sd-summary-icon"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-light-bulb" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M8 1.5c-2.363 0-4 1.69-4 3.75 0 .984.424 1.625.984 2.304l.214.253c.223.264.47.556.673.848.284.411.537.896.621 1.49a.75.75 0 01-1.484.211c-.04-.282-.163-.547-.37-.847a8.695 8.695 0 00-.542-.68c-.084-.1-.173-.205-.268-.32C3.201 7.75 2.5 6.766 2.5 5.25 2.5 2.31 4.863 0 8 0s5.5 2.31 5.5 5.25c0 1.516-.701 2.5-1.328 3.259-.095.115-.184.22-.268.319-.207.245-.383.453-.541.681-.208.3-.33.565-.37.847a.75.75 0 01-1.485-.212c.084-.593.337-1.078.621-1.489.203-.292.45-.584.673-.848.075-.088.147-.173.213-.253.561-.679.985-1.32.985-2.304 0-2.06-1.637-3.75-4-3.75zM6 15.25a.75.75 0 01.75-.75h2.5a.75.75 0 010 1.5h-2.5a.75.75 0 01-.75-.75zM5.75 12a.75.75 0 000 1.5h4.5a.75.75 0 000-1.5h-4.5z"></path></svg></span>Expand to see Jina’s solution in 45 lines of code <div class="sd-summary-down docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
+<div class="sd-summary-up docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
+</summary><div class="sd-summary-content sd-card-body docutils">
+<p class="sd-card-text">The code below can be copy-pasted and run as-is.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pprint</span> <span class="kn">import</span> <span class="n">pprint</span>
+
+<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Document</span><span class="p">,</span> <span class="n">Executor</span>
+
+
+<span class="k">class</span> <span class="nc">MyFeature</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+    <span class="nd">@requests</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">docs</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">Document</span><span class="o">.</span><span class="n">embed_feature_hashing</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">MyDB</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">()</span>
+
+    <span class="nd">@requests</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/index&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span>
+
+    <span class="nd">@requests</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/query&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">docs</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="s1">&#39;jaccard&#39;</span><span class="p">,</span> <span class="n">use_scipy</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="mi">0</span><span class="p">][:</span><span class="mi">3</span><span class="p">]</span>
+
+
+<span class="k">class</span> <span class="nc">MyRanker</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+    <span class="nd">@requests</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/query&#39;</span><span class="p">)</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">DocumentArray</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">docs</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">scores</span><span class="p">[</span><span class="s1">&#39;jaccard&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">))</span>
+
+
+<span class="n">d</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">uri</span><span class="o">=</span><span class="s1">&#39;https://www.gutenberg.org/files/1342/1342-0.txt&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">load_uri_to_text</span><span class="p">()</span>
+<span class="n">da</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">(</span><span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">s</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">Flow</span><span class="p">()</span>
+        <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">MyFeature</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">MyDB</span><span class="p">,</span> <span class="n">shards</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">polling</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;/query&#39;</span><span class="p">:</span> <span class="s1">&#39;ALL&#39;</span><span class="p">,</span> <span class="s1">&#39;/index&#39;</span><span class="p">:</span> <span class="s1">&#39;ANY&#39;</span><span class="p">})</span>
+        <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">MyRanker</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="k">with</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/index&#39;</span><span class="p">,</span> <span class="n">da</span><span class="p">,</span> <span class="n">show_progress</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">pprint</span><span class="p">(</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/query&#39;</span><span class="p">,</span> <span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;she smiled too much&#39;</span><span class="p">))[</span>
+                <span class="p">:,</span> <span class="p">(</span><span class="s1">&#39;text&#39;</span><span class="p">,</span> <span class="s1">&#39;scores__jaccard__value&#39;</span><span class="p">)</span>
+            <span class="p">]</span>
+        <span class="p">)</span>
+</pre></div>
+</div>
+<figure class="align-default">
+<a class="reference internal image-reference" href="../../_images/index-book.gif"><img alt="../../_images/index-book.gif" src="../../_images/index-book.gif" style="width: 80%;" /></a>
+</figure>
+</div>
+</details><p>You don’t have to dig into implementation at the moment, just get a taste of a Jina application, you will get to know the details later.</p>
+<p>What was your solution, is it easier than Jina’s? I bet not. From the two examples above, one can at least conclude that Jina</p>
+<ul class="simple">
+<li><p>is easy to read and understand;</p></li>
+<li><p>is versatile on data modalities: it is capable of building both NLP and video service;</p></li>
+<li><p>has a straightforward design pattern for either a singleton service or a complex workflow;</p></li>
+<li><p>provides out of the box client-server architecture;</p></li>
+<li><p>is fast enough for realtime application;</p></li>
+<li><p>easily scales.</p></li>
+<li><p>self-contained, no context switching between different tech stacks.</p></li>
+</ul>
+</section>
+<section id="comparisons">
+<h2>Comparisons<a class="headerlink" href="#comparisons" title="Permalink to this heading">#</a></h2>
+<p>Jina is unique, but it doesn’t mean you can’t achieve certain task without Jina; you just take a detour but still can make it. In this section, let’s compare Jina with other frameworks and tech stacks that you may want to use for building a solution.</p>
+<section id="on-local-machine">
+<h3>On local machine<a class="headerlink" href="#on-local-machine" title="Permalink to this heading">#</a></h3>
+<p>When using Jina on a local machine, most of the functionalities are realized by DocArray. The comparison hence becomes DocArray vs. alternatives. You can find the comparison <a class="reference external" href="https://docarray.jina.ai/get-started/what-is/#comparing-to-alternatives">here</a>. In conclusion, there is no alternative that offers such expressive data structure for cross-modal and multimodal applications.</p>
+</section>
+<section id="as-a-singleton-or-monolith-service">
+<h3>As a singleton or monolith service<a class="headerlink" href="#as-a-singleton-or-monolith-service" title="Permalink to this heading">#</a></h3>
+<p>When a Jina Flow contains only one Executor, serving this Flow is basically serving a monolith or a singleton service. One may compare it to other web framework such as FastAPI, Tensorflow Serving and NVIDIA Triton Inference Server.</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Feature</p></th>
+<th class="head"><p>Jina</p></th>
+<th class="head"><p>FastAPI</p></th>
+<th class="head"><p>Tensorflow Serving</p></th>
+<th class="head"><p>Nvidia Triton</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Latency</p></td>
+<td><p>Low</p></td>
+<td><p>Moderate</p></td>
+<td><p>Low</p></td>
+<td><p>Low</p></td>
+</tr>
+<tr class="row-odd"><td><p>Easy-to-use</p></td>
+<td><p>Easy</p></td>
+<td><p>Easy</p></td>
+<td><p>Moderate</p></td>
+<td><p>Moderate</p></td>
+</tr>
+<tr class="row-even"><td><p>Supported deep learning frameworks</p></td>
+<td><p>Any</p></td>
+<td><p>Any</p></td>
+<td><p>TensorFlow</p></td>
+<td><p>TensorFlow, PyTorch, MXNet, ONNX</p></td>
+</tr>
+<tr class="row-odd"><td><p>Supported devices</p></td>
+<td><p>CPU, GPU</p></td>
+<td><p>CPU</p></td>
+<td><p>CPU, GPU, TPU</p></td>
+<td><p>CPU, GPU</p></td>
+</tr>
+<tr class="row-even"><td><p>Web protocol</p></td>
+<td><p>gRPC, HTTP, Websocket, GraphQL</p></td>
+<td><p>HTTP, Websocket</p></td>
+<td><p>gRPC</p></td>
+<td><p>gRPC</p></td>
+</tr>
+<tr class="row-odd"><td><p>Prometheus support</p></td>
+<td><p>Yes</p></td>
+<td><p>No</p></td>
+<td><p>No</p></td>
+<td><p>Yes</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="as-a-workflow-on-the-cloud">
+<h3>As a workflow on the cloud<a class="headerlink" href="#as-a-workflow-on-the-cloud" title="Permalink to this heading">#</a></h3>
+<p>When using Jina on cloud, it makes sense to compare Jina with other MLOps platforms. Note that MLOps is an especially confusing landscape with hundreds of tools available. Platforms have their own specializations and there is no clear line between a tool (with a narrow focus) and a platform (which supports many ML lifecycle activities). Even platforms that have a similar scope have different concepts and strategies, making them hard to compare directly.</p>
+<section id="based-on-guide-to-evaluating-mlops-platforms">
+<h4>Based on “Guide to Evaluating MLOps Platforms”<a class="headerlink" href="#based-on-guide-to-evaluating-mlops-platforms" title="Permalink to this heading">#</a></h4>
+<p>The figures below illustrate how platforms specialize in particular areas (bottom) and others aim to cover the whole lifecycle with equal focus (top). The original figures are from <a class="reference external" href="https://www.thoughtworks.com/what-we-do/data-and-ai/cd4ml/guide-to-evaluating-mlops-platforms">the Thoughtworks Guide to MLOps Platforms</a>. We add Jina as a new entry to it.</p>
+<figure class="align-default">
+<img alt="../../_images/jina-landscape-1.svg" src="../../_images/jina-landscape-1.svg" /></figure>
+</section>
+<section id="based-on-mlops-platforms">
+<h4>Based on “MLOps Platforms”<a class="headerlink" href="#based-on-mlops-platforms" title="Permalink to this heading">#</a></h4>
+<p>Below we adopt the methodology from <a class="reference external" href="https://github.com/thoughtworks/mlops-platforms">MLOps Platforms</a> and add Jina as an entry. The chart and tabular data are credited to MLOps Platforms.</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p></p></th>
+<th class="head"><p>Product Focus</p></th>
+<th class="head"><p>Pricing - OSS, per-model etc.</p></th>
+<th class="head"><p>Data Preparation - Exploration, cleaning, feature engineering</p></th>
+<th class="head"><p>Model Training - Managed training. Or AutoML.</p></th>
+<th class="head"><p>Model Deployment - Batch, real-time, streaming</p></th>
+<th class="head"><p>Scaling Predictions - Parallelisation, low-latency/grpc, A/B tests, multi-model</p></th>
+<th class="head"><p>Model Performance and Basic Monitoring - Accuracy, metrics etc.</p></th>
+<th class="head"><p>Model Governance - model registry/catalogue</p></th>
+<th class="head"><p>Continuous Delivery - Auto-retraining, promotions, environments</p></th>
+<th class="head"><p>Collaboration Features - “workspaces”, permissions</p></th>
+<th class="head"><p>Self-install Support - Bare Metal/VMs/containers</p></th>
+<th class="head"><p>Cloud/SaaS Support - Self-managed, SaaS etc.</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Jina</p></td>
+<td><p>Build cross-modal and multimodal services on the cloud, ease the building of neural search and creative AI cloud-native services in production.</p></td>
+<td><p>Opensouce, free cloud hosting via JCloud, free finetuning via Finetuner.</p></td>
+<td><p>Reusable building blocks for preprocessing, cleaning, feature engineering are “Executors” in Jina’s terminology. They are contributed by Jina AI and the community via Jina Hub</p></td>
+<td><p>Model finetuning is managed by Finetuner, and freely available to Jina users.</p></td>
+<td><p>Deployment as optimized REST/gRPC/Websockets/GraphQL services. Can be deployed via JCloud, Kubernetes, DockerSwarm. Support real-time and stream processing.</p></td>
+<td><p>Async data flow all the way. autoscaled, serveless executor on JCloud</p></td>
+<td><p>Monitoring for latency and resource built-in. Integrated Prometheus, and dashboard for Grafana which can be customized to monitor model performance.</p></td>
+<td><p>Jina Hub provides a marketplace for share, explore, and try models, executors. They can be directly used as a microservice in any Flow, without download or pulling.</p></td>
+<td><p>Connect to CI/CD tool (e.g. Github) to automate Executor and Flow release via jina-hubble-sdk and jcloud</p></td>
+<td><p>Basic private &amp; public permission on data, Executor and Flow. “public” means everybody can view/check/use/listing for all 3 concepts “private” means only user itself can view/check/use/listing for all 3 concepts. Will introduce more access levels in the near future</p></td>
+<td><p>Can be run locally, self-hosted, and via JCloud. Flow can be deployed on any K8s, Docker swarm cluster.</p></td>
+<td><p>Managed via JCloud or self-managed on own infrastructure or any cloud provider.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Dataiku DSS</p></td>
+<td><p>Data exploration, model building and excel-style interaction with big data. Visual or code-based pipelines for building and deploying models.</p></td>
+<td><p>Enterprise. Not stated.</p></td>
+<td><p>Lots of data sources, application of schemas, highlighting and fixing of outliers and missing values, interactive stats, built-in filtering and transformations and sampling. Assisted labelling plugin.</p></td>
+<td><p>Flows/Pipelines for training/retraining. Lab for assisted building of models/AutoML. Models can also be custom or Spark.</p></td>
+<td><p>Real-time deploy to API Node. Batch Prediction via Flows. Support for Spark and Spark Streaming.</p></td>
+<td><p>Model versioning, rollbacks and traffic splitting. HA and loadbalancing. Export for prediction in other runtines or offline, inc onnx export.</p></td>
+<td><p>Real-time scoring. Metrics.</p></td>
+<td><p>Models built in flow saved as versions. Active and inactive versions and concept of rollbacks.</p></td>
+<td><p>CI/CD pipelines</p></td>
+<td><p>Projects with permissions. Also history and rollbacks. Configurable user isolation across integrations.</p></td>
+<td><p>Linux or AWS</p></td>
+<td><p>Dataiku Online is a new offering</p></td>
+</tr>
+<tr class="row-even"><td><p>H2O</p></td>
+<td><p>Platform with a core Java compute engine. Lots of integrations and add-ons, includuing AutoML.</p></td>
+<td><p>Enterprise. Not stated. Open source core platform.</p></td>
+<td><p>h2o-3 supports range of input formats and manipulations. Driverless AI supports even more inputs, has visualization and also automatic and tailored feature engineering.</p></td>
+<td><p>Training features in Driverless AI are AutoML. Training features in h2o-3 are for pre-defined algorithms.</p></td>
+<td><p>Predictions can be made in h2o-3 and it can integrate to Spark. Models can be deployed within Driverless. But centerpiece deployment tool in the suite is MLOps for its features and integrations.</p></td>
+<td><p>In MLOps there’s champion/challenger and A/B traffic splitting. Different run-time options for latency optimization. Export to other runtimes inc Java and C++.</p></td>
+<td><p>Latency, alerts, custom metrics.</p></td>
+<td><p>AppStore is like a catalog of apps built from models and has permissions. Integration at project level between model building and hybrid cloud appstore is like registry - called Shared Model Repository.</p></td>
+<td><p>Automatic retraining for driverless AI models. Dev-test-prod envs</p></td>
+<td><p>Projects and sharing in MLOps. Maps to other hybrid cloud products.</p></td>
+<td><p>k8s for MLOps. h2o-3 part of stack can be run locally</p></td>
+<td><p>only for trials</p></td>
+</tr>
+<tr class="row-odd"><td><p>Databricks</p></td>
+<td><p>Spark and mlflow as open source offerings. SaaS platform with added features and DeltaLake as enterprise. ‘Customer-managed’ SaaS option on AWS, Azure or Google.</p></td>
+<td><p>Open Core. Platform can be pay-per-use (DBUs)</p></td>
+<td><p>Notebooks. Spark. Cloud provider integrations. Feature store. Data Catalog.</p></td>
+<td><p>Mlflow, Spark MLLib and AutoML. Distributed training including using GPUs. AutoML.</p></td>
+<td><p>MLFlow serving for real-time. Spark for batch or streaming.</p></td>
+<td><p>Versions and stages for models with MLFlow. Relatively new feature and in preview. For traffic splitting and inference pipelines there are integrations</p></td>
+<td><p>Logs and resource monitoring built-in.</p></td>
+<td><p>mlflow model registry with permissions and deployment history</p></td>
+<td><p>CICD templates, stages</p></td>
+<td><p>for notebooks, models and spark</p></td>
+<td><p>Typical installation is on your cloud account via integration with cloud providers. Allows for levels of control over cloud infra. Open source parts of the platform (e.g. spark, mlflow) can be installed by the user but that’s a subset.</p></td>
+<td><p>Option for ‘customer-managed’ SaaS as well as SaaS options on AWS, Azure or Google.</p></td>
+</tr>
+<tr class="row-even"><td><p>AWS SageMaker</p></td>
+<td><p>MLOps platform on AWS</p></td>
+<td><p>metered</p></td>
+<td><p>Ground truth for labelling, wrangler for feature engineering and feature store, studio IDE, notebooks</p></td>
+<td><p>Pipelines brings together different training options. Lots of support for different languages and distributed vs not distributed. Spot instance option interesting. Pipelines for SageMaker have less prominence in docs than Pipelines for Vertex - less emphasis on orchestration.</p></td>
+<td><p>Deployment with pre-built or custom containers. Inference pipelines supported. Unified batch and real-time.</p></td>
+<td><p>Autoscaling. Multi-model. GPU inference and elastic inference for low-latency. Async for large payloads. Traffic splitting.</p></td>
+<td><p>Invocation metrics to CloudWatch. Payload capture/logging. Custom monitoring schedules to check constraints.</p></td>
+<td><p>Model registry with versions, groups and associations to training metadata. Can enable cross-account deployment.</p></td>
+<td><p>Payload capture/logging. Templates for CI/CD.</p></td>
+<td><p>Has projects idea - has to be configured as is not used by default. Has templates for using with git and CI/CD.</p></td>
+<td><p>Can train models in k8s with kubeflow. Could do this with other tools too but AWS are trying to support it. Only training though.</p></td>
+<td><p>SaaS</p></td>
+</tr>
+<tr class="row-odd"><td><p>Azure Machine Learning</p></td>
+<td><p>MLOps platform on Azure</p></td>
+<td><p>metered</p></td>
+<td><p>Data labelling service. Ingestion pipelines. Azure Synapse for prep/wrangling.</p></td>
+<td><p>Container-based training in an Environment or can use a training Pipeline for distributed. Visual editor for assisted pipeline creation or there’s also full AutoML.</p></td>
+<td><p>Deployment with pre-built or custom containers as managed endpoints. Real-time or batch.</p></td>
+<td><p>GPUs and traffic splitting available.</p></td>
+<td><p>Monitoring for latency and hardware resource built-in.</p></td>
+<td><p>Per-workspace registry and shareable across workspaces.</p></td>
+<td><p>Pipeline, CI and git integration. Payload logging to blob.</p></td>
+<td><p>Workspaces with permissions and security.</p></td>
+<td><p></p></td>
+<td><p>SaaS</p></td>
+</tr>
+<tr class="row-even"><td><p>Google AI Platform (Vertex)</p></td>
+<td><p>Vertex AI Platform on Google</p></td>
+<td><p>metered</p></td>
+<td><p>Vertex feature store, data labelling service, managed/unmanaged datasets, BigQuery, notebooks.</p></td>
+<td><p>Integrated metadata for pipelines. Distributed training for custom training jobs where frameworks supports. GPU-based training for custom training. AutoML fits alongside.</p></td>
+<td><p>Deployment with pre-built or custom containers. AutoML similar but easier. Batch support.</p></td>
+<td><p>Traffic splits available. Private endpoints for low-latency.</p></td>
+<td><p>Built-in monitoring of latency etc.</p></td>
+<td><p>Not an explicit concept of registry in docs but there is a models page in a vertex project, which is like a registry.</p></td>
+<td><p>Prediction logging and continuous evaluation possible but not yet well integrated under Vertex. Pipeline is a bit like CI</p></td>
+<td><p>Uses concept of projects and assigning permissions</p></td>
+<td><p></p></td>
+<td><p>SaaS</p></td>
+</tr>
+<tr class="row-odd"><td><p>Kubeflow</p></td>
+<td><p>Open source MLOps for kubernetes</p></td>
+<td><p>Open source. There are also tailored distros and fully managed in google vertex and from Arrikto</p></td>
+<td><p>Jupyter notebooks</p></td>
+<td><p>Pipelines as orchestrator and training platform. Training operators for specific frameworks. Katib for hyperparameter tuning (AutoML).</p></td>
+<td><p>KFServing as core component with Seldon and other integrations. KFServing has batching integration and a streaming example. Preprocess and postprocess inference steps available.</p></td>
+<td><p>KFServing has autoscaling through knative, traffic splitting, multi-model serving and GPU integration.</p></td>
+<td><p>Resource and high-level request metrics integration. Can be added to UI.</p></td>
+<td><p>No native model registry. Can log model details (artifacts) with metadata. Listing of running models available.</p></td>
+<td><p>Kubeflow Pipelines for workflow orchestration - needs to be invoked from CI. Als flexible request logging via kfserving or seldon.</p></td>
+<td><p>Namespaces and sharing permissions between namespaces</p></td>
+<td><p>Self-install on kubernetes is the default route, with some per-provider distribution customization.</p></td>
+<td><p>Google Vertex has managed kubeflow pipelines but that is not the same as a managed kubeflow. There are distributions which hook into some managed platform features.</p></td>
+</tr>
+<tr class="row-even"><td><p>Mlflow</p></td>
+<td><p>Open source flexible approach to MLops</p></td>
+<td><p>Open source. Also available integrated into the databricks managed service.</p></td>
+<td><p>Projects and entry points provide a way to package data operations.</p></td>
+<td><p>MLflow does tracking during the training process. Provides structure with projects and entry points and multi-step workflows. Can execute locally or on a hosted backend e.g. kubernetes. Provides tools that put structure around training rather than hosted platform like many others do.</p></td>
+<td><p>MLflow Models provides structure for packaging and deploying models. Local basic serving is out of the box. Built-in and extensible integrations for specialist hosting with plugins available. Can do batch straight from projects without serving step. Batch or streaming also possible with spark integration.</p></td>
+<td><p>Depends on the chosen deployment option. The functionality of <code class="docutils literal notranslate"><span class="pre">mlflow</span> <span class="pre">serve</span></code> is basic but mlflow is designed for integrations with more features such as sagemaker</p></td>
+<td><p>Depends on the chosen deployment option as it is the deployment which is monitored. There are integrations but the deployment itself is outside of mlflow open source.</p></td>
+<td><p>Model registry which provides model lineage, versioning, stage transtions and annotations.</p></td>
+<td><p>mlflow projects can be git repos so can hook CI into git to call an entry point. Promotions can be recorded in registry</p></td>
+<td><p>Mlflow projects can be git repos so there’s separaton and collaboration there. At server level there’s not a concept of permissions in the open source</p></td>
+<td><p>Can run on local machine or install server to run hosted</p></td>
+<td><p>Managed version from databricks</p></td>
+</tr>
+<tr class="row-odd"><td><p>KNIME</p></td>
+<td><p>Open core low-code visual Data Science and Data Analytics platform with MLOps capabilities.</p></td>
+<td><p>KNIME Analytics Platform is free and open source. KNIME Server requires an annual license.</p></td>
+<td><p>Inspection of tabular data and generation of plots within Analytics Platform workbench. Various data manipulation nodes available.</p></td>
+<td><p>Workflows can be used to manipulate data and train models. These can be scheduled to run on KNIME Server to leverage elastic infra.</p></td>
+<td><p>Captured subsets of workflows, which can contain models, can be deployed to KNIME Server. Can be for REST calls or as scheduled jobs. Some nodes support streaming. Workflows containing javascript-enabled interactive nodes can also be deployed with KNIME Server’s Web Portal.</p></td>
+<td><p>Challenger rollout modes like A/B testing using Model Process Factory templates. Validation can be performed on model during deployment to KNIME Server.</p></td>
+<td><p>Model monitoring component for classfication or can be done more generally using Model Process Factory. For scheduled jobs there’s notifications. Status of running workflows can be inspected in the admin UI.</p></td>
+<td><p>Versioning and comparison of workflows. Workflows are the key unit rather than models in KNIME, though models can be exported to PMML if you want to deal with them outside KNIME.</p></td>
+<td><p>Triggered retraining for classifiers with model monitoring component. KNIME server has a REST API so deployments can be invoked from CI.</p></td>
+<td><p>Workflows can be parts of workflow groups. Permissions on workflows and groups with owners and delegation.</p></td>
+<td><p>Server can run on cloud or on-prem. Analytics Platform is a desktop app.</p></td>
+<td><p>Marketplace versions available of Server for Azure and AWS.</p></td>
+</tr>
+<tr class="row-even"><td><p>DataRobot</p></td>
+<td><p>End-to-end Data Science and MLOps Platform. Model building for Data Scientists and Citizen Data Scientists (AutoML). MLOps for deploying and monitoring models.</p></td>
+<td><p>Enterprise. Three-year licence with metered pricing plans.</p></td>
+<td><p>Many data sources such as jdbc databases, databricks and salesforce. Spark SQL support. Visual wrangling operations. Automated transformation flows.</p></td>
+<td><p>AutoML for building models with feature detection/exploration and customizable model search. Monitoring for model building jobs. Leaderboard for choosing a model from the AutoML search. Training dashboard for insights into the model training process.</p></td>
+<td><p>Real-time and batch prediction options, including high volume batch. Post-processing of prediction data.</p></td>
+<td><p>Challenger rollouts and monitoring to compare the challenger in detail. Can take stored predictions that went to the main model and replay against the challenger.</p></td>
+<td><p>Accuracy and availability monitoring for individual models and as a summary. Specialist monitoring for time series.</p></td>
+<td><p>Deployment actions restricted by role. Deployment approvals. Deployment notifications and reports. Model registry with generation of compliance docs.</p></td>
+<td><p>Automated retraining. Write-back integrations to log predictions and responses to Snowflake, Tableau and BigQuery as well as native storage.</p></td>
+<td><p>Deployment permissions. Platform-wide roles and RBAC. Projects for building models.</p></td>
+<td><p>Can be installed on-prem as a supported option</p></td>
+<td><p>Installation on preferred cloud platform or as managed service.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Pachyderm</p></td>
+<td><p>Data Foundation for Machine Learning. Pipelines with automated data versioning, lineage and monitoring.</p></td>
+<td><p>Enterprise Edition is self-deploy and Hub is a managed service. Contact pachyderm for pricing of these. Community Edition is open source and free.</p></td>
+<td><p>Notebook integration for exploration. Main focus is pipelines and lineage rather than exploration. Data transformation within pipelines is recorded and monitored. Could be used with any exploration or wrangling tool. Integration examples available for data labeling and experimentation.</p></td>
+<td><p>Data Versioning and Lineage for Pipelines which automates reproducibility for data transformation and model training. Console adds visibility/monitoring. Approach is agnostic to choices of code libraries. Especially well suited to large volumes of unstructured data as well as structured data.</p></td>
+<td><p>Can be used with deployment tools to track data at the prediction stage as well as training. Integration examples are available. Can also serve a model API directly using Service concept.</p></td>
+<td><p>Can be used with deployment tools to track data at the prediction stage as well as training. Integration examples are available. Can also serve a model API directly using Service concept.</p></td>
+<td><p>Can be used with deployment/monitoring tools to track data at the prediction stage as well as training. Integration examples are available.</p></td>
+<td><p>Trained models and their artifacts can be versioned in Pachyderm and hosted with Pachyderm’s S3 gateway to be integrated with deployment systems</p></td>
+<td><p>CI integration, which can be setup to retrain. An end-to-end CD example is provided. Spout for streaming data.</p></td>
+<td><p>Access controls with identity provider integration. Console to facilitate collaboration on DAGs/pipelines and for debugging. Notebooks for collaboration on pipeline creation. Contexts for switching between clusters.</p></td>
+<td><p>Pachyderm Enterprise and Community editions both provide a self deployed option for local or kubernetes</p></td>
+<td><p>Pachyderm Hub provides a managed Cloud version</p></td>
+</tr>
+<tr class="row-even"><td><p>Seldon</p></td>
+<td><p>With an open source core and other popular open source libraries, Seldon focuses on model management, deployment, monitoring and explainability.</p></td>
+<td><p>Open source core + libraries. Enterprise platform priced per model.</p></td>
+<td><p>Works well in tandem with data preparation/versioning tools</p></td>
+<td><p>Agnostic about model training and frameworks used. Integrations with MLFlow, Kubeflow, Pachyderm etc.</p></td>
+<td><p>Deployment as optimised REST/gRPC microservices. Can be deployed using pre-packaged inference servers or using custom python components. Support for real-time inference, batch predictions and stream processing.</p></td>
+<td><p>Autoscaling, multi-model inference graphs, A/B tests and progressive rollouts.</p></td>
+<td><p>Collects metrics by default on your deployed models. Custom metrics can also be defined and there is support for distributed tracing and payload logging</p></td>
+<td><p>Seldon supports a variety of model stores with integration in to cloud stoarge providers. The enterprise offering comes with a model catalog together with supporting metadata.</p></td>
+<td><p>Enterprise offering includes gitops capability, allowing model deployments to be automated, versioned and reproduced. Also examples for upgrades and rollbacks, intelligent rollouts with iter8 and alerts based on monitoring</p></td>
+<td><p>Seldon Core uses Kubernetes namespaces for separation of workspaces. Seldon Deploy also comes with project based authorisation</p></td>
+<td><p>Self-install on Kubernetes with installers provided for enterprise offerings</p></td>
+<td><p>Self-managed on own infrastructure or any cloud provider.</p></td>
+</tr>
+<tr class="row-odd"><td><p>PrimeHub</p></td>
+<td><p>End-to-end ML orchestration platform for Kubernetes. Focuses on model management/deployment with cutomizable notebook environment, 3rd-party app integration and admistrative features.</p></td>
+<td><p>Community Edition (OSS) and Enterprise Edition priced per nodes/deployments; License Comparison.</p></td>
+<td><p>Notebook, group shared-files, multi-dataset management, and Label Studio (Integrated by PHApps). End-to-end tutorial to show this.</p></td>
+<td><p>PrimeHub SDK (guide), job scheduling, model management integrated with MLflow.</p></td>
+<td><p>Via Deployments, models can be deployed with pre-built/custom pre-packaged servers as services over Kubernetes with the specified resources and access-control. Streamlit(integrated by PHapps) to create interactive web apps.</p></td>
+<td><p>Deploy different versions of a models in parallel for the purpose of A/B testing. Deploy models with multiple replicas for scaling predictions.</p></td>
+<td><p>Integrated Prometheus, and dashboard for Grafana to monitor model metrics. Integration with MLflow to track training metrics.</p></td>
+<td><p>Through MLflow integration, experiments/models can be tracked and versioned with access-scope per group. Deployments are also restricted by their own private/public access.</p></td>
+<td><p>Schedules can be used to deploy and upgrade model versions.</p></td>
+<td><p>Groups can collaborate and share data, notebook files, artifacts and models through their own User Portal.</p></td>
+<td><p>Self-install on Kubernetes: Both Community Edition (single-/multi-node)and Enterprise Edition (single-/multi-node) with Trial License available.</p></td>
+<td><p>Self-managed on own private Kubernetes, Google GKE, or Amazon AWS</p></td>
+</tr>
+<tr class="row-even"><td><p>Prevision.io</p></td>
+<td><p>AI management capabilities for production data science.</p></td>
+<td><p>Pay-as-you-go</p></td>
+<td><p>Connectors to data systems. Dataset exploration module and automated features engineering. Notebooks integration.</p></td>
+<td><p>AutoML.Experiment tracking capabilities (versioning, external model import). Pipelines to automate model creation or more complex tasks.</p></td>
+<td><p>Models are deployed on a custom URL. Rest APIs allow the model to be requested in real-time. Pipeline for batch prediction.</p></td>
+<td><p>Autoscaling for deployed models with champion/challenger rollouts.</p></td>
+<td><p>Monitoring for deployed models in the default UI, including predictions, inputs, CPU, response time and memory.</p></td>
+<td><p>Deployed models are listed and versioned. Depending on permission level, they can be added to a marketplace.</p></td>
+<td><p>Pipelines (scheduled or triggered) &amp; git integration for automated retraining.</p></td>
+<td><p>Projects with permissions. Deployments with permissions.</p></td>
+<td><p></p></td>
+<td><p>SaaS</p></td>
+</tr>
+<tr class="row-odd"><td><p>Iguazio</p></td>
+<td><p>MLOps platfom with a built-in feature store running on AWS, Azure, GCP &amp; on-prem</p></td>
+<td><p>OSS &amp; Enterprise</p></td>
+<td><p>Feature engineering with an online feature store, support for various data types (structured &amp; unstructured) and sources (including streaming), built-in Jupyter service &amp; support for 3rd party IDEs (eg. Pycharm)</p></td>
+<td><p>Pipelines for training. Option to leverage 3rd party training platfoms such as SageMaker &amp; Azure ML or run training in Iguazio using Kubeflow pipelines.</p></td>
+<td><p>Deployment/serving supporting batch &amp; real time using Nuclio serverless functions.</p></td>
+<td><p>Built-in API gateway for rolling upgrades, scale with serverless nuclio-based functions running on Kubernetes</p></td>
+<td><p>Real-time monitoring for performance and operational statistics</p></td>
+<td><p>Built-in experiment tracking with model and artifact versioning including model management &amp; cataloging</p></td>
+<td><p>Integration with common CI/CD tools including Gitlab, Jenkins, Github</p></td>
+<td><p>Users work in the context of a project with workspaces and permissions. They can share and collaborate on features, models, artifacts etc. per project. Built-in security layer with RBAC</p></td>
+<td><p>Self install on multi-cloud (AWS, Azure, GCP), on-prem or hybrid, including on-prem VMs</p></td>
+<td><p>Installation on preferred cloud platform or as managed service. Self service running on customer’s VPC</p></td>
+</tr>
+<tr class="row-even"><td><p>Neptune.ai</p></td>
+<td><p>Metadata store for MLOps, built for teams that run a lot of experiments. Neptune.ai logs, stores, organizes and displays metadata, so that you can query and compare on metadata generated during training and experimentation.</p></td>
+<td><p>Free individual and paid team/enterprise plans available.</p></td>
+<td><p>Data versioning and artifacts (possibility to log and query metadata at a project level, including dataset and model versions, text notes, images, notebook files, and anything else that can be logged to a single Run). Integrated with Jupyter Notebook and Deepnote.</p></td>
+<td><p>Tracking model training (data, code, parameters, and model binary versioned for every model training run). Ability to re-run a training job. Integrated with PyTorch, PyTorch Lightning, TensorFlow/ Keras and more.</p></td>
+<td><p>All model artifacts are stored in a central model registry. Guide provided for integration with CI/CD pipelines.</p></td>
+<td><p>N/A</p></td>
+<td><p>Training can be monitored as it happens. Neptune is for monitoring training and experimentation and recording metadata for later reference. It is not a production monitoring/observability tool and can be used alongside one.</p></td>
+<td><p>Neptune.ai can be used as a model registry (all model-building metadata can be logged, queried and downloaded).</p></td>
+<td><p>Integrates with CI/CD pipelines. Can be used with GitHub Actions and Docker.</p></td>
+<td><p>User groups and ACL (only for Teams and Enterprise customers), users can share UI links with project members/external people as well as add notes and comments.</p></td>
+<td><p>Can be deployed on-prem (installation manual provided).</p></td>
+<td><p>Managed cloud service (SaaS)</p></td>
+</tr>
+<tr class="row-odd"><td><p>Verta</p></td>
+<td><p>Platform for model management &amp; operations including experiment tracking, production registry, deployment, and monitoring.</p></td>
+<td><p>Enterprise pricing delivered as SaaS, on-prem, or VPC.</p></td>
+<td><p>Works with data preparation, exploration, cleaning, and featuring engineering tools</p></td>
+<td><p>Works with model training tools</p></td>
+<td><p>Verta Deployment - Serve inference in batch, real-time and streaming (kafka). Verta Model Registry - package and deploy to external ecosystem (e.g. Spark)</p></td>
+<td><p>Manage model release versions and stages. Supports autoscaling, HA, canary rollouts</p></td>
+<td><p>Operation metrics available in the system &amp; exported to other systems. Ingest GT and monitor model performance metrics. Supports creation of custom metrics</p></td>
+<td><p>Package &amp; publish release ready models in Verta Model Registry. Transition model stages with approval workflows &amp; activity logs. Capture model metadata, ensure model immutabilty and add CI/CD automation</p></td>
+<td><p>Connect to CI/CD tool (e.g. Jenkins) to automate model release. Approval workflows and stage/environment promotion</p></td>
+<td><p>Support for workspaces, granual user permissions, admin controls and collaborators. RBAC, user management, SSO support with variety of identity providers.</p></td>
+<td><p>Self-install of ModelDB on kubernetes</p></td>
+<td><p>SaaS, on-prem, and VPC</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
+</section>
+<section id="conclusion">
+<h2>Conclusion<a class="headerlink" href="#conclusion" title="Permalink to this heading">#</a></h2>
+<p>Deep learning applications are quite diverse, and one may consider Jina as MLOps framework for neural search and creative AI. Having one MLOps platform that can deal with all of these different settings and requirements is quite difficult.  Most MLOps products promise everything but actually pick a specific subset of these possibilities. It might not even be a good idea to build a platform that works for everything. Jina focuses on cross-modal and multimodal applications, optimizes for their system designs and requirements, and provides an end-to-end development experience that can be used to build in production applications.</p>
+</section>
+</section>
+
+                </article>
+            </div>
+            <footer>
+                
+                <div class="related-pages">
+                    <a class="next-page" href="../install/">
+                        <div class="page-info">
+                            <div class="context">
+                                <span>Next</span>
+                            </div>
+                            <div class="title">Install</div>
+                        </div>
+                        <svg>
+                            <use href="#svg-arrow-right"></use>
+                        </svg>
+                    </a>
+                    <a class="prev-page" href="../what-is-jina/">
+                        <svg>
+                            <use href="#svg-arrow-right"></use>
+                        </svg>
+                        <div class="page-info">
+                            <div class="context">
+                                <span>Previous</span>
+                            </div>
+                            
+                            <div class="title">What is Jina?</div>
+                            
+                        </div>
+                    </a>
+                </div>
+                <div class="bottom-of-page">
+                    <div class="left-details">
+                        <div class="copyright">
+                            Copyright &#169; Jina AI Limited. All rights reserved.
+                        </div><div class="last-updated">
+                            Last updated on Dec 15, 2022</div>
+                    </div>
+                    <div class="right-details">
+                        <div class="social-btns">
+                            <a class='social-btn' href="https://github.com/jina-ai/jina" aria-label="GitHub"
+                               target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
+                            <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank"
+                               rel="noreferrer"> <i class="fab fa-slack"></i></a>
+                            <a class='social-btn' href="https://youtube.com/c/jina-ai" aria-label="YouTube"
+                               target="_blank" rel="noreferrer"> <i class="fab fa-youtube"></i></a>
+                            <a class='social-btn' href="https://twitter.com/JinaAI_" aria-label="Twitter"
+                               target="_blank" rel="noreferrer"> <i class="fab fa-twitter"></i></a>
+                            <a class='social-btn' href="https://www.linkedin.com/company/jinaai/" aria-label="LinkedIn"
+                               target="_blank" rel="noreferrer"> <i class="fab fa-linkedin"></i></a>
+                        </div>
+                    </div>
+                </div>
+                
+            </footer>
+        </div>
+        <aside class="toc-drawer">
+            
+            
+            <div class="toc-sticky toc-scroll">
+                <div class="toc-title-container">
+          <span class="toc-title">
+            Contents
+          </span>
+                </div>
+                <div class="toc-tree-container">
+                    <div class="toc-tree">
+                        <ul>
+<li><a class="reference internal" href="#">Comparing to Alternatives</a><ul>
+<li><a class="reference internal" href="#multi-user-video-streaming">Multi-user video streaming</a></li>
+<li><a class="reference internal" href="#index-and-query-with-sharding">Index and query with sharding</a></li>
+<li><a class="reference internal" href="#comparisons">Comparisons</a><ul>
+<li><a class="reference internal" href="#on-local-machine">On local machine</a></li>
+<li><a class="reference internal" href="#as-a-singleton-or-monolith-service">As a singleton or monolith service</a></li>
+<li><a class="reference internal" href="#as-a-workflow-on-the-cloud">As a workflow on the cloud</a><ul>
+<li><a class="reference internal" href="#based-on-guide-to-evaluating-mlops-platforms">Based on “Guide to Evaluating MLOps Platforms”</a></li>
+<li><a class="reference internal" href="#based-on-mlops-platforms">Based on “MLOps Platforms”</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#conclusion">Conclusion</a></li>
+</ul>
+</li>
+</ul>
+
+                    </div>
+                </div>
+            </div>
+            
+            
+        </aside>
+    </div>
+    <qa-bot
+            title="Jina Bot"
+            description="Build cross-modal and multi-modal applications on the cloud"
+    >
+        <template>
+            <dl>
+                <dt>You can ask questions about our docs. Try:</dt>
+                <dd>Does Jina support Kubernetes?</dd>
+                <dd>What are the basic concepts in Jina?</dd>
+                <dd>How to share my Executor?</dd>
+            </dl>
+        </template>
+    </qa-bot>
+</div>
+<img referrerpolicy="no-referrer-when-downgrade"
+     src="https://static.scarf.sh/a.png?x-pxid=2823e771-0e1e-4320-8fde-48bc48e53262"/><script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/scripts/furo.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script src="../../_static/tabs.js"></script>
+    <script src="../../_static/design-tabs.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() { 
+            document.querySelector('qa-bot').setAttribute('server', 'https://jina-ai-jina.docsqa.jina.ai');
+        });
+        </script>
+    <script src="https://cdn.jsdelivr.net/npm/qabot@0.4"></script>
+    </body>
+</html>

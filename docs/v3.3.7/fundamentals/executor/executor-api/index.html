@@ -32,10 +32,10 @@
 <link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" /><link rel="next" title="Executors inside a Flow" href="../executor-in-flow/" /><link rel="prev" title="Executor" href="../" />
         <link rel="canonical" href="https://docs.jina.ai/fundamentals/executor/executor-api.html" />
 
-    <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.09.29"/>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
         <title>Executor API - Jina 3.3.7 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/tabs.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
@@ -238,7 +238,7 @@
     <option value="/">latest</option>
   </select>
 </div><form class="sidebar-search-container" method="get" action="../../../search/" role="search">
-  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form>
@@ -601,7 +601,7 @@
                     </label>
                 </div>
                 <section class="tex2jax_ignore mathjax_ignore" id="executor-api">
-<span id="executor"></span><h1>Executor API<a class="headerlink" href="#executor-api" title="Permalink to this headline">#</a></h1>
+<span id="executor"></span><h1>Executor API<a class="headerlink" href="#executor-api" title="Permalink to this heading">#</a></h1>
 <p><a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a> is a self-contained component and performs a group of tasks on a <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code>.
 It encapsulates functions that process <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code>s. Inside the Executor, these functions are decorated with <code class="docutils literal notranslate"><span class="pre">&#64;requests</span></code>. To create an Executor, you only need to follow three principles:</p>
 <ol class="simple">
@@ -611,14 +611,14 @@ functions with arbitrary names.</p></li>
 <li><p>Functions decorated by <code class="docutils literal notranslate"><span class="pre">&#64;requests</span></code> will be invoked according to their <code class="docutils literal notranslate"><span class="pre">on=</span></code> endpoint. These functions can be coroutines (<code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">def</span></code>) or regular functions.</p></li>
 </ol>
 <section id="constructor">
-<h2>Constructor<a class="headerlink" href="#constructor" title="Permalink to this headline">#</a></h2>
+<h2>Constructor<a class="headerlink" href="#constructor" title="Permalink to this heading">#</a></h2>
 <section id="subclass">
-<h3>Subclass<a class="headerlink" href="#subclass" title="Permalink to this headline">#</a></h3>
+<h3>Subclass<a class="headerlink" href="#subclass" title="Permalink to this heading">#</a></h3>
 <p>Every new executor should be a subclass of <a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>.</p>
 <p>You can name your executor class freely.</p>
 </section>
 <section id="init">
-<h3><code class="docutils literal notranslate"><span class="pre">__init__</span></code><a class="headerlink" href="#init" title="Permalink to this headline">#</a></h3>
+<h3><code class="docutils literal notranslate"><span class="pre">__init__</span></code><a class="headerlink" href="#init" title="Permalink to this heading">#</a></h3>
 <p>No need to implement <code class="docutils literal notranslate"><span class="pre">__init__</span></code> if your <code class="docutils literal notranslate"><span class="pre">Executor</span></code> does not contain initial states.</p>
 <p>If your executor has <code class="docutils literal notranslate"><span class="pre">__init__</span></code>, it needs to carry <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> in the signature and call <code class="docutils literal notranslate"><span class="pre">super().__init__(**kwargs)</span></code>
 in the body:</p>
@@ -641,11 +641,11 @@ or modify their values before passing them to <code class="docutils literal notr
 </section>
 </section>
 <section id="methods">
-<span id="exec-endpoint"></span><h2>Methods<a class="headerlink" href="#methods" title="Permalink to this headline">#</a></h2>
+<span id="exec-endpoint"></span><h2>Methods<a class="headerlink" href="#methods" title="Permalink to this heading">#</a></h2>
 <p>Methods of <code class="docutils literal notranslate"><span class="pre">Executor</span></code> can be named and written freely.</p>
 <p>There are, however, special methods inside an <code class="docutils literal notranslate"><span class="pre">Executor</span></code>, which are decorated with <code class="docutils literal notranslate"><span class="pre">&#64;requests</span></code>. When used inside a Flow, these methods are mapped to network endpoints.</p>
 <section id="method-decorator">
-<span id="executor-requests"></span><h3>Method decorator<a class="headerlink" href="#method-decorator" title="Permalink to this headline">#</a></h3>
+<span id="executor-requests"></span><h3>Method decorator<a class="headerlink" href="#method-decorator" title="Permalink to this heading">#</a></h3>
 <p>Executor methods decorated with <code class="docutils literal notranslate"><span class="pre">&#64;requests</span></code> are bound to specific network requests, and respond to network queries.</p>
 <p>Both <code class="docutils literal notranslate"><span class="pre">def</span></code> or <code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">def</span></code> function can be decorated with <code class="docutils literal notranslate"><span class="pre">&#64;requests</span></code>.</p>
 <p>You can import the <code class="docutils literal notranslate"><span class="pre">requests</span></code> decorator via</p>
@@ -691,7 +691,7 @@ or modify their values before passing them to <code class="docutils literal notr
 </pre></div>
 </div>
 <section id="default-binding">
-<h4>Default binding<a class="headerlink" href="#default-binding" title="Permalink to this headline">#</a></h4>
+<h4>Default binding<a class="headerlink" href="#default-binding" title="Permalink to this heading">#</a></h4>
 <p>A class method decorated with plain <code class="docutils literal notranslate"><span class="pre">&#64;requests</span></code> (without <code class="docutils literal notranslate"><span class="pre">on=</span></code>) is the default handler for all endpoints.
 That means it is the fallback handler for endpoints that are not found. <code class="docutils literal notranslate"><span class="pre">f.post(on='/blah',</span> <span class="pre">...)</span></code> will invoke <code class="docutils literal notranslate"><span class="pre">MyExecutor.foo</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
@@ -711,13 +711,13 @@ That means it is the fallback handler for endpoints that are not found. <code cl
 </div>
 </section>
 <section id="no-binding">
-<h4>No binding<a class="headerlink" href="#no-binding" title="Permalink to this headline">#</a></h4>
+<h4>No binding<a class="headerlink" href="#no-binding" title="Permalink to this heading">#</a></h4>
 <p>A class with no <code class="docutils literal notranslate"><span class="pre">&#64;requests</span></code> binding plays no part in the Flow.
 The request will simply pass through without any processing.</p>
 </section>
 </section>
 <section id="method-arguments">
-<h3>Method arguments<a class="headerlink" href="#method-arguments" title="Permalink to this headline">#</a></h3>
+<h3>Method arguments<a class="headerlink" href="#method-arguments" title="Permalink to this heading">#</a></h3>
 <p>All Executor methods decorated by <code class="docutils literal notranslate"><span class="pre">&#64;requests</span></code> need to follow the signature below in order to be usable as a microservice inside a <code class="docutils literal notranslate"><span class="pre">Flow</span></code>.
 The <code class="docutils literal notranslate"><span class="pre">async</span></code> definition is optional.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">List</span>
@@ -767,7 +767,7 @@ As a user, you will rarely touch this parameter.</p></li>
 </div>
 </section>
 <section id="method-return">
-<h3>Method return<a class="headerlink" href="#method-return" title="Permalink to this headline">#</a></h3>
+<h3>Method return<a class="headerlink" href="#method-return" title="Permalink to this heading">#</a></h3>
 <p>Every Executor method can <code class="docutils literal notranslate"><span class="pre">return</span></code> in 3 ways:</p>
 <ul class="simple">
 <li><p>If you return a <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> object, then it will be sent over to the next Executor.</p></li>
@@ -776,7 +776,7 @@ As a user, you will rarely touch this parameter.</p></li>
 </ul>
 </section>
 <section id="example">
-<h3>Example<a class="headerlink" href="#example" title="Permalink to this headline">#</a></h3>
+<h3>Example<a class="headerlink" href="#example" title="Permalink to this heading">#</a></h3>
 <p>Let’s understand how <code class="docutils literal notranslate"><span class="pre">Executor</span></code>s process <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code>s inside a Flow, and how the changes are chained and applied, affecting downstream <code class="docutils literal notranslate"><span class="pre">Executors</span></code> in the Flow.</p>
 <details>
 <summary>Code and output</summary>
@@ -833,7 +833,7 @@ As a user, you will rarely touch this parameter.</p></li>
 </section>
 </section>
 <section id="running-executor-outside-the-flow">
-<h2>Running Executor outside the Flow<a class="headerlink" href="#running-executor-outside-the-flow" title="Permalink to this headline">#</a></h2>
+<h2>Running Executor outside the Flow<a class="headerlink" href="#running-executor-outside-the-flow" title="Permalink to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">Executor</span></code> objects can be used directly, just like any regular Python object.
 There are two ways of instantiating an Executor object: From a local Python class, and from the Jina Hub.</p>
 <div class="tab-set docutils">
@@ -880,7 +880,7 @@ There are two ways of instantiating an Executor object: From a local Python clas
 </div>
 </section>
 <section id="serve-executor-stand-alone">
-<span id="serve-executor-standalone"></span><h2>Serve Executor stand-alone<a class="headerlink" href="#serve-executor-stand-alone" title="Permalink to this headline">#</a></h2>
+<span id="serve-executor-standalone"></span><h2>Serve Executor stand-alone<a class="headerlink" href="#serve-executor-stand-alone" title="Permalink to this heading">#</a></h2>
 <p>Executors can be served - and remotely accessed - directly, without the need to instantiate a Flow manually.
 This is especially useful when debugging an Executor in a remote setting. It can also be used to run external/shared Executors to be used in multiple Flows.
 There are different options how you can deploy and run a stand-alone Executor:</p>
@@ -890,7 +890,7 @@ There are different options how you can deploy and run a stand-alone Executor:</
 <li><p>Run the static <code class="docutils literal notranslate"><span class="pre">Executor.to_docker_compose_yaml()</span></code> method to generate a docker-compose service file</p></li>
 </ul>
 <section id="serving-executors">
-<h3>Serving Executors<a class="headerlink" href="#serving-executors" title="Permalink to this headline">#</a></h3>
+<h3>Serving Executors<a class="headerlink" href="#serving-executors" title="Permalink to this heading">#</a></h3>
 <p>An Executor can be served using the <code class="docutils literal notranslate"><span class="pre">.serve()</span></code> class method:</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--1-input--1" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--1">Serve Executor</label><div class="tab-content docutils">
@@ -930,7 +930,7 @@ the Executor, and <code class="docutils literal notranslate"><span class="pre">*
 </div>
 </section>
 <section id="run-executors-in-kubernetes">
-<h3>Run Executors in Kubernetes<a class="headerlink" href="#run-executors-in-kubernetes" title="Permalink to this headline">#</a></h3>
+<h3>Run Executors in Kubernetes<a class="headerlink" href="#run-executors-in-kubernetes" title="Permalink to this heading">#</a></h3>
 <p>You can generate Kubernetes configuration files for your containerized Executor by using the static <code class="docutils literal notranslate"><span class="pre">Executor.to_k8s_yaml()</span></code> method. This works very similar to <a class="reference internal" href="../../../how-to/kubernetes/#kubernetes"><span class="std std-ref">deploying a Flow in Kubernetes</span></a>, because your Executor is wrapped automatically in a Flow and using the very same deployment techniques.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span>
 
@@ -951,7 +951,7 @@ the Executor, and <code class="docutils literal notranslate"><span class="pre">*
 <p>The Executor you are using needs to be already containerized and stored in a registry accessible from your Kubernetes cluster. We recommend Jina Hub for this.</p>
 </div>
 <section id="external-and-shared-executors">
-<span id="external-shared-executor"></span><h4>External and shared Executors<a class="headerlink" href="#external-and-shared-executors" title="Permalink to this headline">#</a></h4>
+<span id="external-shared-executor"></span><h4>External and shared Executors<a class="headerlink" href="#external-and-shared-executors" title="Permalink to this heading">#</a></h4>
 <p>The type of stand-alone Executors can be either <em>external</em> or <em>shared</em>. By default, it will be external.
 An external Executor is deployd alongside a <a class="reference internal" href="../../architecture-overview/#architecture-overview"><span class="std std-ref">Gateway</span></a>.
 A shared Executor has no Gateway. Both types of Executor <a class="reference internal" href="../../../how-to/external-executor/#external-executor"><span class="std std-ref">can be used directly in any Flow</span></a>.
@@ -959,7 +959,7 @@ Having a Gateway may be useful if you want to be able to access your Executor wi
 </section>
 </section>
 <section id="run-executors-with-docker-compose">
-<h3>Run Executors with Docker Compose<a class="headerlink" href="#run-executors-with-docker-compose" title="Permalink to this headline">#</a></h3>
+<h3>Run Executors with Docker Compose<a class="headerlink" href="#run-executors-with-docker-compose" title="Permalink to this heading">#</a></h3>
 <p>You can generate a Docker Compose service file for your containerized Executor by using the static <code class="docutils literal notranslate"><span class="pre">Executor.to_docker_compose_yaml()</span></code> method. This works very similar to <a class="reference internal" href="../../../how-to/docker-compose/#docker-compose"><span class="std std-ref">running a Flow with Docker Compose</span></a>, because your Executor is wrapped automatically in a Flow and using the very same deployment techniques.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span>
 
@@ -980,7 +980,7 @@ Having a Gateway may be useful if you want to be able to access your Executor wi
 </div>
 </section>
 <section id="use-async-executors">
-<h3>Use async Executors<a class="headerlink" href="#use-async-executors" title="Permalink to this headline">#</a></h3>
+<h3>Use async Executors<a class="headerlink" href="#use-async-executors" title="Permalink to this heading">#</a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span>
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
 
@@ -1005,7 +1005,7 @@ Having a Gateway may be useful if you want to be able to access your Executor wi
 </section>
 </section>
 <section id="see-further">
-<h2>See further<a class="headerlink" href="#see-further" title="Permalink to this headline">#</a></h2>
+<h2>See further<a class="headerlink" href="#see-further" title="Permalink to this heading">#</a></h2>
 <ul class="simple">
 <li><p><a class="reference internal" href="../executor-in-flow/#executor-in-flow"><span class="std std-ref">Executor in Flow</span></a></p></li>
 <li><p><a class="reference internal" href="../../../how-to/debug-executor/#debug-executor"><span class="std std-ref">Debugging an Executor</span></a></p></li>
@@ -1047,7 +1047,7 @@ Having a Gateway may be useful if you want to be able to access your Executor wi
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Nov 25, 2022.
+                    Last updated on Dec 15, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -1130,7 +1130,9 @@ Having a Gateway may be useful if you want to be able to access your Executor wi
 <img referrerpolicy="no-referrer-when-downgrade" src="https://static.scarf.sh/a.png?x-pxid=1b470c1d-3b55-4d38-baa8-989bfba2a218" /><script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
     <script src="../../../_static/scripts/furo.js"></script>
     <script src="../../../_static/clipboard.min.js"></script>
     <script src="../../../_static/copybutton.js"></script>

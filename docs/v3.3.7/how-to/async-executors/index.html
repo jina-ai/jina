@@ -32,10 +32,10 @@
 <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="How to scale out your Executor" href="../scale-out/" /><link rel="prev" title="Executor" href="../executor/" />
         <link rel="canonical" href="https://docs.jina.ai/how-to/async-executors.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.09.29"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
         <title>How to use async coroutines in Executors - Jina 3.3.7 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
@@ -238,7 +238,7 @@
     <option value="/">latest</option>
   </select>
 </div><form class="sidebar-search-container" method="get" action="../../search/" role="search">
-  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form>
@@ -601,7 +601,7 @@
                     </label>
                 </div>
                 <section class="tex2jax_ignore mathjax_ignore" id="how-to-use-async-coroutines-in-executors">
-<span id="async-executors"></span><h1>How to use async coroutines in Executors<a class="headerlink" href="#how-to-use-async-coroutines-in-executors" title="Permalink to this headline">#</a></h1>
+<span id="async-executors"></span><h1>How to use async coroutines in Executors<a class="headerlink" href="#how-to-use-async-coroutines-in-executors" title="Permalink to this heading">#</a></h1>
 <p>You can naturally call async coroutines within <code class="docutils literal notranslate"><span class="pre">Executor</span></code>’s, allowing you to leverage the power of asynchronous
 Python to write concurrent code.</p>
 <div class="hint admonition">
@@ -618,11 +618,11 @@ Python to write concurrent code.</p>
 </div>
 </div>
 <section id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">#</a></h2>
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">#</a></h2>
 <p>In this example we have a heavy lifting API for which we want to call several times, and we want to leverage the
 async Python features to speed up the <code class="docutils literal notranslate"><span class="pre">Executor</span></code>’s call by calling the API multiples times concurrently.</p>
 <section id="with-async">
-<h3>With async<a class="headerlink" href="#with-async" title="Permalink to this headline">#</a></h3>
+<h3>With async<a class="headerlink" href="#with-async" title="Permalink to this heading">#</a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span>
 
 <span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span>
@@ -657,7 +657,7 @@ async Python features to speed up the <code class="docutils literal notranslate"
 </div>
 </section>
 <section id="without-async">
-<h3>Without async<a class="headerlink" href="#without-async" title="Permalink to this headline">#</a></h3>
+<h3>Without async<a class="headerlink" href="#without-async" title="Permalink to this heading">#</a></h3>
 <p>Here is an example without using <code class="docutils literal notranslate"><span class="pre">coroutines</span></code>. All of the 50 API calls will be queued and nothing will be done
 concurrently.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">time</span>
@@ -694,7 +694,7 @@ concurrently.</p>
 </div>
 </section>
 <section id="conclusion">
-<h3>Conclusion<a class="headerlink" href="#conclusion" title="Permalink to this headline">#</a></h3>
+<h3>Conclusion<a class="headerlink" href="#conclusion" title="Permalink to this heading">#</a></h3>
 <p>The processing of the data is 50 faster when using <code class="docutils literal notranslate"><span class="pre">coroutines</span></code> because it happens concurrently.</p>
 </section>
 </section>
@@ -732,7 +732,7 @@ concurrently.</p>
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Nov 25, 2022.
+                    Last updated on Dec 15, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -793,7 +793,9 @@ concurrently.</p>
 <img referrerpolicy="no-referrer-when-downgrade" src="https://static.scarf.sh/a.png?x-pxid=1b470c1d-3b55-4d38-baa8-989bfba2a218" /><script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
     <script src="../../_static/scripts/furo.js"></script>
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>

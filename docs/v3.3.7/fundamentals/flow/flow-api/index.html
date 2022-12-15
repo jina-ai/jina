@@ -32,10 +32,10 @@
 <link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" /><link rel="next" title="Access Flow" href="../access-flow-api/" /><link rel="prev" title="Create a Flow" href="../create-flow/" />
         <link rel="canonical" href="https://docs.jina.ai/fundamentals/flow/flow-api.html" />
 
-    <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.09.29"/>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
         <title>Configure Flow - Jina 3.3.7 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/tabs.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
@@ -238,7 +238,7 @@
     <option value="/">latest</option>
   </select>
 </div><form class="sidebar-search-container" method="get" action="../../../search/" role="search">
-  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form>
@@ -601,7 +601,7 @@
                     </label>
                 </div>
                 <section class="tex2jax_ignore mathjax_ignore" id="configure-flow">
-<span id="flow"></span><h1>Configure Flow<a class="headerlink" href="#configure-flow" title="Permalink to this headline">#</a></h1>
+<span id="flow"></span><h1>Configure Flow<a class="headerlink" href="#configure-flow" title="Permalink to this heading">#</a></h1>
 <p><strong>Flow</strong> ties Executors together into a processing pipeline, provides scalability and facilitates deployments in the cloud.
 Every <code class="docutils literal notranslate"><span class="pre">Flow</span></code> provides an API to receive requests over the network. Supported protocols are gRPC, HTTP and WebSocket.</p>
 <p>There are two ways of defining a Flow, either directly from the Python API or using yaml files. For each section we will show you both possibles way of configuring your flow.</p>
@@ -613,7 +613,7 @@ This does not affect how you have to configure your Flow API, so the examples he
 <p>For more proper use of the Client, and more information about the Client itself, see the <a class="reference internal" href="../client/#client"><span class="std std-ref">Client documentation</span></a>.</p>
 </div>
 <section id="serve-flow-with-different-protocols">
-<span id="flow-protocol"></span><h2>Serve Flow with different protocols<a class="headerlink" href="#serve-flow-with-different-protocols" title="Permalink to this headline">#</a></h2>
+<span id="flow-protocol"></span><h2>Serve Flow with different protocols<a class="headerlink" href="#serve-flow-with-different-protocols" title="Permalink to this heading">#</a></h2>
 <p>You can use three different protocols to serve the <code class="docutils literal notranslate"><span class="pre">Flow</span></code>: <code class="docutils literal notranslate"><span class="pre">grpc</span></code>,<code class="docutils literal notranslate"><span class="pre">http</span></code> and <code class="docutils literal notranslate"><span class="pre">websocket</span></code></p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">gRPC</label><div class="tab-content docutils">
@@ -710,7 +710,7 @@ This does not affect how you have to configure your Flow API, so the examples he
 </div>
 </section>
 <section id="customize-http-interface">
-<span id="custom-http"></span><h2>Customize HTTP interface<a class="headerlink" href="#customize-http-interface" title="Permalink to this headline">#</a></h2>
+<span id="custom-http"></span><h2>Customize HTTP interface<a class="headerlink" href="#customize-http-interface" title="Permalink to this heading">#</a></h2>
 <p>Not every Executor endpoint will automatically be exposed through the external HTTP interface.
 By default, any Flow exposes the following CRUD and debug HTTP endpoints: <code class="docutils literal notranslate"><span class="pre">/status</span></code>, <code class="docutils literal notranslate"><span class="pre">/post</span></code>, <code class="docutils literal notranslate"><span class="pre">/index</span></code>, <code class="docutils literal notranslate"><span class="pre">/search</span></code>, <code class="docutils literal notranslate"><span class="pre">/update</span></code>, and <code class="docutils literal notranslate"><span class="pre">/delete</span></code>.</p>
 <p>Executors that provide additional endpoints (e.g. <code class="docutils literal notranslate"><span class="pre">/foo</span></code>) will be exposed only after manual configuration.
@@ -770,7 +770,7 @@ These custom endpoints can be added to the HTTP interface using <code class="doc
 </div>
 </div>
 <section id="hide-default-endpoints-from-http-interface">
-<h3>Hide default endpoints from HTTP interface<a class="headerlink" href="#hide-default-endpoints-from-http-interface" title="Permalink to this headline">#</a></h3>
+<h3>Hide default endpoints from HTTP interface<a class="headerlink" href="#hide-default-endpoints-from-http-interface" title="Permalink to this heading">#</a></h3>
 <p>It is possible to hide the default CRUD and debug endpoints in production. This might be useful when the context is not applicable.
 For example, in the code snippet below, we didn’t implement any CRUD endpoints for the executor, hence it does not make sense to expose them to public.</p>
 <div class="tab-set docutils">
@@ -794,7 +794,7 @@ For example, in the code snippet below, we didn’t implement any CRUD endpoints
 <p>After setting up a Flow in this way, the <a class="reference internal" href="#custom-http"><span class="std std-ref">default HTTP endpoints</span></a> will not be exposed.</p>
 </section>
 <section id="enable-cross-origin-resource-sharing-cors">
-<span id="cors"></span><h3>Enable Cross-Origin Resource Sharing (CORS)<a class="headerlink" href="#enable-cross-origin-resource-sharing-cors" title="Permalink to this headline">#</a></h3>
+<span id="cors"></span><h3>Enable Cross-Origin Resource Sharing (CORS)<a class="headerlink" href="#enable-cross-origin-resource-sharing-cors" title="Permalink to this heading">#</a></h3>
 <p>To make a Flow accessible from a website with a different domain, you need to enable <a class="reference external" href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS">Cross-Origin Resource Sharing (CORS)</a>.
 Among other things, CORS is necessary to provide a <a class="reference internal" href="../access-flow-api/#swagger-ui"><span class="std std-ref">Swagger UI interface</span></a> for your Flow.</p>
 <p>Note that CORS is disabled by default, for security reasons.
@@ -806,7 +806,7 @@ To enable CORS, configure your Flow in the following way:</p>
 </div>
 </section>
 <section id="advanced-configuration-options">
-<h3>Advanced configuration options<a class="headerlink" href="#advanced-configuration-options" title="Permalink to this headline">#</a></h3>
+<h3>Advanced configuration options<a class="headerlink" href="#advanced-configuration-options" title="Permalink to this heading">#</a></h3>
 <p>HTTP support in Jina is powered by <a class="reference external" href="https://www.uvicorn.org/">Uvicorn</a>.
 You can configure the Flow’s internal Uvicorn sever to your heart’s content by passing <code class="docutils literal notranslate"><span class="pre">uvicorn_kwargs</span></code> to the Flow:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
@@ -823,7 +823,7 @@ see their <a class="reference external" href="https://www.uvicorn.org/settings/"
 </section>
 </section>
 <section id="add-graphql-endpoint">
-<h2>Add GraphQL endpoint<a class="headerlink" href="#add-graphql-endpoint" title="Permalink to this headline">#</a></h2>
+<h2>Add GraphQL endpoint<a class="headerlink" href="#add-graphql-endpoint" title="Permalink to this heading">#</a></h2>
 <div class="caution admonition">
 <p class="admonition-title">Caution</p>
 <p>GraphQL support is an optional feature that requires optional dependencies.
@@ -856,7 +856,7 @@ To enable this endpoint, all you need to do is set <code class="docutils literal
 </div>
 </section>
 <section id="enable-tls">
-<span id="flow-tls"></span><h2>Enable TLS<a class="headerlink" href="#enable-tls" title="Permalink to this headline">#</a></h2>
+<span id="flow-tls"></span><h2>Enable TLS<a class="headerlink" href="#enable-tls" title="Permalink to this heading">#</a></h2>
 <p>You can enable TLS encryption between your Flow’s Gateway and a Client, for any of the protocols supported by Jina (HTTP, gRPC, and Websocket).</p>
 <div class="caution admonition">
 <p class="admonition-title">Caution</p>
@@ -877,7 +877,7 @@ parameters:</p>
 <p>If both of these are provided, the Flow will automatically configure itself to use TLS encryption for its communication with any Client.</p>
 </section>
 <section id="limit-outstanding-requests">
-<span id="prefetch"></span><h2>Limit outstanding requests<a class="headerlink" href="#limit-outstanding-requests" title="Permalink to this headline">#</a></h2>
+<span id="prefetch"></span><h2>Limit outstanding requests<a class="headerlink" href="#limit-outstanding-requests" title="Permalink to this heading">#</a></h2>
 <p>By default, Jina’s Client sends requests to the Flow as fast as possible without any delay. If a client sends their request faster than the Flow can process them, this can put a high load on the Flow. Typically, this is most likely to happen for Flows with expensive indexing.</p>
 <p>You can control the number of in flight requests per Client with the <code class="docutils literal notranslate"><span class="pre">prefetch</span></code> argument. E.g. setting <code class="docutils literal notranslate"><span class="pre">prefetch=2</span></code> lets the API accept only 2 requests per client in parallel, hence limiting the load. By default, prefetch is disabled (set to 0).</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">requests_generator</span><span class="p">():</span>
@@ -917,7 +917,7 @@ parameters:</p>
 </div>
 </section>
 <section id="set-timeouts-for-requests">
-<h2>Set timeouts for requests<a class="headerlink" href="#set-timeouts-for-requests" title="Permalink to this headline">#</a></h2>
+<h2>Set timeouts for requests<a class="headerlink" href="#set-timeouts-for-requests" title="Permalink to this heading">#</a></h2>
 <p>You can set timeouts for sending requests to the Executors within a Flow by passing the <code class="docutils literal notranslate"><span class="pre">timeout_send</span></code> parameter. The timeout is specified in milliseconds. By default, it is <code class="docutils literal notranslate"><span class="pre">None</span></code> and the timeout is disabled.</p>
 <p>If you use timeouts, you may also need to set the <a class="reference internal" href="#prefetch"><span class="std std-ref">prefetch</span></a> option in the Flow. Otherwise, requests may queue up at an Executor and eventually time out.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">Flow</span><span class="p">(</span><span class="n">timeout_send</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
@@ -927,7 +927,7 @@ parameters:</p>
 <p>The example above limits every request to the Executors in the Flow to a timeout of 1 second.</p>
 </section>
 <section id="generate-deployment-configuration">
-<h2>Generate deployment configuration<a class="headerlink" href="#generate-deployment-configuration" title="Permalink to this headline">#</a></h2>
+<h2>Generate deployment configuration<a class="headerlink" href="#generate-deployment-configuration" title="Permalink to this heading">#</a></h2>
 <p>To deploy a <code class="docutils literal notranslate"><span class="pre">Flow</span></code> you will need to deploy the Executors it is composed of.
 The <code class="docutils literal notranslate"><span class="pre">Flow</span></code> is offering convenience functions to generate the necessary configuration files for some use cases.
 At the moment, <code class="docutils literal notranslate"><span class="pre">Docker-Compose</span></code> and <code class="docutils literal notranslate"><span class="pre">Kubernetes</span></code> are supported.</p>
@@ -959,7 +959,7 @@ The generated folder can be used directly with <code class="docutils literal not
 If you do not wish to rebuild the image, set the environment variable <code class="docutils literal notranslate"><span class="pre">JINA_HUB_NO_IMAGE_REBUILD</span></code>.</p>
 </section>
 <section id="see-further">
-<h2>See further<a class="headerlink" href="#see-further" title="Permalink to this headline">#</a></h2>
+<h2>See further<a class="headerlink" href="#see-further" title="Permalink to this heading">#</a></h2>
 <ul class="simple">
 <li><p><a class="reference internal" href="../client/#client"><span class="std std-ref">Access the Flow with the Client</span></a></p></li>
 <li><p><a class="reference internal" href="../../../how-to/kubernetes/#kubernetes"><span class="std std-ref">Deployment with Kubernetes</span></a></p></li>
@@ -1001,7 +1001,7 @@ If you do not wish to rebuild the image, set the environment variable <code clas
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Nov 25, 2022.
+                    Last updated on Dec 15, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -1069,7 +1069,9 @@ If you do not wish to rebuild the image, set the environment variable <code clas
 <img referrerpolicy="no-referrer-when-downgrade" src="https://static.scarf.sh/a.png?x-pxid=1b470c1d-3b55-4d38-baa8-989bfba2a218" /><script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
     <script src="../../../_static/scripts/furo.js"></script>
     <script src="../../../_static/clipboard.min.js"></script>
     <script src="../../../_static/copybutton.js"></script>

@@ -32,10 +32,10 @@
 <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="How to run Executors on GPU" href="../gpu-executor/" /><link rel="prev" title="How to use async coroutines in Executors" href="../async-executors/" />
         <link rel="canonical" href="https://docs.jina.ai/how-to/scale-out.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.09.29"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
         <title>How to scale out your Executor - Jina 3.3.7 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
@@ -238,7 +238,7 @@
     <option value="/">latest</option>
   </select>
 </div><form class="sidebar-search-container" method="get" action="../../search/" role="search">
-  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form>
@@ -601,9 +601,9 @@
                     </label>
                 </div>
                 <section class="tex2jax_ignore mathjax_ignore" id="how-to-scale-out-your-executor">
-<span id="scale-out"></span><h1>How to scale out your Executor<a class="headerlink" href="#how-to-scale-out-your-executor" title="Permalink to this headline">#</a></h1>
+<span id="scale-out"></span><h1>How to scale out your Executor<a class="headerlink" href="#how-to-scale-out-your-executor" title="Permalink to this heading">#</a></h1>
 <section id="overview">
-<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">#</a></h2>
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this heading">#</a></h2>
 <p>A Jina <code class="docutils literal notranslate"><span class="pre">Flow</span></code> orchestrates multiple <code class="docutils literal notranslate"><span class="pre">Executors</span></code>.
 By default, a Jina <code class="docutils literal notranslate"><span class="pre">Executor</span></code> runs with a single <code class="docutils literal notranslate"><span class="pre">replica</span></code> and <code class="docutils literal notranslate"><span class="pre">shard</span></code>.
 Some <code class="docutils literal notranslate"><span class="pre">Executor</span></code> in the Flow might be less performant than others,
@@ -614,7 +614,7 @@ this could turn into a performance bottleneck in your Jina application.</p>
 <p>In this document, we’ll dive into these two concepts and see how you can make use of <code class="docutils literal notranslate"><span class="pre">replicas</span></code> and <code class="docutils literal notranslate"><span class="pre">shards</span></code> to scale out your <code class="docutils literal notranslate"><span class="pre">Executor</span></code>.</p>
 </section>
 <section id="before-you-start">
-<h2>Before you start<a class="headerlink" href="#before-you-start" title="Permalink to this headline">#</a></h2>
+<h2>Before you start<a class="headerlink" href="#before-you-start" title="Permalink to this heading">#</a></h2>
 <!-- Delete this section if your readers can go to the steps without requiring any prerequisite knowledge. -->
 <p>Before you begin, make sure you meet these prerequisites:</p>
 <ul class="simple">
@@ -629,9 +629,9 @@ pip install <span class="nv">pqlite</span><span class="o">==</span><span class="
 </div>
 </section>
 <section id="speed-up-a-slow-executor-replicas">
-<h2>Speed up a slow Executor: Replicas<a class="headerlink" href="#speed-up-a-slow-executor-replicas" title="Permalink to this headline">#</a></h2>
+<h2>Speed up a slow Executor: Replicas<a class="headerlink" href="#speed-up-a-slow-executor-replicas" title="Permalink to this heading">#</a></h2>
 <section id="context">
-<h3>Context<a class="headerlink" href="#context" title="Permalink to this headline">#</a></h3>
+<h3>Context<a class="headerlink" href="#context" title="Permalink to this heading">#</a></h3>
 <p>Imagine you are building a text-based search system and you have an <code class="docutils literal notranslate"><span class="pre">Executor</span></code> to transform text to its <a class="reference external" href="https://en.wikipedia.org/wiki/Tf-idf">tf-idf</a> vector representation.
 This could become a performance bottleneck to your search system.
 The Executor looks like this:</p>
@@ -674,7 +674,7 @@ The Executor looks like this:</p>
 </div>
 </section>
 <section id="scale-up-an-executor">
-<h3>Scale up an Executor<a class="headerlink" href="#scale-up-an-executor" title="Permalink to this headline">#</a></h3>
+<h3>Scale up an Executor<a class="headerlink" href="#scale-up-an-executor" title="Permalink to this heading">#</a></h3>
 <p>When you start your <code class="docutils literal notranslate"><span class="pre">Flow</span></code>, you might discover to process all the text corpus, this process takes a while:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">f</span><span class="p">:</span>
     <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/foo&#39;</span><span class="p">,</span> <span class="n">news_generator</span><span class="p">,</span> <span class="n">show_progress</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -711,9 +711,9 @@ If you are deploying Jina with K8s, you can consider this <code class="docutils 
 </section>
 </section>
 <section id="split-data-into-partitions-shards">
-<h2>Split data into partitions: Shards<a class="headerlink" href="#split-data-into-partitions-shards" title="Permalink to this headline">#</a></h2>
+<h2>Split data into partitions: Shards<a class="headerlink" href="#split-data-into-partitions-shards" title="Permalink to this heading">#</a></h2>
 <section id="id1">
-<h3>Context<a class="headerlink" href="#id1" title="Permalink to this headline">#</a></h3>
+<h3>Context<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h3>
 <p>Now with your text corpus encoded as TF-IDF embeddings,
 it’s time to save the results.
 We’ll use Jina’s <a class="reference external" href="https://hub.jina.ai/executor/pn1qofsj">PQLiteIndexer</a> to persist our embeddings for fast Approximate Nearest Neighbor Search.</p>
@@ -739,7 +739,7 @@ We’ll use Jina’s <a class="reference external" href="https://hub.jina.ai/exe
 </div>
 </section>
 <section id="partitioning-the-data">
-<h3>Partitioning the data<a class="headerlink" href="#partitioning-the-data" title="Permalink to this headline">#</a></h3>
+<h3>Partitioning the data<a class="headerlink" href="#partitioning-the-data" title="Permalink to this heading">#</a></h3>
 <p>Now let’s run the <code class="docutils literal notranslate"><span class="pre">Flow</span></code> to index your data:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">f</span><span class="p">:</span>
     <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/index&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">news_generator</span><span class="p">,</span> <span class="n">show_progress</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -768,7 +768,7 @@ All the data will be saved to <code class="docutils literal notranslate"><span c
 <code class="docutils literal notranslate"><span class="pre">YOUR-WORKSPACE-DIR/PQLiteIndexer/0/</span></code> and <code class="docutils literal notranslate"><span class="pre">YOUR-WORKSPACE-DIR/PQLiteIndexer/1/</span></code>.</p>
 </section>
 <section id="different-polling-strategies">
-<h3>Different polling strategies<a class="headerlink" href="#different-polling-strategies" title="Permalink to this headline">#</a></h3>
+<h3>Different polling strategies<a class="headerlink" href="#different-polling-strategies" title="Permalink to this heading">#</a></h3>
 <p>When you have multiple shards, the default <code class="docutils literal notranslate"><span class="pre">polling</span></code> strategy is <code class="docutils literal notranslate"><span class="pre">any</span></code>.
 Jina supports two <code class="docutils literal notranslate"><span class="pre">polling</span></code> strategies:</p>
 <ol class="simple">
@@ -807,7 +807,7 @@ Jina will collect <code class="docutils literal notranslate"><span class="pre">m
 </section>
 </section>
 <section id="conclusion">
-<h2>Conclusion<a class="headerlink" href="#conclusion" title="Permalink to this headline">#</a></h2>
+<h2>Conclusion<a class="headerlink" href="#conclusion" title="Permalink to this heading">#</a></h2>
 <p>Jina can help you scale out your applications easily and effectively.
 Depending on your needs, if you want to increase the <code class="docutils literal notranslate"><span class="pre">Executor</span></code> throughput, use the <code class="docutils literal notranslate"><span class="pre">replicas</span></code> argument.
 If you want to partition your data across multiple places,
@@ -847,7 +847,7 @@ use the <code class="docutils literal notranslate"><span class="pre">shards</spa
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Nov 25, 2022.
+                    Last updated on Dec 15, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -916,7 +916,9 @@ use the <code class="docutils literal notranslate"><span class="pre">shards</spa
 <img referrerpolicy="no-referrer-when-downgrade" src="https://static.scarf.sh/a.png?x-pxid=1b470c1d-3b55-4d38-baa8-989bfba2a218" /><script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
     <script src="../../_static/scripts/furo.js"></script>
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>

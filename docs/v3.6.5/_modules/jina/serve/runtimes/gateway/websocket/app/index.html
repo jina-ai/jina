@@ -1,0 +1,765 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../../../../genindex/" /><link rel="search" title="Search" href="../../../../../../../search/" />
+        <link rel="canonical" href="https://docs.jina.ai/_modules/jina/serve/runtimes/gateway/websocket/app.html" />
+
+    <link rel="shortcut icon" href="../../../../../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
+        <title>jina.serve.runtimes.gateway.websocket.app - Jina 3.6.5 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/tabs.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/main.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/docbot.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #ffffff;
+  --color-code-foreground: #4d4d4d;
+  --color-brand-primary: #009191;
+  --color-brand-content: #009191;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #FBCB67;
+  --color-brand-content: #FBCB67;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #FBCB67;
+  --color-brand-content: #FBCB67;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+    <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+    <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<div class="announcement">
+    <aside class="announcement-content">
+         
+    <a href="https://www.meetup.com/jina-community-meetup/events/286438459/">Get answers to all your questions at our Office Hour on June 30 at 19:00 CET</a>
+     
+    </aside>
+</div>
+
+<div class="page">
+    <header class="mobile-header">
+        <div class="header-left">
+            <label class="nav-overlay-icon" for="__navigation">
+                <div class="visually-hidden">Toggle site navigation sidebar</div>
+                <i class="icon">
+                    <svg>
+                        <use href="#svg-menu"></use>
+                    </svg>
+                </i>
+            </label>
+        </div>
+        <div class="header-center">
+            <a href="../../../../../../../">
+                <div class="brand">Jina 3.6.5 documentation</div>
+            </a>
+        </div>
+        <div class="header-right">
+            <div class="theme-toggle-container theme-toggle-header">
+                <button class="theme-toggle">
+                    <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+                    <svg class="theme-icon-when-auto">
+                        <use href="#svg-sun-half"></use>
+                    </svg>
+                    <svg class="theme-icon-when-dark">
+                        <use href="#svg-moon"></use>
+                    </svg>
+                    <svg class="theme-icon-when-light">
+                        <use href="#svg-sun"></use>
+                    </svg>
+                </button>
+            </div>
+            <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+                <div class="visually-hidden">Toggle table of contents sidebar</div>
+                <i class="icon">
+                    <svg>
+                        <use href="#svg-toc"></use>
+                    </svg>
+                </i>
+            </label>
+        </div>
+    </header>
+    <aside class="sidebar-drawer">
+        <div class="sidebar-container">
+            
+            <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../../../../../">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo only-light" src="../../../../../../../_static/logo-light.svg" alt="Light Logo" />
+    <img class="sidebar-logo only-dark" src="../../../../../../../_static/logo-dark.svg" alt="Dark Logo" />
+  </div>
+  
+  
+</a>
+<script>
+  function setPrefix(prefix){
+    window.location.href = prefix
+  }
+</script>
+<script defer>
+  fetch(`https://${window.location.host}/_versions.json`)
+  .then((resp) => resp.json())
+  .then((data) => {
+    var versionSelector = document.getElementsByClassName("version-select")[0];
+    var currentPrefix = window.location.href.toString().split(window.location.host)[1].split('/')[1];
+
+    for(var i = 0; i < data.length; i++){
+      var option = document.createElement("option");
+      option.innerHTML = data[i].version;
+      option.value = "/" + data[i].version;
+      versionSelector.appendChild(option);
+      if(currentPrefix === data[i].version){
+        versionSelector.selectedIndex = i + 1;
+      }
+    }
+  })
+  .catch((err) => console.log(err));
+</script>
+<div class="sd-d-flex-row sd-align-major-spaced">
+  <a class="github-button" href="https://github.com/jina-ai/jina" data-icon="octicon-star" data-show-count="true" aria-label="Star jina-ai/jina on GitHub" style="opacity: 0;">Star</a>
+  <select onChange="setPrefix(this.value)" class="version-select">
+    <option value="/">latest</option>
+  </select>
+</div><form class="sidebar-search-container" method="get" action="../../../../../../../search/" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+    <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../../../get-started/install/">Install</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../../get-started/install/docker/">Docker image</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../../get-started/install/windows/">On Windows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../../get-started/install/troubleshooting/">Troubleshooting</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../../get-started/create-app/">Create Project</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../../fundamentals/architecture-overview/">Glossary</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../../../fundamentals/executor/">Executor</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../../fundamentals/executor/executor-api/">Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../../fundamentals/executor/executor-methods/"><code class="docutils literal notranslate"><span class="pre">@requests</span></code> methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../../fundamentals/executor/monitoring-executor/">Monitor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../../fundamentals/executor/executor-run/">Run</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../../fundamentals/executor/executor-serve/">Serve</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../../fundamentals/executor/yaml-spec/">YAML specification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../../fundamentals/executor/executor-files/">File structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../../fundamentals/executor/containerize-executor/">Containerize</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../../../fundamentals/flow/">Flow</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../../fundamentals/flow/create-flow/">Basic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../../fundamentals/flow/add-executors/">Add Executors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../../fundamentals/flow/topologies/">Topology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../../fundamentals/flow/monitoring-flow/">Monitor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../../fundamentals/flow/health-check/">Readiness &amp; health check</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../../fundamentals/flow/when-things-go-wrong/">Handle exceptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../../fundamentals/flow/yaml-spec/">YAML specification</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../../fundamentals/gateway/">Gateway</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../../../fundamentals/flow/client/">Client</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../../fundamentals/flow/access-flow-api/">Third-party clients</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../../../fundamentals/executor/hub/">Hub</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../../fundamentals/executor/hub/hub-portal/">Portal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../../fundamentals/executor/hub/create-hub-executor/">Create</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../../fundamentals/executor/hub/push-executor/">Publish</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../../fundamentals/executor/hub/use-hub-executor/">Use</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../../how-to/sandbox/">Sandbox</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../../how-to/debug-executor/">Debug</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../../fundamentals/executor/hub/executor-best-practices/">Best practices</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../../../fundamentals/jcloud/">JCloud</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../../fundamentals/jcloud/basic/">Basic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../../fundamentals/jcloud/advanced/">Advanced</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../../fundamentals/jcloud/faq/">FAQ</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../../../how-to/"><svg aria-hidden="true" class="sd-octicon sd-octicon-book" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M0 1.75A.75.75 0 01.75 1h4.253c1.227 0 2.317.59 3 1.501A3.744 3.744 0 0111.006 1h4.245a.75.75 0 01.75.75v10.5a.75.75 0 01-.75.75h-4.507a2.25 2.25 0 00-1.591.659l-.622.621a.75.75 0 01-1.06 0l-.622-.621A2.25 2.25 0 005.258 13H.75a.75.75 0 01-.75-.75V1.75zm8.755 3a2.25 2.25 0 012.25-2.25H14.5v9h-3.757c-.71 0-1.4.201-1.992.572l.004-7.322zm-1.504 7.324l.004-5.073-.002-2.253A2.25 2.25 0 005.003 2.5H1.5v9h3.757a3.75 3.75 0 011.994.574z" fill-rule="evenodd"></path></svg> How-To</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../../how-to/google-colab/">Use Jina on Colab with GPU/TPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../../fundamentals/clean-code/">Write clean &amp; efficient code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../../how-to/async-executors/">Use async coroutines in Executors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../../how-to/scale-out/">Scale out your Executor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../../how-to/gpu-executor/">Run Executors on GPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../../how-to/external-executor/">Use external Executors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../../how-to/flow-switch/">Add selection control to a Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../../how-to/docker-compose/">Deploy with Docker Compose</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../../how-to/kubernetes/">Deploy with Kubernetes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../../how-to/monitoring/">Use monitoring with Jina in Kubernetes</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer References</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../../api-rst/"><span class="fab fa-python"></span> Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../../cli/"><svg aria-hidden="true" class="sd-octicon sd-octicon-terminal" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M0 2.75C0 1.784.784 1 1.75 1h12.5c.966 0 1.75.784 1.75 1.75v10.5A1.75 1.75 0 0114.25 15H1.75A1.75 1.75 0 010 13.25V2.75zm1.75-.25a.25.25 0 00-.25.25v10.5c0 .138.112.25.25.25h12.5a.25.25 0 00.25-.25V2.75a.25.25 0 00-.25-.25H1.75zM7.25 8a.75.75 0 01-.22.53l-2.25 2.25a.75.75 0 11-1.06-1.06L5.44 8 3.72 6.28a.75.75 0 111.06-1.06l2.25 2.25c.141.14.22.331.22.53zm1.5 1.5a.75.75 0 000 1.5h3a.75.75 0 000-1.5h-3z" fill-rule="evenodd"></path></svg> Command-Line Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../../proto/docs/">Protocol Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../../envs/">Environment Variables</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Legacy Support</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../../get-started/migrate/">Migrate Jina 2 to Jina 3</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://docs2.jina.ai/">Jina 2 Documentation</a></li>
+</ul>
+
+    <p class="caption" role="heading"><span class="caption-text">Ecosystem</span></p>
+    <ul>
+        <li class="toctree-l1">
+            <a class="reference internal" href="#">
+                <img class="sidebar-ecosys-logo only-light-line" src="../../../../../../../_static/search-light.svg">
+                <img class="sidebar-ecosys-logo only-dark-line" src="../../../../../../../_static/search-dark.svg">
+                Jina</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://hub.jina.ai">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../../../../../../_static/hub-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../../../../../../_static/hub-dark.svg">
+            Jina Hub</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://finetuner.jina.ai">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../../../../../../_static/finetuner-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../../../../../../_static/finetuner-dark.svg">
+            Finetuner</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://docarray.jina.ai">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../../../../../../_static/docarray-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../../../../../../_static/docarray-dark.svg">
+            DocArray</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://clip-as-service.jina.ai">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../../../../../../_static/cas-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../../../../../../_static/cas-dark.svg">
+            CLIP-as-service</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://github.com/jina-ai/jcloud">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../../../../../../_static/JCloud-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../../../../../../_static/JCloud-dark.svg">
+            JCloud</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://now.jina.ai">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../../../../../../_static/now-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../../../../../../_static/now-dark.svg">
+            NOW</a></li>
+    </ul>
+</div>
+
+</div>
+
+            </div>
+            
+        </div>
+    </aside>
+    <div class="main">
+        <div class="content">
+            <div class="article-container">
+                <a href="#" class="back-to-top muted-link">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+                    </svg>
+                    <span>Back to top</span>
+                </a>
+                <div class="content-icon-container"><div class="theme-toggle-container theme-toggle-content">
+                        <button class="theme-toggle">
+                            <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+                            <svg class="theme-icon-when-auto">
+                                <use href="#svg-sun-half"></use>
+                            </svg>
+                            <svg class="theme-icon-when-dark">
+                                <use href="#svg-moon"></use>
+                            </svg>
+                            <svg class="theme-icon-when-light">
+                                <use href="#svg-sun"></use>
+                            </svg>
+                        </button>
+                    </div>
+                    <label class="toc-overlay-icon toc-content-icon no-toc"
+                           for="__toc">
+                        <div class="visually-hidden">Toggle table of contents sidebar</div>
+                        <i class="icon">
+                            <svg>
+                                <use href="#svg-toc"></use>
+                            </svg>
+                        </i>
+                    </label>
+                </div>
+                <article role="main">
+                    <h1>Source code for jina.serve.runtimes.gateway.websocket.app</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">AsyncIterator</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">from</span> <span class="nn">jina.clients.request</span> <span class="kn">import</span> <span class="n">request_generator</span>
+<span class="kn">from</span> <span class="nn">jina.enums</span> <span class="kn">import</span> <span class="n">DataInputType</span><span class="p">,</span> <span class="n">WebsocketSubProtocols</span>
+<span class="kn">from</span> <span class="nn">jina.excepts</span> <span class="kn">import</span> <span class="n">InternalNetworkError</span>
+<span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">get_full_version</span>
+<span class="kn">from</span> <span class="nn">jina.importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
+<span class="kn">from</span> <span class="nn">jina.logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
+<span class="kn">from</span> <span class="nn">jina.types.request.data</span> <span class="kn">import</span> <span class="n">DataRequest</span>
+<span class="kn">from</span> <span class="nn">jina.types.request.status</span> <span class="kn">import</span> <span class="n">StatusMessage</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">prometheus_client</span> <span class="kn">import</span> <span class="n">CollectorRegistry</span>
+
+    <span class="kn">from</span> <span class="nn">jina.serve.networking</span> <span class="kn">import</span> <span class="n">GrpcConnectionPool</span>
+    <span class="kn">from</span> <span class="nn">jina.serve.runtimes.gateway.graph.topology_graph</span> <span class="kn">import</span> <span class="n">TopologyGraph</span>
+
+
+<span class="k">def</span> <span class="nf">_fits_ws_close_msg</span><span class="p">(</span><span class="n">msg</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="c1"># Websocket close messages (&#39;reasons&#39;) can&#39;t exceed 123 bytes:</span>
+    <span class="c1"># https://developer.mozilla.org/en-US/docs/Web/API/WebSocket/close</span>
+    <span class="n">ws_closing_msg_max_len</span> <span class="o">=</span> <span class="mi">123</span>
+    <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span> <span class="o">&lt;=</span> <span class="n">ws_closing_msg_max_len</span>
+
+
+<div class="viewcode-block" id="get_fastapi_app"><a class="viewcode-back" href="../../../../../../../api/jina.serve.runtimes.gateway.websocket.app/#jina.serve.runtimes.gateway.websocket.app.get_fastapi_app">[docs]</a><span class="k">def</span> <span class="nf">get_fastapi_app</span><span class="p">(</span>
+    <span class="n">args</span><span class="p">:</span> <span class="s1">&#39;argparse.Namespace&#39;</span><span class="p">,</span>
+    <span class="n">topology_graph</span><span class="p">:</span> <span class="s1">&#39;TopologyGraph&#39;</span><span class="p">,</span>
+    <span class="n">connection_pool</span><span class="p">:</span> <span class="s1">&#39;GrpcConnectionPool&#39;</span><span class="p">,</span>
+    <span class="n">logger</span><span class="p">:</span> <span class="s1">&#39;JinaLogger&#39;</span><span class="p">,</span>
+    <span class="n">metrics_registry</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;CollectorRegistry&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get the app from FastAPI as the Websocket interface.</span>
+
+<span class="sd">    :param args: passed arguments.</span>
+<span class="sd">    :param topology_graph: topology graph that manages the logic of sending to the proper executors.</span>
+<span class="sd">    :param connection_pool: Connection Pool to handle multiple replicas and sending to different of them</span>
+<span class="sd">    :param logger: Jina logger.</span>
+<span class="sd">    :param metrics_registry: optional metrics registry for prometheus used if we need to expose metrics from the executor or from the data request handler</span>
+<span class="sd">    :return: fastapi app</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="kn">from</span> <span class="nn">jina.serve.runtimes.gateway.http.models</span> <span class="kn">import</span> <span class="n">JinaEndpointRequestModel</span>
+
+    <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">FastAPI</span><span class="p">,</span> <span class="n">Response</span><span class="p">,</span> <span class="n">WebSocket</span><span class="p">,</span> <span class="n">WebSocketDisconnect</span><span class="p">,</span> <span class="n">status</span>
+
+    <span class="k">class</span> <span class="nc">ConnectionManager</span><span class="p">:</span>
+        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">active_connections</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">WebSocket</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">protocol_dict</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">WebsocketSubProtocols</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">def</span> <span class="nf">get_client</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">websocket</span><span class="p">:</span> <span class="n">WebSocket</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">websocket</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">websocket</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">&#39;</span>
+
+        <span class="k">def</span> <span class="nf">get_subprotocol</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">headers</span><span class="p">:</span> <span class="n">Dict</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">if</span> <span class="s1">&#39;sec-websocket-protocol&#39;</span> <span class="ow">in</span> <span class="n">headers</span><span class="p">:</span>
+                    <span class="n">subprotocol</span> <span class="o">=</span> <span class="n">WebsocketSubProtocols</span><span class="p">(</span>
+                        <span class="n">headers</span><span class="p">[</span><span class="s1">&#39;sec-websocket-protocol&#39;</span><span class="p">]</span>
+                    <span class="p">)</span>
+                <span class="k">elif</span> <span class="sa">b</span><span class="s1">&#39;sec-websocket-protocol&#39;</span> <span class="ow">in</span> <span class="n">headers</span><span class="p">:</span>
+                    <span class="n">subprotocol</span> <span class="o">=</span> <span class="n">WebsocketSubProtocols</span><span class="p">(</span>
+                        <span class="n">headers</span><span class="p">[</span><span class="sa">b</span><span class="s1">&#39;sec-websocket-protocol&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+                    <span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">subprotocol</span> <span class="o">=</span> <span class="n">WebsocketSubProtocols</span><span class="o">.</span><span class="n">JSON</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s1">&#39;no protocol headers passed. Choosing default subprotocol </span><span class="si">{</span><span class="n">WebsocketSubProtocols</span><span class="o">.</span><span class="n">JSON</span><span class="si">}</span><span class="s1">&#39;</span>
+                    <span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">&#39;got an exception while setting user</span><span class="se">\&#39;</span><span class="s1">s subprotocol, defaulting to JSON </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">&#39;</span>
+                <span class="p">)</span>
+                <span class="n">subprotocol</span> <span class="o">=</span> <span class="n">WebsocketSubProtocols</span><span class="o">.</span><span class="n">JSON</span>
+            <span class="k">return</span> <span class="n">subprotocol</span>
+
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">websocket</span><span class="p">:</span> <span class="n">WebSocket</span><span class="p">):</span>
+            <span class="k">await</span> <span class="n">websocket</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
+            <span class="n">subprotocol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_subprotocol</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">websocket</span><span class="o">.</span><span class="n">scope</span><span class="p">[</span><span class="s1">&#39;headers&#39;</span><span class="p">]))</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;client </span><span class="si">{</span><span class="n">websocket</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">websocket</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1"> connected &#39;</span>
+                <span class="sa">f</span><span class="s1">&#39;with subprotocol </span><span class="si">{</span><span class="n">subprotocol</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">active_connections</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">websocket</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">protocol_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">get_client</span><span class="p">(</span><span class="n">websocket</span><span class="p">)]</span> <span class="o">=</span> <span class="n">subprotocol</span>
+
+        <span class="k">def</span> <span class="nf">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">websocket</span><span class="p">:</span> <span class="n">WebSocket</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">protocol_dict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_client</span><span class="p">(</span><span class="n">websocket</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">active_connections</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">websocket</span><span class="p">)</span>
+
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">websocket</span><span class="p">:</span> <span class="n">WebSocket</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+            <span class="n">subprotocol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">protocol_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">get_client</span><span class="p">(</span><span class="n">websocket</span><span class="p">)]</span>
+            <span class="k">if</span> <span class="n">subprotocol</span> <span class="o">==</span> <span class="n">WebsocketSubProtocols</span><span class="o">.</span><span class="n">JSON</span><span class="p">:</span>
+                <span class="k">return</span> <span class="k">await</span> <span class="n">websocket</span><span class="o">.</span><span class="n">receive_json</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s1">&#39;text&#39;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">subprotocol</span> <span class="o">==</span> <span class="n">WebsocketSubProtocols</span><span class="o">.</span><span class="n">BYTES</span><span class="p">:</span>
+                <span class="k">return</span> <span class="k">await</span> <span class="n">websocket</span><span class="o">.</span><span class="n">receive_bytes</span><span class="p">()</span>
+
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">iter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">websocket</span><span class="p">:</span> <span class="n">WebSocket</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="n">Any</span><span class="p">]:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+                    <span class="k">yield</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">receive</span><span class="p">(</span><span class="n">websocket</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">WebSocketDisconnect</span><span class="p">:</span>
+                <span class="k">pass</span>
+
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">send</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">websocket</span><span class="p">:</span> <span class="n">WebSocket</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">DataRequest</span><span class="p">,</span> <span class="n">StatusMessage</span><span class="p">]</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">subprotocol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">protocol_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">get_client</span><span class="p">(</span><span class="n">websocket</span><span class="p">)]</span>
+            <span class="k">if</span> <span class="n">subprotocol</span> <span class="o">==</span> <span class="n">WebsocketSubProtocols</span><span class="o">.</span><span class="n">JSON</span><span class="p">:</span>
+                <span class="k">return</span> <span class="k">await</span> <span class="n">websocket</span><span class="o">.</span><span class="n">send_json</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(),</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;text&#39;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">subprotocol</span> <span class="o">==</span> <span class="n">WebsocketSubProtocols</span><span class="o">.</span><span class="n">BYTES</span><span class="p">:</span>
+                <span class="k">return</span> <span class="k">await</span> <span class="n">websocket</span><span class="o">.</span><span class="n">send_bytes</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">to_bytes</span><span class="p">())</span>
+
+    <span class="n">manager</span> <span class="o">=</span> <span class="n">ConnectionManager</span><span class="p">()</span>
+
+    <span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">()</span>
+
+    <span class="kn">from</span> <span class="nn">jina.serve.runtimes.gateway.request_handling</span> <span class="kn">import</span> <span class="n">RequestHandler</span>
+    <span class="kn">from</span> <span class="nn">jina.serve.stream</span> <span class="kn">import</span> <span class="n">RequestStreamer</span>
+
+    <span class="n">request_handler</span> <span class="o">=</span> <span class="n">RequestHandler</span><span class="p">(</span><span class="n">metrics_registry</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+    <span class="n">streamer</span> <span class="o">=</span> <span class="n">RequestStreamer</span><span class="p">(</span>
+        <span class="n">args</span><span class="o">=</span><span class="n">args</span><span class="p">,</span>
+        <span class="n">request_handler</span><span class="o">=</span><span class="n">request_handler</span><span class="o">.</span><span class="n">handle_request</span><span class="p">(</span>
+            <span class="n">graph</span><span class="o">=</span><span class="n">topology_graph</span><span class="p">,</span> <span class="n">connection_pool</span><span class="o">=</span><span class="n">connection_pool</span>
+        <span class="p">),</span>
+        <span class="n">result_handler</span><span class="o">=</span><span class="n">request_handler</span><span class="o">.</span><span class="n">handle_result</span><span class="p">(),</span>
+    <span class="p">)</span>
+
+    <span class="n">streamer</span><span class="o">.</span><span class="n">Call</span> <span class="o">=</span> <span class="n">streamer</span><span class="o">.</span><span class="n">stream</span>
+
+    <span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="n">path</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span>
+        <span class="n">summary</span><span class="o">=</span><span class="s1">&#39;Get the health of Jina service&#39;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">_health</span><span class="p">():</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the health of this Jina service.</span>
+<span class="sd">        .. # noqa: DAR201</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">{}</span>
+
+    <span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="n">path</span><span class="o">=</span><span class="s1">&#39;/status&#39;</span><span class="p">,</span>
+        <span class="n">summary</span><span class="o">=</span><span class="s1">&#39;Get the status of Jina service&#39;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">_status</span><span class="p">():</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the status of this Jina service.</span>
+
+<span class="sd">        This is equivalent to running `jina -vf` from command line.</span>
+
+<span class="sd">        .. # noqa: DAR201</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">version</span><span class="p">,</span> <span class="n">env_info</span> <span class="o">=</span> <span class="n">get_full_version</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">version</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">version</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">env_info</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">env_info</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;jina&#39;</span><span class="p">:</span> <span class="n">version</span><span class="p">,</span> <span class="s1">&#39;envs&#39;</span><span class="p">:</span> <span class="n">env_info</span><span class="p">}</span>
+
+    <span class="nd">@app</span><span class="o">.</span><span class="n">on_event</span><span class="p">(</span><span class="s1">&#39;shutdown&#39;</span><span class="p">)</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">_shutdown</span><span class="p">():</span>
+        <span class="k">await</span> <span class="n">connection_pool</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="nd">@app</span><span class="o">.</span><span class="n">websocket</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">websocket_endpoint</span><span class="p">(</span>
+        <span class="n">websocket</span><span class="p">:</span> <span class="n">WebSocket</span><span class="p">,</span> <span class="n">response</span><span class="p">:</span> <span class="n">Response</span>
+    <span class="p">):</span>  <span class="c1"># &#39;response&#39; is a FastAPI response, not a Jina response</span>
+        <span class="k">await</span> <span class="n">manager</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">websocket</span><span class="p">)</span>
+
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">req_iter</span><span class="p">():</span>
+            <span class="k">async</span> <span class="k">for</span> <span class="n">request</span> <span class="ow">in</span> <span class="n">manager</span><span class="o">.</span><span class="n">iter</span><span class="p">(</span><span class="n">websocket</span><span class="p">):</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">request</span> <span class="o">==</span> <span class="p">{}:</span>
+                        <span class="k">break</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="c1"># NOTE: Helps in converting camelCase to snake_case</span>
+                        <span class="n">req_generator_input</span> <span class="o">=</span> <span class="n">JinaEndpointRequestModel</span><span class="p">(</span><span class="o">**</span><span class="n">request</span><span class="p">)</span><span class="o">.</span><span class="n">dict</span><span class="p">()</span>
+                        <span class="n">req_generator_input</span><span class="p">[</span><span class="s1">&#39;data_type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">DataInputType</span><span class="o">.</span><span class="n">DICT</span>
+                        <span class="k">if</span> <span class="n">request</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="s1">&#39;docs&#39;</span> <span class="ow">in</span> <span class="n">request</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]:</span>
+                            <span class="n">req_generator_input</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">req_generator_input</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">][</span>
+                                <span class="s1">&#39;docs&#39;</span>
+                            <span class="p">]</span>
+
+                        <span class="c1"># you can&#39;t do `yield from` inside an async function</span>
+                        <span class="k">for</span> <span class="n">data_request</span> <span class="ow">in</span> <span class="n">request_generator</span><span class="p">(</span><span class="o">**</span><span class="n">req_generator_input</span><span class="p">):</span>
+                            <span class="k">yield</span> <span class="n">data_request</span>
+                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">request</span> <span class="o">==</span> <span class="nb">bytes</span><span class="p">(</span><span class="kc">True</span><span class="p">):</span>
+                        <span class="k">break</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">yield</span> <span class="n">DataRequest</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">async</span> <span class="k">for</span> <span class="n">msg</span> <span class="ow">in</span> <span class="n">streamer</span><span class="o">.</span><span class="n">stream</span><span class="p">(</span><span class="n">request_iterator</span><span class="o">=</span><span class="n">req_iter</span><span class="p">()):</span>
+                <span class="k">await</span> <span class="n">manager</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">websocket</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">InternalNetworkError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+            <span class="kn">import</span> <span class="nn">grpc</span>
+
+            <span class="n">manager</span><span class="o">.</span><span class="n">disconnect</span><span class="p">(</span><span class="n">websocket</span><span class="p">)</span>
+            <span class="n">fallback_msg</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;Connection to deployment at </span><span class="si">{</span><span class="n">err</span><span class="o">.</span><span class="n">dest_addr</span><span class="si">}</span><span class="s1"> timed out. You can adjust `timeout_send` attribute.&#39;</span>
+                <span class="k">if</span> <span class="n">err</span><span class="o">.</span><span class="n">code</span><span class="p">()</span> <span class="o">==</span> <span class="n">grpc</span><span class="o">.</span><span class="n">StatusCode</span><span class="o">.</span><span class="n">DEADLINE_EXCEEDED</span>
+                <span class="k">else</span> <span class="sa">f</span><span class="s1">&#39;Network error while connecting to deployment at </span><span class="si">{</span><span class="n">err</span><span class="o">.</span><span class="n">dest_addr</span><span class="si">}</span><span class="s1">. It may be down.&#39;</span>
+            <span class="p">)</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">err</span><span class="o">.</span><span class="n">details</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">_fits_ws_close_msg</span><span class="p">(</span>
+                    <span class="n">err</span><span class="o">.</span><span class="n">details</span><span class="p">()</span>
+                <span class="p">)</span>  <span class="c1"># some messages are too long for ws closing message</span>
+                <span class="k">else</span> <span class="n">fallback_msg</span>
+            <span class="p">)</span>
+            <span class="k">await</span> <span class="n">websocket</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="n">status</span><span class="o">.</span><span class="n">WS_1011_INTERNAL_ERROR</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="n">msg</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">WebSocketDisconnect</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Client successfully disconnected from server&#39;</span><span class="p">)</span>
+            <span class="n">manager</span><span class="o">.</span><span class="n">disconnect</span><span class="p">(</span><span class="n">websocket</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">_get_singleton_result</span><span class="p">(</span><span class="n">request_iterator</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Streams results from AsyncPrefetchCall as a dict</span>
+
+<span class="sd">        :param request_iterator: request iterator, with length of 1</span>
+<span class="sd">        :return: the first result from the request iterator</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">async</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">streamer</span><span class="o">.</span><span class="n">stream</span><span class="p">(</span><span class="n">request_iterator</span><span class="o">=</span><span class="n">request_iterator</span><span class="p">):</span>
+            <span class="n">request_dict</span> <span class="o">=</span> <span class="n">k</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">request_dict</span>
+
+    <span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
+
+    <span class="kn">from</span> <span class="nn">jina.proto</span> <span class="kn">import</span> <span class="n">jina_pb2</span>
+    <span class="kn">from</span> <span class="nn">jina.serve.executors</span> <span class="kn">import</span> <span class="n">__dry_run_endpoint__</span>
+    <span class="kn">from</span> <span class="nn">jina.serve.runtimes.gateway.http.models</span> <span class="kn">import</span> <span class="n">PROTO_TO_PYDANTIC_MODELS</span>
+
+    <span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="n">path</span><span class="o">=</span><span class="s1">&#39;/dry_run&#39;</span><span class="p">,</span>
+        <span class="n">summary</span><span class="o">=</span><span class="s1">&#39;Get the readiness of Jina Flow service, sends an empty DocumentArray to the complete Flow to &#39;</span>
+        <span class="s1">&#39;validate connectivity&#39;</span><span class="p">,</span>
+        <span class="n">response_model</span><span class="o">=</span><span class="n">PROTO_TO_PYDANTIC_MODELS</span><span class="o">.</span><span class="n">StatusProto</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">_dry_run_http</span><span class="p">():</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the health of the complete Flow service.</span>
+<span class="sd">        .. # noqa: DAR201</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">da</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">()</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">_</span> <span class="o">=</span> <span class="k">await</span> <span class="n">_get_singleton_result</span><span class="p">(</span>
+                <span class="n">request_generator</span><span class="p">(</span>
+                    <span class="n">exec_endpoint</span><span class="o">=</span><span class="n">__dry_run_endpoint__</span><span class="p">,</span>
+                    <span class="n">data</span><span class="o">=</span><span class="n">da</span><span class="p">,</span>
+                    <span class="n">data_type</span><span class="o">=</span><span class="n">DataInputType</span><span class="o">.</span><span class="n">DOCUMENT</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">status_message</span> <span class="o">=</span> <span class="n">StatusMessage</span><span class="p">()</span>
+            <span class="n">status_message</span><span class="o">.</span><span class="n">set_code</span><span class="p">(</span><span class="n">jina_pb2</span><span class="o">.</span><span class="n">StatusProto</span><span class="o">.</span><span class="n">SUCCESS</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">status_message</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="n">status_message</span> <span class="o">=</span> <span class="n">StatusMessage</span><span class="p">()</span>
+            <span class="n">status_message</span><span class="o">.</span><span class="n">set_exception</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">status_message</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="n">use_integers_for_enums</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="nd">@app</span><span class="o">.</span><span class="n">websocket</span><span class="p">(</span><span class="s1">&#39;/dry_run&#39;</span><span class="p">)</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">websocket_endpoint</span><span class="p">(</span>
+        <span class="n">websocket</span><span class="p">:</span> <span class="n">WebSocket</span><span class="p">,</span> <span class="n">response</span><span class="p">:</span> <span class="n">Response</span>
+    <span class="p">):</span>  <span class="c1"># &#39;response&#39; is a FastAPI response, not a Jina response</span>
+        <span class="kn">from</span> <span class="nn">jina.proto</span> <span class="kn">import</span> <span class="n">jina_pb2</span>
+        <span class="kn">from</span> <span class="nn">jina.serve.executors</span> <span class="kn">import</span> <span class="n">__dry_run_endpoint__</span>
+
+        <span class="k">await</span> <span class="n">manager</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">websocket</span><span class="p">)</span>
+
+        <span class="n">da</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">async</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">streamer</span><span class="o">.</span><span class="n">stream</span><span class="p">(</span>
+                <span class="n">request_iterator</span><span class="o">=</span><span class="n">request_generator</span><span class="p">(</span>
+                    <span class="n">exec_endpoint</span><span class="o">=</span><span class="n">__dry_run_endpoint__</span><span class="p">,</span>
+                    <span class="n">data</span><span class="o">=</span><span class="n">da</span><span class="p">,</span>
+                    <span class="n">data_type</span><span class="o">=</span><span class="n">DataInputType</span><span class="o">.</span><span class="n">DOCUMENT</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">):</span>
+                <span class="k">pass</span>
+            <span class="n">status_message</span> <span class="o">=</span> <span class="n">StatusMessage</span><span class="p">()</span>
+            <span class="n">status_message</span><span class="o">.</span><span class="n">set_code</span><span class="p">(</span><span class="n">jina_pb2</span><span class="o">.</span><span class="n">StatusProto</span><span class="o">.</span><span class="n">SUCCESS</span><span class="p">)</span>
+            <span class="k">await</span> <span class="n">manager</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">websocket</span><span class="p">,</span> <span class="n">status_message</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">InternalNetworkError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+            <span class="n">manager</span><span class="o">.</span><span class="n">disconnect</span><span class="p">(</span><span class="n">websocket</span><span class="p">)</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">err</span><span class="o">.</span><span class="n">details</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">_fits_ws_close_msg</span><span class="p">(</span><span class="n">err</span><span class="o">.</span><span class="n">details</span><span class="p">())</span>  <span class="c1"># some messages are too long</span>
+                <span class="k">else</span> <span class="sa">f</span><span class="s1">&#39;Network error while connecting to deployment at </span><span class="si">{</span><span class="n">err</span><span class="o">.</span><span class="n">dest_addr</span><span class="si">}</span><span class="s1">. It may be down.&#39;</span>
+            <span class="p">)</span>
+            <span class="k">await</span> <span class="n">websocket</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="n">status</span><span class="o">.</span><span class="n">WS_1011_INTERNAL_ERROR</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="n">msg</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">WebSocketDisconnect</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Client successfully disconnected from server&#39;</span><span class="p">)</span>
+            <span class="n">manager</span><span class="o">.</span><span class="n">disconnect</span><span class="p">(</span><span class="n">websocket</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="n">manager</span><span class="o">.</span><span class="n">disconnect</span><span class="p">(</span><span class="n">websocket</span><span class="p">)</span>
+            <span class="n">status_message</span> <span class="o">=</span> <span class="n">StatusMessage</span><span class="p">()</span>
+            <span class="n">status_message</span><span class="o">.</span><span class="n">set_exception</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span>
+            <span class="k">await</span> <span class="n">manager</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">websocket</span><span class="p">,</span> <span class="n">status_message</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">app</span></div>
+</pre></div>
+                </article>
+            </div>
+            <footer>
+                
+                <div class="related-pages">
+                    
+                    
+                </div>
+                <div class="bottom-of-page">
+                    <div class="left-details">
+                        <div class="copyright">
+                            Copyright &#169; Jina AI Limited. All rights reserved.
+                        </div><div class="last-updated">
+                            Last updated on Dec 15, 2022</div>
+                    </div>
+                    <div class="right-details">
+                        <div class="social-btns">
+                            <a class='social-btn' href="https://github.com/jina-ai/jina" aria-label="GitHub"
+                               target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
+                            <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank"
+                               rel="noreferrer"> <i class="fab fa-slack"></i></a>
+                            <a class='social-btn' href="https://youtube.com/c/jina-ai" aria-label="YouTube"
+                               target="_blank" rel="noreferrer"> <i class="fab fa-youtube"></i></a>
+                            <a class='social-btn' href="https://twitter.com/JinaAI_" aria-label="Twitter"
+                               target="_blank" rel="noreferrer"> <i class="fab fa-twitter"></i></a>
+                            <a class='social-btn' href="https://www.linkedin.com/company/jinaai/" aria-label="LinkedIn"
+                               target="_blank" rel="noreferrer"> <i class="fab fa-linkedin"></i></a>
+                        </div>
+                    </div>
+                </div>
+                
+            </footer>
+        </div>
+        <aside class="toc-drawer no-toc">
+            
+            
+            
+        </aside>
+    </div>
+    <qa-bot
+            title="Jina Bot"
+            description="Build cross-modal and multi-modal applications on the cloud"
+    >
+        <template>
+            <dl>
+                <dt>You can ask questions about our docs. Try:</dt>
+                <dd>Does Jina support Kubernetes?</dd>
+                <dd>What are the basic concepts in Jina?</dd>
+                <dd>How to share my Executor?</dd>
+            </dl>
+        </template>
+    </qa-bot>
+</div>
+<img referrerpolicy="no-referrer-when-downgrade"
+     src="https://static.scarf.sh/a.png?x-pxid=2823e771-0e1e-4320-8fde-48bc48e53262"/><script data-url_root="../../../../../../../" id="documentation_options" src="../../../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../../../_static/jquery.js"></script>
+    <script src="../../../../../../../_static/underscore.js"></script>
+    <script src="../../../../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../../../../../_static/doctools.js"></script>
+    <script src="../../../../../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../../../../../_static/scripts/furo.js"></script>
+    <script src="../../../../../../../_static/clipboard.min.js"></script>
+    <script src="../../../../../../../_static/copybutton.js"></script>
+    <script src="../../../../../../../_static/tabs.js"></script>
+    <script src="../../../../../../../_static/design-tabs.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() { 
+            document.querySelector('qa-bot').setAttribute('server', 'https://jina-ai-jina.docsqa.jina.ai');
+        });
+        </script>
+    <script src="https://cdn.jsdelivr.net/npm/qabot@0.4"></script>
+    </body>
+</html>

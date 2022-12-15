@@ -1,0 +1,735 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+<meta property="og:title" content="<no title>" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://docs.jina.ai/fundamentals/flow/executor-args/" />
+<meta property="og:site_name" content="Jina 3.6.13 Documentation" />
+<meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
+<meta property="og:image:alt" content="Jina 3.6.13 Documentation" />
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@JinaAI_">
+<meta name="twitter:creator" content="@JinaAI_">
+<meta name="description" content="Build cross-modal and multi-modal applications on the cloud">
+<meta property="og:description" content="Build cross-modal and multi-modal applications on the cloud">
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-48ZDWC8GT6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-48ZDWC8GT6');
+</script>
+
+<script async defer src="https://buttons.github.io/buttons.js"></script>
+    
+<link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" />
+        <link rel="canonical" href="https://docs.jina.ai/fundamentals/flow/executor-args.html" />
+
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
+        <title>&lt;no title&gt; - Jina 3.6.13 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/tabs.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/main.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/docbot.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #ffffff;
+  --color-code-foreground: #4d4d4d;
+  --color-brand-primary: #009191;
+  --color-brand-content: #009191;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #FBCB67;
+  --color-brand-content: #FBCB67;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #FBCB67;
+  --color-brand-content: #FBCB67;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+    <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+    <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<div class="announcement">
+    <aside class="announcement-content">
+         
+    <a href="https://www.meetup.com/jina-community-meetup/events/286917139/">Join our Office Hours on July 28th at 19:00 CET to find answers on all your questions</a>
+     
+    </aside>
+</div>
+
+<div class="page">
+    <header class="mobile-header">
+        <div class="header-left">
+            <label class="nav-overlay-icon" for="__navigation">
+                <div class="visually-hidden">Toggle site navigation sidebar</div>
+                <i class="icon">
+                    <svg>
+                        <use href="#svg-menu"></use>
+                    </svg>
+                </i>
+            </label>
+        </div>
+        <div class="header-center">
+            <a href="../../../">
+                <div class="brand">Jina 3.6.13 documentation</div>
+            </a>
+        </div>
+        <div class="header-right">
+            <div class="theme-toggle-container theme-toggle-header">
+                <button class="theme-toggle">
+                    <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+                    <svg class="theme-icon-when-auto">
+                        <use href="#svg-sun-half"></use>
+                    </svg>
+                    <svg class="theme-icon-when-dark">
+                        <use href="#svg-moon"></use>
+                    </svg>
+                    <svg class="theme-icon-when-light">
+                        <use href="#svg-sun"></use>
+                    </svg>
+                </button>
+            </div>
+            <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+                <div class="visually-hidden">Toggle table of contents sidebar</div>
+                <i class="icon">
+                    <svg>
+                        <use href="#svg-toc"></use>
+                    </svg>
+                </i>
+            </label>
+        </div>
+    </header>
+    <aside class="sidebar-drawer">
+        <div class="sidebar-container">
+            
+            <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo only-light" src="../../../_static/logo-light.svg" alt="Light Logo" />
+    <img class="sidebar-logo only-dark" src="../../../_static/logo-dark.svg" alt="Dark Logo" />
+  </div>
+  
+  
+</a>
+<script>
+  function setPrefix(prefix){
+    window.location.href = prefix
+  }
+</script>
+<script defer>
+  fetch(`https://${window.location.host}/_versions.json`)
+  .then((resp) => resp.json())
+  .then((data) => {
+    var versionSelector = document.getElementsByClassName("version-select")[0];
+    var currentPrefix = window.location.href.toString().split(window.location.host)[1].split('/')[1];
+
+    for(var i = 0; i < data.length; i++){
+      var option = document.createElement("option");
+      option.innerHTML = data[i].version;
+      option.value = "/" + data[i].version;
+      versionSelector.appendChild(option);
+      if(currentPrefix === data[i].version){
+        versionSelector.selectedIndex = i + 1;
+      }
+    }
+  })
+  .catch((err) => console.log(err));
+</script>
+<div class="sd-d-flex-row sd-align-major-spaced">
+  <a class="github-button" href="https://github.com/jina-ai/jina" data-icon="octicon-star" data-show-count="true" aria-label="Star jina-ai/jina on GitHub" style="opacity: 0;">Star</a>
+  <select onChange="setPrefix(this.value)" class="version-select">
+    <option value="/">latest</option>
+  </select>
+</div><form class="sidebar-search-container" method="get" action="../../../search/" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+    <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../get-started/install/">Install</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../get-started/install/docker/">Docker image</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../get-started/install/windows/">On Windows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../get-started/install/troubleshooting/">Troubleshooting</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../get-started/create-app/">Create Project</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../architecture-overview/">Glossary</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../executor/">Executor</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../executor/executor-api/">Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../executor/executor-methods/"><code class="docutils literal notranslate"><span class="pre">@requests</span></code> methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../executor/monitoring-executor/">Monitor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../executor/executor-run/">Run</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../executor/executor-serve/">Serve</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../executor/yaml-spec/">YAML specification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../executor/executor-files/">File structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../executor/containerize-executor/">Containerize</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../">Flow</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../create-flow/">Basic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../add-executors/">Add Executors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../topologies/">Topology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../monitoring-flow/">Monitor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../health-check/">Readiness &amp; health check</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../when-things-go-wrong/">Handle exceptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../yaml-spec/">YAML specification</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../gateway/">Gateway</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../client/">Client</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../access-flow-api/">Third-party clients</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../executor/hub/">Hub</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../executor/hub/hub-portal/">Portal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../executor/hub/create-hub-executor/">Create</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../executor/hub/push-executor/">Publish</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../executor/hub/use-hub-executor/">Use</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../how-to/sandbox/">Sandbox</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../how-to/debug-executor/">Debug</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../executor/hub/executor-best-practices/">Best practices</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../jcloud/">JCloud</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../jcloud/basic/">Basic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../jcloud/advanced/">Advanced</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../jcloud/faq/">FAQ</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../how-to/"><svg aria-hidden="true" class="sd-octicon sd-octicon-book" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M0 1.75A.75.75 0 01.75 1h4.253c1.227 0 2.317.59 3 1.501A3.744 3.744 0 0111.006 1h4.245a.75.75 0 01.75.75v10.5a.75.75 0 01-.75.75h-4.507a2.25 2.25 0 00-1.591.659l-.622.621a.75.75 0 01-1.06 0l-.622-.621A2.25 2.25 0 005.258 13H.75a.75.75 0 01-.75-.75V1.75zm8.755 3a2.25 2.25 0 012.25-2.25H14.5v9h-3.757c-.71 0-1.4.201-1.992.572l.004-7.322zm-1.504 7.324l.004-5.073-.002-2.253A2.25 2.25 0 005.003 2.5H1.5v9h3.757a3.75 3.75 0 011.994.574z" fill-rule="evenodd"></path></svg> How-To</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../how-to/google-colab/">Use Jina on Colab with GPU/TPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../clean-code/">Write clean &amp; efficient code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../how-to/async-executors/">Use async coroutines in Executors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../how-to/scale-out/">Scale out your Executor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../how-to/gpu-executor/">Run Executors on GPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../how-to/external-executor/">Use external Executors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../how-to/flow-switch/">Add selection control to a Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../how-to/docker-compose/">Deploy with Docker Compose</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../how-to/kubernetes/">Deploy with Kubernetes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../how-to/monitoring/">Use monitoring with Jina in Kubernetes</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer References</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api-rst/"><span class="fab fa-python"></span> Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../cli/"><svg aria-hidden="true" class="sd-octicon sd-octicon-terminal" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M0 2.75C0 1.784.784 1 1.75 1h12.5c.966 0 1.75.784 1.75 1.75v10.5A1.75 1.75 0 0114.25 15H1.75A1.75 1.75 0 010 13.25V2.75zm1.75-.25a.25.25 0 00-.25.25v10.5c0 .138.112.25.25.25h12.5a.25.25 0 00.25-.25V2.75a.25.25 0 00-.25-.25H1.75zM7.25 8a.75.75 0 01-.22.53l-2.25 2.25a.75.75 0 11-1.06-1.06L5.44 8 3.72 6.28a.75.75 0 111.06-1.06l2.25 2.25c.141.14.22.331.22.53zm1.5 1.5a.75.75 0 000 1.5h3a.75.75 0 000-1.5h-3z" fill-rule="evenodd"></path></svg> Command-Line Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../proto/docs/">Protocol Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../envs/">Environment Variables</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Legacy Support</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../get-started/migrate/">Migrate Jina 2 to Jina 3</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://docs2.jina.ai/">Jina 2 Documentation</a></li>
+</ul>
+
+    <p class="caption" role="heading"><span class="caption-text">Ecosystem</span></p>
+    <ul>
+        <li class="toctree-l1">
+            <a class="reference internal" href="#">
+                <img class="sidebar-ecosys-logo only-light-line" src="../../../_static/search-light.svg">
+                <img class="sidebar-ecosys-logo only-dark-line" src="../../../_static/search-dark.svg">
+                Jina</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://hub.jina.ai">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../../_static/hub-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../../_static/hub-dark.svg">
+            Jina Hub</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://finetuner.jina.ai">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../../_static/finetuner-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../../_static/finetuner-dark.svg">
+            Finetuner</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://docarray.jina.ai">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../../_static/docarray-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../../_static/docarray-dark.svg">
+            DocArray</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://clip-as-service.jina.ai">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../../_static/cas-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../../_static/cas-dark.svg">
+            CLIP-as-service</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://github.com/jina-ai/jcloud">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../../_static/JCloud-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../../_static/JCloud-dark.svg">
+            JCloud</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://now.jina.ai">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../../_static/now-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../../_static/now-dark.svg">
+            NOW</a></li>
+    </ul>
+</div>
+
+</div>
+
+            </div>
+            
+        </div>
+    </aside>
+    <div class="main">
+        <div class="content">
+            <div class="article-container">
+                <a href="#" class="back-to-top muted-link">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+                    </svg>
+                    <span>Back to top</span>
+                </a>
+                <div class="content-icon-container"><div class="theme-toggle-container theme-toggle-content">
+                        <button class="theme-toggle">
+                            <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+                            <svg class="theme-icon-when-auto">
+                                <use href="#svg-sun-half"></use>
+                            </svg>
+                            <svg class="theme-icon-when-dark">
+                                <use href="#svg-moon"></use>
+                            </svg>
+                            <svg class="theme-icon-when-light">
+                                <use href="#svg-sun"></use>
+                            </svg>
+                        </button>
+                    </div>
+                    <label class="toc-overlay-icon toc-content-icon no-toc"
+                           for="__toc">
+                        <div class="visually-hidden">Toggle table of contents sidebar</div>
+                        <i class="icon">
+                            <svg>
+                                <use href="#svg-toc"></use>
+                            </svg>
+                        </i>
+                    </label>
+                </div>
+                <article role="main">
+                    <table border="1" class="docutils">
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Type</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>name</code></td>
+<td>The name of this object.<br><br>    This will be used in the following places:<br>    - how you refer to this object in Python/YAML/CLI<br>    - visualization<br>    - log message header<br>    - ...<br><br>    When not given, then the default naming strategy will apply.</td>
+<td><code>string</code></td>
+<td><code>None</code></td>
+</tr>
+<tr>
+<td><code>workspace</code></td>
+<td>The working directory for any IO operations in this object. If not set, then derive from its parent <code>workspace</code>.</td>
+<td><code>string</code></td>
+<td><code>None</code></td>
+</tr>
+<tr>
+<td><code>log_config</code></td>
+<td>The YAML config of the logger used in this object.</td>
+<td><code>string</code></td>
+<td><code>default</code></td>
+</tr>
+<tr>
+<td><code>quiet</code></td>
+<td>If set, then no log will be emitted from this object.</td>
+<td><code>boolean</code></td>
+<td><code>False</code></td>
+</tr>
+<tr>
+<td><code>quiet_error</code></td>
+<td>If set, then exception stack information will not be added to the log</td>
+<td><code>boolean</code></td>
+<td><code>False</code></td>
+</tr>
+<tr>
+<td><code>timeout_ctrl</code></td>
+<td>The timeout in milliseconds of the control request, -1 for waiting forever</td>
+<td><code>number</code></td>
+<td><code>60</code></td>
+</tr>
+<tr>
+<td><code>polling</code></td>
+<td>The polling strategy of the Deployment and its endpoints (when <code>shards&gt;1</code>).<br>    Can be defined for all endpoints of a Deployment or by endpoint.<br>    Define per Deployment:<br>    - ANY: only one (whoever is idle) Pod polls the message<br>    - ALL: all Pods poll the message (like a broadcast)<br>    Define per Endpoint:<br>    JSON dict, {endpoint: PollingType}<br>    {'/custom': 'ALL', '/search': 'ANY', '*': 'ANY'}</td>
+<td><code>string</code></td>
+<td><code>ANY</code></td>
+</tr>
+<tr>
+<td><code>uses</code></td>
+<td>The config of the executor, it could be one of the followings:<br>        * an Executor YAML file (.yml, .yaml, .jaml)<br>        * a Jina Hub Executor (must start with <code>jinahub://</code> or <code>jinahub+docker://</code>)<br>        * a docker image (must start with <code>docker://</code>)<br>        * the string literal of a YAML config (must start with <code>!</code> or <code>jtype:</code>)<br>        * the string literal of a JSON config<br><br>        When use it under Python, one can use the following values additionally:<br>        - a Python dict that represents the config<br>        - a text file stream has <code>.read()</code> interface</td>
+<td><code>string</code></td>
+<td><code>BaseExecutor</code></td>
+</tr>
+<tr>
+<td><code>uses_with</code></td>
+<td>Dictionary of keyword arguments that will override the <code>with</code> configuration in <code>uses</code></td>
+<td><code>object</code></td>
+<td><code>None</code></td>
+</tr>
+<tr>
+<td><code>uses_metas</code></td>
+<td>Dictionary of keyword arguments that will override the <code>metas</code> configuration in <code>uses</code></td>
+<td><code>object</code></td>
+<td><code>None</code></td>
+</tr>
+<tr>
+<td><code>uses_requests</code></td>
+<td>Dictionary of keyword arguments that will override the <code>requests</code> configuration in <code>uses</code></td>
+<td><code>object</code></td>
+<td><code>None</code></td>
+</tr>
+<tr>
+<td><code>py_modules</code></td>
+<td>The customized python modules need to be imported before loading the executor<br><br>Note that the recommended way is to only import a single module - a simple python file, if your<br>executor can be defined in a single file, or an <code>__init__.py</code> file if you have multiple files,<br>which should be structured as a python package. For more details, please see the<br><code>Executor cookbook &lt;https://docs.jina.ai/fundamentals/executor/executor-files/&gt;</code>__</td>
+<td><code>array</code></td>
+<td><code>None</code></td>
+</tr>
+<tr>
+<td><code>port</code></td>
+<td>The port for input data to bind to, default is a random port between [49152, 65535]</td>
+<td><code>number</code></td>
+<td><code>random in [49152, 65535]</code></td>
+</tr>
+<tr>
+<td><code>host_in</code></td>
+<td>The host address for binding to, by default it is 0.0.0.0</td>
+<td><code>string</code></td>
+<td><code>0.0.0.0</code></td>
+</tr>
+<tr>
+<td><code>native</code></td>
+<td>If set, only native Executors is allowed, and the Executor is always run inside WorkerRuntime.</td>
+<td><code>boolean</code></td>
+<td><code>False</code></td>
+</tr>
+<tr>
+<td><code>output_array_type</code></td>
+<td>The type of array <code>tensor</code> and <code>embedding</code> will be serialized to.<br><br>Supports the same types as <code>docarray.to_protobuf(.., ndarray_type=...)</code>, which can be found <br><code>here &lt;https://docarray.jina.ai/fundamentals/document/serialization/#from-to-protobuf&gt;</code>.<br>Defaults to retaining whatever type is returned by the Executor.</td>
+<td><code>string</code></td>
+<td><code>None</code></td>
+</tr>
+<tr>
+<td><code>entrypoint</code></td>
+<td>The entrypoint command overrides the ENTRYPOINT in Docker image. when not set then the Docker image ENTRYPOINT takes effective.</td>
+<td><code>string</code></td>
+<td><code>None</code></td>
+</tr>
+<tr>
+<td><code>docker_kwargs</code></td>
+<td>Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker '<br>container. <br><br>More details can be found in the Docker SDK docs:  https://docker-py.readthedocs.io/en/stable/</td>
+<td><code>object</code></td>
+<td><code>None</code></td>
+</tr>
+<tr>
+<td><code>volumes</code></td>
+<td>The path on the host to be mounted inside the container. <br><br>Note, <br>- If separated by <code>:</code>, then the first part will be considered as the local host path and the second part is the path in the container system. <br>- If no split provided, then the basename of that directory will be mounted into container's root path, e.g. <code>--volumes="/user/test/my-workspace"</code> will be mounted into <code>/my-workspace</code> inside the container. <br>- All volumes are mounted with read-write mode.</td>
+<td><code>array</code></td>
+<td><code>None</code></td>
+</tr>
+<tr>
+<td><code>gpus</code></td>
+<td>This argument allows dockerized Jina executor discover local gpu devices.<br><br>    Note, <br>    - To access all gpus, use <code>--gpus all</code>.<br>    - To access multiple gpus, e.g. make use of 2 gpus, use <code>--gpus 2</code>.<br>    - To access specified gpus based on device id, use <code>--gpus device=[YOUR-GPU-DEVICE-ID]</code><br>    - To access specified gpus based on multiple device id, use <code>--gpus device=[YOUR-GPU-DEVICE-ID1],device=[YOUR-GPU-DEVICE-ID2]</code><br>    - To specify more parameters, use <code>--gpus device=[YOUR-GPU-DEVICE-ID],runtime=nvidia,capabilities=display |</code>string<code>|</code>None`</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>disable_auto_volume</code></td>
+<td>Do not automatically mount a volume for dockerized Executors.</td>
+<td><code>boolean</code></td>
+<td><code>False</code></td>
+</tr>
+<tr>
+<td><code>host</code></td>
+<td>The host address of the runtime, by default it is 0.0.0.0.</td>
+<td><code>string</code></td>
+<td><code>0.0.0.0</code></td>
+</tr>
+<tr>
+<td><code>quiet_remote_logs</code></td>
+<td>Do not display the streaming of remote logs on local console</td>
+<td><code>boolean</code></td>
+<td><code>False</code></td>
+</tr>
+<tr>
+<td><code>upload_files</code></td>
+<td>The files on the host to be uploaded to the remote<br>workspace. This can be useful when your Deployment has more<br>file dependencies beyond a single YAML file, e.g.<br>Python files, data files.<br><br>Note,<br>- currently only flatten structure is supported, which means if you upload <code>[./foo/a.py, ./foo/b.pp, ./bar/c.yml]</code>, then they will be put under the <em>same</em> workspace on the remote, losing all hierarchies.<br>- by default, <code>--uses</code> YAML file is always uploaded.<br>- uploaded files are by default isolated across the runs. To ensure files are submitted to the same workspace across different runs, use <code>--workspace-id</code> to specify the workspace.</td>
+<td><code>array</code></td>
+<td><code>None</code></td>
+</tr>
+<tr>
+<td><code>runtime_cls</code></td>
+<td>The runtime class to run inside the Pod</td>
+<td><code>string</code></td>
+<td><code>WorkerRuntime</code></td>
+</tr>
+<tr>
+<td><code>timeout_ready</code></td>
+<td>The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting forever</td>
+<td><code>number</code></td>
+<td><code>600000</code></td>
+</tr>
+<tr>
+<td><code>env</code></td>
+<td>The map of environment variables that are available inside runtime</td>
+<td><code>object</code></td>
+<td><code>None</code></td>
+</tr>
+<tr>
+<td><code>shards</code></td>
+<td>The number of shards in the deployment running at the same time. For more details check https://docs.jina.ai/fundamentals/flow/create-flow/#complex-flow-topologies</td>
+<td><code>number</code></td>
+<td><code>1</code></td>
+</tr>
+<tr>
+<td><code>replicas</code></td>
+<td>The number of replicas in the deployment</td>
+<td><code>number</code></td>
+<td><code>1</code></td>
+</tr>
+<tr>
+<td><code>monitoring</code></td>
+<td>If set, spawn an http server with a prometheus endpoint to expose metrics</td>
+<td><code>boolean</code></td>
+<td><code>False</code></td>
+</tr>
+<tr>
+<td><code>port_monitoring</code></td>
+<td>The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</td>
+<td><code>number</code></td>
+<td><code>random in [49152, 65535]</code></td>
+</tr>
+<tr>
+<td><code>retries</code></td>
+<td>Number of retries per gRPC call. If &lt;0 it defaults to max(3, num_replicas)</td>
+<td><code>number</code></td>
+<td><code>-1</code></td>
+</tr>
+<tr>
+<td><code>floating</code></td>
+<td>If set, the current Pod/Deployment can not be further chained, and the next <code>.add()</code> will chain after the last Pod/Deployment not this current one.</td>
+<td><code>boolean</code></td>
+<td><code>False</code></td>
+</tr>
+<tr>
+<td><code>install_requirements</code></td>
+<td>If set, install <code>requirements.txt</code> in the Hub Executor bundle to local</td>
+<td><code>boolean</code></td>
+<td><code>False</code></td>
+</tr>
+<tr>
+<td><code>force_update</code></td>
+<td>If set, always pull the latest Hub Executor bundle even it exists on local</td>
+<td><code>boolean</code></td>
+<td><code>False</code></td>
+</tr>
+<tr>
+<td><code>compression</code></td>
+<td>The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.</td>
+<td><code>string</code></td>
+<td><code>None</code></td>
+</tr>
+<tr>
+<td><code>uses_before_address</code></td>
+<td>The address of the uses-before runtime</td>
+<td><code>string</code></td>
+<td><code>None</code></td>
+</tr>
+<tr>
+<td><code>uses_after_address</code></td>
+<td>The address of the uses-before runtime</td>
+<td><code>string</code></td>
+<td><code>None</code></td>
+</tr>
+<tr>
+<td><code>connection_list</code></td>
+<td>dictionary JSON with a list of connections to configure</td>
+<td><code>string</code></td>
+<td><code>None</code></td>
+</tr>
+<tr>
+<td><code>disable_reduce</code></td>
+<td>Disable the built-in reduce mechanism, set this if the reduction is to be handled by the Executor connected to this Head</td>
+<td><code>boolean</code></td>
+<td><code>False</code></td>
+</tr>
+<tr>
+<td><code>timeout_send</code></td>
+<td>The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default</td>
+<td><code>number</code></td>
+<td><code>None</code></td>
+</tr>
+</tbody>
+</table>
+                </article>
+            </div>
+            <footer>
+                
+                <div class="related-pages">
+                    
+                    
+                </div>
+                <div class="bottom-of-page">
+                    <div class="left-details">
+                        <div class="copyright">
+                            Copyright &#169; Jina AI Limited. All rights reserved.
+                        </div><div class="last-updated">
+                            Last updated on Dec 15, 2022</div>
+                    </div>
+                    <div class="right-details">
+                        <div class="social-btns">
+                            <a class='social-btn' href="https://github.com/jina-ai/jina" aria-label="GitHub"
+                               target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
+                            <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank"
+                               rel="noreferrer"> <i class="fab fa-slack"></i></a>
+                            <a class='social-btn' href="https://youtube.com/c/jina-ai" aria-label="YouTube"
+                               target="_blank" rel="noreferrer"> <i class="fab fa-youtube"></i></a>
+                            <a class='social-btn' href="https://twitter.com/JinaAI_" aria-label="Twitter"
+                               target="_blank" rel="noreferrer"> <i class="fab fa-twitter"></i></a>
+                            <a class='social-btn' href="https://www.linkedin.com/company/jinaai/" aria-label="LinkedIn"
+                               target="_blank" rel="noreferrer"> <i class="fab fa-linkedin"></i></a>
+                        </div>
+                    </div>
+                </div>
+                
+            </footer>
+        </div>
+        <aside class="toc-drawer no-toc">
+            
+            
+            
+        </aside>
+    </div>
+    <qa-bot
+            title="Jina Bot"
+            description="Build cross-modal and multi-modal applications on the cloud"
+    >
+        <template>
+            <dl>
+                <dt>You can ask questions about our docs. Try:</dt>
+                <dd>Does Jina support Kubernetes?</dd>
+                <dd>What are the basic concepts in Jina?</dd>
+                <dd>How to share my Executor?</dd>
+            </dl>
+        </template>
+    </qa-bot>
+</div>
+<img referrerpolicy="no-referrer-when-downgrade"
+     src="https://static.scarf.sh/a.png?x-pxid=2823e771-0e1e-4320-8fde-48bc48e53262"/><script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/scripts/furo.js"></script>
+    <script src="../../../_static/clipboard.min.js"></script>
+    <script src="../../../_static/copybutton.js"></script>
+    <script src="../../../_static/tabs.js"></script>
+    <script src="../../../_static/design-tabs.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() { 
+            document.querySelector('qa-bot').setAttribute('server', 'https://jina-ai-jina.docsqa.jina.ai');
+        });
+        </script>
+    <script src="https://cdn.jsdelivr.net/npm/qabot@0.4"></script>
+    </body>
+</html>

@@ -7,10 +7,10 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/api/jina.jaml.parsers/" />
 <meta property="og:site_name" content="Jina 3.3.7 Documentation" />
-<meta property="og:description" content="Subpackages: jina.jaml.parsers.default package- Submodules- jina.jaml.parsers.default.v1 module., Module contents., jina.jaml.parsers.executor package- Submodules- jina.jaml.parsers.executor.legacy module., Module contents., jina.jaml.parsers.flow package- Submodules- jina.jaml.parsers.flow.v1 mo..." />
+<meta property="og:description" content="Subpackages: jina.jaml.parsers.default package- Submodules- jina.jaml.parsers.default.v1 module- V1Parser.., Module contents., jina.jaml.parsers.executor package- Submodules- jina.jaml.parsers.executor.legacy module- LegacyParser.., Module contents., jina.jaml.parsers.flow package- Submodules- ji..." />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
 <meta property="og:image:alt" content="Jina 3.3.7 Documentation" />
-<meta name="description" content="Subpackages: jina.jaml.parsers.default package- Submodules- jina.jaml.parsers.default.v1 module., Module contents., jina.jaml.parsers.executor package- Submodules- jina.jaml.parsers.executor.legacy module., Module contents., jina.jaml.parsers.flow package- Submodules- jina.jaml.parsers.flow.v1 mo..." />
+<meta name="description" content="Subpackages: jina.jaml.parsers.default package- Submodules- jina.jaml.parsers.default.v1 module- V1Parser.., Module contents., jina.jaml.parsers.executor package- Submodules- jina.jaml.parsers.executor.legacy module- LegacyParser.., Module contents., jina.jaml.parsers.flow package- Submodules- ji..." />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
@@ -32,10 +32,10 @@
 <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="jina.jaml.parsers.default package" href="../jina.jaml.parsers.default/" /><link rel="prev" title="jina.jaml package" href="../jina.jaml/" />
         <link rel="canonical" href="https://docs.jina.ai/api/jina.jaml.parsers.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.09.29"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
         <title>jina.jaml.parsers package - Jina 3.3.7 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
@@ -238,7 +238,7 @@
     <option value="/">latest</option>
   </select>
 </div><form class="sidebar-search-container" method="get" action="../../search/" role="search">
-  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form>
@@ -601,14 +601,17 @@
                     </label>
                 </div>
                 <section id="jina-jaml-parsers-package">
-<h1>jina.jaml.parsers package<a class="headerlink" href="#jina-jaml-parsers-package" title="Permalink to this headline">#</a></h1>
+<h1>jina.jaml.parsers package<a class="headerlink" href="#jina-jaml-parsers-package" title="Permalink to this heading">#</a></h1>
 <section id="subpackages">
-<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">#</a></h2>
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this heading">#</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../jina.jaml.parsers.default/">jina.jaml.parsers.default package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../jina.jaml.parsers.default/#submodules">Submodules</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.parsers.default.v1/">jina.jaml.parsers.default.v1 module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.parsers.default.v1/">jina.jaml.parsers.default.v1 module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.jaml.parsers.default.v1/#jina.jaml.parsers.default.v1.V1Parser"><code class="docutils literal notranslate"><span class="pre">V1Parser</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../jina.jaml.parsers.default/#module-jina.jaml.parsers.default">Module contents</a></li>
@@ -616,7 +619,10 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../jina.jaml.parsers.executor/">jina.jaml.parsers.executor package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../jina.jaml.parsers.executor/#submodules">Submodules</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.parsers.executor.legacy/">jina.jaml.parsers.executor.legacy module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.parsers.executor.legacy/">jina.jaml.parsers.executor.legacy module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.jaml.parsers.executor.legacy/#jina.jaml.parsers.executor.legacy.LegacyParser"><code class="docutils literal notranslate"><span class="pre">LegacyParser</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../jina.jaml.parsers.executor/#module-jina.jaml.parsers.executor">Module contents</a></li>
@@ -624,7 +630,10 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../jina.jaml.parsers.flow/">jina.jaml.parsers.flow package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../jina.jaml.parsers.flow/#submodules">Submodules</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.parsers.flow.v1/">jina.jaml.parsers.flow.v1 module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.parsers.flow.v1/">jina.jaml.parsers.flow.v1 module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.jaml.parsers.flow.v1/#jina.jaml.parsers.flow.v1.V1Parser"><code class="docutils literal notranslate"><span class="pre">V1Parser</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../jina.jaml.parsers.flow/#module-jina.jaml.parsers.flow">Module contents</a></li>
@@ -634,15 +643,23 @@
 </div>
 </section>
 <section id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">#</a></h2>
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading">#</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../jina.jaml.parsers.base/">jina.jaml.parsers.base module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../jina.jaml.parsers.base/">jina.jaml.parsers.base module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../jina.jaml.parsers.base/#jina.jaml.parsers.base.VersionedYAMLParser"><code class="docutils literal notranslate"><span class="pre">VersionedYAMLParser</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.parsers.base/#jina.jaml.parsers.base.VersionedYAMLParser.version"><code class="docutils literal notranslate"><span class="pre">VersionedYAMLParser.version</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.parsers.base/#jina.jaml.parsers.base.VersionedYAMLParser.parse"><code class="docutils literal notranslate"><span class="pre">VersionedYAMLParser.parse()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.parsers.base/#jina.jaml.parsers.base.VersionedYAMLParser.dump"><code class="docutils literal notranslate"><span class="pre">VersionedYAMLParser.dump()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </div>
 </section>
 <section id="module-jina.jaml.parsers">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-jina.jaml.parsers" title="Permalink to this headline">#</a></h2>
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-jina.jaml.parsers" title="Permalink to this heading">#</a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="jina.jaml.parsers.get_parser">
 <span class="sig-prename descclassname"><span class="pre">jina.jaml.parsers.</span></span><span class="sig-name descname"><span class="pre">get_parser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">version</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/jaml/parsers/#get_parser"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.jaml.parsers.get_parser" title="Permalink to this definition">#</a></dt>
@@ -714,7 +731,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Nov 25, 2022.
+                    Last updated on Dec 15, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -742,7 +759,11 @@
 <li><a class="reference internal" href="#">jina.jaml.parsers package</a><ul>
 <li><a class="reference internal" href="#subpackages">Subpackages</a></li>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-jina.jaml.parsers">Module contents</a></li>
+<li><a class="reference internal" href="#module-jina.jaml.parsers">Module contents</a><ul>
+<li><a class="reference internal" href="#jina.jaml.parsers.get_parser"><code class="docutils literal notranslate"><span class="pre">get_parser()</span></code></a></li>
+<li><a class="reference internal" href="#jina.jaml.parsers.get_supported_versions"><code class="docutils literal notranslate"><span class="pre">get_supported_versions()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -772,7 +793,9 @@
 <img referrerpolicy="no-referrer-when-downgrade" src="https://static.scarf.sh/a.png?x-pxid=1b470c1d-3b55-4d38-baa8-989bfba2a218" /><script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
     <script src="../../_static/scripts/furo.js"></script>
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>

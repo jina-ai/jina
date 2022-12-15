@@ -1,0 +1,956 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+<meta property="og:title" content="jina.enums module" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://docs.jina.ai/api/jina.enums/" />
+<meta property="og:site_name" content="Jina 3.8.1 Documentation" />
+<meta property="og:description" content="Miscellaneous enums used in Jina. To use these enums in YAML config, following the example below:" />
+<meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
+<meta property="og:image:alt" content="Jina 3.8.1 Documentation" />
+<meta name="description" content="Miscellaneous enums used in Jina. To use these enums in YAML config, following the example below:" />
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@JinaAI_">
+<meta name="twitter:creator" content="@JinaAI_">
+<meta name="description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native · MLOps">
+<meta property="og:description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native · MLOps">
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-48ZDWC8GT6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-48ZDWC8GT6');
+</script>
+
+<script async defer src="https://buttons.github.io/buttons.js"></script>
+    
+<link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" />
+        <link rel="canonical" href="https://docs.jina.ai/api/jina.enums.html" />
+
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
+        <title>jina.enums module - Jina 3.8.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/main.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/docbot.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #ffffff;
+  --color-code-foreground: #4d4d4d;
+  --color-brand-primary: #009191;
+  --color-brand-content: #009191;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #FBCB67;
+  --color-brand-content: #FBCB67;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #FBCB67;
+  --color-brand-content: #FBCB67;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+    <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+    <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+    <header class="mobile-header">
+        <div class="header-left">
+            <label class="nav-overlay-icon" for="__navigation">
+                <div class="visually-hidden">Toggle site navigation sidebar</div>
+                <i class="icon">
+                    <svg>
+                        <use href="#svg-menu"></use>
+                    </svg>
+                </i>
+            </label>
+        </div>
+        <div class="header-center">
+            <a href="../../">
+                <div class="brand">Jina 3.8.1 documentation</div>
+            </a>
+        </div>
+        <div class="header-right">
+            <div class="theme-toggle-container theme-toggle-header">
+                <button class="theme-toggle">
+                    <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+                    <svg class="theme-icon-when-auto">
+                        <use href="#svg-sun-half"></use>
+                    </svg>
+                    <svg class="theme-icon-when-dark">
+                        <use href="#svg-moon"></use>
+                    </svg>
+                    <svg class="theme-icon-when-light">
+                        <use href="#svg-sun"></use>
+                    </svg>
+                </button>
+            </div>
+            <label class="toc-overlay-icon toc-header-icon" for="__toc">
+                <div class="visually-hidden">Toggle table of contents sidebar</div>
+                <i class="icon">
+                    <svg>
+                        <use href="#svg-toc"></use>
+                    </svg>
+                </i>
+            </label>
+        </div>
+    </header>
+    <aside class="sidebar-drawer">
+        <div class="sidebar-container">
+            
+            <div class="sidebar-sticky"><a class="sidebar-brand" href="../../">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo only-light" src="../../_static/logo-light.svg" alt="Light Logo" />
+    <img class="sidebar-logo only-dark" src="../../_static/logo-dark.svg" alt="Dark Logo" />
+  </div>
+  
+  
+</a>
+<script>
+  function setPrefix(prefix){
+    window.location.href = prefix
+  }
+</script>
+<script defer>
+  fetch(`https://${window.location.host}/_versions.json`)
+  .then((resp) => resp.json())
+  .then((data) => {
+    var versionSelector = document.getElementsByClassName("version-select")[0];
+    var currentPrefix = window.location.href.toString().split(window.location.host)[1].split('/')[1];
+
+    for(var i = 0; i < data.length; i++){
+      var option = document.createElement("option");
+      option.innerHTML = data[i].version;
+      option.value = "/" + data[i].version;
+      versionSelector.appendChild(option);
+      if(currentPrefix === data[i].version){
+        versionSelector.selectedIndex = i + 1;
+      }
+    }
+  })
+  .catch((err) => console.log(err));
+</script>
+<div class="sd-d-flex-row sd-align-major-spaced">
+  <a class="github-button" href="https://github.com/jina-ai/jina" data-icon="octicon-star" data-show-count="true" aria-label="Star jina-ai/jina on GitHub" style="opacity: 0;">Star</a>
+  <select onChange="setPrefix(this.value)" class="version-select">
+    <option value="/">latest</option>
+  </select>
+</div><form class="sidebar-search-container" method="get" action="../../search/" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+    <p class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../get-started/what-is-cross-modal-multi-modal/">What is Cross-Modal &amp; Multi-Modal?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../get-started/what-is-jina/">What is Jina?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../get-started/comparing-alternatives/">Comparing to Alternatives</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../get-started/install/">Install</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../get-started/install/docker/">Docker image</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../get-started/install/apple-silicon-m1-m2/">On Apple Silicon</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../get-started/install/windows/">On Windows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../get-started/install/troubleshooting/">Troubleshooting</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../get-started/create-app/"><svg aria-hidden="true" class="sd-octicon sd-octicon-milestone" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M7.75 0a.75.75 0 01.75.75V3h3.634c.414 0 .814.147 1.13.414l2.07 1.75a1.75 1.75 0 010 2.672l-2.07 1.75a1.75 1.75 0 01-1.13.414H8.5v5.25a.75.75 0 11-1.5 0V10H2.75A1.75 1.75 0 011 8.25v-3.5C1 3.784 1.784 3 2.75 3H7V.75A.75.75 0 017.75 0zm0 8.5h4.384a.25.25 0 00.161-.06l2.07-1.75a.25.25 0 000-.38l-2.07-1.75a.25.25 0 00-.161-.06H2.75a.25.25 0 00-.25.25v3.5c0 .138.112.25.25.25h5z" fill-rule="evenodd"></path></svg> Create First Project</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../fundamentals/architecture-overview/">Basic Concepts</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/executor/">Executor</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-api/">Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-methods/"><code class="docutils literal notranslate"><span class="pre">@requests</span></code> methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/monitoring-executor/">Monitor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-run/">Run</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-serve/">Serve</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-files/">File structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/containerize-executor/">Containerize</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/flow/">Flow</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/create-flow/">Basic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/add-executors/">Add Executors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/topologies/">Topology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/monitoring-flow/">Monitor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/health-check/">Readiness &amp; health check</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/when-things-go-wrong/">Handle exceptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/gateway/">Gateway</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/gateway/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/client/client/">Client</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/client/third-party-client/">Third-party clients</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/executor/hub/">Hub</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/hub/hub-portal/">Portal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/hub/create-hub-executor/">Create</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/hub/push-executor/">Publish</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/hub/use-hub-executor/">Use</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/sandbox/">Sandbox</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/debug-executor/">Debug</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/hub/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/jcloud/">JCloud</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/jcloud/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../how-to/"><svg aria-hidden="true" class="sd-octicon sd-octicon-book" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M0 1.75A.75.75 0 01.75 1h4.253c1.227 0 2.317.59 3 1.501A3.744 3.744 0 0111.006 1h4.245a.75.75 0 01.75.75v10.5a.75.75 0 01-.75.75h-4.507a2.25 2.25 0 00-1.591.659l-.622.621a.75.75 0 01-1.06 0l-.622-.621A2.25 2.25 0 005.258 13H.75a.75.75 0 01-.75-.75V1.75zm8.755 3a2.25 2.25 0 012.25-2.25H14.5v9h-3.757c-.71 0-1.4.201-1.992.572l.004-7.322zm-1.504 7.324l.004-5.073-.002-2.253A2.25 2.25 0 005.003 2.5H1.5v9h3.757a3.75 3.75 0 011.994.574z" fill-rule="evenodd"></path></svg> How-To</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/realtime-streaming/">Build real-time streaming service</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/flow-switch/">Conditional route request inside a Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/scale-out/">Scale out with replicas and shards</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/clean-code/">Write clean &amp; efficient code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/google-colab/">Run on Google Colab with GPU/TPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/gpu-executor/">Build a GPU Executor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/external-executor/">Include external Executors in a Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/docker-compose/">Deploy with Docker Compose</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/kubernetes/">Deploy with Kubernetes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/monitoring/">Monitor via Prometheus and Grafana</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer References</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api-rst/"><span class="fab fa-python"></span> Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cli/"><svg aria-hidden="true" class="sd-octicon sd-octicon-terminal" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M0 2.75C0 1.784.784 1 1.75 1h12.5c.966 0 1.75.784 1.75 1.75v10.5A1.75 1.75 0 0114.25 15H1.75A1.75 1.75 0 010 13.25V2.75zm1.75-.25a.25.25 0 00-.25.25v10.5c0 .138.112.25.25.25h12.5a.25.25 0 00.25-.25V2.75a.25.25 0 00-.25-.25H1.75zM7.25 8a.75.75 0 01-.22.53l-2.25 2.25a.75.75 0 11-1.06-1.06L5.44 8 3.72 6.28a.75.75 0 111.06-1.06l2.25 2.25c.141.14.22.331.22.53zm1.5 1.5a.75.75 0 000 1.5h3a.75.75 0 000-1.5h-3z" fill-rule="evenodd"></path></svg> Command-Line Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML Specification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../proto/docs/">Protocol Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../envs/">Environment Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../telemetry/">Telemetry</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Legacy Support</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../get-started/migrate/">Migrate Jina 2 to Jina 3</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://docs2.jina.ai/">Jina 2 Documentation</a></li>
+</ul>
+
+    <p class="caption" role="heading"><span class="caption-text">Ecosystem</span></p>
+    <ul>
+        <li class="toctree-l1">
+            <a class="reference internal" href="#">
+                <img class="sidebar-ecosys-logo only-light-line" src="../../_static/search-light.svg">
+                <img class="sidebar-ecosys-logo only-dark-line" src="../../_static/search-dark.svg">
+                Jina</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://hub.jina.ai">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../_static/hub-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../_static/hub-dark.svg">
+            Jina Hub</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://finetuner.jina.ai">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../_static/finetuner-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../_static/finetuner-dark.svg">
+            Finetuner</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://docarray.jina.ai">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../_static/docarray-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../_static/docarray-dark.svg">
+            DocArray</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://clip-as-service.jina.ai">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../_static/cas-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../_static/cas-dark.svg">
+            CLIP-as-service</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://github.com/jina-ai/jcloud">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../_static/JCloud-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../_static/JCloud-dark.svg">
+            JCloud</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://now.jina.ai">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../_static/now-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../_static/now-dark.svg">
+            NOW</a></li>
+    </ul>
+</div>
+
+</div>
+
+            </div>
+            
+        </div>
+    </aside>
+    <div class="main">
+        <div class="content">
+            <div class="article-container">
+                <a href="#" class="back-to-top muted-link">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+                    </svg>
+                    <span>Back to top</span>
+                </a>
+                <div class="content-icon-container"><div class="theme-toggle-container theme-toggle-content">
+                        <button class="theme-toggle">
+                            <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+                            <svg class="theme-icon-when-auto">
+                                <use href="#svg-sun-half"></use>
+                            </svg>
+                            <svg class="theme-icon-when-dark">
+                                <use href="#svg-moon"></use>
+                            </svg>
+                            <svg class="theme-icon-when-light">
+                                <use href="#svg-sun"></use>
+                            </svg>
+                        </button>
+                    </div>
+                    <label class="toc-overlay-icon toc-content-icon"
+                           for="__toc">
+                        <div class="visually-hidden">Toggle table of contents sidebar</div>
+                        <i class="icon">
+                            <svg>
+                                <use href="#svg-toc"></use>
+                            </svg>
+                        </i>
+                    </label>
+                </div>
+                <article role="main">
+                    <section id="module-jina.enums">
+<span id="jina-enums-module"></span><h1>jina.enums module<a class="headerlink" href="#module-jina.enums" title="Permalink to this heading">#</a></h1>
+<p>Miscellaneous enums used in Jina.</p>
+<p>To use these enums in YAML config, following the example below:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">chunk_idx</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">index/chunk.yml</span><span class="w"></span>
+<span class="w">  </span><span class="nt">parallel</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{PARALLEL}}</span><span class="w"></span>
+<span class="w">  </span><span class="nt">parallel_type</span><span class="p">:</span><span class="w"> </span><span class="kt">!PollingType</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ANY</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># or</span><span class="w"></span>
+<span class="w">  </span><span class="nt">parallel_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ANY</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># or</span><span class="w"></span>
+<span class="w">  </span><span class="nt">parallel_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">any</span><span class="w"></span>
+</pre></div>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="jina.enums.EnumType">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.enums.</span></span><span class="sig-name descname"><span class="pre">EnumType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/enums/#EnumType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.enums.EnumType" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">EnumMeta</span></code></p>
+<p>The metaclass for BetterEnum.</p>
+<p>Register a new EnumType</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>args</strong> – args passed to super()</p></li>
+<li><p><strong>kwargs</strong> – kwargs passed to super()</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the registry class</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.enums.EnumType.register_class">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">register_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/enums/#EnumType.register_class"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.enums.EnumType.register_class" title="Permalink to this definition">#</a></dt>
+<dd><p>Register the class for dumping loading.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>cls</strong> – Target class.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Registered class.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.enums.EnumType.mro">
+<span class="sig-name descname"><span class="pre">mro</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jina.enums.EnumType.mro" title="Permalink to this definition">#</a></dt>
+<dd><p>Return a type’s method resolution order.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jina.enums.BetterEnum">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.enums.</span></span><span class="sig-name descname"><span class="pre">BetterEnum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/enums/#BetterEnum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.enums.BetterEnum" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">IntEnum</span></code></p>
+<p>The base class of Enum used in Jina.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.enums.BetterEnum.from_string">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_string</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/enums/#BetterEnum.from_string"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.enums.BetterEnum.from_string" title="Permalink to this definition">#</a></dt>
+<dd><p>Parse the enum from a string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>s</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – string representation of the enum value</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>enum value</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jina.enums.PollingType">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.enums.</span></span><span class="sig-name descname"><span class="pre">PollingType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/enums/#PollingType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.enums.PollingType" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#jina.enums.BetterEnum" title="jina.enums.BetterEnum"><code class="xref py py-class docutils literal notranslate"><span class="pre">BetterEnum</span></code></a></p>
+<p>The enum for representing the parallel type of pods in a deployment.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.enums.PollingType.ANY">
+<span class="sig-name descname"><span class="pre">ANY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#jina.enums.PollingType.ANY" title="Permalink to this definition">#</a></dt>
+<dd><p>one of the shards will receive the message</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.enums.PollingType.ALL">
+<span class="sig-name descname"><span class="pre">ALL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#jina.enums.PollingType.ALL" title="Permalink to this definition">#</a></dt>
+<dd><p>all shards will receive the message, blocked until all done with the message</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.enums.PollingType.ALL_ASYNC">
+<span class="sig-name descname"><span class="pre">ALL_ASYNC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#jina.enums.PollingType.ALL_ASYNC" title="Permalink to this definition">#</a></dt>
+<dd><p>(reserved) all replica will receive the message, but any one of them can return, useful in backup</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="jina.enums.PollingType.is_push">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_push</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#jina.enums.PollingType.is_push" title="Permalink to this definition">#</a></dt>
+<dd><p>Check if <a class="reference internal" href="#jina.enums.PollingType" title="jina.enums.PollingType"><code class="xref py py-class docutils literal notranslate"><span class="pre">PollingType</span></code></a> is using <cite>push</cite> protocol.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if this <a class="reference internal" href="#jina.enums.PollingType" title="jina.enums.PollingType"><code class="xref py py-class docutils literal notranslate"><span class="pre">PollingType</span></code></a> is using <cite>push</cite> protocol else False.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="jina.enums.PollingType.is_block">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_block</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#jina.enums.PollingType.is_block" title="Permalink to this definition">#</a></dt>
+<dd><p>Check if <a class="reference internal" href="#jina.enums.PollingType" title="jina.enums.PollingType"><code class="xref py py-class docutils literal notranslate"><span class="pre">PollingType</span></code></a> is using <cite>block</cite> protocol.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if this <a class="reference internal" href="#jina.enums.PollingType" title="jina.enums.PollingType"><code class="xref py py-class docutils literal notranslate"><span class="pre">PollingType</span></code></a> is requiring <cite>block</cite> protocol else False.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jina.enums.LogVerbosity">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.enums.</span></span><span class="sig-name descname"><span class="pre">LogVerbosity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/enums/#LogVerbosity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.enums.LogVerbosity" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#jina.enums.BetterEnum" title="jina.enums.BetterEnum"><code class="xref py py-class docutils literal notranslate"><span class="pre">BetterEnum</span></code></a></p>
+<p>Verbosity level of the logger.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.enums.LogVerbosity.DEBUG">
+<span class="sig-name descname"><span class="pre">DEBUG</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">10</span></em><a class="headerlink" href="#jina.enums.LogVerbosity.DEBUG" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.enums.LogVerbosity.INFO">
+<span class="sig-name descname"><span class="pre">INFO</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">20</span></em><a class="headerlink" href="#jina.enums.LogVerbosity.INFO" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.enums.LogVerbosity.SUCCESS">
+<span class="sig-name descname"><span class="pre">SUCCESS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">25</span></em><a class="headerlink" href="#jina.enums.LogVerbosity.SUCCESS" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.enums.LogVerbosity.WARNING">
+<span class="sig-name descname"><span class="pre">WARNING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">30</span></em><a class="headerlink" href="#jina.enums.LogVerbosity.WARNING" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.enums.LogVerbosity.ERROR">
+<span class="sig-name descname"><span class="pre">ERROR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">40</span></em><a class="headerlink" href="#jina.enums.LogVerbosity.ERROR" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.enums.LogVerbosity.CRITICAL">
+<span class="sig-name descname"><span class="pre">CRITICAL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">50</span></em><a class="headerlink" href="#jina.enums.LogVerbosity.CRITICAL" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jina.enums.FlowBuildLevel">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.enums.</span></span><span class="sig-name descname"><span class="pre">FlowBuildLevel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/enums/#FlowBuildLevel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.enums.FlowBuildLevel" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#jina.enums.BetterEnum" title="jina.enums.BetterEnum"><code class="xref py py-class docutils literal notranslate"><span class="pre">BetterEnum</span></code></a></p>
+<p>The enum for representing a flow’s build level.</p>
+<p>Some <code class="xref py py-class docutils literal notranslate"><span class="pre">jina.orchestrate.flow.Flow</span></code> class functions require certain build level to run.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.enums.FlowBuildLevel.EMPTY">
+<span class="sig-name descname"><span class="pre">EMPTY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#jina.enums.FlowBuildLevel.EMPTY" title="Permalink to this definition">#</a></dt>
+<dd><p>Nothing is built</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.enums.FlowBuildLevel.GRAPH">
+<span class="sig-name descname"><span class="pre">GRAPH</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#jina.enums.FlowBuildLevel.GRAPH" title="Permalink to this definition">#</a></dt>
+<dd><p>The underlying graph is built, you may visualize the flow</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.enums.FlowBuildLevel.RUNNING">
+<span class="sig-name descname"><span class="pre">RUNNING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#jina.enums.FlowBuildLevel.RUNNING" title="Permalink to this definition">#</a></dt>
+<dd><p>the graph is started and all deployment are running</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jina.enums.GatewayProtocolType">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.enums.</span></span><span class="sig-name descname"><span class="pre">GatewayProtocolType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/enums/#GatewayProtocolType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.enums.GatewayProtocolType" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#jina.enums.BetterEnum" title="jina.enums.BetterEnum"><code class="xref py py-class docutils literal notranslate"><span class="pre">BetterEnum</span></code></a></p>
+<p>Gateway communication protocol</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.enums.GatewayProtocolType.GRPC">
+<span class="sig-name descname"><span class="pre">GRPC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#jina.enums.GatewayProtocolType.GRPC" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.enums.GatewayProtocolType.HTTP">
+<span class="sig-name descname"><span class="pre">HTTP</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#jina.enums.GatewayProtocolType.HTTP" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.enums.GatewayProtocolType.WEBSOCKET">
+<span class="sig-name descname"><span class="pre">WEBSOCKET</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#jina.enums.GatewayProtocolType.WEBSOCKET" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jina.enums.PodRoleType">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.enums.</span></span><span class="sig-name descname"><span class="pre">PodRoleType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/enums/#PodRoleType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.enums.PodRoleType" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#jina.enums.BetterEnum" title="jina.enums.BetterEnum"><code class="xref py py-class docutils literal notranslate"><span class="pre">BetterEnum</span></code></a></p>
+<p>The enum of a Pod role.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.enums.PodRoleType.HEAD">
+<span class="sig-name descname"><span class="pre">HEAD</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#jina.enums.PodRoleType.HEAD" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.enums.PodRoleType.WORKER">
+<span class="sig-name descname"><span class="pre">WORKER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#jina.enums.PodRoleType.WORKER" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.enums.PodRoleType.GATEWAY">
+<span class="sig-name descname"><span class="pre">GATEWAY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#jina.enums.PodRoleType.GATEWAY" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jina.enums.DeploymentRoleType">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.enums.</span></span><span class="sig-name descname"><span class="pre">DeploymentRoleType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/enums/#DeploymentRoleType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.enums.DeploymentRoleType" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#jina.enums.BetterEnum" title="jina.enums.BetterEnum"><code class="xref py py-class docutils literal notranslate"><span class="pre">BetterEnum</span></code></a></p>
+<p>The enum of a Deploymen role for visualization.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.enums.DeploymentRoleType.DEPLOYMENT">
+<span class="sig-name descname"><span class="pre">DEPLOYMENT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#jina.enums.DeploymentRoleType.DEPLOYMENT" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.enums.DeploymentRoleType.JOIN">
+<span class="sig-name descname"><span class="pre">JOIN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#jina.enums.DeploymentRoleType.JOIN" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.enums.DeploymentRoleType.INSPECT">
+<span class="sig-name descname"><span class="pre">INSPECT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#jina.enums.DeploymentRoleType.INSPECT" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.enums.DeploymentRoleType.GATEWAY">
+<span class="sig-name descname"><span class="pre">GATEWAY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#jina.enums.DeploymentRoleType.GATEWAY" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.enums.DeploymentRoleType.INSPECT_AUX_PASS">
+<span class="sig-name descname"><span class="pre">INSPECT_AUX_PASS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></em><a class="headerlink" href="#jina.enums.DeploymentRoleType.INSPECT_AUX_PASS" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.enums.DeploymentRoleType.JOIN_INSPECT">
+<span class="sig-name descname"><span class="pre">JOIN_INSPECT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">5</span></em><a class="headerlink" href="#jina.enums.DeploymentRoleType.JOIN_INSPECT" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="jina.enums.DeploymentRoleType.is_inspect">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_inspect</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#jina.enums.DeploymentRoleType.is_inspect" title="Permalink to this definition">#</a></dt>
+<dd><p>If the role is inspect deployment related.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the Deployment role is inspect related else False.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jina.enums.FlowInspectType">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.enums.</span></span><span class="sig-name descname"><span class="pre">FlowInspectType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/enums/#FlowInspectType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.enums.FlowInspectType" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#jina.enums.BetterEnum" title="jina.enums.BetterEnum"><code class="xref py py-class docutils literal notranslate"><span class="pre">BetterEnum</span></code></a></p>
+<p>Inspect strategy in the flow.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.enums.FlowInspectType.HANG">
+<span class="sig-name descname"><span class="pre">HANG</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#jina.enums.FlowInspectType.HANG" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.enums.FlowInspectType.REMOVE">
+<span class="sig-name descname"><span class="pre">REMOVE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#jina.enums.FlowInspectType.REMOVE" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.enums.FlowInspectType.COLLECT">
+<span class="sig-name descname"><span class="pre">COLLECT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#jina.enums.FlowInspectType.COLLECT" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="jina.enums.FlowInspectType.is_keep">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_keep</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#jina.enums.FlowInspectType.is_keep" title="Permalink to this definition">#</a></dt>
+<dd><p>Check if the target is inspected.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the target is inspected else False.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jina.enums.DataInputType">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.enums.</span></span><span class="sig-name descname"><span class="pre">DataInputType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/enums/#DataInputType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.enums.DataInputType" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#jina.enums.BetterEnum" title="jina.enums.BetterEnum"><code class="xref py py-class docutils literal notranslate"><span class="pre">BetterEnum</span></code></a></p>
+<p>Data input type in the request generator.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.enums.DataInputType.AUTO">
+<span class="sig-name descname"><span class="pre">AUTO</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#jina.enums.DataInputType.AUTO" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.enums.DataInputType.DOCUMENT">
+<span class="sig-name descname"><span class="pre">DOCUMENT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#jina.enums.DataInputType.DOCUMENT" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.enums.DataInputType.CONTENT">
+<span class="sig-name descname"><span class="pre">CONTENT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#jina.enums.DataInputType.CONTENT" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.enums.DataInputType.DICT">
+<span class="sig-name descname"><span class="pre">DICT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#jina.enums.DataInputType.DICT" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jina.enums.WebsocketSubProtocols">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.enums.</span></span><span class="sig-name descname"><span class="pre">WebsocketSubProtocols</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/enums/#WebsocketSubProtocols"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.enums.WebsocketSubProtocols" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<p>Subprotocol supported with Websocket Gateway</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.enums.WebsocketSubProtocols.JSON">
+<span class="sig-name descname"><span class="pre">JSON</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'json'</span></em><a class="headerlink" href="#jina.enums.WebsocketSubProtocols.JSON" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.enums.WebsocketSubProtocols.BYTES">
+<span class="sig-name descname"><span class="pre">BYTES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'bytes'</span></em><a class="headerlink" href="#jina.enums.WebsocketSubProtocols.BYTES" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="jina.enums.replace_enum_to_str">
+<span class="sig-prename descclassname"><span class="pre">jina.enums.</span></span><span class="sig-name descname"><span class="pre">replace_enum_to_str</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/enums/#replace_enum_to_str"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.enums.replace_enum_to_str" title="Permalink to this definition">#</a></dt>
+<dd><p>Transform BetterEnum type into string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>obj</strong> – Target obj.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Transformed obj with string type values.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+                </article>
+            </div>
+            <footer>
+                
+                <div class="related-pages">
+                    
+                    
+                </div>
+                <div class="bottom-of-page">
+                    <div class="left-details">
+                        <div class="copyright">
+                            Copyright &#169; Jina AI Limited. All rights reserved.
+                        </div><div class="last-updated">
+                            Last updated on Dec 15, 2022</div>
+                    </div>
+                    <div class="right-details">
+                        <div class="social-btns">
+                            <a class='social-btn' href="https://github.com/jina-ai/jina" aria-label="GitHub"
+                               target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
+                            <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank"
+                               rel="noreferrer"> <i class="fab fa-slack"></i></a>
+                            <a class='social-btn' href="https://youtube.com/c/jina-ai" aria-label="YouTube"
+                               target="_blank" rel="noreferrer"> <i class="fab fa-youtube"></i></a>
+                            <a class='social-btn' href="https://twitter.com/JinaAI_" aria-label="Twitter"
+                               target="_blank" rel="noreferrer"> <i class="fab fa-twitter"></i></a>
+                            <a class='social-btn' href="https://www.linkedin.com/company/jinaai/" aria-label="LinkedIn"
+                               target="_blank" rel="noreferrer"> <i class="fab fa-linkedin"></i></a>
+                        </div>
+                    </div>
+                </div>
+                
+            </footer>
+        </div>
+        <aside class="toc-drawer">
+            
+            
+            <div class="toc-sticky toc-scroll">
+                <div class="toc-title-container">
+          <span class="toc-title">
+            Contents
+          </span>
+                </div>
+                <div class="toc-tree-container">
+                    <div class="toc-tree">
+                        <ul>
+<li><a class="reference internal" href="#">jina.enums module</a><ul>
+<li><a class="reference internal" href="#jina.enums.EnumType"><code class="docutils literal notranslate"><span class="pre">EnumType</span></code></a><ul>
+<li><a class="reference internal" href="#jina.enums.EnumType.register_class"><code class="docutils literal notranslate"><span class="pre">EnumType.register_class()</span></code></a></li>
+<li><a class="reference internal" href="#jina.enums.EnumType.mro"><code class="docutils literal notranslate"><span class="pre">EnumType.mro()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#jina.enums.BetterEnum"><code class="docutils literal notranslate"><span class="pre">BetterEnum</span></code></a><ul>
+<li><a class="reference internal" href="#jina.enums.BetterEnum.from_string"><code class="docutils literal notranslate"><span class="pre">BetterEnum.from_string()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#jina.enums.PollingType"><code class="docutils literal notranslate"><span class="pre">PollingType</span></code></a><ul>
+<li><a class="reference internal" href="#jina.enums.PollingType.ANY"><code class="docutils literal notranslate"><span class="pre">PollingType.ANY</span></code></a></li>
+<li><a class="reference internal" href="#jina.enums.PollingType.ALL"><code class="docutils literal notranslate"><span class="pre">PollingType.ALL</span></code></a></li>
+<li><a class="reference internal" href="#jina.enums.PollingType.ALL_ASYNC"><code class="docutils literal notranslate"><span class="pre">PollingType.ALL_ASYNC</span></code></a></li>
+<li><a class="reference internal" href="#jina.enums.PollingType.is_push"><code class="docutils literal notranslate"><span class="pre">PollingType.is_push</span></code></a></li>
+<li><a class="reference internal" href="#jina.enums.PollingType.is_block"><code class="docutils literal notranslate"><span class="pre">PollingType.is_block</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#jina.enums.LogVerbosity"><code class="docutils literal notranslate"><span class="pre">LogVerbosity</span></code></a><ul>
+<li><a class="reference internal" href="#jina.enums.LogVerbosity.DEBUG"><code class="docutils literal notranslate"><span class="pre">LogVerbosity.DEBUG</span></code></a></li>
+<li><a class="reference internal" href="#jina.enums.LogVerbosity.INFO"><code class="docutils literal notranslate"><span class="pre">LogVerbosity.INFO</span></code></a></li>
+<li><a class="reference internal" href="#jina.enums.LogVerbosity.SUCCESS"><code class="docutils literal notranslate"><span class="pre">LogVerbosity.SUCCESS</span></code></a></li>
+<li><a class="reference internal" href="#jina.enums.LogVerbosity.WARNING"><code class="docutils literal notranslate"><span class="pre">LogVerbosity.WARNING</span></code></a></li>
+<li><a class="reference internal" href="#jina.enums.LogVerbosity.ERROR"><code class="docutils literal notranslate"><span class="pre">LogVerbosity.ERROR</span></code></a></li>
+<li><a class="reference internal" href="#jina.enums.LogVerbosity.CRITICAL"><code class="docutils literal notranslate"><span class="pre">LogVerbosity.CRITICAL</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#jina.enums.FlowBuildLevel"><code class="docutils literal notranslate"><span class="pre">FlowBuildLevel</span></code></a><ul>
+<li><a class="reference internal" href="#jina.enums.FlowBuildLevel.EMPTY"><code class="docutils literal notranslate"><span class="pre">FlowBuildLevel.EMPTY</span></code></a></li>
+<li><a class="reference internal" href="#jina.enums.FlowBuildLevel.GRAPH"><code class="docutils literal notranslate"><span class="pre">FlowBuildLevel.GRAPH</span></code></a></li>
+<li><a class="reference internal" href="#jina.enums.FlowBuildLevel.RUNNING"><code class="docutils literal notranslate"><span class="pre">FlowBuildLevel.RUNNING</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#jina.enums.GatewayProtocolType"><code class="docutils literal notranslate"><span class="pre">GatewayProtocolType</span></code></a><ul>
+<li><a class="reference internal" href="#jina.enums.GatewayProtocolType.GRPC"><code class="docutils literal notranslate"><span class="pre">GatewayProtocolType.GRPC</span></code></a></li>
+<li><a class="reference internal" href="#jina.enums.GatewayProtocolType.HTTP"><code class="docutils literal notranslate"><span class="pre">GatewayProtocolType.HTTP</span></code></a></li>
+<li><a class="reference internal" href="#jina.enums.GatewayProtocolType.WEBSOCKET"><code class="docutils literal notranslate"><span class="pre">GatewayProtocolType.WEBSOCKET</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#jina.enums.PodRoleType"><code class="docutils literal notranslate"><span class="pre">PodRoleType</span></code></a><ul>
+<li><a class="reference internal" href="#jina.enums.PodRoleType.HEAD"><code class="docutils literal notranslate"><span class="pre">PodRoleType.HEAD</span></code></a></li>
+<li><a class="reference internal" href="#jina.enums.PodRoleType.WORKER"><code class="docutils literal notranslate"><span class="pre">PodRoleType.WORKER</span></code></a></li>
+<li><a class="reference internal" href="#jina.enums.PodRoleType.GATEWAY"><code class="docutils literal notranslate"><span class="pre">PodRoleType.GATEWAY</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#jina.enums.DeploymentRoleType"><code class="docutils literal notranslate"><span class="pre">DeploymentRoleType</span></code></a><ul>
+<li><a class="reference internal" href="#jina.enums.DeploymentRoleType.DEPLOYMENT"><code class="docutils literal notranslate"><span class="pre">DeploymentRoleType.DEPLOYMENT</span></code></a></li>
+<li><a class="reference internal" href="#jina.enums.DeploymentRoleType.JOIN"><code class="docutils literal notranslate"><span class="pre">DeploymentRoleType.JOIN</span></code></a></li>
+<li><a class="reference internal" href="#jina.enums.DeploymentRoleType.INSPECT"><code class="docutils literal notranslate"><span class="pre">DeploymentRoleType.INSPECT</span></code></a></li>
+<li><a class="reference internal" href="#jina.enums.DeploymentRoleType.GATEWAY"><code class="docutils literal notranslate"><span class="pre">DeploymentRoleType.GATEWAY</span></code></a></li>
+<li><a class="reference internal" href="#jina.enums.DeploymentRoleType.INSPECT_AUX_PASS"><code class="docutils literal notranslate"><span class="pre">DeploymentRoleType.INSPECT_AUX_PASS</span></code></a></li>
+<li><a class="reference internal" href="#jina.enums.DeploymentRoleType.JOIN_INSPECT"><code class="docutils literal notranslate"><span class="pre">DeploymentRoleType.JOIN_INSPECT</span></code></a></li>
+<li><a class="reference internal" href="#jina.enums.DeploymentRoleType.is_inspect"><code class="docutils literal notranslate"><span class="pre">DeploymentRoleType.is_inspect</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#jina.enums.FlowInspectType"><code class="docutils literal notranslate"><span class="pre">FlowInspectType</span></code></a><ul>
+<li><a class="reference internal" href="#jina.enums.FlowInspectType.HANG"><code class="docutils literal notranslate"><span class="pre">FlowInspectType.HANG</span></code></a></li>
+<li><a class="reference internal" href="#jina.enums.FlowInspectType.REMOVE"><code class="docutils literal notranslate"><span class="pre">FlowInspectType.REMOVE</span></code></a></li>
+<li><a class="reference internal" href="#jina.enums.FlowInspectType.COLLECT"><code class="docutils literal notranslate"><span class="pre">FlowInspectType.COLLECT</span></code></a></li>
+<li><a class="reference internal" href="#jina.enums.FlowInspectType.is_keep"><code class="docutils literal notranslate"><span class="pre">FlowInspectType.is_keep</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#jina.enums.DataInputType"><code class="docutils literal notranslate"><span class="pre">DataInputType</span></code></a><ul>
+<li><a class="reference internal" href="#jina.enums.DataInputType.AUTO"><code class="docutils literal notranslate"><span class="pre">DataInputType.AUTO</span></code></a></li>
+<li><a class="reference internal" href="#jina.enums.DataInputType.DOCUMENT"><code class="docutils literal notranslate"><span class="pre">DataInputType.DOCUMENT</span></code></a></li>
+<li><a class="reference internal" href="#jina.enums.DataInputType.CONTENT"><code class="docutils literal notranslate"><span class="pre">DataInputType.CONTENT</span></code></a></li>
+<li><a class="reference internal" href="#jina.enums.DataInputType.DICT"><code class="docutils literal notranslate"><span class="pre">DataInputType.DICT</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#jina.enums.WebsocketSubProtocols"><code class="docutils literal notranslate"><span class="pre">WebsocketSubProtocols</span></code></a><ul>
+<li><a class="reference internal" href="#jina.enums.WebsocketSubProtocols.JSON"><code class="docutils literal notranslate"><span class="pre">WebsocketSubProtocols.JSON</span></code></a></li>
+<li><a class="reference internal" href="#jina.enums.WebsocketSubProtocols.BYTES"><code class="docutils literal notranslate"><span class="pre">WebsocketSubProtocols.BYTES</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#jina.enums.replace_enum_to_str"><code class="docutils literal notranslate"><span class="pre">replace_enum_to_str()</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+                    </div>
+                </div>
+            </div>
+            
+            
+        </aside>
+    </div>
+    <qa-bot
+            title="Jina Bot"
+            description="Build cross-modal and multi-modal applications on the cloud"
+    >
+        <template>
+            <dl>
+                <dt>You can ask questions about our docs. Try:</dt>
+                <dd>Does Jina support Kubernetes?</dd>
+                <dd>What are the basic concepts in Jina?</dd>
+                <dd>How to share my Executor?</dd>
+            </dl>
+        </template>
+    </qa-bot>
+</div>
+<img referrerpolicy="no-referrer-when-downgrade"
+     src="https://static.scarf.sh/a.png?x-pxid=2823e771-0e1e-4320-8fde-48bc48e53262"/><script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/scripts/furo.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script src="../../_static/tabs.js"></script>
+    <script src="../../_static/design-tabs.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() { 
+            document.querySelector('qa-bot').setAttribute('server', 'https://jina-ai-jina.docsqa.jina.ai');
+        });
+        </script>
+    <script src="https://cdn.jsdelivr.net/npm/qabot@0.4"></script>
+    </body>
+</html>

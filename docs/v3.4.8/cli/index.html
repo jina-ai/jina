@@ -1,0 +1,2515 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+<meta property="og:title" content="Command-Line Interface" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://docs.jina.ai/cli/" />
+<meta property="og:site_name" content="Jina 3.4.8 Documentation" />
+<meta property="og:description" content="Positional Arguments: cli,, Possible choices: hello, executor, flow, ping, new, gateway, hub, help, pod, deployment, client, export-api,. Named Arguments:-v, --version,, Show Jina version,,-vf, --version-full,, Show Jina and all dependencies’ versions,. Sub-commands:: hello: Start hello world dem..." />
+<meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
+<meta property="og:image:alt" content="Jina 3.4.8 Documentation" />
+<meta name="description" content="Positional Arguments: cli,, Possible choices: hello, executor, flow, ping, new, gateway, hub, help, pod, deployment, client, export-api,. Named Arguments:-v, --version,, Show Jina version,,-vf, --version-full,, Show Jina and all dependencies’ versions,. Sub-commands:: hello: Start hello world dem..." />
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@JinaAI_">
+<meta name="twitter:creator" content="@JinaAI_">
+<meta name="description" content="Jina is the cloud-native neural search solution powered by the state-of-the-art AI and deep learning">
+<meta property="og:description" content="Jina is the cloud-native neural search solution powered by the state-of-the-art AI and deep learning">
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-48ZDWC8GT6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-48ZDWC8GT6');
+</script>
+
+<script async defer src="https://buttons.github.io/buttons.js"></script>
+    
+<link rel="index" title="Index" href="../genindex/" /><link rel="search" title="Search" href="../search/" /><link rel="next" title="Protocol Documentation" href="../proto/docs/" /><link rel="prev" title="cli.lookup module" href="../api/cli.lookup/" />
+        <link rel="canonical" href="https://docs.jina.ai/cli/index.html" />
+
+    <link rel="shortcut icon" href="../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
+        <title>Command-Line Interface - Jina 3.4.8 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/tabs.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
+    <link rel="stylesheet" type="text/css" href="../_static/main.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/docbot.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #ffffff;
+  --color-code-foreground: #4d4d4d;
+  --color-brand-primary: #009191;
+  --color-brand-content: #009191;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #FBCB67;
+  --color-brand-content: #FBCB67;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #FBCB67;
+  --color-brand-content: #FBCB67;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+    <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+    <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+    <header class="mobile-header" id="mobile-header">
+        <div class="header-left">
+            <label class="nav-overlay-icon" for="__navigation">
+                <div class="visually-hidden">Toggle site navigation sidebar</div>
+                <i class="icon">
+                    <svg>
+                        <use href="#svg-menu"></use>
+                    </svg>
+                </i>
+            </label>
+        </div>
+        <div class="header-center">
+            <a href="../">
+                <div class="brand">Jina 3.4.8 documentation</div>
+            </a>
+        </div>
+        <div class="header-right">
+            <div class="theme-toggle-container theme-toggle-header">
+                <button class="theme-toggle">
+                    <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+                    <svg class="theme-icon-when-auto">
+                        <use href="#svg-sun-half"></use>
+                    </svg>
+                    <svg class="theme-icon-when-dark">
+                        <use href="#svg-moon"></use>
+                    </svg>
+                    <svg class="theme-icon-when-light">
+                        <use href="#svg-sun"></use>
+                    </svg>
+                </button>
+            </div>
+            <label class="toc-overlay-icon toc-header-icon" for="__toc">
+                <div class="visually-hidden">Toggle table of contents sidebar</div>
+                <i class="icon">
+                    <svg>
+                        <use href="#svg-toc"></use>
+                    </svg>
+                </i>
+            </label>
+        </div>
+    </header>
+    <aside class="sidebar-drawer" id="sidebar-drawer">
+        <div class="sidebar-container">
+            
+            <div class="sidebar-sticky"><a class="sidebar-brand" href="../">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo only-light" src="../_static/logo-light.svg" alt="Light Logo" />
+    <img class="sidebar-logo only-dark" src="../_static/logo-dark.svg" alt="Dark Logo" />
+  </div>
+  
+  
+</a>
+<script>
+  function setPrefix(prefix){
+    window.location.href = prefix
+  }
+</script>
+<script defer>
+  fetch(`https://${window.location.host}/_versions.json`)
+  .then((resp) => resp.json())
+  .then((data) => {
+    var versionSelector = document.getElementsByClassName("version-select")[0];
+    var currentPrefix = window.location.href.toString().split(window.location.host)[1].split('/')[1];
+
+    for(var i = 0; i < data.length; i++){
+      var option = document.createElement("option");
+      option.innerHTML = data[i].version;
+      option.value = "/" + data[i].version;
+      versionSelector.appendChild(option);
+      if(currentPrefix === data[i].version){
+        versionSelector.selectedIndex = i + 1;
+      }
+    }
+  })
+  .catch((err) => console.log(err));
+</script>
+<div class="sd-d-flex-row sd-align-major-spaced">
+  <a class="github-button" href="https://github.com/jina-ai/jina" data-icon="octicon-star" data-show-count="true" aria-label="Star jina-ai/jina on GitHub" style="opacity: 0;">Star</a>
+  <select onChange="setPrefix(this.value)" class="version-select">
+    <option value="/">latest</option>
+  </select>
+</div><form class="sidebar-search-container" method="get" action="../search/" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+    <p class="caption" role="heading"><span class="caption-text">Get started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../get-started/neural-search/">What is Neural Search?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get-started/what-is-jina/">What is Jina?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get-started/what-is-jina/#comparing-to-alternatives">Comparing to Alternatives</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../get-started/install/">Install</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../get-started/install/windows/">Jina on Windows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../get-started/install/troubleshooting/">Troubleshooting</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../get-started/create-app/">Create a New Project</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../get-started/hello-world/">Run Quick Demos</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../get-started/hello-world/fashion/">Fashion image search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../get-started/hello-world/covid-19-chatbot/">Covid-19 chatbot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../get-started/hello-world/multimodal/">Multimodal search</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../fundamentals/architecture-overview/">Architecture Overview</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../fundamentals/executor/">Executor</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../fundamentals/executor/executor-api/">Executor API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../fundamentals/executor/executor-in-flow/">Executors inside a Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../fundamentals/executor/repository-structure/">Executor File Structure</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../fundamentals/executor/hub/">Share Executors via Jina Hub</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../fundamentals/executor/hub/hub-portal/">Hub Portal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../fundamentals/executor/hub/create-hub-executor/">Create Executor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../fundamentals/executor/hub/push-executor/">Publish Executor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../fundamentals/executor/hub/use-hub-executor/">Use Hub Executors Locally</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../how-to/sandbox/">Use Hub Executor Remotely</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../fundamentals/executor/hub/executor-best-practices/">Best Practices</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../fundamentals/executor/containerize-executor/">Dockerize your Executor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../fundamentals/executor/monitoring-executor/">Monitor Executor with Custom Metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../fundamentals/executor/yaml-spec/">YAML specification</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../fundamentals/flow/">Flow</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../fundamentals/flow/create-flow/">Create a Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../fundamentals/flow/flow-api/">Configure Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../fundamentals/flow/access-flow-api/">Access Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../fundamentals/flow/client/">Python Client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../fundamentals/flow/monitoring-flow/">Monitor Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../fundamentals/flow/yaml-spec/">YAML specification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../fundamentals/flow/remarks/">Remarks</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../fundamentals/clean-code/">Clean &amp; Efficient Code</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">How-to</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../how-to/deploy/">Deploy</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../how-to/docker-compose/">How to run Jina with Docker Compose</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../how-to/kubernetes/">How to deploy Jina on Kubernetes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../how-to/monitoring/">How to deploy and use the monitoring with Jina</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../how-to/executor/">Executor</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../how-to/async-executors/">How to use async coroutines in Executors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../how-to/scale-out/">How to scale out your Executor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../how-to/gpu-executor/">How to run Executors on GPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../how-to/external-executor/">How to use external Executors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../how-to/flow-switch/">How to build switches in a Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../how-to/debug-executor/">How to debug an Executor</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../get-started/migrate/">Migration to Jina 3</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/">Python API</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../api/jina/">jina package</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.clients/">jina.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../api/jina.clients.base/">jina.clients.base package</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../api/jina.clients.base.grpc/">jina.clients.base.grpc module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../api/jina.clients.base.helper/">jina.clients.base.helper module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../api/jina.clients.base.http/">jina.clients.base.http module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../api/jina.clients.base.websocket/">jina.clients.base.websocket module</a></li>
+</ul>
+</li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../api/jina.clients.request/">jina.clients.request package</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../api/jina.clients.request.asyncio/">jina.clients.request.asyncio module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../api/jina.clients.request.helper/">jina.clients.request.helper module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../api/jina.clients.grpc/">jina.clients.grpc module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/jina.clients.helper/">jina.clients.helper module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/jina.clients.http/">jina.clients.http module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/jina.clients.mixin/">jina.clients.mixin module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/jina.clients.websocket/">jina.clients.websocket module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.helloworld/">jina.helloworld package</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../api/jina.helloworld.chatbot/">jina.helloworld.chatbot package</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../api/jina.helloworld.chatbot.app/">jina.helloworld.chatbot.app module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../api/jina.helloworld.chatbot.my_executors/">jina.helloworld.chatbot.my_executors module</a></li>
+</ul>
+</li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../api/jina.helloworld.fashion/">jina.helloworld.fashion package</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../api/jina.helloworld.fashion.app/">jina.helloworld.fashion.app module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../api/jina.helloworld.fashion.helper/">jina.helloworld.fashion.helper module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../api/jina.helloworld.fashion.my_executors/">jina.helloworld.fashion.my_executors module</a></li>
+</ul>
+</li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../api/jina.helloworld.multimodal/">jina.helloworld.multimodal package</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../api/jina.helloworld.multimodal.app/">jina.helloworld.multimodal.app module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../api/jina.helloworld.multimodal.my_executors/">jina.helloworld.multimodal.my_executors module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../api/jina.helloworld.fork/">jina.helloworld.fork module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.hubble/">jina.hubble package</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../api/jina.hubble.helper/">jina.hubble.helper module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/jina.hubble.hubapi/">jina.hubble.hubapi module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/jina.hubble.hubio/">jina.hubble.hubio module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/jina.hubble.requirements/">jina.hubble.requirements module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.jaml/">jina.jaml package</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../api/jina.jaml.parsers/">jina.jaml.parsers package</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" role="switch" type="checkbox"/><label for="toctree-checkbox-19"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5 has-children"><a class="reference internal" href="../api/jina.jaml.parsers.default/">jina.jaml.parsers.default package</a><input class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" role="switch" type="checkbox"/><label for="toctree-checkbox-20"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l6"><a class="reference internal" href="../api/jina.jaml.parsers.default.v1/">jina.jaml.parsers.default.v1 module</a></li>
+</ul>
+</li>
+<li class="toctree-l5 has-children"><a class="reference internal" href="../api/jina.jaml.parsers.executor/">jina.jaml.parsers.executor package</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" role="switch" type="checkbox"/><label for="toctree-checkbox-21"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l6"><a class="reference internal" href="../api/jina.jaml.parsers.executor.legacy/">jina.jaml.parsers.executor.legacy module</a></li>
+</ul>
+</li>
+<li class="toctree-l5 has-children"><a class="reference internal" href="../api/jina.jaml.parsers.flow/">jina.jaml.parsers.flow package</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l6"><a class="reference internal" href="../api/jina.jaml.parsers.flow.v1/">jina.jaml.parsers.flow.v1 module</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="../api/jina.jaml.parsers.base/">jina.jaml.parsers.base module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../api/jina.jaml.helper/">jina.jaml.helper module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.logging/">jina.logging package</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../api/jina.logging.formatter/">jina.logging.formatter module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/jina.logging.logger/">jina.logging.logger module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/jina.logging.predefined/">jina.logging.predefined module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/jina.logging.profile/">jina.logging.profile module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.orchestrate/">jina.orchestrate package</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" role="switch" type="checkbox"/><label for="toctree-checkbox-24"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../api/jina.orchestrate.deployments/">jina.orchestrate.deployments package</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" role="switch" type="checkbox"/><label for="toctree-checkbox-25"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5 has-children"><a class="reference internal" href="../api/jina.orchestrate.deployments.config/">jina.orchestrate.deployments.config package</a><input class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" role="switch" type="checkbox"/><label for="toctree-checkbox-26"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l6 has-children"><a class="reference internal" href="../api/jina.orchestrate.deployments.config.k8slib/">jina.orchestrate.deployments.config.k8slib package</a><input class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" role="switch" type="checkbox"/><label for="toctree-checkbox-27"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l7"><a class="reference internal" href="../api/jina.orchestrate.deployments.config.k8slib.kubernetes_deployment/">jina.orchestrate.deployments.config.k8slib.kubernetes_deployment module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="../api/jina.orchestrate.deployments.config.k8slib.kubernetes_tools/">jina.orchestrate.deployments.config.k8slib.kubernetes_tools module</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="../api/jina.orchestrate.deployments.config.docker_compose/">jina.orchestrate.deployments.config.docker_compose module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../api/jina.orchestrate.deployments.config.helper/">jina.orchestrate.deployments.config.helper module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../api/jina.orchestrate.deployments.config.k8s/">jina.orchestrate.deployments.config.k8s module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../api/jina.orchestrate.flow/">jina.orchestrate.flow package</a><input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" role="switch" type="checkbox"/><label for="toctree-checkbox-28"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../api/jina.orchestrate.flow.asyncio/">jina.orchestrate.flow.asyncio module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../api/jina.orchestrate.flow.base/">jina.orchestrate.flow.base module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../api/jina.orchestrate.flow.builder/">jina.orchestrate.flow.builder module</a></li>
+</ul>
+</li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../api/jina.orchestrate.pods/">jina.orchestrate.pods package</a><input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" role="switch" type="checkbox"/><label for="toctree-checkbox-29"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../api/jina.orchestrate.pods.container/">jina.orchestrate.pods.container module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../api/jina.orchestrate.pods.container_helper/">jina.orchestrate.pods.container_helper module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../api/jina.orchestrate.pods.factory/">jina.orchestrate.pods.factory module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../api/jina.orchestrate.pods.helper/">jina.orchestrate.pods.helper module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../api/jina.orchestrate.helper/">jina.orchestrate.helper module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.parsers/">jina.parsers package</a><input class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" role="switch" type="checkbox"/><label for="toctree-checkbox-30"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../api/jina.parsers.hubble/">jina.parsers.hubble package</a><input class="toctree-checkbox" id="toctree-checkbox-31" name="toctree-checkbox-31" role="switch" type="checkbox"/><label for="toctree-checkbox-31"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../api/jina.parsers.hubble.new/">jina.parsers.hubble.new module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../api/jina.parsers.hubble.pull/">jina.parsers.hubble.pull module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../api/jina.parsers.hubble.push/">jina.parsers.hubble.push module</a></li>
+</ul>
+</li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../api/jina.parsers.orchestrate/">jina.parsers.orchestrate package</a><input class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" role="switch" type="checkbox"/><label for="toctree-checkbox-32"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5 has-children"><a class="reference internal" href="../api/jina.parsers.orchestrate.runtimes/">jina.parsers.orchestrate.runtimes package</a><input class="toctree-checkbox" id="toctree-checkbox-33" name="toctree-checkbox-33" role="switch" type="checkbox"/><label for="toctree-checkbox-33"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l6"><a class="reference internal" href="../api/jina.parsers.orchestrate.runtimes.container/">jina.parsers.orchestrate.runtimes.container module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../api/jina.parsers.orchestrate.runtimes.distributed/">jina.parsers.orchestrate.runtimes.distributed module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../api/jina.parsers.orchestrate.runtimes.head/">jina.parsers.orchestrate.runtimes.head module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../api/jina.parsers.orchestrate.runtimes.remote/">jina.parsers.orchestrate.runtimes.remote module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../api/jina.parsers.orchestrate.runtimes.worker/">jina.parsers.orchestrate.runtimes.worker module</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="../api/jina.parsers.orchestrate.base/">jina.parsers.orchestrate.base module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../api/jina.parsers.orchestrate.deployment/">jina.parsers.orchestrate.deployment module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../api/jina.parsers.orchestrate.pod/">jina.parsers.orchestrate.pod module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../api/jina.parsers.base/">jina.parsers.base module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/jina.parsers.client/">jina.parsers.client module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/jina.parsers.create/">jina.parsers.create module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/jina.parsers.deprecated/">jina.parsers.deprecated module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/jina.parsers.export_api/">jina.parsers.export_api module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/jina.parsers.flow/">jina.parsers.flow module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/jina.parsers.helloworld/">jina.parsers.helloworld module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/jina.parsers.helper/">jina.parsers.helper module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/jina.parsers.ping/">jina.parsers.ping module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.proto/">jina.proto package</a><input class="toctree-checkbox" id="toctree-checkbox-34" name="toctree-checkbox-34" role="switch" type="checkbox"/><label for="toctree-checkbox-34"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../api/jina.proto.jina_pb2/">jina.proto.jina_pb2 module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/jina.proto.jina_pb2_grpc/">jina.proto.jina_pb2_grpc module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/jina.proto.serializer/">jina.proto.serializer module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.schemas/">jina.schemas package</a><input class="toctree-checkbox" id="toctree-checkbox-35" name="toctree-checkbox-35" role="switch" type="checkbox"/><label for="toctree-checkbox-35"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../api/jina.schemas.deployment/">jina.schemas.deployment module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/jina.schemas.executor/">jina.schemas.executor module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/jina.schemas.flow/">jina.schemas.flow module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/jina.schemas.helper/">jina.schemas.helper module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/jina.schemas.meta/">jina.schemas.meta module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.serve/">jina.serve package</a><input class="toctree-checkbox" id="toctree-checkbox-36" name="toctree-checkbox-36" role="switch" type="checkbox"/><label for="toctree-checkbox-36"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../api/jina.serve.executors/">jina.serve.executors package</a><input class="toctree-checkbox" id="toctree-checkbox-37" name="toctree-checkbox-37" role="switch" type="checkbox"/><label for="toctree-checkbox-37"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../api/jina.serve.executors.decorators/">jina.serve.executors.decorators module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../api/jina.serve.executors.metas/">jina.serve.executors.metas module</a></li>
+</ul>
+</li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../api/jina.serve.runtimes/">jina.serve.runtimes package</a><input class="toctree-checkbox" id="toctree-checkbox-38" name="toctree-checkbox-38" role="switch" type="checkbox"/><label for="toctree-checkbox-38"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5 has-children"><a class="reference internal" href="../api/jina.serve.runtimes.gateway/">jina.serve.runtimes.gateway package</a><input class="toctree-checkbox" id="toctree-checkbox-39" name="toctree-checkbox-39" role="switch" type="checkbox"/><label for="toctree-checkbox-39"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l6 has-children"><a class="reference internal" href="../api/jina.serve.runtimes.gateway.graph/">jina.serve.runtimes.gateway.graph package</a><input class="toctree-checkbox" id="toctree-checkbox-40" name="toctree-checkbox-40" role="switch" type="checkbox"/><label for="toctree-checkbox-40"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l7"><a class="reference internal" href="../api/jina.serve.runtimes.gateway.graph.topology_graph/">jina.serve.runtimes.gateway.graph.topology_graph module</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="../api/jina.serve.runtimes.gateway.grpc/">jina.serve.runtimes.gateway.grpc package</a></li>
+<li class="toctree-l6 has-children"><a class="reference internal" href="../api/jina.serve.runtimes.gateway.http/">jina.serve.runtimes.gateway.http package</a><input class="toctree-checkbox" id="toctree-checkbox-41" name="toctree-checkbox-41" role="switch" type="checkbox"/><label for="toctree-checkbox-41"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l7"><a class="reference internal" href="../api/jina.serve.runtimes.gateway.http.app/">jina.serve.runtimes.gateway.http.app module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="../api/jina.serve.runtimes.gateway.http.models/">jina.serve.runtimes.gateway.http.models module</a></li>
+</ul>
+</li>
+<li class="toctree-l6 has-children"><a class="reference internal" href="../api/jina.serve.runtimes.gateway.websocket/">jina.serve.runtimes.gateway.websocket package</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" role="switch" type="checkbox"/><label for="toctree-checkbox-42"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l7"><a class="reference internal" href="../api/jina.serve.runtimes.gateway.websocket.app/">jina.serve.runtimes.gateway.websocket.app module</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="../api/jina.serve.runtimes.gateway.request_handling/">jina.serve.runtimes.gateway.request_handling module</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="../api/jina.serve.runtimes.head/">jina.serve.runtimes.head package</a></li>
+<li class="toctree-l5 has-children"><a class="reference internal" href="../api/jina.serve.runtimes.request_handlers/">jina.serve.runtimes.request_handlers package</a><input class="toctree-checkbox" id="toctree-checkbox-43" name="toctree-checkbox-43" role="switch" type="checkbox"/><label for="toctree-checkbox-43"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l6"><a class="reference internal" href="../api/jina.serve.runtimes.request_handlers.data_request_handler/">jina.serve.runtimes.request_handlers.data_request_handler module</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="../api/jina.serve.runtimes.worker/">jina.serve.runtimes.worker package</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../api/jina.serve.runtimes.asyncio/">jina.serve.runtimes.asyncio module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../api/jina.serve.runtimes.base/">jina.serve.runtimes.base module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../api/jina.serve.runtimes.monitoring/">jina.serve.runtimes.monitoring module</a></li>
+</ul>
+</li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../api/jina.serve.stream/">jina.serve.stream package</a><input class="toctree-checkbox" id="toctree-checkbox-44" name="toctree-checkbox-44" role="switch" type="checkbox"/><label for="toctree-checkbox-44"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../api/jina.serve.stream.helper/">jina.serve.stream.helper module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../api/jina.serve.networking/">jina.serve.networking module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.types/">jina.types package</a><input class="toctree-checkbox" id="toctree-checkbox-45" name="toctree-checkbox-45" role="switch" type="checkbox"/><label for="toctree-checkbox-45"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../api/jina.types.request/">jina.types.request package</a><input class="toctree-checkbox" id="toctree-checkbox-46" name="toctree-checkbox-46" role="switch" type="checkbox"/><label for="toctree-checkbox-46"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../api/jina.types.request.control/">jina.types.request.control module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../api/jina.types.request.data/">jina.types.request.data module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../api/jina.types.mixin/">jina.types.mixin module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../api/jina.checker/">jina.checker module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/jina.enums/">jina.enums module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/jina.excepts/">jina.excepts module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/jina.helper/">jina.helper module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/jina.importer/">jina.importer module</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../api/cli/">cli package</a><input class="toctree-checkbox" id="toctree-checkbox-47" name="toctree-checkbox-47" role="switch" type="checkbox"/><label for="toctree-checkbox-47"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api/cli.api/">cli.api module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cli.autocomplete/">cli.autocomplete module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cli.export/">cli.export module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cli.known_plugins/">cli.known_plugins module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cli.lookup/">cli.lookup module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Command-Line Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../proto/docs/">Protocol Documentation</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://docs2.jina.ai/">Jina 2 Documentation</a></li>
+</ul>
+
+    <p class="caption" role="heading"><span class="caption-text">Ecosystem</span></p>
+    <ul>
+        <li class="toctree-l1">
+            <a class="reference internal" href="#">
+                <img class="sidebar-ecosys-logo only-light-line" src="../_static/search-light.svg">
+                <img class="sidebar-ecosys-logo only-dark-line" src="../_static/search-dark.svg">
+                Jina</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://hub.jina.ai">
+            <img class="sidebar-ecosys-logo only-light-line" src="../_static/hub-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../_static/hub-dark.svg">
+            Jina Hub</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://finetuner.jina.ai">
+            <img class="sidebar-ecosys-logo only-light-line" src="../_static/finetuner-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../_static/finetuner-dark.svg">
+            Finetuner</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://docarray.jina.ai">
+            <img class="sidebar-ecosys-logo only-light-line" src="../_static/docarray-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../_static/docarray-dark.svg">
+            DocArray</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://clip-as-service.jina.ai">
+            <img class="sidebar-ecosys-logo only-light-line" src="../_static/cas-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../_static/cas-dark.svg">
+            CLIP-as-service</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://github.com/jina-ai/jcloud">
+            <img class="sidebar-ecosys-logo only-light-line" src="../_static/JCloud-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../_static/JCloud-dark.svg">
+            JCloud</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://now.jina.ai">
+            <img class="sidebar-ecosys-logo only-light-line" src="../_static/now-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../_static/now-dark.svg">
+            NOW</a></li>
+    </ul>
+</div>
+
+</div>
+
+            </div>
+            
+        </div>
+    </aside>
+    <div class="main">
+        <div class="content">
+            <article role="main">
+                <div class="content-icon-container">
+                    <div class="theme-toggle-container theme-toggle-content">
+                        <button class="theme-toggle">
+                            <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+                            <svg class="theme-icon-when-auto">
+                                <use href="#svg-sun-half"></use>
+                            </svg>
+                            <svg class="theme-icon-when-dark">
+                                <use href="#svg-moon"></use>
+                            </svg>
+                            <svg class="theme-icon-when-light">
+                                <use href="#svg-sun"></use>
+                            </svg>
+                        </button>
+                    </div>
+                    <label class="toc-overlay-icon toc-content-icon"
+                           for="__toc">
+                        <div class="visually-hidden">Toggle table of contents sidebar</div>
+                        <i class="icon">
+                            <svg>
+                                <use href="#svg-toc"></use>
+                            </svg>
+                        </i>
+                    </label>
+                </div>
+                <section id="command-line-interface">
+<h1>Command-Line Interface<a class="headerlink" href="#command-line-interface" title="Permalink to this heading">#</a></h1>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">jina</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">v</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">vf</span><span class="p">]</span>
+            <span class="p">{</span><span class="n">hello</span><span class="p">,</span> <span class="n">executor</span><span class="p">,</span> <span class="n">flow</span><span class="p">,</span> <span class="n">ping</span> <span class="o">...</span> <span class="mi">8</span> <span class="n">more</span> <span class="n">choices</span><span class="p">}</span> <span class="o">...</span>
+</pre></div>
+</div>
+<section id="Positional Arguments">
+<h2>Positional Arguments<a class="headerlink" href="#Positional Arguments" title="Permalink to this heading">#</a></h2>
+<dl class="option-list">
+<dt><kbd>cli</kbd></dt>
+<dd><p>Possible choices: hello, executor, flow, ping, new, gateway, hub, help, pod, deployment, client, export-api</p>
+</dd>
+</dl>
+</section>
+<section id="Named Arguments">
+<h2>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this heading">#</a></h2>
+<dl class="option-list">
+<dt><kbd>-v, --version</kbd></dt>
+<dd><p>Show Jina version</p>
+</dd>
+<dt><kbd>-vf, --version-full</kbd></dt>
+<dd><p>Show Jina and all dependencies’ versions</p>
+</dd>
+</dl>
+</section>
+<section id="Sub-commands:">
+<h2>Sub-commands:<a class="headerlink" href="#Sub-commands:" title="Permalink to this heading">#</a></h2>
+<section id="hello">
+<h3>hello<a class="headerlink" href="#hello" title="Permalink to this heading">#</a></h3>
+<p>Start hello world demos.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">hello</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">{</span><span class="n">fashion</span><span class="p">,</span> <span class="n">chatbot</span><span class="p">,</span> <span class="n">multimodal</span><span class="p">,</span> <span class="n">fork</span><span class="p">}</span> <span class="o">...</span>
+</pre></div>
+</div>
+<section id="subcommands">
+<h4>subcommands<a class="headerlink" href="#subcommands" title="Permalink to this heading">#</a></h4>
+<p>use <cite>%(prog)-8s [sub-command] –help</cite> to get detailed information about each sub-command</p>
+<dl class="option-list">
+<dt><kbd>hello</kbd></dt>
+<dd><p>Possible choices: fashion, chatbot, multimodal, fork</p>
+</dd>
+</dl>
+</section>
+<section id="Sub-commands:_repeat1">
+<h4>Sub-commands:<a class="headerlink" href="#Sub-commands:_repeat1" title="Permalink to this heading">#</a></h4>
+<section id="fashion">
+<h5>fashion<a class="headerlink" href="#fashion" title="Permalink to this heading">#</a></h5>
+<p>Run a fashion search demo</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">hello</span> <span class="n">fashion</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">workdir</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">download</span><span class="o">-</span><span class="n">proxy</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">index</span><span class="o">-</span><span class="n">data</span><span class="o">-</span><span class="n">url</span><span class="p">]</span>
+                   <span class="p">[</span><span class="o">--</span><span class="n">index</span><span class="o">-</span><span class="n">labels</span><span class="o">-</span><span class="n">url</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">query</span><span class="o">-</span><span class="n">data</span><span class="o">-</span><span class="n">url</span><span class="p">]</span>
+                   <span class="p">[</span><span class="o">--</span><span class="n">query</span><span class="o">-</span><span class="n">labels</span><span class="o">-</span><span class="n">url</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">num</span><span class="o">-</span><span class="n">query</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">top</span><span class="o">-</span><span class="n">k</span><span class="p">]</span>
+</pre></div>
+</div>
+<section id="General arguments">
+<h6>General arguments<a class="headerlink" href="#General arguments" title="Permalink to this heading">#</a></h6>
+<dl class="option-list">
+<dt><kbd>--workdir</kbd></dt>
+<dd><p>The workdir for hello-world demoall data, indices, shards and outputs will be saved there</p>
+<p>Default: “266c23155d80445696e600b4b9992ea3”</p>
+</dd>
+<dt><kbd>--download-proxy</kbd></dt>
+<dd><p>The proxy when downloading sample data</p>
+</dd>
+</dl>
+</section>
+<section id="Index arguments">
+<h6>Index arguments<a class="headerlink" href="#Index arguments" title="Permalink to this heading">#</a></h6>
+<dl class="option-list">
+<dt><kbd>--index-data-url</kbd></dt>
+<dd><p>The url of index data (should be in idx3-ubyte.gz format)</p>
+<p>Default: “<a class="reference external" href="http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/train-images-idx3-ubyte.gz">http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/train-images-idx3-ubyte.gz</a>”</p>
+</dd>
+<dt><kbd>--index-labels-url</kbd></dt>
+<dd><p>The url of index labels data (should be in idx3-ubyte.gz format)</p>
+<p>Default: “<a class="reference external" href="http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/train-labels-idx1-ubyte.gz">http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/train-labels-idx1-ubyte.gz</a>”</p>
+</dd>
+</dl>
+</section>
+<section id="Search arguments">
+<h6>Search arguments<a class="headerlink" href="#Search arguments" title="Permalink to this heading">#</a></h6>
+<dl class="option-list">
+<dt><kbd>--query-data-url</kbd></dt>
+<dd><p>The url of query data (should be in idx3-ubyte.gz format)</p>
+<p>Default: “<a class="reference external" href="http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/t10k-images-idx3-ubyte.gz">http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/t10k-images-idx3-ubyte.gz</a>”</p>
+</dd>
+<dt><kbd>--query-labels-url</kbd></dt>
+<dd><p>The url of query labels data (should be in idx3-ubyte.gz format)</p>
+<p>Default: “<a class="reference external" href="http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/t10k-labels-idx1-ubyte.gz">http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/t10k-labels-idx1-ubyte.gz</a>”</p>
+</dd>
+<dt><kbd>--num-query</kbd></dt>
+<dd><p>The number of queries to visualize</p>
+<p>Default: 128</p>
+</dd>
+<dt><kbd>--top-k</kbd></dt>
+<dd><p>Top-k results to retrieve and visualize</p>
+<p>Default: 50</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="chatbot">
+<h5>chatbot<a class="headerlink" href="#chatbot" title="Permalink to this heading">#</a></h5>
+<p>Run a chatbot QA demo</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">hello</span> <span class="n">chatbot</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">workdir</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">download</span><span class="o">-</span><span class="n">proxy</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">index</span><span class="o">-</span><span class="n">data</span><span class="o">-</span><span class="n">url</span><span class="p">]</span>
+                   <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">replicas</span><span class="p">]</span>
+</pre></div>
+</div>
+<section id="Named Arguments_repeat1">
+<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat1" title="Permalink to this heading">#</a></h6>
+<dl class="option-list">
+<dt><kbd>--index-data-url</kbd></dt>
+<dd><p>The url of index csv data</p>
+<p>Default: “<a class="reference external" href="https://static.jina.ai/chatbot/dataset.csv">https://static.jina.ai/chatbot/dataset.csv</a>”</p>
+</dd>
+<dt><kbd>--port</kbd></dt>
+<dd><p>The port of the host exposed to the public</p>
+<p>Default: 8080</p>
+</dd>
+<dt><kbd>--replicas</kbd></dt>
+<dd><p>The number of replicas when index and query</p>
+<p>Default: 2</p>
+</dd>
+</dl>
+</section>
+<section id="General arguments_repeat1">
+<h6>General arguments<a class="headerlink" href="#General arguments_repeat1" title="Permalink to this heading">#</a></h6>
+<dl class="option-list">
+<dt><kbd>--workdir</kbd></dt>
+<dd><p>The workdir for hello-world demoall data, indices, shards and outputs will be saved there</p>
+<p>Default: “809d9b6d36f64c3a907c96fba829ca48”</p>
+</dd>
+<dt><kbd>--download-proxy</kbd></dt>
+<dd><p>The proxy when downloading sample data</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="multimodal">
+<h5>multimodal<a class="headerlink" href="#multimodal" title="Permalink to this heading">#</a></h5>
+<p>Run a multimodal search demo</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">hello</span> <span class="n">multimodal</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">workdir</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">download</span><span class="o">-</span><span class="n">proxy</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">index</span><span class="o">-</span><span class="n">data</span><span class="o">-</span><span class="n">url</span><span class="p">]</span>
+                      <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="p">]</span>
+</pre></div>
+</div>
+<section id="Named Arguments_repeat2">
+<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat2" title="Permalink to this heading">#</a></h6>
+<dl class="option-list">
+<dt><kbd>--index-data-url</kbd></dt>
+<dd><p>The url of index csv data</p>
+<p>Default: “<a class="reference external" href="https://static.jina.ai/multimodal/people-img.zip">https://static.jina.ai/multimodal/people-img.zip</a>”</p>
+</dd>
+<dt><kbd>--port</kbd></dt>
+<dd><p>The port of the host exposed to the public</p>
+<p>Default: 8080</p>
+</dd>
+</dl>
+</section>
+<section id="General arguments_repeat2">
+<h6>General arguments<a class="headerlink" href="#General arguments_repeat2" title="Permalink to this heading">#</a></h6>
+<dl class="option-list">
+<dt><kbd>--workdir</kbd></dt>
+<dd><p>The workdir for hello-world demoall data, indices, shards and outputs will be saved there</p>
+<p>Default: “88008d67936f4d288882fea68f883083”</p>
+</dd>
+<dt><kbd>--download-proxy</kbd></dt>
+<dd><p>The proxy when downloading sample data</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="fork">
+<h5>fork<a class="headerlink" href="#fork" title="Permalink to this heading">#</a></h5>
+<p>Fork a hello world project to a local directory.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">hello</span> <span class="n">fork</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">{</span><span class="n">fashion</span><span class="p">,</span> <span class="n">chatbot</span><span class="p">,</span> <span class="n">multimodal</span><span class="p">}</span> <span class="n">destination</span>
+</pre></div>
+</div>
+<section id="Positional Arguments_repeat1">
+<h6>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat1" title="Permalink to this heading">#</a></h6>
+<dl class="option-list">
+<dt><kbd>project</kbd></dt>
+<dd><p>Possible choices: fashion, chatbot, multimodal</p>
+<p>The hello world project to fork</p>
+</dd>
+<dt><kbd>destination</kbd></dt>
+<dd><p>The dest directory of the forked project. Note, it can not be an existing path.</p>
+</dd>
+</dl>
+</section>
+</section>
+</section>
+</section>
+<section id="executor">
+<h3>executor<a class="headerlink" href="#executor" title="Permalink to this heading">#</a></h3>
+<p>Start an Executor. Executor is how Jina processes Document.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">executor</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">name</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">workspace</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">config</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="p">]</span>
+              <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="o">-</span><span class="n">error</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ctrl</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">polling</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="p">]</span>
+              <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="k">with</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
+              <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">metas</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
+              <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">requests</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
+              <span class="p">[</span><span class="o">--</span><span class="n">py</span><span class="o">-</span><span class="n">modules</span> <span class="p">[</span><span class="n">PATH</span> <span class="p">[</span><span class="n">PATH</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="ow">in</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">host</span><span class="o">-</span><span class="ow">in</span><span class="p">]</span>
+              <span class="p">[</span><span class="o">--</span><span class="n">native</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">output</span><span class="o">-</span><span class="n">array</span><span class="o">-</span><span class="nb">type</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">entrypoint</span><span class="p">]</span>
+              <span class="p">[</span><span class="o">--</span><span class="n">docker</span><span class="o">-</span><span class="n">kwargs</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
+              <span class="p">[</span><span class="o">--</span><span class="n">volumes</span> <span class="p">[</span><span class="n">DIR</span> <span class="p">[</span><span class="n">DIR</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">gpus</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">disable</span><span class="o">-</span><span class="n">auto</span><span class="o">-</span><span class="n">volume</span><span class="p">]</span>
+              <span class="p">[</span><span class="o">--</span><span class="n">host</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="o">-</span><span class="n">remote</span><span class="o">-</span><span class="n">logs</span><span class="p">]</span>
+              <span class="p">[</span><span class="o">--</span><span class="n">upload</span><span class="o">-</span><span class="n">files</span> <span class="p">[</span><span class="n">FILE</span> <span class="p">[</span><span class="n">FILE</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">runtime</span><span class="o">-</span><span class="bp">cls</span><span class="p">]</span>
+              <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ready</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">env</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
+              <span class="p">[</span><span class="o">--</span><span class="n">shards</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">replicas</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">monitoring</span><span class="p">]</span>
+              <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">monitoring</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">install</span><span class="o">-</span><span class="n">requirements</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">force</span><span class="o">-</span><span class="n">update</span><span class="p">]</span>
+              <span class="p">[</span><span class="o">--</span><span class="n">compression</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">before</span><span class="o">-</span><span class="n">address</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">after</span><span class="o">-</span><span class="n">address</span><span class="p">]</span>
+              <span class="p">[</span><span class="o">--</span><span class="n">connection</span><span class="o">-</span><span class="nb">list</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">disable</span><span class="o">-</span><span class="n">reduce</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">send</span><span class="p">]</span>
+</pre></div>
+</div>
+<section id="Essential arguments">
+<h4>Essential arguments<a class="headerlink" href="#Essential arguments" title="Permalink to this heading">#</a></h4>
+<dl class="option-list">
+<dt><kbd>--name</kbd></dt>
+<dd><blockquote>
+<div><p>The name of this object.</p>
+<p>This will be used in the following places:
+- how you refer to this object in Python/YAML/CLI
+- visualization
+- log message header
+- …</p>
+<p>When not given, then the default naming strategy will apply.</p>
+</div></blockquote>
+</dd>
+<dt><kbd>--workspace</kbd></dt>
+<dd><p>The working directory for any IO operations in this object. If not set, then derive from its parent <cite>workspace</cite>.</p>
+</dd>
+<dt><kbd>--log-config</kbd></dt>
+<dd><p>The YAML config of the logger used in this object.</p>
+<p>Default: “default”</p>
+</dd>
+<dt><kbd>--quiet</kbd></dt>
+<dd><p>If set, then no log will be emitted from this object.</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--quiet-error</kbd></dt>
+<dd><p>If set, then exception stack information will not be added to the log</p>
+<p>Default: False</p>
+</dd>
+</dl>
+</section>
+<section id="Base Deployment arguments">
+<h4>Base Deployment arguments<a class="headerlink" href="#Base Deployment arguments" title="Permalink to this heading">#</a></h4>
+<dl class="option-list">
+<dt><kbd>--timeout-ctrl</kbd></dt>
+<dd><p>The timeout in milliseconds of the control request, -1 for waiting forever</p>
+<p>Default: 60</p>
+</dd>
+<dt><kbd>--polling</kbd></dt>
+<dd><blockquote>
+<div><p>The polling strategy of the Deployment and its endpoints (when <cite>shards&gt;1</cite>).
+Can be defined for all endpoints of a Deployment or by endpoint.
+Define per Deployment:
+- ANY: only one (whoever is idle) Pod polls the message
+- ALL: all Pods poll the message (like a broadcast)
+Define per Endpoint:
+JSON dict, {endpoint: PollingType}
+{‘/custom’: ‘ALL’, ‘/search’: ‘ANY’, ‘*’: ‘ANY’}</p>
+</div></blockquote>
+<p>Default: “ANY”</p>
+</dd>
+</dl>
+</section>
+<section id="WorkerRuntime arguments">
+<h4>WorkerRuntime arguments<a class="headerlink" href="#WorkerRuntime arguments" title="Permalink to this heading">#</a></h4>
+<dl class="option-list">
+<dt><kbd>--uses</kbd></dt>
+<dd><blockquote>
+<div><p>The config of the executor, it could be one of the followings:
+* an Executor YAML file (.yml, .yaml, .jaml)
+* a Jina Hub Executor (must start with <cite>jinahub://</cite> or <cite>jinahub+docker://</cite>)
+* a docker image (must start with <cite>docker://</cite>)
+* the string literal of a YAML config (must start with <cite>!</cite> or <a href="#id1"><span class="problematic" id="id2">`</span></a>jtype: <a href="#id3"><span class="problematic" id="id4">`</span></a>)
+* the string literal of a JSON config</p>
+<p>When use it under Python, one can use the following values additionally:
+- a Python dict that represents the config
+- a text file stream has <cite>.read()</cite> interface</p>
+</div></blockquote>
+<p>Default: “BaseExecutor”</p>
+</dd>
+<dt><kbd>--uses-with</kbd></dt>
+<dd><blockquote>
+<div><p>Dictionary of keyword arguments that will override the <cite>with</cite> configuration in <cite>uses</cite></p>
+</div></blockquote>
+</dd>
+<dt><kbd>--uses-metas</kbd></dt>
+<dd><blockquote>
+<div><p>Dictionary of keyword arguments that will override the <cite>metas</cite> configuration in <cite>uses</cite></p>
+</div></blockquote>
+</dd>
+<dt><kbd>--uses-requests</kbd></dt>
+<dd><blockquote>
+<div><p>Dictionary of keyword arguments that will override the <cite>requests</cite> configuration in <cite>uses</cite></p>
+</div></blockquote>
+</dd>
+<dt><kbd>--py-modules</kbd></dt>
+<dd><p>The customized python modules need to be imported before loading the executor</p>
+<p>Note that the recommended way is to only import a single module - a simple python file, if your
+executor can be defined in a single file, or an <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> file if you have multiple files,
+which should be structured as a python package. For more details, please see the
+<a class="reference external" href="https://docs.jina.ai/fundamentals/executor/repository-structure/">Executor cookbook</a></p>
+</dd>
+<dt><kbd>--port-in</kbd></dt>
+<dd><p>The port for input data to bind to, default a random port between [49152, 65535]</p>
+<p>Default: 50133</p>
+</dd>
+<dt><kbd>--host-in</kbd></dt>
+<dd><p>The host address for binding to, by default it is 0.0.0.0</p>
+<p>Default: “0.0.0.0”</p>
+</dd>
+<dt><kbd>--native</kbd></dt>
+<dd><p>If set, only native Executors is allowed, and the Executor is always run inside WorkerRuntime.</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--output-array-type</kbd></dt>
+<dd><p>The type of array <cite>tensor</cite> and <cite>embedding</cite> will be serialized to.</p>
+<p>Supports the same types as <cite>docarray.to_protobuf(.., ndarray_type=…)</cite>, which can be found
+<cite>here &lt;https://docarray.jina.ai/fundamentals/document/serialization/#from-to-protobuf&gt;</cite>.
+Defaults to retaining whatever type is returned by the Executor.</p>
+</dd>
+</dl>
+</section>
+<section id="ContainerRuntime arguments">
+<h4>ContainerRuntime arguments<a class="headerlink" href="#ContainerRuntime arguments" title="Permalink to this heading">#</a></h4>
+<dl class="option-list">
+<dt><kbd>--entrypoint</kbd></dt>
+<dd><p>The entrypoint command overrides the ENTRYPOINT in Docker image. when not set then the Docker image ENTRYPOINT takes effective.</p>
+</dd>
+<dt><kbd>--docker-kwargs</kbd></dt>
+<dd><p>Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker ‘
+container.</p>
+<p>More details can be found in the Docker SDK docs:  <a class="reference external" href="https://docker-py.readthedocs.io/en/stable/">https://docker-py.readthedocs.io/en/stable/</a></p>
+</dd>
+<dt><kbd>--volumes</kbd></dt>
+<dd><p>The path on the host to be mounted inside the container.</p>
+<p>Note,
+- If separated by <cite>:</cite>, then the first part will be considered as the local host path and the second part is the path in the container system.
+- If no split provided, then the basename of that directory will be mounted into container’s root path, e.g. <cite>–volumes=”/user/test/my-workspace”</cite> will be mounted into <cite>/my-workspace</cite> inside the container.
+- All volumes are mounted with read-write mode.</p>
+</dd>
+<dt><kbd>--gpus</kbd></dt>
+<dd><blockquote>
+<div><p>This argument allows dockerized Jina executor discover local gpu devices.</p>
+<p>Note,
+- To access all gpus, use <cite>–gpus all</cite>.
+- To access multiple gpus, e.g. make use of 2 gpus, use <cite>–gpus 2</cite>.
+- To access specified gpus based on device id, use <cite>–gpus device=[YOUR-GPU-DEVICE-ID]</cite>
+- To access specified gpus based on multiple device id, use <cite>–gpus device=[YOUR-GPU-DEVICE-ID1],device=[YOUR-GPU-DEVICE-ID2]</cite>
+- To specify more parameters, use <a href="#id1"><span class="problematic" id="id2">`</span></a>–gpus device=[YOUR-GPU-DEVICE-ID],runtime=nvidia,capabilities=display</p>
+</div></blockquote>
+</dd>
+<dt><kbd>--disable-auto-volume</kbd></dt>
+<dd><p>Do not automatically mount a volume for dockerized Executors.</p>
+<p>Default: False</p>
+</dd>
+</dl>
+</section>
+<section id="RemoteRuntime arguments">
+<h4>RemoteRuntime arguments<a class="headerlink" href="#RemoteRuntime arguments" title="Permalink to this heading">#</a></h4>
+<dl class="option-list">
+<dt><kbd>--host</kbd></dt>
+<dd><p>The host address of the runtime, by default it is 0.0.0.0.</p>
+<p>Default: “0.0.0.0”</p>
+</dd>
+</dl>
+</section>
+<section id="Distributed arguments">
+<h4>Distributed arguments<a class="headerlink" href="#Distributed arguments" title="Permalink to this heading">#</a></h4>
+<dl class="option-list">
+<dt><kbd>--quiet-remote-logs</kbd></dt>
+<dd><p>Do not display the streaming of remote logs on local console</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--upload-files</kbd></dt>
+<dd><p>The files on the host to be uploaded to the remote
+workspace. This can be useful when your Deployment has more
+file dependencies beyond a single YAML file, e.g.
+Python files, data files.</p>
+<p>Note,
+- currently only flatten structure is supported, which means if you upload <cite>[./foo/a.py, ./foo/b.pp, ./bar/c.yml]</cite>, then they will be put under the _same_ workspace on the remote, losing all hierarchies.
+- by default, <cite>–uses</cite> YAML file is always uploaded.
+- uploaded files are by default isolated across the runs. To ensure files are submitted to the same workspace across different runs, use <cite>–workspace-id</cite> to specify the workspace.</p>
+</dd>
+</dl>
+</section>
+<section id="Pod arguments">
+<h4>Pod arguments<a class="headerlink" href="#Pod arguments" title="Permalink to this heading">#</a></h4>
+<dl class="option-list">
+<dt><kbd>--runtime-cls</kbd></dt>
+<dd><p>The runtime class to run inside the Pod</p>
+<p>Default: “WorkerRuntime”</p>
+</dd>
+<dt><kbd>--timeout-ready</kbd></dt>
+<dd><p>The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting forever</p>
+<p>Default: 600000</p>
+</dd>
+<dt><kbd>--env</kbd></dt>
+<dd><p>The map of environment variables that are available inside runtime</p>
+</dd>
+<dt><kbd>--shards</kbd></dt>
+<dd><p>The number of shards in the deployment running at the same time. For more details check <a class="reference external" href="https://docs.jina.ai/fundamentals/flow/create-flow/#complex-flow-topologies">https://docs.jina.ai/fundamentals/flow/create-flow/#complex-flow-topologies</a></p>
+<p>Default: 1</p>
+</dd>
+<dt><kbd>--replicas</kbd></dt>
+<dd><p>The number of replicas in the deployment</p>
+<p>Default: 1</p>
+</dd>
+<dt><kbd>--port</kbd></dt>
+<dd><p>The port for input data to bind to, default is a random port between [49152, 65535]</p>
+<p>Default: 54935</p>
+</dd>
+<dt><kbd>--monitoring</kbd></dt>
+<dd><p>If set, spawn an http server with a prometheus endpoint to expose metrics</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--port-monitoring</kbd></dt>
+<dd><p>The port on which the prometheus server is exposed, default port is 9090</p>
+<p>Default: 9090</p>
+</dd>
+</dl>
+</section>
+<section id="Pull arguments">
+<h4>Pull arguments<a class="headerlink" href="#Pull arguments" title="Permalink to this heading">#</a></h4>
+<dl class="option-list">
+<dt><kbd>--install-requirements</kbd></dt>
+<dd><p>If set, install <cite>requirements.txt</cite> in the Hub Executor bundle to local</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--force-update, --force</kbd></dt>
+<dd><p>If set, always pull the latest Hub Executor bundle even it exists on local</p>
+<p>Default: False</p>
+</dd>
+</dl>
+</section>
+<section id="Head arguments">
+<h4>Head arguments<a class="headerlink" href="#Head arguments" title="Permalink to this heading">#</a></h4>
+<dl class="option-list">
+<dt><kbd>--compression</kbd></dt>
+<dd><p>The compression mechanism used when sending requests from the Head to the WorkerRuntimes. Possibilities are <cite>NoCompression, Gzip, Deflate</cite>. For more details, check <a class="reference external" href="https://grpc.github.io/grpc/python/grpc.html#compression">https://grpc.github.io/grpc/python/grpc.html#compression</a>.</p>
+<p>Default: “NoCompression”</p>
+</dd>
+<dt><kbd>--uses-before-address</kbd></dt>
+<dd><p>The address of the uses-before runtime</p>
+</dd>
+<dt><kbd>--uses-after-address</kbd></dt>
+<dd><p>The address of the uses-before runtime</p>
+</dd>
+<dt><kbd>--connection-list</kbd></dt>
+<dd><p>dictionary JSON with a list of connections to configure</p>
+</dd>
+<dt><kbd>--disable-reduce</kbd></dt>
+<dd><p>Disable the built-in reduce mechanism, set this if the reduction is to be handled by the Executor connected to this Head</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--timeout-send</kbd></dt>
+<dd><p>The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="flow">
+<h3>flow<a class="headerlink" href="#flow" title="Permalink to this heading">#</a></h3>
+<p>Start a Flow. Flow is how Jina streamlines and distributes Executors.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">flow</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">name</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">workspace</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">config</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="o">-</span><span class="n">error</span><span class="p">]</span>
+          <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">env</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
+          <span class="p">[</span><span class="o">--</span><span class="n">inspect</span> <span class="p">{</span><span class="n">HANG</span><span class="p">,</span> <span class="n">REMOVE</span><span class="p">,</span> <span class="n">COLLECT</span><span class="p">}]</span>
+</pre></div>
+</div>
+<section id="Essential arguments_repeat1">
+<h4>Essential arguments<a class="headerlink" href="#Essential arguments_repeat1" title="Permalink to this heading">#</a></h4>
+<dl class="option-list">
+<dt><kbd>--name</kbd></dt>
+<dd><blockquote>
+<div><p>The name of this object.</p>
+<p>This will be used in the following places:
+- how you refer to this object in Python/YAML/CLI
+- visualization
+- log message header
+- …</p>
+<p>When not given, then the default naming strategy will apply.</p>
+</div></blockquote>
+</dd>
+<dt><kbd>--workspace</kbd></dt>
+<dd><p>The working directory for any IO operations in this object. If not set, then derive from its parent <cite>workspace</cite>.</p>
+</dd>
+<dt><kbd>--log-config</kbd></dt>
+<dd><p>The YAML config of the logger used in this object.</p>
+<p>Default: “default”</p>
+</dd>
+<dt><kbd>--quiet</kbd></dt>
+<dd><p>If set, then no log will be emitted from this object.</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--quiet-error</kbd></dt>
+<dd><p>If set, then exception stack information will not be added to the log</p>
+<p>Default: False</p>
+</dd>
+</dl>
+</section>
+<section id="Flow Feature arguments">
+<h4>Flow Feature arguments<a class="headerlink" href="#Flow Feature arguments" title="Permalink to this heading">#</a></h4>
+<dl class="option-list">
+<dt><kbd>--uses</kbd></dt>
+<dd><p>The YAML file represents a flow</p>
+</dd>
+<dt><kbd>--env</kbd></dt>
+<dd><p>The map of environment variables that are available inside runtime</p>
+</dd>
+<dt><kbd>--inspect</kbd></dt>
+<dd><p>Possible choices: HANG, REMOVE, COLLECT</p>
+<blockquote>
+<div><p>The strategy on those inspect deployments in the flow.</p>
+<p>If <cite>REMOVE</cite> is given then all inspect deployments are removed when building the flow.</p>
+</div></blockquote>
+<p>Default: COLLECT</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="ping">
+<h3>ping<a class="headerlink" href="#ping" title="Permalink to this heading">#</a></h3>
+<p>Ping a Deployment and check its network connectivity.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">ping</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">retries</span><span class="p">]</span> <span class="n">host</span> <span class="n">port</span>
+</pre></div>
+</div>
+<section id="Positional Arguments_repeat2">
+<h4>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat2" title="Permalink to this heading">#</a></h4>
+<dl class="option-list">
+<dt><kbd>host</kbd></dt>
+<dd><p>The host address of the target Pod, e.g. 0.0.0.0</p>
+</dd>
+<dt><kbd>port</kbd></dt>
+<dd><p>The control port of the target deployment/pod</p>
+</dd>
+</dl>
+</section>
+<section id="Named Arguments_repeat3">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat3" title="Permalink to this heading">#</a></h4>
+<dl class="option-list">
+<dt><kbd>--timeout</kbd></dt>
+<dd><p>Timeout in millisecond of one check
+-1 for waiting forever</p>
+<p>Default: 3000</p>
+</dd>
+<dt><kbd>--retries</kbd></dt>
+<dd><p>The max number of tried health checks before exit with exit code 1</p>
+<p>Default: 3</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="new">
+<h3>new<a class="headerlink" href="#new" title="Permalink to this heading">#</a></h3>
+<p>Create a new Jina toy project with the predefined template.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">new</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="n">name</span>
+</pre></div>
+</div>
+<section id="Positional Arguments_repeat3">
+<h4>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat3" title="Permalink to this heading">#</a></h4>
+<dl class="option-list">
+<dt><kbd>name</kbd></dt>
+<dd><p>The name of the project</p>
+<p>Default: “hello-jina”</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="gateway">
+<h3>gateway<a class="headerlink" href="#gateway" title="Permalink to this heading">#</a></h3>
+<p>Start a Gateway that receives client Requests via gRPC/REST interface</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">gateway</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">name</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">workspace</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">config</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="o">-</span><span class="n">error</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ctrl</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">polling</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="k">with</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">metas</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">requests</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">py</span><span class="o">-</span><span class="n">modules</span> <span class="p">[</span><span class="n">PATH</span> <span class="p">[</span><span class="n">PATH</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="ow">in</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">host</span><span class="o">-</span><span class="ow">in</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">native</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">output</span><span class="o">-</span><span class="n">array</span><span class="o">-</span><span class="nb">type</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">prefetch</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">title</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">description</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">cors</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">default</span><span class="o">-</span><span class="n">swagger</span><span class="o">-</span><span class="n">ui</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">debug</span><span class="o">-</span><span class="n">endpoints</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">crud</span><span class="o">-</span><span class="n">endpoints</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">expose</span><span class="o">-</span><span class="n">endpoints</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">uvicorn</span><span class="o">-</span><span class="n">kwargs</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">grpc</span><span class="o">-</span><span class="n">server</span><span class="o">-</span><span class="n">kwargs</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">ssl</span><span class="o">-</span><span class="n">certfile</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ssl</span><span class="o">-</span><span class="n">keyfile</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">expose</span><span class="o">-</span><span class="n">graphql</span><span class="o">-</span><span class="n">endpoint</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">protocol</span> <span class="p">{</span><span class="n">GRPC</span><span class="p">,</span> <span class="n">HTTP</span><span class="p">,</span> <span class="n">WEBSOCKET</span><span class="p">}]</span> <span class="p">[</span><span class="o">--</span><span class="n">host</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">proxy</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">expose</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">graph</span><span class="o">-</span><span class="n">description</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">graph</span><span class="o">-</span><span class="n">conditions</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">deployments</span><span class="o">-</span><span class="n">addresses</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">deployments</span><span class="o">-</span><span class="n">disable</span><span class="o">-</span><span class="n">reduce</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">compression</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">send</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">runtime</span><span class="o">-</span><span class="bp">cls</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ready</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">env</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">shards</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">replicas</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">monitoring</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">monitoring</span><span class="p">]</span>
+</pre></div>
+</div>
+<section id="Named Arguments_repeat4">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat4" title="Permalink to this heading">#</a></h4>
+<dl class="option-list">
+<dt><kbd>--protocol</kbd></dt>
+<dd><p>Possible choices: GRPC, HTTP, WEBSOCKET</p>
+<p>Communication protocol between server and client.</p>
+<p>Default: GRPC</p>
+</dd>
+<dt><kbd>--graph-description</kbd></dt>
+<dd><p>Routing graph for the gateway</p>
+<p>Default: “{}”</p>
+</dd>
+<dt><kbd>--graph-conditions</kbd></dt>
+<dd><p>Dictionary stating which filtering conditions each Executor in the graph requires to receive Documents.</p>
+<p>Default: “{}”</p>
+</dd>
+<dt><kbd>--deployments-addresses</kbd></dt>
+<dd><p>dictionary JSON with the input addresses of each Deployment</p>
+<p>Default: “{}”</p>
+</dd>
+<dt><kbd>--deployments-disable-reduce</kbd></dt>
+<dd><p>list JSON disabling the built-in merging mechanism for each Deployment listed</p>
+<p>Default: “[]”</p>
+</dd>
+</dl>
+</section>
+<section id="Essential arguments_repeat2">
+<h4>Essential arguments<a class="headerlink" href="#Essential arguments_repeat2" title="Permalink to this heading">#</a></h4>
+<dl class="option-list">
+<dt><kbd>--name</kbd></dt>
+<dd><blockquote>
+<div><p>The name of this object.</p>
+<p>This will be used in the following places:
+- how you refer to this object in Python/YAML/CLI
+- visualization
+- log message header
+- …</p>
+<p>When not given, then the default naming strategy will apply.</p>
+</div></blockquote>
+<p>Default: “gateway”</p>
+</dd>
+<dt><kbd>--workspace</kbd></dt>
+<dd><p>The working directory for any IO operations in this object. If not set, then derive from its parent <cite>workspace</cite>.</p>
+</dd>
+<dt><kbd>--log-config</kbd></dt>
+<dd><p>The YAML config of the logger used in this object.</p>
+<p>Default: “default”</p>
+</dd>
+<dt><kbd>--quiet</kbd></dt>
+<dd><p>If set, then no log will be emitted from this object.</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--quiet-error</kbd></dt>
+<dd><p>If set, then exception stack information will not be added to the log</p>
+<p>Default: False</p>
+</dd>
+</dl>
+</section>
+<section id="Base Deployment arguments_repeat1">
+<h4>Base Deployment arguments<a class="headerlink" href="#Base Deployment arguments_repeat1" title="Permalink to this heading">#</a></h4>
+<dl class="option-list">
+<dt><kbd>--timeout-ctrl</kbd></dt>
+<dd><p>The timeout in milliseconds of the control request, -1 for waiting forever</p>
+<p>Default: 60</p>
+</dd>
+<dt><kbd>--polling</kbd></dt>
+<dd><blockquote>
+<div><p>The polling strategy of the Deployment and its endpoints (when <cite>shards&gt;1</cite>).
+Can be defined for all endpoints of a Deployment or by endpoint.
+Define per Deployment:
+- ANY: only one (whoever is idle) Pod polls the message
+- ALL: all Pods poll the message (like a broadcast)
+Define per Endpoint:
+JSON dict, {endpoint: PollingType}
+{‘/custom’: ‘ALL’, ‘/search’: ‘ANY’, ‘*’: ‘ANY’}</p>
+</div></blockquote>
+<p>Default: “ANY”</p>
+</dd>
+</dl>
+</section>
+<section id="WorkerRuntime arguments_repeat1">
+<h4>WorkerRuntime arguments<a class="headerlink" href="#WorkerRuntime arguments_repeat1" title="Permalink to this heading">#</a></h4>
+<dl class="option-list">
+<dt><kbd>--uses</kbd></dt>
+<dd><blockquote>
+<div><p>The config of the executor, it could be one of the followings:
+* an Executor YAML file (.yml, .yaml, .jaml)
+* a Jina Hub Executor (must start with <cite>jinahub://</cite> or <cite>jinahub+docker://</cite>)
+* a docker image (must start with <cite>docker://</cite>)
+* the string literal of a YAML config (must start with <cite>!</cite> or <a href="#id1"><span class="problematic" id="id2">`</span></a>jtype: <a href="#id3"><span class="problematic" id="id4">`</span></a>)
+* the string literal of a JSON config</p>
+<p>When use it under Python, one can use the following values additionally:
+- a Python dict that represents the config
+- a text file stream has <cite>.read()</cite> interface</p>
+</div></blockquote>
+<p>Default: “BaseExecutor”</p>
+</dd>
+<dt><kbd>--uses-with</kbd></dt>
+<dd><blockquote>
+<div><p>Dictionary of keyword arguments that will override the <cite>with</cite> configuration in <cite>uses</cite></p>
+</div></blockquote>
+</dd>
+<dt><kbd>--uses-metas</kbd></dt>
+<dd><blockquote>
+<div><p>Dictionary of keyword arguments that will override the <cite>metas</cite> configuration in <cite>uses</cite></p>
+</div></blockquote>
+</dd>
+<dt><kbd>--uses-requests</kbd></dt>
+<dd><blockquote>
+<div><p>Dictionary of keyword arguments that will override the <cite>requests</cite> configuration in <cite>uses</cite></p>
+</div></blockquote>
+</dd>
+<dt><kbd>--py-modules</kbd></dt>
+<dd><p>The customized python modules need to be imported before loading the executor</p>
+<p>Note that the recommended way is to only import a single module - a simple python file, if your
+executor can be defined in a single file, or an <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> file if you have multiple files,
+which should be structured as a python package. For more details, please see the
+<a class="reference external" href="https://docs.jina.ai/fundamentals/executor/repository-structure/">Executor cookbook</a></p>
+</dd>
+<dt><kbd>--port-in</kbd></dt>
+<dd><p>The port for input data to bind to, default a random port between [49152, 65535]</p>
+<p>Default: 57273</p>
+</dd>
+<dt><kbd>--host-in</kbd></dt>
+<dd><p>The host address for binding to, by default it is 0.0.0.0</p>
+<p>Default: “0.0.0.0”</p>
+</dd>
+<dt><kbd>--native</kbd></dt>
+<dd><p>If set, only native Executors is allowed, and the Executor is always run inside WorkerRuntime.</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--output-array-type</kbd></dt>
+<dd><p>The type of array <cite>tensor</cite> and <cite>embedding</cite> will be serialized to.</p>
+<p>Supports the same types as <cite>docarray.to_protobuf(.., ndarray_type=…)</cite>, which can be found
+<cite>here &lt;https://docarray.jina.ai/fundamentals/document/serialization/#from-to-protobuf&gt;</cite>.
+Defaults to retaining whatever type is returned by the Executor.</p>
+</dd>
+</dl>
+</section>
+<section id="Prefetch arguments">
+<h4>Prefetch arguments<a class="headerlink" href="#Prefetch arguments" title="Permalink to this heading">#</a></h4>
+<dl class="option-list">
+<dt><kbd>--prefetch</kbd></dt>
+<dd><blockquote>
+<div><p>Number of requests fetched from the client before feeding into the first Executor.</p>
+<p>Used to control the speed of data input into a Flow. 0 disables prefetch (disabled by default)</p>
+</div></blockquote>
+<p>Default: 0</p>
+</dd>
+</dl>
+</section>
+<section id="HTTP Gateway arguments">
+<h4>HTTP Gateway arguments<a class="headerlink" href="#HTTP Gateway arguments" title="Permalink to this heading">#</a></h4>
+<dl class="option-list">
+<dt><kbd>--title</kbd></dt>
+<dd><p>The title of this HTTP server. It will be used in automatics docs such as Swagger UI.</p>
+</dd>
+<dt><kbd>--description</kbd></dt>
+<dd><p>The description of this HTTP server. It will be used in automatics docs such as Swagger UI.</p>
+</dd>
+<dt><kbd>--cors</kbd></dt>
+<dd><blockquote>
+<div><p>If set, a CORS middleware is added to FastAPI frontend to allow cross-origin access.</p>
+</div></blockquote>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--default-swagger-ui</kbd></dt>
+<dd><p>If set, the default swagger ui is used for <cite>/docs</cite> endpoint.</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--no-debug-endpoints</kbd></dt>
+<dd><p>If set, /status /post endpoints are removed from HTTP interface.</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--no-crud-endpoints</kbd></dt>
+<dd><blockquote>
+<div><p>If set, /index, /search, /update, /delete endpoints are removed from HTTP interface.</p>
+<p>Any executor that has <cite>&#64;requests(on=…)</cite> bind with those values will receive data requests.</p>
+</div></blockquote>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--expose-endpoints</kbd></dt>
+<dd><blockquote>
+<div><p>A JSON string that represents a map from executor endpoints (<cite>&#64;requests(on=…)</cite>) to HTTP endpoints.</p>
+</div></blockquote>
+</dd>
+<dt><kbd>--uvicorn-kwargs</kbd></dt>
+<dd><p>Dictionary of kwargs arguments that will be passed to Uvicorn server when starting the server</p>
+<p>More details can be found in Uvicorn docs: <a class="reference external" href="https://www.uvicorn.org/settings/">https://www.uvicorn.org/settings/</a></p>
+</dd>
+<dt><kbd>--grpc-server-kwargs</kbd></dt>
+<dd><blockquote>
+<div><p>Dictionary of kwargs arguments that will be passed to the grpc server when starting the server # todo update</p>
+</div></blockquote>
+</dd>
+<dt><kbd>--ssl-certfile</kbd></dt>
+<dd><blockquote>
+<div><p>the path to the certificate file</p>
+</div></blockquote>
+</dd>
+<dt><kbd>--ssl-keyfile</kbd></dt>
+<dd><blockquote>
+<div><p>the path to the key file</p>
+</div></blockquote>
+</dd>
+</dl>
+</section>
+<section id="GraphQL arguments">
+<h4>GraphQL arguments<a class="headerlink" href="#GraphQL arguments" title="Permalink to this heading">#</a></h4>
+<dl class="option-list">
+<dt><kbd>--expose-graphql-endpoint</kbd></dt>
+<dd><p>If set, /graphql endpoint is added to HTTP interface.</p>
+<p>Default: False</p>
+</dd>
+</dl>
+</section>
+<section id="Gateway arguments">
+<h4>Gateway arguments<a class="headerlink" href="#Gateway arguments" title="Permalink to this heading">#</a></h4>
+<dl class="option-list">
+<dt><kbd>--host</kbd></dt>
+<dd><p>The host address of the runtime, by default it is 0.0.0.0.</p>
+<p>Default: “0.0.0.0”</p>
+</dd>
+<dt><kbd>--proxy</kbd></dt>
+<dd><p>If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--port-expose</kbd></dt>
+<dd><p>The port that the gateway exposes for clients for GRPC connections.</p>
+<p>Default: 49619</p>
+</dd>
+<dt><kbd>--compression</kbd></dt>
+<dd><p>The compression mechanism used when sending requests to Executors. Possibilites are: <cite>NoCompression, Gzip, Deflate</cite>. For more details, check <a class="reference external" href="https://grpc.github.io/grpc/python/grpc.html#compression">https://grpc.github.io/grpc/python/grpc.html#compression</a>.</p>
+<p>Default: “NoCompression”</p>
+</dd>
+<dt><kbd>--timeout-send</kbd></dt>
+<dd><p>The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default</p>
+</dd>
+</dl>
+</section>
+<section id="Pod arguments_repeat1">
+<h4>Pod arguments<a class="headerlink" href="#Pod arguments_repeat1" title="Permalink to this heading">#</a></h4>
+<dl class="option-list">
+<dt><kbd>--runtime-cls</kbd></dt>
+<dd><p>The runtime class to run inside the Pod</p>
+<p>Default: “GRPCGatewayRuntime”</p>
+</dd>
+<dt><kbd>--timeout-ready</kbd></dt>
+<dd><p>The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting forever</p>
+<p>Default: 600000</p>
+</dd>
+<dt><kbd>--env</kbd></dt>
+<dd><p>The map of environment variables that are available inside runtime</p>
+</dd>
+<dt><kbd>--shards</kbd></dt>
+<dd><p>The number of shards in the deployment running at the same time. For more details check <a class="reference external" href="https://docs.jina.ai/fundamentals/flow/create-flow/#complex-flow-topologies">https://docs.jina.ai/fundamentals/flow/create-flow/#complex-flow-topologies</a></p>
+<p>Default: 1</p>
+</dd>
+<dt><kbd>--replicas</kbd></dt>
+<dd><p>The number of replicas in the deployment</p>
+<p>Default: 1</p>
+</dd>
+<dt><kbd>--port</kbd></dt>
+<dd><p>The port for input data to bind to, default is a random port between [49152, 65535]</p>
+<p>Default: 52519</p>
+</dd>
+<dt><kbd>--monitoring</kbd></dt>
+<dd><p>If set, spawn an http server with a prometheus endpoint to expose metrics</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--port-monitoring</kbd></dt>
+<dd><p>The port on which the prometheus server is exposed, default port is 9090</p>
+<p>Default: 9090</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="hub">
+<h3>hub<a class="headerlink" href="#hub" title="Permalink to this heading">#</a></h3>
+<p>Push/Pull an Executor to/from Jina Hub</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">hub</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">{</span><span class="n">new</span><span class="p">,</span> <span class="n">push</span><span class="p">,</span> <span class="n">pull</span><span class="p">}</span> <span class="o">...</span>
+</pre></div>
+</div>
+<section id="subcommands_repeat1">
+<h4>subcommands<a class="headerlink" href="#subcommands_repeat1" title="Permalink to this heading">#</a></h4>
+<p>use <cite>%(prog)-8s [sub-command] –help</cite> to get detailed information about each sub-command</p>
+<dl class="option-list">
+<dt><kbd>hub</kbd></dt>
+<dd><p>Possible choices: new, push, pull</p>
+</dd>
+</dl>
+</section>
+<section id="Sub-commands:_repeat2">
+<h4>Sub-commands:<a class="headerlink" href="#Sub-commands:_repeat2" title="Permalink to this heading">#</a></h4>
+<section id="new_repeat1">
+<h5>new<a class="headerlink" href="#new_repeat1" title="Permalink to this heading">#</a></h5>
+<p>Create a new executor using the template</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">hub</span> <span class="n">new</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">name</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">path</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">advance</span><span class="o">-</span><span class="n">configuration</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">description</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">keywords</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">url</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">add</span><span class="o">-</span><span class="n">dockerfile</span><span class="p">]</span>
+</pre></div>
+</div>
+<section id="Create Executor arguments">
+<h6>Create Executor arguments<a class="headerlink" href="#Create Executor arguments" title="Permalink to this heading">#</a></h6>
+<dl class="option-list">
+<dt><kbd>--name</kbd></dt>
+<dd><p>the name of the Executor</p>
+</dd>
+<dt><kbd>--path</kbd></dt>
+<dd><p>the path to store the Executor</p>
+</dd>
+<dt><kbd>--advance-configuration</kbd></dt>
+<dd><p>If set, always set up advance configuration like description, keywords and url</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--description</kbd></dt>
+<dd><p>the short description of the Executor</p>
+</dd>
+<dt><kbd>--keywords</kbd></dt>
+<dd><p>some keywords to help people search your Executor (separated by comma)</p>
+</dd>
+<dt><kbd>--url</kbd></dt>
+<dd><p>the URL of your GitHub repo</p>
+</dd>
+<dt><kbd>--add-dockerfile</kbd></dt>
+<dd><p>If set, add a Dockerfile to the created Executor bundle</p>
+<p>Default: False</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="push">
+<h5>push<a class="headerlink" href="#push" title="Permalink to this heading">#</a></h5>
+<p>Push an executor package to Jina hub</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">hub</span> <span class="n">push</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">usage</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">verbose</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">f</span> <span class="n">DOCKERFILE</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">t</span><span class="p">]</span>
+              <span class="p">[</span><span class="o">--</span><span class="n">protected</span><span class="o">-</span><span class="n">tag</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">force</span><span class="o">-</span><span class="n">update</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">secret</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">cache</span><span class="p">]</span>
+              <span class="p">[</span><span class="o">--</span><span class="n">public</span> <span class="o">|</span> <span class="o">--</span><span class="n">private</span><span class="p">]</span>
+              <span class="n">path</span>
+</pre></div>
+</div>
+<section id="Named Arguments_repeat5">
+<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat5" title="Permalink to this heading">#</a></h6>
+<dl class="option-list">
+<dt><kbd>--no-usage</kbd></dt>
+<dd><p>If set, Hub executor usage will not be printed.</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--verbose</kbd></dt>
+<dd><p>If set, more information will be printed.</p>
+<p>Default: False</p>
+</dd>
+</dl>
+</section>
+<section id="Push arguments">
+<h6>Push arguments<a class="headerlink" href="#Push arguments" title="Permalink to this heading">#</a></h6>
+<dl class="option-list">
+<dt><kbd>path</kbd></dt>
+<dd><p>The Executor folder to be pushed to Jina Hub</p>
+</dd>
+<dt><kbd>-f, --dockerfile</kbd></dt>
+<dd><p>The file path to the Dockerfile (default is <cite>${cwd}/Dockerfile</cite>)</p>
+</dd>
+<dt><kbd>-t, --tag</kbd></dt>
+<dd><p>A list of tags. One can use it to distinguish architecture (e.g. <cite>cpu</cite>, <cite>gpu</cite>) or versions (e.g. <cite>v1</cite>, <cite>v2</cite>).</p>
+<p>One can later fetch a tagged Executor via <cite>jinahub[+docker]://MyExecutor/gpu</cite></p>
+</dd>
+<dt><kbd>--protected-tag</kbd></dt>
+<dd><p>A list of protected tags. Like tag but protected against updates after first push.</p>
+</dd>
+<dt><kbd>--force-update, --force</kbd></dt>
+<dd><p>If set, push will overwrite the Executor on the Hub that shares the same NAME or UUID8 identifier</p>
+</dd>
+<dt><kbd>--secret</kbd></dt>
+<dd><p>The secret for overwrite a Hub executor</p>
+</dd>
+<dt><kbd>--no-cache</kbd></dt>
+<dd><p>If set, “–no-cache” option will be added to the Docker build.</p>
+<p>Default: False</p>
+</dd>
+</dl>
+</section>
+<section id="Visibility arguments">
+<h6>Visibility arguments<a class="headerlink" href="#Visibility arguments" title="Permalink to this heading">#</a></h6>
+<dl class="option-list">
+<dt><kbd>--public</kbd></dt>
+<dd><p>If set, the pushed executor is visible to public</p>
+</dd>
+<dt><kbd>--private</kbd></dt>
+<dd><p>If set, the pushed executor is invisible to public</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="pull">
+<h5>pull<a class="headerlink" href="#pull" title="Permalink to this heading">#</a></h5>
+<p>Download an executor image/package from Jina hub</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">hub</span> <span class="n">pull</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">usage</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">install</span><span class="o">-</span><span class="n">requirements</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">force</span><span class="o">-</span><span class="n">update</span><span class="p">]</span> <span class="n">uri</span>
+</pre></div>
+</div>
+<section id="Positional Arguments_repeat4">
+<h6>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat4" title="Permalink to this heading">#</a></h6>
+<dl class="option-list">
+<dt><kbd>uri</kbd></dt>
+<dd><p>The URI of the executor to pull (e.g., jinahub[+docker]://NAME)</p>
+</dd>
+</dl>
+</section>
+<section id="Named Arguments_repeat6">
+<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat6" title="Permalink to this heading">#</a></h6>
+<dl class="option-list">
+<dt><kbd>--no-usage</kbd></dt>
+<dd><p>If set, Hub executor usage will not be printed.</p>
+<p>Default: False</p>
+</dd>
+</dl>
+</section>
+<section id="Pull arguments_repeat1">
+<h6>Pull arguments<a class="headerlink" href="#Pull arguments_repeat1" title="Permalink to this heading">#</a></h6>
+<dl class="option-list">
+<dt><kbd>--install-requirements</kbd></dt>
+<dd><p>If set, install <cite>requirements.txt</cite> in the Hub Executor bundle to local</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--force-update, --force</kbd></dt>
+<dd><p>If set, always pull the latest Hub Executor bundle even it exists on local</p>
+<p>Default: False</p>
+</dd>
+</dl>
+</section>
+</section>
+</section>
+</section>
+<section id="help">
+<h3>help<a class="headerlink" href="#help" title="Permalink to this heading">#</a></h3>
+<p>Show help text of a CLI argument</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">help</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="n">query</span>
+</pre></div>
+</div>
+<section id="Positional Arguments_repeat5">
+<h4>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat5" title="Permalink to this heading">#</a></h4>
+<dl class="option-list">
+<dt><kbd>query</kbd></dt>
+<dd><p>Lookup the usage &amp; mention of the argument name in Jina API. The name can be fuzzy</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="pod">
+<h3>pod<a class="headerlink" href="#pod" title="Permalink to this heading">#</a></h3>
+<p>Start a Pod. You should rarely use this directly unless you are doing low-level orchestration</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">pod</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">name</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">workspace</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">config</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="o">-</span><span class="n">error</span><span class="p">]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ctrl</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">polling</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="p">]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="k">with</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">metas</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">requests</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">py</span><span class="o">-</span><span class="n">modules</span> <span class="p">[</span><span class="n">PATH</span> <span class="p">[</span><span class="n">PATH</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="ow">in</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">host</span><span class="o">-</span><span class="ow">in</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">native</span><span class="p">]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">output</span><span class="o">-</span><span class="n">array</span><span class="o">-</span><span class="nb">type</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">entrypoint</span><span class="p">]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">docker</span><span class="o">-</span><span class="n">kwargs</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">volumes</span> <span class="p">[</span><span class="n">DIR</span> <span class="p">[</span><span class="n">DIR</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">gpus</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">disable</span><span class="o">-</span><span class="n">auto</span><span class="o">-</span><span class="n">volume</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">host</span><span class="p">]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="o">-</span><span class="n">remote</span><span class="o">-</span><span class="n">logs</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">upload</span><span class="o">-</span><span class="n">files</span> <span class="p">[</span><span class="n">FILE</span> <span class="p">[</span><span class="n">FILE</span> <span class="o">...</span><span class="p">]]]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">runtime</span><span class="o">-</span><span class="bp">cls</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ready</span><span class="p">]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">env</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">shards</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">replicas</span><span class="p">]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">monitoring</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">monitoring</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">install</span><span class="o">-</span><span class="n">requirements</span><span class="p">]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">force</span><span class="o">-</span><span class="n">update</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">compression</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">before</span><span class="o">-</span><span class="n">address</span><span class="p">]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">after</span><span class="o">-</span><span class="n">address</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">connection</span><span class="o">-</span><span class="nb">list</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">disable</span><span class="o">-</span><span class="n">reduce</span><span class="p">]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">send</span><span class="p">]</span>
+</pre></div>
+</div>
+<section id="Essential arguments_repeat3">
+<h4>Essential arguments<a class="headerlink" href="#Essential arguments_repeat3" title="Permalink to this heading">#</a></h4>
+<dl class="option-list">
+<dt><kbd>--name</kbd></dt>
+<dd><blockquote>
+<div><p>The name of this object.</p>
+<p>This will be used in the following places:
+- how you refer to this object in Python/YAML/CLI
+- visualization
+- log message header
+- …</p>
+<p>When not given, then the default naming strategy will apply.</p>
+</div></blockquote>
+</dd>
+<dt><kbd>--workspace</kbd></dt>
+<dd><p>The working directory for any IO operations in this object. If not set, then derive from its parent <cite>workspace</cite>.</p>
+</dd>
+<dt><kbd>--log-config</kbd></dt>
+<dd><p>The YAML config of the logger used in this object.</p>
+<p>Default: “default”</p>
+</dd>
+<dt><kbd>--quiet</kbd></dt>
+<dd><p>If set, then no log will be emitted from this object.</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--quiet-error</kbd></dt>
+<dd><p>If set, then exception stack information will not be added to the log</p>
+<p>Default: False</p>
+</dd>
+</dl>
+</section>
+<section id="Base Deployment arguments_repeat2">
+<h4>Base Deployment arguments<a class="headerlink" href="#Base Deployment arguments_repeat2" title="Permalink to this heading">#</a></h4>
+<dl class="option-list">
+<dt><kbd>--timeout-ctrl</kbd></dt>
+<dd><p>The timeout in milliseconds of the control request, -1 for waiting forever</p>
+<p>Default: 60</p>
+</dd>
+<dt><kbd>--polling</kbd></dt>
+<dd><blockquote>
+<div><p>The polling strategy of the Deployment and its endpoints (when <cite>shards&gt;1</cite>).
+Can be defined for all endpoints of a Deployment or by endpoint.
+Define per Deployment:
+- ANY: only one (whoever is idle) Pod polls the message
+- ALL: all Pods poll the message (like a broadcast)
+Define per Endpoint:
+JSON dict, {endpoint: PollingType}
+{‘/custom’: ‘ALL’, ‘/search’: ‘ANY’, ‘*’: ‘ANY’}</p>
+</div></blockquote>
+<p>Default: “ANY”</p>
+</dd>
+</dl>
+</section>
+<section id="WorkerRuntime arguments_repeat2">
+<h4>WorkerRuntime arguments<a class="headerlink" href="#WorkerRuntime arguments_repeat2" title="Permalink to this heading">#</a></h4>
+<dl class="option-list">
+<dt><kbd>--uses</kbd></dt>
+<dd><blockquote>
+<div><p>The config of the executor, it could be one of the followings:
+* an Executor YAML file (.yml, .yaml, .jaml)
+* a Jina Hub Executor (must start with <cite>jinahub://</cite> or <cite>jinahub+docker://</cite>)
+* a docker image (must start with <cite>docker://</cite>)
+* the string literal of a YAML config (must start with <cite>!</cite> or <a href="#id1"><span class="problematic" id="id2">`</span></a>jtype: <a href="#id3"><span class="problematic" id="id4">`</span></a>)
+* the string literal of a JSON config</p>
+<p>When use it under Python, one can use the following values additionally:
+- a Python dict that represents the config
+- a text file stream has <cite>.read()</cite> interface</p>
+</div></blockquote>
+<p>Default: “BaseExecutor”</p>
+</dd>
+<dt><kbd>--uses-with</kbd></dt>
+<dd><blockquote>
+<div><p>Dictionary of keyword arguments that will override the <cite>with</cite> configuration in <cite>uses</cite></p>
+</div></blockquote>
+</dd>
+<dt><kbd>--uses-metas</kbd></dt>
+<dd><blockquote>
+<div><p>Dictionary of keyword arguments that will override the <cite>metas</cite> configuration in <cite>uses</cite></p>
+</div></blockquote>
+</dd>
+<dt><kbd>--uses-requests</kbd></dt>
+<dd><blockquote>
+<div><p>Dictionary of keyword arguments that will override the <cite>requests</cite> configuration in <cite>uses</cite></p>
+</div></blockquote>
+</dd>
+<dt><kbd>--py-modules</kbd></dt>
+<dd><p>The customized python modules need to be imported before loading the executor</p>
+<p>Note that the recommended way is to only import a single module - a simple python file, if your
+executor can be defined in a single file, or an <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> file if you have multiple files,
+which should be structured as a python package. For more details, please see the
+<a class="reference external" href="https://docs.jina.ai/fundamentals/executor/repository-structure/">Executor cookbook</a></p>
+</dd>
+<dt><kbd>--port-in</kbd></dt>
+<dd><p>The port for input data to bind to, default a random port between [49152, 65535]</p>
+<p>Default: 59716</p>
+</dd>
+<dt><kbd>--host-in</kbd></dt>
+<dd><p>The host address for binding to, by default it is 0.0.0.0</p>
+<p>Default: “0.0.0.0”</p>
+</dd>
+<dt><kbd>--native</kbd></dt>
+<dd><p>If set, only native Executors is allowed, and the Executor is always run inside WorkerRuntime.</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--output-array-type</kbd></dt>
+<dd><p>The type of array <cite>tensor</cite> and <cite>embedding</cite> will be serialized to.</p>
+<p>Supports the same types as <cite>docarray.to_protobuf(.., ndarray_type=…)</cite>, which can be found
+<cite>here &lt;https://docarray.jina.ai/fundamentals/document/serialization/#from-to-protobuf&gt;</cite>.
+Defaults to retaining whatever type is returned by the Executor.</p>
+</dd>
+</dl>
+</section>
+<section id="ContainerRuntime arguments_repeat1">
+<h4>ContainerRuntime arguments<a class="headerlink" href="#ContainerRuntime arguments_repeat1" title="Permalink to this heading">#</a></h4>
+<dl class="option-list">
+<dt><kbd>--entrypoint</kbd></dt>
+<dd><p>The entrypoint command overrides the ENTRYPOINT in Docker image. when not set then the Docker image ENTRYPOINT takes effective.</p>
+</dd>
+<dt><kbd>--docker-kwargs</kbd></dt>
+<dd><p>Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker ‘
+container.</p>
+<p>More details can be found in the Docker SDK docs:  <a class="reference external" href="https://docker-py.readthedocs.io/en/stable/">https://docker-py.readthedocs.io/en/stable/</a></p>
+</dd>
+<dt><kbd>--volumes</kbd></dt>
+<dd><p>The path on the host to be mounted inside the container.</p>
+<p>Note,
+- If separated by <cite>:</cite>, then the first part will be considered as the local host path and the second part is the path in the container system.
+- If no split provided, then the basename of that directory will be mounted into container’s root path, e.g. <cite>–volumes=”/user/test/my-workspace”</cite> will be mounted into <cite>/my-workspace</cite> inside the container.
+- All volumes are mounted with read-write mode.</p>
+</dd>
+<dt><kbd>--gpus</kbd></dt>
+<dd><blockquote>
+<div><p>This argument allows dockerized Jina executor discover local gpu devices.</p>
+<p>Note,
+- To access all gpus, use <cite>–gpus all</cite>.
+- To access multiple gpus, e.g. make use of 2 gpus, use <cite>–gpus 2</cite>.
+- To access specified gpus based on device id, use <cite>–gpus device=[YOUR-GPU-DEVICE-ID]</cite>
+- To access specified gpus based on multiple device id, use <cite>–gpus device=[YOUR-GPU-DEVICE-ID1],device=[YOUR-GPU-DEVICE-ID2]</cite>
+- To specify more parameters, use <a href="#id1"><span class="problematic" id="id2">`</span></a>–gpus device=[YOUR-GPU-DEVICE-ID],runtime=nvidia,capabilities=display</p>
+</div></blockquote>
+</dd>
+<dt><kbd>--disable-auto-volume</kbd></dt>
+<dd><p>Do not automatically mount a volume for dockerized Executors.</p>
+<p>Default: False</p>
+</dd>
+</dl>
+</section>
+<section id="RemoteRuntime arguments_repeat1">
+<h4>RemoteRuntime arguments<a class="headerlink" href="#RemoteRuntime arguments_repeat1" title="Permalink to this heading">#</a></h4>
+<dl class="option-list">
+<dt><kbd>--host</kbd></dt>
+<dd><p>The host address of the runtime, by default it is 0.0.0.0.</p>
+<p>Default: “0.0.0.0”</p>
+</dd>
+</dl>
+</section>
+<section id="Distributed arguments_repeat1">
+<h4>Distributed arguments<a class="headerlink" href="#Distributed arguments_repeat1" title="Permalink to this heading">#</a></h4>
+<dl class="option-list">
+<dt><kbd>--quiet-remote-logs</kbd></dt>
+<dd><p>Do not display the streaming of remote logs on local console</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--upload-files</kbd></dt>
+<dd><p>The files on the host to be uploaded to the remote
+workspace. This can be useful when your Deployment has more
+file dependencies beyond a single YAML file, e.g.
+Python files, data files.</p>
+<p>Note,
+- currently only flatten structure is supported, which means if you upload <cite>[./foo/a.py, ./foo/b.pp, ./bar/c.yml]</cite>, then they will be put under the _same_ workspace on the remote, losing all hierarchies.
+- by default, <cite>–uses</cite> YAML file is always uploaded.
+- uploaded files are by default isolated across the runs. To ensure files are submitted to the same workspace across different runs, use <cite>–workspace-id</cite> to specify the workspace.</p>
+</dd>
+</dl>
+</section>
+<section id="Pod arguments_repeat2">
+<h4>Pod arguments<a class="headerlink" href="#Pod arguments_repeat2" title="Permalink to this heading">#</a></h4>
+<dl class="option-list">
+<dt><kbd>--runtime-cls</kbd></dt>
+<dd><p>The runtime class to run inside the Pod</p>
+<p>Default: “WorkerRuntime”</p>
+</dd>
+<dt><kbd>--timeout-ready</kbd></dt>
+<dd><p>The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting forever</p>
+<p>Default: 600000</p>
+</dd>
+<dt><kbd>--env</kbd></dt>
+<dd><p>The map of environment variables that are available inside runtime</p>
+</dd>
+<dt><kbd>--shards</kbd></dt>
+<dd><p>The number of shards in the deployment running at the same time. For more details check <a class="reference external" href="https://docs.jina.ai/fundamentals/flow/create-flow/#complex-flow-topologies">https://docs.jina.ai/fundamentals/flow/create-flow/#complex-flow-topologies</a></p>
+<p>Default: 1</p>
+</dd>
+<dt><kbd>--replicas</kbd></dt>
+<dd><p>The number of replicas in the deployment</p>
+<p>Default: 1</p>
+</dd>
+<dt><kbd>--port</kbd></dt>
+<dd><p>The port for input data to bind to, default is a random port between [49152, 65535]</p>
+<p>Default: 54707</p>
+</dd>
+<dt><kbd>--monitoring</kbd></dt>
+<dd><p>If set, spawn an http server with a prometheus endpoint to expose metrics</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--port-monitoring</kbd></dt>
+<dd><p>The port on which the prometheus server is exposed, default port is 9090</p>
+<p>Default: 9090</p>
+</dd>
+</dl>
+</section>
+<section id="Pull arguments_repeat2">
+<h4>Pull arguments<a class="headerlink" href="#Pull arguments_repeat2" title="Permalink to this heading">#</a></h4>
+<dl class="option-list">
+<dt><kbd>--install-requirements</kbd></dt>
+<dd><p>If set, install <cite>requirements.txt</cite> in the Hub Executor bundle to local</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--force-update, --force</kbd></dt>
+<dd><p>If set, always pull the latest Hub Executor bundle even it exists on local</p>
+<p>Default: False</p>
+</dd>
+</dl>
+</section>
+<section id="Head arguments_repeat1">
+<h4>Head arguments<a class="headerlink" href="#Head arguments_repeat1" title="Permalink to this heading">#</a></h4>
+<dl class="option-list">
+<dt><kbd>--compression</kbd></dt>
+<dd><p>The compression mechanism used when sending requests from the Head to the WorkerRuntimes. Possibilities are <cite>NoCompression, Gzip, Deflate</cite>. For more details, check <a class="reference external" href="https://grpc.github.io/grpc/python/grpc.html#compression">https://grpc.github.io/grpc/python/grpc.html#compression</a>.</p>
+<p>Default: “NoCompression”</p>
+</dd>
+<dt><kbd>--uses-before-address</kbd></dt>
+<dd><p>The address of the uses-before runtime</p>
+</dd>
+<dt><kbd>--uses-after-address</kbd></dt>
+<dd><p>The address of the uses-before runtime</p>
+</dd>
+<dt><kbd>--connection-list</kbd></dt>
+<dd><p>dictionary JSON with a list of connections to configure</p>
+</dd>
+<dt><kbd>--disable-reduce</kbd></dt>
+<dd><p>Disable the built-in reduce mechanism, set this if the reduction is to be handled by the Executor connected to this Head</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--timeout-send</kbd></dt>
+<dd><p>The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="deployment">
+<h3>deployment<a class="headerlink" href="#deployment" title="Permalink to this heading">#</a></h3>
+<p>Start a Deployment. You should rarely use this directly unless you are doing low-level orchestration</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">deployment</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">name</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">workspace</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">config</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="p">]</span>
+                <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="o">-</span><span class="n">error</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ctrl</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">polling</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="p">]</span>
+                <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="k">with</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
+                <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">metas</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
+                <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">requests</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
+                <span class="p">[</span><span class="o">--</span><span class="n">py</span><span class="o">-</span><span class="n">modules</span> <span class="p">[</span><span class="n">PATH</span> <span class="p">[</span><span class="n">PATH</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="ow">in</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">host</span><span class="o">-</span><span class="ow">in</span><span class="p">]</span>
+                <span class="p">[</span><span class="o">--</span><span class="n">native</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">output</span><span class="o">-</span><span class="n">array</span><span class="o">-</span><span class="nb">type</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">entrypoint</span><span class="p">]</span>
+                <span class="p">[</span><span class="o">--</span><span class="n">docker</span><span class="o">-</span><span class="n">kwargs</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
+                <span class="p">[</span><span class="o">--</span><span class="n">volumes</span> <span class="p">[</span><span class="n">DIR</span> <span class="p">[</span><span class="n">DIR</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">gpus</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">disable</span><span class="o">-</span><span class="n">auto</span><span class="o">-</span><span class="n">volume</span><span class="p">]</span>
+                <span class="p">[</span><span class="o">--</span><span class="n">host</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="o">-</span><span class="n">remote</span><span class="o">-</span><span class="n">logs</span><span class="p">]</span>
+                <span class="p">[</span><span class="o">--</span><span class="n">upload</span><span class="o">-</span><span class="n">files</span> <span class="p">[</span><span class="n">FILE</span> <span class="p">[</span><span class="n">FILE</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">runtime</span><span class="o">-</span><span class="bp">cls</span><span class="p">]</span>
+                <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ready</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">env</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
+                <span class="p">[</span><span class="o">--</span><span class="n">shards</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">replicas</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">monitoring</span><span class="p">]</span>
+                <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">monitoring</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">install</span><span class="o">-</span><span class="n">requirements</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">force</span><span class="o">-</span><span class="n">update</span><span class="p">]</span>
+                <span class="p">[</span><span class="o">--</span><span class="n">compression</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">before</span><span class="o">-</span><span class="n">address</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">after</span><span class="o">-</span><span class="n">address</span><span class="p">]</span>
+                <span class="p">[</span><span class="o">--</span><span class="n">connection</span><span class="o">-</span><span class="nb">list</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">disable</span><span class="o">-</span><span class="n">reduce</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">send</span><span class="p">]</span>
+                <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">before</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">after</span><span class="p">]</span>
+                <span class="p">[</span><span class="o">--</span><span class="n">when</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">external</span><span class="p">]</span>
+</pre></div>
+</div>
+<section id="Essential arguments_repeat4">
+<h4>Essential arguments<a class="headerlink" href="#Essential arguments_repeat4" title="Permalink to this heading">#</a></h4>
+<dl class="option-list">
+<dt><kbd>--name</kbd></dt>
+<dd><blockquote>
+<div><p>The name of this object.</p>
+<p>This will be used in the following places:
+- how you refer to this object in Python/YAML/CLI
+- visualization
+- log message header
+- …</p>
+<p>When not given, then the default naming strategy will apply.</p>
+</div></blockquote>
+</dd>
+<dt><kbd>--workspace</kbd></dt>
+<dd><p>The working directory for any IO operations in this object. If not set, then derive from its parent <cite>workspace</cite>.</p>
+</dd>
+<dt><kbd>--log-config</kbd></dt>
+<dd><p>The YAML config of the logger used in this object.</p>
+<p>Default: “default”</p>
+</dd>
+<dt><kbd>--quiet</kbd></dt>
+<dd><p>If set, then no log will be emitted from this object.</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--quiet-error</kbd></dt>
+<dd><p>If set, then exception stack information will not be added to the log</p>
+<p>Default: False</p>
+</dd>
+</dl>
+</section>
+<section id="Base Deployment arguments_repeat3">
+<h4>Base Deployment arguments<a class="headerlink" href="#Base Deployment arguments_repeat3" title="Permalink to this heading">#</a></h4>
+<dl class="option-list">
+<dt><kbd>--timeout-ctrl</kbd></dt>
+<dd><p>The timeout in milliseconds of the control request, -1 for waiting forever</p>
+<p>Default: 60</p>
+</dd>
+<dt><kbd>--polling</kbd></dt>
+<dd><blockquote>
+<div><p>The polling strategy of the Deployment and its endpoints (when <cite>shards&gt;1</cite>).
+Can be defined for all endpoints of a Deployment or by endpoint.
+Define per Deployment:
+- ANY: only one (whoever is idle) Pod polls the message
+- ALL: all Pods poll the message (like a broadcast)
+Define per Endpoint:
+JSON dict, {endpoint: PollingType}
+{‘/custom’: ‘ALL’, ‘/search’: ‘ANY’, ‘*’: ‘ANY’}</p>
+</div></blockquote>
+<p>Default: “ANY”</p>
+</dd>
+</dl>
+</section>
+<section id="WorkerRuntime arguments_repeat3">
+<h4>WorkerRuntime arguments<a class="headerlink" href="#WorkerRuntime arguments_repeat3" title="Permalink to this heading">#</a></h4>
+<dl class="option-list">
+<dt><kbd>--uses</kbd></dt>
+<dd><blockquote>
+<div><p>The config of the executor, it could be one of the followings:
+* an Executor YAML file (.yml, .yaml, .jaml)
+* a Jina Hub Executor (must start with <cite>jinahub://</cite> or <cite>jinahub+docker://</cite>)
+* a docker image (must start with <cite>docker://</cite>)
+* the string literal of a YAML config (must start with <cite>!</cite> or <a href="#id1"><span class="problematic" id="id2">`</span></a>jtype: <a href="#id3"><span class="problematic" id="id4">`</span></a>)
+* the string literal of a JSON config</p>
+<p>When use it under Python, one can use the following values additionally:
+- a Python dict that represents the config
+- a text file stream has <cite>.read()</cite> interface</p>
+</div></blockquote>
+<p>Default: “BaseExecutor”</p>
+</dd>
+<dt><kbd>--uses-with</kbd></dt>
+<dd><blockquote>
+<div><p>Dictionary of keyword arguments that will override the <cite>with</cite> configuration in <cite>uses</cite></p>
+</div></blockquote>
+</dd>
+<dt><kbd>--uses-metas</kbd></dt>
+<dd><blockquote>
+<div><p>Dictionary of keyword arguments that will override the <cite>metas</cite> configuration in <cite>uses</cite></p>
+</div></blockquote>
+</dd>
+<dt><kbd>--uses-requests</kbd></dt>
+<dd><blockquote>
+<div><p>Dictionary of keyword arguments that will override the <cite>requests</cite> configuration in <cite>uses</cite></p>
+</div></blockquote>
+</dd>
+<dt><kbd>--py-modules</kbd></dt>
+<dd><p>The customized python modules need to be imported before loading the executor</p>
+<p>Note that the recommended way is to only import a single module - a simple python file, if your
+executor can be defined in a single file, or an <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> file if you have multiple files,
+which should be structured as a python package. For more details, please see the
+<a class="reference external" href="https://docs.jina.ai/fundamentals/executor/repository-structure/">Executor cookbook</a></p>
+</dd>
+<dt><kbd>--port-in</kbd></dt>
+<dd><p>The port for input data to bind to, default a random port between [49152, 65535]</p>
+<p>Default: 53312</p>
+</dd>
+<dt><kbd>--host-in</kbd></dt>
+<dd><p>The host address for binding to, by default it is 0.0.0.0</p>
+<p>Default: “0.0.0.0”</p>
+</dd>
+<dt><kbd>--native</kbd></dt>
+<dd><p>If set, only native Executors is allowed, and the Executor is always run inside WorkerRuntime.</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--output-array-type</kbd></dt>
+<dd><p>The type of array <cite>tensor</cite> and <cite>embedding</cite> will be serialized to.</p>
+<p>Supports the same types as <cite>docarray.to_protobuf(.., ndarray_type=…)</cite>, which can be found
+<cite>here &lt;https://docarray.jina.ai/fundamentals/document/serialization/#from-to-protobuf&gt;</cite>.
+Defaults to retaining whatever type is returned by the Executor.</p>
+</dd>
+</dl>
+</section>
+<section id="ContainerRuntime arguments_repeat2">
+<h4>ContainerRuntime arguments<a class="headerlink" href="#ContainerRuntime arguments_repeat2" title="Permalink to this heading">#</a></h4>
+<dl class="option-list">
+<dt><kbd>--entrypoint</kbd></dt>
+<dd><p>The entrypoint command overrides the ENTRYPOINT in Docker image. when not set then the Docker image ENTRYPOINT takes effective.</p>
+</dd>
+<dt><kbd>--docker-kwargs</kbd></dt>
+<dd><p>Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker ‘
+container.</p>
+<p>More details can be found in the Docker SDK docs:  <a class="reference external" href="https://docker-py.readthedocs.io/en/stable/">https://docker-py.readthedocs.io/en/stable/</a></p>
+</dd>
+<dt><kbd>--volumes</kbd></dt>
+<dd><p>The path on the host to be mounted inside the container.</p>
+<p>Note,
+- If separated by <cite>:</cite>, then the first part will be considered as the local host path and the second part is the path in the container system.
+- If no split provided, then the basename of that directory will be mounted into container’s root path, e.g. <cite>–volumes=”/user/test/my-workspace”</cite> will be mounted into <cite>/my-workspace</cite> inside the container.
+- All volumes are mounted with read-write mode.</p>
+</dd>
+<dt><kbd>--gpus</kbd></dt>
+<dd><blockquote>
+<div><p>This argument allows dockerized Jina executor discover local gpu devices.</p>
+<p>Note,
+- To access all gpus, use <cite>–gpus all</cite>.
+- To access multiple gpus, e.g. make use of 2 gpus, use <cite>–gpus 2</cite>.
+- To access specified gpus based on device id, use <cite>–gpus device=[YOUR-GPU-DEVICE-ID]</cite>
+- To access specified gpus based on multiple device id, use <cite>–gpus device=[YOUR-GPU-DEVICE-ID1],device=[YOUR-GPU-DEVICE-ID2]</cite>
+- To specify more parameters, use <a href="#id1"><span class="problematic" id="id2">`</span></a>–gpus device=[YOUR-GPU-DEVICE-ID],runtime=nvidia,capabilities=display</p>
+</div></blockquote>
+</dd>
+<dt><kbd>--disable-auto-volume</kbd></dt>
+<dd><p>Do not automatically mount a volume for dockerized Executors.</p>
+<p>Default: False</p>
+</dd>
+</dl>
+</section>
+<section id="RemoteRuntime arguments_repeat2">
+<h4>RemoteRuntime arguments<a class="headerlink" href="#RemoteRuntime arguments_repeat2" title="Permalink to this heading">#</a></h4>
+<dl class="option-list">
+<dt><kbd>--host</kbd></dt>
+<dd><p>The host address of the runtime, by default it is 0.0.0.0.</p>
+<p>Default: “0.0.0.0”</p>
+</dd>
+</dl>
+</section>
+<section id="Distributed arguments_repeat2">
+<h4>Distributed arguments<a class="headerlink" href="#Distributed arguments_repeat2" title="Permalink to this heading">#</a></h4>
+<dl class="option-list">
+<dt><kbd>--quiet-remote-logs</kbd></dt>
+<dd><p>Do not display the streaming of remote logs on local console</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--upload-files</kbd></dt>
+<dd><p>The files on the host to be uploaded to the remote
+workspace. This can be useful when your Deployment has more
+file dependencies beyond a single YAML file, e.g.
+Python files, data files.</p>
+<p>Note,
+- currently only flatten structure is supported, which means if you upload <cite>[./foo/a.py, ./foo/b.pp, ./bar/c.yml]</cite>, then they will be put under the _same_ workspace on the remote, losing all hierarchies.
+- by default, <cite>–uses</cite> YAML file is always uploaded.
+- uploaded files are by default isolated across the runs. To ensure files are submitted to the same workspace across different runs, use <cite>–workspace-id</cite> to specify the workspace.</p>
+</dd>
+</dl>
+</section>
+<section id="Pod arguments_repeat3">
+<h4>Pod arguments<a class="headerlink" href="#Pod arguments_repeat3" title="Permalink to this heading">#</a></h4>
+<dl class="option-list">
+<dt><kbd>--runtime-cls</kbd></dt>
+<dd><p>The runtime class to run inside the Pod</p>
+<p>Default: “WorkerRuntime”</p>
+</dd>
+<dt><kbd>--timeout-ready</kbd></dt>
+<dd><p>The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting forever</p>
+<p>Default: 600000</p>
+</dd>
+<dt><kbd>--env</kbd></dt>
+<dd><p>The map of environment variables that are available inside runtime</p>
+</dd>
+<dt><kbd>--shards</kbd></dt>
+<dd><p>The number of shards in the deployment running at the same time. For more details check <a class="reference external" href="https://docs.jina.ai/fundamentals/flow/create-flow/#complex-flow-topologies">https://docs.jina.ai/fundamentals/flow/create-flow/#complex-flow-topologies</a></p>
+<p>Default: 1</p>
+</dd>
+<dt><kbd>--replicas</kbd></dt>
+<dd><p>The number of replicas in the deployment</p>
+<p>Default: 1</p>
+</dd>
+<dt><kbd>--port</kbd></dt>
+<dd><p>The port for input data to bind to, default is a random port between [49152, 65535]</p>
+<p>Default: 50450</p>
+</dd>
+<dt><kbd>--monitoring</kbd></dt>
+<dd><p>If set, spawn an http server with a prometheus endpoint to expose metrics</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--port-monitoring</kbd></dt>
+<dd><p>The port on which the prometheus server is exposed, default port is 9090</p>
+<p>Default: 9090</p>
+</dd>
+</dl>
+</section>
+<section id="Pull arguments_repeat3">
+<h4>Pull arguments<a class="headerlink" href="#Pull arguments_repeat3" title="Permalink to this heading">#</a></h4>
+<dl class="option-list">
+<dt><kbd>--install-requirements</kbd></dt>
+<dd><p>If set, install <cite>requirements.txt</cite> in the Hub Executor bundle to local</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--force-update, --force</kbd></dt>
+<dd><p>If set, always pull the latest Hub Executor bundle even it exists on local</p>
+<p>Default: False</p>
+</dd>
+</dl>
+</section>
+<section id="Head arguments_repeat2">
+<h4>Head arguments<a class="headerlink" href="#Head arguments_repeat2" title="Permalink to this heading">#</a></h4>
+<dl class="option-list">
+<dt><kbd>--compression</kbd></dt>
+<dd><p>The compression mechanism used when sending requests from the Head to the WorkerRuntimes. Possibilities are <cite>NoCompression, Gzip, Deflate</cite>. For more details, check <a class="reference external" href="https://grpc.github.io/grpc/python/grpc.html#compression">https://grpc.github.io/grpc/python/grpc.html#compression</a>.</p>
+<p>Default: “NoCompression”</p>
+</dd>
+<dt><kbd>--uses-before-address</kbd></dt>
+<dd><p>The address of the uses-before runtime</p>
+</dd>
+<dt><kbd>--uses-after-address</kbd></dt>
+<dd><p>The address of the uses-before runtime</p>
+</dd>
+<dt><kbd>--connection-list</kbd></dt>
+<dd><p>dictionary JSON with a list of connections to configure</p>
+</dd>
+<dt><kbd>--disable-reduce</kbd></dt>
+<dd><p>Disable the built-in reduce mechanism, set this if the reduction is to be handled by the Executor connected to this Head</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--timeout-send</kbd></dt>
+<dd><p>The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default</p>
+</dd>
+</dl>
+</section>
+<section id="Deployment arguments">
+<h4>Deployment arguments<a class="headerlink" href="#Deployment arguments" title="Permalink to this heading">#</a></h4>
+<dl class="option-list">
+<dt><kbd>--uses-before</kbd></dt>
+<dd><p>The executor attached before the Pods described by –uses, typically before sending to all shards, accepted type follows <cite>–uses</cite>. This argument only applies for sharded Deployments (shards &gt; 1).</p>
+</dd>
+<dt><kbd>--uses-after</kbd></dt>
+<dd><p>The executor attached after the Pods described by –uses, typically used for receiving from all shards, accepted type follows <cite>–uses</cite>. This argument only applies for sharded Deployments (shards &gt; 1).</p>
+</dd>
+<dt><kbd>--when</kbd></dt>
+<dd><p>The condition that the documents need to fulfill before reaching the Executor.The condition can be defined in the form of a <cite>DocArray query condition &lt;https://docarray.jina.ai/fundamentals/documentarray/find/#query-by-conditions&gt;</cite></p>
+</dd>
+<dt><kbd>--external</kbd></dt>
+<dd><p>The Deployment will be considered an external Deployment that has been started independently from the Flow.This Deployment will not be context managed by the Flow.</p>
+<p>Default: False</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="client">
+<h3>client<a class="headerlink" href="#client" title="Permalink to this heading">#</a></h3>
+<p>Start a Python client that connects to a remote Jina gateway</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">client</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">host</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">proxy</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">tls</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">asyncio</span><span class="p">]</span>
+            <span class="p">[</span><span class="o">--</span><span class="k">return</span><span class="o">-</span><span class="n">responses</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">protocol</span> <span class="p">{</span><span class="n">GRPC</span><span class="p">,</span> <span class="n">HTTP</span><span class="p">,</span> <span class="n">WEBSOCKET</span><span class="p">}]</span>
+</pre></div>
+</div>
+<section id="Named Arguments_repeat7">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat7" title="Permalink to this heading">#</a></h4>
+<dl class="option-list">
+<dt><kbd>--asyncio</kbd></dt>
+<dd><p>If set, then the input and output of this Client work in an asynchronous manner.</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--return-responses</kbd></dt>
+<dd><p>If set, return results as List of Requests instead of a reduced DocArray.</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--protocol</kbd></dt>
+<dd><p>Possible choices: GRPC, HTTP, WEBSOCKET</p>
+<p>Communication protocol between server and client.</p>
+<p>Default: GRPC</p>
+</dd>
+</dl>
+</section>
+<section id="ClientGateway arguments">
+<h4>ClientGateway arguments<a class="headerlink" href="#ClientGateway arguments" title="Permalink to this heading">#</a></h4>
+<dl class="option-list">
+<dt><kbd>--host</kbd></dt>
+<dd><p>The host address of the runtime, by default it is 0.0.0.0.</p>
+<p>Default: “0.0.0.0”</p>
+</dd>
+<dt><kbd>--proxy</kbd></dt>
+<dd><p>If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--port</kbd></dt>
+<dd><p>The port of the Gateway, which the client should connect to.</p>
+<p>Default: 58554</p>
+</dd>
+<dt><kbd>--tls</kbd></dt>
+<dd><p>If set, connect to gateway using tls encryption</p>
+<p>Default: False</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="export-api">
+<h3>export-api<a class="headerlink" href="#export-api" title="Permalink to this heading">#</a></h3>
+<p>Export Jina API to JSON/YAML file for 3rd party applications</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">export</span><span class="o">-</span><span class="n">api</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">yaml</span><span class="o">-</span><span class="n">path</span> <span class="p">[</span><span class="n">PATH</span> <span class="p">[</span><span class="n">PATH</span> <span class="o">...</span><span class="p">]]]</span>
+                <span class="p">[</span><span class="o">--</span><span class="n">json</span><span class="o">-</span><span class="n">path</span> <span class="p">[</span><span class="n">PATH</span> <span class="p">[</span><span class="n">PATH</span> <span class="o">...</span><span class="p">]]]</span>
+                <span class="p">[</span><span class="o">--</span><span class="n">schema</span><span class="o">-</span><span class="n">path</span> <span class="p">[</span><span class="n">PATH</span> <span class="p">[</span><span class="n">PATH</span> <span class="o">...</span><span class="p">]]]</span>
+</pre></div>
+</div>
+<section id="Named Arguments_repeat8">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat8" title="Permalink to this heading">#</a></h4>
+<dl class="option-list">
+<dt><kbd>--yaml-path</kbd></dt>
+<dd><p>The YAML file path for storing the exported API</p>
+</dd>
+<dt><kbd>--json-path</kbd></dt>
+<dd><p>The JSON file path for storing the exported API</p>
+</dd>
+<dt><kbd>--schema-path</kbd></dt>
+<dd><p>The JSONSchema file path for storing the exported API</p>
+</dd>
+</dl>
+</section>
+</section>
+</section>
+</section>
+
+            </article>
+            <footer>
+                
+                <div class="related-pages">
+                    <a class="next-page" href="../proto/docs/">
+                        <div class="page-info">
+                            <div class="context">
+                                <span>Next</span>
+                            </div>
+                            <div class="title">Protocol Documentation</div>
+                        </div>
+                        <svg>
+                            <use href="#svg-arrow-right"></use>
+                        </svg>
+                    </a>
+                    <a class="prev-page" href="../api/cli.lookup/">
+                        <svg>
+                            <use href="#svg-arrow-right"></use>
+                        </svg>
+                        <div class="page-info">
+                            <div class="context">
+                                <span>Previous</span>
+                            </div>
+                            
+                            <div class="title">cli.lookup module</div>
+                            
+                        </div>
+                    </a>
+                </div>
+
+                <div class="related-information sd-d-inline-flex">
+                    <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
+                    Last updated on Dec 15, 2022.
+                    <div class="social-btns">
+                    <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
+                    <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
+                    <a class='social-btn' href="https://youtube.com/c/jina-ai" aria-label="YouTube" target="_blank" rel="noreferrer"> <i class="fab fa-youtube"></i></a>
+                    <a class='social-btn' href="https://twitter.com/JinaAI_" aria-label="Twitter" target="_blank" rel="noreferrer"> <i class="fab fa-twitter"></i></a>
+                    <a class='social-btn' href="https://www.linkedin.com/company/jinaai/" aria-label="LinkedIn" target="_blank" rel="noreferrer"> <i class="fab fa-linkedin"></i></a>
+                    </div>
+                </div>
+                
+            </footer>
+        </div>
+        <aside class="toc-drawer" id="toc-drawer">
+            
+
+            <div class="toc-sticky toc-scroll">
+                
+                <div class="toc-title-container">
+          <span class="toc-title">
+            Contents
+          </span>
+                </div>
+                <div class="toc-tree-container">
+                    <div class="toc-tree">
+                        <ul>
+<li><a class="reference internal" href="#">Command-Line Interface</a><ul>
+<li><a class="reference internal" href="#Positional Arguments">Positional Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments">Named Arguments</a></li>
+<li><a class="reference internal" href="#Sub-commands:">Sub-commands:</a><ul>
+<li><a class="reference internal" href="#hello">hello</a><ul>
+<li><a class="reference internal" href="#subcommands">subcommands</a></li>
+<li><a class="reference internal" href="#Sub-commands:_repeat1">Sub-commands:</a><ul>
+<li><a class="reference internal" href="#fashion">fashion</a><ul>
+<li><a class="reference internal" href="#General arguments">General arguments</a></li>
+<li><a class="reference internal" href="#Index arguments">Index arguments</a></li>
+<li><a class="reference internal" href="#Search arguments">Search arguments</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#chatbot">chatbot</a><ul>
+<li><a class="reference internal" href="#Named Arguments_repeat1">Named Arguments</a></li>
+<li><a class="reference internal" href="#General arguments_repeat1">General arguments</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#multimodal">multimodal</a><ul>
+<li><a class="reference internal" href="#Named Arguments_repeat2">Named Arguments</a></li>
+<li><a class="reference internal" href="#General arguments_repeat2">General arguments</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#fork">fork</a><ul>
+<li><a class="reference internal" href="#Positional Arguments_repeat1">Positional Arguments</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#executor">executor</a><ul>
+<li><a class="reference internal" href="#Essential arguments">Essential arguments</a></li>
+<li><a class="reference internal" href="#Base Deployment arguments">Base Deployment arguments</a></li>
+<li><a class="reference internal" href="#WorkerRuntime arguments">WorkerRuntime arguments</a></li>
+<li><a class="reference internal" href="#ContainerRuntime arguments">ContainerRuntime arguments</a></li>
+<li><a class="reference internal" href="#RemoteRuntime arguments">RemoteRuntime arguments</a></li>
+<li><a class="reference internal" href="#Distributed arguments">Distributed arguments</a></li>
+<li><a class="reference internal" href="#Pod arguments">Pod arguments</a></li>
+<li><a class="reference internal" href="#Pull arguments">Pull arguments</a></li>
+<li><a class="reference internal" href="#Head arguments">Head arguments</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#flow">flow</a><ul>
+<li><a class="reference internal" href="#Essential arguments_repeat1">Essential arguments</a></li>
+<li><a class="reference internal" href="#Flow Feature arguments">Flow Feature arguments</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#ping">ping</a><ul>
+<li><a class="reference internal" href="#Positional Arguments_repeat2">Positional Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat3">Named Arguments</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#new">new</a><ul>
+<li><a class="reference internal" href="#Positional Arguments_repeat3">Positional Arguments</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#gateway">gateway</a><ul>
+<li><a class="reference internal" href="#Named Arguments_repeat4">Named Arguments</a></li>
+<li><a class="reference internal" href="#Essential arguments_repeat2">Essential arguments</a></li>
+<li><a class="reference internal" href="#Base Deployment arguments_repeat1">Base Deployment arguments</a></li>
+<li><a class="reference internal" href="#WorkerRuntime arguments_repeat1">WorkerRuntime arguments</a></li>
+<li><a class="reference internal" href="#Prefetch arguments">Prefetch arguments</a></li>
+<li><a class="reference internal" href="#HTTP Gateway arguments">HTTP Gateway arguments</a></li>
+<li><a class="reference internal" href="#GraphQL arguments">GraphQL arguments</a></li>
+<li><a class="reference internal" href="#Gateway arguments">Gateway arguments</a></li>
+<li><a class="reference internal" href="#Pod arguments_repeat1">Pod arguments</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#hub">hub</a><ul>
+<li><a class="reference internal" href="#subcommands_repeat1">subcommands</a></li>
+<li><a class="reference internal" href="#Sub-commands:_repeat2">Sub-commands:</a><ul>
+<li><a class="reference internal" href="#new_repeat1">new</a><ul>
+<li><a class="reference internal" href="#Create Executor arguments">Create Executor arguments</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#push">push</a><ul>
+<li><a class="reference internal" href="#Named Arguments_repeat5">Named Arguments</a></li>
+<li><a class="reference internal" href="#Push arguments">Push arguments</a></li>
+<li><a class="reference internal" href="#Visibility arguments">Visibility arguments</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#pull">pull</a><ul>
+<li><a class="reference internal" href="#Positional Arguments_repeat4">Positional Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat6">Named Arguments</a></li>
+<li><a class="reference internal" href="#Pull arguments_repeat1">Pull arguments</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#help">help</a><ul>
+<li><a class="reference internal" href="#Positional Arguments_repeat5">Positional Arguments</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#pod">pod</a><ul>
+<li><a class="reference internal" href="#Essential arguments_repeat3">Essential arguments</a></li>
+<li><a class="reference internal" href="#Base Deployment arguments_repeat2">Base Deployment arguments</a></li>
+<li><a class="reference internal" href="#WorkerRuntime arguments_repeat2">WorkerRuntime arguments</a></li>
+<li><a class="reference internal" href="#ContainerRuntime arguments_repeat1">ContainerRuntime arguments</a></li>
+<li><a class="reference internal" href="#RemoteRuntime arguments_repeat1">RemoteRuntime arguments</a></li>
+<li><a class="reference internal" href="#Distributed arguments_repeat1">Distributed arguments</a></li>
+<li><a class="reference internal" href="#Pod arguments_repeat2">Pod arguments</a></li>
+<li><a class="reference internal" href="#Pull arguments_repeat2">Pull arguments</a></li>
+<li><a class="reference internal" href="#Head arguments_repeat1">Head arguments</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#deployment">deployment</a><ul>
+<li><a class="reference internal" href="#Essential arguments_repeat4">Essential arguments</a></li>
+<li><a class="reference internal" href="#Base Deployment arguments_repeat3">Base Deployment arguments</a></li>
+<li><a class="reference internal" href="#WorkerRuntime arguments_repeat3">WorkerRuntime arguments</a></li>
+<li><a class="reference internal" href="#ContainerRuntime arguments_repeat2">ContainerRuntime arguments</a></li>
+<li><a class="reference internal" href="#RemoteRuntime arguments_repeat2">RemoteRuntime arguments</a></li>
+<li><a class="reference internal" href="#Distributed arguments_repeat2">Distributed arguments</a></li>
+<li><a class="reference internal" href="#Pod arguments_repeat3">Pod arguments</a></li>
+<li><a class="reference internal" href="#Pull arguments_repeat3">Pull arguments</a></li>
+<li><a class="reference internal" href="#Head arguments_repeat2">Head arguments</a></li>
+<li><a class="reference internal" href="#Deployment arguments">Deployment arguments</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#client">client</a><ul>
+<li><a class="reference internal" href="#Named Arguments_repeat7">Named Arguments</a></li>
+<li><a class="reference internal" href="#ClientGateway arguments">ClientGateway arguments</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#export-api">export-api</a><ul>
+<li><a class="reference internal" href="#Named Arguments_repeat8">Named Arguments</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+                    </div>
+                </div>
+                
+            </div>
+
+            
+        </aside>
+
+    </div>
+    <qa-bot
+        title="Jina Bot"
+        description="The cloud-native neural search framework"
+    >
+        <template>
+            <dl>
+                <dt>You can ask questions about our docs. Try:</dt>
+                <dd>Does Jina support Kubernetes?</dd>
+                <dd>What are the basic concepts in Jina?</dd>
+                <dd>How to share my Executor?</dd>
+            </dl>
+        </template>
+    </qa-bot>
+
+</div>
+<img referrerpolicy="no-referrer-when-downgrade" src="https://static.scarf.sh/a.png?x-pxid=1b470c1d-3b55-4d38-baa8-989bfba2a218" /><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/scripts/furo.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script src="../_static/tabs.js"></script>
+    <script src="../_static/design-tabs.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() { 
+            document.querySelector('qa-bot').setAttribute('server', 'https://jina-ai-jina.docsqa.jina.ai');
+        });
+        </script>
+    <script src="https://cdn.jsdelivr.net/npm/qabot@0.4"></script>
+    </body>
+</html>

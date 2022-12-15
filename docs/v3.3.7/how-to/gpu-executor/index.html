@@ -32,10 +32,10 @@
 <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="How to use external Executors" href="../external-executor/" /><link rel="prev" title="How to scale out your Executor" href="../scale-out/" />
         <link rel="canonical" href="https://docs.jina.ai/how-to/gpu-executor.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.09.29"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
         <title>How to run Executors on GPU - Jina 3.3.7 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
@@ -238,7 +238,7 @@
     <option value="/">latest</option>
   </select>
 </div><form class="sidebar-search-container" method="get" action="../../search/" role="search">
-  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form>
@@ -601,7 +601,7 @@
                     </label>
                 </div>
                 <section class="tex2jax_ignore mathjax_ignore" id="how-to-run-executors-on-gpu">
-<span id="gpu-executor"></span><h1>How to run Executors on GPU<a class="headerlink" href="#how-to-run-executors-on-gpu" title="Permalink to this headline">#</a></h1>
+<span id="gpu-executor"></span><h1>How to run Executors on GPU<a class="headerlink" href="#how-to-run-executors-on-gpu" title="Permalink to this heading">#</a></h1>
 <p>This document will show you how to use an Executor on a GPU, both locally and in a
 Docker container. You will also learn how to use GPU with pre-built Hub executors.</p>
 <p>Using a GPU allows you to significantly speed up encoding for most deep learning models,
@@ -612,7 +612,7 @@ reducing response latency by anything from 5 to 100 times, depending on the mode
 <p>If you’re not yet familiar with these concepts, first read the <a class="reference internal" href="../../fundamentals/executor/"><span class="doc std std-doc">Executor</span></a> and <a class="reference internal" href="../../fundamentals/executor/"><span class="doc std std-doc">Flow</span></a> documentation, and return to this tutorial once you feel comfortable performing basic operations in Jina.</p>
 </div>
 <section id="jina-gpus-in-a-nutshell">
-<h2>Jina &amp; GPUs in a nutshell<a class="headerlink" href="#jina-gpus-in-a-nutshell" title="Permalink to this headline">#</a></h2>
+<h2>Jina &amp; GPUs in a nutshell<a class="headerlink" href="#jina-gpus-in-a-nutshell" title="Permalink to this heading">#</a></h2>
 <p>If you want a thorough walk-through of how to use GPU resources in your code, the full tutorial in the
 <a class="reference external" href="#Prerequisites">next section</a> is exactly what you are looking for.</p>
 <p>But if you already know how to use your GPU and have come here just to find out how to make it play nice with Jina,
@@ -693,7 +693,7 @@ container - it does not impose any additional requirements or configuration.</p>
 documents - all on GPU, and thus blazingly fast.</p>
 </section>
 <section id="prerequisites">
-<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">#</a></h2>
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this heading">#</a></h2>
 <p>For this tutorial, you will need to work on a machine with an NVIDIA graphics card. You
 can use various free cloud platforms (like Google Colab or Kaggle kernels), if you do
 not have such a machine at home.</p>
@@ -708,7 +708,7 @@ the deep learning framework that you use, that might be required (for local exec
 </div>
 </section>
 <section id="setting-up-the-executor">
-<h2>Setting up the Executor<a class="headerlink" href="#setting-up-the-executor" title="Permalink to this headline">#</a></h2>
+<h2>Setting up the Executor<a class="headerlink" href="#setting-up-the-executor" title="Permalink to this heading">#</a></h2>
 <div class="hint admonition">
 <p class="admonition-title">Jina Hub</p>
 <p>In this section we create an executor using <a class="reference external" href="https://hub.jina.ai/">Jina Hub</a>. This still creates your executor locally
@@ -861,7 +861,7 @@ encoder by encoding 10 thousand text documents.</p>
 </div>
 </section>
 <section id="running-on-gpu-and-cpu-locally">
-<h2>Running on GPU and CPU locally<a class="headerlink" href="#running-on-gpu-and-cpu-locally" title="Permalink to this headline">#</a></h2>
+<h2>Running on GPU and CPU locally<a class="headerlink" href="#running-on-gpu-and-cpu-locally" title="Permalink to this heading">#</a></h2>
 <p>Let’s try it out by running the same code on CPU and GPU, so we can observe the speedup we can achieve.</p>
 <p>To toggle between the two, simply set your device type to <code class="docutils literal notranslate"><span class="pre">'cuda'</span></code>, and your GPU will take over the work:</p>
 <div class="highlight-diff notranslate"><div class="highlight"><pre><span></span><span class="gi">+ f = Flow().add(uses=SentenceEncoder, uses_with={&#39;device&#39;: &#39;cuda&#39;})</span><span class="w"></span>
@@ -911,7 +911,7 @@ so for most use cases this is not something we would worry about.</p>
 </div>
 </section>
 <section id="using-gpu-in-a-container">
-<h2>Using GPU in a container<a class="headerlink" href="#using-gpu-in-a-container" title="Permalink to this headline">#</a></h2>
+<h2>Using GPU in a container<a class="headerlink" href="#using-gpu-in-a-container" title="Permalink to this heading">#</a></h2>
 <div class="caution admonition">
 <p class="admonition-title">Using your GPU inside a container</p>
 <p>For this part of the tutorial, you need <code class="docutils literal notranslate"><span class="pre">nvidia-container-toolkit</span></code> installed on your machine.
@@ -968,7 +968,7 @@ If you haven’t installed that already, you can find an installation guide <a c
 <p>Now, if we run <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">main.py</span></code> again you can see that no downloading happens inside the container, and that the encoding starts faster.</p>
 </section>
 <section id="using-gpu-with-hub-executors">
-<h2>Using GPU with Hub Executors<a class="headerlink" href="#using-gpu-with-hub-executors" title="Permalink to this headline">#</a></h2>
+<h2>Using GPU with Hub Executors<a class="headerlink" href="#using-gpu-with-hub-executors" title="Permalink to this heading">#</a></h2>
 <p>We now saw how to use GPU with our Executor locally, and when using it in a Docker container. What about when we use Executors from Jina Hub, is there any difference?</p>
 <p>Nope! Not only that, many of the Executors on Jina Hub already come with a GPU-enabled version pre-built, usually under the <code class="docutils literal notranslate"><span class="pre">gpu</span></code> tag (see <a class="reference internal" href="../../fundamentals/executor/hub/push-executor/#hub-tags"><span class="std std-ref">Jina Hub tags</span></a>). Let’s modify our example to use the pre-built <code class="docutils literal notranslate"><span class="pre">TransformerTorchEncoder</span></code> from Jina Hub</p>
 <div class="highlight-diff notranslate"><div class="highlight"><pre><span></span><span class="w">f = Flow().add(</span>
@@ -988,7 +988,7 @@ If you haven’t installed that already, you can find an installation guide <a c
 </div>
 </section>
 <section id="conclusion">
-<h2>Conclusion<a class="headerlink" href="#conclusion" title="Permalink to this headline">#</a></h2>
+<h2>Conclusion<a class="headerlink" href="#conclusion" title="Permalink to this heading">#</a></h2>
 <p>Let’s recap what we saw in this tutorial:</p>
 <ol class="simple">
 <li><p>Using Executors on a GPU locally is no different than using GPU in a standalone script. You can pass the device you want your Executor to use in the initialization.</p></li>
@@ -1032,7 +1032,7 @@ If you haven’t installed that already, you can find an installation guide <a c
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Nov 25, 2022.
+                    Last updated on Dec 15, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -1094,7 +1094,9 @@ If you haven’t installed that already, you can find an installation guide <a c
 <img referrerpolicy="no-referrer-when-downgrade" src="https://static.scarf.sh/a.png?x-pxid=1b470c1d-3b55-4d38-baa8-989bfba2a218" /><script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
     <script src="../../_static/scripts/furo.js"></script>
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>

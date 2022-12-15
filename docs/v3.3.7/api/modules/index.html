@@ -7,10 +7,10 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/api/modules/" />
 <meta property="og:site_name" content="Jina 3.3.7 Documentation" />
-<meta property="og:description" content="cli package- Submodules- cli.api module, cli.autocomplete module, cli.export module, cli.known_plugins module, cli.lookup module., Module contents., fastentrypoints module, jina package- Subpackages- jina.clients package- Subpackages, Submodules, Module contents., jina.helloworld package- Subpack..." />
+<meta property="og:description" content="cli package- Submodules- cli.api module- deployment(), pod(), executor_native(), executor(), worker_runtime(), gateway(), ping(), client(), export_api(), hello(), flow(), hub(), new(), help()., cli.autocomplete module, cli.export module- api_to_dict()., cli.known_plugins module, cli.lookup module..." />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
 <meta property="og:image:alt" content="Jina 3.3.7 Documentation" />
-<meta name="description" content="cli package- Submodules- cli.api module, cli.autocomplete module, cli.export module, cli.known_plugins module, cli.lookup module., Module contents., fastentrypoints module, jina package- Subpackages- jina.clients package- Subpackages, Submodules, Module contents., jina.helloworld package- Subpack..." />
+<meta name="description" content="cli package- Submodules- cli.api module- deployment(), pod(), executor_native(), executor(), worker_runtime(), gateway(), ping(), client(), export_api(), hello(), flow(), hub(), new(), help()., cli.autocomplete module, cli.export module- api_to_dict()., cli.known_plugins module, cli.lookup module..." />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
@@ -32,10 +32,10 @@
 <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" />
         <link rel="canonical" href="https://docs.jina.ai/api/modules.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.09.29"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
         <title>jina - Jina 3.3.7 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
@@ -238,7 +238,7 @@
     <option value="/">latest</option>
   </select>
 </div><form class="sidebar-search-container" method="get" action="../../search/" role="search">
-  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form>
@@ -601,22 +601,51 @@
                     </label>
                 </div>
                 <section id="jina">
-<h1>jina<a class="headerlink" href="#jina" title="Permalink to this headline">#</a></h1>
+<h1>jina<a class="headerlink" href="#jina" title="Permalink to this heading">#</a></h1>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../cli/">cli package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../cli/#submodules">Submodules</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../cli.api/">cli.api module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../cli.api/">cli.api module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cli.api/#cli.api.deployment"><code class="docutils literal notranslate"><span class="pre">deployment()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../cli.api/#cli.api.pod"><code class="docutils literal notranslate"><span class="pre">pod()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../cli.api/#cli.api.executor_native"><code class="docutils literal notranslate"><span class="pre">executor_native()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../cli.api/#cli.api.executor"><code class="docutils literal notranslate"><span class="pre">executor()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../cli.api/#cli.api.worker_runtime"><code class="docutils literal notranslate"><span class="pre">worker_runtime()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../cli.api/#cli.api.gateway"><code class="docutils literal notranslate"><span class="pre">gateway()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../cli.api/#cli.api.ping"><code class="docutils literal notranslate"><span class="pre">ping()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../cli.api/#cli.api.client"><code class="docutils literal notranslate"><span class="pre">client()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../cli.api/#cli.api.export_api"><code class="docutils literal notranslate"><span class="pre">export_api()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../cli.api/#cli.api.hello"><code class="docutils literal notranslate"><span class="pre">hello()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../cli.api/#cli.api.flow"><code class="docutils literal notranslate"><span class="pre">flow()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../cli.api/#cli.api.hub"><code class="docutils literal notranslate"><span class="pre">hub()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../cli.api/#cli.api.new"><code class="docutils literal notranslate"><span class="pre">new()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../cli.api/#cli.api.help"><code class="docutils literal notranslate"><span class="pre">help()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="../cli.autocomplete/">cli.autocomplete module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../cli.export/">cli.export module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../cli.export/">cli.export module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cli.export/#cli.export.api_to_dict"><code class="docutils literal notranslate"><span class="pre">api_to_dict()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="../cli.known_plugins/">cli.known_plugins module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../cli.lookup/">cli.lookup module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../cli.lookup/">cli.lookup module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../cli.lookup/#cli.lookup.lookup_and_print"><code class="docutils literal notranslate"><span class="pre">lookup_and_print()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../cli/#module-cli">Module contents</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../fastentrypoints/">fastentrypoints module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cli/#module-cli">Module contents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../cli/#cli.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../fastentrypoints/">fastentrypoints module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../fastentrypoints/#fastentrypoints.get_args"><code class="docutils literal notranslate"><span class="pre">get_args()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../fastentrypoints/#fastentrypoints.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../jina/">jina package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../jina/#subpackages">Subpackages</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../jina.clients/">jina.clients package</a><ul>
@@ -684,14 +713,127 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../jina/#submodules">Submodules</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../jina.checker/">jina.checker module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.enums/">jina.enums module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.excepts/">jina.excepts module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.helper/">jina.helper module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.importer/">jina.importer module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.checker/">jina.checker module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.checker/#jina.checker.NetworkChecker"><code class="docutils literal notranslate"><span class="pre">NetworkChecker</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../jina/#module-jina">Module contents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.enums/">jina.enums module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.enums/#jina.enums.EnumType"><code class="docutils literal notranslate"><span class="pre">EnumType</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.enums/#jina.enums.BetterEnum"><code class="docutils literal notranslate"><span class="pre">BetterEnum</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.enums/#jina.enums.PollingType"><code class="docutils literal notranslate"><span class="pre">PollingType</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.enums/#jina.enums.LogVerbosity"><code class="docutils literal notranslate"><span class="pre">LogVerbosity</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.enums/#jina.enums.FlowBuildLevel"><code class="docutils literal notranslate"><span class="pre">FlowBuildLevel</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.enums/#jina.enums.GatewayProtocolType"><code class="docutils literal notranslate"><span class="pre">GatewayProtocolType</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.enums/#jina.enums.PodRoleType"><code class="docutils literal notranslate"><span class="pre">PodRoleType</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.enums/#jina.enums.DeploymentRoleType"><code class="docutils literal notranslate"><span class="pre">DeploymentRoleType</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.enums/#jina.enums.RequestType"><code class="docutils literal notranslate"><span class="pre">RequestType</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.enums/#jina.enums.CompressAlgo"><code class="docutils literal notranslate"><span class="pre">CompressAlgo</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.enums/#jina.enums.OnErrorStrategy"><code class="docutils literal notranslate"><span class="pre">OnErrorStrategy</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.enums/#jina.enums.FlowInspectType"><code class="docutils literal notranslate"><span class="pre">FlowInspectType</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.enums/#jina.enums.DataInputType"><code class="docutils literal notranslate"><span class="pre">DataInputType</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.enums/#jina.enums.WebsocketSubProtocols"><code class="docutils literal notranslate"><span class="pre">WebsocketSubProtocols</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.enums/#jina.enums.replace_enum_to_str"><code class="docutils literal notranslate"><span class="pre">replace_enum_to_str()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.excepts/">jina.excepts module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.excepts/#jina.excepts.BaseJinaException"><code class="docutils literal notranslate"><span class="pre">BaseJinaException</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.excepts/#jina.excepts.ExecutorFailToLoad"><code class="docutils literal notranslate"><span class="pre">ExecutorFailToLoad</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.excepts/#jina.excepts.RuntimeFailToStart"><code class="docutils literal notranslate"><span class="pre">RuntimeFailToStart</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.excepts/#jina.excepts.RuntimeTerminated"><code class="docutils literal notranslate"><span class="pre">RuntimeTerminated</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.excepts/#jina.excepts.FlowTopologyError"><code class="docutils literal notranslate"><span class="pre">FlowTopologyError</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.excepts/#jina.excepts.FlowMissingDeploymentError"><code class="docutils literal notranslate"><span class="pre">FlowMissingDeploymentError</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.excepts/#jina.excepts.FlowBuildLevelError"><code class="docutils literal notranslate"><span class="pre">FlowBuildLevelError</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.excepts/#jina.excepts.BadConfigSource"><code class="docutils literal notranslate"><span class="pre">BadConfigSource</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.excepts/#jina.excepts.BadClient"><code class="docutils literal notranslate"><span class="pre">BadClient</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.excepts/#jina.excepts.BadClientCallback"><code class="docutils literal notranslate"><span class="pre">BadClientCallback</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.excepts/#jina.excepts.BadClientInput"><code class="docutils literal notranslate"><span class="pre">BadClientInput</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.excepts/#jina.excepts.BadRequestType"><code class="docutils literal notranslate"><span class="pre">BadRequestType</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.excepts/#jina.excepts.BadClientResponse"><code class="docutils literal notranslate"><span class="pre">BadClientResponse</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.excepts/#jina.excepts.BadImageNameError"><code class="docutils literal notranslate"><span class="pre">BadImageNameError</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.excepts/#jina.excepts.BadYAMLVersion"><code class="docutils literal notranslate"><span class="pre">BadYAMLVersion</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.excepts/#jina.excepts.NotSupportedError"><code class="docutils literal notranslate"><span class="pre">NotSupportedError</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.excepts/#jina.excepts.RuntimeRunForeverEarlyError"><code class="docutils literal notranslate"><span class="pre">RuntimeRunForeverEarlyError</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.excepts/#jina.excepts.DockerVersionError"><code class="docutils literal notranslate"><span class="pre">DockerVersionError</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.excepts/#jina.excepts.NoContainerizedError"><code class="docutils literal notranslate"><span class="pre">NoContainerizedError</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.excepts/#jina.excepts.PortAlreadyUsed"><code class="docutils literal notranslate"><span class="pre">PortAlreadyUsed</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.helper/">jina.helper module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.helper/#jina.helper.batch_iterator"><code class="docutils literal notranslate"><span class="pre">batch_iterator()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.helper/#jina.helper.parse_arg"><code class="docutils literal notranslate"><span class="pre">parse_arg()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.helper/#jina.helper.random_port"><code class="docutils literal notranslate"><span class="pre">random_port()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.helper/#jina.helper.random_identity"><code class="docutils literal notranslate"><span class="pre">random_identity()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.helper/#jina.helper.random_uuid"><code class="docutils literal notranslate"><span class="pre">random_uuid()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.helper/#jina.helper.expand_env_var"><code class="docutils literal notranslate"><span class="pre">expand_env_var()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.helper/#jina.helper.colored"><code class="docutils literal notranslate"><span class="pre">colored()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.helper/#jina.helper.ArgNamespace"><code class="docutils literal notranslate"><span class="pre">ArgNamespace</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.helper/#jina.helper.is_valid_local_config_source"><code class="docutils literal notranslate"><span class="pre">is_valid_local_config_source()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.helper/#jina.helper.cached_property"><code class="docutils literal notranslate"><span class="pre">cached_property</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.helper/#jina.helper.typename"><code class="docutils literal notranslate"><span class="pre">typename()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.helper/#jina.helper.get_public_ip"><code class="docutils literal notranslate"><span class="pre">get_public_ip()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.helper/#jina.helper.get_internal_ip"><code class="docutils literal notranslate"><span class="pre">get_internal_ip()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.helper/#jina.helper.convert_tuple_to_list"><code class="docutils literal notranslate"><span class="pre">convert_tuple_to_list()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.helper/#jina.helper.run_async"><code class="docutils literal notranslate"><span class="pre">run_async()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.helper/#jina.helper.deprecated_alias"><code class="docutils literal notranslate"><span class="pre">deprecated_alias()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.helper/#jina.helper.retry"><code class="docutils literal notranslate"><span class="pre">retry()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.helper/#jina.helper.countdown"><code class="docutils literal notranslate"><span class="pre">countdown()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.helper/#jina.helper.CatchAllCleanupContextManager"><code class="docutils literal notranslate"><span class="pre">CatchAllCleanupContextManager</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.helper/#jina.helper.download_mermaid_url"><code class="docutils literal notranslate"><span class="pre">download_mermaid_url()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.helper/#jina.helper.get_readable_size"><code class="docutils literal notranslate"><span class="pre">get_readable_size()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.helper/#jina.helper.get_or_reuse_loop"><code class="docutils literal notranslate"><span class="pre">get_or_reuse_loop()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.helper/#jina.helper.get_rich_console"><code class="docutils literal notranslate"><span class="pre">get_rich_console()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.helper/#jina.helper.docarray_graphql_compatible"><code class="docutils literal notranslate"><span class="pre">docarray_graphql_compatible()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.importer/">jina.importer module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.importer/#jina.importer.ImportExtensions"><code class="docutils literal notranslate"><span class="pre">ImportExtensions</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.importer/#jina.importer.PathImporter"><code class="docutils literal notranslate"><span class="pre">PathImporter</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../jina/#module-jina">Module contents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../jina/#jina.AsyncFlow"><code class="docutils literal notranslate"><span class="pre">AsyncFlow</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina/#jina.Client"><code class="docutils literal notranslate"><span class="pre">Client()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina/#jina.Document"><code class="docutils literal notranslate"><span class="pre">Document</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina/#jina.DocumentArray"><code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina/#jina.Executor"><code class="docutils literal notranslate"><span class="pre">Executor</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina/#jina.Flow"><code class="docutils literal notranslate"><span class="pre">Flow</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina/#jina.Flow.last_deployment"><code class="docutils literal notranslate"><span class="pre">Flow.last_deployment</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina/#jina.Flow.needs"><code class="docutils literal notranslate"><span class="pre">Flow.needs()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina/#jina.Flow.needs_all"><code class="docutils literal notranslate"><span class="pre">Flow.needs_all()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina/#jina.Flow.add"><code class="docutils literal notranslate"><span class="pre">Flow.add()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina/#jina.Flow.inspect"><code class="docutils literal notranslate"><span class="pre">Flow.inspect()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina/#jina.Flow.gather_inspect"><code class="docutils literal notranslate"><span class="pre">Flow.gather_inspect()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina/#jina.Flow.build"><code class="docutils literal notranslate"><span class="pre">Flow.build()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina/#jina.Flow.start"><code class="docutils literal notranslate"><span class="pre">Flow.start()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina/#jina.Flow.num_deployments"><code class="docutils literal notranslate"><span class="pre">Flow.num_deployments</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina/#jina.Flow.num_pods"><code class="docutils literal notranslate"><span class="pre">Flow.num_pods</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina/#jina.Flow.client"><code class="docutils literal notranslate"><span class="pre">Flow.client</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina/#jina.Flow.plot"><code class="docutils literal notranslate"><span class="pre">Flow.plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina/#jina.Flow.port"><code class="docutils literal notranslate"><span class="pre">Flow.port</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina/#jina.Flow.host"><code class="docutils literal notranslate"><span class="pre">Flow.host</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina/#jina.Flow.monitoring"><code class="docutils literal notranslate"><span class="pre">Flow.monitoring</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina/#jina.Flow.port_monitoring"><code class="docutils literal notranslate"><span class="pre">Flow.port_monitoring</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina/#jina.Flow.address_private"><code class="docutils literal notranslate"><span class="pre">Flow.address_private</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina/#jina.Flow.address_public"><code class="docutils literal notranslate"><span class="pre">Flow.address_public</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina/#jina.Flow.block"><code class="docutils literal notranslate"><span class="pre">Flow.block()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina/#jina.Flow.protocol"><code class="docutils literal notranslate"><span class="pre">Flow.protocol</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina/#jina.Flow.workspace"><code class="docutils literal notranslate"><span class="pre">Flow.workspace</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina/#jina.Flow.workspace_id"><code class="docutils literal notranslate"><span class="pre">Flow.workspace_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina/#jina.Flow.env"><code class="docutils literal notranslate"><span class="pre">Flow.env</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina/#jina.Flow.expose_endpoint"><code class="docutils literal notranslate"><span class="pre">Flow.expose_endpoint()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina/#jina.Flow.join"><code class="docutils literal notranslate"><span class="pre">Flow.join()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina/#jina.Flow.to_k8s_yaml"><code class="docutils literal notranslate"><span class="pre">Flow.to_k8s_yaml()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina/#jina.Flow.to_docker_compose_yaml"><code class="docutils literal notranslate"><span class="pre">Flow.to_docker_compose_yaml()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina/#jina.Flow.client_args"><code class="docutils literal notranslate"><span class="pre">Flow.client_args</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina/#jina.Flow.gateway_args"><code class="docutils literal notranslate"><span class="pre">Flow.gateway_args</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina/#jina.Flow.update_network_interface"><code class="docutils literal notranslate"><span class="pre">Flow.update_network_interface()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../jina/#jina.requests"><code class="docutils literal notranslate"><span class="pre">requests()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../pin_requirements/">pin_requirements module</a></li>
@@ -709,7 +851,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Nov 25, 2022.
+                    Last updated on Dec 15, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -748,7 +890,9 @@
 <img referrerpolicy="no-referrer-when-downgrade" src="https://static.scarf.sh/a.png?x-pxid=1b470c1d-3b55-4d38-baa8-989bfba2a218" /><script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
     <script src="../../_static/scripts/furo.js"></script>
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>

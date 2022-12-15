@@ -32,10 +32,10 @@
 <link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" /><link rel="next" title="Clean &amp; Efficient Code" href="../../clean-code/" /><link rel="prev" title="Python Client" href="../client/" />
         <link rel="canonical" href="https://docs.jina.ai/fundamentals/flow/remarks.html" />
 
-    <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.09.29"/>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
         <title>Remarks - Jina 3.3.7 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/tabs.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
@@ -238,7 +238,7 @@
     <option value="/">latest</option>
   </select>
 </div><form class="sidebar-search-container" method="get" action="../../../search/" role="search">
-  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form>
@@ -601,7 +601,7 @@
                     </label>
                 </div>
                 <section class="tex2jax_ignore mathjax_ignore" id="remarks">
-<h1>Remarks<a class="headerlink" href="#remarks" title="Permalink to this headline">#</a></h1>
+<h1>Remarks<a class="headerlink" href="#remarks" title="Permalink to this heading">#</a></h1>
 <ul>
 <li><p>Define &amp; start the Flow via an explicit function call inside <code class="docutils literal notranslate"><span class="pre">if</span> <span class="pre">__name__</span> <span class="pre">==</span> <span class="pre">'__main__'</span></code>. For example</p>
 <div class="tab-set docutils">
@@ -689,7 +689,7 @@
 </li>
 </ul>
 <section id="multiprocessing-spawn">
-<h2>multiprocessing Spawn<a class="headerlink" href="#multiprocessing-spawn" title="Permalink to this headline">#</a></h2>
+<h2>multiprocessing Spawn<a class="headerlink" href="#multiprocessing-spawn" title="Permalink to this heading">#</a></h2>
 <p>Few cases require to use <code class="docutils literal notranslate"><span class="pre">spawn</span></code> start method for multiprocessing.
 (e.g.- Cannot re-initialize CUDA in forked subprocess. To use CUDA with multiprocessing, you must use the ‘spawn’ start method)</p>
 <ul>
@@ -714,7 +714,7 @@ AssertionError: can only join a started process
 </ul>
 </section>
 <section id="debugging-executor-in-a-flow">
-<h2>Debugging Executor in a Flow<a class="headerlink" href="#debugging-executor-in-a-flow" title="Permalink to this headline">#</a></h2>
+<h2>Debugging Executor in a Flow<a class="headerlink" href="#debugging-executor-in-a-flow" title="Permalink to this heading">#</a></h2>
 <p>Standard Python breakpoints will not work inside <code class="docutils literal notranslate"><span class="pre">Executor</span></code> methods when called inside a Flow context manager. Nevertheless, <code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">epdb;</span> <span class="pre">epdb.set_trace()</span></code> will work just as a native python breakpoint. Note that you need to <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">epdb</span></code> to have acces to this type of breakpoints.</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--2-input--1" name="tab-set--2" type="radio"><label class="tab-label" for="tab-set--2-input--1">✅ Do</label><div class="tab-content docutils">
@@ -793,7 +793,7 @@ AssertionError: can only join a started process
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Nov 25, 2022.
+                    Last updated on Dec 15, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -850,7 +850,9 @@ AssertionError: can only join a started process
 <img referrerpolicy="no-referrer-when-downgrade" src="https://static.scarf.sh/a.png?x-pxid=1b470c1d-3b55-4d38-baa8-989bfba2a218" /><script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
     <script src="../../../_static/scripts/furo.js"></script>
     <script src="../../../_static/clipboard.min.js"></script>
     <script src="../../../_static/copybutton.js"></script>

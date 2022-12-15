@@ -7,10 +7,10 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/api/jina.hubble/" />
 <meta property="og:site_name" content="Jina 3.3.7 Documentation" />
-<meta property="og:description" content="Submodules: jina.hubble.helper module, jina.hubble.hubapi module, jina.hubble.hubio module. Module contents:" />
+<meta property="og:description" content="Submodules: jina.hubble.helper module- get_hub_packages_dir(), get_cache_db(), get_download_cache_dir(), get_hubble_url_v1(), get_hubble_url_v2(), parse_hub_uri(), is_valid_huburi(), md5file(), unpack_package(), archive_package(), download_with_resume(), upload_file(), disk_cache_offline(), is_re..." />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
 <meta property="og:image:alt" content="Jina 3.3.7 Documentation" />
-<meta name="description" content="Submodules: jina.hubble.helper module, jina.hubble.hubapi module, jina.hubble.hubio module. Module contents:" />
+<meta name="description" content="Submodules: jina.hubble.helper module- get_hub_packages_dir(), get_cache_db(), get_download_cache_dir(), get_hubble_url_v1(), get_hubble_url_v2(), parse_hub_uri(), is_valid_huburi(), md5file(), unpack_package(), archive_package(), download_with_resume(), upload_file(), disk_cache_offline(), is_re..." />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
@@ -32,10 +32,10 @@
 <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="jina.hubble.helper module" href="../jina.hubble.helper/" /><link rel="prev" title="jina.helloworld.fork module" href="../jina.helloworld.fork/" />
         <link rel="canonical" href="https://docs.jina.ai/api/jina.hubble.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.09.29"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
         <title>jina.hubble package - Jina 3.3.7 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
@@ -238,7 +238,7 @@
     <option value="/">latest</option>
   </select>
 </div><form class="sidebar-search-container" method="get" action="../../search/" role="search">
-  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form>
@@ -601,19 +601,59 @@
                     </label>
                 </div>
                 <section id="jina-hubble-package">
-<h1>jina.hubble package<a class="headerlink" href="#jina-hubble-package" title="Permalink to this headline">#</a></h1>
+<h1>jina.hubble package<a class="headerlink" href="#jina-hubble-package" title="Permalink to this heading">#</a></h1>
 <section id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">#</a></h2>
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading">#</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../jina.hubble.helper/">jina.hubble.helper module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../jina.hubble.hubapi/">jina.hubble.hubapi module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../jina.hubble.hubio/">jina.hubble.hubio module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../jina.hubble.helper/">jina.hubble.helper module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../jina.hubble.helper/#jina.hubble.helper.get_hub_packages_dir"><code class="docutils literal notranslate"><span class="pre">get_hub_packages_dir()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.hubble.helper/#jina.hubble.helper.get_cache_db"><code class="docutils literal notranslate"><span class="pre">get_cache_db()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.hubble.helper/#jina.hubble.helper.get_download_cache_dir"><code class="docutils literal notranslate"><span class="pre">get_download_cache_dir()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.hubble.helper/#jina.hubble.helper.get_hubble_url_v1"><code class="docutils literal notranslate"><span class="pre">get_hubble_url_v1()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.hubble.helper/#jina.hubble.helper.get_hubble_url_v2"><code class="docutils literal notranslate"><span class="pre">get_hubble_url_v2()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.hubble.helper/#jina.hubble.helper.parse_hub_uri"><code class="docutils literal notranslate"><span class="pre">parse_hub_uri()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.hubble.helper/#jina.hubble.helper.is_valid_huburi"><code class="docutils literal notranslate"><span class="pre">is_valid_huburi()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.hubble.helper/#jina.hubble.helper.md5file"><code class="docutils literal notranslate"><span class="pre">md5file()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.hubble.helper/#jina.hubble.helper.unpack_package"><code class="docutils literal notranslate"><span class="pre">unpack_package()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.hubble.helper/#jina.hubble.helper.archive_package"><code class="docutils literal notranslate"><span class="pre">archive_package()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.hubble.helper/#jina.hubble.helper.download_with_resume"><code class="docutils literal notranslate"><span class="pre">download_with_resume()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.hubble.helper/#jina.hubble.helper.upload_file"><code class="docutils literal notranslate"><span class="pre">upload_file()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.hubble.helper/#jina.hubble.helper.disk_cache_offline"><code class="docutils literal notranslate"><span class="pre">disk_cache_offline()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.hubble.helper/#jina.hubble.helper.is_requirements_installed"><code class="docutils literal notranslate"><span class="pre">is_requirements_installed()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.hubble.helper/#jina.hubble.helper.install_requirements"><code class="docutils literal notranslate"><span class="pre">install_requirements()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../jina.hubble.hubapi/">jina.hubble.hubapi module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../jina.hubble.hubapi/#jina.hubble.hubapi.get_dist_path"><code class="docutils literal notranslate"><span class="pre">get_dist_path()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.hubble.hubapi/#jina.hubble.hubapi.get_dist_path_of_executor"><code class="docutils literal notranslate"><span class="pre">get_dist_path_of_executor()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.hubble.hubapi/#jina.hubble.hubapi.get_config_path"><code class="docutils literal notranslate"><span class="pre">get_config_path()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.hubble.hubapi/#jina.hubble.hubapi.get_lockfile"><code class="docutils literal notranslate"><span class="pre">get_lockfile()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.hubble.hubapi/#jina.hubble.hubapi.load_secret"><code class="docutils literal notranslate"><span class="pre">load_secret()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.hubble.hubapi/#jina.hubble.hubapi.dump_secret"><code class="docutils literal notranslate"><span class="pre">dump_secret()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.hubble.hubapi/#jina.hubble.hubapi.install_local"><code class="docutils literal notranslate"><span class="pre">install_local()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.hubble.hubapi/#jina.hubble.hubapi.install_package_dependencies"><code class="docutils literal notranslate"><span class="pre">install_package_dependencies()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.hubble.hubapi/#jina.hubble.hubapi.uninstall_local"><code class="docutils literal notranslate"><span class="pre">uninstall_local()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.hubble.hubapi/#jina.hubble.hubapi.list_local"><code class="docutils literal notranslate"><span class="pre">list_local()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.hubble.hubapi/#jina.hubble.hubapi.exist_local"><code class="docutils literal notranslate"><span class="pre">exist_local()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../jina.hubble.hubio/">jina.hubble.hubio module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../jina.hubble.hubio/#jina.hubble.hubio.HubIO"><code class="docutils literal notranslate"><span class="pre">HubIO</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../jina.hubble.hubio/#jina.hubble.hubio.HubIO.new"><code class="docutils literal notranslate"><span class="pre">HubIO.new()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.hubble.hubio/#jina.hubble.hubio.HubIO.push"><code class="docutils literal notranslate"><span class="pre">HubIO.push()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.hubble.hubio/#jina.hubble.hubio.HubIO.fetch_meta"><code class="docutils literal notranslate"><span class="pre">HubIO.fetch_meta()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.hubble.hubio/#jina.hubble.hubio.HubIO.deploy_public_sandbox"><code class="docutils literal notranslate"><span class="pre">HubIO.deploy_public_sandbox()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.hubble.hubio/#jina.hubble.hubio.HubIO.pull"><code class="docutils literal notranslate"><span class="pre">HubIO.pull()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </div>
 </section>
 <section id="module-jina.hubble">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-jina.hubble" title="Permalink to this headline">#</a></h2>
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-jina.hubble" title="Permalink to this heading">#</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="jina.hubble.HubExecutor">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.hubble.</span></span><span class="sig-name descname"><span class="pre">HubExecutor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uuid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">commit_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">visibility</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">archive_url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">md5sum</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/#HubExecutor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.HubExecutor" title="Permalink to this definition">#</a></dt>
@@ -696,7 +736,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Nov 25, 2022.
+                    Last updated on Dec 15, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -723,7 +763,20 @@
                         <ul>
 <li><a class="reference internal" href="#">jina.hubble package</a><ul>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-jina.hubble">Module contents</a></li>
+<li><a class="reference internal" href="#module-jina.hubble">Module contents</a><ul>
+<li><a class="reference internal" href="#jina.hubble.HubExecutor"><code class="docutils literal notranslate"><span class="pre">HubExecutor</span></code></a><ul>
+<li><a class="reference internal" href="#jina.hubble.HubExecutor.uuid"><code class="docutils literal notranslate"><span class="pre">HubExecutor.uuid</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.HubExecutor.name"><code class="docutils literal notranslate"><span class="pre">HubExecutor.name</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.HubExecutor.commit_id"><code class="docutils literal notranslate"><span class="pre">HubExecutor.commit_id</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.HubExecutor.tag"><code class="docutils literal notranslate"><span class="pre">HubExecutor.tag</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.HubExecutor.visibility"><code class="docutils literal notranslate"><span class="pre">HubExecutor.visibility</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.HubExecutor.image_name"><code class="docutils literal notranslate"><span class="pre">HubExecutor.image_name</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.HubExecutor.archive_url"><code class="docutils literal notranslate"><span class="pre">HubExecutor.archive_url</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.HubExecutor.md5sum"><code class="docutils literal notranslate"><span class="pre">HubExecutor.md5sum</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -753,7 +806,9 @@
 <img referrerpolicy="no-referrer-when-downgrade" src="https://static.scarf.sh/a.png?x-pxid=1b470c1d-3b55-4d38-baa8-989bfba2a218" /><script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
     <script src="../../_static/scripts/furo.js"></script>
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>

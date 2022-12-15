@@ -1,0 +1,1169 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+<meta property="og:title" content="jina.logging.logger module" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://docs.jina.ai/api/jina.logging.logger/" />
+<meta property="og:site_name" content="Jina 3.7.2 Documentation" />
+<meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
+<meta property="og:image:alt" content="Jina 3.7.2 Documentation" />
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@JinaAI_">
+<meta name="twitter:creator" content="@JinaAI_">
+<meta name="description" content="Build cross-modal and multi-modal applications on the cloud">
+<meta property="og:description" content="Build cross-modal and multi-modal applications on the cloud">
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-48ZDWC8GT6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-48ZDWC8GT6');
+</script>
+
+<script async defer src="https://buttons.github.io/buttons.js"></script>
+    
+<link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" />
+        <link rel="canonical" href="https://docs.jina.ai/api/jina.logging.logger.html" />
+
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
+        <title>jina.logging.logger module - Jina 3.7.2 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/main.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/docbot.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #ffffff;
+  --color-code-foreground: #4d4d4d;
+  --color-brand-primary: #009191;
+  --color-brand-content: #009191;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #FBCB67;
+  --color-brand-content: #FBCB67;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #FBCB67;
+  --color-brand-content: #FBCB67;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+    <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+    <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<div class="announcement">
+    <aside class="announcement-content">
+         
+    <a href="https://www.meetup.com/jina-community-meetup/events/286917139/">Join our Office Hours on July 28th at 19:00 CET to find answers on all your questions</a>
+     
+    </aside>
+</div>
+
+<div class="page">
+    <header class="mobile-header">
+        <div class="header-left">
+            <label class="nav-overlay-icon" for="__navigation">
+                <div class="visually-hidden">Toggle site navigation sidebar</div>
+                <i class="icon">
+                    <svg>
+                        <use href="#svg-menu"></use>
+                    </svg>
+                </i>
+            </label>
+        </div>
+        <div class="header-center">
+            <a href="../../">
+                <div class="brand">Jina 3.7.2 documentation</div>
+            </a>
+        </div>
+        <div class="header-right">
+            <div class="theme-toggle-container theme-toggle-header">
+                <button class="theme-toggle">
+                    <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+                    <svg class="theme-icon-when-auto">
+                        <use href="#svg-sun-half"></use>
+                    </svg>
+                    <svg class="theme-icon-when-dark">
+                        <use href="#svg-moon"></use>
+                    </svg>
+                    <svg class="theme-icon-when-light">
+                        <use href="#svg-sun"></use>
+                    </svg>
+                </button>
+            </div>
+            <label class="toc-overlay-icon toc-header-icon" for="__toc">
+                <div class="visually-hidden">Toggle table of contents sidebar</div>
+                <i class="icon">
+                    <svg>
+                        <use href="#svg-toc"></use>
+                    </svg>
+                </i>
+            </label>
+        </div>
+    </header>
+    <aside class="sidebar-drawer">
+        <div class="sidebar-container">
+            
+            <div class="sidebar-sticky"><a class="sidebar-brand" href="../../">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo only-light" src="../../_static/logo-light.svg" alt="Light Logo" />
+    <img class="sidebar-logo only-dark" src="../../_static/logo-dark.svg" alt="Dark Logo" />
+  </div>
+  
+  
+</a>
+<script>
+  function setPrefix(prefix){
+    window.location.href = prefix
+  }
+</script>
+<script defer>
+  fetch(`https://${window.location.host}/_versions.json`)
+  .then((resp) => resp.json())
+  .then((data) => {
+    var versionSelector = document.getElementsByClassName("version-select")[0];
+    var currentPrefix = window.location.href.toString().split(window.location.host)[1].split('/')[1];
+
+    for(var i = 0; i < data.length; i++){
+      var option = document.createElement("option");
+      option.innerHTML = data[i].version;
+      option.value = "/" + data[i].version;
+      versionSelector.appendChild(option);
+      if(currentPrefix === data[i].version){
+        versionSelector.selectedIndex = i + 1;
+      }
+    }
+  })
+  .catch((err) => console.log(err));
+</script>
+<div class="sd-d-flex-row sd-align-major-spaced">
+  <a class="github-button" href="https://github.com/jina-ai/jina" data-icon="octicon-star" data-show-count="true" aria-label="Star jina-ai/jina on GitHub" style="opacity: 0;">Star</a>
+  <select onChange="setPrefix(this.value)" class="version-select">
+    <option value="/">latest</option>
+  </select>
+</div><form class="sidebar-search-container" method="get" action="../../search/" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+    <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../get-started/install/">Install</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../get-started/install/docker/">Docker image</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../get-started/install/windows/">On Windows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../get-started/install/troubleshooting/">Troubleshooting</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../get-started/create-app/">Create Project</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../fundamentals/architecture-overview/">Glossary</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/executor/">Executor</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-api/">Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-methods/"><code class="docutils literal notranslate"><span class="pre">@requests</span></code> methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/monitoring-executor/">Monitor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-run/">Run</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-serve/">Serve</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/yaml-spec/">YAML specification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-files/">File structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/containerize-executor/">Containerize</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/flow/">Flow</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/create-flow/">Basic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/add-executors/">Add Executors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/topologies/">Topology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/monitoring-flow/">Monitor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/health-check/">Readiness &amp; health check</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/when-things-go-wrong/">Handle exceptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/yaml-spec/">YAML specification</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../fundamentals/gateway/">Gateway</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/flow/client/">Client</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/access-flow-api/">Third-party clients</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/executor/hub/">Hub</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/hub/hub-portal/">Portal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/hub/create-hub-executor/">Create</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/hub/push-executor/">Publish</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/hub/use-hub-executor/">Use</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/sandbox/">Sandbox</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/debug-executor/">Debug</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/hub/executor-best-practices/">Best practices</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/jcloud/">JCloud</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/jcloud/basic/">Basic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/jcloud/advanced/">Advanced</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/jcloud/faq/">FAQ</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../how-to/"><svg aria-hidden="true" class="sd-octicon sd-octicon-book" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M0 1.75A.75.75 0 01.75 1h4.253c1.227 0 2.317.59 3 1.501A3.744 3.744 0 0111.006 1h4.245a.75.75 0 01.75.75v10.5a.75.75 0 01-.75.75h-4.507a2.25 2.25 0 00-1.591.659l-.622.621a.75.75 0 01-1.06 0l-.622-.621A2.25 2.25 0 005.258 13H.75a.75.75 0 01-.75-.75V1.75zm8.755 3a2.25 2.25 0 012.25-2.25H14.5v9h-3.757c-.71 0-1.4.201-1.992.572l.004-7.322zm-1.504 7.324l.004-5.073-.002-2.253A2.25 2.25 0 005.003 2.5H1.5v9h3.757a3.75 3.75 0 011.994.574z" fill-rule="evenodd"></path></svg> How-To</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/google-colab/">Use Jina on Colab with GPU/TPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/clean-code/">Write clean &amp; efficient code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/async-executors/">Use async coroutines in Executors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/scale-out/">Scale out your Executor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/gpu-executor/">Run Executors on GPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/external-executor/">Use external Executors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/flow-switch/">Add selection control to a Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/docker-compose/">Deploy with Docker Compose</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/kubernetes/">Deploy with Kubernetes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/monitoring/">Use monitoring with Jina in Kubernetes</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer References</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api-rst/"><span class="fab fa-python"></span> Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cli/"><svg aria-hidden="true" class="sd-octicon sd-octicon-terminal" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M0 2.75C0 1.784.784 1 1.75 1h12.5c.966 0 1.75.784 1.75 1.75v10.5A1.75 1.75 0 0114.25 15H1.75A1.75 1.75 0 010 13.25V2.75zm1.75-.25a.25.25 0 00-.25.25v10.5c0 .138.112.25.25.25h12.5a.25.25 0 00.25-.25V2.75a.25.25 0 00-.25-.25H1.75zM7.25 8a.75.75 0 01-.22.53l-2.25 2.25a.75.75 0 11-1.06-1.06L5.44 8 3.72 6.28a.75.75 0 111.06-1.06l2.25 2.25c.141.14.22.331.22.53zm1.5 1.5a.75.75 0 000 1.5h3a.75.75 0 000-1.5h-3z" fill-rule="evenodd"></path></svg> Command-Line Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../proto/docs/">Protocol Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../envs/">Environment Variables</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Legacy Support</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../get-started/migrate/">Migrate Jina 2 to Jina 3</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://docs2.jina.ai/">Jina 2 Documentation</a></li>
+</ul>
+
+    <p class="caption" role="heading"><span class="caption-text">Ecosystem</span></p>
+    <ul>
+        <li class="toctree-l1">
+            <a class="reference internal" href="#">
+                <img class="sidebar-ecosys-logo only-light-line" src="../../_static/search-light.svg">
+                <img class="sidebar-ecosys-logo only-dark-line" src="../../_static/search-dark.svg">
+                Jina</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://hub.jina.ai">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../_static/hub-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../_static/hub-dark.svg">
+            Jina Hub</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://finetuner.jina.ai">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../_static/finetuner-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../_static/finetuner-dark.svg">
+            Finetuner</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://docarray.jina.ai">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../_static/docarray-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../_static/docarray-dark.svg">
+            DocArray</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://clip-as-service.jina.ai">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../_static/cas-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../_static/cas-dark.svg">
+            CLIP-as-service</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://github.com/jina-ai/jcloud">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../_static/JCloud-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../_static/JCloud-dark.svg">
+            JCloud</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://now.jina.ai">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../_static/now-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../_static/now-dark.svg">
+            NOW</a></li>
+    </ul>
+</div>
+
+</div>
+
+            </div>
+            
+        </div>
+    </aside>
+    <div class="main">
+        <div class="content">
+            <div class="article-container">
+                <a href="#" class="back-to-top muted-link">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+                    </svg>
+                    <span>Back to top</span>
+                </a>
+                <div class="content-icon-container"><div class="theme-toggle-container theme-toggle-content">
+                        <button class="theme-toggle">
+                            <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+                            <svg class="theme-icon-when-auto">
+                                <use href="#svg-sun-half"></use>
+                            </svg>
+                            <svg class="theme-icon-when-dark">
+                                <use href="#svg-moon"></use>
+                            </svg>
+                            <svg class="theme-icon-when-light">
+                                <use href="#svg-sun"></use>
+                            </svg>
+                        </button>
+                    </div>
+                    <label class="toc-overlay-icon toc-content-icon"
+                           for="__toc">
+                        <div class="visually-hidden">Toggle table of contents sidebar</div>
+                        <i class="icon">
+                            <svg>
+                                <use href="#svg-toc"></use>
+                            </svg>
+                        </i>
+                    </label>
+                </div>
+                <article role="main">
+                    <section id="module-jina.logging.logger">
+<span id="jina-logging-logger-module"></span><h1>jina.logging.logger module<a class="headerlink" href="#module-jina.logging.logger" title="Permalink to this heading">#</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="jina.logging.logger.RichHandler">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.logging.logger.</span></span><span class="sig-name descname"><span class="pre">RichHandler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/logging/logger/#RichHandler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.logging.logger.RichHandler" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">RichHandler</span></code></p>
+<p>Override the original rich handler for more compact layout.</p>
+<p>Initializes the instance - basically setting the formatter to None
+and the filter list to empty.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.logging.logger.RichHandler.HIGHLIGHTER_CLASS">
+<span class="sig-name descname"><span class="pre">HIGHLIGHTER_CLASS</span></span><a class="headerlink" href="#jina.logging.logger.RichHandler.HIGHLIGHTER_CLASS" title="Permalink to this definition">#</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">ReprHighlighter</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.logging.logger.RichHandler.KEYWORDS">
+<span class="sig-name descname"><span class="pre">KEYWORDS</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['GET',</span> <span class="pre">'POST',</span> <span class="pre">'HEAD',</span> <span class="pre">'PUT',</span> <span class="pre">'DELETE',</span> <span class="pre">'OPTIONS',</span> <span class="pre">'TRACE',</span> <span class="pre">'PATCH']</span></em><a class="headerlink" href="#jina.logging.logger.RichHandler.KEYWORDS" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.logging.logger.RichHandler.acquire">
+<span class="sig-name descname"><span class="pre">acquire</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jina.logging.logger.RichHandler.acquire" title="Permalink to this definition">#</a></dt>
+<dd><p>Acquire the I/O thread lock.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.logging.logger.RichHandler.addFilter">
+<span class="sig-name descname"><span class="pre">addFilter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filter</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.logging.logger.RichHandler.addFilter" title="Permalink to this definition">#</a></dt>
+<dd><p>Add the specified filter to this handler.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.logging.logger.RichHandler.close">
+<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jina.logging.logger.RichHandler.close" title="Permalink to this definition">#</a></dt>
+<dd><p>Tidy up any resources used by the handler.</p>
+<p>This version removes the handler from an internal map of handlers,
+_handlers, which is used for handler lookup by name. Subclasses
+should ensure that this gets called from overridden close()
+methods.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.logging.logger.RichHandler.createLock">
+<span class="sig-name descname"><span class="pre">createLock</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jina.logging.logger.RichHandler.createLock" title="Permalink to this definition">#</a></dt>
+<dd><p>Acquire a thread lock for serializing access to the underlying I/O.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.logging.logger.RichHandler.emit">
+<span class="sig-name descname"><span class="pre">emit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">record</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/rich/logging/#RichHandler.emit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.logging.logger.RichHandler.emit" title="Permalink to this definition">#</a></dt>
+<dd><p>Invoked by logging.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.logging.logger.RichHandler.filter">
+<span class="sig-name descname"><span class="pre">filter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">record</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.logging.logger.RichHandler.filter" title="Permalink to this definition">#</a></dt>
+<dd><p>Determine if a record is loggable by consulting all the filters.</p>
+<p>The default is to allow the record to be logged; any filter can veto
+this and the record is then dropped. Returns a zero value if a record
+is to be dropped, else non-zero.</p>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.2: </span>Allow filters to be just callables.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.logging.logger.RichHandler.flush">
+<span class="sig-name descname"><span class="pre">flush</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jina.logging.logger.RichHandler.flush" title="Permalink to this definition">#</a></dt>
+<dd><p>Ensure all logging output has been flushed.</p>
+<p>This version does nothing and is intended to be implemented by
+subclasses.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.logging.logger.RichHandler.format">
+<span class="sig-name descname"><span class="pre">format</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">record</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.logging.logger.RichHandler.format" title="Permalink to this definition">#</a></dt>
+<dd><p>Format the specified record.</p>
+<p>If a formatter is set, use it. Otherwise, use the default formatter
+for the module.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.logging.logger.RichHandler.get_level_text">
+<span class="sig-name descname"><span class="pre">get_level_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">record</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/rich/logging/#RichHandler.get_level_text"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.logging.logger.RichHandler.get_level_text" title="Permalink to this definition">#</a></dt>
+<dd><p>Get the level name from the record.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>record (LogRecord): LogRecord instance.</p>
+</dd>
+<dt>Returns:</dt><dd><p>Text: A tuple of the style and level name.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Text</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.logging.logger.RichHandler.get_name">
+<span class="sig-name descname"><span class="pre">get_name</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jina.logging.logger.RichHandler.get_name" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.logging.logger.RichHandler.handle">
+<span class="sig-name descname"><span class="pre">handle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">record</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.logging.logger.RichHandler.handle" title="Permalink to this definition">#</a></dt>
+<dd><p>Conditionally emit the specified logging record.</p>
+<p>Emission depends on filters which may have been added to the handler.
+Wrap the actual emission of the record with acquisition/release of
+the I/O thread lock. Returns whether the filter passed the record for
+emission.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.logging.logger.RichHandler.handleError">
+<span class="sig-name descname"><span class="pre">handleError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">record</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.logging.logger.RichHandler.handleError" title="Permalink to this definition">#</a></dt>
+<dd><p>Handle errors which occur during an emit() call.</p>
+<p>This method should be called from handlers when an exception is
+encountered during an emit() call. If raiseExceptions is false,
+exceptions get silently ignored. This is what is mostly wanted
+for a logging system - most users will not care about errors in
+the logging system, they are more interested in application errors.
+You could, however, replace this with a custom handler if you wish.
+The record which was being processed is passed in to this method.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="jina.logging.logger.RichHandler.name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#jina.logging.logger.RichHandler.name" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.logging.logger.RichHandler.release">
+<span class="sig-name descname"><span class="pre">release</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jina.logging.logger.RichHandler.release" title="Permalink to this definition">#</a></dt>
+<dd><p>Release the I/O thread lock.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.logging.logger.RichHandler.removeFilter">
+<span class="sig-name descname"><span class="pre">removeFilter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filter</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.logging.logger.RichHandler.removeFilter" title="Permalink to this definition">#</a></dt>
+<dd><p>Remove the specified filter from this handler.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.logging.logger.RichHandler.render">
+<span class="sig-name descname"><span class="pre">render</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">record</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">traceback</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message_renderable</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/rich/logging/#RichHandler.render"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.logging.logger.RichHandler.render" title="Permalink to this definition">#</a></dt>
+<dd><p>Render log for display.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>record (LogRecord): logging Record.
+traceback (Optional[Traceback]): Traceback instance or None for no Traceback.
+message_renderable (ConsoleRenderable): Renderable (typically Text) containing log message contents.</p>
+</dd>
+<dt>Returns:</dt><dd><p>ConsoleRenderable: Renderable to display log.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ConsoleRenderable</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.logging.logger.RichHandler.render_message">
+<span class="sig-name descname"><span class="pre">render_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">record</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/rich/logging/#RichHandler.render_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.logging.logger.RichHandler.render_message" title="Permalink to this definition">#</a></dt>
+<dd><p>Render message text in to Text.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>record (LogRecord): logging Record.
+message (str): String containing log message.</p>
+</dd>
+<dt>Returns:</dt><dd><p>ConsoleRenderable: Renderable to display log message.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ConsoleRenderable</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.logging.logger.RichHandler.setFormatter">
+<span class="sig-name descname"><span class="pre">setFormatter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fmt</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.logging.logger.RichHandler.setFormatter" title="Permalink to this definition">#</a></dt>
+<dd><p>Set the formatter for this handler.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.logging.logger.RichHandler.setLevel">
+<span class="sig-name descname"><span class="pre">setLevel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">level</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.logging.logger.RichHandler.setLevel" title="Permalink to this definition">#</a></dt>
+<dd><p>Set the logging level of this handler.  level must be an int or a str.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.logging.logger.RichHandler.set_name">
+<span class="sig-name descname"><span class="pre">set_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.logging.logger.RichHandler.set_name" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jina.logging.logger.SysLogHandlerWrapper">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.logging.logger.</span></span><span class="sig-name descname"><span class="pre">SysLogHandlerWrapper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">('localhost',</span> <span class="pre">514)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">facility</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">socktype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/logging/logger/#SysLogHandlerWrapper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.logging.logger.SysLogHandlerWrapper" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">SysLogHandler</span></code></p>
+<p>Override the priority_map <code class="xref py py-class docutils literal notranslate"><span class="pre">SysLogHandler</span></code>.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This messages at DEBUG and INFO are therefore not stored by ASL, (ASL = Apple System Log)
+which in turn means they can’t be printed by syslog after the fact. You can confirm it via <strong class="command">syslog</strong> or
+<strong class="command">tail -f /var/log/system.log</strong>.</p>
+</div>
+<p>Initialize a handler.</p>
+<p>If address is specified as a string, a UNIX socket is used. To log to a
+local syslogd, “SysLogHandler(address=”/dev/log”)” can be used.
+If facility is not specified, LOG_USER is used. If socktype is
+specified as socket.SOCK_DGRAM or socket.SOCK_STREAM, that specific
+socket type will be used. For Unix sockets, you can also specify a
+socktype of None, in which case socket.SOCK_DGRAM will be used, falling
+back to socket.SOCK_STREAM.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.logging.logger.SysLogHandlerWrapper.priority_map">
+<span class="sig-name descname"><span class="pre">priority_map</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'CRITICAL':</span> <span class="pre">'critical',</span> <span class="pre">'DEBUG':</span> <span class="pre">'debug',</span> <span class="pre">'ERROR':</span> <span class="pre">'error',</span> <span class="pre">'INFO':</span> <span class="pre">'info',</span> <span class="pre">'WARNING':</span> <span class="pre">'warning'}</span></em><a class="headerlink" href="#jina.logging.logger.SysLogHandlerWrapper.priority_map" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.logging.logger.SysLogHandlerWrapper.LOG_ALERT">
+<span class="sig-name descname"><span class="pre">LOG_ALERT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_ALERT" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.logging.logger.SysLogHandlerWrapper.LOG_AUTH">
+<span class="sig-name descname"><span class="pre">LOG_AUTH</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></em><a class="headerlink" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_AUTH" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.logging.logger.SysLogHandlerWrapper.LOG_AUTHPRIV">
+<span class="sig-name descname"><span class="pre">LOG_AUTHPRIV</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">10</span></em><a class="headerlink" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_AUTHPRIV" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.logging.logger.SysLogHandlerWrapper.LOG_CRIT">
+<span class="sig-name descname"><span class="pre">LOG_CRIT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_CRIT" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.logging.logger.SysLogHandlerWrapper.LOG_CRON">
+<span class="sig-name descname"><span class="pre">LOG_CRON</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">9</span></em><a class="headerlink" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_CRON" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.logging.logger.SysLogHandlerWrapper.LOG_DAEMON">
+<span class="sig-name descname"><span class="pre">LOG_DAEMON</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_DAEMON" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.logging.logger.SysLogHandlerWrapper.LOG_DEBUG">
+<span class="sig-name descname"><span class="pre">LOG_DEBUG</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">7</span></em><a class="headerlink" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_DEBUG" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.logging.logger.SysLogHandlerWrapper.LOG_EMERG">
+<span class="sig-name descname"><span class="pre">LOG_EMERG</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_EMERG" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.logging.logger.SysLogHandlerWrapper.LOG_ERR">
+<span class="sig-name descname"><span class="pre">LOG_ERR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_ERR" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.logging.logger.SysLogHandlerWrapper.LOG_FTP">
+<span class="sig-name descname"><span class="pre">LOG_FTP</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">11</span></em><a class="headerlink" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_FTP" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.logging.logger.SysLogHandlerWrapper.LOG_INFO">
+<span class="sig-name descname"><span class="pre">LOG_INFO</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">6</span></em><a class="headerlink" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_INFO" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.logging.logger.SysLogHandlerWrapper.LOG_KERN">
+<span class="sig-name descname"><span class="pre">LOG_KERN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_KERN" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.logging.logger.SysLogHandlerWrapper.LOG_LOCAL0">
+<span class="sig-name descname"><span class="pre">LOG_LOCAL0</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">16</span></em><a class="headerlink" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_LOCAL0" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.logging.logger.SysLogHandlerWrapper.LOG_LOCAL1">
+<span class="sig-name descname"><span class="pre">LOG_LOCAL1</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">17</span></em><a class="headerlink" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_LOCAL1" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.logging.logger.SysLogHandlerWrapper.LOG_LOCAL2">
+<span class="sig-name descname"><span class="pre">LOG_LOCAL2</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">18</span></em><a class="headerlink" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_LOCAL2" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.logging.logger.SysLogHandlerWrapper.LOG_LOCAL3">
+<span class="sig-name descname"><span class="pre">LOG_LOCAL3</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">19</span></em><a class="headerlink" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_LOCAL3" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.logging.logger.SysLogHandlerWrapper.LOG_LOCAL4">
+<span class="sig-name descname"><span class="pre">LOG_LOCAL4</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">20</span></em><a class="headerlink" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_LOCAL4" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.logging.logger.SysLogHandlerWrapper.LOG_LOCAL5">
+<span class="sig-name descname"><span class="pre">LOG_LOCAL5</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">21</span></em><a class="headerlink" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_LOCAL5" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.logging.logger.SysLogHandlerWrapper.LOG_LOCAL6">
+<span class="sig-name descname"><span class="pre">LOG_LOCAL6</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">22</span></em><a class="headerlink" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_LOCAL6" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.logging.logger.SysLogHandlerWrapper.LOG_LOCAL7">
+<span class="sig-name descname"><span class="pre">LOG_LOCAL7</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">23</span></em><a class="headerlink" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_LOCAL7" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.logging.logger.SysLogHandlerWrapper.LOG_LPR">
+<span class="sig-name descname"><span class="pre">LOG_LPR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">6</span></em><a class="headerlink" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_LPR" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.logging.logger.SysLogHandlerWrapper.LOG_MAIL">
+<span class="sig-name descname"><span class="pre">LOG_MAIL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_MAIL" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.logging.logger.SysLogHandlerWrapper.LOG_NEWS">
+<span class="sig-name descname"><span class="pre">LOG_NEWS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">7</span></em><a class="headerlink" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_NEWS" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.logging.logger.SysLogHandlerWrapper.LOG_NOTICE">
+<span class="sig-name descname"><span class="pre">LOG_NOTICE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">5</span></em><a class="headerlink" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_NOTICE" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.logging.logger.SysLogHandlerWrapper.LOG_SYSLOG">
+<span class="sig-name descname"><span class="pre">LOG_SYSLOG</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">5</span></em><a class="headerlink" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_SYSLOG" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.logging.logger.SysLogHandlerWrapper.LOG_USER">
+<span class="sig-name descname"><span class="pre">LOG_USER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_USER" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.logging.logger.SysLogHandlerWrapper.LOG_UUCP">
+<span class="sig-name descname"><span class="pre">LOG_UUCP</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">8</span></em><a class="headerlink" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_UUCP" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.logging.logger.SysLogHandlerWrapper.LOG_WARNING">
+<span class="sig-name descname"><span class="pre">LOG_WARNING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></em><a class="headerlink" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_WARNING" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.logging.logger.SysLogHandlerWrapper.acquire">
+<span class="sig-name descname"><span class="pre">acquire</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jina.logging.logger.SysLogHandlerWrapper.acquire" title="Permalink to this definition">#</a></dt>
+<dd><p>Acquire the I/O thread lock.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.logging.logger.SysLogHandlerWrapper.addFilter">
+<span class="sig-name descname"><span class="pre">addFilter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filter</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.logging.logger.SysLogHandlerWrapper.addFilter" title="Permalink to this definition">#</a></dt>
+<dd><p>Add the specified filter to this handler.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.logging.logger.SysLogHandlerWrapper.append_nul">
+<span class="sig-name descname"><span class="pre">append_nul</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#jina.logging.logger.SysLogHandlerWrapper.append_nul" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.logging.logger.SysLogHandlerWrapper.close">
+<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jina.logging.logger.SysLogHandlerWrapper.close" title="Permalink to this definition">#</a></dt>
+<dd><p>Closes the socket.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.logging.logger.SysLogHandlerWrapper.createLock">
+<span class="sig-name descname"><span class="pre">createLock</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jina.logging.logger.SysLogHandlerWrapper.createLock" title="Permalink to this definition">#</a></dt>
+<dd><p>Acquire a thread lock for serializing access to the underlying I/O.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.logging.logger.SysLogHandlerWrapper.emit">
+<span class="sig-name descname"><span class="pre">emit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">record</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.logging.logger.SysLogHandlerWrapper.emit" title="Permalink to this definition">#</a></dt>
+<dd><p>Emit a record.</p>
+<p>The record is formatted, and then sent to the syslog server. If
+exception information is present, it is NOT sent to the server.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.logging.logger.SysLogHandlerWrapper.encodePriority">
+<span class="sig-name descname"><span class="pre">encodePriority</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">facility</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">priority</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.logging.logger.SysLogHandlerWrapper.encodePriority" title="Permalink to this definition">#</a></dt>
+<dd><p>Encode the facility and priority. You can pass in strings or
+integers - if strings are passed, the facility_names and
+priority_names mapping dictionaries are used to convert them to
+integers.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.logging.logger.SysLogHandlerWrapper.facility_names">
+<span class="sig-name descname"><span class="pre">facility_names</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'auth':</span> <span class="pre">4,</span> <span class="pre">'authpriv':</span> <span class="pre">10,</span> <span class="pre">'cron':</span> <span class="pre">9,</span> <span class="pre">'daemon':</span> <span class="pre">3,</span> <span class="pre">'ftp':</span> <span class="pre">11,</span> <span class="pre">'kern':</span> <span class="pre">0,</span> <span class="pre">'local0':</span> <span class="pre">16,</span> <span class="pre">'local1':</span> <span class="pre">17,</span> <span class="pre">'local2':</span> <span class="pre">18,</span> <span class="pre">'local3':</span> <span class="pre">19,</span> <span class="pre">'local4':</span> <span class="pre">20,</span> <span class="pre">'local5':</span> <span class="pre">21,</span> <span class="pre">'local6':</span> <span class="pre">22,</span> <span class="pre">'local7':</span> <span class="pre">23,</span> <span class="pre">'lpr':</span> <span class="pre">6,</span> <span class="pre">'mail':</span> <span class="pre">2,</span> <span class="pre">'news':</span> <span class="pre">7,</span> <span class="pre">'security':</span> <span class="pre">4,</span> <span class="pre">'syslog':</span> <span class="pre">5,</span> <span class="pre">'user':</span> <span class="pre">1,</span> <span class="pre">'uucp':</span> <span class="pre">8}</span></em><a class="headerlink" href="#jina.logging.logger.SysLogHandlerWrapper.facility_names" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.logging.logger.SysLogHandlerWrapper.filter">
+<span class="sig-name descname"><span class="pre">filter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">record</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.logging.logger.SysLogHandlerWrapper.filter" title="Permalink to this definition">#</a></dt>
+<dd><p>Determine if a record is loggable by consulting all the filters.</p>
+<p>The default is to allow the record to be logged; any filter can veto
+this and the record is then dropped. Returns a zero value if a record
+is to be dropped, else non-zero.</p>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.2: </span>Allow filters to be just callables.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.logging.logger.SysLogHandlerWrapper.flush">
+<span class="sig-name descname"><span class="pre">flush</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jina.logging.logger.SysLogHandlerWrapper.flush" title="Permalink to this definition">#</a></dt>
+<dd><p>Ensure all logging output has been flushed.</p>
+<p>This version does nothing and is intended to be implemented by
+subclasses.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.logging.logger.SysLogHandlerWrapper.format">
+<span class="sig-name descname"><span class="pre">format</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">record</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.logging.logger.SysLogHandlerWrapper.format" title="Permalink to this definition">#</a></dt>
+<dd><p>Format the specified record.</p>
+<p>If a formatter is set, use it. Otherwise, use the default formatter
+for the module.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.logging.logger.SysLogHandlerWrapper.get_name">
+<span class="sig-name descname"><span class="pre">get_name</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jina.logging.logger.SysLogHandlerWrapper.get_name" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.logging.logger.SysLogHandlerWrapper.handle">
+<span class="sig-name descname"><span class="pre">handle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">record</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.logging.logger.SysLogHandlerWrapper.handle" title="Permalink to this definition">#</a></dt>
+<dd><p>Conditionally emit the specified logging record.</p>
+<p>Emission depends on filters which may have been added to the handler.
+Wrap the actual emission of the record with acquisition/release of
+the I/O thread lock. Returns whether the filter passed the record for
+emission.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.logging.logger.SysLogHandlerWrapper.handleError">
+<span class="sig-name descname"><span class="pre">handleError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">record</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.logging.logger.SysLogHandlerWrapper.handleError" title="Permalink to this definition">#</a></dt>
+<dd><p>Handle errors which occur during an emit() call.</p>
+<p>This method should be called from handlers when an exception is
+encountered during an emit() call. If raiseExceptions is false,
+exceptions get silently ignored. This is what is mostly wanted
+for a logging system - most users will not care about errors in
+the logging system, they are more interested in application errors.
+You could, however, replace this with a custom handler if you wish.
+The record which was being processed is passed in to this method.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.logging.logger.SysLogHandlerWrapper.ident">
+<span class="sig-name descname"><span class="pre">ident</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></em><a class="headerlink" href="#jina.logging.logger.SysLogHandlerWrapper.ident" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.logging.logger.SysLogHandlerWrapper.mapPriority">
+<span class="sig-name descname"><span class="pre">mapPriority</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">levelName</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.logging.logger.SysLogHandlerWrapper.mapPriority" title="Permalink to this definition">#</a></dt>
+<dd><p>Map a logging level name to a key in the priority_names map.
+This is useful in two scenarios: when custom levels are being
+used, and in the case where you can’t do a straightforward
+mapping by lowercasing the logging level name because of locale-
+specific issues (see SF #1524081).</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="jina.logging.logger.SysLogHandlerWrapper.name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#jina.logging.logger.SysLogHandlerWrapper.name" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.logging.logger.SysLogHandlerWrapper.priority_names">
+<span class="sig-name descname"><span class="pre">priority_names</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'alert':</span> <span class="pre">1,</span> <span class="pre">'crit':</span> <span class="pre">2,</span> <span class="pre">'critical':</span> <span class="pre">2,</span> <span class="pre">'debug':</span> <span class="pre">7,</span> <span class="pre">'emerg':</span> <span class="pre">0,</span> <span class="pre">'err':</span> <span class="pre">3,</span> <span class="pre">'error':</span> <span class="pre">3,</span> <span class="pre">'info':</span> <span class="pre">6,</span> <span class="pre">'notice':</span> <span class="pre">5,</span> <span class="pre">'panic':</span> <span class="pre">0,</span> <span class="pre">'warn':</span> <span class="pre">4,</span> <span class="pre">'warning':</span> <span class="pre">4}</span></em><a class="headerlink" href="#jina.logging.logger.SysLogHandlerWrapper.priority_names" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.logging.logger.SysLogHandlerWrapper.release">
+<span class="sig-name descname"><span class="pre">release</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jina.logging.logger.SysLogHandlerWrapper.release" title="Permalink to this definition">#</a></dt>
+<dd><p>Release the I/O thread lock.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.logging.logger.SysLogHandlerWrapper.removeFilter">
+<span class="sig-name descname"><span class="pre">removeFilter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filter</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.logging.logger.SysLogHandlerWrapper.removeFilter" title="Permalink to this definition">#</a></dt>
+<dd><p>Remove the specified filter from this handler.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.logging.logger.SysLogHandlerWrapper.setFormatter">
+<span class="sig-name descname"><span class="pre">setFormatter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fmt</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.logging.logger.SysLogHandlerWrapper.setFormatter" title="Permalink to this definition">#</a></dt>
+<dd><p>Set the formatter for this handler.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.logging.logger.SysLogHandlerWrapper.setLevel">
+<span class="sig-name descname"><span class="pre">setLevel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">level</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.logging.logger.SysLogHandlerWrapper.setLevel" title="Permalink to this definition">#</a></dt>
+<dd><p>Set the logging level of this handler.  level must be an int or a str.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.logging.logger.SysLogHandlerWrapper.set_name">
+<span class="sig-name descname"><span class="pre">set_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.logging.logger.SysLogHandlerWrapper.set_name" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jina.logging.logger.JinaLogger">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.logging.logger.</span></span><span class="sig-name descname"><span class="pre">JinaLogger</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quiet</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/logging/logger/#JinaLogger"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.logging.logger.JinaLogger" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Build a logger for a context.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>context</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – The context identifier of the class, module or method.</p></li>
+<li><p><strong>log_config</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – The configuration file for the logger.</p></li>
+</ul>
+</dd>
+</dl>
+<p>configuration to group logs by deployment.
+:return:: an executor object.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.logging.logger.JinaLogger.supported">
+<span class="sig-name descname"><span class="pre">supported</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'FileHandler',</span> <span class="pre">'RichHandler',</span> <span class="pre">'StreamHandler',</span> <span class="pre">'SysLogHandler'}</span></em><a class="headerlink" href="#jina.logging.logger.JinaLogger.supported" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="jina.logging.logger.JinaLogger.handlers">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">handlers</span></span><a class="headerlink" href="#jina.logging.logger.JinaLogger.handlers" title="Permalink to this definition">#</a></dt>
+<dd><p>Get the handlers of the logger.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return:</dt>
+<dd class="field-odd"><p>Handlers of logger.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.logging.logger.JinaLogger.close">
+<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/logging/logger/#JinaLogger.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.logging.logger.JinaLogger.close" title="Permalink to this definition">#</a></dt>
+<dd><p>Close all the handlers.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.logging.logger.JinaLogger.add_handlers">
+<span class="sig-name descname"><span class="pre">add_handlers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/logging/logger/#JinaLogger.add_handlers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.logging.logger.JinaLogger.add_handlers" title="Permalink to this definition">#</a></dt>
+<dd><p>Add handlers from config file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>config_path</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – Path of config file.</p></li>
+<li><p><strong>kwargs</strong> – Extra parameters.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+                </article>
+            </div>
+            <footer>
+                
+                <div class="related-pages">
+                    
+                    
+                </div>
+                <div class="bottom-of-page">
+                    <div class="left-details">
+                        <div class="copyright">
+                            Copyright &#169; Jina AI Limited. All rights reserved.
+                        </div><div class="last-updated">
+                            Last updated on Dec 15, 2022</div>
+                    </div>
+                    <div class="right-details">
+                        <div class="social-btns">
+                            <a class='social-btn' href="https://github.com/jina-ai/jina" aria-label="GitHub"
+                               target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
+                            <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank"
+                               rel="noreferrer"> <i class="fab fa-slack"></i></a>
+                            <a class='social-btn' href="https://youtube.com/c/jina-ai" aria-label="YouTube"
+                               target="_blank" rel="noreferrer"> <i class="fab fa-youtube"></i></a>
+                            <a class='social-btn' href="https://twitter.com/JinaAI_" aria-label="Twitter"
+                               target="_blank" rel="noreferrer"> <i class="fab fa-twitter"></i></a>
+                            <a class='social-btn' href="https://www.linkedin.com/company/jinaai/" aria-label="LinkedIn"
+                               target="_blank" rel="noreferrer"> <i class="fab fa-linkedin"></i></a>
+                        </div>
+                    </div>
+                </div>
+                
+            </footer>
+        </div>
+        <aside class="toc-drawer">
+            
+            
+            <div class="toc-sticky toc-scroll">
+                <div class="toc-title-container">
+          <span class="toc-title">
+            Contents
+          </span>
+                </div>
+                <div class="toc-tree-container">
+                    <div class="toc-tree">
+                        <ul>
+<li><a class="reference internal" href="#">jina.logging.logger module</a><ul>
+<li><a class="reference internal" href="#jina.logging.logger.RichHandler"><code class="docutils literal notranslate"><span class="pre">RichHandler</span></code></a><ul>
+<li><a class="reference internal" href="#jina.logging.logger.RichHandler.HIGHLIGHTER_CLASS"><code class="docutils literal notranslate"><span class="pre">RichHandler.HIGHLIGHTER_CLASS</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.RichHandler.KEYWORDS"><code class="docutils literal notranslate"><span class="pre">RichHandler.KEYWORDS</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.RichHandler.acquire"><code class="docutils literal notranslate"><span class="pre">RichHandler.acquire()</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.RichHandler.addFilter"><code class="docutils literal notranslate"><span class="pre">RichHandler.addFilter()</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.RichHandler.close"><code class="docutils literal notranslate"><span class="pre">RichHandler.close()</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.RichHandler.createLock"><code class="docutils literal notranslate"><span class="pre">RichHandler.createLock()</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.RichHandler.emit"><code class="docutils literal notranslate"><span class="pre">RichHandler.emit()</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.RichHandler.filter"><code class="docutils literal notranslate"><span class="pre">RichHandler.filter()</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.RichHandler.flush"><code class="docutils literal notranslate"><span class="pre">RichHandler.flush()</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.RichHandler.format"><code class="docutils literal notranslate"><span class="pre">RichHandler.format()</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.RichHandler.get_level_text"><code class="docutils literal notranslate"><span class="pre">RichHandler.get_level_text()</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.RichHandler.get_name"><code class="docutils literal notranslate"><span class="pre">RichHandler.get_name()</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.RichHandler.handle"><code class="docutils literal notranslate"><span class="pre">RichHandler.handle()</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.RichHandler.handleError"><code class="docutils literal notranslate"><span class="pre">RichHandler.handleError()</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.RichHandler.name"><code class="docutils literal notranslate"><span class="pre">RichHandler.name</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.RichHandler.release"><code class="docutils literal notranslate"><span class="pre">RichHandler.release()</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.RichHandler.removeFilter"><code class="docutils literal notranslate"><span class="pre">RichHandler.removeFilter()</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.RichHandler.render"><code class="docutils literal notranslate"><span class="pre">RichHandler.render()</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.RichHandler.render_message"><code class="docutils literal notranslate"><span class="pre">RichHandler.render_message()</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.RichHandler.setFormatter"><code class="docutils literal notranslate"><span class="pre">RichHandler.setFormatter()</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.RichHandler.setLevel"><code class="docutils literal notranslate"><span class="pre">RichHandler.setLevel()</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.RichHandler.set_name"><code class="docutils literal notranslate"><span class="pre">RichHandler.set_name()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper</span></code></a><ul>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.priority_map"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.priority_map</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_ALERT"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.LOG_ALERT</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_AUTH"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.LOG_AUTH</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_AUTHPRIV"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.LOG_AUTHPRIV</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_CRIT"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.LOG_CRIT</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_CRON"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.LOG_CRON</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_DAEMON"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.LOG_DAEMON</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_DEBUG"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.LOG_DEBUG</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_EMERG"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.LOG_EMERG</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_ERR"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.LOG_ERR</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_FTP"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.LOG_FTP</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_INFO"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.LOG_INFO</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_KERN"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.LOG_KERN</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_LOCAL0"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.LOG_LOCAL0</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_LOCAL1"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.LOG_LOCAL1</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_LOCAL2"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.LOG_LOCAL2</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_LOCAL3"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.LOG_LOCAL3</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_LOCAL4"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.LOG_LOCAL4</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_LOCAL5"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.LOG_LOCAL5</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_LOCAL6"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.LOG_LOCAL6</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_LOCAL7"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.LOG_LOCAL7</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_LPR"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.LOG_LPR</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_MAIL"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.LOG_MAIL</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_NEWS"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.LOG_NEWS</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_NOTICE"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.LOG_NOTICE</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_SYSLOG"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.LOG_SYSLOG</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_USER"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.LOG_USER</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_UUCP"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.LOG_UUCP</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_WARNING"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.LOG_WARNING</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.acquire"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.acquire()</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.addFilter"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.addFilter()</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.append_nul"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.append_nul</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.close"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.close()</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.createLock"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.createLock()</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.emit"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.emit()</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.encodePriority"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.encodePriority()</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.facility_names"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.facility_names</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.filter"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.filter()</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.flush"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.flush()</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.format"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.format()</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.get_name"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.get_name()</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.handle"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.handle()</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.handleError"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.handleError()</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.ident"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.ident</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.mapPriority"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.mapPriority()</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.name"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.name</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.priority_names"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.priority_names</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.release"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.release()</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.removeFilter"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.removeFilter()</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.setFormatter"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.setFormatter()</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.setLevel"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.setLevel()</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.set_name"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.set_name()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#jina.logging.logger.JinaLogger"><code class="docutils literal notranslate"><span class="pre">JinaLogger</span></code></a><ul>
+<li><a class="reference internal" href="#jina.logging.logger.JinaLogger.supported"><code class="docutils literal notranslate"><span class="pre">JinaLogger.supported</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.JinaLogger.handlers"><code class="docutils literal notranslate"><span class="pre">JinaLogger.handlers</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.JinaLogger.close"><code class="docutils literal notranslate"><span class="pre">JinaLogger.close()</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.JinaLogger.add_handlers"><code class="docutils literal notranslate"><span class="pre">JinaLogger.add_handlers()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+                    </div>
+                </div>
+            </div>
+            
+            
+        </aside>
+    </div>
+    <qa-bot
+            title="Jina Bot"
+            description="Build cross-modal and multi-modal applications on the cloud"
+    >
+        <template>
+            <dl>
+                <dt>You can ask questions about our docs. Try:</dt>
+                <dd>Does Jina support Kubernetes?</dd>
+                <dd>What are the basic concepts in Jina?</dd>
+                <dd>How to share my Executor?</dd>
+            </dl>
+        </template>
+    </qa-bot>
+</div>
+<img referrerpolicy="no-referrer-when-downgrade"
+     src="https://static.scarf.sh/a.png?x-pxid=2823e771-0e1e-4320-8fde-48bc48e53262"/><script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/scripts/furo.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script src="../../_static/tabs.js"></script>
+    <script src="../../_static/design-tabs.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() { 
+            document.querySelector('qa-bot').setAttribute('server', 'https://jina-ai-jina.docsqa.jina.ai');
+        });
+        </script>
+    <script src="https://cdn.jsdelivr.net/npm/qabot@0.4"></script>
+    </body>
+</html>

@@ -1,0 +1,780 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+<meta property="og:title" content="Readiness & health check" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://docs.jina.ai/fundamentals/flow/health-check/" />
+<meta property="og:site_name" content="Jina 3.6.9 Documentation" />
+<meta property="og:description" content="Every Jina Flow consists of a number of microservices, each of which have to be healthy before the Flow is ready to receive requests. Each Flow microservice provides a health check in the form of a standardized gRPC endpoint that exposes this information to the outside world. This means that heal..." />
+<meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
+<meta property="og:image:alt" content="Jina 3.6.9 Documentation" />
+<meta name="description" content="Every Jina Flow consists of a number of microservices, each of which have to be healthy before the Flow is ready to receive requests. Each Flow microservice provides a health check in the form of a standardized gRPC endpoint that exposes this information to the outside world. This means that heal..." />
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@JinaAI_">
+<meta name="twitter:creator" content="@JinaAI_">
+<meta name="description" content="Build cross-modal and multi-modal applications on the cloud">
+<meta property="og:description" content="Build cross-modal and multi-modal applications on the cloud">
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-48ZDWC8GT6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-48ZDWC8GT6');
+</script>
+
+<script async defer src="https://buttons.github.io/buttons.js"></script>
+    
+<link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" /><link rel="next" title="Handle exceptions" href="../when-things-go-wrong/" /><link rel="prev" title="Monitor" href="../monitoring-flow/" />
+        <link rel="canonical" href="https://docs.jina.ai/fundamentals/flow/health-check.html" />
+
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
+        <title>Readiness &amp; health check - Jina 3.6.9 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/tabs.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/main.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/docbot.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #ffffff;
+  --color-code-foreground: #4d4d4d;
+  --color-brand-primary: #009191;
+  --color-brand-content: #009191;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #FBCB67;
+  --color-brand-content: #FBCB67;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #FBCB67;
+  --color-brand-content: #FBCB67;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+    <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+    <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<div class="announcement">
+    <aside class="announcement-content">
+         
+    <a href="https://www.meetup.com/jina-community-meetup/events/286438459/">Get answers to all your questions at our Office Hour on June 30 at 19:00 CET</a>
+     
+    </aside>
+</div>
+
+<div class="page">
+    <header class="mobile-header">
+        <div class="header-left">
+            <label class="nav-overlay-icon" for="__navigation">
+                <div class="visually-hidden">Toggle site navigation sidebar</div>
+                <i class="icon">
+                    <svg>
+                        <use href="#svg-menu"></use>
+                    </svg>
+                </i>
+            </label>
+        </div>
+        <div class="header-center">
+            <a href="../../../">
+                <div class="brand">Jina 3.6.9 documentation</div>
+            </a>
+        </div>
+        <div class="header-right">
+            <div class="theme-toggle-container theme-toggle-header">
+                <button class="theme-toggle">
+                    <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+                    <svg class="theme-icon-when-auto">
+                        <use href="#svg-sun-half"></use>
+                    </svg>
+                    <svg class="theme-icon-when-dark">
+                        <use href="#svg-moon"></use>
+                    </svg>
+                    <svg class="theme-icon-when-light">
+                        <use href="#svg-sun"></use>
+                    </svg>
+                </button>
+            </div>
+            <label class="toc-overlay-icon toc-header-icon" for="__toc">
+                <div class="visually-hidden">Toggle table of contents sidebar</div>
+                <i class="icon">
+                    <svg>
+                        <use href="#svg-toc"></use>
+                    </svg>
+                </i>
+            </label>
+        </div>
+    </header>
+    <aside class="sidebar-drawer">
+        <div class="sidebar-container">
+            
+            <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo only-light" src="../../../_static/logo-light.svg" alt="Light Logo" />
+    <img class="sidebar-logo only-dark" src="../../../_static/logo-dark.svg" alt="Dark Logo" />
+  </div>
+  
+  
+</a>
+<script>
+  function setPrefix(prefix){
+    window.location.href = prefix
+  }
+</script>
+<script defer>
+  fetch(`https://${window.location.host}/_versions.json`)
+  .then((resp) => resp.json())
+  .then((data) => {
+    var versionSelector = document.getElementsByClassName("version-select")[0];
+    var currentPrefix = window.location.href.toString().split(window.location.host)[1].split('/')[1];
+
+    for(var i = 0; i < data.length; i++){
+      var option = document.createElement("option");
+      option.innerHTML = data[i].version;
+      option.value = "/" + data[i].version;
+      versionSelector.appendChild(option);
+      if(currentPrefix === data[i].version){
+        versionSelector.selectedIndex = i + 1;
+      }
+    }
+  })
+  .catch((err) => console.log(err));
+</script>
+<div class="sd-d-flex-row sd-align-major-spaced">
+  <a class="github-button" href="https://github.com/jina-ai/jina" data-icon="octicon-star" data-show-count="true" aria-label="Star jina-ai/jina on GitHub" style="opacity: 0;">Star</a>
+  <select onChange="setPrefix(this.value)" class="version-select">
+    <option value="/">latest</option>
+  </select>
+</div><form class="sidebar-search-container" method="get" action="../../../search/" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+    <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../get-started/install/">Install</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../get-started/install/docker/">Docker image</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../get-started/install/windows/">On Windows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../get-started/install/troubleshooting/">Troubleshooting</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../get-started/create-app/">Create Project</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../architecture-overview/">Glossary</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
+<ul class="current">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../executor/">Executor</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../executor/executor-api/">Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../executor/executor-methods/"><code class="docutils literal notranslate"><span class="pre">@requests</span></code> methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../executor/monitoring-executor/">Monitor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../executor/executor-run/">Run</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../executor/executor-serve/">Serve</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../executor/yaml-spec/">YAML specification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../executor/executor-files/">File structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../executor/containerize-executor/">Containerize</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../">Flow</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../create-flow/">Basic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../add-executors/">Add Executors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../topologies/">Topology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../monitoring-flow/">Monitor</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Readiness &amp; health check</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../when-things-go-wrong/">Handle exceptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../yaml-spec/">YAML specification</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../gateway/">Gateway</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../client/">Client</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../access-flow-api/">Third-party clients</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../executor/hub/">Hub</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../executor/hub/hub-portal/">Portal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../executor/hub/create-hub-executor/">Create</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../executor/hub/push-executor/">Publish</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../executor/hub/use-hub-executor/">Use</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../how-to/sandbox/">Sandbox</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../how-to/debug-executor/">Debug</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../executor/hub/executor-best-practices/">Best practices</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../jcloud/">JCloud</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../jcloud/basic/">Basic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../jcloud/advanced/">Advanced</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../jcloud/faq/">FAQ</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../how-to/"><svg aria-hidden="true" class="sd-octicon sd-octicon-book" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M0 1.75A.75.75 0 01.75 1h4.253c1.227 0 2.317.59 3 1.501A3.744 3.744 0 0111.006 1h4.245a.75.75 0 01.75.75v10.5a.75.75 0 01-.75.75h-4.507a2.25 2.25 0 00-1.591.659l-.622.621a.75.75 0 01-1.06 0l-.622-.621A2.25 2.25 0 005.258 13H.75a.75.75 0 01-.75-.75V1.75zm8.755 3a2.25 2.25 0 012.25-2.25H14.5v9h-3.757c-.71 0-1.4.201-1.992.572l.004-7.322zm-1.504 7.324l.004-5.073-.002-2.253A2.25 2.25 0 005.003 2.5H1.5v9h3.757a3.75 3.75 0 011.994.574z" fill-rule="evenodd"></path></svg> How-To</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../how-to/google-colab/">Use Jina on Colab with GPU/TPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../clean-code/">Write clean &amp; efficient code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../how-to/async-executors/">Use async coroutines in Executors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../how-to/scale-out/">Scale out your Executor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../how-to/gpu-executor/">Run Executors on GPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../how-to/external-executor/">Use external Executors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../how-to/flow-switch/">Add selection control to a Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../how-to/docker-compose/">Deploy with Docker Compose</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../how-to/kubernetes/">Deploy with Kubernetes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../how-to/monitoring/">Use monitoring with Jina in Kubernetes</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer References</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api-rst/"><span class="fab fa-python"></span> Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../cli/"><svg aria-hidden="true" class="sd-octicon sd-octicon-terminal" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M0 2.75C0 1.784.784 1 1.75 1h12.5c.966 0 1.75.784 1.75 1.75v10.5A1.75 1.75 0 0114.25 15H1.75A1.75 1.75 0 010 13.25V2.75zm1.75-.25a.25.25 0 00-.25.25v10.5c0 .138.112.25.25.25h12.5a.25.25 0 00.25-.25V2.75a.25.25 0 00-.25-.25H1.75zM7.25 8a.75.75 0 01-.22.53l-2.25 2.25a.75.75 0 11-1.06-1.06L5.44 8 3.72 6.28a.75.75 0 111.06-1.06l2.25 2.25c.141.14.22.331.22.53zm1.5 1.5a.75.75 0 000 1.5h3a.75.75 0 000-1.5h-3z" fill-rule="evenodd"></path></svg> Command-Line Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../proto/docs/">Protocol Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../envs/">Environment Variables</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Legacy Support</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../get-started/migrate/">Migrate Jina 2 to Jina 3</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://docs2.jina.ai/">Jina 2 Documentation</a></li>
+</ul>
+
+    <p class="caption" role="heading"><span class="caption-text">Ecosystem</span></p>
+    <ul>
+        <li class="toctree-l1">
+            <a class="reference internal" href="#">
+                <img class="sidebar-ecosys-logo only-light-line" src="../../../_static/search-light.svg">
+                <img class="sidebar-ecosys-logo only-dark-line" src="../../../_static/search-dark.svg">
+                Jina</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://hub.jina.ai">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../../_static/hub-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../../_static/hub-dark.svg">
+            Jina Hub</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://finetuner.jina.ai">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../../_static/finetuner-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../../_static/finetuner-dark.svg">
+            Finetuner</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://docarray.jina.ai">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../../_static/docarray-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../../_static/docarray-dark.svg">
+            DocArray</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://clip-as-service.jina.ai">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../../_static/cas-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../../_static/cas-dark.svg">
+            CLIP-as-service</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://github.com/jina-ai/jcloud">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../../_static/JCloud-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../../_static/JCloud-dark.svg">
+            JCloud</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://now.jina.ai">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../../_static/now-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../../_static/now-dark.svg">
+            NOW</a></li>
+    </ul>
+</div>
+
+</div>
+
+            </div>
+            
+        </div>
+    </aside>
+    <div class="main">
+        <div class="content">
+            <div class="article-container">
+                <a href="#" class="back-to-top muted-link">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+                    </svg>
+                    <span>Back to top</span>
+                </a>
+                <div class="content-icon-container"><div class="theme-toggle-container theme-toggle-content">
+                        <button class="theme-toggle">
+                            <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+                            <svg class="theme-icon-when-auto">
+                                <use href="#svg-sun-half"></use>
+                            </svg>
+                            <svg class="theme-icon-when-dark">
+                                <use href="#svg-moon"></use>
+                            </svg>
+                            <svg class="theme-icon-when-light">
+                                <use href="#svg-sun"></use>
+                            </svg>
+                        </button>
+                    </div>
+                    <label class="toc-overlay-icon toc-content-icon"
+                           for="__toc">
+                        <div class="visually-hidden">Toggle table of contents sidebar</div>
+                        <i class="icon">
+                            <svg>
+                                <use href="#svg-toc"></use>
+                            </svg>
+                        </i>
+                    </label>
+                </div>
+                <article role="main">
+                    <section class="tex2jax_ignore mathjax_ignore" id="readiness-health-check">
+<h1>Readiness &amp; health check<a class="headerlink" href="#readiness-health-check" title="Permalink to this heading">#</a></h1>
+<p>Every Jina <a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> consists of a <a class="reference internal" href="../../architecture-overview/#architecture-overview"><span class="std std-ref">number of microservices</span></a>,
+each of which have to be healthy before the Flow is ready to receive requests.</p>
+<p>Each Flow microservice provides a health check in the form of a <a class="reference external" href="https://github.com/grpc/grpc/blob/master/doc/health-checking.md">standardized gRPC endpoint</a> that exposes this information to the outside world.
+This means that health checks can automatically be performed by Jina itself as well as external tools like Docker Compose, Kubernetes service meshes, or load balancers.</p>
+<p>In most cases, it is most useful to check if an entire Flow is ready to accept requests.
+To enable this readiness check, the Jina Gateway can aggregate health check information from all services and provides
+a readiness check endpoint for the complete Flow.</p>
+<section id="readiness-of-complete-flow">
+<h2>Readiness of complete Flow<a class="headerlink" href="#readiness-of-complete-flow" title="Permalink to this heading">#</a></h2>
+<p>A lot of times, it is useful to know if a Flow, as a complete set of microservices, is ready to receive requests. This is why the Gateway
+exposes an endpoint for each of the supported protocols to know the health and readiness of the entire Flow.</p>
+<p>Jina <a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> and <a class="reference internal" href="../../../api/jina/#jina.Client" title="jina.Client"><code class="xref py py-class docutils literal notranslate"><span class="pre">Client</span></code></a> offer a convenient API to query these readiness endpoints. You can call <code class="docutils literal notranslate"><span class="pre">flow.dry_run()</span></code> or <code class="docutils literal notranslate"><span class="pre">client.dry_run()</span></code>, which will return <code class="docutils literal notranslate"><span class="pre">True</span></code> if the Flow is healthy and ready, and <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise:</p>
+<div class="tab-set docutils">
+<input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">via Flow</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
+
+<span class="k">with</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">()</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">dry_run</span><span class="p">())</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">dry_run</span><span class="p">())</span>
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>True
+False
+</pre></div>
+</div>
+</div>
+<input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--2">via Client</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
+
+<span class="k">with</span> <span class="n">Flow</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">()</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">block</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span>
+
+<span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">dry_run</span><span class="p">())</span>
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>True
+</pre></div>
+</div>
+</div>
+</div>
+<section id="flow-status-using-third-party-clients">
+<h3>Flow status using third-party clients<a class="headerlink" href="#flow-status-using-third-party-clients" title="Permalink to this heading">#</a></h3>
+<p>You can check the status of a Flow using any gRPC/HTTP/Websocket client, not just Jina’s Client implementation.</p>
+<p>To see how this works, first instantiate the Flow with its corresponding protocol and block it for serving:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="n">PROTOCOL</span> <span class="o">=</span> <span class="s1">&#39;grpc&#39;</span>  <span class="c1"># it could also be http or websocket</span>
+
+<span class="n">os</span><span class="o">.</span><span class="n">setenv</span><span class="p">[</span>
+    <span class="s1">&#39;JINA_LOG_LEVEL&#39;</span>
+<span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;DEBUG&#39;</span>  <span class="c1"># this way we can check what is the PID of the Executor</span>
+
+<span class="k">with</span> <span class="n">Flow</span><span class="p">(</span><span class="n">protocol</span><span class="o">=</span><span class="n">PROTOCOL</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">()</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">block</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>⠋  Waiting ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 0/0 -:--:--DEBUG  gateway/rep-0@19075 adding connection for deployment executor0/heads/0 to grpc://0.0.0.0:12346                                                                                           [05/31/22 18:10:16]
+DEBUG  executor0/rep-0@19074 start listening on 0.0.0.0:12346                                                                                                                                   [05/31/22 18:10:16]
+DEBUG  gateway/rep-0@19075 start server bound to 0.0.0.0:12345                                                                                                                                  [05/31/22 18:10:17]
+DEBUG  executor0/rep-0@19059 ready and listening                                                                                                                                                [05/31/22 18:10:17]
+DEBUG  gateway/rep-0@19059 ready and listening                                                                                                                                                  [05/31/22 18:10:17]
+╭────── 🎉 Flow is ready to serve! ──────╮
+│  🔗  Protocol                  GRPC    │
+│  🏠     Local         0.0.0.0:12345    │
+│  🔒   Private    192.168.1.13:12345    │
+╰────────────────────────────────────────╯
+DEBUG  Flow@19059 2 Deployments (i.e. 2 Pods) are running in this Flow 
+</pre></div>
+</div>
+<section id="using-grpc">
+<h4>Using gRPC<a class="headerlink" href="#using-grpc" title="Permalink to this heading">#</a></h4>
+<p>When using grpc, you can use <a class="reference external" href="https://github.com/fullstorydev/grpcurl">grpcurl</a> to hit the Gateway’s gRPC service that is responsible for reporting the Flow status.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker pull fullstorydev/grpcurl:latest
+docker run --network<span class="o">=</span><span class="s1">&#39;host&#39;</span> fullstorydev/grpcurl -plaintext <span class="m">127</span>.0.0.1:12345 jina.JinaGatewayDryRunRPC/dry_run
+</pre></div>
+</div>
+<p>The error-free output below signifies a correctly running Flow:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{}</span><span class="w"></span>
+</pre></div>
+</div>
+<p>You can simulate an Executor going offline by killing its process.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">kill</span> -9 <span class="nv">$EXECUTOR_PID</span> <span class="c1"># in this case we can see in the logs that it is 19059</span>
+</pre></div>
+</div>
+<p>Then by doing the same check, you will see that it returns an error:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker run --network<span class="o">=</span><span class="s1">&#39;host&#39;</span> fullstorydev/grpcurl -plaintext <span class="m">127</span>.0.0.1:12345 jina.JinaGatewayDryRunRPC/dry_run
+</pre></div>
+</div>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header">
+Error output<div class="sd-summary-down docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
+<div class="sd-summary-up docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
+</summary><div class="sd-summary-content sd-card-body docutils">
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;code&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;failed to connect to all addresses |Gateway: Communication error with deployment at address(es) 0.0.0.0:12346. Head or worker(s) may be down.&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;exception&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;InternalNetworkError&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;args&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">      </span><span class="s2">&quot;failed to connect to all addresses |Gateway: Communication error with deployment at address(es) 0.0.0.0:12346. Head or worker(s) may be down.&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="p">],</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;stacks&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">      </span><span class="s2">&quot;Traceback (most recent call last):\n&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/networking.py\&quot;, line 750, in task_wrapper\n    timeout=timeout,\n&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/networking.py\&quot;, line 197, in send_discover_endpoint\n    await self._init_stubs()\n&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/networking.py\&quot;, line 174, in _init_stubs\n    self.channel\n&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/networking.py\&quot;, line 1001, in get_available_services\n    async for res in response:\n&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="s2">&quot;  File \&quot;/home/joan/.local/lib/python3.7/site-packages/grpc/aio/_call.py\&quot;, line 326, in _fetch_stream_responses\n    await self._raise_for_status()\n&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="s2">&quot;  File \&quot;/home/joan/.local/lib/python3.7/site-packages/grpc/aio/_call.py\&quot;, line 237, in _raise_for_status\n    self._cython_call.status())\n&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="s2">&quot;grpc.aio._call.AioRpcError: \u003cAioRpcError of RPC that terminated with:\n\tstatus = StatusCode.UNAVAILABLE\n\tdetails = \&quot;failed to connect to all addresses\&quot;\n\tdebug_error_string = \&quot;{\&quot;created\&quot;:\&quot;@1654012804.794351252\&quot;,\&quot;description\&quot;:\&quot;Failed to pick subchannel\&quot;,\&quot;file\&quot;:\&quot;src/core/ext/filters/client_channel/client_channel.cc\&quot;,\&quot;file_line\&quot;:3134,\&quot;referenced_errors\&quot;:[{\&quot;created\&quot;:\&quot;@1654012804.794350006\&quot;,\&quot;description\&quot;:\&quot;failed to connect to all addresses\&quot;,\&quot;file\&quot;:\&quot;src/core/lib/transport/error_utils.cc\&quot;,\&quot;file_line\&quot;:163,\&quot;grpc_status\&quot;:14}]}\&quot;\n\u003e\n&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="s2">&quot;\nDuring handling of the above exception, another exception occurred:\n\n&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="s2">&quot;Traceback (most recent call last):\n&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/runtimes/gateway/grpc/__init__.py\&quot;, line 155, in dry_run\n    async for _ in self.streamer.stream(request_iterator=req_iterator):\n&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/stream/__init__.py\&quot;, line 78, in stream\n    async for response in async_iter:\n&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/stream/__init__.py\&quot;, line 154, in _stream_requests\n    response = self._result_handler(future.result())\n&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/runtimes/gateway/request_handling.py\&quot;, line 146, in _process_results_at_end_gateway\n    await asyncio.gather(gather_endpoints(request_graph))\n&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/runtimes/gateway/request_handling.py\&quot;, line 88, in gather_endpoints\n    raise err\n&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/runtimes/gateway/request_handling.py\&quot;, line 80, in gather_endpoints\n    endpoints = await asyncio.gather(*tasks_to_get_endpoints)\n&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/networking.py\&quot;, line 754, in task_wrapper\n    e=e, retry_i=i, dest_addr=connection.address\n&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/networking.py\&quot;, line 697, in _handle_aiorpcerror\n    details=e.details(),\n&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="s2">&quot;jina.excepts.InternalNetworkError: failed to connect to all addresses |Gateway: Communication error with deployment at address(es) 0.0.0.0:12346. Head or worker(s) may be down.\n&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="p">]</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</pre></div>
+</div>
+</div>
+</details></section>
+<section id="using-http-or-websocket">
+<h4>Using HTTP or Websocket<a class="headerlink" href="#using-http-or-websocket" title="Permalink to this heading">#</a></h4>
+<p>When using HTTP or Websocket as the Gateway protocol, you can use curl to target the <code class="docutils literal notranslate"><span class="pre">/dry_run</span></code> endpoint and get the status of the Flow.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>curl http://localhost:12345/dry_run
+</pre></div>
+</div>
+<p>The error-free output below signifies a correctly running Flow:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="nt">&quot;code&quot;</span><span class="p">:</span><span class="mi">0</span><span class="p">,</span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="s2">&quot;&quot;</span><span class="p">,</span><span class="nt">&quot;exception&quot;</span><span class="p">:</span><span class="kc">null</span><span class="p">}</span><span class="w"></span>
+</pre></div>
+</div>
+<p>You can simulate an Executor going offline by killing its process.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">kill</span> -9 <span class="nv">$EXECUTOR_PID</span> <span class="c1"># in this case we can see in the logs that it is 19059</span>
+</pre></div>
+</div>
+<p>Then by doing the same check, you will see that the call returns an error:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="nt">&quot;code&quot;</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="s2">&quot;failed to connect to all addresses |Gateway: Communication error with deployment executor0 at address(es) {&#39;0.0.0.0:12346&#39;}. Head or worker(s) may be down.&quot;</span><span class="p">,</span><span class="nt">&quot;exception&quot;</span><span class="p">:{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="s2">&quot;InternalNetworkError&quot;</span><span class="p">,</span><span class="nt">&quot;args&quot;</span><span class="p">:[</span><span class="s2">&quot;failed to connect to all addresses |Gateway: Communication error with deployment executor0 at address(es) {&#39;0.0.0.0:12346&#39;}. Head or worker(s) may be down.&quot;</span><span class="p">],</span><span class="nt">&quot;stacks&quot;</span><span class="p">:[</span><span class="s2">&quot;Traceback (most recent call last):\n&quot;</span><span class="p">,</span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/networking.py\&quot;, line 726, in task_wrapper\n    timeout=timeout,\n&quot;</span><span class="p">,</span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/networking.py\&quot;, line 241, in send_requests\n    await call_result,\n&quot;</span><span class="p">,</span><span class="s2">&quot;  File \&quot;/home/joan/.local/lib/python3.7/site-packages/grpc/aio/_call.py\&quot;, line 291, in __await__\n    self._cython_call._status)\n&quot;</span><span class="p">,</span><span class="s2">&quot;grpc.aio._call.AioRpcError: &lt;AioRpcError of RPC that terminated with:\n\tstatus = StatusCode.UNAVAILABLE\n\tdetails = \&quot;failed to connect to all addresses\&quot;\n\tdebug_error_string = \&quot;{\&quot;created\&quot;:\&quot;@1654074272.702044542\&quot;,\&quot;description\&quot;:\&quot;Failed to pick subchannel\&quot;,\&quot;file\&quot;:\&quot;src/core/ext/filters/client_channel/client_channel.cc\&quot;,\&quot;file_line\&quot;:3134,\&quot;referenced_errors\&quot;:[{\&quot;created\&quot;:\&quot;@1654074272.702043378\&quot;,\&quot;description\&quot;:\&quot;failed to connect to all addresses\&quot;,\&quot;file\&quot;:\&quot;src/core/lib/transport/error_utils.cc\&quot;,\&quot;file_line\&quot;:163,\&quot;grpc_status\&quot;:14}]}\&quot;\n&gt;\n&quot;</span><span class="p">,</span><span class="s2">&quot;\nDuring handling of the above exception, another exception occurred:\n\n&quot;</span><span class="p">,</span><span class="s2">&quot;Traceback (most recent call last):\n&quot;</span><span class="p">,</span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/runtimes/gateway/http/app.py\&quot;, line 142, in _flow_health\n    data_type=DataInputType.DOCUMENT,\n&quot;</span><span class="p">,</span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/runtimes/gateway/http/app.py\&quot;, line 399, in _get_singleton_result\n    async for k in streamer.stream(request_iterator=request_iterator):\n&quot;</span><span class="p">,</span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/stream/__init__.py\&quot;, line 78, in stream\n    async for response in async_iter:\n&quot;</span><span class="p">,</span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/stream/__init__.py\&quot;, line 154, in _stream_requests\n    response = self._result_handler(future.result())\n&quot;</span><span class="p">,</span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/runtimes/gateway/request_handling.py\&quot;, line 148, in _process_results_at_end_gateway\n    partial_responses = await asyncio.gather(*tasks)\n&quot;</span><span class="p">,</span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/runtimes/gateway/graph/topology_graph.py\&quot;, line 128, in _wait_previous_and_send\n    self._handle_internalnetworkerror(err)\n&quot;</span><span class="p">,</span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/runtimes/gateway/graph/topology_graph.py\&quot;, line 70, in _handle_internalnetworkerror\n    raise err\n&quot;</span><span class="p">,</span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/runtimes/gateway/graph/topology_graph.py\&quot;, line 125, in _wait_previous_and_send\n    timeout=self._timeout_send,\n&quot;</span><span class="p">,</span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/networking.py\&quot;, line 734, in task_wrapper\n    num_retries=num_retries,\n&quot;</span><span class="p">,</span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/networking.py\&quot;, line 697, in _handle_aiorpcerror\n    details=e.details(),\n&quot;</span><span class="p">,</span><span class="s2">&quot;jina.excepts.InternalNetworkError: failed to connect to all addresses |Gateway: Communication error with deployment executor0 at address(es) {&#39;0.0.0.0:12346&#39;}. Head or worker(s) may be down.\n&quot;</span><span class="p">],</span><span class="nt">&quot;executor&quot;</span><span class="p">:</span><span class="s2">&quot;&quot;</span><span class="p">}}</span><span class="w"></span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+<section id="health-check-of-individual-microservices">
+<span id="health-check-microservices"></span><h2>Health check of individual microservices<a class="headerlink" href="#health-check-of-individual-microservices" title="Permalink to this heading">#</a></h2>
+<p>In addition to a performing a readiness check for the entire Flow, it is also possible to check every individual microservice in said Flow,
+by utilizing a <a class="reference external" href="https://github.com/grpc/grpc/blob/master/doc/health-checking.md">standardized gRPC health check endpoint</a>.
+In most cases this is not necessary, since such checks are performed by Jina, a Kubernetes service mesh or a load balancer under the hood.
+Nevertheless, it is possible to perform these checks as a user.</p>
+<p>When performing these checks, you can expect on of the following <code class="docutils literal notranslate"><span class="pre">ServingStatus</span></code> responses:</p>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">UNKNOWN</span></code> (0)</strong>: The health of the microservice could not be determined</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">SERVING</span></code> (1)</strong>: The microservice is healthy and ready to receive requests</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">NOT_SERVING</span></code> (2)</strong>: The microservice is <em>not</em> healthy and <em>not</em> ready to receive requests</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">SERVICE_UNKNOWN</span></code> (3)</strong>: The health of the microservice could not be determined while performing streaming</p></li>
+</ul>
+<div class="seealso admonition">
+<p class="admonition-title">See Also</p>
+<p>To learn more about these status codes, and how health checks are performed with gRPC, see <a class="reference external" href="https://github.com/grpc/grpc/blob/master/doc/health-checking.md">here</a>.</p>
+</div>
+<section id="health-check-of-an-executor">
+<span id="health-check-executor"></span><h3>Health check of an Executor<a class="headerlink" href="#health-check-of-an-executor" title="Permalink to this heading">#</a></h3>
+<p><a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>s run as microservices exposing gRPC endpoints, and they expose one endpoint for a health and readiness check.</p>
+<p>To see how to use it, you can start a Flow inside a terminal and block it to accept requests:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
+
+<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">(</span><span class="n">protocol</span><span class="o">=</span><span class="s1">&#39;grpc&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">12346</span><span class="p">)</span>
+<span class="k">with</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">block</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>On another terminal, you can use <a class="reference external" href="https://github.com/fullstorydev/grpcurl">grpcurl</a> to send RPC requests to your services.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker pull fullstorydev/grpcurl:latest
+docker run --network<span class="o">=</span><span class="s1">&#39;host&#39;</span> fullstorydev/grpcurl -plaintext <span class="m">127</span>.0.0.1:12346 grpc.health.v1.Health/Check
+</pre></div>
+</div>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SERVING&quot;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</pre></div>
+</div>
+</section>
+<section id="health-check-of-the-gateway">
+<span id="health-check-gateway"></span><h3>Health check of the Gateway<a class="headerlink" href="#health-check-of-the-gateway" title="Permalink to this heading">#</a></h3>
+<p>Just like each individual Executor, the Gateway also acts as a microservice, and as such it exposes a health check endpoint.</p>
+<p>In contrast to Executors however, a Gateway can use gRPC, HTTP, or Websocket, and the health check endpoint changes accordingly.</p>
+<section id="gateway-health-check-with-grpc">
+<h4>Gateway health check with gRPC<a class="headerlink" href="#gateway-health-check-with-grpc" title="Permalink to this heading">#</a></h4>
+<p>When using gRPC as the protocol to communicate with the Gateway, the Gateway uses the exact same mechanism as Executors to expose its health status: It exposes the <a class="reference external" href="https://github.com/grpc/grpc/blob/master/doc/health-checking.md"> standard gRPC health check</a> to the outside world.</p>
+<p>With the same Flow as described before, you can use the same way to check the Gateway status:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker run --network<span class="o">=</span><span class="s1">&#39;host&#39;</span> fullstorydev/grpcurl -plaintext <span class="m">127</span>.0.0.1:12345 grpc.health.v1.Health/Check
+</pre></div>
+</div>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SERVING&quot;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</pre></div>
+</div>
+</section>
+<section id="gateway-health-check-with-http-or-websocket">
+<h4>Gateway health check with HTTP or Websocket<a class="headerlink" href="#gateway-health-check-with-http-or-websocket" title="Permalink to this heading">#</a></h4>
+<div class="caution admonition">
+<p class="admonition-title">Caution</p>
+<p>For Gateways running with HTTP or Websocket, the gRPC health check response codes outlined <a class="reference internal" href="#health-check-microservices"><span class="std std-ref">above</span></a> do not apply.</p>
+<p>Instead, an error free response signifies healthiness.</p>
+</div>
+<p>When using HTTP or Websocket as the protocol for the Gateway, it exposes the endpoint <code class="docutils literal notranslate"><span class="pre">'/'</span></code> that one can query to check the status.</p>
+<p>First, crate a Flow with HTTP or Websocket protocol:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
+
+<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">(</span><span class="n">protocol</span><span class="o">=</span><span class="s1">&#39;http&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">()</span>
+<span class="k">with</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">block</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Then, you can query the “empty” endpoint:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl http://localhost:12345
+</pre></div>
+</div>
+<p>And you will get a valid empty response indicating the Gateway’s ability to serve.</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{}</span><span class="w"></span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+</section>
+
+                </article>
+            </div>
+            <footer>
+                
+                <div class="related-pages">
+                    <a class="next-page" href="../when-things-go-wrong/">
+                        <div class="page-info">
+                            <div class="context">
+                                <span>Next</span>
+                            </div>
+                            <div class="title">Handle exceptions</div>
+                        </div>
+                        <svg>
+                            <use href="#svg-arrow-right"></use>
+                        </svg>
+                    </a>
+                    <a class="prev-page" href="../monitoring-flow/">
+                        <svg>
+                            <use href="#svg-arrow-right"></use>
+                        </svg>
+                        <div class="page-info">
+                            <div class="context">
+                                <span>Previous</span>
+                            </div>
+                            
+                            <div class="title">Monitor</div>
+                            
+                        </div>
+                    </a>
+                </div>
+                <div class="bottom-of-page">
+                    <div class="left-details">
+                        <div class="copyright">
+                            Copyright &#169; Jina AI Limited. All rights reserved.
+                        </div><div class="last-updated">
+                            Last updated on Dec 15, 2022</div>
+                    </div>
+                    <div class="right-details">
+                        <div class="social-btns">
+                            <a class='social-btn' href="https://github.com/jina-ai/jina" aria-label="GitHub"
+                               target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
+                            <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank"
+                               rel="noreferrer"> <i class="fab fa-slack"></i></a>
+                            <a class='social-btn' href="https://youtube.com/c/jina-ai" aria-label="YouTube"
+                               target="_blank" rel="noreferrer"> <i class="fab fa-youtube"></i></a>
+                            <a class='social-btn' href="https://twitter.com/JinaAI_" aria-label="Twitter"
+                               target="_blank" rel="noreferrer"> <i class="fab fa-twitter"></i></a>
+                            <a class='social-btn' href="https://www.linkedin.com/company/jinaai/" aria-label="LinkedIn"
+                               target="_blank" rel="noreferrer"> <i class="fab fa-linkedin"></i></a>
+                        </div>
+                    </div>
+                </div>
+                
+            </footer>
+        </div>
+        <aside class="toc-drawer">
+            
+            
+            <div class="toc-sticky toc-scroll">
+                <div class="toc-title-container">
+          <span class="toc-title">
+            Contents
+          </span>
+                </div>
+                <div class="toc-tree-container">
+                    <div class="toc-tree">
+                        <ul>
+<li><a class="reference internal" href="#">Readiness &amp; health check</a><ul>
+<li><a class="reference internal" href="#readiness-of-complete-flow">Readiness of complete Flow</a><ul>
+<li><a class="reference internal" href="#flow-status-using-third-party-clients">Flow status using third-party clients</a><ul>
+<li><a class="reference internal" href="#using-grpc">Using gRPC</a></li>
+<li><a class="reference internal" href="#using-http-or-websocket">Using HTTP or Websocket</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#health-check-of-individual-microservices">Health check of individual microservices</a><ul>
+<li><a class="reference internal" href="#health-check-of-an-executor">Health check of an Executor</a></li>
+<li><a class="reference internal" href="#health-check-of-the-gateway">Health check of the Gateway</a><ul>
+<li><a class="reference internal" href="#gateway-health-check-with-grpc">Gateway health check with gRPC</a></li>
+<li><a class="reference internal" href="#gateway-health-check-with-http-or-websocket">Gateway health check with HTTP or Websocket</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+                    </div>
+                </div>
+            </div>
+            
+            
+        </aside>
+    </div>
+    <qa-bot
+            title="Jina Bot"
+            description="Build cross-modal and multi-modal applications on the cloud"
+    >
+        <template>
+            <dl>
+                <dt>You can ask questions about our docs. Try:</dt>
+                <dd>Does Jina support Kubernetes?</dd>
+                <dd>What are the basic concepts in Jina?</dd>
+                <dd>How to share my Executor?</dd>
+            </dl>
+        </template>
+    </qa-bot>
+</div>
+<img referrerpolicy="no-referrer-when-downgrade"
+     src="https://static.scarf.sh/a.png?x-pxid=2823e771-0e1e-4320-8fde-48bc48e53262"/><script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/scripts/furo.js"></script>
+    <script src="../../../_static/clipboard.min.js"></script>
+    <script src="../../../_static/copybutton.js"></script>
+    <script src="../../../_static/tabs.js"></script>
+    <script src="../../../_static/design-tabs.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() { 
+            document.querySelector('qa-bot').setAttribute('server', 'https://jina-ai-jina.docsqa.jina.ai');
+        });
+        </script>
+    <script src="https://cdn.jsdelivr.net/npm/qabot@0.4"></script>
+    </body>
+</html>

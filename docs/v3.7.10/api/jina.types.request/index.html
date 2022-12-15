@@ -1,0 +1,788 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+<meta property="og:title" content="jina.types.request package" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://docs.jina.ai/api/jina.types.request/" />
+<meta property="og:site_name" content="Jina 3.7.10 Documentation" />
+<meta property="og:description" content="Submodules: jina.types.request.data module- DataRequest- DataRequest.is_decompressed, DataRequest.is_decompressed_with_data, DataRequest.is_decompressed_wo_data, DataRequest.proto_wo_data, DataRequest.proto, DataRequest.proto_with_data, DataRequest.to_dict(), DataRequest.docs, DataRequest.data, D..." />
+<meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
+<meta property="og:image:alt" content="Jina 3.7.10 Documentation" />
+<meta name="description" content="Submodules: jina.types.request.data module- DataRequest- DataRequest.is_decompressed, DataRequest.is_decompressed_with_data, DataRequest.is_decompressed_wo_data, DataRequest.proto_wo_data, DataRequest.proto, DataRequest.proto_with_data, DataRequest.to_dict(), DataRequest.docs, DataRequest.data, D..." />
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@JinaAI_">
+<meta name="twitter:creator" content="@JinaAI_">
+<meta name="description" content="Build cross-modal and multi-modal applications on the cloud">
+<meta property="og:description" content="Build cross-modal and multi-modal applications on the cloud">
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-48ZDWC8GT6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-48ZDWC8GT6');
+</script>
+
+<script async defer src="https://buttons.github.io/buttons.js"></script>
+    
+<link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" />
+        <link rel="canonical" href="https://docs.jina.ai/api/jina.types.request.html" />
+
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
+        <title>jina.types.request package - Jina 3.7.10 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/main.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/docbot.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #ffffff;
+  --color-code-foreground: #4d4d4d;
+  --color-brand-primary: #009191;
+  --color-brand-content: #009191;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #FBCB67;
+  --color-brand-content: #FBCB67;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #FBCB67;
+  --color-brand-content: #FBCB67;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+    <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+    <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<div class="announcement">
+    <aside class="announcement-content">
+         
+    <a href="https://www.meetup.com/jina-community-meetup/events/287738538/?isFirstPublish=true">Join our Office Hours Special Edition on August 25th at 19:00 CET to talk about Career Development at Jina AI</a>
+     
+    </aside>
+</div>
+
+<div class="page">
+    <header class="mobile-header">
+        <div class="header-left">
+            <label class="nav-overlay-icon" for="__navigation">
+                <div class="visually-hidden">Toggle site navigation sidebar</div>
+                <i class="icon">
+                    <svg>
+                        <use href="#svg-menu"></use>
+                    </svg>
+                </i>
+            </label>
+        </div>
+        <div class="header-center">
+            <a href="../../">
+                <div class="brand">Jina 3.7.10 documentation</div>
+            </a>
+        </div>
+        <div class="header-right">
+            <div class="theme-toggle-container theme-toggle-header">
+                <button class="theme-toggle">
+                    <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+                    <svg class="theme-icon-when-auto">
+                        <use href="#svg-sun-half"></use>
+                    </svg>
+                    <svg class="theme-icon-when-dark">
+                        <use href="#svg-moon"></use>
+                    </svg>
+                    <svg class="theme-icon-when-light">
+                        <use href="#svg-sun"></use>
+                    </svg>
+                </button>
+            </div>
+            <label class="toc-overlay-icon toc-header-icon" for="__toc">
+                <div class="visually-hidden">Toggle table of contents sidebar</div>
+                <i class="icon">
+                    <svg>
+                        <use href="#svg-toc"></use>
+                    </svg>
+                </i>
+            </label>
+        </div>
+    </header>
+    <aside class="sidebar-drawer">
+        <div class="sidebar-container">
+            
+            <div class="sidebar-sticky"><a class="sidebar-brand" href="../../">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo only-light" src="../../_static/logo-light.svg" alt="Light Logo" />
+    <img class="sidebar-logo only-dark" src="../../_static/logo-dark.svg" alt="Dark Logo" />
+  </div>
+  
+  
+</a>
+<script>
+  function setPrefix(prefix){
+    window.location.href = prefix
+  }
+</script>
+<script defer>
+  fetch(`https://${window.location.host}/_versions.json`)
+  .then((resp) => resp.json())
+  .then((data) => {
+    var versionSelector = document.getElementsByClassName("version-select")[0];
+    var currentPrefix = window.location.href.toString().split(window.location.host)[1].split('/')[1];
+
+    for(var i = 0; i < data.length; i++){
+      var option = document.createElement("option");
+      option.innerHTML = data[i].version;
+      option.value = "/" + data[i].version;
+      versionSelector.appendChild(option);
+      if(currentPrefix === data[i].version){
+        versionSelector.selectedIndex = i + 1;
+      }
+    }
+  })
+  .catch((err) => console.log(err));
+</script>
+<div class="sd-d-flex-row sd-align-major-spaced">
+  <a class="github-button" href="https://github.com/jina-ai/jina" data-icon="octicon-star" data-show-count="true" aria-label="Star jina-ai/jina on GitHub" style="opacity: 0;">Star</a>
+  <select onChange="setPrefix(this.value)" class="version-select">
+    <option value="/">latest</option>
+  </select>
+</div><form class="sidebar-search-container" method="get" action="../../search/" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+    <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../get-started/what-is-cross-modal-multi-modal/">What is Cross-Modal &amp; Multi-Modal?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../get-started/what-is-jina/">What is Jina?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../fundamentals/architecture-overview/">Basic Concepts</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../get-started/install/">Install</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../get-started/install/docker/">Docker image</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../get-started/install/windows/">On Windows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../get-started/install/troubleshooting/">Troubleshooting</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../get-started/create-app/">Create Project</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/executor/">Executor</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-api/">Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-methods/"><code class="docutils literal notranslate"><span class="pre">@requests</span></code> methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/monitoring-executor/">Monitor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-run/">Run</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-serve/">Serve</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/yaml-spec/">YAML specification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-files/">File structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/containerize-executor/">Containerize</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/flow/">Flow</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/create-flow/">Basic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/add-executors/">Add Executors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/topologies/">Topology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/monitoring-flow/">Monitor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/health-check/">Readiness &amp; health check</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/when-things-go-wrong/">Handle exceptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/yaml-spec/">YAML specification</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../fundamentals/gateway/">Gateway</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/client/client/">Client</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/client/third-party-client/">Third-party clients</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/executor/hub/">Hub</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/hub/hub-portal/">Portal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/hub/create-hub-executor/">Create</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/hub/push-executor/">Publish</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/hub/use-hub-executor/">Use</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/sandbox/">Sandbox</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/debug-executor/">Debug</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/hub/executor-best-practices/">Best practices</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/jcloud/">JCloud</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/jcloud/resources/">Resources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/jcloud/autoscale/">Autoscaling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/jcloud/advanced/">Advanced</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/jcloud/faq/">FAQ</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../how-to/"><svg aria-hidden="true" class="sd-octicon sd-octicon-book" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M0 1.75A.75.75 0 01.75 1h4.253c1.227 0 2.317.59 3 1.501A3.744 3.744 0 0111.006 1h4.245a.75.75 0 01.75.75v10.5a.75.75 0 01-.75.75h-4.507a2.25 2.25 0 00-1.591.659l-.622.621a.75.75 0 01-1.06 0l-.622-.621A2.25 2.25 0 005.258 13H.75a.75.75 0 01-.75-.75V1.75zm8.755 3a2.25 2.25 0 012.25-2.25H14.5v9h-3.757c-.71 0-1.4.201-1.992.572l.004-7.322zm-1.504 7.324l.004-5.073-.002-2.253A2.25 2.25 0 005.003 2.5H1.5v9h3.757a3.75 3.75 0 011.994.574z" fill-rule="evenodd"></path></svg> How-To</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/google-colab/">Use Jina on Colab with GPU/TPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/clean-code/">Write clean &amp; efficient code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/async-executors/">Use async coroutines in Executors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/scale-out/">Scale out your Executor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/gpu-executor/">Run Executors on GPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/external-executor/">Use external Executors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/flow-switch/">Add selection control to a Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/docker-compose/">Deploy with Docker Compose</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/kubernetes/">Deploy with Kubernetes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/monitoring/">Use monitoring with Jina in Kubernetes</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer References</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api-rst/"><span class="fab fa-python"></span> Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cli/"><svg aria-hidden="true" class="sd-octicon sd-octicon-terminal" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M0 2.75C0 1.784.784 1 1.75 1h12.5c.966 0 1.75.784 1.75 1.75v10.5A1.75 1.75 0 0114.25 15H1.75A1.75 1.75 0 010 13.25V2.75zm1.75-.25a.25.25 0 00-.25.25v10.5c0 .138.112.25.25.25h12.5a.25.25 0 00.25-.25V2.75a.25.25 0 00-.25-.25H1.75zM7.25 8a.75.75 0 01-.22.53l-2.25 2.25a.75.75 0 11-1.06-1.06L5.44 8 3.72 6.28a.75.75 0 111.06-1.06l2.25 2.25c.141.14.22.331.22.53zm1.5 1.5a.75.75 0 000 1.5h3a.75.75 0 000-1.5h-3z" fill-rule="evenodd"></path></svg> Command-Line Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../proto/docs/">Protocol Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../envs/">Environment Variables</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Legacy Support</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../get-started/migrate/">Migrate Jina 2 to Jina 3</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://docs2.jina.ai/">Jina 2 Documentation</a></li>
+</ul>
+
+    <p class="caption" role="heading"><span class="caption-text">Ecosystem</span></p>
+    <ul>
+        <li class="toctree-l1">
+            <a class="reference internal" href="#">
+                <img class="sidebar-ecosys-logo only-light-line" src="../../_static/search-light.svg">
+                <img class="sidebar-ecosys-logo only-dark-line" src="../../_static/search-dark.svg">
+                Jina</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://hub.jina.ai">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../_static/hub-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../_static/hub-dark.svg">
+            Jina Hub</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://finetuner.jina.ai">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../_static/finetuner-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../_static/finetuner-dark.svg">
+            Finetuner</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://docarray.jina.ai">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../_static/docarray-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../_static/docarray-dark.svg">
+            DocArray</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://clip-as-service.jina.ai">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../_static/cas-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../_static/cas-dark.svg">
+            CLIP-as-service</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://github.com/jina-ai/jcloud">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../_static/JCloud-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../_static/JCloud-dark.svg">
+            JCloud</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://now.jina.ai">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../_static/now-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../_static/now-dark.svg">
+            NOW</a></li>
+    </ul>
+</div>
+
+</div>
+
+            </div>
+            
+        </div>
+    </aside>
+    <div class="main">
+        <div class="content">
+            <div class="article-container">
+                <a href="#" class="back-to-top muted-link">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+                    </svg>
+                    <span>Back to top</span>
+                </a>
+                <div class="content-icon-container"><div class="theme-toggle-container theme-toggle-content">
+                        <button class="theme-toggle">
+                            <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+                            <svg class="theme-icon-when-auto">
+                                <use href="#svg-sun-half"></use>
+                            </svg>
+                            <svg class="theme-icon-when-dark">
+                                <use href="#svg-moon"></use>
+                            </svg>
+                            <svg class="theme-icon-when-light">
+                                <use href="#svg-sun"></use>
+                            </svg>
+                        </button>
+                    </div>
+                    <label class="toc-overlay-icon toc-content-icon"
+                           for="__toc">
+                        <div class="visually-hidden">Toggle table of contents sidebar</div>
+                        <i class="icon">
+                            <svg>
+                                <use href="#svg-toc"></use>
+                            </svg>
+                        </i>
+                    </label>
+                </div>
+                <article role="main">
+                    <section id="jina-types-request-package">
+<h1>jina.types.request package<a class="headerlink" href="#jina-types-request-package" title="Permalink to this heading">#</a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading">#</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../jina.types.request.data/">jina.types.request.data module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.DataRequest"><code class="docutils literal notranslate"><span class="pre">DataRequest</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.DataRequest.is_decompressed"><code class="docutils literal notranslate"><span class="pre">DataRequest.is_decompressed</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.DataRequest.is_decompressed_with_data"><code class="docutils literal notranslate"><span class="pre">DataRequest.is_decompressed_with_data</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.DataRequest.is_decompressed_wo_data"><code class="docutils literal notranslate"><span class="pre">DataRequest.is_decompressed_wo_data</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.DataRequest.proto_wo_data"><code class="docutils literal notranslate"><span class="pre">DataRequest.proto_wo_data</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.DataRequest.proto"><code class="docutils literal notranslate"><span class="pre">DataRequest.proto</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.DataRequest.proto_with_data"><code class="docutils literal notranslate"><span class="pre">DataRequest.proto_with_data</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.DataRequest.to_dict"><code class="docutils literal notranslate"><span class="pre">DataRequest.to_dict()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.DataRequest.docs"><code class="docutils literal notranslate"><span class="pre">DataRequest.docs</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.DataRequest.data"><code class="docutils literal notranslate"><span class="pre">DataRequest.data</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.DataRequest.CopyFrom"><code class="docutils literal notranslate"><span class="pre">DataRequest.CopyFrom()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.DataRequest.MergeFrom"><code class="docutils literal notranslate"><span class="pre">DataRequest.MergeFrom()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.DataRequest.add_exception"><code class="docutils literal notranslate"><span class="pre">DataRequest.add_exception()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.DataRequest.binary_str"><code class="docutils literal notranslate"><span class="pre">DataRequest.binary_str()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.DataRequest.clear"><code class="docutils literal notranslate"><span class="pre">DataRequest.clear()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.DataRequest.dict"><code class="docutils literal notranslate"><span class="pre">DataRequest.dict()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.DataRequest.json"><code class="docutils literal notranslate"><span class="pre">DataRequest.json()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.DataRequest.nbytes"><code class="docutils literal notranslate"><span class="pre">DataRequest.nbytes</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.DataRequest.parameters"><code class="docutils literal notranslate"><span class="pre">DataRequest.parameters</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.DataRequest.pop"><code class="docutils literal notranslate"><span class="pre">DataRequest.pop()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.DataRequest.to_bytes"><code class="docutils literal notranslate"><span class="pre">DataRequest.to_bytes()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.DataRequest.to_json"><code class="docutils literal notranslate"><span class="pre">DataRequest.to_json()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.DataRequest.response"><code class="docutils literal notranslate"><span class="pre">DataRequest.response</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.DataRequest.status"><code class="docutils literal notranslate"><span class="pre">DataRequest.status</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.DataRequest.request_id"><code class="docutils literal notranslate"><span class="pre">DataRequest.request_id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.DataRequest.from_proto"><code class="docutils literal notranslate"><span class="pre">DataRequest.from_proto()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.Response"><code class="docutils literal notranslate"><span class="pre">Response</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.Response.CopyFrom"><code class="docutils literal notranslate"><span class="pre">Response.CopyFrom()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.Response.MergeFrom"><code class="docutils literal notranslate"><span class="pre">Response.MergeFrom()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.Response.add_exception"><code class="docutils literal notranslate"><span class="pre">Response.add_exception()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.Response.binary_str"><code class="docutils literal notranslate"><span class="pre">Response.binary_str()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.Response.clear"><code class="docutils literal notranslate"><span class="pre">Response.clear()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.Response.dict"><code class="docutils literal notranslate"><span class="pre">Response.dict()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.Response.docs"><code class="docutils literal notranslate"><span class="pre">Response.docs</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.Response.from_proto"><code class="docutils literal notranslate"><span class="pre">Response.from_proto()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.Response.is_decompressed"><code class="docutils literal notranslate"><span class="pre">Response.is_decompressed</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.Response.is_decompressed_with_data"><code class="docutils literal notranslate"><span class="pre">Response.is_decompressed_with_data</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.Response.is_decompressed_wo_data"><code class="docutils literal notranslate"><span class="pre">Response.is_decompressed_wo_data</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.Response.json"><code class="docutils literal notranslate"><span class="pre">Response.json()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.Response.nbytes"><code class="docutils literal notranslate"><span class="pre">Response.nbytes</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.Response.parameters"><code class="docutils literal notranslate"><span class="pre">Response.parameters</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.Response.pop"><code class="docutils literal notranslate"><span class="pre">Response.pop()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.Response.proto"><code class="docutils literal notranslate"><span class="pre">Response.proto</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.Response.proto_with_data"><code class="docutils literal notranslate"><span class="pre">Response.proto_with_data</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.Response.proto_wo_data"><code class="docutils literal notranslate"><span class="pre">Response.proto_wo_data</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.Response.request_id"><code class="docutils literal notranslate"><span class="pre">Response.request_id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.Response.response"><code class="docutils literal notranslate"><span class="pre">Response.response</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.Response.status"><code class="docutils literal notranslate"><span class="pre">Response.status</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.Response.to_bytes"><code class="docutils literal notranslate"><span class="pre">Response.to_bytes()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.Response.to_dict"><code class="docutils literal notranslate"><span class="pre">Response.to_dict()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.Response.to_json"><code class="docutils literal notranslate"><span class="pre">Response.to_json()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../jina.types.request.status/">jina.types.request.status module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../jina.types.request.status/#jina.types.request.status.StatusMessage"><code class="docutils literal notranslate"><span class="pre">StatusMessage</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.status/#jina.types.request.status.StatusMessage.CopyFrom"><code class="docutils literal notranslate"><span class="pre">StatusMessage.CopyFrom()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.status/#jina.types.request.status.StatusMessage.MergeFrom"><code class="docutils literal notranslate"><span class="pre">StatusMessage.MergeFrom()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.status/#jina.types.request.status.StatusMessage.binary_str"><code class="docutils literal notranslate"><span class="pre">StatusMessage.binary_str()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.status/#jina.types.request.status.StatusMessage.clear"><code class="docutils literal notranslate"><span class="pre">StatusMessage.clear()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.status/#jina.types.request.status.StatusMessage.dict"><code class="docutils literal notranslate"><span class="pre">StatusMessage.dict()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.status/#jina.types.request.status.StatusMessage.json"><code class="docutils literal notranslate"><span class="pre">StatusMessage.json()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.status/#jina.types.request.status.StatusMessage.nbytes"><code class="docutils literal notranslate"><span class="pre">StatusMessage.nbytes</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.status/#jina.types.request.status.StatusMessage.pop"><code class="docutils literal notranslate"><span class="pre">StatusMessage.pop()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.status/#jina.types.request.status.StatusMessage.proto"><code class="docutils literal notranslate"><span class="pre">StatusMessage.proto</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.status/#jina.types.request.status.StatusMessage.set_exception"><code class="docutils literal notranslate"><span class="pre">StatusMessage.set_exception()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.status/#jina.types.request.status.StatusMessage.to_bytes"><code class="docutils literal notranslate"><span class="pre">StatusMessage.to_bytes()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.status/#jina.types.request.status.StatusMessage.to_dict"><code class="docutils literal notranslate"><span class="pre">StatusMessage.to_dict()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.status/#jina.types.request.status.StatusMessage.to_json"><code class="docutils literal notranslate"><span class="pre">StatusMessage.to_json()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.status/#jina.types.request.status.StatusMessage.set_code"><code class="docutils literal notranslate"><span class="pre">StatusMessage.set_code()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="module-jina.types.request">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-jina.types.request" title="Permalink to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="jina.types.request.Request">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.types.request.</span></span><span class="sig-name descname"><span class="pre">Request</span></span><a class="reference internal" href="../../_modules/jina/types/request/#Request"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.request.Request" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="../jina.types.mixin/#jina.types.mixin.ProtoTypeMixin" title="jina.types.mixin.ProtoTypeMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProtoTypeMixin</span></code></a></p>
+<p><a class="reference internal" href="#jina.types.request.Request" title="jina.types.request.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></a> is one of the primitive data types in Jina, and serves as a base for
+<a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.DataRequest" title="jina.types.request.data.DataRequest"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataRequest</span></code></a> and <a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.Response" title="jina.types.request.data.Response"><code class="xref py py-class docutils literal notranslate"><span class="pre">Response</span></code></a>.</p>
+<p>It offers a Pythonic interface to allow users access and manipulate
+<code class="xref py py-class docutils literal notranslate"><span class="pre">jina.jina_pb2.RequestProto</span></code> object without working with Protobuf itself.</p>
+<p>It serves as a container for serialized <code class="xref py py-class docutils literal notranslate"><span class="pre">jina_pb2.RequestProto</span></code> that only triggers deserialization
+and decompression when receives the first read access to its member.</p>
+<p>It overrides <code class="xref py py-meth docutils literal notranslate"><span class="pre">__getattr__()</span></code> to provide the same get/set interface as an
+<code class="xref py py-class docutils literal notranslate"><span class="pre">jina_pb2.RequestProto</span></code> object.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.types.request.Request.add_exception">
+<span class="sig-name descname"><span class="pre">add_exception</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ex</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">executor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/request/#Request.add_exception"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.request.Request.add_exception" title="Permalink to this definition">#</a></dt>
+<dd><p>Add exception to the last route in the envelope
+:type ex: <code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code>]
+:param ex: Exception to be added
+:type executor: <code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<a class="reference internal" href="../jina.serve.executors/#jina.serve.executors.BaseExecutor" title="jina.serve.executors.BaseExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseExecutor</span></code></a>]
+:param executor: Executor related to the exception</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.types.request.Request.CopyFrom">
+<span class="sig-name descname"><span class="pre">CopyFrom</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.types.request.Request.CopyFrom" title="Permalink to this definition">#</a></dt>
+<dd><p>Copy the content of target</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>other</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code>(<code class="docutils literal notranslate"><span class="pre">T</span></code>)) – the document to copy from</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.types.request.Request.MergeFrom">
+<span class="sig-name descname"><span class="pre">MergeFrom</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.types.request.Request.MergeFrom" title="Permalink to this definition">#</a></dt>
+<dd><p>Merge the content of target</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>other</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code>(<code class="docutils literal notranslate"><span class="pre">T</span></code>)) – the document to merge from</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.types.request.Request.binary_str">
+<span class="sig-name descname"><span class="pre">binary_str</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.types.request.Request.binary_str" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.types.request.Request.clear">
+<span class="sig-name descname"><span class="pre">clear</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jina.types.request.Request.clear" title="Permalink to this definition">#</a></dt>
+<dd><p>Remove all values from all fields of this Document.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.types.request.Request.dict">
+<span class="sig-name descname"><span class="pre">dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.types.request.Request.dict" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.types.request.Request.json">
+<span class="sig-name descname"><span class="pre">json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.types.request.Request.json" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="jina.types.request.Request.nbytes">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">nbytes</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#jina.types.request.Request.nbytes" title="Permalink to this definition">#</a></dt>
+<dd><p>Return total bytes consumed by protobuf.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>number of bytes</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.types.request.Request.pop">
+<span class="sig-name descname"><span class="pre">pop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">fields</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.types.request.Request.pop" title="Permalink to this definition">#</a></dt>
+<dd><p>Remove the values from the given fields of this Document.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>fields</strong> – field names</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="jina.types.request.Request.proto">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">proto</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">GeneratedProtocolMessageType</span></em><a class="headerlink" href="#jina.types.request.Request.proto" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the underlying Protobuf object</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">GeneratedProtocolMessageType</span></code></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Protobuf representation of the object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.types.request.Request.to_bytes">
+<span class="sig-name descname"><span class="pre">to_bytes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jina.types.request.Request.to_bytes" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the serialized the message to a string.</p>
+<p>For more Pythonic code, please use <code class="docutils literal notranslate"><span class="pre">bytes(...)</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>binary string representation of the object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.types.request.Request.to_dict">
+<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.types.request.Request.to_dict" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the object in Python dictionary.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Array like object such as <code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> (i.e. anything described as <code class="xref py py-class docutils literal notranslate"><span class="pre">jina_pb2.NdArrayProto</span></code>)
+will be converted to Python list.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>kwargs</strong> – Extra kwargs to be passed to MessageToDict, like use_integers_for_enums</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>dict representation of the object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.types.request.Request.to_json">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jina.types.request.Request.to_json" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the object in JSON string</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>JSON string of the object</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+                </article>
+            </div>
+            <footer>
+                
+                <div class="related-pages">
+                    
+                    
+                </div>
+                <div class="bottom-of-page">
+                    <div class="left-details">
+                        <div class="copyright">
+                            Copyright &#169; Jina AI Limited. All rights reserved.
+                        </div><div class="last-updated">
+                            Last updated on Dec 15, 2022</div>
+                    </div>
+                    <div class="right-details">
+                        <div class="social-btns">
+                            <a class='social-btn' href="https://github.com/jina-ai/jina" aria-label="GitHub"
+                               target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
+                            <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank"
+                               rel="noreferrer"> <i class="fab fa-slack"></i></a>
+                            <a class='social-btn' href="https://youtube.com/c/jina-ai" aria-label="YouTube"
+                               target="_blank" rel="noreferrer"> <i class="fab fa-youtube"></i></a>
+                            <a class='social-btn' href="https://twitter.com/JinaAI_" aria-label="Twitter"
+                               target="_blank" rel="noreferrer"> <i class="fab fa-twitter"></i></a>
+                            <a class='social-btn' href="https://www.linkedin.com/company/jinaai/" aria-label="LinkedIn"
+                               target="_blank" rel="noreferrer"> <i class="fab fa-linkedin"></i></a>
+                        </div>
+                    </div>
+                </div>
+                
+            </footer>
+        </div>
+        <aside class="toc-drawer">
+            
+            
+            <div class="toc-sticky toc-scroll">
+                <div class="toc-title-container">
+          <span class="toc-title">
+            Contents
+          </span>
+                </div>
+                <div class="toc-tree-container">
+                    <div class="toc-tree">
+                        <ul>
+<li><a class="reference internal" href="#">jina.types.request package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-jina.types.request">Module contents</a><ul>
+<li><a class="reference internal" href="#jina.types.request.Request"><code class="docutils literal notranslate"><span class="pre">Request</span></code></a><ul>
+<li><a class="reference internal" href="#jina.types.request.Request.add_exception"><code class="docutils literal notranslate"><span class="pre">Request.add_exception()</span></code></a></li>
+<li><a class="reference internal" href="#jina.types.request.Request.CopyFrom"><code class="docutils literal notranslate"><span class="pre">Request.CopyFrom()</span></code></a></li>
+<li><a class="reference internal" href="#jina.types.request.Request.MergeFrom"><code class="docutils literal notranslate"><span class="pre">Request.MergeFrom()</span></code></a></li>
+<li><a class="reference internal" href="#jina.types.request.Request.binary_str"><code class="docutils literal notranslate"><span class="pre">Request.binary_str()</span></code></a></li>
+<li><a class="reference internal" href="#jina.types.request.Request.clear"><code class="docutils literal notranslate"><span class="pre">Request.clear()</span></code></a></li>
+<li><a class="reference internal" href="#jina.types.request.Request.dict"><code class="docutils literal notranslate"><span class="pre">Request.dict()</span></code></a></li>
+<li><a class="reference internal" href="#jina.types.request.Request.json"><code class="docutils literal notranslate"><span class="pre">Request.json()</span></code></a></li>
+<li><a class="reference internal" href="#jina.types.request.Request.nbytes"><code class="docutils literal notranslate"><span class="pre">Request.nbytes</span></code></a></li>
+<li><a class="reference internal" href="#jina.types.request.Request.pop"><code class="docutils literal notranslate"><span class="pre">Request.pop()</span></code></a></li>
+<li><a class="reference internal" href="#jina.types.request.Request.proto"><code class="docutils literal notranslate"><span class="pre">Request.proto</span></code></a></li>
+<li><a class="reference internal" href="#jina.types.request.Request.to_bytes"><code class="docutils literal notranslate"><span class="pre">Request.to_bytes()</span></code></a></li>
+<li><a class="reference internal" href="#jina.types.request.Request.to_dict"><code class="docutils literal notranslate"><span class="pre">Request.to_dict()</span></code></a></li>
+<li><a class="reference internal" href="#jina.types.request.Request.to_json"><code class="docutils literal notranslate"><span class="pre">Request.to_json()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+                    </div>
+                </div>
+            </div>
+            
+            
+        </aside>
+    </div>
+    <qa-bot
+            title="Jina Bot"
+            description="Build cross-modal and multi-modal applications on the cloud"
+    >
+        <template>
+            <dl>
+                <dt>You can ask questions about our docs. Try:</dt>
+                <dd>Does Jina support Kubernetes?</dd>
+                <dd>What are the basic concepts in Jina?</dd>
+                <dd>How to share my Executor?</dd>
+            </dl>
+        </template>
+    </qa-bot>
+</div>
+<img referrerpolicy="no-referrer-when-downgrade"
+     src="https://static.scarf.sh/a.png?x-pxid=2823e771-0e1e-4320-8fde-48bc48e53262"/><script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/scripts/furo.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script src="../../_static/tabs.js"></script>
+    <script src="../../_static/design-tabs.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() { 
+            document.querySelector('qa-bot').setAttribute('server', 'https://jina-ai-jina.docsqa.jina.ai');
+        });
+        </script>
+    <script src="https://cdn.jsdelivr.net/npm/qabot@0.4"></script>
+    </body>
+</html>

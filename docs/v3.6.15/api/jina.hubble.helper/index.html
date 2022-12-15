@@ -1,0 +1,1021 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+<meta property="og:title" content="jina.hubble.helper module" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://docs.jina.ai/api/jina.hubble.helper/" />
+<meta property="og:site_name" content="Jina 3.6.15 Documentation" />
+<meta property="og:description" content="Module for helper functions for Hub API." />
+<meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
+<meta property="og:image:alt" content="Jina 3.6.15 Documentation" />
+<meta name="description" content="Module for helper functions for Hub API." />
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@JinaAI_">
+<meta name="twitter:creator" content="@JinaAI_">
+<meta name="description" content="Build cross-modal and multi-modal applications on the cloud">
+<meta property="og:description" content="Build cross-modal and multi-modal applications on the cloud">
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-48ZDWC8GT6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-48ZDWC8GT6');
+</script>
+
+<script async defer src="https://buttons.github.io/buttons.js"></script>
+    
+<link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" />
+        <link rel="canonical" href="https://docs.jina.ai/api/jina.hubble.helper.html" />
+
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
+        <title>jina.hubble.helper module - Jina 3.6.15 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/main.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/docbot.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #ffffff;
+  --color-code-foreground: #4d4d4d;
+  --color-brand-primary: #009191;
+  --color-brand-content: #009191;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #FBCB67;
+  --color-brand-content: #FBCB67;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #FBCB67;
+  --color-brand-content: #FBCB67;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+    <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+    <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<div class="announcement">
+    <aside class="announcement-content">
+         
+    <a href="https://www.meetup.com/jina-community-meetup/events/286917139/">Join our Office Hours on July 28th at 19:00 CET to find answers on all your questions</a>
+     
+    </aside>
+</div>
+
+<div class="page">
+    <header class="mobile-header">
+        <div class="header-left">
+            <label class="nav-overlay-icon" for="__navigation">
+                <div class="visually-hidden">Toggle site navigation sidebar</div>
+                <i class="icon">
+                    <svg>
+                        <use href="#svg-menu"></use>
+                    </svg>
+                </i>
+            </label>
+        </div>
+        <div class="header-center">
+            <a href="../../">
+                <div class="brand">Jina 3.6.15 documentation</div>
+            </a>
+        </div>
+        <div class="header-right">
+            <div class="theme-toggle-container theme-toggle-header">
+                <button class="theme-toggle">
+                    <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+                    <svg class="theme-icon-when-auto">
+                        <use href="#svg-sun-half"></use>
+                    </svg>
+                    <svg class="theme-icon-when-dark">
+                        <use href="#svg-moon"></use>
+                    </svg>
+                    <svg class="theme-icon-when-light">
+                        <use href="#svg-sun"></use>
+                    </svg>
+                </button>
+            </div>
+            <label class="toc-overlay-icon toc-header-icon" for="__toc">
+                <div class="visually-hidden">Toggle table of contents sidebar</div>
+                <i class="icon">
+                    <svg>
+                        <use href="#svg-toc"></use>
+                    </svg>
+                </i>
+            </label>
+        </div>
+    </header>
+    <aside class="sidebar-drawer">
+        <div class="sidebar-container">
+            
+            <div class="sidebar-sticky"><a class="sidebar-brand" href="../../">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo only-light" src="../../_static/logo-light.svg" alt="Light Logo" />
+    <img class="sidebar-logo only-dark" src="../../_static/logo-dark.svg" alt="Dark Logo" />
+  </div>
+  
+  
+</a>
+<script>
+  function setPrefix(prefix){
+    window.location.href = prefix
+  }
+</script>
+<script defer>
+  fetch(`https://${window.location.host}/_versions.json`)
+  .then((resp) => resp.json())
+  .then((data) => {
+    var versionSelector = document.getElementsByClassName("version-select")[0];
+    var currentPrefix = window.location.href.toString().split(window.location.host)[1].split('/')[1];
+
+    for(var i = 0; i < data.length; i++){
+      var option = document.createElement("option");
+      option.innerHTML = data[i].version;
+      option.value = "/" + data[i].version;
+      versionSelector.appendChild(option);
+      if(currentPrefix === data[i].version){
+        versionSelector.selectedIndex = i + 1;
+      }
+    }
+  })
+  .catch((err) => console.log(err));
+</script>
+<div class="sd-d-flex-row sd-align-major-spaced">
+  <a class="github-button" href="https://github.com/jina-ai/jina" data-icon="octicon-star" data-show-count="true" aria-label="Star jina-ai/jina on GitHub" style="opacity: 0;">Star</a>
+  <select onChange="setPrefix(this.value)" class="version-select">
+    <option value="/">latest</option>
+  </select>
+</div><form class="sidebar-search-container" method="get" action="../../search/" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+    <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../get-started/install/">Install</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../get-started/install/docker/">Docker image</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../get-started/install/windows/">On Windows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../get-started/install/troubleshooting/">Troubleshooting</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../get-started/create-app/">Create Project</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../fundamentals/architecture-overview/">Glossary</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/executor/">Executor</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-api/">Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-methods/"><code class="docutils literal notranslate"><span class="pre">@requests</span></code> methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/monitoring-executor/">Monitor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-run/">Run</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-serve/">Serve</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/yaml-spec/">YAML specification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-files/">File structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/containerize-executor/">Containerize</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/flow/">Flow</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/create-flow/">Basic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/add-executors/">Add Executors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/topologies/">Topology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/monitoring-flow/">Monitor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/health-check/">Readiness &amp; health check</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/when-things-go-wrong/">Handle exceptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/yaml-spec/">YAML specification</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../fundamentals/gateway/">Gateway</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/flow/client/">Client</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/access-flow-api/">Third-party clients</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/executor/hub/">Hub</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/hub/hub-portal/">Portal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/hub/create-hub-executor/">Create</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/hub/push-executor/">Publish</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/hub/use-hub-executor/">Use</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/sandbox/">Sandbox</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/debug-executor/">Debug</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/hub/executor-best-practices/">Best practices</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/jcloud/">JCloud</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/jcloud/basic/">Basic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/jcloud/advanced/">Advanced</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/jcloud/faq/">FAQ</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../how-to/"><svg aria-hidden="true" class="sd-octicon sd-octicon-book" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M0 1.75A.75.75 0 01.75 1h4.253c1.227 0 2.317.59 3 1.501A3.744 3.744 0 0111.006 1h4.245a.75.75 0 01.75.75v10.5a.75.75 0 01-.75.75h-4.507a2.25 2.25 0 00-1.591.659l-.622.621a.75.75 0 01-1.06 0l-.622-.621A2.25 2.25 0 005.258 13H.75a.75.75 0 01-.75-.75V1.75zm8.755 3a2.25 2.25 0 012.25-2.25H14.5v9h-3.757c-.71 0-1.4.201-1.992.572l.004-7.322zm-1.504 7.324l.004-5.073-.002-2.253A2.25 2.25 0 005.003 2.5H1.5v9h3.757a3.75 3.75 0 011.994.574z" fill-rule="evenodd"></path></svg> How-To</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/google-colab/">Use Jina on Colab with GPU/TPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/clean-code/">Write clean &amp; efficient code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/async-executors/">Use async coroutines in Executors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/scale-out/">Scale out your Executor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/gpu-executor/">Run Executors on GPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/external-executor/">Use external Executors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/flow-switch/">Add selection control to a Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/docker-compose/">Deploy with Docker Compose</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/kubernetes/">Deploy with Kubernetes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/monitoring/">Use monitoring with Jina in Kubernetes</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer References</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api-rst/"><span class="fab fa-python"></span> Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cli/"><svg aria-hidden="true" class="sd-octicon sd-octicon-terminal" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M0 2.75C0 1.784.784 1 1.75 1h12.5c.966 0 1.75.784 1.75 1.75v10.5A1.75 1.75 0 0114.25 15H1.75A1.75 1.75 0 010 13.25V2.75zm1.75-.25a.25.25 0 00-.25.25v10.5c0 .138.112.25.25.25h12.5a.25.25 0 00.25-.25V2.75a.25.25 0 00-.25-.25H1.75zM7.25 8a.75.75 0 01-.22.53l-2.25 2.25a.75.75 0 11-1.06-1.06L5.44 8 3.72 6.28a.75.75 0 111.06-1.06l2.25 2.25c.141.14.22.331.22.53zm1.5 1.5a.75.75 0 000 1.5h3a.75.75 0 000-1.5h-3z" fill-rule="evenodd"></path></svg> Command-Line Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../proto/docs/">Protocol Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../envs/">Environment Variables</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Legacy Support</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../get-started/migrate/">Migrate Jina 2 to Jina 3</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://docs2.jina.ai/">Jina 2 Documentation</a></li>
+</ul>
+
+    <p class="caption" role="heading"><span class="caption-text">Ecosystem</span></p>
+    <ul>
+        <li class="toctree-l1">
+            <a class="reference internal" href="#">
+                <img class="sidebar-ecosys-logo only-light-line" src="../../_static/search-light.svg">
+                <img class="sidebar-ecosys-logo only-dark-line" src="../../_static/search-dark.svg">
+                Jina</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://hub.jina.ai">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../_static/hub-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../_static/hub-dark.svg">
+            Jina Hub</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://finetuner.jina.ai">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../_static/finetuner-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../_static/finetuner-dark.svg">
+            Finetuner</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://docarray.jina.ai">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../_static/docarray-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../_static/docarray-dark.svg">
+            DocArray</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://clip-as-service.jina.ai">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../_static/cas-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../_static/cas-dark.svg">
+            CLIP-as-service</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://github.com/jina-ai/jcloud">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../_static/JCloud-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../_static/JCloud-dark.svg">
+            JCloud</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://now.jina.ai">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../_static/now-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../_static/now-dark.svg">
+            NOW</a></li>
+    </ul>
+</div>
+
+</div>
+
+            </div>
+            
+        </div>
+    </aside>
+    <div class="main">
+        <div class="content">
+            <div class="article-container">
+                <a href="#" class="back-to-top muted-link">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+                    </svg>
+                    <span>Back to top</span>
+                </a>
+                <div class="content-icon-container"><div class="theme-toggle-container theme-toggle-content">
+                        <button class="theme-toggle">
+                            <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+                            <svg class="theme-icon-when-auto">
+                                <use href="#svg-sun-half"></use>
+                            </svg>
+                            <svg class="theme-icon-when-dark">
+                                <use href="#svg-moon"></use>
+                            </svg>
+                            <svg class="theme-icon-when-light">
+                                <use href="#svg-sun"></use>
+                            </svg>
+                        </button>
+                    </div>
+                    <label class="toc-overlay-icon toc-content-icon"
+                           for="__toc">
+                        <div class="visually-hidden">Toggle table of contents sidebar</div>
+                        <i class="icon">
+                            <svg>
+                                <use href="#svg-toc"></use>
+                            </svg>
+                        </i>
+                    </label>
+                </div>
+                <article role="main">
+                    <section id="module-jina.hubble.helper">
+<span id="jina-hubble-helper-module"></span><h1>jina.hubble.helper module<a class="headerlink" href="#module-jina.hubble.helper" title="Permalink to this heading">#</a></h1>
+<p>Module for helper functions for Hub API.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="jina.hubble.helper.get_hub_packages_dir">
+<span class="sig-prename descclassname"><span class="pre">jina.hubble.helper.</span></span><span class="sig-name descname"><span class="pre">get_hub_packages_dir</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/helper/#get_hub_packages_dir"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.helper.get_hub_packages_dir" title="Permalink to this definition">#</a></dt>
+<dd><p>Get the path of folder where the hub packages are stored</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the path of folder where the hub packages are stored</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="jina.hubble.helper.get_cache_db">
+<span class="sig-prename descclassname"><span class="pre">jina.hubble.helper.</span></span><span class="sig-name descname"><span class="pre">get_cache_db</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/helper/#get_cache_db"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.helper.get_cache_db" title="Permalink to this definition">#</a></dt>
+<dd><p>Get the path of cache db of hub Executors</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the path of cache db of hub Executors</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="jina.hubble.helper.get_download_cache_dir">
+<span class="sig-prename descclassname"><span class="pre">jina.hubble.helper.</span></span><span class="sig-name descname"><span class="pre">get_download_cache_dir</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/helper/#get_download_cache_dir"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.helper.get_download_cache_dir" title="Permalink to this definition">#</a></dt>
+<dd><p>Get the path of cache folder where the downloading cache is stored</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the path of cache folder where the downloading cache is stored</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="jina.hubble.helper.get_request_header">
+<span class="sig-prename descclassname"><span class="pre">jina.hubble.helper.</span></span><span class="sig-name descname"><span class="pre">get_request_header</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/helper/#get_request_header"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.helper.get_request_header" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the header of request with an authorization token.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>request header</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="jina.hubble.helper.get_hubble_url_v1">
+<span class="sig-prename descclassname"><span class="pre">jina.hubble.helper.</span></span><span class="sig-name descname"><span class="pre">get_hubble_url_v1</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/helper/#get_hubble_url_v1"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.helper.get_hubble_url_v1" title="Permalink to this definition">#</a></dt>
+<dd><p>Get v1 Hubble Url</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>v1 Hubble url</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="jina.hubble.helper.get_hubble_url_v2">
+<span class="sig-prename descclassname"><span class="pre">jina.hubble.helper.</span></span><span class="sig-name descname"><span class="pre">get_hubble_url_v2</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/helper/#get_hubble_url_v2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.helper.get_hubble_url_v2" title="Permalink to this definition">#</a></dt>
+<dd><p>Get v2 Hubble Url</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>v2 Hubble url</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="jina.hubble.helper.parse_hub_uri">
+<span class="sig-prename descclassname"><span class="pre">jina.hubble.helper.</span></span><span class="sig-name descname"><span class="pre">parse_hub_uri</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uri_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/helper/#parse_hub_uri"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.helper.parse_hub_uri" title="Permalink to this definition">#</a></dt>
+<dd><p>Parse the uri of the Jina Hub executor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>uri_path</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the uri of Jina Hub executor</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>a tuple of schema, id, tag, and secret</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="jina.hubble.helper.replace_secret_of_hub_uri">
+<span class="sig-prename descclassname"><span class="pre">jina.hubble.helper.</span></span><span class="sig-name descname"><span class="pre">replace_secret_of_hub_uri</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uri_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">txt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'&lt;secret&gt;'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/helper/#replace_secret_of_hub_uri"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.helper.replace_secret_of_hub_uri" title="Permalink to this definition">#</a></dt>
+<dd><p>Replace the secret of the Jina Hub URI.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>uri_path</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the uri of Jina Hub URI</p></li>
+<li><p><strong>txt</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – text to replace</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>the new URI</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="jina.hubble.helper.is_valid_huburi">
+<span class="sig-prename descclassname"><span class="pre">jina.hubble.helper.</span></span><span class="sig-name descname"><span class="pre">is_valid_huburi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uri</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/helper/#is_valid_huburi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.helper.is_valid_huburi" title="Permalink to this definition">#</a></dt>
+<dd><p>Return True if it is a valid Hubble URI</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>uri</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the uri to test</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>True or False</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="jina.hubble.helper.md5file">
+<span class="sig-prename descclassname"><span class="pre">jina.hubble.helper.</span></span><span class="sig-name descname"><span class="pre">md5file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/helper/#md5file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.helper.md5file" title="Permalink to this definition">#</a></dt>
+<dd><p>Retrun the MD5 checksum of the file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>file_path</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code>) – the file to check md5sum</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>the MD5 checksum</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="jina.hubble.helper.unpack_package">
+<span class="sig-prename descclassname"><span class="pre">jina.hubble.helper.</span></span><span class="sig-name descname"><span class="pre">unpack_package</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_dir</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/helper/#unpack_package"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.helper.unpack_package" title="Permalink to this definition">#</a></dt>
+<dd><p>Unpack the file to the target_dir.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filepath</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code>) – the path of given file</p></li>
+<li><p><strong>target_dir</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code>) – the path of target folder</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="jina.hubble.helper.archive_package">
+<span class="sig-prename descclassname"><span class="pre">jina.hubble.helper.</span></span><span class="sig-name descname"><span class="pre">archive_package</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">package_folder</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/helper/#archive_package"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.helper.archive_package" title="Permalink to this definition">#</a></dt>
+<dd><p>Archives the given folder in zip format and return a data stream.
+:type package_folder: <code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code>
+:param package_folder: the folder path of the package
+:rtype: <code class="xref py py-class docutils literal notranslate"><span class="pre">BytesIO</span></code>
+:return: the data stream of zip content</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="jina.hubble.helper.download_with_resume">
+<span class="sig-prename descclassname"><span class="pre">jina.hubble.helper.</span></span><span class="sig-name descname"><span class="pre">download_with_resume</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">md5sum</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/helper/#download_with_resume"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.helper.download_with_resume" title="Permalink to this definition">#</a></dt>
+<dd><p>Download file from url to target_dir, and check md5sum.
+Performs a HTTP(S) download that can be restarted if prematurely terminated.
+The HTTP server must support byte ranges.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>url</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the URL to download</p></li>
+<li><p><strong>target_dir</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code>) – the target path for the file</p></li>
+<li><p><strong>filename</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – the filename of the downloaded file</p></li>
+<li><p><strong>md5sum</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – the MD5 checksum to match</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>the filepath of the downloaded file</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="jina.hubble.helper.upload_file">
+<span class="sig-prename descclassname"><span class="pre">jina.hubble.helper.</span></span><span class="sig-name descname"><span class="pre">upload_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">buffer_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dict_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">headers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stream</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'post'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/helper/#upload_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.helper.upload_file" title="Permalink to this definition">#</a></dt>
+<dd><p>Upload file to target url</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>url</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – target url</p></li>
+<li><p><strong>file_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the file name</p></li>
+<li><p><strong>buffer_data</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code>) – the data to upload</p></li>
+<li><p><strong>dict_data</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>) – the dict-style data to upload</p></li>
+<li><p><strong>headers</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>) – the request header</p></li>
+<li><p><strong>stream</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – receive stream response</p></li>
+<li><p><strong>method</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the request method</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the response of request</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="jina.hubble.helper.disk_cache_offline">
+<span class="sig-prename descclassname"><span class="pre">jina.hubble.helper.</span></span><span class="sig-name descname"><span class="pre">disk_cache_offline</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cache_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'disk_cache.db'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Calling</span> <span class="pre">{func_name}</span> <span class="pre">failed,</span> <span class="pre">using</span> <span class="pre">cached</span> <span class="pre">results'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/helper/#disk_cache_offline"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.helper.disk_cache_offline" title="Permalink to this definition">#</a></dt>
+<dd><p>Decorator which caches a function in disk and uses cache when a urllib.error.URLError exception is raised
+If the function was called with a kwarg force=True, then this decorator will always attempt to call it, otherwise,
+will always default to local cache.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cache_file</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the cache file</p></li>
+<li><p><strong>message</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the warning message shown when defaulting to cache. Use “{func_name}” if you want to print
+the function name</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>function decorator</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="jina.hubble.helper.is_requirements_installed">
+<span class="sig-prename descclassname"><span class="pre">jina.hubble.helper.</span></span><span class="sig-name descname"><span class="pre">is_requirements_installed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">requirements_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_warning</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/helper/#is_requirements_installed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.helper.is_requirements_installed" title="Permalink to this definition">#</a></dt>
+<dd><p>Return True if requirements.txt is installed locally
+:type requirements_file: <code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code>
+:param requirements_file: the requirements.txt file
+:type show_warning: <code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>
+:param show_warning: if to show a warning when a dependency is not satisfied
+:rtype: <code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>
+:return: True or False if not satisfied</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="jina.hubble.helper.install_requirements">
+<span class="sig-prename descclassname"><span class="pre">jina.hubble.helper.</span></span><span class="sig-name descname"><span class="pre">install_requirements</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">requirements_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/helper/#install_requirements"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.helper.install_requirements" title="Permalink to this definition">#</a></dt>
+<dd><p>Install modules included in requirments file
+:type requirements_file: <code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code>
+:param requirements_file: the requirements.txt file
+:type timeout: <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>
+:param timeout: the socket timeout (default = 1000s)</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jina.hubble.helper.HubbleReturnStatus">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.hubble.helper.</span></span><span class="sig-name descname"><span class="pre">HubbleReturnStatus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/helper/#HubbleReturnStatus"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.helper.HubbleReturnStatus" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="../jina.enums/#jina.enums.BetterEnum" title="jina.enums.BetterEnum"><code class="xref py py-class docutils literal notranslate"><span class="pre">BetterEnum</span></code></a></p>
+<p>Type of hubble return status enum</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.hubble.helper.HubbleReturnStatus.UNKNOWN_ERROR">
+<span class="sig-name descname"><span class="pre">UNKNOWN_ERROR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">-1</span></em><a class="headerlink" href="#jina.hubble.helper.HubbleReturnStatus.UNKNOWN_ERROR" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.hubble.helper.HubbleReturnStatus.OK">
+<span class="sig-name descname"><span class="pre">OK</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">20000</span></em><a class="headerlink" href="#jina.hubble.helper.HubbleReturnStatus.OK" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.hubble.helper.HubbleReturnStatus.PARAM_VALIDATION_ERROR">
+<span class="sig-name descname"><span class="pre">PARAM_VALIDATION_ERROR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">40001</span></em><a class="headerlink" href="#jina.hubble.helper.HubbleReturnStatus.PARAM_VALIDATION_ERROR" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.hubble.helper.HubbleReturnStatus.SQL_CREATION_ERROR">
+<span class="sig-name descname"><span class="pre">SQL_CREATION_ERROR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">40002</span></em><a class="headerlink" href="#jina.hubble.helper.HubbleReturnStatus.SQL_CREATION_ERROR" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.hubble.helper.HubbleReturnStatus.DATA_STREAM_BROKEN_ERROR">
+<span class="sig-name descname"><span class="pre">DATA_STREAM_BROKEN_ERROR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">40003</span></em><a class="headerlink" href="#jina.hubble.helper.HubbleReturnStatus.DATA_STREAM_BROKEN_ERROR" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.hubble.helper.HubbleReturnStatus.UNEXPECTED_MIME_TYPE_ERROR">
+<span class="sig-name descname"><span class="pre">UNEXPECTED_MIME_TYPE_ERROR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">40004</span></em><a class="headerlink" href="#jina.hubble.helper.HubbleReturnStatus.UNEXPECTED_MIME_TYPE_ERROR" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.hubble.helper.HubbleReturnStatus.SSO_LOGIN_REQUIRED">
+<span class="sig-name descname"><span class="pre">SSO_LOGIN_REQUIRED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">40101</span></em><a class="headerlink" href="#jina.hubble.helper.HubbleReturnStatus.SSO_LOGIN_REQUIRED" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.hubble.helper.HubbleReturnStatus.AUTHENTICATION_FAILED">
+<span class="sig-name descname"><span class="pre">AUTHENTICATION_FAILED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">40102</span></em><a class="headerlink" href="#jina.hubble.helper.HubbleReturnStatus.AUTHENTICATION_FAILED" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.hubble.helper.HubbleReturnStatus.AUTHENTICATION_REQUIRED">
+<span class="sig-name descname"><span class="pre">AUTHENTICATION_REQUIRED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">40103</span></em><a class="headerlink" href="#jina.hubble.helper.HubbleReturnStatus.AUTHENTICATION_REQUIRED" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.hubble.helper.HubbleReturnStatus.OPERATION_NOT_ALLOWED">
+<span class="sig-name descname"><span class="pre">OPERATION_NOT_ALLOWED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">40301</span></em><a class="headerlink" href="#jina.hubble.helper.HubbleReturnStatus.OPERATION_NOT_ALLOWED" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.hubble.helper.HubbleReturnStatus.INTERNAL_RESOURCE_NOT_FOUND">
+<span class="sig-name descname"><span class="pre">INTERNAL_RESOURCE_NOT_FOUND</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">40401</span></em><a class="headerlink" href="#jina.hubble.helper.HubbleReturnStatus.INTERNAL_RESOURCE_NOT_FOUND" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.hubble.helper.HubbleReturnStatus.RPC_METHOD_NOT_FOUND">
+<span class="sig-name descname"><span class="pre">RPC_METHOD_NOT_FOUND</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">40402</span></em><a class="headerlink" href="#jina.hubble.helper.HubbleReturnStatus.RPC_METHOD_NOT_FOUND" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.hubble.helper.HubbleReturnStatus.REQUESTED_ENTITY_NOT_FOUND">
+<span class="sig-name descname"><span class="pre">REQUESTED_ENTITY_NOT_FOUND</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">40403</span></em><a class="headerlink" href="#jina.hubble.helper.HubbleReturnStatus.REQUESTED_ENTITY_NOT_FOUND" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.hubble.helper.HubbleReturnStatus.INTERNAL_RESOURCE_METHOD_NOT_ALLOWED">
+<span class="sig-name descname"><span class="pre">INTERNAL_RESOURCE_METHOD_NOT_ALLOWED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">40501</span></em><a class="headerlink" href="#jina.hubble.helper.HubbleReturnStatus.INTERNAL_RESOURCE_METHOD_NOT_ALLOWED" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.hubble.helper.HubbleReturnStatus.INCOMPATIBLE_METHOD_ERROR">
+<span class="sig-name descname"><span class="pre">INCOMPATIBLE_METHOD_ERROR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">40502</span></em><a class="headerlink" href="#jina.hubble.helper.HubbleReturnStatus.INCOMPATIBLE_METHOD_ERROR" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.hubble.helper.HubbleReturnStatus.INTERNAL_RESOURCE_ID_CONFLICT">
+<span class="sig-name descname"><span class="pre">INTERNAL_RESOURCE_ID_CONFLICT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">40901</span></em><a class="headerlink" href="#jina.hubble.helper.HubbleReturnStatus.INTERNAL_RESOURCE_ID_CONFLICT" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.hubble.helper.HubbleReturnStatus.RESOURCE_POLICY_DENY">
+<span class="sig-name descname"><span class="pre">RESOURCE_POLICY_DENY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">40902</span></em><a class="headerlink" href="#jina.hubble.helper.HubbleReturnStatus.RESOURCE_POLICY_DENY" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.hubble.helper.HubbleReturnStatus.TOO_LARGE_FILE">
+<span class="sig-name descname"><span class="pre">TOO_LARGE_FILE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">41301</span></em><a class="headerlink" href="#jina.hubble.helper.HubbleReturnStatus.TOO_LARGE_FILE" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.hubble.helper.HubbleReturnStatus.INTERNAL_DATA_CORRUPTION">
+<span class="sig-name descname"><span class="pre">INTERNAL_DATA_CORRUPTION</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">42201</span></em><a class="headerlink" href="#jina.hubble.helper.HubbleReturnStatus.INTERNAL_DATA_CORRUPTION" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.hubble.helper.HubbleReturnStatus.IDENTIFIER_NAMESPACE_OCCUPIED">
+<span class="sig-name descname"><span class="pre">IDENTIFIER_NAMESPACE_OCCUPIED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">42202</span></em><a class="headerlink" href="#jina.hubble.helper.HubbleReturnStatus.IDENTIFIER_NAMESPACE_OCCUPIED" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.hubble.helper.HubbleReturnStatus.SUBMITTED_DATA_MALFORMED">
+<span class="sig-name descname"><span class="pre">SUBMITTED_DATA_MALFORMED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">42203</span></em><a class="headerlink" href="#jina.hubble.helper.HubbleReturnStatus.SUBMITTED_DATA_MALFORMED" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.hubble.helper.HubbleReturnStatus.EXTERNAL_SERVICE_FAILURE">
+<span class="sig-name descname"><span class="pre">EXTERNAL_SERVICE_FAILURE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">42204</span></em><a class="headerlink" href="#jina.hubble.helper.HubbleReturnStatus.EXTERNAL_SERVICE_FAILURE" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.hubble.helper.HubbleReturnStatus.DOWNSTREAM_SERVICE_FAILURE">
+<span class="sig-name descname"><span class="pre">DOWNSTREAM_SERVICE_FAILURE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">42205</span></em><a class="headerlink" href="#jina.hubble.helper.HubbleReturnStatus.DOWNSTREAM_SERVICE_FAILURE" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.hubble.helper.HubbleReturnStatus.SERVER_INTERNAL_ERROR">
+<span class="sig-name descname"><span class="pre">SERVER_INTERNAL_ERROR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">50001</span></em><a class="headerlink" href="#jina.hubble.helper.HubbleReturnStatus.SERVER_INTERNAL_ERROR" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.hubble.helper.HubbleReturnStatus.DOWNSTREAM_SERVICE_ERROR">
+<span class="sig-name descname"><span class="pre">DOWNSTREAM_SERVICE_ERROR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">50002</span></em><a class="headerlink" href="#jina.hubble.helper.HubbleReturnStatus.DOWNSTREAM_SERVICE_ERROR" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.hubble.helper.HubbleReturnStatus.SERVER_SUBPROCESS_ERROR">
+<span class="sig-name descname"><span class="pre">SERVER_SUBPROCESS_ERROR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">50003</span></em><a class="headerlink" href="#jina.hubble.helper.HubbleReturnStatus.SERVER_SUBPROCESS_ERROR" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.hubble.helper.HubbleReturnStatus.SANDBOX_BUILD_NOT_FOUND">
+<span class="sig-name descname"><span class="pre">SANDBOX_BUILD_NOT_FOUND</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">50004</span></em><a class="headerlink" href="#jina.hubble.helper.HubbleReturnStatus.SANDBOX_BUILD_NOT_FOUND" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.hubble.helper.HubbleReturnStatus.NOT_IMPLEMENTED_ERROR">
+<span class="sig-name descname"><span class="pre">NOT_IMPLEMENTED_ERROR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">50005</span></em><a class="headerlink" href="#jina.hubble.helper.HubbleReturnStatus.NOT_IMPLEMENTED_ERROR" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.hubble.helper.HubbleReturnStatus.RESPONSE_STREAM_CLOSED">
+<span class="sig-name descname"><span class="pre">RESPONSE_STREAM_CLOSED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">50006</span></em><a class="headerlink" href="#jina.hubble.helper.HubbleReturnStatus.RESPONSE_STREAM_CLOSED" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jina.hubble.helper.NormalizerErrorCode">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.hubble.helper.</span></span><span class="sig-name descname"><span class="pre">NormalizerErrorCode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/helper/#NormalizerErrorCode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.helper.NormalizerErrorCode" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="../jina.enums/#jina.enums.BetterEnum" title="jina.enums.BetterEnum"><code class="xref py py-class docutils literal notranslate"><span class="pre">BetterEnum</span></code></a></p>
+<p>Type of executor-normalizer error code enum</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.hubble.helper.NormalizerErrorCode.ExecutorNotFound">
+<span class="sig-name descname"><span class="pre">ExecutorNotFound</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4000</span></em><a class="headerlink" href="#jina.hubble.helper.NormalizerErrorCode.ExecutorNotFound" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.hubble.helper.NormalizerErrorCode.ExecutorExists">
+<span class="sig-name descname"><span class="pre">ExecutorExists</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4001</span></em><a class="headerlink" href="#jina.hubble.helper.NormalizerErrorCode.ExecutorExists" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.hubble.helper.NormalizerErrorCode.IllegalExecutor">
+<span class="sig-name descname"><span class="pre">IllegalExecutor</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4002</span></em><a class="headerlink" href="#jina.hubble.helper.NormalizerErrorCode.IllegalExecutor" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.hubble.helper.NormalizerErrorCode.BrokenDependency">
+<span class="sig-name descname"><span class="pre">BrokenDependency</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4003</span></em><a class="headerlink" href="#jina.hubble.helper.NormalizerErrorCode.BrokenDependency" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.hubble.helper.NormalizerErrorCode.Others">
+<span class="sig-name descname"><span class="pre">Others</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">5000</span></em><a class="headerlink" href="#jina.hubble.helper.NormalizerErrorCode.Others" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="jina.hubble.helper.get_hubble_error_message">
+<span class="sig-prename descclassname"><span class="pre">jina.hubble.helper.</span></span><span class="sig-name descname"><span class="pre">get_hubble_error_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hubble_structured_error</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/helper/#get_hubble_error_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.helper.get_hubble_error_message" title="Permalink to this definition">#</a></dt>
+<dd><p>Override some of the hubble error messages to provide better user experience
+:type hubble_structured_error: <code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>
+:param hubble_structured_error: the hubble structured error response
+:rtype: <code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]
+:returns: Tuple of overridden_msg and original_msg</p>
+</dd></dl>
+
+</section>
+
+                </article>
+            </div>
+            <footer>
+                
+                <div class="related-pages">
+                    
+                    
+                </div>
+                <div class="bottom-of-page">
+                    <div class="left-details">
+                        <div class="copyright">
+                            Copyright &#169; Jina AI Limited. All rights reserved.
+                        </div><div class="last-updated">
+                            Last updated on Dec 15, 2022</div>
+                    </div>
+                    <div class="right-details">
+                        <div class="social-btns">
+                            <a class='social-btn' href="https://github.com/jina-ai/jina" aria-label="GitHub"
+                               target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
+                            <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank"
+                               rel="noreferrer"> <i class="fab fa-slack"></i></a>
+                            <a class='social-btn' href="https://youtube.com/c/jina-ai" aria-label="YouTube"
+                               target="_blank" rel="noreferrer"> <i class="fab fa-youtube"></i></a>
+                            <a class='social-btn' href="https://twitter.com/JinaAI_" aria-label="Twitter"
+                               target="_blank" rel="noreferrer"> <i class="fab fa-twitter"></i></a>
+                            <a class='social-btn' href="https://www.linkedin.com/company/jinaai/" aria-label="LinkedIn"
+                               target="_blank" rel="noreferrer"> <i class="fab fa-linkedin"></i></a>
+                        </div>
+                    </div>
+                </div>
+                
+            </footer>
+        </div>
+        <aside class="toc-drawer">
+            
+            
+            <div class="toc-sticky toc-scroll">
+                <div class="toc-title-container">
+          <span class="toc-title">
+            Contents
+          </span>
+                </div>
+                <div class="toc-tree-container">
+                    <div class="toc-tree">
+                        <ul>
+<li><a class="reference internal" href="#">jina.hubble.helper module</a><ul>
+<li><a class="reference internal" href="#jina.hubble.helper.get_hub_packages_dir"><code class="docutils literal notranslate"><span class="pre">get_hub_packages_dir()</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.get_cache_db"><code class="docutils literal notranslate"><span class="pre">get_cache_db()</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.get_download_cache_dir"><code class="docutils literal notranslate"><span class="pre">get_download_cache_dir()</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.get_request_header"><code class="docutils literal notranslate"><span class="pre">get_request_header()</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.get_hubble_url_v1"><code class="docutils literal notranslate"><span class="pre">get_hubble_url_v1()</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.get_hubble_url_v2"><code class="docutils literal notranslate"><span class="pre">get_hubble_url_v2()</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.parse_hub_uri"><code class="docutils literal notranslate"><span class="pre">parse_hub_uri()</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.replace_secret_of_hub_uri"><code class="docutils literal notranslate"><span class="pre">replace_secret_of_hub_uri()</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.is_valid_huburi"><code class="docutils literal notranslate"><span class="pre">is_valid_huburi()</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.md5file"><code class="docutils literal notranslate"><span class="pre">md5file()</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.unpack_package"><code class="docutils literal notranslate"><span class="pre">unpack_package()</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.archive_package"><code class="docutils literal notranslate"><span class="pre">archive_package()</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.download_with_resume"><code class="docutils literal notranslate"><span class="pre">download_with_resume()</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.upload_file"><code class="docutils literal notranslate"><span class="pre">upload_file()</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.disk_cache_offline"><code class="docutils literal notranslate"><span class="pre">disk_cache_offline()</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.is_requirements_installed"><code class="docutils literal notranslate"><span class="pre">is_requirements_installed()</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.install_requirements"><code class="docutils literal notranslate"><span class="pre">install_requirements()</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.HubbleReturnStatus"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus</span></code></a><ul>
+<li><a class="reference internal" href="#jina.hubble.helper.HubbleReturnStatus.UNKNOWN_ERROR"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.UNKNOWN_ERROR</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.HubbleReturnStatus.OK"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.OK</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.HubbleReturnStatus.PARAM_VALIDATION_ERROR"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.PARAM_VALIDATION_ERROR</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.HubbleReturnStatus.SQL_CREATION_ERROR"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.SQL_CREATION_ERROR</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.HubbleReturnStatus.DATA_STREAM_BROKEN_ERROR"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.DATA_STREAM_BROKEN_ERROR</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.HubbleReturnStatus.UNEXPECTED_MIME_TYPE_ERROR"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.UNEXPECTED_MIME_TYPE_ERROR</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.HubbleReturnStatus.SSO_LOGIN_REQUIRED"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.SSO_LOGIN_REQUIRED</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.HubbleReturnStatus.AUTHENTICATION_FAILED"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.AUTHENTICATION_FAILED</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.HubbleReturnStatus.AUTHENTICATION_REQUIRED"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.AUTHENTICATION_REQUIRED</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.HubbleReturnStatus.OPERATION_NOT_ALLOWED"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.OPERATION_NOT_ALLOWED</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.HubbleReturnStatus.INTERNAL_RESOURCE_NOT_FOUND"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.INTERNAL_RESOURCE_NOT_FOUND</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.HubbleReturnStatus.RPC_METHOD_NOT_FOUND"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.RPC_METHOD_NOT_FOUND</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.HubbleReturnStatus.REQUESTED_ENTITY_NOT_FOUND"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.REQUESTED_ENTITY_NOT_FOUND</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.HubbleReturnStatus.INTERNAL_RESOURCE_METHOD_NOT_ALLOWED"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.INTERNAL_RESOURCE_METHOD_NOT_ALLOWED</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.HubbleReturnStatus.INCOMPATIBLE_METHOD_ERROR"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.INCOMPATIBLE_METHOD_ERROR</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.HubbleReturnStatus.INTERNAL_RESOURCE_ID_CONFLICT"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.INTERNAL_RESOURCE_ID_CONFLICT</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.HubbleReturnStatus.RESOURCE_POLICY_DENY"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.RESOURCE_POLICY_DENY</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.HubbleReturnStatus.TOO_LARGE_FILE"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.TOO_LARGE_FILE</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.HubbleReturnStatus.INTERNAL_DATA_CORRUPTION"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.INTERNAL_DATA_CORRUPTION</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.HubbleReturnStatus.IDENTIFIER_NAMESPACE_OCCUPIED"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.IDENTIFIER_NAMESPACE_OCCUPIED</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.HubbleReturnStatus.SUBMITTED_DATA_MALFORMED"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.SUBMITTED_DATA_MALFORMED</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.HubbleReturnStatus.EXTERNAL_SERVICE_FAILURE"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.EXTERNAL_SERVICE_FAILURE</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.HubbleReturnStatus.DOWNSTREAM_SERVICE_FAILURE"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.DOWNSTREAM_SERVICE_FAILURE</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.HubbleReturnStatus.SERVER_INTERNAL_ERROR"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.SERVER_INTERNAL_ERROR</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.HubbleReturnStatus.DOWNSTREAM_SERVICE_ERROR"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.DOWNSTREAM_SERVICE_ERROR</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.HubbleReturnStatus.SERVER_SUBPROCESS_ERROR"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.SERVER_SUBPROCESS_ERROR</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.HubbleReturnStatus.SANDBOX_BUILD_NOT_FOUND"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.SANDBOX_BUILD_NOT_FOUND</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.HubbleReturnStatus.NOT_IMPLEMENTED_ERROR"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.NOT_IMPLEMENTED_ERROR</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.HubbleReturnStatus.RESPONSE_STREAM_CLOSED"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.RESPONSE_STREAM_CLOSED</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#jina.hubble.helper.NormalizerErrorCode"><code class="docutils literal notranslate"><span class="pre">NormalizerErrorCode</span></code></a><ul>
+<li><a class="reference internal" href="#jina.hubble.helper.NormalizerErrorCode.ExecutorNotFound"><code class="docutils literal notranslate"><span class="pre">NormalizerErrorCode.ExecutorNotFound</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.NormalizerErrorCode.ExecutorExists"><code class="docutils literal notranslate"><span class="pre">NormalizerErrorCode.ExecutorExists</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.NormalizerErrorCode.IllegalExecutor"><code class="docutils literal notranslate"><span class="pre">NormalizerErrorCode.IllegalExecutor</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.NormalizerErrorCode.BrokenDependency"><code class="docutils literal notranslate"><span class="pre">NormalizerErrorCode.BrokenDependency</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.NormalizerErrorCode.Others"><code class="docutils literal notranslate"><span class="pre">NormalizerErrorCode.Others</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#jina.hubble.helper.get_hubble_error_message"><code class="docutils literal notranslate"><span class="pre">get_hubble_error_message()</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+                    </div>
+                </div>
+            </div>
+            
+            
+        </aside>
+    </div>
+    <qa-bot
+            title="Jina Bot"
+            description="Build cross-modal and multi-modal applications on the cloud"
+    >
+        <template>
+            <dl>
+                <dt>You can ask questions about our docs. Try:</dt>
+                <dd>Does Jina support Kubernetes?</dd>
+                <dd>What are the basic concepts in Jina?</dd>
+                <dd>How to share my Executor?</dd>
+            </dl>
+        </template>
+    </qa-bot>
+</div>
+<img referrerpolicy="no-referrer-when-downgrade"
+     src="https://static.scarf.sh/a.png?x-pxid=2823e771-0e1e-4320-8fde-48bc48e53262"/><script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/scripts/furo.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script src="../../_static/tabs.js"></script>
+    <script src="../../_static/design-tabs.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() { 
+            document.querySelector('qa-bot').setAttribute('server', 'https://jina-ai-jina.docsqa.jina.ai');
+        });
+        </script>
+    <script src="https://cdn.jsdelivr.net/npm/qabot@0.4"></script>
+    </body>
+</html>

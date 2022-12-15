@@ -32,10 +32,10 @@
 <link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" /><link rel="next" title="Flow" href="../../flow/" /><link rel="prev" title="Best Practices" href="../hub/executor-best-practices/" />
         <link rel="canonical" href="https://docs.jina.ai/fundamentals/executor/containerize-executor.html" />
 
-    <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.09.29"/>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
         <title>Dockerize your Executor - Jina 3.3.7 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/tabs.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
@@ -238,7 +238,7 @@
     <option value="/">latest</option>
   </select>
 </div><form class="sidebar-search-container" method="get" action="../../../search/" role="search">
-  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form>
@@ -601,7 +601,7 @@
                     </label>
                 </div>
                 <section class="tex2jax_ignore mathjax_ignore" id="dockerize-your-executor">
-<h1>Dockerize your Executor<a class="headerlink" href="#dockerize-your-executor" title="Permalink to this headline">#</a></h1>
+<h1>Dockerize your Executor<a class="headerlink" href="#dockerize-your-executor" title="Permalink to this heading">#</a></h1>
 <p>Once you have understood what an <code class="docutils literal notranslate"><span class="pre">Executor</span></code> is and how it can be used inside a <code class="docutils literal notranslate"><span class="pre">Flow</span></code>, you may be interested in wrapping this Executor into a container
 so that you can isolate its dependencies and make it ready to run in the cloud or in Kubernetes.</p>
 <p>One option is to leverage <span class="xref std std-ref">Jina Hub</span> infrastructure to make sure your Executor can run as a container.</p>
@@ -612,13 +612,13 @@ on how this image needs to be built, the main ones being:</p>
 <li><p>The Jina CLI command to start the Executor has to be the default entrypoint</p></li>
 </ul>
 <section id="prerequisites">
-<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">#</a></h2>
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this heading">#</a></h2>
 <p>To understand how a container image for an Executor is built, you need a basic understanding of <a class="reference external" href="https://docs.docker.com/">Docker</a>, both of how to write
 a <a class="reference external" href="https://docs.docker.com/engine/reference/builder/">Dockerfile</a>, and how to build a Docker image.</p>
 <p>To reproduce the example below it is required to have Docker installed locally.</p>
 </section>
 <section id="install-jina-in-the-docker-image">
-<h2>Install Jina in the Docker image<a class="headerlink" href="#install-jina-in-the-docker-image" title="Permalink to this headline">#</a></h2>
+<h2>Install Jina in the Docker image<a class="headerlink" href="#install-jina-in-the-docker-image" title="Permalink to this heading">#</a></h2>
 <p>Jina <strong>must</strong> be installed inside the Docker image. This can be achieved in one of two ways:</p>
 <ul class="simple">
 <li><p>Use a <a class="reference external" href="https://hub.docker.com/r/jinaai/jina">Jina based image</a> as the base image in your Dockerfile.
@@ -636,7 +636,7 @@ or by including the <code class="docutils literal notranslate"><span class="pre"
 </div>
 </section>
 <section id="set-jina-executor-cli-as-entrypoint">
-<h2>Set Jina Executor CLI as entrypoint<a class="headerlink" href="#set-jina-executor-cli-as-entrypoint" title="Permalink to this headline">#</a></h2>
+<h2>Set Jina Executor CLI as entrypoint<a class="headerlink" href="#set-jina-executor-cli-as-entrypoint" title="Permalink to this heading">#</a></h2>
 <p>When a containerized Executor is run inside a Flow,
 under the hood Jina executes <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">run</span></code> with extra arguments.</p>
 <p>This means that Jina assumes that whatever runs inside the container, also runs like it would in a regular OS process. Therefore, you need to make sure that
@@ -646,10 +646,10 @@ the basic entrypoint of the image calls <code class="docutils literal notranslat
 </div>
 </section>
 <section id="example-dockerized-executor">
-<h2>Example: Dockerized Executor<a class="headerlink" href="#example-dockerized-executor" title="Permalink to this headline">#</a></h2>
+<h2>Example: Dockerized Executor<a class="headerlink" href="#example-dockerized-executor" title="Permalink to this heading">#</a></h2>
 <p>Here we will show how to build a basic Executor with a dependency on another external package</p>
 <section id="write-the-executor">
-<h3>Write the Executor<a class="headerlink" href="#write-the-executor" title="Permalink to this headline">#</a></h3>
+<h3>Write the Executor<a class="headerlink" href="#write-the-executor" title="Permalink to this heading">#</a></h3>
 <p>You can define your soon-to-be-Dockerized Executor exactly like any other Executor.
 We do this here in the <code class="docutils literal notranslate"><span class="pre">my_executor.py</span></code> file.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">torch</span>  <span class="c1"># Our Executor has dependency on torch</span>
@@ -666,7 +666,7 @@ We do this here in the <code class="docutils literal notranslate"><span class="p
 </div>
 </section>
 <section id="write-the-executor-yaml-file">
-<h3>Write the Executor YAML file<a class="headerlink" href="#write-the-executor-yaml-file" title="Permalink to this headline">#</a></h3>
+<h3>Write the Executor YAML file<a class="headerlink" href="#write-the-executor-yaml-file" title="Permalink to this heading">#</a></h3>
 <p>The YAML configuration, as a minimal working example, is required to point to the file containing the Executor.</p>
 <div class="seealso admonition">
 <p class="admonition-title">More YAML options</p>
@@ -682,7 +682,7 @@ and we can define such a configuration in <code class="docutils literal notransl
 </div>
 </section>
 <section id="write-requirements-txt">
-<h3>Write <code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code><a class="headerlink" href="#write-requirements-txt" title="Permalink to this headline">#</a></h3>
+<h3>Write <code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code><a class="headerlink" href="#write-requirements-txt" title="Permalink to this heading">#</a></h3>
 <p>In this case, our Executor has only one requirement besides Jina: <code class="docutils literal notranslate"><span class="pre">torch</span></code>.</p>
 <p>In <code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code>, we specify a single requirement:</p>
 <div class="highlight-requirements.txt notranslate"><div class="highlight"><pre><span></span>torch
@@ -690,7 +690,7 @@ and we can define such a configuration in <code class="docutils literal notransl
 </div>
 </section>
 <section id="write-the-dockerfile">
-<h3>Write the Dockerfile<a class="headerlink" href="#write-the-dockerfile" title="Permalink to this headline">#</a></h3>
+<h3>Write the Dockerfile<a class="headerlink" href="#write-the-dockerfile" title="Permalink to this heading">#</a></h3>
 <p>The last step is to write a <code class="docutils literal notranslate"><span class="pre">Dockerfile</span></code>, which has to do little more than launching the Executor via the Jina CLI:</p>
 <div class="highlight-dockerfile notranslate"><div class="highlight"><pre><span></span><span class="k">FROM</span><span class="w"> </span><span class="s">jinaai/jina:3.0-py37-perf</span>
 
@@ -706,7 +706,7 @@ and we can define such a configuration in <code class="docutils literal notransl
 </div>
 </section>
 <section id="build-the-image">
-<h3>Build the image<a class="headerlink" href="#build-the-image" title="Permalink to this headline">#</a></h3>
+<h3>Build the image<a class="headerlink" href="#build-the-image" title="Permalink to this heading">#</a></h3>
 <p>At this point we have a folder structure that looks like this:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>.
 ├── my_executor.py
@@ -726,7 +726,7 @@ and we can define such a configuration in <code class="docutils literal notransl
 </div>
 </section>
 <section id="use-the-containerized-executor">
-<h3>Use the containerized Executor<a class="headerlink" href="#use-the-containerized-executor" title="Permalink to this headline">#</a></h3>
+<h3>Use the containerized Executor<a class="headerlink" href="#use-the-containerized-executor" title="Permalink to this heading">#</a></h3>
 <p>The containerized Executor can be used like any other, the only difference being the ‘docker’ prefix in the <code class="docutils literal notranslate"><span class="pre">uses</span></code>
 parameter:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Document</span>
@@ -748,7 +748,7 @@ parameter:</p>
 </div>
 </section>
 <section id="mount-volumes">
-<h3>Mount volumes<a class="headerlink" href="#mount-volumes" title="Permalink to this headline">#</a></h3>
+<h3>Mount volumes<a class="headerlink" href="#mount-volumes" title="Permalink to this heading">#</a></h3>
 <p>You can mount volumes into your dockerized Executor by passing a list of volumes to the <code class="docutils literal notranslate"><span class="pre">volumes</span></code> argument:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
     <span class="n">uses</span><span class="o">=</span><span class="s1">&#39;docker://my_containerized_executor&#39;</span><span class="p">,</span>
@@ -802,7 +802,7 @@ a workspace is recommended.</p>
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Nov 25, 2022.
+                    Last updated on Dec 15, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -870,7 +870,9 @@ a workspace is recommended.</p>
 <img referrerpolicy="no-referrer-when-downgrade" src="https://static.scarf.sh/a.png?x-pxid=1b470c1d-3b55-4d38-baa8-989bfba2a218" /><script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
     <script src="../../../_static/scripts/furo.js"></script>
     <script src="../../../_static/clipboard.min.js"></script>
     <script src="../../../_static/copybutton.js"></script>

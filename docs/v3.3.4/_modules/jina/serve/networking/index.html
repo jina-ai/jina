@@ -1,0 +1,1594 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex/" /><link rel="search" title="Search" href="../../../../search/" />
+        <link rel="canonical" href="https://docs.jina.ai/_modules/jina/serve/networking.html" />
+
+    <link rel="shortcut icon" href="../../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
+        <title>jina.serve.networking - Jina 3.3.4 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/tabs.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/main.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/docbot.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #ffffff;
+  --color-code-foreground: #4d4d4d;
+  --color-brand-primary: #009191;
+  --color-brand-content: #009191;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #FBCB67;
+  --color-brand-content: #FBCB67;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #FBCB67;
+  --color-brand-content: #FBCB67;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+    <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+    <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<div class="announcement" id="announcement">
+    <aside class="announcement-content">
+         
+    <a href="https://www.meetup.com/jina-community-meetup/events/285054198/">Join our Office Hours on April 28th at 19:00 CET </a>
+     
+    </aside>
+</div>
+
+<div class="page">
+    <header class="mobile-header" id="mobile-header">
+        <div class="header-left">
+            <label class="nav-overlay-icon" for="__navigation">
+                <div class="visually-hidden">Toggle site navigation sidebar</div>
+                <i class="icon">
+                    <svg>
+                        <use href="#svg-menu"></use>
+                    </svg>
+                </i>
+            </label>
+        </div>
+        <div class="header-center">
+            <a href="../../../../">
+                <div class="brand">Jina 3.3.4 documentation</div>
+            </a>
+        </div>
+        <div class="header-right">
+            <div class="theme-toggle-container theme-toggle-header">
+                <button class="theme-toggle">
+                    <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+                    <svg class="theme-icon-when-auto">
+                        <use href="#svg-sun-half"></use>
+                    </svg>
+                    <svg class="theme-icon-when-dark">
+                        <use href="#svg-moon"></use>
+                    </svg>
+                    <svg class="theme-icon-when-light">
+                        <use href="#svg-sun"></use>
+                    </svg>
+                </button>
+            </div>
+            <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+                <div class="visually-hidden">Toggle table of contents sidebar</div>
+                <i class="icon">
+                    <svg>
+                        <use href="#svg-toc"></use>
+                    </svg>
+                </i>
+            </label>
+        </div>
+    </header>
+    <aside class="sidebar-drawer" id="sidebar-drawer">
+        <div class="sidebar-container">
+            
+            <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../../">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo only-light" src="../../../../_static/logo-light.svg" alt="Light Logo" />
+    <img class="sidebar-logo only-dark" src="../../../../_static/logo-dark.svg" alt="Dark Logo" />
+  </div>
+  
+  
+</a>
+<script>
+  function setPrefix(prefix){
+    window.location.href = prefix
+  }
+</script>
+<script defer>
+  fetch(`https://${window.location.host}/_versions.json`)
+  .then((resp) => resp.json())
+  .then((data) => {
+    var versionSelector = document.getElementsByClassName("version-select")[0];
+    var currentPrefix = window.location.href.toString().split(window.location.host)[1].split('/')[1];
+
+    for(var i = 0; i < data.length; i++){
+      var option = document.createElement("option");
+      option.innerHTML = data[i].version;
+      option.value = "/" + data[i].version;
+      versionSelector.appendChild(option);
+      if(currentPrefix === data[i].version){
+        versionSelector.selectedIndex = i + 1;
+      }
+    }
+  })
+  .catch((err) => console.log(err));
+</script>
+<div class="sd-d-flex-row sd-align-major-spaced">
+  <a class="github-button" href="https://github.com/jina-ai/jina" data-icon="octicon-star" data-show-count="true" aria-label="Star jina-ai/jina on GitHub" style="opacity: 0;">Star</a>
+  <select onChange="setPrefix(this.value)" class="version-select">
+    <option value="/">latest</option>
+  </select>
+</div><form class="sidebar-search-container" method="get" action="../../../../search/" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+    <p class="caption" role="heading"><span class="caption-text">Get started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../get-started/neural-search/">What is Neural Search?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../get-started/what-is-jina/">What is Jina?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../get-started/what-is-jina/#comparing-to-alternatives">Comparing to Alternatives</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../get-started/install/">Install</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../get-started/install/windows/">Jina on Windows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../get-started/install/troubleshooting/">Troubleshooting</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../get-started/create-app/">Create a New Project</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../get-started/hello-world/">Run Quick Demos</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../get-started/hello-world/fashion/">Fashion image search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../get-started/hello-world/covid-19-chatbot/">Covid-19 chatbot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../get-started/hello-world/multimodal/">Multimodal search</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../fundamentals/architecture-overview/">Architecture Overview</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../fundamentals/executor/">Executor</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../fundamentals/executor/executor-api/">Executor API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../fundamentals/executor/executor-in-flow/">Executors inside a Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../fundamentals/executor/repository-structure/">Executor File Structure</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../fundamentals/executor/hub/">Share Executors via Jina Hub</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../fundamentals/executor/hub/hub-portal/">Hub Portal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../fundamentals/executor/hub/create-hub-executor/">Create Executor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../fundamentals/executor/hub/push-executor/">Publish Executor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../fundamentals/executor/hub/use-hub-executor/">Use Hub Executors Locally</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../how-to/sandbox/">Use Hub Executor Remotely</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../fundamentals/executor/hub/executor-best-practices/">Best Practices</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../fundamentals/executor/containerize-executor/">Dockerize your Executor</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../fundamentals/flow/">Flow</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../fundamentals/flow/create-flow/">Create a Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../fundamentals/flow/flow-api/">Configure Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../fundamentals/flow/access-flow-api/">Access Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../fundamentals/flow/client/">Python Client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../fundamentals/flow/remarks/">Remarks</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../fundamentals/clean-code/">Clean &amp; Efficient Code</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">How-to</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../how-to/deploy/">Deploy</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../how-to/docker-compose/">How to run Jina with Docker Compose</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../how-to/kubernetes/">How to deploy Jina on Kubernetes</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../how-to/executor/">Executor</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../how-to/async-executors/">How to use async coroutines in Executors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../how-to/scale-out/">How to Scale Out Your Executor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../how-to/gpu-executor/">How to run Executors on GPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../how-to/external-executor/">How to use external Executors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../how-to/flow-switch/">How to build switches in a Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../how-to/debug-executor/">How to Debug Executor</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../get-started/migrate/">Migration to Jina 3</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../api/">Python API</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../api/jina/">jina package</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.clients/">jina.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../api/jina.clients.base/">jina.clients.base package</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.clients.base.grpc/">jina.clients.base.grpc module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.clients.base.helper/">jina.clients.base.helper module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.clients.base.http/">jina.clients.base.http module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.clients.base.websocket/">jina.clients.base.websocket module</a></li>
+</ul>
+</li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../api/jina.clients.request/">jina.clients.request package</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.clients.request.asyncio/">jina.clients.request.asyncio module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.clients.request.helper/">jina.clients.request.helper module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.clients.grpc/">jina.clients.grpc module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.clients.helper/">jina.clients.helper module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.clients.http/">jina.clients.http module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.clients.mixin/">jina.clients.mixin module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.clients.websocket/">jina.clients.websocket module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.helloworld/">jina.helloworld package</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../api/jina.helloworld.chatbot/">jina.helloworld.chatbot package</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.helloworld.chatbot.app/">jina.helloworld.chatbot.app module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.helloworld.chatbot.my_executors/">jina.helloworld.chatbot.my_executors module</a></li>
+</ul>
+</li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../api/jina.helloworld.fashion/">jina.helloworld.fashion package</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.helloworld.fashion.app/">jina.helloworld.fashion.app module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.helloworld.fashion.helper/">jina.helloworld.fashion.helper module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.helloworld.fashion.my_executors/">jina.helloworld.fashion.my_executors module</a></li>
+</ul>
+</li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../api/jina.helloworld.multimodal/">jina.helloworld.multimodal package</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.helloworld.multimodal.app/">jina.helloworld.multimodal.app module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.helloworld.multimodal.my_executors/">jina.helloworld.multimodal.my_executors module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.helloworld.fork/">jina.helloworld.fork module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.hubble/">jina.hubble package</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.hubble.helper/">jina.hubble.helper module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.hubble.hubapi/">jina.hubble.hubapi module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.hubble.hubio/">jina.hubble.hubio module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.jaml/">jina.jaml package</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../api/jina.jaml.parsers/">jina.jaml.parsers package</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" role="switch" type="checkbox"/><label for="toctree-checkbox-19"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5 has-children"><a class="reference internal" href="../../../../api/jina.jaml.parsers.default/">jina.jaml.parsers.default package</a><input class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" role="switch" type="checkbox"/><label for="toctree-checkbox-20"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l6"><a class="reference internal" href="../../../../api/jina.jaml.parsers.default.v1/">jina.jaml.parsers.default.v1 module</a></li>
+</ul>
+</li>
+<li class="toctree-l5 has-children"><a class="reference internal" href="../../../../api/jina.jaml.parsers.executor/">jina.jaml.parsers.executor package</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" role="switch" type="checkbox"/><label for="toctree-checkbox-21"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l6"><a class="reference internal" href="../../../../api/jina.jaml.parsers.executor.legacy/">jina.jaml.parsers.executor.legacy module</a></li>
+</ul>
+</li>
+<li class="toctree-l5 has-children"><a class="reference internal" href="../../../../api/jina.jaml.parsers.flow/">jina.jaml.parsers.flow package</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l6"><a class="reference internal" href="../../../../api/jina.jaml.parsers.flow.v1/">jina.jaml.parsers.flow.v1 module</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.jaml.parsers.base/">jina.jaml.parsers.base module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.jaml.helper/">jina.jaml.helper module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.logging/">jina.logging package</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.logging.formatter/">jina.logging.formatter module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.logging.logger/">jina.logging.logger module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.logging.predefined/">jina.logging.predefined module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.logging.profile/">jina.logging.profile module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.orchestrate/">jina.orchestrate package</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" role="switch" type="checkbox"/><label for="toctree-checkbox-24"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../api/jina.orchestrate.deployments/">jina.orchestrate.deployments package</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" role="switch" type="checkbox"/><label for="toctree-checkbox-25"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5 has-children"><a class="reference internal" href="../../../../api/jina.orchestrate.deployments.config/">jina.orchestrate.deployments.config package</a><input class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" role="switch" type="checkbox"/><label for="toctree-checkbox-26"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l6 has-children"><a class="reference internal" href="../../../../api/jina.orchestrate.deployments.config.k8slib/">jina.orchestrate.deployments.config.k8slib package</a><input class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" role="switch" type="checkbox"/><label for="toctree-checkbox-27"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l7"><a class="reference internal" href="../../../../api/jina.orchestrate.deployments.config.k8slib.kubernetes_deployment/">jina.orchestrate.deployments.config.k8slib.kubernetes_deployment module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="../../../../api/jina.orchestrate.deployments.config.k8slib.kubernetes_tools/">jina.orchestrate.deployments.config.k8slib.kubernetes_tools module</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="../../../../api/jina.orchestrate.deployments.config.docker_compose/">jina.orchestrate.deployments.config.docker_compose module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../../../../api/jina.orchestrate.deployments.config.helper/">jina.orchestrate.deployments.config.helper module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../../../../api/jina.orchestrate.deployments.config.k8s/">jina.orchestrate.deployments.config.k8s module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../api/jina.orchestrate.flow/">jina.orchestrate.flow package</a><input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" role="switch" type="checkbox"/><label for="toctree-checkbox-28"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.orchestrate.flow.asyncio/">jina.orchestrate.flow.asyncio module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.orchestrate.flow.base/">jina.orchestrate.flow.base module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.orchestrate.flow.builder/">jina.orchestrate.flow.builder module</a></li>
+</ul>
+</li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../api/jina.orchestrate.pods/">jina.orchestrate.pods package</a><input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" role="switch" type="checkbox"/><label for="toctree-checkbox-29"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.orchestrate.pods.container/">jina.orchestrate.pods.container module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.orchestrate.pods.container_helper/">jina.orchestrate.pods.container_helper module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.orchestrate.pods.factory/">jina.orchestrate.pods.factory module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.orchestrate.pods.helper/">jina.orchestrate.pods.helper module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.orchestrate.helper/">jina.orchestrate.helper module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.parsers/">jina.parsers package</a><input class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" role="switch" type="checkbox"/><label for="toctree-checkbox-30"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../api/jina.parsers.hubble/">jina.parsers.hubble package</a><input class="toctree-checkbox" id="toctree-checkbox-31" name="toctree-checkbox-31" role="switch" type="checkbox"/><label for="toctree-checkbox-31"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.parsers.hubble.new/">jina.parsers.hubble.new module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.parsers.hubble.pull/">jina.parsers.hubble.pull module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.parsers.hubble.push/">jina.parsers.hubble.push module</a></li>
+</ul>
+</li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../api/jina.parsers.orchestrate/">jina.parsers.orchestrate package</a><input class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" role="switch" type="checkbox"/><label for="toctree-checkbox-32"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5 has-children"><a class="reference internal" href="../../../../api/jina.parsers.orchestrate.runtimes/">jina.parsers.orchestrate.runtimes package</a><input class="toctree-checkbox" id="toctree-checkbox-33" name="toctree-checkbox-33" role="switch" type="checkbox"/><label for="toctree-checkbox-33"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l6"><a class="reference internal" href="../../../../api/jina.parsers.orchestrate.runtimes.container/">jina.parsers.orchestrate.runtimes.container module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../../../../api/jina.parsers.orchestrate.runtimes.distributed/">jina.parsers.orchestrate.runtimes.distributed module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../../../../api/jina.parsers.orchestrate.runtimes.head/">jina.parsers.orchestrate.runtimes.head module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../../../../api/jina.parsers.orchestrate.runtimes.remote/">jina.parsers.orchestrate.runtimes.remote module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../../../../api/jina.parsers.orchestrate.runtimes.worker/">jina.parsers.orchestrate.runtimes.worker module</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.parsers.orchestrate.base/">jina.parsers.orchestrate.base module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.parsers.orchestrate.deployment/">jina.parsers.orchestrate.deployment module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.parsers.orchestrate.pod/">jina.parsers.orchestrate.pod module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.parsers.base/">jina.parsers.base module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.parsers.client/">jina.parsers.client module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.parsers.create/">jina.parsers.create module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.parsers.deprecated/">jina.parsers.deprecated module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.parsers.export_api/">jina.parsers.export_api module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.parsers.flow/">jina.parsers.flow module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.parsers.helloworld/">jina.parsers.helloworld module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.parsers.helper/">jina.parsers.helper module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.parsers.ping/">jina.parsers.ping module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.proto/">jina.proto package</a><input class="toctree-checkbox" id="toctree-checkbox-34" name="toctree-checkbox-34" role="switch" type="checkbox"/><label for="toctree-checkbox-34"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.proto.jina_pb2/">jina.proto.jina_pb2 module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.proto.jina_pb2_grpc/">jina.proto.jina_pb2_grpc module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.proto.serializer/">jina.proto.serializer module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.schemas/">jina.schemas package</a><input class="toctree-checkbox" id="toctree-checkbox-35" name="toctree-checkbox-35" role="switch" type="checkbox"/><label for="toctree-checkbox-35"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.schemas.deployment/">jina.schemas.deployment module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.schemas.executor/">jina.schemas.executor module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.schemas.flow/">jina.schemas.flow module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.schemas.helper/">jina.schemas.helper module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.schemas.meta/">jina.schemas.meta module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.serve/">jina.serve package</a><input class="toctree-checkbox" id="toctree-checkbox-36" name="toctree-checkbox-36" role="switch" type="checkbox"/><label for="toctree-checkbox-36"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../api/jina.serve.executors/">jina.serve.executors package</a><input class="toctree-checkbox" id="toctree-checkbox-37" name="toctree-checkbox-37" role="switch" type="checkbox"/><label for="toctree-checkbox-37"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.serve.executors.decorators/">jina.serve.executors.decorators module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.serve.executors.metas/">jina.serve.executors.metas module</a></li>
+</ul>
+</li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../api/jina.serve.runtimes/">jina.serve.runtimes package</a><input class="toctree-checkbox" id="toctree-checkbox-38" name="toctree-checkbox-38" role="switch" type="checkbox"/><label for="toctree-checkbox-38"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5 has-children"><a class="reference internal" href="../../../../api/jina.serve.runtimes.gateway/">jina.serve.runtimes.gateway package</a><input class="toctree-checkbox" id="toctree-checkbox-39" name="toctree-checkbox-39" role="switch" type="checkbox"/><label for="toctree-checkbox-39"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l6 has-children"><a class="reference internal" href="../../../../api/jina.serve.runtimes.gateway.graph/">jina.serve.runtimes.gateway.graph package</a><input class="toctree-checkbox" id="toctree-checkbox-40" name="toctree-checkbox-40" role="switch" type="checkbox"/><label for="toctree-checkbox-40"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l7"><a class="reference internal" href="../../../../api/jina.serve.runtimes.gateway.graph.topology_graph/">jina.serve.runtimes.gateway.graph.topology_graph module</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="../../../../api/jina.serve.runtimes.gateway.grpc/">jina.serve.runtimes.gateway.grpc package</a></li>
+<li class="toctree-l6 has-children"><a class="reference internal" href="../../../../api/jina.serve.runtimes.gateway.http/">jina.serve.runtimes.gateway.http package</a><input class="toctree-checkbox" id="toctree-checkbox-41" name="toctree-checkbox-41" role="switch" type="checkbox"/><label for="toctree-checkbox-41"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l7"><a class="reference internal" href="../../../../api/jina.serve.runtimes.gateway.http.app/">jina.serve.runtimes.gateway.http.app module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="../../../../api/jina.serve.runtimes.gateway.http.models/">jina.serve.runtimes.gateway.http.models module</a></li>
+</ul>
+</li>
+<li class="toctree-l6 has-children"><a class="reference internal" href="../../../../api/jina.serve.runtimes.gateway.websocket/">jina.serve.runtimes.gateway.websocket package</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" role="switch" type="checkbox"/><label for="toctree-checkbox-42"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l7"><a class="reference internal" href="../../../../api/jina.serve.runtimes.gateway.websocket.app/">jina.serve.runtimes.gateway.websocket.app module</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="../../../../api/jina.serve.runtimes.gateway.request_handling/">jina.serve.runtimes.gateway.request_handling module</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.serve.runtimes.head/">jina.serve.runtimes.head package</a></li>
+<li class="toctree-l5 has-children"><a class="reference internal" href="../../../../api/jina.serve.runtimes.request_handlers/">jina.serve.runtimes.request_handlers package</a><input class="toctree-checkbox" id="toctree-checkbox-43" name="toctree-checkbox-43" role="switch" type="checkbox"/><label for="toctree-checkbox-43"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l6"><a class="reference internal" href="../../../../api/jina.serve.runtimes.request_handlers.data_request_handler/">jina.serve.runtimes.request_handlers.data_request_handler module</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.serve.runtimes.worker/">jina.serve.runtimes.worker package</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.serve.runtimes.asyncio/">jina.serve.runtimes.asyncio module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.serve.runtimes.base/">jina.serve.runtimes.base module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.serve.runtimes.monitoring/">jina.serve.runtimes.monitoring module</a></li>
+</ul>
+</li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../api/jina.serve.stream/">jina.serve.stream package</a><input class="toctree-checkbox" id="toctree-checkbox-44" name="toctree-checkbox-44" role="switch" type="checkbox"/><label for="toctree-checkbox-44"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.serve.stream.helper/">jina.serve.stream.helper module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.serve.networking/">jina.serve.networking module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.types/">jina.types package</a><input class="toctree-checkbox" id="toctree-checkbox-45" name="toctree-checkbox-45" role="switch" type="checkbox"/><label for="toctree-checkbox-45"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../api/jina.types.request/">jina.types.request package</a><input class="toctree-checkbox" id="toctree-checkbox-46" name="toctree-checkbox-46" role="switch" type="checkbox"/><label for="toctree-checkbox-46"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.types.request.control/">jina.types.request.control module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.types.request.data/">jina.types.request.data module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.types.mixin/">jina.types.mixin module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.checker/">jina.checker module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.enums/">jina.enums module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.excepts/">jina.excepts module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.helper/">jina.helper module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.importer/">jina.importer module</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../api/cli/">cli package</a><input class="toctree-checkbox" id="toctree-checkbox-47" name="toctree-checkbox-47" role="switch" type="checkbox"/><label for="toctree-checkbox-47"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/cli.api/">cli.api module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/cli.autocomplete/">cli.autocomplete module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/cli.export/">cli.export module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/cli.known_plugins/">cli.known_plugins module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/cli.lookup/">cli.lookup module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../cli/">Command-Line Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../proto/docs/">Protocol Documentation</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://docs2.jina.ai/">Jina 2 Documentation</a></li>
+</ul>
+
+    <p class="caption" role="heading"><span class="caption-text">Ecosystem</span></p>
+    <ul>
+        <li class="toctree-l1">
+            <a class="reference internal" href="#">
+                <img class="sidebar-ecosys-logo only-light-line" src="../../../../_static/search-light.svg">
+                <img class="sidebar-ecosys-logo only-dark-line" src="../../../../_static/search-dark.svg">
+                Jina</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://hub.jina.ai">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../../../_static/hub-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../../../_static/hub-dark.svg">
+            Jina Hub</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://finetuner.jina.ai">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../../../_static/finetuner-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../../../_static/finetuner-dark.svg">
+            Finetuner</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://docarray.jina.ai">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../../../_static/docarray-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../../../_static/docarray-dark.svg">
+            DocArray</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://clip-as-service.jina.ai">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../../../_static/cas-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../../../_static/cas-dark.svg">
+            CLIP-as-service</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://github.com/jina-ai/jcloud">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../../../_static/JCloud-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../../../_static/JCloud-dark.svg">
+            JCloud</a></li>
+    </ul>
+</div>
+
+</div>
+
+            </div>
+            
+        </div>
+    </aside>
+    <div class="main">
+        <div class="content">
+            <article role="main">
+                <div class="content-icon-container">
+                    <div class="theme-toggle-container theme-toggle-content">
+                        <button class="theme-toggle">
+                            <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+                            <svg class="theme-icon-when-auto">
+                                <use href="#svg-sun-half"></use>
+                            </svg>
+                            <svg class="theme-icon-when-dark">
+                                <use href="#svg-moon"></use>
+                            </svg>
+                            <svg class="theme-icon-when-light">
+                                <use href="#svg-sun"></use>
+                            </svg>
+                        </button>
+                    </div>
+                    <label class="toc-overlay-icon toc-content-icon"
+                           for="__toc">
+                        <div class="visually-hidden">Toggle table of contents sidebar</div>
+                        <i class="icon">
+                            <svg>
+                                <use href="#svg-toc"></use>
+                            </svg>
+                        </i>
+                    </label>
+                </div>
+                <h1>Source code for jina.serve.networking</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">import</span> <span class="nn">contextlib</span>
+<span class="kn">import</span> <span class="nn">ipaddress</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">from</span> <span class="nn">urllib.parse</span> <span class="kn">import</span> <span class="n">urlparse</span>
+
+<span class="kn">import</span> <span class="nn">grpc</span>
+<span class="kn">from</span> <span class="nn">grpc.aio</span> <span class="kn">import</span> <span class="n">AioRpcError</span>
+<span class="kn">from</span> <span class="nn">grpc_reflection.v1alpha.reflection_pb2</span> <span class="kn">import</span> <span class="n">ServerReflectionRequest</span>
+<span class="kn">from</span> <span class="nn">grpc_reflection.v1alpha.reflection_pb2_grpc</span> <span class="kn">import</span> <span class="n">ServerReflectionStub</span>
+
+<span class="kn">from</span> <span class="nn">jina.enums</span> <span class="kn">import</span> <span class="n">PollingType</span>
+<span class="kn">from</span> <span class="nn">jina.importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
+<span class="kn">from</span> <span class="nn">jina.logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
+<span class="kn">from</span> <span class="nn">jina.proto</span> <span class="kn">import</span> <span class="n">jina_pb2_grpc</span>
+<span class="kn">from</span> <span class="nn">jina.types.request</span> <span class="kn">import</span> <span class="n">Request</span>
+<span class="kn">from</span> <span class="nn">jina.types.request.control</span> <span class="kn">import</span> <span class="n">ControlRequest</span>
+<span class="kn">from</span> <span class="nn">jina.types.request.data</span> <span class="kn">import</span> <span class="n">DataRequest</span>
+
+<span class="n">TLS_PROTOCOL_SCHEMES</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;grpcs&#39;</span><span class="p">,</span> <span class="s1">&#39;https&#39;</span><span class="p">,</span> <span class="s1">&#39;wss&#39;</span><span class="p">]</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">prometheus_client</span> <span class="kn">import</span> <span class="n">CollectorRegistry</span>
+
+
+<div class="viewcode-block" id="ReplicaList"><a class="viewcode-back" href="../../../../api/jina.serve.networking/#jina.serve.networking.ReplicaList">[docs]</a><span class="k">class</span> <span class="nc">ReplicaList</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Maintains a list of connections to replicas and uses round robin for selecting a replica</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">summary</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_address_to_connection_idx</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_address_to_channel</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rr_counter</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">summary</span> <span class="o">=</span> <span class="n">summary</span>
+
+<div class="viewcode-block" id="ReplicaList.add_connection"><a class="viewcode-back" href="../../../../api/jina.serve.networking/#jina.serve.networking.ReplicaList.add_connection">[docs]</a>    <span class="k">def</span> <span class="nf">add_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add connection with address to the connection list</span>
+<span class="sd">        :param address: Target address of this connection</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">address</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_address_to_connection_idx</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">parsed_address</span> <span class="o">=</span> <span class="n">urlparse</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
+                <span class="n">address</span> <span class="o">=</span> <span class="n">parsed_address</span><span class="o">.</span><span class="n">netloc</span> <span class="k">if</span> <span class="n">parsed_address</span><span class="o">.</span><span class="n">netloc</span> <span class="k">else</span> <span class="n">address</span>
+                <span class="n">use_tls</span> <span class="o">=</span> <span class="n">parsed_address</span><span class="o">.</span><span class="n">scheme</span> <span class="ow">in</span> <span class="n">TLS_PROTOCOL_SCHEMES</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="n">use_tls</span> <span class="o">=</span> <span class="kc">False</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_address_to_connection_idx</span><span class="p">[</span><span class="n">address</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="p">)</span>
+            <span class="n">stubs</span><span class="p">,</span> <span class="n">channel</span> <span class="o">=</span> <span class="n">GrpcConnectionPool</span><span class="o">.</span><span class="n">create_async_channel_stub</span><span class="p">(</span>
+                <span class="n">address</span><span class="p">,</span> <span class="n">tls</span><span class="o">=</span><span class="n">use_tls</span><span class="p">,</span> <span class="n">summary</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">summary</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_address_to_channel</span><span class="p">[</span><span class="n">address</span><span class="p">]</span> <span class="o">=</span> <span class="n">channel</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">stubs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ReplicaList.remove_connection"><a class="viewcode-back" href="../../../../api/jina.serve.networking/#jina.serve.networking.ReplicaList.remove_connection">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">remove_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Remove connection with address from the connection list</span>
+<span class="sd">        :param address: Remove connection for this address</span>
+<span class="sd">        :returns: The removed connection or None if there was not any for the given address</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">address</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_address_to_connection_idx</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_rr_counter</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_rr_counter</span> <span class="o">%</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="k">else</span> <span class="mi">0</span>
+            <span class="p">)</span>
+            <span class="n">idx_to_delete</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_address_to_connection_idx</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
+
+            <span class="n">popped_connection</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">idx_to_delete</span><span class="p">)</span>
+            <span class="c1"># we should handle graceful termination better, 0.5 is a rather random number here</span>
+            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_address_to_channel</span><span class="p">[</span><span class="n">address</span><span class="p">]</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_address_to_channel</span><span class="p">[</span><span class="n">address</span><span class="p">]</span>
+            <span class="c1"># update the address/idx mapping</span>
+            <span class="k">for</span> <span class="n">address</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_address_to_connection_idx</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_address_to_connection_idx</span><span class="p">[</span><span class="n">address</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">idx_to_delete</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_address_to_connection_idx</span><span class="p">[</span><span class="n">address</span><span class="p">]</span> <span class="o">-=</span> <span class="mi">1</span>
+
+            <span class="k">return</span> <span class="n">popped_connection</span>
+
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="ReplicaList.get_next_connection"><a class="viewcode-back" href="../../../../api/jina.serve.networking/#jina.serve.networking.ReplicaList.get_next_connection">[docs]</a>    <span class="k">def</span> <span class="nf">get_next_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a connection from the list. Strategy is round robin</span>
+<span class="sd">        :returns: A connection from the pool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">connection</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_rr_counter</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+            <span class="c1"># This can happen as a race condition while removing connections</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_rr_counter</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">connection</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_rr_counter</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rr_counter</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_rr_counter</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">connection</span></div>
+
+<div class="viewcode-block" id="ReplicaList.get_all_connections"><a class="viewcode-back" href="../../../../api/jina.serve.networking/#jina.serve.networking.ReplicaList.get_all_connections">[docs]</a>    <span class="k">def</span> <span class="nf">get_all_connections</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns all available connections</span>
+<span class="sd">        :returns: A complete list of all connections from the pool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span></div>
+
+<div class="viewcode-block" id="ReplicaList.has_connection"><a class="viewcode-back" href="../../../../api/jina.serve.networking/#jina.serve.networking.ReplicaList.has_connection">[docs]</a>    <span class="k">def</span> <span class="nf">has_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks if a connection for ip exists in the list</span>
+<span class="sd">        :param address: The address to check</span>
+<span class="sd">        :returns: True if a connection for the ip exists in the list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">address</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_address_to_connection_idx</span></div>
+
+<div class="viewcode-block" id="ReplicaList.has_connections"><a class="viewcode-back" href="../../../../api/jina.serve.networking/#jina.serve.networking.ReplicaList.has_connections">[docs]</a>    <span class="k">def</span> <span class="nf">has_connections</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks if this contains any connection</span>
+<span class="sd">        :returns: True if any connection is managed, False otherwise</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_address_to_connection_idx</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span></div>
+
+<div class="viewcode-block" id="ReplicaList.close"><a class="viewcode-back" href="../../../../api/jina.serve.networking/#jina.serve.networking.ReplicaList.close">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Close all connections and clean up internal state</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">address</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_address_to_channel</span><span class="p">:</span>
+            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_address_to_channel</span><span class="p">[</span><span class="n">address</span><span class="p">]</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_address_to_channel</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_address_to_connection_idx</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rr_counter</span> <span class="o">=</span> <span class="mi">0</span></div></div>
+
+
+<div class="viewcode-block" id="GrpcConnectionPool"><a class="viewcode-back" href="../../../../api/jina.serve.networking/#jina.serve.networking.GrpcConnectionPool">[docs]</a><span class="k">class</span> <span class="nc">GrpcConnectionPool</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Manages a list of grpc connections.</span>
+
+<span class="sd">    :param logger: the logger to use</span>
+<span class="sd">    :param compression: The compression algorithm to be used by this GRPCConnectionPool when sending data to GRPC</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">K8S_PORT_USES_AFTER</span> <span class="o">=</span> <span class="mi">8082</span>
+    <span class="n">K8S_PORT_USES_BEFORE</span> <span class="o">=</span> <span class="mi">8081</span>
+    <span class="n">K8S_PORT</span> <span class="o">=</span> <span class="mi">8080</span>
+
+<div class="viewcode-block" id="GrpcConnectionPool.ConnectionStubs"><a class="viewcode-back" href="../../../../api/jina.serve.networking/#jina.serve.networking.GrpcConnectionPool.ConnectionStubs">[docs]</a>    <span class="k">class</span> <span class="nc">ConnectionStubs</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Maintains a list of grpc stubs available for a particular connection</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">STUB_MAPPING</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;jina.JinaControlRequestRPC&#39;</span><span class="p">:</span> <span class="n">jina_pb2_grpc</span><span class="o">.</span><span class="n">JinaControlRequestRPCStub</span><span class="p">,</span>
+            <span class="s1">&#39;jina.JinaDataRequestRPC&#39;</span><span class="p">:</span> <span class="n">jina_pb2_grpc</span><span class="o">.</span><span class="n">JinaDataRequestRPCStub</span><span class="p">,</span>
+            <span class="s1">&#39;jina.JinaSingleDataRequestRPC&#39;</span><span class="p">:</span> <span class="n">jina_pb2_grpc</span><span class="o">.</span><span class="n">JinaSingleDataRequestRPCStub</span><span class="p">,</span>
+            <span class="s1">&#39;jina.JinaRPC&#39;</span><span class="p">:</span> <span class="n">jina_pb2_grpc</span><span class="o">.</span><span class="n">JinaRPCStub</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">summary</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">address</span> <span class="o">=</span> <span class="n">address</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">channel</span> <span class="o">=</span> <span class="n">channel</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_summary_time</span> <span class="o">=</span> <span class="n">summary</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_initialized</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="c1"># This has to be done lazily, because the target endpoint may not be available</span>
+        <span class="c1"># when a connection is added</span>
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">_init_stubs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="n">available_services</span> <span class="o">=</span> <span class="k">await</span> <span class="n">GrpcConnectionPool</span><span class="o">.</span><span class="n">get_available_services</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">channel</span>
+            <span class="p">)</span>
+            <span class="n">stubs</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">service</span> <span class="ow">in</span> <span class="n">available_services</span><span class="p">:</span>
+                <span class="n">stubs</span><span class="p">[</span><span class="n">service</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">STUB_MAPPING</span><span class="p">[</span><span class="n">service</span><span class="p">](</span><span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">control_stub</span> <span class="o">=</span> <span class="n">stubs</span><span class="p">[</span><span class="s1">&#39;jina.JinaControlRequestRPC&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data_list_stub</span> <span class="o">=</span> <span class="n">stubs</span><span class="p">[</span><span class="s1">&#39;jina.JinaDataRequestRPC&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">single_data_stub</span> <span class="o">=</span> <span class="n">stubs</span><span class="p">[</span><span class="s1">&#39;jina.JinaSingleDataRequestRPC&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stream_stub</span> <span class="o">=</span> <span class="n">stubs</span><span class="p">[</span><span class="s1">&#39;jina.JinaRPC&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_initialized</span> <span class="o">=</span> <span class="kc">True</span>
+
+<div class="viewcode-block" id="GrpcConnectionPool.ConnectionStubs.send_requests"><a class="viewcode-back" href="../../../../api/jina.serve.networking/#jina.serve.networking.GrpcConnectionPool.ConnectionStubs.send_requests">[docs]</a>        <span class="k">async</span> <span class="k">def</span> <span class="nf">send_requests</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">requests</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Request</span><span class="p">],</span> <span class="n">metadata</span><span class="p">,</span> <span class="n">compression</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">:</span>
+            <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Send requests and uses the appropriate grpc stub for this</span>
+<span class="sd">            Stub is chosen based on availability and type of requests</span>
+
+<span class="sd">            :param requests: the requests to send</span>
+<span class="sd">            :param metadata: the metadata to send alongside the requests</span>
+<span class="sd">            :param compression: defines if compression should be used</span>
+
+<span class="sd">            :returns: Tuple of response and metadata about the response</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_initialized</span><span class="p">:</span>
+                <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_init_stubs</span><span class="p">()</span>
+            <span class="n">request_type</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">requests</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">request_type</span> <span class="o">==</span> <span class="n">DataRequest</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">requests</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">single_data_stub</span><span class="p">:</span>
+                    <span class="n">call_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">single_data_stub</span><span class="o">.</span><span class="n">process_single_data</span><span class="p">(</span>
+                        <span class="n">requests</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                        <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span>
+                        <span class="n">compression</span><span class="o">=</span><span class="n">compression</span><span class="p">,</span>
+                    <span class="p">)</span>
+                    <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_summary_time</span><span class="p">:</span>
+                        <span class="n">metadata</span><span class="p">,</span> <span class="n">response</span> <span class="o">=</span> <span class="p">(</span>
+                            <span class="k">await</span> <span class="n">call_result</span><span class="o">.</span><span class="n">trailing_metadata</span><span class="p">(),</span>
+                            <span class="k">await</span> <span class="n">call_result</span><span class="p">,</span>
+                        <span class="p">)</span>
+                    <span class="k">return</span> <span class="n">response</span><span class="p">,</span> <span class="n">metadata</span>
+                <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">stream_stub</span><span class="p">:</span>
+                    <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_summary_time</span><span class="p">:</span>
+                        <span class="k">async</span> <span class="k">for</span> <span class="n">resp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">stream_stub</span><span class="o">.</span><span class="n">Call</span><span class="p">(</span>
+                            <span class="nb">iter</span><span class="p">(</span><span class="n">requests</span><span class="p">),</span>
+                            <span class="n">compression</span><span class="o">=</span><span class="n">compression</span><span class="p">,</span>
+                        <span class="p">):</span>
+                            <span class="k">return</span> <span class="n">resp</span><span class="p">,</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="n">request_type</span> <span class="o">==</span> <span class="n">DataRequest</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">requests</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_list_stub</span><span class="p">:</span>
+                    <span class="n">call_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_list_stub</span><span class="o">.</span><span class="n">process_data</span><span class="p">(</span>
+                        <span class="n">requests</span><span class="p">,</span>
+                        <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span>
+                        <span class="n">compression</span><span class="o">=</span><span class="n">compression</span><span class="p">,</span>
+                    <span class="p">)</span>
+                    <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_summary_time</span><span class="p">:</span>
+                        <span class="n">metadata</span><span class="p">,</span> <span class="n">response</span> <span class="o">=</span> <span class="p">(</span>
+                            <span class="k">await</span> <span class="n">call_result</span><span class="o">.</span><span class="n">trailing_metadata</span><span class="p">(),</span>
+                            <span class="k">await</span> <span class="n">call_result</span><span class="p">,</span>
+                        <span class="p">)</span>
+                    <span class="k">return</span> <span class="n">response</span><span class="p">,</span> <span class="n">metadata</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                        <span class="s1">&#39;Can not send list of DataRequests. gRPC endpoint not available.&#39;</span>
+                    <span class="p">)</span>
+            <span class="k">elif</span> <span class="n">request_type</span> <span class="o">==</span> <span class="n">ControlRequest</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">control_stub</span><span class="p">:</span>
+                    <span class="n">call_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">control_stub</span><span class="o">.</span><span class="n">process_control</span><span class="p">(</span><span class="n">requests</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                    <span class="n">metadata</span><span class="p">,</span> <span class="n">response</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="k">await</span> <span class="n">call_result</span><span class="o">.</span><span class="n">trailing_metadata</span><span class="p">(),</span>
+                        <span class="k">await</span> <span class="n">call_result</span><span class="p">,</span>
+                    <span class="p">)</span>
+                    <span class="k">return</span> <span class="n">response</span><span class="p">,</span> <span class="n">metadata</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                        <span class="s1">&#39;Can not send ControlRequest. gRPC endpoint not available.&#39;</span>
+                    <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Unsupported request type </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">requests</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span></div></div>
+
+    <span class="k">class</span> <span class="nc">_ConnectionPoolMap</span><span class="p">:</span>
+        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logger</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">JinaLogger</span><span class="p">],</span> <span class="n">summary</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span> <span class="o">=</span> <span class="n">logger</span>
+            <span class="c1"># this maps deployments to shards or heads</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_deployments</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">ReplicaList</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="c1"># dict stores last entity id used for a particular deployment, used for round robin</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_access_count</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">summary</span> <span class="o">=</span> <span class="n">summary</span>
+
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="s1">&#39;nt&#39;</span><span class="p">:</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">unsetenv</span><span class="p">(</span><span class="s1">&#39;http_proxy&#39;</span><span class="p">)</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">unsetenv</span><span class="p">(</span><span class="s1">&#39;https_proxy&#39;</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">add_replica</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">deployment</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">shard_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_add_connection</span><span class="p">(</span><span class="n">deployment</span><span class="p">,</span> <span class="n">shard_id</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="s1">&#39;shards&#39;</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">add_head</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">deployment</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">head_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="p">):</span>  <span class="c1"># the head_id is always 0 for now, this will change when scaling the head</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_add_connection</span><span class="p">(</span><span class="n">deployment</span><span class="p">,</span> <span class="n">head_id</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="s1">&#39;heads&#39;</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">get_replicas</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">deployment</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">head</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">entity_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ReplicaList</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">deployment</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deployments</span><span class="p">:</span>
+                <span class="nb">type</span> <span class="o">=</span> <span class="s1">&#39;heads&#39;</span> <span class="k">if</span> <span class="n">head</span> <span class="k">else</span> <span class="s1">&#39;shards&#39;</span>
+                <span class="k">if</span> <span class="n">entity_id</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">head</span><span class="p">:</span>
+                    <span class="n">entity_id</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_connection_list</span><span class="p">(</span><span class="n">deployment</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="n">entity_id</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">&#39;Unknown deployment </span><span class="si">{</span><span class="n">deployment</span><span class="si">}</span><span class="s1">, no replicas available&#39;</span>
+                <span class="p">)</span>
+                <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="k">def</span> <span class="nf">get_replicas_all_shards</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">deployment</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">ReplicaList</span><span class="p">]:</span>
+            <span class="n">replicas</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">if</span> <span class="n">deployment</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deployments</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">shard_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deployments</span><span class="p">[</span><span class="n">deployment</span><span class="p">][</span><span class="s1">&#39;shards&#39;</span><span class="p">]:</span>
+                    <span class="n">replicas</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_get_connection_list</span><span class="p">(</span><span class="n">deployment</span><span class="p">,</span> <span class="s1">&#39;shards&#39;</span><span class="p">,</span> <span class="n">shard_id</span><span class="p">)</span>
+                    <span class="p">)</span>
+            <span class="k">return</span> <span class="n">replicas</span>
+
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="c1"># Close all connections to all replicas</span>
+            <span class="k">for</span> <span class="n">deployment</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deployments</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">entity_type</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deployments</span><span class="p">[</span><span class="n">deployment</span><span class="p">]:</span>
+                    <span class="k">for</span> <span class="n">shard_in</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deployments</span><span class="p">[</span><span class="n">deployment</span><span class="p">][</span><span class="n">entity_type</span><span class="p">]:</span>
+                        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deployments</span><span class="p">[</span><span class="n">deployment</span><span class="p">][</span><span class="n">entity_type</span><span class="p">][</span>
+                            <span class="n">shard_in</span>
+                        <span class="p">]</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_deployments</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+
+        <span class="k">def</span> <span class="nf">_get_connection_list</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">deployment</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">entity_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ReplicaList</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">entity_id</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_deployments</span><span class="p">[</span><span class="n">deployment</span><span class="p">][</span><span class="nb">type</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="c1"># select a random entity</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_access_count</span><span class="p">[</span><span class="n">deployment</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deployments</span><span class="p">[</span><span class="n">deployment</span><span class="p">][</span><span class="nb">type</span><span class="p">][</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_access_count</span><span class="p">[</span><span class="n">deployment</span><span class="p">]</span>
+                        <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_deployments</span><span class="p">[</span><span class="n">deployment</span><span class="p">][</span><span class="nb">type</span><span class="p">])</span>
+                    <span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deployments</span><span class="p">[</span><span class="n">deployment</span><span class="p">][</span><span class="nb">type</span><span class="p">][</span><span class="n">entity_id</span><span class="p">]</span>
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="n">entity_id</span> <span class="ow">is</span> <span class="kc">None</span>
+                    <span class="ow">and</span> <span class="n">deployment</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deployments</span>
+                    <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_deployments</span><span class="p">[</span><span class="n">deployment</span><span class="p">][</span><span class="nb">type</span><span class="p">])</span>
+                <span class="p">):</span>
+                    <span class="c1"># This can happen as a race condition when removing connections while accessing it</span>
+                    <span class="c1"># In this case we don&#39;t care for the concrete entity, so retry with the first one</span>
+                    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_connection_list</span><span class="p">(</span><span class="n">deployment</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">&#39;Did not find a connection for deployment </span><span class="si">{</span><span class="n">deployment</span><span class="si">}</span><span class="s1">, type </span><span class="si">{</span><span class="nb">type</span><span class="si">}</span><span class="s1"> and entity_id </span><span class="si">{</span><span class="n">entity_id</span><span class="si">}</span><span class="s1">. There are </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_deployments</span><span class="p">[</span><span class="n">deployment</span><span class="p">][</span><span class="nb">type</span><span class="p">])</span> <span class="k">if</span> <span class="n">deployment</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deployments</span> <span class="k">else</span> <span class="mi">0</span><span class="si">}</span><span class="s1"> available connections for this deployment and type. &#39;</span>
+                <span class="p">)</span>
+                <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="k">def</span> <span class="nf">_add_deployment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">deployment</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">deployment</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deployments</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_deployments</span><span class="p">[</span><span class="n">deployment</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;shards&#39;</span><span class="p">:</span> <span class="p">{},</span> <span class="s1">&#39;heads&#39;</span><span class="p">:</span> <span class="p">{}}</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_access_count</span><span class="p">[</span><span class="n">deployment</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">def</span> <span class="nf">_add_connection</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">deployment</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="n">entity_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="nb">type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_add_deployment</span><span class="p">(</span><span class="n">deployment</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">entity_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deployments</span><span class="p">[</span><span class="n">deployment</span><span class="p">][</span><span class="nb">type</span><span class="p">]:</span>
+                <span class="n">connection_list</span> <span class="o">=</span> <span class="n">ReplicaList</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">summary</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_deployments</span><span class="p">[</span><span class="n">deployment</span><span class="p">][</span><span class="nb">type</span><span class="p">][</span><span class="n">entity_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">connection_list</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deployments</span><span class="p">[</span><span class="n">deployment</span><span class="p">][</span><span class="nb">type</span><span class="p">][</span><span class="n">entity_id</span><span class="p">]</span><span class="o">.</span><span class="n">has_connection</span><span class="p">(</span>
+                <span class="n">address</span>
+            <span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">&#39;Adding connection for deployment </span><span class="si">{</span><span class="n">deployment</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="nb">type</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">entity_id</span><span class="si">}</span><span class="s1"> to </span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s1">&#39;</span>
+                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_deployments</span><span class="p">[</span><span class="n">deployment</span><span class="p">][</span><span class="nb">type</span><span class="p">][</span><span class="n">entity_id</span><span class="p">]</span><span class="o">.</span><span class="n">add_connection</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">&#39;Ignoring activation of pod, </span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s1"> already known&#39;</span>
+                <span class="p">)</span>
+
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">remove_head</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">deployment</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">head_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_remove_connection</span><span class="p">(</span><span class="n">deployment</span><span class="p">,</span> <span class="n">head_id</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="s1">&#39;heads&#39;</span><span class="p">)</span>
+
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">remove_replica</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">deployment</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">shard_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="p">):</span>
+            <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_remove_connection</span><span class="p">(</span>
+                <span class="n">deployment</span><span class="p">,</span> <span class="n">shard_id</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="s1">&#39;shards&#39;</span>
+            <span class="p">)</span>
+
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">_remove_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">deployment</span><span class="p">,</span> <span class="n">entity_id</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="nb">type</span><span class="p">):</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="n">deployment</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deployments</span>
+                <span class="ow">and</span> <span class="n">entity_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deployments</span><span class="p">[</span><span class="n">deployment</span><span class="p">][</span><span class="nb">type</span><span class="p">]</span>
+            <span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">&#39;Removing connection for deployment </span><span class="si">{</span><span class="n">deployment</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="nb">type</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">entity_id</span><span class="si">}</span><span class="s1"> to </span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s1">&#39;</span>
+                <span class="p">)</span>
+                <span class="n">connection</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deployments</span><span class="p">[</span><span class="n">deployment</span><span class="p">][</span><span class="nb">type</span><span class="p">][</span>
+                    <span class="n">entity_id</span>
+                <span class="p">]</span><span class="o">.</span><span class="n">remove_connection</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deployments</span><span class="p">[</span><span class="n">deployment</span><span class="p">][</span><span class="nb">type</span><span class="p">][</span><span class="n">entity_id</span><span class="p">]</span><span class="o">.</span><span class="n">has_connections</span><span class="p">():</span>
+                    <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deployments</span><span class="p">[</span><span class="n">deployment</span><span class="p">][</span><span class="nb">type</span><span class="p">][</span><span class="n">entity_id</span><span class="p">]</span>
+                <span class="k">return</span> <span class="n">connection</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">logger</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">JinaLogger</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">compression</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;NoCompression&#39;</span><span class="p">,</span>
+        <span class="n">metrics_registry</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;CollectorRegistry&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span> <span class="o">=</span> <span class="n">logger</span> <span class="ow">or</span> <span class="n">JinaLogger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+        <span class="n">GRPC_COMPRESSION_MAP</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;NoCompression&#39;</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span> <span class="n">grpc</span><span class="o">.</span><span class="n">Compression</span><span class="o">.</span><span class="n">NoCompression</span><span class="p">,</span>
+            <span class="s1">&#39;Gzip&#39;</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span> <span class="n">grpc</span><span class="o">.</span><span class="n">Compression</span><span class="o">.</span><span class="n">Gzip</span><span class="p">,</span>
+            <span class="s1">&#39;Deflate&#39;</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span> <span class="n">grpc</span><span class="o">.</span><span class="n">Compression</span><span class="o">.</span><span class="n">Deflate</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="n">compression</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">GRPC_COMPRESSION_MAP</span><span class="p">:</span>
+            <span class="kn">import</span> <span class="nn">warnings</span>
+
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="n">message</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;Your compression &quot;</span><span class="si">{</span><span class="n">compression</span><span class="si">}</span><span class="s1">&quot; is not supported. Supported &#39;</span>
+                <span class="sa">f</span><span class="s1">&#39;algorithms are `Gzip`, `Deflate` and `NoCompression`. NoCompression will be used as &#39;</span>
+                <span class="sa">f</span><span class="s1">&#39;default&#39;</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">compression</span> <span class="o">=</span> <span class="n">GRPC_COMPRESSION_MAP</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="n">compression</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span> <span class="n">grpc</span><span class="o">.</span><span class="n">Compression</span><span class="o">.</span><span class="n">NoCompression</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">metrics_registry</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span>
+                <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">help_text</span><span class="o">=</span><span class="s1">&#39;You need to install the `prometheus_client` to use the montitoring functionality of jina&#39;</span><span class="p">,</span>
+            <span class="p">):</span>
+                <span class="kn">from</span> <span class="nn">prometheus_client</span> <span class="kn">import</span> <span class="n">Summary</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_summary_time</span> <span class="o">=</span> <span class="n">Summary</span><span class="p">(</span>
+                <span class="s1">&#39;sending_request_seconds&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;Time spent between sending a request to the Pod and receiving the response&#39;</span><span class="p">,</span>
+                <span class="n">registry</span><span class="o">=</span><span class="n">metrics_registry</span><span class="p">,</span>
+                <span class="n">namespace</span><span class="o">=</span><span class="s1">&#39;jina&#39;</span><span class="p">,</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_summary_time</span> <span class="o">=</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">nullcontext</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ConnectionPoolMap</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_summary_time</span><span class="p">)</span>
+
+<div class="viewcode-block" id="GrpcConnectionPool.send_request"><a class="viewcode-back" href="../../../../api/jina.serve.networking/#jina.serve.networking.GrpcConnectionPool.send_request">[docs]</a>    <span class="k">def</span> <span class="nf">send_request</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span>
+        <span class="n">deployment</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">head</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">shard_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">polling_type</span><span class="p">:</span> <span class="n">PollingType</span> <span class="o">=</span> <span class="n">PollingType</span><span class="o">.</span><span class="n">ANY</span><span class="p">,</span>
+        <span class="n">endpoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">asyncio</span><span class="o">.</span><span class="n">Task</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Send a single message to target via one or all of the pooled connections, depending on polling_type. Convenience function wrapper around send_request.</span>
+<span class="sd">        :param request: a single request to send</span>
+<span class="sd">        :param deployment: name of the Jina deployment to send the message to</span>
+<span class="sd">        :param head: If True it is send to the head, otherwise to the worker pods</span>
+<span class="sd">        :param shard_id: Send to a specific shard of the deployment, ignored for polling ALL</span>
+<span class="sd">        :param polling_type: defines if the message should be send to any or all pooled connections for the target</span>
+<span class="sd">        :param endpoint: endpoint to target with the request</span>
+<span class="sd">        :return: list of asyncio.Task items for each send call</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_requests</span><span class="p">(</span>
+            <span class="n">requests</span><span class="o">=</span><span class="p">[</span><span class="n">request</span><span class="p">],</span>
+            <span class="n">deployment</span><span class="o">=</span><span class="n">deployment</span><span class="p">,</span>
+            <span class="n">head</span><span class="o">=</span><span class="n">head</span><span class="p">,</span>
+            <span class="n">shard_id</span><span class="o">=</span><span class="n">shard_id</span><span class="p">,</span>
+            <span class="n">polling_type</span><span class="o">=</span><span class="n">polling_type</span><span class="p">,</span>
+            <span class="n">endpoint</span><span class="o">=</span><span class="n">endpoint</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="GrpcConnectionPool.send_requests"><a class="viewcode-back" href="../../../../api/jina.serve.networking/#jina.serve.networking.GrpcConnectionPool.send_requests">[docs]</a>    <span class="k">def</span> <span class="nf">send_requests</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">requests</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Request</span><span class="p">],</span>
+        <span class="n">deployment</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">head</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">shard_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">polling_type</span><span class="p">:</span> <span class="n">PollingType</span> <span class="o">=</span> <span class="n">PollingType</span><span class="o">.</span><span class="n">ANY</span><span class="p">,</span>
+        <span class="n">endpoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">asyncio</span><span class="o">.</span><span class="n">Task</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Send a request to target via one or all of the pooled connections, depending on polling_type</span>
+
+<span class="sd">        :param requests: request (DataRequest/ControlRequest) to send</span>
+<span class="sd">        :param deployment: name of the Jina deployment to send the request to</span>
+<span class="sd">        :param head: If True it is send to the head, otherwise to the worker pods</span>
+<span class="sd">        :param shard_id: Send to a specific shard of the deployment, ignored for polling ALL</span>
+<span class="sd">        :param polling_type: defines if the request should be send to any or all pooled connections for the target</span>
+<span class="sd">        :param endpoint: endpoint to target with the requests</span>
+<span class="sd">        :return: list of asyncio.Task items for each send call</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">connections</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">polling_type</span> <span class="o">==</span> <span class="n">PollingType</span><span class="o">.</span><span class="n">ANY</span><span class="p">:</span>
+            <span class="n">connection_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="o">.</span><span class="n">get_replicas</span><span class="p">(</span><span class="n">deployment</span><span class="p">,</span> <span class="n">head</span><span class="p">,</span> <span class="n">shard_id</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">connection_list</span><span class="p">:</span>
+                <span class="n">connections</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">connection_list</span><span class="o">.</span><span class="n">get_next_connection</span><span class="p">())</span>
+        <span class="k">elif</span> <span class="n">polling_type</span> <span class="o">==</span> <span class="n">PollingType</span><span class="o">.</span><span class="n">ALL</span><span class="p">:</span>
+            <span class="n">connection_lists</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="o">.</span><span class="n">get_replicas_all_shards</span><span class="p">(</span><span class="n">deployment</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">connection_list</span> <span class="ow">in</span> <span class="n">connection_lists</span><span class="p">:</span>
+                <span class="n">connections</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">connection_list</span><span class="o">.</span><span class="n">get_next_connection</span><span class="p">())</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Unsupported polling type </span><span class="si">{</span><span class="n">polling_type</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">connection</span> <span class="ow">in</span> <span class="n">connections</span><span class="p">:</span>
+            <span class="n">task</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send_requests</span><span class="p">(</span><span class="n">requests</span><span class="p">,</span> <span class="n">connection</span><span class="p">,</span> <span class="n">endpoint</span><span class="p">)</span>
+            <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">task</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">results</span></div>
+
+<div class="viewcode-block" id="GrpcConnectionPool.send_request_once"><a class="viewcode-back" href="../../../../api/jina.serve.networking/#jina.serve.networking.GrpcConnectionPool.send_request_once">[docs]</a>    <span class="k">def</span> <span class="nf">send_request_once</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span>
+        <span class="n">deployment</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">head</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">shard_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Task</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Send msg to target via only one of the pooled connections</span>
+<span class="sd">        :param request: request to send</span>
+<span class="sd">        :param deployment: name of the Jina deployment to send the message to</span>
+<span class="sd">        :param head: If True it is send to the head, otherwise to the worker pods</span>
+<span class="sd">        :param shard_id: Send to a specific shard of the deployment, ignored for polling ALL</span>
+<span class="sd">        :return: asyncio.Task representing the send call</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_requests_once</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">request</span><span class="p">],</span> <span class="n">deployment</span><span class="o">=</span><span class="n">deployment</span><span class="p">,</span> <span class="n">head</span><span class="o">=</span><span class="n">head</span><span class="p">,</span> <span class="n">shard_id</span><span class="o">=</span><span class="n">shard_id</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="GrpcConnectionPool.send_requests_once"><a class="viewcode-back" href="../../../../api/jina.serve.networking/#jina.serve.networking.GrpcConnectionPool.send_requests_once">[docs]</a>    <span class="k">def</span> <span class="nf">send_requests_once</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">requests</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Request</span><span class="p">],</span>
+        <span class="n">deployment</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">head</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">shard_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">endpoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Task</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Send a request to target via only one of the pooled connections</span>
+
+<span class="sd">        :param requests: request to send</span>
+<span class="sd">        :param deployment: name of the Jina deployment to send the request to</span>
+<span class="sd">        :param head: If True it is send to the head, otherwise to the worker pods</span>
+<span class="sd">        :param shard_id: Send to a specific shard of the deployment, ignored for polling ALL</span>
+<span class="sd">        :param endpoint: endpoint to target with the requests</span>
+<span class="sd">        :return: asyncio.Task representing the send call</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">replicas</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="o">.</span><span class="n">get_replicas</span><span class="p">(</span><span class="n">deployment</span><span class="p">,</span> <span class="n">head</span><span class="p">,</span> <span class="n">shard_id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">replicas</span><span class="p">:</span>
+            <span class="n">connection</span> <span class="o">=</span> <span class="n">replicas</span><span class="o">.</span><span class="n">get_next_connection</span><span class="p">()</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send_requests</span><span class="p">(</span><span class="n">requests</span><span class="p">,</span> <span class="n">connection</span><span class="p">,</span> <span class="n">endpoint</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;No available connections for deployment </span><span class="si">{</span><span class="n">deployment</span><span class="si">}</span><span class="s1"> and shard </span><span class="si">{</span><span class="n">shard_id</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="GrpcConnectionPool.add_connection"><a class="viewcode-back" href="../../../../api/jina.serve.networking/#jina.serve.networking.GrpcConnectionPool.add_connection">[docs]</a>    <span class="k">def</span> <span class="nf">add_connection</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">deployment</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">head</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">shard_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adds a connection for a deployment to this connection pool</span>
+
+<span class="sd">        :param deployment: The deployment the connection belongs to, like &#39;encoder&#39;</span>
+<span class="sd">        :param head: True if the connection is for a head</span>
+<span class="sd">        :param address: Address used for the grpc connection, format is &lt;host&gt;:&lt;port&gt;</span>
+<span class="sd">        :param shard_id: Optional parameter to indicate this connection belongs to a shard, ignored for heads</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">head</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="o">.</span><span class="n">add_head</span><span class="p">(</span><span class="n">deployment</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">shard_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">shard_id</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="o">.</span><span class="n">add_replica</span><span class="p">(</span><span class="n">deployment</span><span class="p">,</span> <span class="n">shard_id</span><span class="p">,</span> <span class="n">address</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GrpcConnectionPool.remove_connection"><a class="viewcode-back" href="../../../../api/jina.serve.networking/#jina.serve.networking.GrpcConnectionPool.remove_connection">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">remove_connection</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">deployment</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">head</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">shard_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Removes a connection to a deployment</span>
+
+<span class="sd">        :param deployment: The deployment the connection belongs to, like &#39;encoder&#39;</span>
+<span class="sd">        :param address: Address used for the grpc connection, format is &lt;host&gt;:&lt;port&gt;</span>
+<span class="sd">        :param head: True if the connection is for a head</span>
+<span class="sd">        :param shard_id: Optional parameter to indicate this connection belongs to a shard, ignored for heads</span>
+<span class="sd">        :return: The removed connection, None if it did not exist</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">head</span><span class="p">:</span>
+            <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="o">.</span><span class="n">remove_head</span><span class="p">(</span><span class="n">deployment</span><span class="p">,</span> <span class="n">address</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">shard_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">shard_id</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="o">.</span><span class="n">remove_replica</span><span class="p">(</span><span class="n">deployment</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">shard_id</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GrpcConnectionPool.start"><a class="viewcode-back" href="../../../../api/jina.serve.networking/#jina.serve.networking.GrpcConnectionPool.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Starts the connection pool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="GrpcConnectionPool.close"><a class="viewcode-back" href="../../../../api/jina.serve.networking/#jina.serve.networking.GrpcConnectionPool.close">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Closes the connection pool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="nf">_send_requests</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">requests</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Request</span><span class="p">],</span>
+        <span class="n">connection</span><span class="p">:</span> <span class="n">ConnectionStubs</span><span class="p">,</span>
+        <span class="n">endpoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Task</span><span class="p">:</span>
+        <span class="c1"># this wraps the awaitable object from grpc as a coroutine so it can be used as a task</span>
+        <span class="c1"># the grpc call function is not a coroutine but some _AioCall</span>
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">task_wrapper</span><span class="p">(</span>
+            <span class="n">requests</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="n">GrpcConnectionPool</span><span class="o">.</span><span class="n">ConnectionStubs</span><span class="p">,</span> <span class="n">endpoint</span>
+        <span class="p">):</span>
+            <span class="n">metadata</span> <span class="o">=</span> <span class="p">((</span><span class="s1">&#39;endpoint&#39;</span><span class="p">,</span> <span class="n">endpoint</span><span class="p">),)</span> <span class="k">if</span> <span class="n">endpoint</span> <span class="k">else</span> <span class="kc">None</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="k">await</span> <span class="n">connection</span><span class="o">.</span><span class="n">send_requests</span><span class="p">(</span>
+                        <span class="n">requests</span><span class="o">=</span><span class="n">requests</span><span class="p">,</span>
+                        <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span>
+                        <span class="n">compression</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">compression</span><span class="p">,</span>
+                    <span class="p">)</span>
+                <span class="k">except</span> <span class="n">AioRpcError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">code</span><span class="p">()</span> <span class="o">!=</span> <span class="n">grpc</span><span class="o">.</span><span class="n">StatusCode</span><span class="o">.</span><span class="n">UNAVAILABLE</span><span class="p">:</span>
+                        <span class="k">raise</span>
+                    <span class="k">elif</span> <span class="n">e</span><span class="o">.</span><span class="n">code</span><span class="p">()</span> <span class="o">==</span> <span class="n">grpc</span><span class="o">.</span><span class="n">StatusCode</span><span class="o">.</span><span class="n">UNAVAILABLE</span> <span class="ow">and</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;GRPC call failed, retries exhausted&#39;</span><span class="p">)</span>
+                        <span class="k">raise</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s1">&#39;GRPC call failed with StatusCode.UNAVAILABLE, retry attempt </span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s1">/3&#39;</span>
+                        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="n">task_wrapper</span><span class="p">(</span><span class="n">requests</span><span class="p">,</span> <span class="n">connection</span><span class="p">,</span> <span class="n">endpoint</span><span class="p">))</span>
+
+<div class="viewcode-block" id="GrpcConnectionPool.get_grpc_channel"><a class="viewcode-back" href="../../../../api/jina.serve.networking/#jina.serve.networking.GrpcConnectionPool.get_grpc_channel">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_grpc_channel</span><span class="p">(</span>
+        <span class="n">address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">options</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">asyncio</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">tls</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">root_certificates</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">grpc</span><span class="o">.</span><span class="n">Channel</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a grpc channel to the given address</span>
+
+<span class="sd">        :param address: The address to connect to, format is &lt;host&gt;:&lt;port&gt;</span>
+<span class="sd">        :param options: A list of options to pass to the grpc channel</span>
+<span class="sd">        :param asyncio: If True, use the asyncio implementation of the grpc channel</span>
+<span class="sd">        :param tls: If True, use tls encryption for the grpc channel</span>
+<span class="sd">        :param root_certificates: The path to the root certificates for tls, only used if tls is True</span>
+
+<span class="sd">        :return: A grpc channel or an asyncio channel</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">secure_channel</span> <span class="o">=</span> <span class="n">grpc</span><span class="o">.</span><span class="n">secure_channel</span>
+        <span class="n">insecure_channel</span> <span class="o">=</span> <span class="n">grpc</span><span class="o">.</span><span class="n">insecure_channel</span>
+
+        <span class="k">if</span> <span class="n">asyncio</span><span class="p">:</span>
+            <span class="n">secure_channel</span> <span class="o">=</span> <span class="n">grpc</span><span class="o">.</span><span class="n">aio</span><span class="o">.</span><span class="n">secure_channel</span>
+            <span class="n">insecure_channel</span> <span class="o">=</span> <span class="n">grpc</span><span class="o">.</span><span class="n">aio</span><span class="o">.</span><span class="n">insecure_channel</span>
+
+        <span class="k">if</span> <span class="n">options</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">options</span> <span class="o">=</span> <span class="n">GrpcConnectionPool</span><span class="o">.</span><span class="n">get_default_grpc_options</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">tls</span><span class="p">:</span>
+            <span class="n">credentials</span> <span class="o">=</span> <span class="n">grpc</span><span class="o">.</span><span class="n">ssl_channel_credentials</span><span class="p">(</span>
+                <span class="n">root_certificates</span><span class="o">=</span><span class="n">root_certificates</span>
+            <span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">secure_channel</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">credentials</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">insecure_channel</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GrpcConnectionPool.activate_worker_sync"><a class="viewcode-back" href="../../../../api/jina.serve.networking/#jina.serve.networking.GrpcConnectionPool.activate_worker_sync">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">activate_worker_sync</span><span class="p">(</span>
+        <span class="n">worker_host</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">worker_port</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">target_head</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">shard_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ControlRequest</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Register a given worker to a head by sending an activate request</span>
+
+<span class="sd">        :param worker_host: the host address of the worker</span>
+<span class="sd">        :param worker_port: the port of the worker</span>
+<span class="sd">        :param target_head: address of the head to send the activate request to</span>
+<span class="sd">        :param shard_id: id of the shard the worker belongs to</span>
+<span class="sd">        :returns: the response request</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">activate_request</span> <span class="o">=</span> <span class="n">ControlRequest</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s1">&#39;ACTIVATE&#39;</span><span class="p">)</span>
+        <span class="n">activate_request</span><span class="o">.</span><span class="n">add_related_entity</span><span class="p">(</span>
+            <span class="s1">&#39;worker&#39;</span><span class="p">,</span> <span class="n">worker_host</span><span class="p">,</span> <span class="n">worker_port</span><span class="p">,</span> <span class="n">shard_id</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="s1">&#39;nt&#39;</span><span class="p">:</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">unsetenv</span><span class="p">(</span><span class="s1">&#39;http_proxy&#39;</span><span class="p">)</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">unsetenv</span><span class="p">(</span><span class="s1">&#39;https_proxy&#39;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">GrpcConnectionPool</span><span class="o">.</span><span class="n">send_request_sync</span><span class="p">(</span><span class="n">activate_request</span><span class="p">,</span> <span class="n">target_head</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GrpcConnectionPool.activate_worker"><a class="viewcode-back" href="../../../../api/jina.serve.networking/#jina.serve.networking.GrpcConnectionPool.activate_worker">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">activate_worker</span><span class="p">(</span>
+        <span class="n">worker_host</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">worker_port</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">target_head</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">shard_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ControlRequest</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Register a given worker to a head by sending an activate request</span>
+
+<span class="sd">        :param worker_host: the host address of the worker</span>
+<span class="sd">        :param worker_port: the port of the worker</span>
+<span class="sd">        :param target_head: address of the head to send the activate request to</span>
+<span class="sd">        :param shard_id: id of the shard the worker belongs to</span>
+<span class="sd">        :returns: the response request</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">activate_request</span> <span class="o">=</span> <span class="n">ControlRequest</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s1">&#39;ACTIVATE&#39;</span><span class="p">)</span>
+        <span class="n">activate_request</span><span class="o">.</span><span class="n">add_related_entity</span><span class="p">(</span>
+            <span class="s1">&#39;worker&#39;</span><span class="p">,</span> <span class="n">worker_host</span><span class="p">,</span> <span class="n">worker_port</span><span class="p">,</span> <span class="n">shard_id</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="n">GrpcConnectionPool</span><span class="o">.</span><span class="n">send_request_async</span><span class="p">(</span>
+            <span class="n">activate_request</span><span class="p">,</span> <span class="n">target_head</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="GrpcConnectionPool.deactivate_worker"><a class="viewcode-back" href="../../../../api/jina.serve.networking/#jina.serve.networking.GrpcConnectionPool.deactivate_worker">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">deactivate_worker</span><span class="p">(</span>
+        <span class="n">worker_host</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">worker_port</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">target_head</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">shard_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ControlRequest</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Remove a given worker to a head by sending a deactivate request</span>
+
+<span class="sd">        :param worker_host: the host address of the worker</span>
+<span class="sd">        :param worker_port: the port of the worker</span>
+<span class="sd">        :param target_head: address of the head to send the deactivate request to</span>
+<span class="sd">        :param shard_id: id of the shard the worker belongs to</span>
+<span class="sd">        :returns: the response request</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">activate_request</span> <span class="o">=</span> <span class="n">ControlRequest</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s1">&#39;DEACTIVATE&#39;</span><span class="p">)</span>
+        <span class="n">activate_request</span><span class="o">.</span><span class="n">add_related_entity</span><span class="p">(</span>
+            <span class="s1">&#39;worker&#39;</span><span class="p">,</span> <span class="n">worker_host</span><span class="p">,</span> <span class="n">worker_port</span><span class="p">,</span> <span class="n">shard_id</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="n">GrpcConnectionPool</span><span class="o">.</span><span class="n">send_request_async</span><span class="p">(</span>
+            <span class="n">activate_request</span><span class="p">,</span> <span class="n">target_head</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="GrpcConnectionPool.send_request_sync"><a class="viewcode-back" href="../../../../api/jina.serve.networking/#jina.serve.networking.GrpcConnectionPool.send_request_sync">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">send_request_sync</span><span class="p">(</span>
+        <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span>
+        <span class="n">target</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">timeout</span><span class="o">=</span><span class="mf">100.0</span><span class="p">,</span>
+        <span class="n">tls</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">root_certificates</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">endpoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Request</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sends a request synchronically to the target via grpc</span>
+
+<span class="sd">        :param request: the request to send</span>
+<span class="sd">        :param target: where to send the request to, like 127.0.0.1:8080</span>
+<span class="sd">        :param timeout: timeout for the send</span>
+<span class="sd">        :param tls: if True, use tls encryption for the grpc channel</span>
+<span class="sd">        :param root_certificates: the path to the root certificates for tls, only used if tls is True</span>
+<span class="sd">        :param endpoint: endpoint to target with the request</span>
+
+<span class="sd">        :returns: the response request</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">with</span> <span class="n">GrpcConnectionPool</span><span class="o">.</span><span class="n">get_grpc_channel</span><span class="p">(</span>
+                    <span class="n">target</span><span class="p">,</span>
+                    <span class="n">tls</span><span class="o">=</span><span class="n">tls</span><span class="p">,</span>
+                    <span class="n">root_certificates</span><span class="o">=</span><span class="n">root_certificates</span><span class="p">,</span>
+                <span class="p">)</span> <span class="k">as</span> <span class="n">channel</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">request</span><span class="p">)</span> <span class="o">==</span> <span class="n">DataRequest</span><span class="p">:</span>
+                        <span class="n">metadata</span> <span class="o">=</span> <span class="p">((</span><span class="s1">&#39;endpoint&#39;</span><span class="p">,</span> <span class="n">endpoint</span><span class="p">),)</span> <span class="k">if</span> <span class="n">endpoint</span> <span class="k">else</span> <span class="kc">None</span>
+                        <span class="n">stub</span> <span class="o">=</span> <span class="n">jina_pb2_grpc</span><span class="o">.</span><span class="n">JinaSingleDataRequestRPCStub</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span>
+                        <span class="n">response</span><span class="p">,</span> <span class="n">call</span> <span class="o">=</span> <span class="n">stub</span><span class="o">.</span><span class="n">process_single_data</span><span class="o">.</span><span class="n">with_call</span><span class="p">(</span>
+                            <span class="n">request</span><span class="p">,</span>
+                            <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
+                            <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span>
+                        <span class="p">)</span>
+                    <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">request</span><span class="p">)</span> <span class="o">==</span> <span class="n">ControlRequest</span><span class="p">:</span>
+                        <span class="n">stub</span> <span class="o">=</span> <span class="n">jina_pb2_grpc</span><span class="o">.</span><span class="n">JinaControlRequestRPCStub</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span>
+                        <span class="n">response</span> <span class="o">=</span> <span class="n">stub</span><span class="o">.</span><span class="n">process_control</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">response</span>
+            <span class="k">except</span> <span class="n">grpc</span><span class="o">.</span><span class="n">RpcError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">code</span><span class="p">()</span> <span class="o">!=</span> <span class="n">grpc</span><span class="o">.</span><span class="n">StatusCode</span><span class="o">.</span><span class="n">UNAVAILABLE</span> <span class="ow">or</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                    <span class="k">raise</span></div>
+
+<div class="viewcode-block" id="GrpcConnectionPool.send_requests_sync"><a class="viewcode-back" href="../../../../api/jina.serve.networking/#jina.serve.networking.GrpcConnectionPool.send_requests_sync">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">send_requests_sync</span><span class="p">(</span>
+        <span class="n">requests</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Request</span><span class="p">],</span>
+        <span class="n">target</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">timeout</span><span class="o">=</span><span class="mf">100.0</span><span class="p">,</span>
+        <span class="n">tls</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">root_certificates</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">endpoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Request</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sends a list of requests synchronically to the target via grpc</span>
+
+<span class="sd">        :param requests: the requests to send</span>
+<span class="sd">        :param target: where to send the request to, like 127.0.0.1:8080</span>
+<span class="sd">        :param timeout: timeout for the send</span>
+<span class="sd">        :param tls: if True, use tls for the grpc channel</span>
+<span class="sd">        :param root_certificates: the path to the root certificates for tls, only used if tls is True</span>
+<span class="sd">        :param endpoint: endpoint to target with the request</span>
+
+<span class="sd">        :returns: the response request</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">with</span> <span class="n">GrpcConnectionPool</span><span class="o">.</span><span class="n">get_grpc_channel</span><span class="p">(</span>
+                    <span class="n">target</span><span class="p">,</span>
+                    <span class="n">tls</span><span class="o">=</span><span class="n">tls</span><span class="p">,</span>
+                    <span class="n">root_certificates</span><span class="o">=</span><span class="n">root_certificates</span><span class="p">,</span>
+                <span class="p">)</span> <span class="k">as</span> <span class="n">channel</span><span class="p">:</span>
+                    <span class="n">metadata</span> <span class="o">=</span> <span class="p">((</span><span class="s1">&#39;endpoint&#39;</span><span class="p">,</span> <span class="n">endpoint</span><span class="p">),)</span> <span class="k">if</span> <span class="n">endpoint</span> <span class="k">else</span> <span class="kc">None</span>
+                    <span class="n">stub</span> <span class="o">=</span> <span class="n">jina_pb2_grpc</span><span class="o">.</span><span class="n">JinaDataRequestRPCStub</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span>
+                    <span class="n">response</span><span class="p">,</span> <span class="n">call</span> <span class="o">=</span> <span class="n">stub</span><span class="o">.</span><span class="n">process_data</span><span class="o">.</span><span class="n">with_call</span><span class="p">(</span>
+                        <span class="n">requests</span><span class="p">,</span>
+                        <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
+                        <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span>
+                    <span class="p">)</span>
+                    <span class="k">return</span> <span class="n">response</span>
+            <span class="k">except</span> <span class="n">grpc</span><span class="o">.</span><span class="n">RpcError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">code</span><span class="p">()</span> <span class="o">!=</span> <span class="n">grpc</span><span class="o">.</span><span class="n">StatusCode</span><span class="o">.</span><span class="n">UNAVAILABLE</span> <span class="ow">or</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                    <span class="k">raise</span></div>
+
+<div class="viewcode-block" id="GrpcConnectionPool.get_default_grpc_options"><a class="viewcode-back" href="../../../../api/jina.serve.networking/#jina.serve.networking.GrpcConnectionPool.get_default_grpc_options">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_default_grpc_options</span><span class="p">():</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a list of default options used for creating grpc channels.</span>
+<span class="sd">        Documentation is here https://github.com/grpc/grpc/blob/master/include/grpc/impl/codegen/grpc_types.h</span>
+<span class="sd">        :returns: list of tuples defining grpc parameters</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="p">(</span><span class="s1">&#39;grpc.max_send_message_length&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;grpc.max_receive_message_length&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span>
+        <span class="p">]</span></div>
+
+<div class="viewcode-block" id="GrpcConnectionPool.send_request_async"><a class="viewcode-back" href="../../../../api/jina.serve.networking/#jina.serve.networking.GrpcConnectionPool.send_request_async">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">send_request_async</span><span class="p">(</span>
+        <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span>
+        <span class="n">target</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">tls</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">root_certificates</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Request</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sends a request asynchronously to the target via grpc</span>
+
+<span class="sd">        :param request: the request to send</span>
+<span class="sd">        :param target: where to send the request to, like 127.0.0.1:8080</span>
+<span class="sd">        :param timeout: timeout for the send</span>
+<span class="sd">        :param tls: if True, use tls for the grpc channel</span>
+<span class="sd">        :param root_certificates: the path to the root certificates for tls, only used if tls is True</span>
+
+<span class="sd">        :returns: the response request</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">async</span> <span class="k">with</span> <span class="n">GrpcConnectionPool</span><span class="o">.</span><span class="n">get_grpc_channel</span><span class="p">(</span>
+            <span class="n">target</span><span class="p">,</span>
+            <span class="n">asyncio</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">tls</span><span class="o">=</span><span class="n">tls</span><span class="p">,</span>
+            <span class="n">root_certificates</span><span class="o">=</span><span class="n">root_certificates</span><span class="p">,</span>
+        <span class="p">)</span> <span class="k">as</span> <span class="n">channel</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">request</span><span class="p">)</span> <span class="o">==</span> <span class="n">DataRequest</span><span class="p">:</span>
+                <span class="n">stub</span> <span class="o">=</span> <span class="n">jina_pb2_grpc</span><span class="o">.</span><span class="n">JinaSingleDataRequestRPCStub</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span>
+                <span class="k">return</span> <span class="k">await</span> <span class="n">stub</span><span class="o">.</span><span class="n">process_single_data</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">request</span><span class="p">)</span> <span class="o">==</span> <span class="n">ControlRequest</span><span class="p">:</span>
+                <span class="n">stub</span> <span class="o">=</span> <span class="n">jina_pb2_grpc</span><span class="o">.</span><span class="n">JinaControlRequestRPCStub</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span>
+                <span class="k">return</span> <span class="k">await</span> <span class="n">stub</span><span class="o">.</span><span class="n">process_control</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GrpcConnectionPool.create_async_channel_stub"><a class="viewcode-back" href="../../../../api/jina.serve.networking/#jina.serve.networking.GrpcConnectionPool.create_async_channel_stub">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">create_async_channel_stub</span><span class="p">(</span>
+        <span class="n">address</span><span class="p">,</span> <span class="n">tls</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">root_certificates</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">summary</span><span class="o">=</span><span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">ConnectionStubs</span><span class="p">,</span> <span class="n">grpc</span><span class="o">.</span><span class="n">aio</span><span class="o">.</span><span class="n">Channel</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates an async GRPC Channel. This channel has to be closed eventually!</span>
+
+<span class="sd">        :param address: the address to create the connection to, like 127.0.0.0.1:8080</span>
+<span class="sd">        :param tls: if True, use tls for the grpc channel</span>
+<span class="sd">        :param root_certificates: the path to the root certificates for tls, only u</span>
+<span class="sd">        :param summary: Optional Prometheus summary object</span>
+
+<span class="sd">        :returns: DataRequest/ControlRequest stubs and an async grpc channel</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">channel</span> <span class="o">=</span> <span class="n">GrpcConnectionPool</span><span class="o">.</span><span class="n">get_grpc_channel</span><span class="p">(</span>
+            <span class="n">address</span><span class="p">,</span>
+            <span class="n">asyncio</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">tls</span><span class="o">=</span><span class="n">tls</span><span class="p">,</span>
+            <span class="n">root_certificates</span><span class="o">=</span><span class="n">root_certificates</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="n">GrpcConnectionPool</span><span class="o">.</span><span class="n">ConnectionStubs</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">summary</span><span class="p">),</span>
+            <span class="n">channel</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="GrpcConnectionPool.get_available_services"><a class="viewcode-back" href="../../../../api/jina.serve.networking/#jina.serve.networking.GrpcConnectionPool.get_available_services">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_available_services</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Lists available services by name, exposed at target address</span>
+
+<span class="sd">        :param channel: the channel to use</span>
+
+<span class="sd">        :returns: List of services offered</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">reflection_stub</span> <span class="o">=</span> <span class="n">ServerReflectionStub</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">reflection_stub</span><span class="o">.</span><span class="n">ServerReflectionInfo</span><span class="p">(</span>
+            <span class="nb">iter</span><span class="p">([</span><span class="n">ServerReflectionRequest</span><span class="p">(</span><span class="n">list_services</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)])</span>
+        <span class="p">)</span>
+        <span class="n">service_names</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">async</span> <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">response</span><span class="p">:</span>
+            <span class="n">service_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="p">[</span>
+                    <span class="n">service</span><span class="o">.</span><span class="n">name</span>
+                    <span class="k">for</span> <span class="n">service</span> <span class="ow">in</span> <span class="n">res</span><span class="o">.</span><span class="n">list_services_response</span><span class="o">.</span><span class="n">service</span>
+                    <span class="k">if</span> <span class="n">service</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="s1">&#39;grpc.reflection.v1alpha.ServerReflection&#39;</span>
+                <span class="p">]</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">service_names</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div></div>
+
+
+<div class="viewcode-block" id="in_docker"><a class="viewcode-back" href="../../../../api/jina.serve.networking/#jina.serve.networking.in_docker">[docs]</a><span class="k">def</span> <span class="nf">in_docker</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Checks if the current process is running inside Docker</span>
+<span class="sd">    :return: True if the current process is running inside Docker</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="s1">&#39;/proc/self/cgroup&#39;</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s1">&#39;/.dockerenv&#39;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">any</span><span class="p">(</span><span class="s1">&#39;docker&#39;</span> <span class="ow">in</span> <span class="n">line</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">file</span><span class="p">)</span>
+    <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="host_is_local"><a class="viewcode-back" href="../../../../api/jina.serve.networking/#jina.serve.networking.host_is_local">[docs]</a><span class="k">def</span> <span class="nf">host_is_local</span><span class="p">(</span><span class="n">hostname</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check if hostname is point to localhost</span>
+<span class="sd">    :param hostname: host to check</span>
+<span class="sd">    :return: True if hostname means localhost, False otherwise</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">socket</span>
+
+    <span class="n">fqn</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">getfqdn</span><span class="p">(</span><span class="n">hostname</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">fqn</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;localhost&quot;</span><span class="p">,</span> <span class="s2">&quot;0.0.0.0&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">hostname</span> <span class="o">==</span> <span class="s1">&#39;0.0.0.0&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">ipaddress</span><span class="o">.</span><span class="n">ip_address</span><span class="p">(</span><span class="n">hostname</span><span class="p">)</span><span class="o">.</span><span class="n">is_loopback</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+</pre></div>
+            </article>
+            <footer>
+                
+                <div class="related-pages">
+                    
+                    
+                </div>
+
+                <div class="related-information sd-d-inline-flex">
+                    <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
+                    Last updated on Dec 15, 2022.
+                    <div class="social-btns">
+                    <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
+                    <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
+                    <a class='social-btn' href="https://youtube.com/c/jina-ai" aria-label="YouTube" target="_blank" rel="noreferrer"> <i class="fab fa-youtube"></i></a>
+                    <a class='social-btn' href="https://twitter.com/JinaAI_" aria-label="Twitter" target="_blank" rel="noreferrer"> <i class="fab fa-twitter"></i></a>
+                    <a class='social-btn' href="https://www.linkedin.com/company/jinaai/" aria-label="LinkedIn" target="_blank" rel="noreferrer"> <i class="fab fa-linkedin"></i></a>
+                    </div>
+                </div>
+                
+            </footer>
+        </div>
+        <aside class="toc-drawer" id="toc-drawer">
+            
+
+            <div class="toc-sticky toc-scroll">
+                
+            </div>
+
+            
+        </aside>
+
+    </div>
+    <qa-bot
+        title="Jina Bot"
+        description="The cloud-native neural search framework"
+        >
+        <dl>
+            <dt>You can ask questions about our docs. Try:</dt>
+            <dd>Does Jina support Kubernetes?</dd>
+            <dd>What are the basic concepts in Jina?</dd>
+            <dd>How to share my Executor?</dd>
+        </dl>
+    </qa-bot>
+
+</div>
+<img referrerpolicy="no-referrer-when-downgrade" src="https://static.scarf.sh/a.png?x-pxid=1b470c1d-3b55-4d38-baa8-989bfba2a218" /><script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../../_static/scripts/furo.js"></script>
+    <script src="../../../../_static/clipboard.min.js"></script>
+    <script src="../../../../_static/copybutton.js"></script>
+    <script src="../../../../_static/tabs.js"></script>
+    <script src="../../../../_static/design-tabs.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() { 
+            document.querySelector('qa-bot').setAttribute('server', 'https://jina-ai-jina.docsqa.jina.ai');
+        });
+        </script>
+    <script src="https://cdn.jsdelivr.net/npm/qabot@0.4"></script>
+    </body>
+</html>

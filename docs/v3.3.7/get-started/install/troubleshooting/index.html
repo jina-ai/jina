@@ -32,10 +32,10 @@
 <link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" /><link rel="next" title="Create a New Project" href="../../create-app/" /><link rel="prev" title="Jina on Windows" href="../windows/" />
         <link rel="canonical" href="https://docs.jina.ai/get-started/install/troubleshooting.html" />
 
-    <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.09.29"/>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
         <title>Troubleshooting - Jina 3.3.7 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/tabs.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
@@ -238,7 +238,7 @@
     <option value="/">latest</option>
   </select>
 </div><form class="sidebar-search-container" method="get" action="../../../search/" role="search">
-  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form>
@@ -601,10 +601,10 @@
                     </label>
                 </div>
                 <section class="tex2jax_ignore mathjax_ignore" id="troubleshooting">
-<h1>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permalink to this headline">#</a></h1>
+<h1>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permalink to this heading">#</a></h1>
 <p>This article helps you to solve the installation problems of Jina.</p>
 <section id="on-linux-mac-building-wheels-takes-long-time">
-<h2>On Linux/Mac, building wheels takes long time<a class="headerlink" href="#on-linux-mac-building-wheels-takes-long-time" title="Permalink to this headline">#</a></h2>
+<h2>On Linux/Mac, building wheels takes long time<a class="headerlink" href="#on-linux-mac-building-wheels-takes-long-time" title="Permalink to this heading">#</a></h2>
 <p>The normal installation of Jina takes 10 seconds. If yours takes longer than this, then it is likely you unnecessarily built wheels from scratch.</p>
 <p>Every upstream dependency of Jina has pre-built wheels exhaustively for x86/arm64, macos/Linux and Python 3.7/3.8/3.9, including <code class="docutils literal notranslate"><span class="pre">numpy</span></code>, <code class="docutils literal notranslate"><span class="pre">protobuf</span></code>, <code class="docutils literal notranslate"><span class="pre">pyzmq</span></code>, <code class="docutils literal notranslate"><span class="pre">grpcio</span></code> etc. This means when you install Jina, your <code class="docutils literal notranslate"><span class="pre">pip</span></code> should directly leverage the pre-built wheels instead of building them from scratch locally. For example, you should expect the install log to contain <code class="docutils literal notranslate"><span class="pre">-cp38-cp38-macosx_10_15_x86_64.whl</span></code> when installing Jina on MacOS with Python 3.8.</p>
 <p>If you find you are building wheels during installation (see an example below), then it is a sign that you are installing Jina <strong>wrongly</strong>.</p>
@@ -617,19 +617,19 @@ Building wheels for collected packages: numpy
 </pre></div>
 </div>
 <section id="solution-update-your-pip">
-<h3>Solution: update your <code class="docutils literal notranslate"><span class="pre">pip</span></code><a class="headerlink" href="#solution-update-your-pip" title="Permalink to this headline">#</a></h3>
+<h3>Solution: update your <code class="docutils literal notranslate"><span class="pre">pip</span></code><a class="headerlink" href="#solution-update-your-pip" title="Permalink to this heading">#</a></h3>
 <p>It could simply be that your local <code class="docutils literal notranslate"><span class="pre">pip</span></code> is too old. Updating it should solve the problem:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">U</span> <span class="n">pip</span>
 </pre></div>
 </div>
 </section>
 <section id="if-not-then">
-<h3>If not, then…<a class="headerlink" href="#if-not-then" title="Permalink to this headline">#</a></h3>
+<h3>If not, then…<a class="headerlink" href="#if-not-then" title="Permalink to this heading">#</a></h3>
 <p>Then you are likely installing Jina on a less-supported system/architecture. For example, on native Mac M1, Alpine Linux, or Raspberry Pi 2/3 (armv6/7).</p>
 </section>
 </section>
 <section id="on-mac-m1">
-<h2>On Mac M1<a class="headerlink" href="#on-mac-m1" title="Permalink to this headline">#</a></h2>
+<h2>On Mac M1<a class="headerlink" href="#on-mac-m1" title="Permalink to this heading">#</a></h2>
 <p>It is generally recommended using a conda environment on a Mac M1 and installing in particular <code class="docutils literal notranslate"><span class="pre">grpcio</span></code>, <code class="docutils literal notranslate"><span class="pre">protobuf</span></code> and <code class="docutils literal notranslate"><span class="pre">torch</span></code>  using <code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">install</span></code>. See for more <a class="reference external" href="https://github.com/jina-ai/jina/issues/4422#issuecomment-1057663345">Issue 4422</a>.</p>
 <p>Some users may have difficulty to install Protobuf on MacOS from <code class="docutils literal notranslate"><span class="pre">pip</span></code>, you may try <code class="docutils literal notranslate"><span class="pre">brew</span> <span class="pre">install</span> <span class="pre">protobuf</span></code>.</p>
 <p>In general, some upstream dependencies do not yet have pre-built wheels for the M1 chip, so you are likely to encounter some issues during the install. In this case, you need to configure the development environment using <a class="reference external" href="https://support.apple.com/en-us/HT211861">Rosetta2</a>, including your terminal, <code class="docutils literal notranslate"><span class="pre">brew</span></code> and <code class="docutils literal notranslate"><span class="pre">python</span></code>. They must all be running under Rosetta2 instead of natively on M1.</p>
@@ -648,11 +648,11 @@ Building wheels for collected packages: numpy
 </div>
 </section>
 <section id="on-windows-with-conda">
-<h2>On Windows with <code class="docutils literal notranslate"><span class="pre">conda</span></code><a class="headerlink" href="#on-windows-with-conda" title="Permalink to this headline">#</a></h2>
+<h2>On Windows with <code class="docutils literal notranslate"><span class="pre">conda</span></code><a class="headerlink" href="#on-windows-with-conda" title="Permalink to this heading">#</a></h2>
 <p>Unfortunately, <code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">install</span></code> is not supported on Windows. You can either do <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">jina</span></code> natively on Windows, or use <code class="docutils literal notranslate"><span class="pre">pip/conda</span> <span class="pre">install</span></code> under WSL2.</p>
 </section>
 <section id="upgrading-from-jina-2-x-to-3-x">
-<h2>Upgrading from Jina 2.x to 3.x<a class="headerlink" href="#upgrading-from-jina-2-x-to-3-x" title="Permalink to this headline">#</a></h2>
+<h2>Upgrading from Jina 2.x to 3.x<a class="headerlink" href="#upgrading-from-jina-2-x-to-3-x" title="Permalink to this heading">#</a></h2>
 <p>If you upgraded an existing Jina installation from 2.x to 3.x you may see the following error message:</p>
 <div class="highlight-commandline notranslate"><div class="highlight"><pre><span></span>OSError: `docarray` dependency is not installed correctly, please reinstall with `pip install -U --force-reinstall docarray`
 </pre></div>
@@ -697,7 +697,7 @@ Building wheels for collected packages: numpy
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Nov 25, 2022.
+                    Last updated on Dec 15, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -760,7 +760,9 @@ Building wheels for collected packages: numpy
 <img referrerpolicy="no-referrer-when-downgrade" src="https://static.scarf.sh/a.png?x-pxid=1b470c1d-3b55-4d38-baa8-989bfba2a218" /><script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
     <script src="../../../_static/scripts/furo.js"></script>
     <script src="../../../_static/clipboard.min.js"></script>
     <script src="../../../_static/copybutton.js"></script>

@@ -32,10 +32,10 @@
 <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="How to build switches in a Flow" href="../flow-switch/" /><link rel="prev" title="How to run Executors on GPU" href="../gpu-executor/" />
         <link rel="canonical" href="https://docs.jina.ai/how-to/external-executor.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.09.29"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
         <title>How to use external Executors - Jina 3.3.7 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
@@ -238,7 +238,7 @@
     <option value="/">latest</option>
   </select>
 </div><form class="sidebar-search-container" method="get" action="../../search/" role="search">
-  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form>
@@ -601,7 +601,7 @@
                     </label>
                 </div>
                 <section class="tex2jax_ignore mathjax_ignore" id="how-to-use-external-executors">
-<span id="external-executor"></span><h1>How to use external Executors<a class="headerlink" href="#how-to-use-external-executors" title="Permalink to this headline">#</a></h1>
+<span id="external-executor"></span><h1>How to use external Executors<a class="headerlink" href="#how-to-use-external-executors" title="Permalink to this heading">#</a></h1>
 <p>Normally, we have seen how <code class="docutils literal notranslate"><span class="pre">Flow</span></code> ties up <code class="docutils literal notranslate"><span class="pre">Executors</span></code> together, and how an <code class="docutils literal notranslate"><span class="pre">Executor</span></code> lives in the context of a Flow.</p>
 <p>However, this is not always the case, and sometimes you may want to launch an <code class="docutils literal notranslate"><span class="pre">Executor</span></code> on its own, and perhaps have the same
 <code class="docutils literal notranslate"><span class="pre">Executor</span></code> be used by different <code class="docutils literal notranslate"><span class="pre">Flows</span></code>.</p>
@@ -613,7 +613,7 @@ machine.</p>
 <p>As the first step in this tutorial, you will learn how to add already running external Executors to your Flow.
 After that, you will see how to create and use an external Executor yourself.</p>
 <section id="adding-external-executors">
-<h2>Adding external Executors<a class="headerlink" href="#adding-external-executors" title="Permalink to this headline">#</a></h2>
+<h2>Adding external Executors<a class="headerlink" href="#adding-external-executors" title="Permalink to this heading">#</a></h2>
 <p>If you want to add an external Executor to your Flow, all you really need to know is how to find it.
 You need:</p>
 <ul class="simple">
@@ -636,7 +636,7 @@ Flows!</p>
 </div>
 </section>
 <section id="starting-standalone-executors">
-<h2>Starting standalone Executors<a class="headerlink" href="#starting-standalone-executors" title="Permalink to this headline">#</a></h2>
+<h2>Starting standalone Executors<a class="headerlink" href="#starting-standalone-executors" title="Permalink to this heading">#</a></h2>
 <p>The example above assumes that there already is an Executor running, and you just want to access
 it from your Flow.</p>
 <p>You can, however, also start your own standalone Executors, which can then be accessed from anywhere.
@@ -648,7 +648,7 @@ In the following sections we will describe how to run standalone Executors via t
 </div>
 </section>
 <section id="using-jina-hub">
-<h2>Using Jina Hub<a class="headerlink" href="#using-jina-hub" title="Permalink to this headline">#</a></h2>
+<h2>Using Jina Hub<a class="headerlink" href="#using-jina-hub" title="Permalink to this heading">#</a></h2>
 <p>The Jina CLI allows you to spawn executors straight from the Hub.
 In this example, we will use <code class="docutils literal notranslate"><span class="pre">CLIPTextEncoder</span></code> to create embeddings for our Documents.</p>
 <p>First, we start the Executor from the terminal. All we need to decide is the <code class="docutils literal notranslate"><span class="pre">port</span></code> that will be used by the Executor.
@@ -701,7 +701,7 @@ the following Flow in a Python file:</p>
 <p>We obtain embeddings for our Documents, just like we would with a local Executor.</p>
 </section>
 <section id="using-a-custom-executor">
-<h2>Using a custom Executor<a class="headerlink" href="#using-a-custom-executor" title="Permalink to this headline">#</a></h2>
+<h2>Using a custom Executor<a class="headerlink" href="#using-a-custom-executor" title="Permalink to this heading">#</a></h2>
 <p>You can achieve the same while using your own, locally defined Executor. Let’s walk through it.</p>
 <p>First, we create a file <code class="docutils literal notranslate"><span class="pre">exec.py</span></code>, and in it we define our custom Executor:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
@@ -782,7 +782,7 @@ We do this using a YAML file.</p>
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Nov 25, 2022.
+                    Last updated on Dec 15, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -841,7 +841,9 @@ We do this using a YAML file.</p>
 <img referrerpolicy="no-referrer-when-downgrade" src="https://static.scarf.sh/a.png?x-pxid=1b470c1d-3b55-4d38-baa8-989bfba2a218" /><script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
     <script src="../../_static/scripts/furo.js"></script>
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>

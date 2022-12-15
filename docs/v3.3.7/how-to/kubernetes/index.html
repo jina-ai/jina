@@ -32,10 +32,10 @@
 <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="Executor" href="../executor/" /><link rel="prev" title="How to run Jina with Docker Compose" href="../docker-compose/" />
         <link rel="canonical" href="https://docs.jina.ai/how-to/kubernetes.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.09.29"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
         <title>How to deploy Jina on Kubernetes - Jina 3.3.7 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
@@ -238,7 +238,7 @@
     <option value="/">latest</option>
   </select>
 </div><form class="sidebar-search-container" method="get" action="../../search/" role="search">
-  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form>
@@ -601,7 +601,7 @@
                     </label>
                 </div>
                 <section class="tex2jax_ignore mathjax_ignore" id="how-to-deploy-jina-on-kubernetes">
-<span id="kubernetes"></span><h1>How to deploy Jina on Kubernetes<a class="headerlink" href="#how-to-deploy-jina-on-kubernetes" title="Permalink to this headline">#</a></h1>
+<span id="kubernetes"></span><h1>How to deploy Jina on Kubernetes<a class="headerlink" href="#how-to-deploy-jina-on-kubernetes" title="Permalink to this heading">#</a></h1>
 <p>Jina natively supports deploying your Flow and Executors on Kubernetes.</p>
 <p>A <code class="docutils literal notranslate"><span class="pre">Flow</span></code> is composed of <code class="docutils literal notranslate"><span class="pre">Executors</span></code> which run Python code
 defined to operate on a <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code>. These Executors live in different runtimes depending on how you want to deploy
@@ -610,7 +610,7 @@ your Flow.</p>
 by Kubernetes.</p>
 <p>Deploying a Flow in Kubernetes is the recommended way of using Jina in production.</p>
 <section id="jina-relies-on-service-mesh">
-<h2>Jina relies on Service Mesh<a class="headerlink" href="#jina-relies-on-service-mesh" title="Permalink to this headline">#</a></h2>
+<h2>Jina relies on Service Mesh<a class="headerlink" href="#jina-relies-on-service-mesh" title="Permalink to this heading">#</a></h2>
 <p>Jina’s Kubernetes support comes with a built-in integration for <a class="reference external" href="https://linkerd.io/">Linkerd</a> as the service mesh for connecting all the Jina services in Kubernetes. All Jina deployment resources are annotated with the necessary <a class="reference external" href="https://linkerd.io/2.11/tasks/adding-your-service/#meshing-a-service-with-annotations">Linkerd annotations</a>. So we recommend every Jina user to <a class="reference external" href="https://linkerd.io/2.11/getting-started/#step-3-install-the-control-plane-onto-your-cluster">install Linkerd</a> into the Kubernetes cluster they are using Jina in.</p>
 <p>Linkerd will automatically load balance traffic between all replicas of an Executor. It also has <a class="reference external" href="https://linkerd.io/2.11/features/">additional features</a>.</p>
 <p>It is also generally possible to use other service mesh providers (like <a class="reference external" href="https://istio.io/">Istio</a>) with Jina. You need to manually change Jina’s deployment configurations in the generated YAML files for this.</p>
@@ -620,7 +620,7 @@ by Kubernetes.</p>
 </div>
 </section>
 <section id="deploy-your-flow">
-<span id="kubernetes-deploy"></span><h2>Deploy your Flow<a class="headerlink" href="#deploy-your-flow" title="Permalink to this headline">#</a></h2>
+<span id="kubernetes-deploy"></span><h2>Deploy your Flow<a class="headerlink" href="#deploy-your-flow" title="Permalink to this heading">#</a></h2>
 <p>To deploy a Flow on <code class="docutils literal notranslate"><span class="pre">Kubernetes</span></code>, first, you have to generate Kubernetes YAML configuration files from a Jina Flow.
 Then, you can use the <code class="docutils literal notranslate"><span class="pre">kubectl</span> <span class="pre">apply</span></code> command to create or update your Flow resources within your cluster.</p>
 <div class="admonition caution">
@@ -643,7 +643,7 @@ adapt it to your own needs. For instance, no Persistent Volume Object is added.<
 </div>
 </section>
 <section id="scaling-executors-on-kubernetes">
-<h2>Scaling Executors on Kubernetes<a class="headerlink" href="#scaling-executors-on-kubernetes" title="Permalink to this headline">#</a></h2>
+<h2>Scaling Executors on Kubernetes<a class="headerlink" href="#scaling-executors-on-kubernetes" title="Permalink to this heading">#</a></h2>
 <p>In Jina we support two ways of scaling:</p>
 <ul class="simple">
 <li><p><strong>Replicas</strong> can be used with any Executor type and is typically used for performance and availability.</p></li>
@@ -654,14 +654,14 @@ adapt it to your own needs. For instance, no Persistent Volume Object is added.<
 <p>Once the Flow is deployed on Kubernetes, you can use all the native Kubernetes tools like <code class="docutils literal notranslate"><span class="pre">kubeclt</span></code> to perform operations on the Pods and Deployments.</p>
 <p>You can use this to <a class="reference external" href="https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#scaling-a-deployment">add or remove replicas</a>, to run <a class="reference external" href="https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#updating-a-deployment">rolling update</a> operations, etc …</p>
 <section id="scaling-the-gateway">
-<h3>Scaling the Gateway<a class="headerlink" href="#scaling-the-gateway" title="Permalink to this headline">#</a></h3>
+<h3>Scaling the Gateway<a class="headerlink" href="#scaling-the-gateway" title="Permalink to this heading">#</a></h3>
 <p>The Gateway is responsible for providing the API of the <a class="reference internal" href="../../fundamentals/flow/flow-api/#flow"><span class="std std-ref">Flow</span></a>. If you have a large Flow with many Clients and many replicated Executors, the Gateway can become the bottleneck. In this case you can also scale up the Gateway deployment to be backed by multiple Kubernetes Pods.
 This is done by the regular means of Kubernetes: Either increase the number of replicas in the  <a class="reference internal" href="#kubernetes-deploy"><span class="std std-ref">generated yaml configuration files</span></a> or <a class="reference external" href="https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#scaling-a-deployment">add replicas while running</a>.
 To expose your Gateway replicas outside Kubernetes, you can add a load balancer as described <a class="reference internal" href="#kubernetes-expose"><span class="std std-ref">here</span></a>.</p>
 </section>
 </section>
 <section id="extra-kubernetes-options">
-<h2>Extra Kubernetes options<a class="headerlink" href="#extra-kubernetes-options" title="Permalink to this headline">#</a></h2>
+<h2>Extra Kubernetes options<a class="headerlink" href="#extra-kubernetes-options" title="Permalink to this heading">#</a></h2>
 <p>One could see that you can’t add basic Kubernetes feature like <code class="docutils literal notranslate"><span class="pre">Secrets</span></code>, <code class="docutils literal notranslate"><span class="pre">ConfigMap</span></code> or <code class="docutils literal notranslate"><span class="pre">Lables</span></code> via the pythonic interface. That is intended
 and it does not mean that we don’t support these features. On the contrary we allow you to fully express your Kubernetes configuration by using the Kubernetes API so that you can add you own Kubernetes standard to jina.</p>
 <div class="hint admonition">
@@ -679,9 +679,9 @@ and it does not mean that we don’t support these features. On the contrary we 
 </ul>
 </section>
 <section id="example-deploying-a-flow-with-kubernetes">
-<h2>Example : Deploying a Flow with Kubernetes<a class="headerlink" href="#example-deploying-a-flow-with-kubernetes" title="Permalink to this headline">#</a></h2>
+<h2>Example : Deploying a Flow with Kubernetes<a class="headerlink" href="#example-deploying-a-flow-with-kubernetes" title="Permalink to this heading">#</a></h2>
 <section id="preliminaries">
-<h3>Preliminaries<a class="headerlink" href="#preliminaries" title="Permalink to this headline">#</a></h3>
+<h3>Preliminaries<a class="headerlink" href="#preliminaries" title="Permalink to this heading">#</a></h3>
 <p>Set up a Kubernetes cluster and configure cluster access locally.</p>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
@@ -699,7 +699,7 @@ and it does not mean that we don’t support these features. On the contrary we 
 </div>
 </section>
 <section id="indexing-and-searching-images-using-clip-image-encoder-and-pqliteindexer">
-<h3>Indexing and searching images using CLIP image encoder and PQLiteIndexer<a class="headerlink" href="#indexing-and-searching-images-using-clip-image-encoder-and-pqliteindexer" title="Permalink to this headline">#</a></h3>
+<h3>Indexing and searching images using CLIP image encoder and PQLiteIndexer<a class="headerlink" href="#indexing-and-searching-images-using-clip-image-encoder-and-pqliteindexer" title="Permalink to this heading">#</a></h3>
 <p>This example shows how to build and deploy a Flow in Kubernetes with <a class="reference external" href="https://hub.jina.ai/executor/0hnlmu3q"><code class="docutils literal notranslate"><span class="pre">CLIPImageEncoder</span></code></a> as encoder and <a class="reference external" href="https://hub.jina.ai/executor/pn1qofsj"><code class="docutils literal notranslate"><span class="pre">PQLiteIndexer</span></code></a> as indexer.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
 
@@ -780,7 +780,7 @@ indexer-head-6fcc679d95-8mrm6   1/1     Running   0          60m
 </section>
 </section>
 <section id="exposing-your-flow">
-<span id="kubernetes-expose"></span><h2>Exposing your Flow<a class="headerlink" href="#exposing-your-flow" title="Permalink to this headline">#</a></h2>
+<span id="kubernetes-expose"></span><h2>Exposing your Flow<a class="headerlink" href="#exposing-your-flow" title="Permalink to this heading">#</a></h2>
 <p>The previous examples use port-forwarding to index documents to the Flow.
 Thinking about real world applications,
 you might want to expose your service to make it reachable by the users, so that you can serve search requests</p>
@@ -798,7 +798,7 @@ sleep <span class="m">60</span> <span class="c1"># wait until the external ip is
 </pre></div>
 </div>
 <section id="client">
-<h3>Client<a class="headerlink" href="#client" title="Permalink to this headline">#</a></h3>
+<h3>Client<a class="headerlink" href="#client" title="Permalink to this heading">#</a></h3>
 <p>The client sends an image to the exposed <code class="docutils literal notranslate"><span class="pre">Flow</span></code> on <code class="docutils literal notranslate"><span class="pre">$EXTERNAL_IP</span></code> and retrieves the matches retrieved from the Flow.
 Finally, it prints the uri of the closest matches.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
@@ -856,7 +856,7 @@ Finally, it prints the uri of the closest matches.</p>
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Nov 25, 2022.
+                    Last updated on Dec 15, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -927,7 +927,9 @@ Finally, it prints the uri of the closest matches.</p>
 <img referrerpolicy="no-referrer-when-downgrade" src="https://static.scarf.sh/a.png?x-pxid=1b470c1d-3b55-4d38-baa8-989bfba2a218" /><script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
     <script src="../../_static/scripts/furo.js"></script>
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>

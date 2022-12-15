@@ -32,10 +32,10 @@
 <link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" /><link rel="next" title="Executor File Structure" href="../repository-structure/" /><link rel="prev" title="Executor API" href="../executor-api/" />
         <link rel="canonical" href="https://docs.jina.ai/fundamentals/executor/executor-in-flow.html" />
 
-    <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.09.29"/>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
         <title>Executors inside a Flow - Jina 3.3.7 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/tabs.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
@@ -238,7 +238,7 @@
     <option value="/">latest</option>
   </select>
 </div><form class="sidebar-search-container" method="get" action="../../../search/" role="search">
-  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form>
@@ -601,11 +601,11 @@
                     </label>
                 </div>
                 <section class="tex2jax_ignore mathjax_ignore" id="executors-inside-a-flow">
-<span id="executor-in-flow"></span><h1>Executors inside a Flow<a class="headerlink" href="#executors-inside-a-flow" title="Permalink to this headline">#</a></h1>
+<span id="executor-in-flow"></span><h1>Executors inside a Flow<a class="headerlink" href="#executors-inside-a-flow" title="Permalink to this heading">#</a></h1>
 <p>Executors are a way to group your <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> functions and processing logic into a class that can share configuration and state in a modular way.
 The main advantage of <code class="docutils literal notranslate"><span class="pre">Executor</span></code>s is using them in a <code class="docutils literal notranslate"><span class="pre">Flow</span></code>, which can serve, scale, and deploy them with ease.</p>
 <section id="yaml-and-python-api">
-<span id="executor-api"></span><h2>YAML and Python API<a class="headerlink" href="#yaml-and-python-api" title="Permalink to this headline">#</a></h2>
+<span id="executor-api"></span><h2>YAML and Python API<a class="headerlink" href="#yaml-and-python-api" title="Permalink to this heading">#</a></h2>
 <p>An Executor can be loaded from a YAML file or via Python API.</p>
 <details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3" open="open">
 <summary class="sd-summary-title sd-card-header">
@@ -697,7 +697,7 @@ The YAML file has the following format:</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">workspace</span></code> is a string value that defines the <a class="reference internal" href="#executor-workspace"><span class="std std-ref">workspace</span></a>.</p></li>
 </ul>
 <section id="passing-and-overriding-arguments">
-<span id="executor-args"></span><h3>Passing and overriding arguments<a class="headerlink" href="#passing-and-overriding-arguments" title="Permalink to this headline">#</a></h3>
+<span id="executor-args"></span><h3>Passing and overriding arguments<a class="headerlink" href="#passing-and-overriding-arguments" title="Permalink to this heading">#</a></h3>
 <p>When using an Executor in a Flow, there are two ways of passing arguments.</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--1-input--1" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--1">via uses_with</label><div class="tab-content docutils">
@@ -849,7 +849,7 @@ Example<div class="sd-summary-down docutils">
 </details></section>
 </section>
 <section id="internal-executor-attributes">
-<h2>Internal Executor attributes<a class="headerlink" href="#internal-executor-attributes" title="Permalink to this headline">#</a></h2>
+<h2>Internal Executor attributes<a class="headerlink" href="#internal-executor-attributes" title="Permalink to this heading">#</a></h2>
 <p>When implementing an <code class="docutils literal notranslate"><span class="pre">Executor</span></code>, if your Executor overrides <code class="docutils literal notranslate"><span class="pre">__init__</span></code>, it needs to carry <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> in the signature and call <code class="docutils literal notranslate"><span class="pre">super().__init__(**kwargs)</span></code></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span>
 
@@ -865,7 +865,7 @@ Example<div class="sd-summary-down docutils">
 Some of these <code class="docutils literal notranslate"><span class="pre">arguments</span></code> can be used when developing the internal logic of the Executor.</p>
 <p>These <code class="docutils literal notranslate"><span class="pre">special</span></code> arguments are <code class="docutils literal notranslate"><span class="pre">workspace</span></code>, <code class="docutils literal notranslate"><span class="pre">requests</span></code>, <code class="docutils literal notranslate"><span class="pre">metas</span></code>, <code class="docutils literal notranslate"><span class="pre">runtime_args</span></code>.</p>
 <section id="workspace">
-<span id="executor-workspace"></span><h3><code class="docutils literal notranslate"><span class="pre">workspace</span></code><a class="headerlink" href="#workspace" title="Permalink to this headline">#</a></h3>
+<span id="executor-workspace"></span><h3><code class="docutils literal notranslate"><span class="pre">workspace</span></code><a class="headerlink" href="#workspace" title="Permalink to this heading">#</a></h3>
 <p>Each <code class="docutils literal notranslate"><span class="pre">Executor</span></code> has a special <em>workspace</em> that is reserved for that specific Executor instance.
 The <code class="docutils literal notranslate"><span class="pre">.workspace</span></code> property contains the path to this workspace.</p>
 <p>This <code class="docutils literal notranslate"><span class="pre">workspace</span></code> is based on the workspace passed when adding the Executor: <code class="docutils literal notranslate"><span class="pre">flow.add(...,</span> <span class="pre">workspace='path/to/workspace/')</span></code>.
@@ -892,12 +892,12 @@ you install jina on your system.</p>
 </div>
 </details></section>
 <section id="requests">
-<span id="executor-requests"></span><h3><code class="docutils literal notranslate"><span class="pre">requests</span></code><a class="headerlink" href="#requests" title="Permalink to this headline">#</a></h3>
+<span id="executor-requests"></span><h3><code class="docutils literal notranslate"><span class="pre">requests</span></code><a class="headerlink" href="#requests" title="Permalink to this heading">#</a></h3>
 <p>By default, an <code class="docutils literal notranslate"><span class="pre">Executor</span></code> object contains <code class="docutils literal notranslate"><span class="pre">.requests</span></code> as an attribute when loaded from the <code class="docutils literal notranslate"><span class="pre">Flow</span></code>. This attribute is a <code class="docutils literal notranslate"><span class="pre">Dict</span></code> describing the mapping between Executor methods and network endpoints: It holds endpoint strings as keys, and pointers to functions as values.</p>
 <p>These can be provided to the Executor via the <a class="reference internal" href="#executor-api"><span class="std std-ref">Python or YAML API</span></a>.</p>
 </section>
 <section id="metas">
-<span id="executor-metas"></span><h3><code class="docutils literal notranslate"><span class="pre">metas</span></code><a class="headerlink" href="#metas" title="Permalink to this headline">#</a></h3>
+<span id="executor-metas"></span><h3><code class="docutils literal notranslate"><span class="pre">metas</span></code><a class="headerlink" href="#metas" title="Permalink to this heading">#</a></h3>
 <p>An <code class="docutils literal notranslate"><span class="pre">Executor</span></code> object contains <code class="docutils literal notranslate"><span class="pre">.metas</span></code> as an attribute when loaded from the <code class="docutils literal notranslate"><span class="pre">Flow</span></code>. It is of <a class="reference external" href="https://docs.python.org/3/library/types.html#types.SimpleNamespace"><code class="docutils literal notranslate"><span class="pre">SimpleNamespace</span></code></a> type and contains some key-value information.</p>
 <p>The list of the <code class="docutils literal notranslate"><span class="pre">metas</span></code> are:</p>
 <ul class="simple">
@@ -908,7 +908,7 @@ you install jina on your system.</p>
 <p>These can be provided to the Executor via the <a class="reference internal" href="#executor-api"><span class="std std-ref">Python or YAML API</span></a>.</p>
 </section>
 <section id="runtime-args">
-<h3><code class="docutils literal notranslate"><span class="pre">runtime_args</span></code><a class="headerlink" href="#runtime-args" title="Permalink to this headline">#</a></h3>
+<h3><code class="docutils literal notranslate"><span class="pre">runtime_args</span></code><a class="headerlink" href="#runtime-args" title="Permalink to this heading">#</a></h3>
 <p>By default, an <code class="docutils literal notranslate"><span class="pre">Executor</span></code> object contains <code class="docutils literal notranslate"><span class="pre">.runtime_args</span></code> as an attribute when loaded from the <code class="docutils literal notranslate"><span class="pre">Flow</span></code>. It is of <a class="reference external" href="https://docs.python.org/3/library/types.html#types.SimpleNamespace"><code class="docutils literal notranslate"><span class="pre">SimpleNamespace</span></code></a> type and contains information in key-value format.
 As the name suggests, <code class="docutils literal notranslate"><span class="pre">runtime_args</span></code> are dynamically determined during runtime, meaning that you don’t know the value before running the <code class="docutils literal notranslate"><span class="pre">Executor</span></code>. These values are often related to the system/network environment around the <code class="docutils literal notranslate"><span class="pre">Executor</span></code>, and less about the <code class="docutils literal notranslate"><span class="pre">Executor</span></code> itself, like <code class="docutils literal notranslate"><span class="pre">shard_id</span></code> and <code class="docutils literal notranslate"><span class="pre">replicas</span></code>. They are usually set with the <a class="reference internal" href="../../../api/jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.add" title="jina.orchestrate.flow.base.Flow.add"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add()</span></code></a> method.</p>
 <p>The list of the <code class="docutils literal notranslate"><span class="pre">runtime_args</span></code> is:</p>
@@ -924,7 +924,7 @@ As the name suggests, <code class="docutils literal notranslate"><span class="pr
 </section>
 </section>
 <section id="passing-and-changing-request-parameters">
-<span id="pass-parameters"></span><h2>Passing and changing request parameters<a class="headerlink" href="#passing-and-changing-request-parameters" title="Permalink to this headline">#</a></h2>
+<span id="pass-parameters"></span><h2>Passing and changing request parameters<a class="headerlink" href="#passing-and-changing-request-parameters" title="Permalink to this heading">#</a></h2>
 <p>An important feature of <code class="docutils literal notranslate"><span class="pre">Executor</span></code>, beyond the capacity of <em>processing</em> Documents, is the capacity to receive <code class="docutils literal notranslate"><span class="pre">parameters</span></code> and to return additional results.</p>
 <p>Results are returned inside the <code class="docutils literal notranslate"><span class="pre">parameters</span></code> dictionary, behind the reserved <code class="docutils literal notranslate"><span class="pre">__results__</span></code> key.</p>
 <p>Note, however, that not all Executors or request methods populate this field with results. Some just modify the <code class="docutils literal notranslate"><span class="pre">Document</span></code>s passed to them, without adding further information.</p>
@@ -975,7 +975,7 @@ Example usage and output<div class="sd-summary-down docutils">
 </div>
 </details></section>
 <section id="exception-handling">
-<h2>Exception handling<a class="headerlink" href="#exception-handling" title="Permalink to this headline">#</a></h2>
+<h2>Exception handling<a class="headerlink" href="#exception-handling" title="Permalink to this heading">#</a></h2>
 <p>Exceptions raised inside <code class="docutils literal notranslate"><span class="pre">&#64;requests</span></code>-decorated functions can simply be raised. The Flow will handle it.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">Flow</span>
 
@@ -1022,7 +1022,7 @@ Example usage and output<div class="sd-summary-down docutils">
 </div>
 </details></section>
 <section id="graceful-shutdown-of-an-executor">
-<h2>Graceful shutdown of an Executor<a class="headerlink" href="#graceful-shutdown-of-an-executor" title="Permalink to this headline">#</a></h2>
+<h2>Graceful shutdown of an Executor<a class="headerlink" href="#graceful-shutdown-of-an-executor" title="Permalink to this heading">#</a></h2>
 <p>You might need to execute some logic when your Executor’s destructor is called.
 For example, you want to persist data to the disk (e.g. in-memory indexed data, fine-tuned model,…).
 To do so, you can overwrite the <code class="docutils literal notranslate"><span class="pre">close</span></code> method and add your logic.</p>
@@ -1077,7 +1077,7 @@ Usage<div class="sd-summary-down docutils">
 </div>
 </details></section>
 <section id="multiple-documentarrays-as-input">
-<h2>Multiple DocumentArrays as input<a class="headerlink" href="#multiple-documentarrays-as-input" title="Permalink to this headline">#</a></h2>
+<h2>Multiple DocumentArrays as input<a class="headerlink" href="#multiple-documentarrays-as-input" title="Permalink to this heading">#</a></h2>
 <p>You have seen that <code class="docutils literal notranslate"><span class="pre">Executor</span></code> methods can receive three types of parameters: <code class="docutils literal notranslate"><span class="pre">docs</span></code>, <code class="docutils literal notranslate"><span class="pre">parameters</span></code> and <code class="docutils literal notranslate"><span class="pre">docs_matrix</span></code>.</p>
 <p><code class="docutils literal notranslate"><span class="pre">docs_matrix</span></code> is a parameter that is only used in some special cases.
 One case is when an Executor receives messages from more than one upstream Executor in the Flow.</p>
@@ -1179,7 +1179,7 @@ Output<div class="sd-summary-down docutils">
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Nov 25, 2022.
+                    Last updated on Dec 15, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -1249,7 +1249,9 @@ Output<div class="sd-summary-down docutils">
 <img referrerpolicy="no-referrer-when-downgrade" src="https://static.scarf.sh/a.png?x-pxid=1b470c1d-3b55-4d38-baa8-989bfba2a218" /><script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
     <script src="../../../_static/scripts/furo.js"></script>
     <script src="../../../_static/clipboard.min.js"></script>
     <script src="../../../_static/copybutton.js"></script>

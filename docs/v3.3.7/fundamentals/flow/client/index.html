@@ -32,10 +32,10 @@
 <link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" /><link rel="next" title="Remarks" href="../remarks/" /><link rel="prev" title="Access Flow" href="../access-flow-api/" />
         <link rel="canonical" href="https://docs.jina.ai/fundamentals/flow/client.html" />
 
-    <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.09.29"/>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
         <title>Python Client - Jina 3.3.7 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/tabs.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
@@ -238,7 +238,7 @@
     <option value="/">latest</option>
   </select>
 </div><form class="sidebar-search-container" method="get" action="../../../search/" role="search">
-  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form>
@@ -601,15 +601,15 @@
                     </label>
                 </div>
                 <section class="tex2jax_ignore mathjax_ignore" id="python-client">
-<span id="client"></span><h1>Python Client<a class="headerlink" href="#python-client" title="Permalink to this headline">#</a></h1>
+<span id="client"></span><h1>Python Client<a class="headerlink" href="#python-client" title="Permalink to this heading">#</a></h1>
 <p>The most convenient way to work with the <code class="docutils literal notranslate"><span class="pre">Flow</span></code> API is the Python Client.
 It enables you to send <code class="docutils literal notranslate"><span class="pre">Documents</span></code> to a running <code class="docutils literal notranslate"><span class="pre">Flow</span></code> in a number of different ways, as shown below.</p>
 <section id="http-grpc-and-websocket">
-<h2>HTTP, gRPC, and WebSocket<a class="headerlink" href="#http-grpc-and-websocket" title="Permalink to this headline">#</a></h2>
+<h2>HTTP, gRPC, and WebSocket<a class="headerlink" href="#http-grpc-and-websocket" title="Permalink to this heading">#</a></h2>
 <p>Jina Flows and Clients support three different networking protocols: HTTP, gRPC, and WebSocket.
 For each of them, you first connect your Client to the Flow, before you can send requests to it.</p>
 <section id="connect-client-to-a-flow">
-<h3>Connect Client to a Flow<a class="headerlink" href="#connect-client-to-a-flow" title="Permalink to this headline">#</a></h3>
+<h3>Connect Client to a Flow<a class="headerlink" href="#connect-client-to-a-flow" title="Permalink to this heading">#</a></h3>
 <p>If there is not already a Flow running in the background or on the network, you can start one:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
 
@@ -689,7 +689,7 @@ This is particularly useful when debugging or accessing a Flow on your local mac
 </div>
 </section>
 <section id="send-requests-to-the-flow">
-<h3>Send requests to the Flow<a class="headerlink" href="#send-requests-to-the-flow" title="Permalink to this headline">#</a></h3>
+<h3>Send requests to the Flow<a class="headerlink" href="#send-requests-to-the-flow" title="Permalink to this heading">#</a></h3>
 <p>After a Client has connected to a Flow, it can send requests to the Flow using its <code class="docutils literal notranslate"><span class="pre">.post()</span></code> method.
 This expects as inputs the <a class="reference internal" href="../../executor/executor-api/#exec-endpoint"><span class="std std-ref">Executor endpoint</span></a> that you want to target, as well as a Document or Iterable of Documents:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span>
@@ -725,7 +725,7 @@ Hence, <code class="docutils literal notranslate"><span class="pre">flow.post()<
 </div>
 </section>
 <section id="batching-requests">
-<h3>Batching Requests<a class="headerlink" href="#batching-requests" title="Permalink to this headline">#</a></h3>
+<h3>Batching Requests<a class="headerlink" href="#batching-requests" title="Permalink to this heading">#</a></h3>
 <p>Especially during indexing, a Client can send up to thousands or millions of Documents to a <code class="docutils literal notranslate"><span class="pre">Flow</span></code>.
 Those Documents are internally batched into a <code class="docutils literal notranslate"><span class="pre">Request</span></code>, providing a smaller memory footprint and faster response times thanks
 to <a class="reference internal" href="#callback-functions"><span class="std std-ref">callback functions</span></a>.</p>
@@ -741,7 +741,7 @@ The default <code class="docutils literal notranslate"><span class="pre">request
 </div>
 </section>
 <section id="targeting-a-specific-executor">
-<h3>Targeting a specific Executor<a class="headerlink" href="#targeting-a-specific-executor" title="Permalink to this headline">#</a></h3>
+<h3>Targeting a specific Executor<a class="headerlink" href="#targeting-a-specific-executor" title="Permalink to this heading">#</a></h3>
 <p>Usually a <code class="docutils literal notranslate"><span class="pre">Flow</span></code> will send each request to all Executors with matching endpoints as configured. But the <code class="docutils literal notranslate"><span class="pre">Client</span></code> also allows you to only target a specific Executor in a <code class="docutils literal notranslate"><span class="pre">Flow</span></code> using the <code class="docutils literal notranslate"><span class="pre">target_executor</span></code> keyword. The request will then only be processed by the Executor with the provided name. Its usage is shown in the listing below.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span>
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">requests</span>
@@ -773,7 +773,7 @@ The default <code class="docutils literal notranslate"><span class="pre">request
 </div>
 </section>
 <section id="request-parameters">
-<h3>Request parameters<a class="headerlink" href="#request-parameters" title="Permalink to this headline">#</a></h3>
+<h3>Request parameters<a class="headerlink" href="#request-parameters" title="Permalink to this heading">#</a></h3>
 <p>The Client can also send parameters to the Executors as shown below:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">Document</span>
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">requests</span>
@@ -803,7 +803,7 @@ The default <code class="docutils literal notranslate"><span class="pre">request
 </div>
 </section>
 <section id="processing-results-using-callback-functions">
-<span id="callback-functions"></span><h3>Processing results using callback functions<a class="headerlink" href="#processing-results-using-callback-functions" title="Permalink to this headline">#</a></h3>
+<span id="callback-functions"></span><h3>Processing results using callback functions<a class="headerlink" href="#processing-results-using-callback-functions" title="Permalink to this heading">#</a></h3>
 <p>After performing <code class="docutils literal notranslate"><span class="pre">client.post()</span></code>, you may want to further process the obtained results.</p>
 <p>For this purpose, Jina implements a promise-like interface, letting you specify three kinds of callback functions:</p>
 <ul class="simple">
@@ -886,7 +886,7 @@ If something goes wrong, it beeps. Finally, the result is written to output.txt.
 </div>
 </section>
 <section id="on-failure-callback">
-<h3>On failure callback<a class="headerlink" href="#on-failure-callback" title="Permalink to this headline">#</a></h3>
+<h3>On failure callback<a class="headerlink" href="#on-failure-callback" title="Permalink to this heading">#</a></h3>
 <p>Additionally, the <code class="docutils literal notranslate"><span class="pre">on_error</span></code> callback can be triggered by a raise of an exception. The callback must take an optional
 <code class="docutils literal notranslate"><span class="pre">exception</span></code> parameters as an argument.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">on_error</span><span class="p">(</span><span class="n">resp</span><span class="p">,</span> <span class="n">exception</span><span class="p">:</span> <span class="ne">Exception</span><span class="p">):</span>
@@ -895,7 +895,7 @@ If something goes wrong, it beeps. Finally, the result is written to output.txt.
 </div>
 </section>
 <section id="returning-results-from-post">
-<h3>Returning results from .post()<a class="headerlink" href="#returning-results-from-post" title="Permalink to this headline">#</a></h3>
+<h3>Returning results from .post()<a class="headerlink" href="#returning-results-from-post" title="Permalink to this heading">#</a></h3>
 <p>If no callback is provided, <code class="docutils literal notranslate"><span class="pre">client.post()</span></code> returns a flattened <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> containing all Documents of all Requests.</p>
 <p>By setting <code class="docutils literal notranslate"><span class="pre">return_responses=True</span></code> as an argument to <code class="docutils literal notranslate"><span class="pre">client.post(return_responses=True),</span> <span class="pre">this</span> <span class="pre">behavior</span> <span class="pre">can</span> <span class="pre">be</span> <span class="pre">modified</span> <span class="pre">to</span> <span class="pre">return</span> <span class="pre">a</span> <span class="pre">list</span> <span class="pre">of</span> <span class="pre">Responses</span> <span class="pre">(</span></code>DataRequest`s) instead.</p>
 <p>If a callback is provided, no results will be returned.</p>
@@ -962,7 +962,7 @@ This may not only be slower, but also require more memory.</p>
 </div>
 </section>
 <section id="custom-grpc-compression-for-grpc-client">
-<h3>Custom gRPC compression for GRPC Client<a class="headerlink" href="#custom-grpc-compression-for-grpc-client" title="Permalink to this headline">#</a></h3>
+<h3>Custom gRPC compression for GRPC Client<a class="headerlink" href="#custom-grpc-compression-for-grpc-client" title="Permalink to this heading">#</a></h3>
 <p>If the communication to the <code class="docutils literal notranslate"><span class="pre">Flow</span></code> needs to be done via gRPC, you can pass <code class="docutils literal notranslate"><span class="pre">compression</span></code> parameter to <code class="docutils literal notranslate"><span class="pre">client.post</span></code> to benefit from (<code class="docutils literal notranslate"><span class="pre">grpc</span> <span class="pre">compression</span></code>)[https://grpc.github.io/grpc/python/grpc.html#compression] methods.
 The supported methods are: <code class="docutils literal notranslate"><span class="pre">NoCompression</span></code>, <code class="docutils literal notranslate"><span class="pre">Gzip</span></code> and <code class="docutils literal notranslate"><span class="pre">Deflate</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span>
@@ -973,7 +973,7 @@ The supported methods are: <code class="docutils literal notranslate"><span clas
 </div>
 </section>
 <section id="tls-support">
-<h3>TLS support<a class="headerlink" href="#tls-support" title="Permalink to this headline">#</a></h3>
+<h3>TLS support<a class="headerlink" href="#tls-support" title="Permalink to this heading">#</a></h3>
 <p>To connect to a Flow that has been <a class="reference internal" href="../flow-api/#flow-tls"><span class="std std-ref">configured to use TLS</span></a> in combination with gRPC, http, or websocket,
 set the Client’s <code class="docutils literal notranslate"><span class="pre">tls</span></code> parameter to <code class="docutils literal notranslate"><span class="pre">True</span></code>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">c_http</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">protocol</span><span class="o">=</span><span class="s1">&#39;http&#39;</span><span class="p">,</span> <span class="n">tls</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">host</span><span class="o">=...</span><span class="p">,</span> <span class="n">port</span><span class="o">=...</span><span class="p">)</span>
@@ -990,7 +990,7 @@ set the Client’s <code class="docutils literal notranslate"><span class="pre">
 </section>
 </section>
 <section id="graphql">
-<h2>GraphQL<a class="headerlink" href="#graphql" title="Permalink to this headline">#</a></h2>
+<h2>GraphQL<a class="headerlink" href="#graphql" title="Permalink to this heading">#</a></h2>
 <p>The Jina Client additionally supports fetching data via GraphQL mutations using <code class="docutils literal notranslate"><span class="pre">client.mutate()</span></code>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span>
 
@@ -1012,7 +1012,7 @@ set the Client’s <code class="docutils literal notranslate"><span class="pre">
 <p>For details on the allowed mutation arguments and response fields, see <a class="reference internal" href="../access-flow-api/#flow-graphql"><span class="std std-ref">here</span></a>.</p>
 </section>
 <section id="async-python-client">
-<h2>Async Python Client<a class="headerlink" href="#async-python-client" title="Permalink to this headline">#</a></h2>
+<h2>Async Python Client<a class="headerlink" href="#async-python-client" title="Permalink to this heading">#</a></h2>
 <p>There also exists an async version of the Python Client which works with <code class="docutils literal notranslate"><span class="pre">.post()</span></code> and <code class="docutils literal notranslate"><span class="pre">.mutate()</span></code>.</p>
 <p>While the standard <code class="docutils literal notranslate"><span class="pre">Client</span></code> is also asynchronous under the hood, its async version exposes this fact to the outside world,
 by allowing <em>coroutines</em> as input, and returning an <em>asynchronous iterator</em>.
@@ -1074,7 +1074,7 @@ This means you can iterate over Responses one by one, as they come in.</p>
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Nov 25, 2022.
+                    Last updated on Dec 15, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -1144,7 +1144,9 @@ This means you can iterate over Responses one by one, as they come in.</p>
 <img referrerpolicy="no-referrer-when-downgrade" src="https://static.scarf.sh/a.png?x-pxid=1b470c1d-3b55-4d38-baa8-989bfba2a218" /><script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
     <script src="../../../_static/scripts/furo.js"></script>
     <script src="../../../_static/clipboard.min.js"></script>
     <script src="../../../_static/copybutton.js"></script>
