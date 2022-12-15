@@ -1,4 +1,5 @@
 import argparse
+import asyncio
 import base64
 import copy
 import inspect
@@ -1785,11 +1786,11 @@ class Flow(
         results = {}
         threads = []
 
-        def _wait_ready(_deployment_name, _deployment):
+        async def _wait_ready(_deployment_name, _deployment):
             try:
                 if not _deployment.external:
                     results[_deployment_name] = 'pending'
-                    _deployment.wait_start_success()
+                    await _deployment.async_wait_start_success()
                     results[_deployment_name] = 'done'
             except Exception as ex:
                 results[_deployment_name] = repr(ex)
@@ -1834,18 +1835,6 @@ class Flow(
                 'wait', total=len(threads), pending_str='', start=False
             )
 
-            # kick off all deployments wait-ready threads
-            for k, v in self:
-                t = threading.Thread(
-                    target=_wait_ready,
-                    args=(
-                        k,
-                        v,
-                    ),
-                    daemon=True,
-                )
-                threads.append(t)
-
             # kick off ip getter thread, address, http, graphq
             all_panels = []
 
@@ -1862,6 +1851,21 @@ class Flow(
 
             for t in threads:
                 t.start()
+
+            # kick off all deployments wait-ready tasks
+            coros = []
+            for k, v in self:
+                coros.append(_wait_ready(k, v))
+
+            async def _wait_all():
+                await asyncio.gather(*coros)
+
+            try:
+                loop = asyncio.get_event_loop()
+            except:
+                loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(loop)
+            asyncio.get_event_loop().run_until_complete(_wait_all())
 
             for t in threads:
                 t.join()
