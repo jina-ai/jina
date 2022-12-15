@@ -1,11 +1,12 @@
+import contextlib
 import os
+import shutil
 import threading
 import time
-import shutil
-import contextlib
+
 import pytest
 
-from jina import Flow, Client, DocumentArray, Executor, requests
+from jina import Client, DocumentArray, Executor, Flow, requests
 from jina.helper import random_port
 
 cur_dir = os.path.dirname(__file__)
@@ -29,10 +30,12 @@ def flow_run(flow, stop_event):
         flow.block(stop_event)
 
 
-def test_deployment_restart(tmpdir):
+def test_deployment_reload(tmpdir):
     stop_event = threading.Event()
 
-    flow = Flow().add(uses=os.path.join(os.path.join(cur_dir, 'exec'), 'config.yml'), restart=True)
+    flow = Flow().add(
+        uses=os.path.join(os.path.join(cur_dir, 'exec'), 'config.yml'), reload=True
+    )
     t = threading.Thread(target=flow_run, args=(flow, stop_event))
     t.start()
     time.sleep(5)
@@ -41,18 +44,22 @@ def test_deployment_restart(tmpdir):
         res = client.post(on='/', inputs=DocumentArray.empty(10))
         assert len(res) == 10
         for doc in res:
-            assert doc.text == 'MyExecutorBeforeRestart'
-        with _update_file(os.path.join(os.path.join(cur_dir, 'exec'), 'config_alt.yml'), os.path.join(os.path.join(cur_dir, 'exec'), 'config.yml'), str(tmpdir)):
+            assert doc.text == 'MyExecutorBeforeReload'
+        with _update_file(
+            os.path.join(os.path.join(cur_dir, 'exec'), 'config_alt.yml'),
+            os.path.join(os.path.join(cur_dir, 'exec'), 'config.yml'),
+            str(tmpdir),
+        ):
             client = Client(port=flow.port, protocol=str(flow.protocol))
             res = client.post(on='/', inputs=DocumentArray.empty(10))
             assert len(res) == 10
             for doc in res:
-                assert doc.text == 'MyExecutorAfterRestart'
+                assert doc.text == 'MyExecutorAfterReload'
         client = Client(port=flow.port, protocol=str(flow.protocol))
         res = client.post(on='/', inputs=DocumentArray.empty(10))
         assert len(res) == 10
         for doc in res:
-            assert doc.text == 'MyExecutorBeforeRestart'
+            assert doc.text == 'MyExecutorBeforeReload'
     finally:
         stop_event.set()
         t.join()

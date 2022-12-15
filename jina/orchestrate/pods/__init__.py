@@ -15,21 +15,20 @@ from jina.logging.logger import JinaLogger
 from jina.orchestrate.pods.helper import ConditionalEvent, _get_event
 from jina.parsers.helper import _update_gateway_args
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
+from jina.serve.runtimes.gateway import GatewayRuntime
 
 __all__ = ['BasePod', 'Pod']
 
-from jina.serve.runtimes.gateway import GatewayRuntime
-
 
 def run(
-    args: 'argparse.Namespace',
-    name: str,
-    runtime_cls: Type[AsyncNewLoopRuntime],
-    envs: Dict[str, str],
-    is_started: Union['multiprocessing.Event', 'threading.Event'],
-    is_shutdown: Union['multiprocessing.Event', 'threading.Event'],
-    is_ready: Union['multiprocessing.Event', 'threading.Event'],
-    jaml_classes: Optional[Dict] = None,
+        args: 'argparse.Namespace',
+        name: str,
+        runtime_cls: Type[AsyncNewLoopRuntime],
+        envs: Dict[str, str],
+        is_started: Union['multiprocessing.Event', 'threading.Event'],
+        is_shutdown: Union['multiprocessing.Event', 'threading.Event'],
+        is_ready: Union['multiprocessing.Event', 'threading.Event'],
+        jaml_classes: Optional[Dict] = None,
 ):
     """Method representing the :class:`BaseRuntime` activity.
 
@@ -74,6 +73,7 @@ def run(
 
     try:
         _set_envs()
+
         runtime = runtime_cls(
             args=args,
         )
@@ -152,7 +152,7 @@ class BasePod(ABC):
                 self.logger.debug(f'terminate')
                 self._terminate()
                 if not self.is_shutdown.wait(
-                    timeout=self._timeout_ctrl if not __windows__ else 1.0
+                        timeout=self._timeout_ctrl if not __windows__ else 1.0
                 ):
                     if not __windows__:
                         raise Exception(
