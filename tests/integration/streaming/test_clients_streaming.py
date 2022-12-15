@@ -3,12 +3,13 @@ import os
 import time
 from datetime import datetime
 from functools import partial
-from multiprocessing import Process, current_process
+from multiprocessing import Process, current_process, Event
 from typing import List
 
 import pytest
 
 from jina import Client, Document, DocumentArray, Executor, Flow, requests
+from jina.helper import random_port
 
 INPUT_LEN = 4
 INPUT_GEN_SLEEP_TIME = 1
@@ -208,11 +209,15 @@ def info_log_level():
 
 
 @pytest.mark.parametrize('prefetch', [0, 5])
-@pytest.mark.parametrize('protocol', ['websocket', 'http', 'grpc'])
-def test_multiple_clients(prefetch, protocol, info_log_level):
+@pytest.mark.parametrize('stream', [True, False])
+@pytest.mark.parametrize('protocol', ['websocket', 'grpc'])
+def test_multiple_clients(prefetch, protocol, stream, info_log_level):
     GOOD_CLIENTS = 5
     GOOD_CLIENT_NUM_DOCS = 20
     MALICIOUS_CLIENT_NUM_DOCS = 50
+
+    if protocol != 'grpc' and not stream:
+        return
 
     def get_document(i):
         return Document(
@@ -229,61 +234,67 @@ def test_multiple_clients(prefetch, protocol, info_log_level):
         for i in range(1000, 1000 + MALICIOUS_CLIENT_NUM_DOCS):
             yield get_document(i)
 
-    def client(gen, port):
-        Client(protocol=protocol, port=port).post(
-            on='/index', inputs=gen, request_size=1, return_responses=True
+    def client(gen, port, ready_event):
+        ready_event.wait()
+        Client(protocol=protocol, port=port, prefetch=prefetch).post(
+            on='/index', inputs=gen, request_size=1, return_responses=True, stream=stream
         )
 
     pool: List[Process] = []
-    f = Flow(protocol=protocol, prefetch=prefetch).add(uses=Indexer)
-    with f:
-        # We have 5 good clients connecting to the same gateway. They have controlled requests.
-        # Each client sends `GOOD_CLIENT_NUM_DOCS` (20) requests and sleeps after each request.
-        for i in range(GOOD_CLIENTS):
-            p = Process(
-                target=partial(client, good_client_gen, f.port),
-                name=f'goodguy_{i}',
-            )
-            p.start()
-            pool.append(p)
-
-        # and 1 malicious client, sending lot of requests (trying to block others)
+    port = random_port()
+    f = Flow(protocol=protocol, prefetch=prefetch, port=port).add(uses=Indexer)
+    flow_ready_event = Event()
+    # We have 5 good clients connecting to the same gateway. They have controlled requests.
+    # Each client sends `GOOD_CLIENT_NUM_DOCS` (20) requests and sleeps after each request.
+    # and 1 malicious client, sending lot of requests (trying to block others)
+    for i in range(GOOD_CLIENTS):
         p = Process(
-            target=partial(client, malicious_client_gen, f.port),
-            name='badguy',
+            target=partial(client, good_client_gen, port, flow_ready_event),
+            name=f'goodguy_{i}',
         )
         p.start()
         pool.append(p)
 
-        for p in pool:
-            p.join()
-
-        order_of_ids = list(
-            Client(protocol=protocol, port=f.port)
-            .post(on='/status', inputs=[Document()], return_responses=True)[0]
-            .docs[0]
-            .tags['ids']
-        )
-    # There must be total 150 docs indexed.
-    assert (
-        len(order_of_ids)
-        == GOOD_CLIENTS * GOOD_CLIENT_NUM_DOCS + MALICIOUS_CLIENT_NUM_DOCS
+    p = Process(
+        target=partial(client, malicious_client_gen, port, flow_ready_event),
+        name='badguy',
     )
+    p.start()
+    pool.append(p)
+    try:
+        with f:
+            flow_ready_event.set()
+            for p in pool:
+                p.join()
+            order_of_ids = list(
+                Client(protocol=protocol, port=f.port, prefetch=prefetch)
+                .post(on='/status', inputs=[Document()], return_responses=True, stream=stream)[0]
+                .docs[0]
+                .tags['ids']
+            )
+        # There must be total 150 docs indexed.
+        assert (
+            len(order_of_ids)
+            == GOOD_CLIENTS * GOOD_CLIENT_NUM_DOCS + MALICIOUS_CLIENT_NUM_DOCS
+        )
 
-    """
-    If prefetch is set, each Client is allowed (max) 5 requests at a time.
-    Since requests are controlled, `badguy` has to do the last 20 requests.
+        """
+        If prefetch is set, each Client is allowed (max) 5 requests at a time.
+        Since requests are controlled, `badguy` has to do the last 20 requests.
+        
+        If prefetch is disabled, clients can freeflow requests. No client is blocked. 
+        Hence last 20 requests go from `goodguy`.
+        (Ideally last 30 requests should be validated, to avoid flaky CI, we test last 20)
     
-    If prefetch is disabled, clients can freeflow requests. No client is blocked. 
-    Hence last 20 requests go from `goodguy`.
-    (Ideally last 30 requests should be validated, to avoid flaky CI, we test last 20)
-
-    When there are no rules, badguy wins! With rule, you find balance in the world.        
-    """
-    if protocol == 'http':
-        # There's no prefetch for http.
-        assert set(map(lambda x: x.split('_')[0], order_of_ids[-20:])) == {'goodguy'}
-    elif prefetch == 5:
-        assert set(map(lambda x: x.split('_')[0], order_of_ids[-20:])) == {'badguy'}
-    elif prefetch == 0:
-        assert set(map(lambda x: x.split('_')[0], order_of_ids[-20:])) == {'goodguy'}
+        When there are no rules, badguy wins! With rule, you find balance in the world.        
+        """
+        if prefetch == 5:
+            assert set(map(lambda x: x.split('_')[0], order_of_ids[-20:])) == {'badguy'}
+        elif prefetch == 0:
+            assert set(map(lambda x: x.split('_')[0], order_of_ids[-20:])) == {'goodguy'}
+    except Exception:
+        raise
+    finally:
+        for p in pool:
+            p.join(timeout=2.0)
+            p.terminate()
