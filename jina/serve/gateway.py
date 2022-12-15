@@ -1,22 +1,12 @@
 import abc
-import argparse
 from types import SimpleNamespace
-from typing import TYPE_CHECKING, Dict, Optional, Sequence
+from typing import Dict, Optional
 
 from jina.jaml import JAMLCompatible
 from jina.logging.logger import JinaLogger
 from jina.serve.helper import store_init_kwargs, wrap_func
 
 __all__ = ['BaseGateway']
-
-if TYPE_CHECKING:  # pragma: no cover
-    from grpc.aio._interceptor import ClientInterceptor, ServerInterceptor
-    from opentelemetry import trace
-    from opentelemetry.instrumentation.grpc._client import (
-        OpenTelemetryClientInterceptor,
-    )
-    from opentelemetry.metrics import Meter
-    from prometheus_client import CollectorRegistry
 
 
 class GatewayType(type(JAMLCompatible), type):
