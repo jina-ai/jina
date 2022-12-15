@@ -157,7 +157,7 @@ class GRPCBaseClient(BaseClient):
             max_backoff: float = 0.1,
             backoff_multiplier: float = 1.5,
             results_in_order: bool = False,
-            stream: bool = False,
+            stream: bool = True,
             **kwargs,
     ):
         try:
