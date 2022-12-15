@@ -5,7 +5,6 @@ import functools
 import inspect
 import multiprocessing
 import os
-import threading
 import warnings
 from types import SimpleNamespace
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, Union, overload
@@ -31,6 +30,7 @@ from jina.serve.helper import store_init_kwargs, wrap_func
 from jina.serve.instrumentation import MetricsTimer
 
 if TYPE_CHECKING:  # pragma: no cover
+    import threading
     from opentelemetry.context.context import Context
 
 __dry_run_endpoint__ = '_jina_dry_run_'
@@ -699,7 +699,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         uses_with: Optional[Dict] = None,
         uses_metas: Optional[Dict] = None,
         uses_requests: Optional[Dict] = None,
-        stop_event: Optional[Union[threading.Event, multiprocessing.Event]] = None,
+        stop_event: Optional[Union['threading.Event', 'multiprocessing.Event']] = None,
         uses_dynamic_batching: Optional[Dict] = None,
         reload: bool = False,
         **kwargs,

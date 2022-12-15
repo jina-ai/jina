@@ -1,10 +1,9 @@
 import argparse
 import multiprocessing
 import os
-import threading
 import time
 from abc import ABC, abstractmethod
-from typing import Dict, Optional, Type, Union
+from typing import Dict, Optional, Type, Union, TYPE_CHECKING
 
 from jina import __ready_msg__, __stop_msg__, __windows__
 from jina.enums import PodRoleType
@@ -16,6 +15,9 @@ from jina.orchestrate.pods.helper import ConditionalEvent, _get_event
 from jina.parsers.helper import _update_gateway_args
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.gateway import GatewayRuntime
+
+if TYPE_CHECKING:
+    import threading
 
 __all__ = ['BasePod', 'Pod']
 
@@ -287,7 +289,7 @@ class BasePod(ABC):
     @abstractmethod
     def start(self):
         """Start the BasePod.
-        This method calls :meth:`start` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.
+        This method calls :meth:`start` in :class:`multiprocesssing.Process`.
         .. #noqa: DAR201
         """
         ...
@@ -308,8 +310,7 @@ class BasePod(ABC):
 
 class Pod(BasePod):
     """
-    :class:`Pod` is a thread/process- container of :class:`BaseRuntime`. It leverages :class:`threading.Thread`
-    or :class:`multiprocessing.Process` to manage the lifecycle of a :class:`BaseRuntime` object in a robust way.
+    :class:`Pod` is a thread/process- container of :class:`BaseRuntime`. It leverages :class:`multiprocessing.Process` to manage the lifecycle of a :class:`BaseRuntime` object in a robust way.
 
     A :class:`Pod` must be equipped with a proper :class:`Runtime` class to work.
     """
@@ -335,7 +336,7 @@ class Pod(BasePod):
 
     def start(self):
         """Start the Pod.
-        This method calls :meth:`start` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.
+        This method calls :meth:`start` in :class:`multiprocesssing.Process`.
         .. #noqa: DAR201
         """
         self.worker.start()
@@ -347,7 +348,7 @@ class Pod(BasePod):
 
     def join(self, *args, **kwargs):
         """Joins the Pod.
-        This method calls :meth:`join` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.
+        This method calls :meth:`join` in :class:`multiprocesssing.Process`.
 
         :param args: extra positional arguments to pass to join
         :param kwargs: extra keyword arguments to pass to join
@@ -358,7 +359,7 @@ class Pod(BasePod):
 
     def _terminate(self):
         """Terminate the Pod.
-        This method calls :meth:`terminate` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.
+        This method calls :meth:`terminate` in :class:`multiprocesssing.Process`.
         """
         self.logger.debug(f'terminating the runtime process')
         self.worker.terminate()
