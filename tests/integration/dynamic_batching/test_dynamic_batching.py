@@ -211,11 +211,12 @@ def call_api_with_params(req: RequestStructParams):
         },
     ],
 )
-def test_timeout(add_parameters):
+@pytest.mark.parametrize('use_stream', [False, True])
+def test_timeout(add_parameters, use_stream):
     f = Flow().add(**add_parameters)
     with f:
         start_time = time.time()
-        f.post('/bar', inputs=DocumentArray.empty(2))
+        f.post('/bar', inputs=DocumentArray.empty(2), stream=use_stream)
         time_taken = time.time() - start_time
         assert time_taken > 2, 'Timeout ended too fast'
         assert time_taken < 2 + TIMEOUT_TOLERANCE, 'Timeout ended too slowly'

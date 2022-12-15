@@ -327,7 +327,8 @@ def test_disable_prefetch_fast_client_slow_executor(
 
 @pytest.mark.parametrize('prefetch', [0, 5])
 @pytest.mark.parametrize('protocol', ['websocket', 'http', 'grpc'])
-def test_multiple_clients(prefetch, protocol, monkeypatch, simple_graph_dict_indexer):
+@pytest.mark.parametrize('use_stream', [True, False])
+def test_multiple_clients(prefetch, protocol, monkeypatch, simple_graph_dict_indexer, use_stream):
     GOOD_CLIENTS = 5
     GOOD_CLIENT_NUM_DOCS = 20
     MALICIOUS_CLIENT_NUM_DOCS = 50
@@ -349,7 +350,7 @@ def test_multiple_clients(prefetch, protocol, monkeypatch, simple_graph_dict_ind
 
     def client(gen, port):
         Client(protocol=protocol, port=port).post(
-            on='/index', inputs=gen, request_size=1
+            on='/index', inputs=gen, request_size=1, stream=use_stream
         )
 
     monkeypatch.setattr(
@@ -399,7 +400,7 @@ def test_multiple_clients(prefetch, protocol, monkeypatch, simple_graph_dict_ind
 
     order_of_ids = list(
         Client(protocol=protocol, port=port)
-        .post(on='/status', inputs=[Document()])[0]
+        .post(on='/status', inputs=[Document()], stream=use_stream)[0]
         .tags['ids']
     )
     # There must be total 150 docs indexed.
