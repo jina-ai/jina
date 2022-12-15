@@ -121,6 +121,7 @@ class Flow(
         metrics_exporter_host: Optional[str] = None, 
         metrics_exporter_port: Optional[int] = None, 
         port: Optional[int] = None, 
+        prefetch: Optional[int] = 1000, 
         protocol: Optional[Union[str, List[str]]] = 'GRPC', 
         proxy: Optional[bool] = False, 
         tls: Optional[bool] = False, 
@@ -136,6 +137,9 @@ class Flow(
         :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.
         :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.
         :param port: The port of the Gateway, which the client should connect to.
+        :param prefetch: Number of requests fetched from the client before feeding into the first Executor. 
+              
+              Used to control the speed of data input into a Flow. 0 disables prefetch (1000 requests is the default)
         :param protocol: Communication protocol between server and client.
         :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
         :param tls: If set, connect to gateway using tls encryption
@@ -368,6 +372,9 @@ class Flow(
         :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.
         :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.
         :param port: The port of the Gateway, which the client should connect to.
+        :param prefetch: Number of requests fetched from the client before feeding into the first Executor. 
+              
+              Used to control the speed of data input into a Flow. 0 disables prefetch (1000 requests is the default)
         :param protocol: Communication protocol between server and client.
         :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
         :param tls: If set, connect to gateway using tls encryption
