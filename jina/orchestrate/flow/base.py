@@ -1822,6 +1822,13 @@ class Flow(
                     break
                 time.sleep(0.1)
 
+        wait_for_ready_coros = []
+        for k, v in self:
+            wait_for_ready_coros.append(_wait_ready(k, v))
+
+        async def _wait_all():
+            await asyncio.gather(*wait_for_ready_coros)
+
         progress = Progress(
             SpinnerColumn(),
             TextColumn('Waiting [b]{task.fields[pending_str]}[/]...', justify='right'),
@@ -1832,7 +1839,7 @@ class Flow(
         )
         with progress:
             task = progress.add_task(
-                'wait', total=len(threads), pending_str='', start=False
+                'wait', total=len(wait_for_ready_coros), pending_str='', start=False
             )
 
             # kick off ip getter thread, address, http, graphq
@@ -1853,12 +1860,11 @@ class Flow(
                 t.start()
 
             # kick off all deployments wait-ready tasks
-            coros = []
-            for k, v in self:
-                coros.append(_wait_ready(k, v))
-
-            async def _wait_all():
-                await asyncio.gather(*coros)
+            try:
+                _ = asyncio.get_event_loop()
+            except:
+                loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(loop)
 
             try:
                 loop = asyncio.get_event_loop()
