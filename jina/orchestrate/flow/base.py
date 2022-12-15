@@ -115,21 +115,21 @@ class Flow(
     # overload_inject_start_client_flow
     @overload
     def __init__(
-            self, *,
-            asyncio: Optional[bool] = False,
-            host: Optional[str] = '0.0.0.0',
-            metrics: Optional[bool] = False,
-            metrics_exporter_host: Optional[str] = None,
-            metrics_exporter_port: Optional[int] = None,
-            port: Optional[int] = None,
-            prefetch: Optional[int] = 1000,
-            protocol: Optional[Union[str, List[str]]] = 'GRPC',
-            proxy: Optional[bool] = False,
-            tls: Optional[bool] = False,
-            traces_exporter_host: Optional[str] = None,
-            traces_exporter_port: Optional[int] = None,
-            tracing: Optional[bool] = False,
-            **kwargs):
+        self,*,
+        asyncio: Optional[bool] = False, 
+        host: Optional[str] = '0.0.0.0', 
+        metrics: Optional[bool] = False, 
+        metrics_exporter_host: Optional[str] = None, 
+        metrics_exporter_port: Optional[int] = None, 
+        port: Optional[int] = None, 
+        prefetch: Optional[int] = 1000, 
+        protocol: Optional[Union[str, List[str]]] = 'GRPC', 
+        proxy: Optional[bool] = False, 
+        tls: Optional[bool] = False, 
+        traces_exporter_host: Optional[str] = None, 
+        traces_exporter_port: Optional[int] = None, 
+        tracing: Optional[bool] = False, 
+        **kwargs):
         """Create a Flow. Flow is how Jina streamlines and scales Executors. This overloaded method provides arguments from `jina client` CLI.
 
         :param asyncio: If set, then the input and output of this Client work in an asynchronous manner.
@@ -152,62 +152,61 @@ class Flow(
         .. # noqa: DAR101
         .. # noqa: DAR003
         """
-
     # overload_inject_end_client_flow
 
     # overload_inject_start_gateway_flow
     @overload
     def __init__(
-            self, *,
-            compression: Optional[str] = None,
-            cors: Optional[bool] = False,
-            deployments_addresses: Optional[str] = '{}',
-            deployments_metadata: Optional[str] = '{}',
-            deployments_no_reduce: Optional[str] = '[]',
-            description: Optional[str] = None,
-            docker_kwargs: Optional[dict] = None,
-            entrypoint: Optional[str] = None,
-            env: Optional[dict] = None,
-            expose_endpoints: Optional[str] = None,
-            expose_graphql_endpoint: Optional[bool] = False,
-            floating: Optional[bool] = False,
-            graph_conditions: Optional[str] = '{}',
-            graph_description: Optional[str] = '{}',
-            grpc_server_options: Optional[dict] = None,
-            host: Optional[str] = '0.0.0.0',
-            log_config: Optional[str] = None,
-            metrics: Optional[bool] = False,
-            metrics_exporter_host: Optional[str] = None,
-            metrics_exporter_port: Optional[int] = None,
-            monitoring: Optional[bool] = False,
-            name: Optional[str] = 'gateway',
-            no_crud_endpoints: Optional[bool] = False,
-            no_debug_endpoints: Optional[bool] = False,
-            port: Optional[int] = None,
-            port_monitoring: Optional[int] = None,
-            prefetch: Optional[int] = 1000,
-            protocol: Optional[Union[str, List[str]]] = ['GRPC'],
-            proxy: Optional[bool] = False,
-            py_modules: Optional[List[str]] = None,
-            quiet: Optional[bool] = False,
-            quiet_error: Optional[bool] = False,
-            reload: Optional[bool] = False,
-            retries: Optional[int] = -1,
-            runtime_cls: Optional[str] = 'GatewayRuntime',
-            ssl_certfile: Optional[str] = None,
-            ssl_keyfile: Optional[str] = None,
-            timeout_ctrl: Optional[int] = 60,
-            timeout_ready: Optional[int] = 600000,
-            timeout_send: Optional[int] = None,
-            title: Optional[str] = None,
-            traces_exporter_host: Optional[str] = None,
-            traces_exporter_port: Optional[int] = None,
-            tracing: Optional[bool] = False,
-            uses: Optional[Union[str, Type['BaseExecutor'], dict]] = None,
-            uses_with: Optional[dict] = None,
-            uvicorn_kwargs: Optional[dict] = None,
-            workspace: Optional[str] = None,
-            **kwargs):
+        self,*,
+        compression: Optional[str] = None, 
+        cors: Optional[bool] = False, 
+        deployments_addresses: Optional[str] = '{}', 
+        deployments_metadata: Optional[str] = '{}', 
+        deployments_no_reduce: Optional[str] = '[]', 
+        description: Optional[str] = None, 
+        docker_kwargs: Optional[dict] = None, 
+        entrypoint: Optional[str] = None, 
+        env: Optional[dict] = None, 
+        expose_endpoints: Optional[str] = None, 
+        expose_graphql_endpoint: Optional[bool] = False, 
+        floating: Optional[bool] = False, 
+        graph_conditions: Optional[str] = '{}', 
+        graph_description: Optional[str] = '{}', 
+        grpc_server_options: Optional[dict] = None, 
+        host: Optional[str] = '0.0.0.0', 
+        log_config: Optional[str] = None, 
+        metrics: Optional[bool] = False, 
+        metrics_exporter_host: Optional[str] = None, 
+        metrics_exporter_port: Optional[int] = None, 
+        monitoring: Optional[bool] = False, 
+        name: Optional[str] = 'gateway', 
+        no_crud_endpoints: Optional[bool] = False, 
+        no_debug_endpoints: Optional[bool] = False, 
+        port: Optional[int] = None, 
+        port_monitoring: Optional[int] = None, 
+        prefetch: Optional[int] = 1000, 
+        protocol: Optional[Union[str, List[str]]] = ['GRPC'], 
+        proxy: Optional[bool] = False, 
+        py_modules: Optional[List[str]] = None, 
+        quiet: Optional[bool] = False, 
+        quiet_error: Optional[bool] = False, 
+        reload: Optional[bool] = False, 
+        retries: Optional[int] = -1, 
+        runtime_cls: Optional[str] = 'GatewayRuntime', 
+        ssl_certfile: Optional[str] = None, 
+        ssl_keyfile: Optional[str] = None, 
+        timeout_ctrl: Optional[int] = 60, 
+        timeout_ready: Optional[int] = 600000, 
+        timeout_send: Optional[int] = None, 
+        title: Optional[str] = None, 
+        traces_exporter_host: Optional[str] = None, 
+        traces_exporter_port: Optional[int] = None, 
+        tracing: Optional[bool] = False, 
+        uses: Optional[Union[str, Type['BaseExecutor'], dict]] = None, 
+        uses_with: Optional[dict] = None, 
+        uvicorn_kwargs: Optional[dict] = None, 
+        workspace: Optional[str] = None, 
+        **kwargs):
         """Create a Flow. Flow is how Jina streamlines and scales Executors. This overloaded method provides arguments from `jina gateway` CLI.
 
         :param compression: The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.
@@ -293,22 +292,21 @@ class Flow(
         .. # noqa: DAR101
         .. # noqa: DAR003
         """
-
     # overload_inject_end_gateway_flow
     # overload_inject_start_flow
     @overload
     def __init__(
-            self, *,
-            env: Optional[dict] = None,
-            inspect: Optional[str] = 'COLLECT',
-            log_config: Optional[str] = None,
-            name: Optional[str] = None,
-            quiet: Optional[bool] = False,
-            quiet_error: Optional[bool] = False,
-            reload: Optional[bool] = False,
-            uses: Optional[str] = None,
-            workspace: Optional[str] = None,
-            **kwargs):
+        self,*,
+        env: Optional[dict] = None, 
+        inspect: Optional[str] = 'COLLECT', 
+        log_config: Optional[str] = None, 
+        name: Optional[str] = None, 
+        quiet: Optional[bool] = False, 
+        quiet_error: Optional[bool] = False, 
+        reload: Optional[bool] = False, 
+        uses: Optional[str] = None, 
+        workspace: Optional[str] = None, 
+        **kwargs):
         """Create a Flow. Flow is how Jina streamlines and scales Executors. This overloaded method provides arguments from `jina flow` CLI.
 
         :param env: The map of environment variables that are available inside runtime
@@ -335,7 +333,6 @@ class Flow(
         .. # noqa: DAR101
         .. # noqa: DAR003
         """
-
     # overload_inject_end_flow
     def __init__(
             self,
@@ -343,7 +340,7 @@ class Flow(
             **kwargs,
     ):
         # implementation_stub_inject_start_flow
-
+    
         """Create a Flow. Flow is how Jina streamlines and scales Executors.
 
         EXAMPLE USAGE
@@ -488,7 +485,7 @@ class Flow(
         .. # noqa: DAR101
         .. # noqa: DAR003
         """
-        # implementation_stub_inject_end_flow
+    # implementation_stub_inject_end_flow
         super().__init__()
         self._version = '1'  #: YAML version number, this will be later overridden if YAML config says the other way
         self._deployment_nodes = OrderedDict()  # type: Dict[str, Deployment]
@@ -837,62 +834,62 @@ class Flow(
     # overload_inject_start_deployment
     @overload
     def add(
-            self, *,
-            compression: Optional[str] = None,
-            connection_list: Optional[str] = None,
-            disable_auto_volume: Optional[bool] = False,
-            docker_kwargs: Optional[dict] = None,
-            entrypoint: Optional[str] = None,
-            env: Optional[dict] = None,
-            exit_on_exceptions: Optional[List[str]] = [],
-            external: Optional[bool] = False,
-            floating: Optional[bool] = False,
-            force_update: Optional[bool] = False,
-            gpus: Optional[str] = None,
-            grpc_metadata: Optional[dict] = None,
-            grpc_server_options: Optional[dict] = None,
-            host: Optional[List[str]] = ['0.0.0.0'],
-            install_requirements: Optional[bool] = False,
-            log_config: Optional[str] = None,
-            metrics: Optional[bool] = False,
-            metrics_exporter_host: Optional[str] = None,
-            metrics_exporter_port: Optional[int] = None,
-            monitoring: Optional[bool] = False,
-            name: Optional[str] = None,
-            native: Optional[bool] = False,
-            no_reduce: Optional[bool] = False,
-            output_array_type: Optional[str] = None,
-            polling: Optional[str] = 'ANY',
-            port: Optional[int] = None,
-            port_monitoring: Optional[int] = None,
-            py_modules: Optional[List[str]] = None,
-            quiet: Optional[bool] = False,
-            quiet_error: Optional[bool] = False,
-            reload: Optional[bool] = False,
-            replicas: Optional[int] = 1,
-            retries: Optional[int] = -1,
-            runtime_cls: Optional[str] = 'WorkerRuntime',
-            shards: Optional[int] = 1,
-            timeout_ctrl: Optional[int] = 60,
-            timeout_ready: Optional[int] = 600000,
-            timeout_send: Optional[int] = None,
-            tls: Optional[bool] = False,
-            traces_exporter_host: Optional[str] = None,
-            traces_exporter_port: Optional[int] = None,
-            tracing: Optional[bool] = False,
-            uses: Optional[Union[str, Type['BaseExecutor'], dict]] = 'BaseExecutor',
-            uses_after: Optional[Union[str, Type['BaseExecutor'], dict]] = None,
-            uses_after_address: Optional[str] = None,
-            uses_before: Optional[Union[str, Type['BaseExecutor'], dict]] = None,
-            uses_before_address: Optional[str] = None,
-            uses_dynamic_batching: Optional[dict] = None,
-            uses_metas: Optional[dict] = None,
-            uses_requests: Optional[dict] = None,
-            uses_with: Optional[dict] = None,
-            volumes: Optional[List[str]] = None,
-            when: Optional[dict] = None,
-            workspace: Optional[str] = None,
-            **kwargs) -> Union['Flow', 'AsyncFlow']:
+        self,*,
+        compression: Optional[str] = None, 
+        connection_list: Optional[str] = None, 
+        disable_auto_volume: Optional[bool] = False, 
+        docker_kwargs: Optional[dict] = None, 
+        entrypoint: Optional[str] = None, 
+        env: Optional[dict] = None, 
+        exit_on_exceptions: Optional[List[str]] = [], 
+        external: Optional[bool] = False, 
+        floating: Optional[bool] = False, 
+        force_update: Optional[bool] = False, 
+        gpus: Optional[str] = None, 
+        grpc_metadata: Optional[dict] = None, 
+        grpc_server_options: Optional[dict] = None, 
+        host: Optional[List[str]] = ['0.0.0.0'], 
+        install_requirements: Optional[bool] = False, 
+        log_config: Optional[str] = None, 
+        metrics: Optional[bool] = False, 
+        metrics_exporter_host: Optional[str] = None, 
+        metrics_exporter_port: Optional[int] = None, 
+        monitoring: Optional[bool] = False, 
+        name: Optional[str] = None, 
+        native: Optional[bool] = False, 
+        no_reduce: Optional[bool] = False, 
+        output_array_type: Optional[str] = None, 
+        polling: Optional[str] = 'ANY', 
+        port: Optional[int] = None, 
+        port_monitoring: Optional[int] = None, 
+        py_modules: Optional[List[str]] = None, 
+        quiet: Optional[bool] = False, 
+        quiet_error: Optional[bool] = False, 
+        reload: Optional[bool] = False, 
+        replicas: Optional[int] = 1, 
+        retries: Optional[int] = -1, 
+        runtime_cls: Optional[str] = 'WorkerRuntime', 
+        shards: Optional[int] = 1, 
+        timeout_ctrl: Optional[int] = 60, 
+        timeout_ready: Optional[int] = 600000, 
+        timeout_send: Optional[int] = None, 
+        tls: Optional[bool] = False, 
+        traces_exporter_host: Optional[str] = None, 
+        traces_exporter_port: Optional[int] = None, 
+        tracing: Optional[bool] = False, 
+        uses: Optional[Union[str, Type['BaseExecutor'], dict]] = 'BaseExecutor', 
+        uses_after: Optional[Union[str, Type['BaseExecutor'], dict]] = None, 
+        uses_after_address: Optional[str] = None, 
+        uses_before: Optional[Union[str, Type['BaseExecutor'], dict]] = None, 
+        uses_before_address: Optional[str] = None, 
+        uses_dynamic_batching: Optional[dict] = None, 
+        uses_metas: Optional[dict] = None, 
+        uses_requests: Optional[dict] = None, 
+        uses_with: Optional[dict] = None, 
+        volumes: Optional[List[str]] = None, 
+        when: Optional[dict] = None, 
+        workspace: Optional[str] = None, 
+        **kwargs) -> Union['Flow', 'AsyncFlow']:
         """Add an Executor to the current Flow object.
 
         :param compression: The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.
@@ -1004,7 +1001,6 @@ class Flow(
         .. # noqa: DAR101
         .. # noqa: DAR003
         """
-
     # overload_inject_end_deployment
     @overload
     def add(
@@ -1038,7 +1034,7 @@ class Flow(
             **kwargs,
     ) -> Union['Flow', 'AsyncFlow']:
         # implementation_stub_inject_start_add
-
+    
         """Add a Deployment to the current Flow object and return the new modified Flow object.
         The attribute of the Deployment can be later changed with :py:meth:`set` or deleted with :py:meth:`remove`
 
@@ -1157,7 +1153,7 @@ class Flow(
         .. # noqa: DAR101
         .. # noqa: DAR003
         """
-        # implementation_stub_inject_end_add
+    # implementation_stub_inject_end_add
 
         needs = kwargs.pop('needs', None)
         copy_flow = kwargs.pop('copy_flow', True)
@@ -1234,56 +1230,56 @@ class Flow(
     # overload_inject_start_config_gateway
     @overload
     def config_gateway(
-            self, *,
-            compression: Optional[str] = None,
-            cors: Optional[bool] = False,
-            deployments_addresses: Optional[str] = '{}',
-            deployments_metadata: Optional[str] = '{}',
-            deployments_no_reduce: Optional[str] = '[]',
-            description: Optional[str] = None,
-            docker_kwargs: Optional[dict] = None,
-            entrypoint: Optional[str] = None,
-            env: Optional[dict] = None,
-            expose_endpoints: Optional[str] = None,
-            expose_graphql_endpoint: Optional[bool] = False,
-            floating: Optional[bool] = False,
-            graph_conditions: Optional[str] = '{}',
-            graph_description: Optional[str] = '{}',
-            grpc_server_options: Optional[dict] = None,
-            host: Optional[str] = '0.0.0.0',
-            log_config: Optional[str] = None,
-            metrics: Optional[bool] = False,
-            metrics_exporter_host: Optional[str] = None,
-            metrics_exporter_port: Optional[int] = None,
-            monitoring: Optional[bool] = False,
-            name: Optional[str] = 'gateway',
-            no_crud_endpoints: Optional[bool] = False,
-            no_debug_endpoints: Optional[bool] = False,
-            port: Optional[int] = None,
-            port_monitoring: Optional[int] = None,
-            prefetch: Optional[int] = 1000,
-            protocol: Optional[Union[str, List[str]]] = ['GRPC'],
-            proxy: Optional[bool] = False,
-            py_modules: Optional[List[str]] = None,
-            quiet: Optional[bool] = False,
-            quiet_error: Optional[bool] = False,
-            reload: Optional[bool] = False,
-            retries: Optional[int] = -1,
-            runtime_cls: Optional[str] = 'GatewayRuntime',
-            ssl_certfile: Optional[str] = None,
-            ssl_keyfile: Optional[str] = None,
-            timeout_ctrl: Optional[int] = 60,
-            timeout_ready: Optional[int] = 600000,
-            timeout_send: Optional[int] = None,
-            title: Optional[str] = None,
-            traces_exporter_host: Optional[str] = None,
-            traces_exporter_port: Optional[int] = None,
-            tracing: Optional[bool] = False,
-            uses: Optional[Union[str, Type['BaseExecutor'], dict]] = None,
-            uses_with: Optional[dict] = None,
-            uvicorn_kwargs: Optional[dict] = None,
-            workspace: Optional[str] = None,
-            **kwargs):
+        self,*,
+        compression: Optional[str] = None, 
+        cors: Optional[bool] = False, 
+        deployments_addresses: Optional[str] = '{}', 
+        deployments_metadata: Optional[str] = '{}', 
+        deployments_no_reduce: Optional[str] = '[]', 
+        description: Optional[str] = None, 
+        docker_kwargs: Optional[dict] = None, 
+        entrypoint: Optional[str] = None, 
+        env: Optional[dict] = None, 
+        expose_endpoints: Optional[str] = None, 
+        expose_graphql_endpoint: Optional[bool] = False, 
+        floating: Optional[bool] = False, 
+        graph_conditions: Optional[str] = '{}', 
+        graph_description: Optional[str] = '{}', 
+        grpc_server_options: Optional[dict] = None, 
+        host: Optional[str] = '0.0.0.0', 
+        log_config: Optional[str] = None, 
+        metrics: Optional[bool] = False, 
+        metrics_exporter_host: Optional[str] = None, 
+        metrics_exporter_port: Optional[int] = None, 
+        monitoring: Optional[bool] = False, 
+        name: Optional[str] = 'gateway', 
+        no_crud_endpoints: Optional[bool] = False, 
+        no_debug_endpoints: Optional[bool] = False, 
+        port: Optional[int] = None, 
+        port_monitoring: Optional[int] = None, 
+        prefetch: Optional[int] = 1000, 
+        protocol: Optional[Union[str, List[str]]] = ['GRPC'], 
+        proxy: Optional[bool] = False, 
+        py_modules: Optional[List[str]] = None, 
+        quiet: Optional[bool] = False, 
+        quiet_error: Optional[bool] = False, 
+        reload: Optional[bool] = False, 
+        retries: Optional[int] = -1, 
+        runtime_cls: Optional[str] = 'GatewayRuntime', 
+        ssl_certfile: Optional[str] = None, 
+        ssl_keyfile: Optional[str] = None, 
+        timeout_ctrl: Optional[int] = 60, 
+        timeout_ready: Optional[int] = 600000, 
+        timeout_send: Optional[int] = None, 
+        title: Optional[str] = None, 
+        traces_exporter_host: Optional[str] = None, 
+        traces_exporter_port: Optional[int] = None, 
+        tracing: Optional[bool] = False, 
+        uses: Optional[Union[str, Type['BaseExecutor'], dict]] = None, 
+        uses_with: Optional[dict] = None, 
+        uvicorn_kwargs: Optional[dict] = None, 
+        workspace: Optional[str] = None, 
+        **kwargs):
         """Configure the Gateway inside a Flow. The Gateway exposes your Flow logic as a service to the internet according to the protocol and configuration you choose.
 
         :param compression: The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.
@@ -1369,7 +1365,6 @@ class Flow(
         .. # noqa: DAR101
         .. # noqa: DAR003
         """
-
     # overload_inject_end_config_gateway
 
     @allowed_levels([FlowBuildLevel.EMPTY])
@@ -1379,7 +1374,7 @@ class Flow(
             **kwargs,
     ) -> Union['Flow', 'AsyncFlow']:
         # implementation_stub_inject_start_config_gateway
-
+    
         """Configure the Gateway inside a Flow. The Gateway exposes your Flow logic as a service to the internet according to the protocol and configuration you choose.
 
         :param compression: The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.
@@ -1467,7 +1462,7 @@ class Flow(
         .. # noqa: DAR101
         .. # noqa: DAR003
         """
-        # implementation_stub_inject_end_config_gateway
+    # implementation_stub_inject_end_config_gateway
 
         copy_flow = kwargs.pop('copy_flow', True)
 
