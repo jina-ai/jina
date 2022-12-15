@@ -26,7 +26,7 @@ def test_profiling(protocol, show_table):
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize('protocol', ['http', 'websocket', 'grpc'])
+@pytest.mark.parametrize('protocol', ['grpc'])
 async def test_profiling_async(protocol):
     f = Flow(protocol=protocol, asyncio=True).add(name='hello').add(name='world')
     with f:

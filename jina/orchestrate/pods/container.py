@@ -2,6 +2,7 @@ import argparse
 import asyncio
 import copy
 import multiprocessing
+import threading
 import os
 import re
 import signal
@@ -24,7 +25,6 @@ from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.gateway import GatewayRuntime
 
 if TYPE_CHECKING:  # pragma: no cover
-    import threading
     from docker.client import DockerClient
 
 
@@ -195,8 +195,8 @@ def run(
     log_kwargs['log_config'] = 'docker'
     logger = JinaLogger(name, **log_kwargs)
 
-    cancel = asyncio.Event()
-    fail_to_start = asyncio.Event()
+    cancel = threading.Event()
+    fail_to_start = threading.Event()
 
     if not __windows__:
         try:
