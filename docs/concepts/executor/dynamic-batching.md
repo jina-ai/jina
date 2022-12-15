@@ -34,20 +34,22 @@ batching enabled.
 ---
 emphasize-lines: 12
 ---
-from jina import requests, dynamic_batching, Executor, DocumentArray, Flow
+from jina import Executor, requests, dynamic_batching, Flow, DocumentArray, Document
+import numpy as np
+import torch
+
 
 class MyExecutor(Executor):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         
         # initialize model
-        import torch
         self.model = torch.nn.Linear(in_features=128, out_features=128)
     
     @requests(on='/bar')
     @dynamic_batching(preferred_batch_size=10, timeout=200)
-    def embed(self, docs: DocumentArray):
-        docs.embeddings = self.model(docs.tensors)
+    def embed(self, docs: DocumentArray, **kwargs):
+        docs.embeddings = self.model(torch.Tensor(docs.tensors))
 
 flow = Flow().add(uses=MyExecutor)
 ```
