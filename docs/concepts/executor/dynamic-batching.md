@@ -34,8 +34,8 @@ batching enabled.
 ---
 emphasize-lines: 12
 ---
-import numpy as np
 from jina import Executor, requests, dynamic_batching, Flow, DocumentArray, Document
+import numpy as np
 import torch
 
 
