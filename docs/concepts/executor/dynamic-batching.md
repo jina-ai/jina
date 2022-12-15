@@ -12,7 +12,7 @@ When you enable dynamic batching, incoming requests to Executor endpoints with t
 are queued together. The Executor endpoint is executed on the queue requests when either:
 
 - the number of accumulated Documents exceeds the {ref}`preferred_batch_size<executor-dynamic-batching-parameters>` parameter
-- or the {ref}`timeout<executor-dynamic-batching-parameters` parameter is exceeded.
+- or the {ref}`timeout<executor-dynamic-batching-parameters>` parameter is exceeded.
 
 Although this feature _can_ work on {ref}`parametrized requests<client-executor-parameters>`, it's best used for endpoints that don't often receive different parameters.
 Creating a batch of requests typically results in better usage of hardware resources and potentially increased throughput.

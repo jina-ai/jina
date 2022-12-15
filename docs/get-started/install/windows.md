@@ -34,7 +34,7 @@ We've added preliminary support for using Executors listed in the Hub portal. No
 
 ### `UnicodeEncodeError` on Jina CLI
 
-```bash
+```
 UnicodeEncodeError: 'charmap' codec can't encode character '\u25ae' in position : character maps to <undefined>
 ```
 Set environment variable `PYTHONIOENCODING='utf-8'` before starting your Python script.

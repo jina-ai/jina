@@ -15,7 +15,7 @@ from jina import Flow
 f = Flow().add()
 ```
 
-This adds an "empty" Executor called {class}`~jina.Executor.BaseExecutor` to the Flow. This Executor (without any parameters) performs no actions.
+This adds an "empty" Executor called {class}`~jina.serve.executors.BaseExecutor` to the Flow. This Executor (without any parameters) performs no actions.
 
 ```{figure} no-op-flow.svg
 :scale: 70%
@@ -376,8 +376,7 @@ Flow().add(host='123.45.67.89:443', external=True, tls=True)
 After that, the external Executor behaves just like an internal one. You can even add the same Executor to multiple Flows.
 
 ```{hint} 
-Using `tls` to connect to the External Executor is especially needed to use an external Executor deployed with JCloud. See the JCloud {ref}`documentation <jcloud-external-executors>`
-for further details
+Using `tls` to connect to the External Executor is especially needed to use an external Executor deployed with JCloud. See the JCloud {ref}`documentation <jcloud>` for further details
 ```
 
 ### Pass arguments

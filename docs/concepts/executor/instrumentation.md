@@ -13,7 +13,7 @@ Read more on setting up an OpenTelemetry collector backend in the {ref}`OpenTele
 ```
 
 ```{caution}
-Prometheus-only based metrics collection will soon be deprecated. Refer to {ref}`Monitoring Executor <monitoring-executor>` for this deprecated setup.
+Prometheus-only based metrics collection will soon be deprecated. Refer to {ref}`Monitoring Executor <monitoring>` for this deprecated setup.
 ```
 
 ## Tracing
@@ -81,7 +81,7 @@ If tracing is not enabled by default or enabled in your environment, check `self
 ## Metrics
 
 ```{hint}
-Prometheus-only based metrics collection will be deprecated soon. Refer to {ref}`Monitoring Executor <monitoring-executor>` section for the deprecated setup.
+Prometheus-only based metrics collection will be deprecated soon. Refer to {ref}`Monitoring Executor <monitoring>` section for the deprecated setup.
 ```
 
 Any method that uses the {class}`~jina.requests` decorator is monitored and creates a
