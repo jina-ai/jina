@@ -205,4 +205,4 @@ client.search(inputs=DocumentArray.empty(size=4))
 ## See also
 
 - [Using Grafana to visualize Prometheus metrics](https://grafana.com/docs/grafana/latest/getting-started/getting-started-prometheus/)
-- {ref}`Defining custom metrics in an Executor <monitoring-executor>`
+- {ref}`Defining custom metrics in an Executor <monitoring>`

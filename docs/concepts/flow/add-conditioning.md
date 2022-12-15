@@ -225,7 +225,7 @@ That's exactly what you want for your filter!
 ````{admonition} See Also
 :class: seealso
 
-For a hands-on example of leveraging filter conditions, see {ref}`this how-to <flow-switch>`.
+For a hands-on example of leveraging filter conditions, see {ref}`this how-to <flow-filter>`.
 ````
 
 To define a filter condition, use [DocArrays rich query language](https://docarray.jina.ai/fundamentals/documentarray/find/#query-by-conditions).

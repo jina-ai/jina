@@ -212,7 +212,7 @@ Refer to the gRPC [Performance Best Practices](https://grpc.io/docs/guides/perfo
 
 ## Returns
 
-{meth}`~jina.clients.mixin.PostMixin.post` returns a `DocumentArray` containing all Documents flattened over all Requests. When setting `return_responses=True`, this behavior is changed to returning a list of {class}`~jina.types.request.Response` objects.
+{meth}`~jina.clients.mixin.PostMixin.post` returns a `DocumentArray` containing all Documents flattened over all Requests. When setting `return_responses=True`, this behavior is changed to returning a list of {class}`~jina.types.request.data.Response` objects.
 
 If a callback function is provided, `client.post()` will return none.
 

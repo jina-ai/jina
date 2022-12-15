@@ -87,7 +87,7 @@ jina hub push [--public/--private] --force-update <NAME> --secret <SECRET> --pro
 
 The `--build-env` parameter manages environment variables, letting you use a private token in `requirements.txt` to install private dependencies. For security reasons, you don't want to expose this token to anyone else. For example, we have the following `requirements.txt`: 
 
-```txt
+```
 # requirements.txt
 git+http://${YOUR_TOKEN}@github.com/your_private_repo 
 ```

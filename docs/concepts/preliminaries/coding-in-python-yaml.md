@@ -7,7 +7,7 @@ In the docs, you often see two coding styles when describing a Jina project:
 **Pythonic**
     The Flow and Executors are all written in Python files, and the entrypoint is via Python.
     
-**YAMLish** 
+**YAMLish**
     Executors are written in Python files, and the Flow is defined in a YAML file. The entrypoint is via Jina CLI `jina flow --uses flow.yml`.
 ```
 

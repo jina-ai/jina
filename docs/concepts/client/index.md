@@ -188,7 +188,7 @@ One can also specify the compression of the internal communication {ref}`as desc
 
 ## Simple profiling of the latency
 
-Before sending any real data, you can test the connectivity and network latency by calling the {meth}`~jina.Client.profiling` method:
+Before sending any real data, you can test the connectivity and network latency by calling the {meth}`~jina.clients.mixin.ProfileMixin.profiling` method:
 
 ```python
 from jina import Client
