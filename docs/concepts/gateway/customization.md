@@ -24,7 +24,7 @@ or based on a general server using {class}`~jina.Gateway`, you will need to impl
 the same way.
 In the next section we will discuss the implementation steps, and then we will discuss how to use both base Gateway classes.
 
-(custom-gateway-server-implementation)
+(custom-gateway-server-implementation)=
 ### Server implementation
 
 When implementing the server to your custom Gateway, you need to care about the following items:
@@ -83,7 +83,7 @@ class MyGateway(Gateway):
 gateways but is restricted to FastAPI apps.
 
 In order to implement a custom gateway using {class}`~jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway`, 
-simply implement the {meth}`~jina.jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway.app` property:
+simply implement the {meth}`~jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway.app` property:
 
 ```python
 from jina.serve.runtimes.gateway.http.fastapi import FastAPIBaseGateway

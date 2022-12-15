@@ -28,7 +28,7 @@ Note that `response` here is `Dict` not a `DocumentArray`. This is because Graph
 The Flow GraphQL API exposes the mutation `docs`, which sends its inputs to the Flow's Executors,
 just like HTTP `post` as described {ref}`above <http-interface>`.
 
-A GraphQL mutation takes the same set of arguments used in [HTTP](#arguments). 
+A GraphQL mutation takes the same set of arguments used in {ref}`HTTP <http-arguments>`. 
 
 The response from GraphQL can include all fields available on a DocumentArray.
 

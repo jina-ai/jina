@@ -379,7 +379,6 @@ curl http://localhost:12345/status
 - {ref}`Access the Flow with the Client <client>`
 - {ref}`Deployment with Kubernetes <kubernetes>`
 - {ref}`Deployment with Docker Compose <docker-compose>`
-- {ref}`Executors inside a Flow <executor-in-flow>`
 
 ```{toctree}
 :hidden:

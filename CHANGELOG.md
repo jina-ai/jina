@@ -238,6 +238,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -15385,4 +15386,93 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```b63633ee```](https://github.com/jina-ai/jina/commit/b63633eec48e8a1ebd4ece31f869bec100f568c0)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```7093cf0b```](https://github.com/jina-ai/jina/commit/7093cf0b23a7867edf1a964d88099754a9f1ff50)] __-__ __version__: the next version will be 3.11.1 (*Jina Dev Bot*)
  - [[```2caac49c```](https://github.com/jina-ai/jina/commit/2caac49c14ae1322b4470eac9a87e2afd79f3bf0)] __-__ __version__: bump release version to 3.11.0 (#5304) (*Girish Chandrashekar*)
+
+<a name=release-note-3-13-0></a>
+## Release Note (`3.13.0`)
+
+> Release time: 2022-12-15 15:33:43
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ AlaeddineAbdessalem,  Anne Yang,  Joan Fontanals,  Jackmin801,  Alex Cureton-Griffiths,  Han Xiao,  Girish Chandrashekar,  IyadhKhalfallah,  Delgermurun,  Deepankar Mahapatro,  big-thousand,  samsja,  Jina Dev Bot,  Joan Fontanals Martinez,  Jie Fu,  🙇
+
+
+### 🆕 New Features
+
+ - [[```3b07fa1c```](https://github.com/jina-ai/jina/commit/3b07fa1c4f8c26e2abf8a8ddc575021e8b37b6ce)] __-__ dev install requirements (#5508) (*Joan Fontanals*)
+ - [[```03ce8e85```](https://github.com/jina-ai/jina/commit/03ce8e85d95f2b7b3ee09268e5a05dd3a66ce4ec)] __-__ support jinaai executor scheme (#5515) (*AlaeddineAbdessalem*)
+ - [[```b4f584b6```](https://github.com/jina-ai/jina/commit/b4f584b600a14f80ebc93c80d8a8704618a42de4)] __-__ unify reload and restart arguments (#5514) (*Han Xiao*)
+ - [[```a5b9df58```](https://github.com/jina-ai/jina/commit/a5b9df58edac2e8c59ad25c9b13ef1ffa75f0bec)] __-__ expand executor serve parameters (#5494) (*AlaeddineAbdessalem*)
+ - [[```bfe9a32b```](https://github.com/jina-ai/jina/commit/bfe9a32bfbcd3fce8dc92c79016b269178c31f61)] __-__ add grpc trailing metadata when logging grpc error (#5512) (*Girish Chandrashekar*)
+ - [[```46d79730```](https://github.com/jina-ai/jina/commit/46d7973043e2e599149812cc6fc7671b935c13f8)] __-__ dynamic batching (#5410) (*Jackmin801*)
+ - [[```8bbbcbb0```](https://github.com/jina-ai/jina/commit/8bbbcbb00061df63afd596e2a5b92df93be87e49)] __-__ implement unary_unary stub for Gateway Runtime (#5507) (*Girish Chandrashekar*)
+ - [[```974f6886```](https://github.com/jina-ai/jina/commit/974f6886040d34bc943090f857ebe885608e5761)] __-__ add startupProbe and replace readiness probe with liveness probe (#5407) (*Joan Fontanals*)
+ - [[```fbac8855```](https://github.com/jina-ai/jina/commit/fbac88557a9082ea6f07870510726e1cb5c11b72)] __-__ add restart from YAML option to Flow and Executors (#5488) (*Joan Fontanals*)
+ - [[```8c77361e```](https://github.com/jina-ai/jina/commit/8c77361ead730228283372ab82d4f9703f5f565c)] __-__ create new Dockerfile with perf tools (#5498) (*Girish Chandrashekar*)
+ - [[```7f4a1f0f```](https://github.com/jina-ai/jina/commit/7f4a1f0fc36bc2ef6ecb182aec7b8399abbbf9dc)] __-__ install health check for fast api gateway app by default (#5477) (*AlaeddineAbdessalem*)
+ - [[```b36e6bdb```](https://github.com/jina-ai/jina/commit/b36e6bdb1f5d02a4c5af3131f3a07d7b4ccddced)] __-__ add get_streamer helper and inject streamer info (#5472) (*AlaeddineAbdessalem*)
+ - [[```fac78c2c```](https://github.com/jina-ai/jina/commit/fac78c2ca75d51fcd81a1fcff8a11def81df1116)] __-__ update hubble-sdk (#5468) (*Joan Fontanals*)
+ - [[```484d6b01```](https://github.com/jina-ai/jina/commit/484d6b0191324055091798cbe286889369663756)] __-__ silence or minimize output of jina ping command (#5476) (*Girish Chandrashekar*)
+ - [[```c2c6213c```](https://github.com/jina-ai/jina/commit/c2c6213c4aa9cf74138b071ab372a16e6e23a7ab)] __-__ add k8s preStop hook to the containers  (#5445) (*Joan Fontanals*)
+ - [[```ce1cea86```](https://github.com/jina-ai/jina/commit/ce1cea865725775ac1eeb60b3109fd566be0d106)] __-__ add hot reload option to Executor for development (#5461) (*Joan Fontanals*)
+ - [[```113d14ff```](https://github.com/jina-ai/jina/commit/113d14ffbbed5d9d3c5305c6bc2342c252353aa2)] __-__ add FastAPIBaseGateway (#5457) (*AlaeddineAbdessalem*)
+ - [[```5f56f6b2```](https://github.com/jina-ai/jina/commit/5f56f6b2abc891a4912f4cb45ff370edbf89193f)] __-__ generate random ports for multiple protocol (#5455) (*AlaeddineAbdessalem*)
+
+### 🐞 Bug fixes
+
+ - [[```57d313ad```](https://github.com/jina-ai/jina/commit/57d313ad48e72f06668a5faa52f516de1adc4f27)] __-__ jina ai cloud redirects (#5519) (*Alex Cureton-Griffiths*)
+ - [[```87912a37```](https://github.com/jina-ai/jina/commit/87912a37ce7ab3c3b63c12b48d6cdfe31f81742c)] __-__ list-like args passed as string (#5464) (*Anne Yang*)
+ - [[```23a911be```](https://github.com/jina-ai/jina/commit/23a911be6a1ebb53d0d78b8df857e9288b984397)] __-__ restore port to overload type hint and json schema (#5501) (*AlaeddineAbdessalem*)
+ - [[```50417a13```](https://github.com/jina-ai/jina/commit/50417a13c825967ac33d040d7eba23e533dab589)] __-__ OpenTelemetry do not force parameter (#5483) (*big-thousand*)
+ - [[```64755313```](https://github.com/jina-ai/jina/commit/64755313be22d210c73b7d5b67fccabf716ea585)] __-__ provide protocol for traces/metrics exporter host (#5500) (*Girish Chandrashekar*)
+ - [[```d206bb96```](https://github.com/jina-ai/jina/commit/d206bb96fe7f759528f4443364005eff5e5cca8f)] __-__ fix problem when using floating in HTTP (#5493) (*Joan Fontanals*)
+ - [[```d8489f7c```](https://github.com/jina-ai/jina/commit/d8489f7c9ce4dbdc270ba61fdd3297c4a0468f6b)] __-__ suppress warning for http gateway about health check (#5495) (*AlaeddineAbdessalem*)
+ - [[```b057b626```](https://github.com/jina-ai/jina/commit/b057b62666e4ee549ac1c24d1240c7218da48979)] __-__ add egg info post install command for egg info setup mode (#5491) (*AlaeddineAbdessalem*)
+ - [[```94185e44```](https://github.com/jina-ai/jina/commit/94185e447aa3995ff631a58bb91b0553d8ec50e5)] __-__ do not apply limits when gpus all in K8s (#5485) (*Joan Fontanals*)
+ - [[```ac5059f8```](https://github.com/jina-ai/jina/commit/ac5059f8716e5e73ca762121efe1b0e9a2929f45)] __-__ fix windows signal handling (#5484) (*Joan Fontanals*)
+ - [[```0604ca55```](https://github.com/jina-ai/jina/commit/0604ca557e2090fa26db5cd2a482f0c77a986215)] __-__ adapt to new resource structure (#5462) (*Joan Fontanals*)
+ - [[```85e1ece9```](https://github.com/jina-ai/jina/commit/85e1ece9222825ca1489010752cef4962e626cd6)] __-__ fix custom gateway container port (#5463) (*AlaeddineAbdessalem*)
+ - [[```a575d3ce```](https://github.com/jina-ai/jina/commit/a575d3cef9b601035a42549be12d9a455331b07d)] __-__ cap opentelemetry-instrumentation-aiohttp-client incompatible wh… (#5452) (*AlaeddineAbdessalem*)
+ - [[```6e0222fd```](https://github.com/jina-ai/jina/commit/6e0222fdc54063c7b95aff40c5458a2becd16d3a)] __-__ raise exceptions in path importer (#5447) (*Jie Fu*)
+
+### 🧼 Code Refactoring
+
+ - [[```f854d5dd```](https://github.com/jina-ai/jina/commit/f854d5ddc10f6d4392a7da8722482463af56be9b)] __-__ make server link to gateway so that custom gateway can inherit (#5526) (*Joan Fontanals*)
+ - [[```5a0830cf```](https://github.com/jina-ai/jina/commit/5a0830cfb6bfa33dcffb38681f86efe5f6f0f97c)] __-__ avoid run in executor creating threads (#5518) (*Joan Fontanals*)
+ - [[```8794fcd3```](https://github.com/jina-ai/jina/commit/8794fcd378b1f6fadc3f84a6492441ca0168483c)] __-__ add more debug info to prints (#5475) (*Joan Fontanals*)
+ - [[```e143ea30```](https://github.com/jina-ai/jina/commit/e143ea3092ebae68f8c2cf7f784f86296cae68d7)] __-__ use stream_docs from streamer (#5438) (*AlaeddineAbdessalem*)
+ - [[```23a625d1```](https://github.com/jina-ai/jina/commit/23a625d122fae317db4ff5711bfd48a56a8d2e0c)] __-__ remove unused distributed args (#5460) (*Joan Fontanals*)
+
+### 📗 Documentation
+
+ - [[```96c1040c```](https://github.com/jina-ai/jina/commit/96c1040cfda6cbbefabf8b9f9b130b76376373e4)] __-__ fix dynamic batching example (#5524) (*AlaeddineAbdessalem*)
+ - [[```f51bccfb```](https://github.com/jina-ai/jina/commit/f51bccfb0ae1a0790c87ed313f2d62746a45e621)] __-__ m1 fix (#5511) (*IyadhKhalfallah*)
+ - [[```7ab2d9ca```](https://github.com/jina-ai/jina/commit/7ab2d9cad8bea8a4631474b51cf749d2a50ce646)] __-__ add files under fundamentals to redirects (#5504) (*AlaeddineAbdessalem*)
+ - [[```ae3d3b7e```](https://github.com/jina-ai/jina/commit/ae3d3b7ec77aa5c267b3ef86a313484777e5fd2b)] __-__ __jcloud__: adapt to new api (#5385) (*Deepankar Mahapatro*)
+ - [[```77267b81```](https://github.com/jina-ai/jina/commit/77267b81d48e754ae6227bf991809fdec0de1d56)] __-__ revamp narrative (*Han Xiao*)
+ - [[```12f19acc```](https://github.com/jina-ai/jina/commit/12f19acc0d25f050487ae7a159a0fa27c50c7881)] __-__ document needed setup for macos (#5489) (*AlaeddineAbdessalem*)
+ - [[```212466e4```](https://github.com/jina-ai/jina/commit/212466e4e313bfdfc04e2e423da899e0cc35b634)] __-__ custom gateway (#5465) (*AlaeddineAbdessalem*)
+ - [[```dbb493ce```](https://github.com/jina-ai/jina/commit/dbb493ce025000493958c850fe1cdd89e72964b0)] __-__ change executor uri to &#34;jinaai&#34; (#5450) (*Delgermurun*)
+ - [[```47da80be```](https://github.com/jina-ai/jina/commit/47da80beca9cd60db51081594f1fcc5bee6d1246)] __-__ fix port and protocol description for the gateway (#5456) (*AlaeddineAbdessalem*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```d4c666e5```](https://github.com/jina-ai/jina/commit/d4c666e52a7bf99b5c2fc00aa854e1f1298990fa)] __-__ fix old docs build opentelemetry sdk pin (#5523) (*Jackmin801*)
+ - [[```fd37a092```](https://github.com/jina-ai/jina/commit/fd37a092b3294c92ff4943e3bd135d396bc0cd52)] __-__ fix histograms monitoring test (#5509) (*AlaeddineAbdessalem*)
+ - [[```6a6fafcd```](https://github.com/jina-ai/jina/commit/6a6fafcd422005e08467f23ab8803195b08405e8)] __-__ build python 3.10 and 3.11 as default jina docker images and make 3.8 the default jina docker image (#5490) (*AlaeddineAbdessalem*)
+ - [[```3e89a500```](https://github.com/jina-ai/jina/commit/3e89a5007bc604f7efe14d1b852a380677d6b64f)] __-__ change script to build old docs (*Joan Fontanals Martinez*)
+ - [[```a51304ab```](https://github.com/jina-ai/jina/commit/a51304ab7e051e6f0443f21ab3a9aa7af9ee1d8d)] __-__ remove otel-semantic-convention (#5451) (*Joan Fontanals*)
+
+### 🍹 Other Improvements
+
+ - [[```8e50736e```](https://github.com/jina-ai/jina/commit/8e50736e8bdae426415cb02fc46eaf973887aebe)] __-__ update jina version (#5528) (*AlaeddineAbdessalem*)
+ - [[```3cc4762f```](https://github.com/jina-ai/jina/commit/3cc4762fda3c992885ead1b098cdc8f33c681b00)] __-__ reduce warnings when building docs (#5520) (*Anne Yang*)
+ - [[```a3b1497e```](https://github.com/jina-ai/jina/commit/a3b1497e94143862fba705a3781cdb7f5383d814)] __-__ change type hint (#5521) (*Joan Fontanals*)
+ - [[```b0a554f7```](https://github.com/jina-ai/jina/commit/b0a554f773fc3fbc4556b17ca35dea561db9f157)] __-__ bump hubble sdk (#5505) (*Delgermurun*)
+ - [[```c250c63b```](https://github.com/jina-ai/jina/commit/c250c63b97db58c1768e393daa2597e7c78071d2)] __-__ send telemetry event before starting gateway object (#5496) (*AlaeddineAbdessalem*)
+ - [[```0e34e4ec```](https://github.com/jina-ai/jina/commit/0e34e4ecafc677d05480701911d33738f9349080)] __-__ add install ecosystem latest version test to ci (#5439) (*samsja*)
+ - [[```b1fc108c```](https://github.com/jina-ai/jina/commit/b1fc108c9f9f8f72af04a0ef60e07272df4cc0eb)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```854f6d2b```](https://github.com/jina-ai/jina/commit/854f6d2b79711ebc4ce2fce5f33f8ae03d58345b)] __-__ fix old docs script (#5459) (*Joan Fontanals*)
+ - [[```ce7e5b77```](https://github.com/jina-ai/jina/commit/ce7e5b7760b02790eff777359748392e9d2903ab)] __-__ __version__: the next version will be 3.12.1 (*Jina Dev Bot*)
 

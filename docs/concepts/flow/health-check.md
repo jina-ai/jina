@@ -1,6 +1,6 @@
 # Health Check
 
-Once a Flow is running, you can use `jina ping`  {ref}`CLI <../api/jina_cli>` to run a health check of the complete Flow or of individual Executors or Gateway.
+Once a Flow is running, you can use `jina ping` [CLI](../../api/jina_cli.rst) to run a health check of the complete Flow or of individual Executors or Gateway.
 
 Start a Flow in Python:
 

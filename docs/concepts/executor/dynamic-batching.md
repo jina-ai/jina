@@ -12,7 +12,7 @@ When you enable dynamic batching, incoming requests to Executor endpoints with t
 are queued together. The Executor endpoint is executed on the queue requests when either:
 
 - the number of accumulated Documents exceeds the {ref}`preferred_batch_size<executor-dynamic-batching-parameters>` parameter
-- or the {ref}`timeout<executor-dynamic-batching-parameters` parameter is exceeded.
+- or the {ref}`timeout<executor-dynamic-batching-parameters>` parameter is exceeded.
 
 Although this feature _can_ work on {ref}`parametrized requests<client-executor-parameters>`, it's best used for endpoints that don't often receive different parameters.
 Creating a batch of requests typically results in better usage of hardware resources and potentially increased throughput.
@@ -34,20 +34,22 @@ batching enabled.
 ---
 emphasize-lines: 12
 ---
-from jina import requests, dynamic_batching, Executor, DocumentArray, Flow
+from jina import Executor, requests, dynamic_batching, Flow, DocumentArray, Document
+import numpy as np
+import torch
+
 
 class MyExecutor(Executor):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         
         # initialize model
-        import torch
         self.model = torch.nn.Linear(in_features=128, out_features=128)
     
     @requests(on='/bar')
     @dynamic_batching(preferred_batch_size=10, timeout=200)
-    def embed(self, docs: DocumentArray):
-        docs.embeddings = self.model(docs.tensors)
+    def embed(self, docs: DocumentArray, **kwargs):
+        docs.embeddings = self.model(torch.Tensor(docs.tensors))
 
 flow = Flow().add(uses=MyExecutor)
 ```

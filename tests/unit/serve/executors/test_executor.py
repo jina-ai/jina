@@ -74,10 +74,11 @@ def served_exec(request: FixtureRequest, exposed_port):
     t.join()
 
 
-def test_executor_load_from_hub():
-    exec = Executor.from_hub(
-        'jinahub://DummyHubExecutor', uses_metas={'name': 'hello123'}
-    )
+@pytest.mark.parametrize(
+    'uses', ['jinaai://jina-ai/DummyHubExecutor']
+)
+def test_executor_load_from_hub(uses):
+    exec = Executor.from_hub(uses, uses_metas={'name': 'hello123'})
     da = DocumentArray([Document()])
     exec.foo(da)
     assert da.texts == ['hello']
@@ -438,11 +439,15 @@ def test_default_workspace(tmpdir):
     'exec_type',
     [Executor.StandaloneExecutorType.EXTERNAL, Executor.StandaloneExecutorType.SHARED],
 )
-def test_to_k8s_yaml(tmpdir, exec_type):
+@pytest.mark.parametrize(
+    'uses',
+    ['jinahub+docker://DummyHubExecutor', 'jinaai+docker://jina-ai/DummyHubExecutor'],
+)
+def test_to_k8s_yaml(tmpdir, exec_type, uses):
     Executor.to_kubernetes_yaml(
         output_base_path=tmpdir,
         port_expose=2020,
-        uses='jinahub+docker://DummyHubExecutor',
+        uses=uses,
         executor_type=exec_type,
     )
 
@@ -480,12 +485,16 @@ def test_to_k8s_yaml(tmpdir, exec_type):
     'exec_type',
     [Executor.StandaloneExecutorType.EXTERNAL, Executor.StandaloneExecutorType.SHARED],
 )
-def test_to_docker_compose_yaml(tmpdir, exec_type):
+@pytest.mark.parametrize(
+    'uses',
+    ['jinaai+docker://jina-ai/DummyHubExecutor'],
+)
+def test_to_docker_compose_yaml(tmpdir, exec_type, uses):
     compose_file = os.path.join(tmpdir, 'compose.yml')
     Executor.to_docker_compose_yaml(
         output_path=compose_file,
         port_expose=2020,
-        uses='jinahub+docker://DummyHubExecutor',
+        uses=uses,
         executor_type=exec_type,
     )
 

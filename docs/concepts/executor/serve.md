@@ -18,7 +18,7 @@ In Jina there are two ways of running standalone Executors: *Served Executors* a
 It resides behind a {ref}`Gateway <architecture-overview>` and can thus be directly accessed by a {ref}`Client <client>`.
 It can also be used as part of a Flow.
 
-- A **shared Executor** is launched using the [Jina CLI](../cli/index.rst) and does *not* sit behind a Gateway.
+- A **shared Executor** is launched using the [Jina CLI](../../cli/index.rst) and does *not* sit behind a Gateway.
 It is intended to be used in one or more Flows.
 Because a shared Executor does not reside behind a Gataway, it cannot be directly accessed by a Client, but it requires
 fewer networking hops when used inside of a Flow.
@@ -63,7 +63,7 @@ print(Client(port=12345).post(inputs=DocumentArray.empty(1), on='/foo').texts)
 ````
 
 Internally, the {meth}`~jina.serve.executors.BaseExecutor.serve` method creates and starts a {class}`~jina.Flow`. Therefore, it can take all associated parameters:
-`uses_with`, `uses_metas`, `uses_requests` are passed to the internal {meth}`~jina.serve.executors.BaseExecutor.add` call, `stop_event` stops
+`uses_with`, `uses_metas`, `uses_requests` are passed to the internal {meth}`~jina.Flow.add` call, `stop_event` stops
 the Executor, and `**kwargs` is passed to the internal {meth}`~jina.Flow` initialisation call.
 
 ````{admonition} See Also
@@ -103,7 +103,7 @@ This type of standalone Executor can be either *external* or *shared*. By defaul
 - An external Executor is deployed alongside a {ref}`Gateway <architecture-overview>`. 
 - A shared Executor has no Gateway. 
 
-Both types of Executor {ref}`can be used directly in any Flow <external-executor>`.
+Both types of Executor {ref}`can be used directly in any Flow <external-executors>`.
 Having a Gateway may be useful if you want to access your Executor with the {ref}`Client <client>` without an additional Flow. If the Executor is only used inside other Flows, you should define a shared Executor to save the costs of running the Gateway in Kubernetes.
 
 ## Serve via Docker Compose

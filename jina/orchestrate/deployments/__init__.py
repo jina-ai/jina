@@ -19,6 +19,7 @@ from jina.helper import (
     CatchAllCleanupContextManager,
     parse_host_scheme,
 )
+from jina.orchestrate.deployments.install_requirements_helper import install_package_dependencies, _get_package_path_from_uses
 from jina.orchestrate.pods.factory import PodFactory
 from jina.parsers.helper import _update_gateway_args
 from jina.serve.networking import host_is_local, in_docker
@@ -611,6 +612,9 @@ class Deployment(BaseDeployment):
         """
         if self.is_sandbox and not self._sandbox_deployed:
             self.update_sandbox_args()
+
+        if not self._is_docker and getattr(self.args, 'install_requirements', False):
+            install_package_dependencies(_get_package_path_from_uses(self.args.uses))
 
         if self.pod_args['uses_before'] is not None:
             _args = self.pod_args['uses_before']

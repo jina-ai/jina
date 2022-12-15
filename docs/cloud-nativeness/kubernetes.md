@@ -319,4 +319,4 @@ In short, there are just three key steps to deploy a Jina Flow on Kubernetes:
 - {ref}`Kubernetes support documentation <kubernetes-docs>`
 - {ref}`Monitor the Flow once it is deployed <monitoring>`
 - {ref}`See how failures and retries are handled <flow-error-handling>`
-- {ref}`Learn more about scaling Executors <scale-out>`
+- {ref}`Learn more about scaling Executors <flow-complex-topologies>`

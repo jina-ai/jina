@@ -49,7 +49,7 @@ For the rest of this section, we use `jc` or `jcloud`. But again they are interc
 In Jina's idiom, a project is a [Flow](https://docs.jina.ai/concepts/flow/), which represents an end-to-end task such as indexing, searching or recommending. In this document, we use "project" and "Flow" interchangeably.
 
 ```{caution}
-Flows have a maximum {ref}`lifetime<jcloud-lifetime>` after which they are automatically deleted.
+Flows have a maximum lifetime after which they are automatically deleted.
 ```
 
 A Flow can have two types of file structure: a single YAML file or a project folder.
