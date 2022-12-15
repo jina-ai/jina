@@ -8,7 +8,6 @@ Submodules
    :maxdepth: 4
 
    jina.parsers.orchestrate.runtimes.container
-   jina.parsers.orchestrate.runtimes.distributed
    jina.parsers.orchestrate.runtimes.head
    jina.parsers.orchestrate.runtimes.remote
    jina.parsers.orchestrate.runtimes.runtime

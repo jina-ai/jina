@@ -36,6 +36,5 @@ To adapt Prometheus queries in Grafana:
 You can download a [sample Grafana dashboard JSON file](https://github.com/jina-ai/example-grafana-prometheus/blob/main/grafana-dashboards/flow-histogram-metrics.json) and import it into Grafana to get started with some pre-built graphs.
 
 ```{hint}
-A list of available metrics which will soon be deprecated is in the {ref}`Flow Monitoring <monitoring-flow>` section.
 A list of available metrics is in the {ref}`Flow Instrumentation <instrumenting-flow>` section.
 ```

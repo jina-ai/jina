@@ -51,8 +51,12 @@ from jina import Flow
 
 f = (
     Flow(port=8080)
-    .add(name='encoder', uses='jinahub+docker://CLIPEncoder')
-    .add(name='indexer', uses='jinahub+docker://AnnLiteIndexer', uses_with={'dim': 512})
+    .add(name='encoder', uses='jinaai+docker://jina-ai/CLIPEncoder')
+    .add(
+        name='indexer',
+        uses='jinaai+docker://jina-ai/AnnLiteIndexer',
+        uses_with={'dim': 512},
+    )
 )
 ```
 
@@ -162,10 +166,10 @@ from jina import Flow
 
 f = (
     Flow(port=8080)
-    .add(name='encoder', uses='jinahub+docker://CLIPEncoder', replicas=2)
+    .add(name='encoder', uses='jinaai+docker://jina-ai/CLIPEncoder', replicas=2)
     .add(
         name='indexer',
-        uses='jinahub+docker://ANNLiteIndexer',
+        uses='jinaai+docker://jina-ai/ANNLiteIndexer',
         uses_with={'dim': 512},
         shards=2,
     )
@@ -315,4 +319,4 @@ In short, there are just three key steps to deploy a Jina Flow on Kubernetes:
 - {ref}`Kubernetes support documentation <kubernetes-docs>`
 - {ref}`Monitor the Flow once it is deployed <monitoring>`
 - {ref}`See how failures and retries are handled <flow-error-handling>`
-- {ref}`Learn more about scaling Executors <scale-out>`
+- {ref}`Learn more about scaling Executors <flow-complex-topologies>`

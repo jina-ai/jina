@@ -8,6 +8,7 @@ Submodules
    :maxdepth: 4
 
    jina.serve.runtimes.gateway.http.app
+   jina.serve.runtimes.gateway.http.fastapi
    jina.serve.runtimes.gateway.http.gateway
    jina.serve.runtimes.gateway.http.models
 
