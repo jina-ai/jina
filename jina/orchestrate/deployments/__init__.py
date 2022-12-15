@@ -3,6 +3,8 @@ import json
 import os
 import re
 import subprocess
+import asyncio
+
 from abc import abstractmethod
 from argparse import Namespace
 from collections import defaultdict
@@ -187,6 +189,9 @@ class Deployment(BaseDeployment):
         def wait_start_success(self):
             for pod in self._pods:
                 pod.wait_start_success()
+
+        async def async_wait_start_success(self):
+            await asyncio.gather(*[pod.async_wait_start_success() for pod in self._pods])
 
         def __enter__(self):
             for _args in self.args:
@@ -662,6 +667,30 @@ class Deployment(BaseDeployment):
                 self.head_pod.wait_start_success()
             for shard_id in self.shards:
                 self.shards[shard_id].wait_start_success()
+        except:
+            self.close()
+            raise
+
+    async def async_wait_start_success(self) -> None:
+        """Block until all pods starts successfully.
+
+        If not successful, it will raise an error hoping the outer function to catch it
+        """
+        if not self.args.noblock_on_start:
+            raise ValueError(
+                f'{self.async_wait_start_success!r} should only be called when `noblock_on_start` is set to True'
+            )
+        try:
+            coros = []
+            if self.uses_before_pod is not None:
+                coros.append(self.uses_before_pod.async_wait_start_success())
+            if self.uses_after_pod is not None:
+                coros.append(self.uses_after_pod.async_wait_start_success())
+            if self.head_pod is not None:
+                coros.append(self.head_pod.async_wait_start_success())
+            for shard_id in self.shards:
+                coros.append(self.shards[shard_id].async_wait_start_success())
+            await asyncio.gather(*coros)
         except:
             self.close()
             raise
