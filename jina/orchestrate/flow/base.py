@@ -1860,7 +1860,12 @@ class Flow(
             async def _wait_all():
                 await asyncio.gather(*coros)
 
-            asyncio.get_event_loop().run_until_complete(_wait_all())
+            try:
+                loop = asyncio.get_event_loop()
+            except:
+                loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(loop)
+            loop.run_until_complete(_wait_all())
 
             for t in threads:
                 t.join()
