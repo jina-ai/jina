@@ -1224,23 +1224,29 @@ async def test_flow_with_custom_gateway(logger, docker_images, tmpdir):
     [['multiprotocol-gateway']],
     indirect=True,
 )
+@pytest.mark.parametrize('built_in_gateway', [True, False])
 async def test_flow_multiple_protocols_gateway(
-    logger, docker_images, tmpdir, k8s_cluster
+    logger, docker_images, built_in_gateway, tmpdir, k8s_cluster
 ):
     from kubernetes import client
 
-    namespace = 'flow-multiprotocol-gateway'.lower()
     api_client = client.ApiClient()
     core_client = client.CoreV1Api(api_client=api_client)
     app_client = client.AppsV1Api(api_client=api_client)
     try:
         http_port = random_port()
         grpc_port = random_port()
-        flow = Flow().config_gateway(
-            uses=f'docker://{docker_images[0]}',
-            port=[http_port, grpc_port],
-            protocol=['http', 'grpc'],
-        )
+        if built_in_gateway:
+            flow = Flow().config_gateway(
+                port=[http_port, grpc_port],
+                protocol=['http', 'grpc'],
+            )
+        else:
+            flow = Flow().config_gateway(
+                uses=f'docker://{docker_images[0]}',
+                port=[http_port, grpc_port],
+                protocol=['http', 'grpc'],
+            )
 
         dump_path = os.path.join(str(tmpdir), 'k8s-flow-multiprotocol-gateway')
         namespace = 'flow-multiprotocol-gateway'
