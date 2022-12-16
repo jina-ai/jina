@@ -37,7 +37,7 @@ from rich.progress import (
 )
 from rich.table import Table
 
-from jina import __default_host__, __docker_host__, __windows__, helper
+from jina.constants import __default_host__, __docker_host__, __windows__
 from jina.clients import Client
 from jina.clients.mixin import AsyncPostMixin, HealthCheckMixin, PostMixin, ProfileMixin
 from jina.enums import (
@@ -62,6 +62,7 @@ from jina.helper import (
     is_port_free,
     send_telemetry_event,
     typename,
+    random_ports
 )
 from jina.importer import ImportExtensions
 from jina.jaml import JAMLCompatible
@@ -628,7 +629,7 @@ class Flow(
         )
 
         if not args.port:
-            args.port = helper.random_ports(len(args.protocol))
+            args.port = random_ports(len(args.protocol))
         args.noblock_on_start = True
         args.graph_description = json.dumps(graph_description)
         args.graph_conditions = json.dumps(graph_conditions)

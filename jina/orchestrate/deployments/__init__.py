@@ -906,7 +906,7 @@ class Deployment(BaseDeployment):
         _args = copy.deepcopy(args)
         _args.pod_role = PodRoleType.WORKER
         _args.host = _args.host[0] or __default_host__
-        _args.port = helper.random_port()
+        _args.port = random_port()
 
         if _args.name:
             _args.name += f'/{entity_type}-0'
