@@ -17,9 +17,8 @@ def flow_run(flow, stop_event):
         flow.block(stop_event)
 
 
-def client_post(c):
-    doc = Document(id='doc', text='hello world')
-    result = c.post(on='/', inputs=doc)[0]
+def client_post(doc, client):
+    result = client.post(on='/', inputs=doc)[0]
     return result
 
 
@@ -37,13 +36,14 @@ def test_multithread_client(capsys):
 
         with ThreadPoolExecutor(max_workers=50) as pool:
             tasks = []
-            for _ in range(1000):
-                task = pool.submit(client_post, c)
+            for i in range(1000):
+                doc = Document(id=f'{i}', text='hello world')
+                task = pool.submit(client_post, doc, c)
                 tasks.append(task)
 
-            for task in tasks:
+            for i,task in enumerate(tasks):
                 result = task.result()
-                assert result.id == 'doc'
+                assert result.id == f'{i}'
                 assert result.text == 'I am coming from MyExecutor'
 
         with capsys.disabled():
