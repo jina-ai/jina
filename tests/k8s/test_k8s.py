@@ -1282,7 +1282,10 @@ async def test_flow_multiple_protocols_gateway(
                 import requests
 
                 resp = requests.get(f'http://localhost:{http_port}').json()
-                assert resp['protocol'] == 'http'
+                assert resp in [
+                    {'protocol': 'http'},
+                    {},
+                ]  # first one for the custom gateway implementation, the second is for the built-in multiprotocol gateway
 
         # test portforwarding the gateway pod and service using grpc
         forward_args = [
