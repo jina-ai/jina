@@ -2,10 +2,10 @@ import argparse
 import asyncio
 import copy
 import multiprocessing
+import threading
 import os
 import re
 import signal
-import threading
 import time
 from typing import TYPE_CHECKING, Dict, Optional, Union
 
@@ -290,8 +290,7 @@ def run(
 
 class ContainerPod(BasePod):
     """
-    :class:`ContainerPod` starts a runtime of :class:`BaseRuntime` inside a container. It leverages :class:`threading.Thread`
-    or :class:`multiprocessing.Process` to manage the logs and the lifecycle of docker container object in a robust way.
+    :class:`ContainerPod` starts a runtime of :class:`BaseRuntime` inside a container. It leverages :class:`multiprocessing.Process` to manage the logs and the lifecycle of docker container object in a robust way.
     """
 
     def __init__(self, args: 'argparse.Namespace'):
@@ -383,7 +382,6 @@ class ContainerPod(BasePod):
 
     def start(self):
         """Start the ContainerPod.
-        This method calls :meth:`start` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.
         .. #noqa: DAR201
         """
         self.worker = multiprocessing.Process(
@@ -408,7 +406,7 @@ class ContainerPod(BasePod):
 
     def _terminate(self):
         """Terminate the Pod.
-        This method calls :meth:`terminate` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.
+        This method kills the container inside the Pod
         """
         # terminate the docker
         try:
@@ -421,7 +419,6 @@ class ContainerPod(BasePod):
 
     def join(self, *args, **kwargs):
         """Joins the Pod.
-        This method calls :meth:`join` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.
 
         :param args: extra positional arguments to pass to join
         :param kwargs: extra keyword arguments to pass to join

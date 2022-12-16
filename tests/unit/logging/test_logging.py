@@ -80,18 +80,6 @@ def test_logging_quiet(caplog):
     # no way to capture logs in multiprocessing
     # see discussion here: https://github.com/pytest-dev/pytest/issues/3037#issuecomment-745050393
 
-    f = Flow().add().add()
-    with f:
-        f.index(Document())
-
     f = Flow().add(quiet=True).add()
-    with f:
-        f.index(Document())
-
-    f = Flow().add(quiet=True).add(quiet=True)
-    with f:
-        f.index(Document())
-
-    f = Flow(quiet=True).add().add()
     with f:
         f.index(Document())

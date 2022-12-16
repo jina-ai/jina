@@ -101,7 +101,7 @@ Jina supports two types of scaling:
 - **Replicas** can be used with any Executor type and are typically used for performance and availability.
 - **Shards** are used for partitioning data and should only be used with indexers since they store state.
 
-Check {ref}`here <scale-out>` for more information about these scaling mechanisms.
+Check {ref}`here <flow-complex-topologies>` for more information about these scaling mechanisms.
 
 For shards, Jina creates one separate Deployment in Kubernetes per Shard.
 Setting `f.add(..., shards=num_shards)` is sufficient to create a corresponding Kubernetes configuration.
@@ -120,7 +120,7 @@ If you want to learn more about this limitation, see [this](https://kubernetes.i
 The {ref}`Gateway <flow>` is responsible for providing the API of the {ref}`Flow <flow>`.
 If you have a large Flow with many Clients and many replicated Executors, the Gateway can become the bottleneck.
 In this case you can also scale up the Gateway deployment to be backed by multiple Kubernetes Pods.
-This is done by the regular means of Kubernetes: Either increase the number of replicas in the  {ref}`generated yaml configuration files <kubernetes-deploy>` or [add replicas while running](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#scaling-a-deployment).
+This is done by the regular means of Kubernetes: Either increase the number of replicas in the  {ref}`generated yaml configuration files <kubernetes-export>` or [add replicas while running](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#scaling-a-deployment).
 To expose your Gateway replicas outside Kubernetes, you can add a load balancer as described {ref}`here <kubernetes-expose>`.
 
 ````{admonition} Hint

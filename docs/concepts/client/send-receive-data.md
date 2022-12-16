@@ -201,7 +201,7 @@ In the simplest case, you can specify a precise Executor name, and the request w
 The Flow with **gRPC** protocol implements the unary and the streaming RPC lifecycle for communicating with the clients. When sending more than one request using the batching or the iterator mechanism, the RPC lifecycle for the {meth}`~jina.clients.mixin.PostMixin.post` method can be controlled using the `stream` boolean method argument. By default the stream option is set to `True` which uses the streaming RPC to send the data to the Flow. If the stream option is set to `False`, the unary RPC is used to send the data to the Flow.
 Both RPC lifecycles are implemented to provide the flexibility for the clients. 
 
-Currently the unary RPC option will always return results in order of the input request iterator and the `results_in_order` argument is ignored. There might be performance penalties when using the streaming RPC in the Python gRPC implementation.
+There might be performance penalties when using the streaming RPC in the Python gRPC implementation.
 
 
 ```{hint}
@@ -212,7 +212,7 @@ Refer to the gRPC [Performance Best Practices](https://grpc.io/docs/guides/perfo
 
 ## Returns
 
-{meth}`~jina.clients.mixin.PostMixin.post` returns a `DocumentArray` containing all Documents flattened over all Requests. When setting `return_responses=True`, this behavior is changed to returning a list of {class}`~jina.types.request.Response` objects.
+{meth}`~jina.clients.mixin.PostMixin.post` returns a `DocumentArray` containing all Documents flattened over all Requests. When setting `return_responses=True`, this behavior is changed to returning a list of {class}`~jina.types.request.data.Response` objects.
 
 If a callback function is provided, `client.post()` will return none.
 

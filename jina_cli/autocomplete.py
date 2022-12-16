@@ -380,6 +380,7 @@ ac_table = {
             '--metrics-exporter-host',
             '--metrics-exporter-port',
             '--protocol',
+            '--prefetch',
         ],
     },
 }

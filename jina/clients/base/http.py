@@ -149,7 +149,6 @@ class HTTPBaseClient(BaseClient):
             streamer = RequestStreamer(
                 request_handler=_request_handler,
                 result_handler=_result_handler,
-                prefetch=getattr(self.args, 'prefetch', 0),
                 logger=self.logger,
                 **vars(self.args),
             )

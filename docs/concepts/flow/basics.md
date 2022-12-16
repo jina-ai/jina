@@ -59,7 +59,7 @@ f.save_config('flow.yml')
 
 ## Start and stop
 
-When a {class}`~jina.Flow` starts, all its {ref}`added Executors <flow-add-executors>` will start as well, making it possible to {ref}`reach the service through its API <access-flow-api>`.
+When a {class}`~jina.Flow` starts, all its {ref}`added Executors <flow-add-executors>` will start as well, making it possible to {ref}`reach the service through its API <third-party-client>`.
 
 There are three ways to start a Flow: In Python, from a YAML file, or from the terminal.
 
@@ -121,7 +121,7 @@ A successful start of a Flow looks like this:
 
 Your addresses and entrypoints can be found in the output. When you enable more features such as monitoring, HTTP gateway, TLS encryption, this display expands to contain more information.
 
-(multiprocessing-spawn)
+(multiprocessing-spawn)=
 ### Set multiprocessing `spawn` 
 
 Some corner cases require forcing a `spawn` start method for multiprocessing, for example if you encounter "Cannot re-initialize CUDA in forked subprocess". 
