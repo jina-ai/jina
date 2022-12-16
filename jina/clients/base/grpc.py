@@ -1,10 +1,10 @@
 import asyncio
 import json
+import threading
 from typing import TYPE_CHECKING, Optional
 
 import grpc
 from grpc import RpcError
-
 from jina.clients.base import BaseClient
 from jina.clients.helper import callback_exec
 from jina.excepts import BadClientInput, BadServerFlow, InternalNetworkError
@@ -23,6 +23,8 @@ class GRPCBaseClient(BaseClient):
 
     It manages the asyncio event loop internally, so all interfaces are synchronous from the outside.
     """
+    
+    _lock = threading.RLock()
 
     async def _is_flow_ready(self, **kwargs) -> bool:
         """Sends a dry run to the Flow to validate if the Flow is ready to receive requests
@@ -195,7 +197,7 @@ class GRPCBaseClient(BaseClient):
 
                 with ProgressBar(
                     total_length=self._inputs_length, disable=not self.show_progress
-                ) as p_bar:
+                ) as p_bar, self._lock:
                     try:
                         if stream:
                             async for resp in self._stream_rpc(
