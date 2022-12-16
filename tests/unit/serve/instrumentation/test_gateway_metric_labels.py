@@ -1,4 +1,4 @@
-from jina import DocumentArray, Executor, Flow, requests
+from docarray import DocumentArray, Executor, Flow, requests
 
 
 def test_gateway_metric_labels(monkeypatch_metric_exporter):

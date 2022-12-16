@@ -2,7 +2,7 @@ import multiprocessing
 
 import pytest
 
-from jina import DocumentArray, Executor, requests
+from docarray import DocumentArray, Executor, requests
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.worker import WorkerRuntime
 from jina.serve.streamer import GatewayStreamer

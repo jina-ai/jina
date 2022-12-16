@@ -2,7 +2,7 @@ from datetime import datetime
 
 import pytest
 
-from jina import Document, DocumentArray, Flow
+from docarray import Document, DocumentArray, Flow
 
 
 class MyOwnException(Exception):

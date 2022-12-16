@@ -3,7 +3,7 @@ import os
 import shutil
 import time
 
-from jina import DocumentArray, Flow
+from docarray import DocumentArray, Flow
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 

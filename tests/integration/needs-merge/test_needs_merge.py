@@ -1,4 +1,4 @@
-from jina import DocumentArray, Executor, Flow, requests
+from docarray import DocumentArray, Executor, Flow, requests
 
 
 def test_needs_docs_map():

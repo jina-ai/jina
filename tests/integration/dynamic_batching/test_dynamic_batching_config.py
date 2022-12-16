@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 
-from jina import Document, DocumentArray, Executor, Flow, dynamic_batching, requests
+from docarray import Document, DocumentArray, Executor, Flow, dynamic_batching, requests
 
 cur_dir = os.path.dirname(__file__)
 

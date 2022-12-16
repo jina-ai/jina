@@ -5,7 +5,7 @@ import numpy as np
 import pytest
 from docarray.document.generators import from_ndarray
 
-from jina import Document, Executor, Flow, requests
+from docarray import Document, Executor, Flow, requests
 from jina.excepts import BadServer, RuntimeFailToStart
 from jina.proto import jina_pb2
 from tests import validate_callback

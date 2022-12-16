@@ -1,6 +1,6 @@
 import pytest
 
-from jina import Document, DocumentArray, Executor, Flow, requests
+from docarray import Document, DocumentArray, Executor, Flow, requests
 from tests import validate_callback
 
 

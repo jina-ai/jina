@@ -3,7 +3,7 @@ import time
 
 import pytest
 
-from jina import Document
+from docarray import Document
 from jina.clients.request import request_generator
 from jina.serve.stream.helper import AsyncRequestsIterator, _RequestsCounter
 

@@ -6,7 +6,7 @@ from typing import Dict
 
 import pytest
 
-from jina import Document, DocumentArray
+from docarray import Document, DocumentArray
 from jina.helper import random_port
 from jina.parsers import set_gateway_parser
 from jina.serve import networking

@@ -10,7 +10,7 @@ from jina.helper import iscoroutinefunction
 from jina.importer import ImportExtensions
 
 if TYPE_CHECKING:  # pragma: no cover
-    from jina import DocumentArray
+    from docarray import DocumentArray
 
 
 @functools.lru_cache()

@@ -1,6 +1,6 @@
 import pytest
 
-from jina import Document, Flow
+from docarray import Document, Flow
 
 
 @pytest.mark.parametrize('endpoint', ['foo', 'bar'])

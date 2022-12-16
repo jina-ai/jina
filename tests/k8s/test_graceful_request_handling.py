@@ -5,7 +5,7 @@ import time
 
 import pytest
 
-from jina import Document, Flow
+from docarray import Document, Flow
 
 cur_dir = os.path.dirname(__file__)
 

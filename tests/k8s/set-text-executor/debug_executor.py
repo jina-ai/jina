@@ -1,7 +1,7 @@
 import os
 import time
 
-from jina import DocumentArray, Executor, requests
+from docarray import DocumentArray, Executor, requests
 
 
 class TagTextExecutor(Executor):
