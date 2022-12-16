@@ -5,7 +5,7 @@ import warnings
 from types import SimpleNamespace
 from typing import Optional
 
-from jina import __resources_path__
+from jina.constants import __resources_path__
 
 IMPORTED = SimpleNamespace()
 IMPORTED.executors = False

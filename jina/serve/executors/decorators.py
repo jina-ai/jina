@@ -5,7 +5,7 @@ import os
 from pathlib import Path
 from typing import TYPE_CHECKING, Callable, Dict, List, Optional, Sequence, Union
 
-from jina import __cache_path__
+from jina.constants import __cache_path__
 from jina.helper import iscoroutinefunction
 from jina.importer import ImportExtensions
 
@@ -154,7 +154,7 @@ def requests(
     :param on: the endpoint string, by convention starts with `/`
     :return: decorated function
     """
-    from jina import __args_executor_func__, __default_endpoint__
+    from jina.constants import __args_executor_func__, __default_endpoint__
 
     class FunctionMapper:
         def __init__(self, fn):

@@ -9,7 +9,7 @@ from typing import Optional
 from rich.logging import LogRender as _LogRender
 from rich.logging import RichHandler as _RichHandler
 
-from jina import __resources_path__, __uptime__, __windows__
+from jina.constants import __resources_path__, __uptime__, __windows__
 from jina.enums import LogVerbosity
 from jina.jaml import JAML
 from jina.logging import formatter
