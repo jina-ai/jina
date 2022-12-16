@@ -301,6 +301,13 @@ You can control the access mode, storage class name and capacity of the attached
 `JINA_K8S_ACCESS_MODES`, `JINA_K8S_STORAGE_CLASS_NAME` and `JINA_K8S_STORAGE_CAPACITY`. Only the first volume will be considered to be mounted.
 ```
 
+```{tip}
+All arguments received by `Flow()` API will be propagated to other entities (gateway, executor) with the following exclusions:
+
+- `uses` and `uses_with` won't be passed to gateway
+- `port`, `port_monitoring`, `uses` and `uses_with` won't be passed to executor
+```
+
 ```{admonition} See also
 :class: seealso
 For more in-depth guides on Flow deployment, check our how-tos for {ref}`Docker compose <docker-compose>` and
