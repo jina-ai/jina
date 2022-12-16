@@ -205,6 +205,7 @@ class GRPCBaseClient(BaseClient):
                 metadata = metadata or ()
                 metadata = metadata + (('__results_in_order__', 'true'),)
 
+            self._lock.acquire()
             async with GrpcConnectionPool.get_grpc_channel(
                     f'{self.args.host}:{self.args.port}',
                     options=options,
@@ -216,7 +217,7 @@ class GRPCBaseClient(BaseClient):
 
                 with ProgressBar(
                         total_length=self._inputs_length, disable=not self.show_progress
-                ) as p_bar, self._lock:
+                ) as p_bar:
                     try:
                         if stream:
                             async for resp in self._stream_rpc(
@@ -280,6 +281,7 @@ class GRPCBaseClient(BaseClient):
                             ) from err
                         else:
                             raise BadServerFlow(msg) from err
+            self._lock.release()
 
         except KeyboardInterrupt:
             self.logger.warning('user cancel the process')
