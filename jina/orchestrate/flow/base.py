@@ -62,6 +62,7 @@ from jina.helper import (
     is_port_free,
     send_telemetry_event,
     typename,
+    run_async
 )
 from jina.importer import ImportExtensions
 from jina.jaml import JAMLCompatible
@@ -1836,7 +1837,7 @@ class Flow(
             wait_for_ready_coros.append(_async_wait_ready(k, v))
 
         async def _async_wait_all():
-            await asyncio.gather(*wait_for_ready_coros)
+            return await asyncio.gather(*wait_for_ready_coros)
 
         progress = Progress(
             SpinnerColumn(),
@@ -1869,32 +1870,7 @@ class Flow(
                 t.start()
 
             # kick off all deployments wait-ready tasks
-            try:
-                _ = asyncio.get_event_loop()
-            except Exception as e:
-                loop = asyncio.new_event_loop()
-                asyncio.set_event_loop(loop)
-
-            async def _f():
-                pass
-
-            running_in_event_loop = False
-            try:
-                asyncio.get_event_loop().run_until_complete(_f())
-            except:
-                running_in_event_loop = True
-
-            if not running_in_event_loop:
-                asyncio.get_event_loop().run_until_complete(_async_wait_all())
-            else:
-                new_threads = []
-                for k, v in self:
-                    new_threads.append(threading.Thread(
-                        target=_wait_ready, args=(k, v), daemon=True
-                    ))
-                threads.extend(new_threads)
-                for t in new_threads:
-                    t.start()
+            run_async(_async_wait_all)
 
             for t in threads:
                 t.join()
