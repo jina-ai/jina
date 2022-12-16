@@ -115,6 +115,7 @@ class ServerWrapper:
             print('Cancelled')
 
     async def Call(self, request_iterator, context=None, *args, **kwargs):
+        print(f' stream received')
         async for resp in request_iterator:
             await asyncio.sleep(0.01)
             yield resp
@@ -122,6 +123,7 @@ class ServerWrapper:
     async def process_single_data(
             self, request, context=None
     ):
+        print(f' single data received')
         await asyncio.sleep(0.01)
         return request
 
@@ -130,9 +132,50 @@ def _run_server():
     with ServerWrapper():
         pass
 
-for _ in range(100):
-    p = multiprocessing.Process(target=_run_server, args=())
-    p.start()
-    time.sleep(5)
-    p.terminate()
-    p.join()
+
+from jina.types.request.data import DataRequest
+
+request = DataRequest()
+
+
+async def client():
+    for _ in range(50):
+        async with grpc.aio.insecure_channel('localhost:12345') as channel:
+            stub = jina_pb2_grpc.JinaSingleDataRequestRPCStub(channel)
+            ret = await stub.process_single_data(
+                request,
+            )
+            print(f' return {ret}')
+
+
+# for _ in range(100):
+#     p = multiprocessing.Process(target=_run_server, args=())
+#     p.start()
+#     from grpc_health.v1 import health_pb2, health_pb2_grpc
+#
+#     ready = False
+#     time.sleep(1)
+#     while not ready:
+#         with grpc.insecure_channel(
+#                 'localhost:12345',
+#         ) as channel:
+#             health_check_req = health_pb2.HealthCheckRequest()
+#             health_check_req.service = ''
+#             stub = health_pb2_grpc.HealthStub(channel)
+#             resp = stub.Check(health_check_req, timeout=100)
+#             print(resp)
+#             ready = resp.status == health_pb2.HealthCheckResponse.ServingStatus.SERVING
+#     # send requests unary_unary
+#     asyncio.run(client())
+#     p.terminate()
+#     p.join()
+
+
+from jina import Flow
+
+for i in range(10):
+    with Flow(port=12345) as f:
+        print(f' HAHAHAH')
+        asyncio.run(client())
+        pass
+        # f.post(on='/', inputs=DocumentArray.empty(100), request_size=1, stream=(i % 2 == 0))
