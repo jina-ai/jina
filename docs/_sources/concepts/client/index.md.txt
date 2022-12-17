@@ -1,5 +1,5 @@
 (client)=
-# Client
+# {fas}`laptop-code` Client
 {class}`~jina.Client` enables you to send Documents to a running {class}`~jina.Flow`. Same as Gateway, Client supports four networking protocols: **gRPC**, **HTTP**, **WebSocket** and **GraphQL** with/without TLS.
 
 You may have observed two styles of using a Client in the docs:
