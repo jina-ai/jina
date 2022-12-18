@@ -1318,9 +1318,13 @@ async def test_flow_multiple_protocols_built_in(
             protocol=['http', 'grpc'],
         )
 
-        dump_path = os.path.join(str(tmpdir), 'k8s-flow-multiprotocol-gateway')
-        namespace = 'flow-multiprotocol-gateway'
+        dump_path = os.path.join(str(tmpdir), 'k8s-flow-multiprotocol-gateway-builtin')
+        namespace = 'flow-multiprotocol-gateway-builtin'
         flow.to_kubernetes_yaml(dump_path, k8s_namespace=namespace)
+
+        print('printing k8s yaml...')
+        with open(os.path.join(dump_path, 'gateway/gateway.yml'), 'r') as f:
+            print(f.read())
 
         await create_all_flow_deployments_and_wait_ready(
             dump_path,
