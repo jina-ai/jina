@@ -19,10 +19,10 @@ f = Flow()
 ````
 
 ```{important}
-All arguments received by `Flow()` API will be propagated to other entities (gateway, executor) with the following exceptions:
+All arguments received by `Flow()` API will be propagated to other entities (Gateway, Executor) with the following exceptions:
 
-- `uses` and `uses_with` won't be passed to gateway
-- `port`, `port_monitoring`, `uses` and `uses_with` won't be passed to executor
+- `uses` and `uses_with` won't be passed to Gateway
+- `port`, `port_monitoring`, `uses` and `uses_with` won't be passed to Executor
 ```
 
 `````{tab} YAML

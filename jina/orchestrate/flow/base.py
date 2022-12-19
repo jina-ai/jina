@@ -367,10 +367,10 @@ class Flow(
                 with f:
                     f.bock()  # serve Flow
             
-        All arguments received by `Flow()` API will be propagated to other entities (gateway, executor) with the following exceptions:
+        All arguments received by `Flow()` API will be propagated to other entities (Gateway, Executor) with the following exceptions:
         
-        - `uses` and `uses_with` won't be passed to gateway
-        - `port`, `port_monitoring`, `uses` and `uses_with` won't be passed to executor
+        - `uses` and `uses_with` won't be passed to Gateway
+        - `port`, `port_monitoring`, `uses` and `uses_with` won't be passed to Executor
 
         :param asyncio: If set, then the input and output of this Client work in an asynchronous manner.
         :param host: The host of the Gateway, which the client should connect to, by default it is 0.0.0.0.
