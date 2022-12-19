@@ -20,8 +20,6 @@ from jina import (
 from jina.clients.request import request_generator
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
-from jina.serve.runtimes.gateway import GatewayRuntime
-from jina.serve.runtimes.worker import WorkerRuntime
 from jina_cli.api import executor_native
 from tests.helper import _generate_pod_args
 

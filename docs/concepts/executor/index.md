@@ -1,5 +1,5 @@
 (executor-cookbook)=
-# Executor
+# {fas}`gears` Executor
 
 {class}`~jina.Executor` is a self-contained component and performs a group of tasks on a `DocumentArray`. 
 

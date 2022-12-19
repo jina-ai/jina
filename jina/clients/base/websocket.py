@@ -184,7 +184,6 @@ class WebSocketBaseClient(BaseClient):
                 request_handler=_request_handler,
                 result_handler=_result_handler,
                 end_of_iter_handler=_handle_end_of_iter,
-                prefetch=getattr(self.args, 'prefetch', 0),
                 logger=self.logger,
                 **vars(self.args),
             )

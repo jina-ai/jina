@@ -1,5 +1,5 @@
 (install)=
-# Install
+# {octicon}`desktop-download` Install
 
 Jina comes with multiple installation options, enabling different feature sets.
 Standard install enables all major features of Jina and is the recommended installation for most users.
