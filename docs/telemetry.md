@@ -1,4 +1,4 @@
-# Telemetry
+# {fas}`tower-cell` Telemetry
 
 ```{warning}
 To opt out from telemetry, set the `JINA_OPTOUT_TELEMETRY=1` as an environment variable.
