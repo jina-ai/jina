@@ -194,7 +194,7 @@ class RequestStreamer:
                 future_cancel = asyncio.ensure_future(end_future())
                 result_queue.put_nowait(future_cancel)
             if (
-                all_floating_requests_awaited.is_set()
+                (all_requests_handled.is_set() and all_floating_requests_awaited.is_set())
                 or empty_requests_iterator.is_set()
             ):
                 # It will be waiting for something that will never appear
