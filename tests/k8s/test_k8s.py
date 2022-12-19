@@ -1224,18 +1224,18 @@ async def test_flow_with_custom_gateway(logger, docker_images, tmpdir):
     [['multiprotocol-gateway']],
     indirect=True,
 )
-async def test_flow_multiple_protocols_gateway(
+async def test_flow_multiple_protocols_custom_gateway(
     logger, docker_images, tmpdir, k8s_cluster
 ):
     from kubernetes import client
 
-    namespace = 'flow-multiprotocol-gateway'.lower()
     api_client = client.ApiClient()
     core_client = client.CoreV1Api(api_client=api_client)
     app_client = client.AppsV1Api(api_client=api_client)
     try:
         http_port = random_port()
         grpc_port = random_port()
+
         flow = Flow().config_gateway(
             uses=f'docker://{docker_images[0]}',
             port=[http_port, grpc_port],
@@ -1276,8 +1276,83 @@ async def test_flow_multiple_protocols_gateway(
                 import requests
 
                 resp = requests.get(f'http://localhost:{http_port}').json()
-                assert resp['protocol'] == 'http'
+                assert resp == {'protocol': 'http'}
 
+        # test portforwarding the gateway pod and service using grpc
+        forward_args = [
+            [gateway_pod_name, grpc_port, grpc_port, namespace],
+            ['service/gateway-1-grpc', grpc_port, grpc_port, namespace],
+        ]
+        for forward in forward_args:
+            with shell_portforward(k8s_cluster._cluster.kubectl_path, *forward):
+                grpc_client = Client(protocol='grpc', port=grpc_port, asyncio=True)
+                async for _ in grpc_client.post('/', inputs=DocumentArray.empty(5)):
+                    pass
+                assert AsyncNewLoopRuntime.is_ready(f'localhost:{grpc_port}')
+    except Exception as exc:
+        logger.error(f' Exception raised {exc}')
+        raise exc
+
+
+@pytest.mark.asyncio
+@pytest.mark.timeout(3600)
+@pytest.mark.parametrize(
+    'docker_images',
+    [['multiprotocol-gateway']],
+    indirect=True,
+)
+async def test_flow_multiple_protocols_built_in(
+    logger, docker_images, tmpdir, k8s_cluster
+):
+    from kubernetes import client
+
+    api_client = client.ApiClient()
+    core_client = client.CoreV1Api(api_client=api_client)
+    app_client = client.AppsV1Api(api_client=api_client)
+    try:
+        http_port = random_port()
+        grpc_port = random_port()
+
+        flow = Flow().config_gateway(
+            port=[http_port, grpc_port],
+            protocol=['http', 'grpc'],
+        )
+
+        dump_path = os.path.join(str(tmpdir), 'k8s-flow-multiprotocol-gateway-builtin')
+        namespace = 'flow-multiprotocol-gateway-builtin'
+        flow.to_kubernetes_yaml(dump_path, k8s_namespace=namespace)
+
+        await create_all_flow_deployments_and_wait_ready(
+            dump_path,
+            namespace=namespace,
+            api_client=api_client,
+            app_client=app_client,
+            core_client=core_client,
+            deployment_replicas_expected={
+                'gateway': 1,
+            },
+            logger=logger,
+        )
+
+        gateway_pod_name = (
+            core_client.list_namespaced_pod(
+                namespace=namespace, label_selector='app=gateway'
+            )
+            .items[0]
+            .metadata.name
+        )
+
+        # test portforwarding the gateway pod and service using http
+        forward_args = [
+            [gateway_pod_name, http_port, http_port, namespace],
+            ['service/gateway', http_port, http_port, namespace],
+        ]
+        for forward in forward_args:
+            with shell_portforward(k8s_cluster._cluster.kubectl_path, *forward):
+                import requests
+
+                resp = requests.get(f'http://localhost:{http_port}').json()
+                assert resp == {}
         # test portforwarding the gateway pod and service using grpc
         forward_args = [
             [gateway_pod_name, grpc_port, grpc_port, namespace],
