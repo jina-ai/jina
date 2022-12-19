@@ -4,6 +4,7 @@ import time
 from concurrent.futures import ThreadPoolExecutor
 
 from jina import Client, Document, Executor, Flow, requests
+from jina.helper import random_port
 
 
 class MyExecutor(Executor):
@@ -23,11 +24,12 @@ def client_post(doc, client):
 
 
 def test_multithread_client(capsys):
+    port = random_port()
     stop_event = threading.Event()
-    flow = Flow(port=12345).add(uses=MyExecutor)
+    flow = Flow(port=port).add(uses=MyExecutor)
     t = threading.Thread(target=flow_run, args=(flow, stop_event))
 
-    c = Client(port=12345)
+    c = Client(port=port)
 
     try:
         with capsys.disabled():
