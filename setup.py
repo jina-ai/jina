@@ -150,12 +150,9 @@ elif os.environ.get('JINA_PIP_INSTALL_PERF'):
     final_deps = perf_deps
 
 if sys.version_info.major == 3 and sys.version_info.minor >= 11:
-    grpcio_deps = []
-    for dep in final_deps:
+    for dep in list(final_deps):
         if dep.startswith('grpcio'):
-            grpcio_deps.append(dep)
-    for dep in grpcio_deps:
-        final_deps.remove(dep)
+            final_deps.remove(dep)
     final_deps.add('grpcio>=1.49.0')
     final_deps.add('grpcio-health-checking>=1.49.0')
     final_deps.add('grpcio-reflection>=1.49.0')
