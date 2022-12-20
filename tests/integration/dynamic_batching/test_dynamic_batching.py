@@ -166,19 +166,19 @@ USES_DYNAMIC_BATCHING_PLACE_HOLDER_EXECUTOR = {
     '/param': {'preferred_batch_size': 4, 'timeout': 2000},
 }
 
-RequestStruct = namedtuple('RequestStruct', ['port', 'endpoint', 'iterator'])
+RequestStruct = namedtuple('RequestStruct', ['port', 'endpoint', 'iterator', 'use_stream'])
 
 
 def call_api(req: RequestStruct):
     c = Client(port=req.port)
     return c.post(
         req.endpoint,
-        inputs=DocumentArray([Document(text=str(i)) for i in req.iterator]),
+        inputs=DocumentArray([Document(text=str(i)) for i in req.iterator]), stream=req.use_stream
     )
 
 
 RequestStructParams = namedtuple(
-    'RequestStructParams', ['port', 'endpoint', 'iterator', 'params']
+    'RequestStructParams', ['port', 'endpoint', 'iterator', 'params', 'use_stream']
 )
 
 
@@ -188,6 +188,7 @@ def call_api_with_params(req: RequestStructParams):
         req.endpoint,
         inputs=DocumentArray([Document(text=str(i)) for i in req.iterator]),
         parameters=req.params,
+        stream=req.use_stream
     )
 
 
@@ -227,9 +228,9 @@ def test_timeout(add_parameters, use_stream):
                 p.map(
                     call_api,
                     [
-                        RequestStruct(f.port, '/bar', range(1)),
-                        RequestStruct(f.port, '/bar', range(1)),
-                        RequestStruct(f.port, '/bar', range(1)),
+                        RequestStruct(f.port, '/bar', range(1), use_stream),
+                        RequestStruct(f.port, '/bar', range(1), not use_stream),
+                        RequestStruct(f.port, '/bar', range(1), use_stream),
                     ],
                 )
             )
@@ -258,7 +259,8 @@ def test_timeout(add_parameters, use_stream):
         },
     ],
 )
-def test_preferred_batch_size(add_parameters):
+@pytest.mark.parametrize('use_stream', [False, True])
+def test_preferred_batch_size(add_parameters, use_stream):
     f = Flow().add(**add_parameters)
     with f:
         with mp.Pool(2) as p:
@@ -267,8 +269,8 @@ def test_preferred_batch_size(add_parameters):
                 p.map(
                     call_api,
                     [
-                        RequestStruct(f.port, '/bar', range(2)),
-                        RequestStruct(f.port, '/bar', range(2)),
+                        RequestStruct(f.port, '/bar', range(2), use_stream),
+                        RequestStruct(f.port, '/bar', range(2), use_stream),
                     ],
                 )
             )
@@ -281,8 +283,8 @@ def test_preferred_batch_size(add_parameters):
                 p.map(
                     call_api,
                     [
-                        RequestStruct(f.port, '/bar', range(3)),
-                        RequestStruct(f.port, '/bar', range(2)),
+                        RequestStruct(f.port, '/bar', range(3), use_stream),
+                        RequestStruct(f.port, '/bar', range(2), use_stream),
                     ],
                 )
             )
@@ -295,18 +297,18 @@ def test_preferred_batch_size(add_parameters):
                 p.map(
                     call_api,
                     [
-                        RequestStruct(f.port, '/bar', range(1)),
-                        RequestStruct(f.port, '/bar', range(1)),
-                        RequestStruct(f.port, '/bar', range(1)),
-                        RequestStruct(f.port, '/bar', range(1)),
+                        RequestStruct(f.port, '/bar', range(1), use_stream),
+                        RequestStruct(f.port, '/bar', range(1), use_stream),
+                        RequestStruct(f.port, '/bar', range(1), use_stream),
+                        RequestStruct(f.port, '/bar', range(1), use_stream),
                     ],
                 )
             )
             time_taken = time.time() - start_time
             assert time_taken < TIMEOUT_TOLERANCE
 
-
-def test_correctness():
+@pytest.mark.parametrize('use_stream', [False, True])
+def test_correctness(use_stream):
     f = Flow().add(uses=PlaceholderExecutor)
     with f:
         with mp.Pool(2) as p:
@@ -314,8 +316,8 @@ def test_correctness():
                 p.map(
                     call_api,
                     [
-                        RequestStruct(f.port, '/bar', 'ab'),
-                        RequestStruct(f.port, '/bar', 'cd'),
+                        RequestStruct(f.port, '/bar', 'ab', use_stream),
+                        RequestStruct(f.port, '/bar', 'cd', use_stream),
                     ],
                 )
             )
@@ -334,8 +336,8 @@ def test_correctness():
                 p.map(
                     call_api,
                     [
-                        RequestStruct(f.port, '/foo', 'ABC'),
-                        RequestStruct(f.port, '/foo', 'AB'),
+                        RequestStruct(f.port, '/foo', 'ABC', use_stream),
+                        RequestStruct(f.port, '/foo', 'AB', use_stream),
                     ],
                 )
             )
@@ -357,9 +359,9 @@ def test_correctness():
                 p.map(
                     call_api,
                     [
-                        RequestStruct(f.port, '/bar', 'a'),
-                        RequestStruct(f.port, '/bar', 'b'),
-                        RequestStruct(f.port, '/bar', 'c'),
+                        RequestStruct(f.port, '/bar', 'a', use_stream),
+                        RequestStruct(f.port, '/bar', 'b', use_stream),
+                        RequestStruct(f.port, '/bar', 'c', use_stream),
                     ],
                 )
             )
@@ -369,7 +371,8 @@ def test_correctness():
             assert [doc.text for doc in results[2]] == [f'c{BAR_SUCCESS_MSG}']
 
 
-def test_incoming_requests_while_flushing():
+@pytest.mark.parametrize('use_stream', [False, True])
+def test_incoming_requests_while_flushing(use_stream):
     f = Flow().add(uses=PlaceholderExecutor, uses_with={'slow': True})
     with f:
         with mp.Pool(2) as p:
@@ -379,8 +382,8 @@ def test_incoming_requests_while_flushing():
                 p.map(
                     call_api,
                     [
-                        RequestStruct(f.port, '/bar', 'abcd'),
-                        RequestStruct(f.port, '/bar', 'efg'),
+                        RequestStruct(f.port, '/bar', 'abcd', use_stream),
+                        RequestStruct(f.port, '/bar', 'efg', use_stream),
                     ],
                 )
             )
@@ -399,7 +402,8 @@ def test_incoming_requests_while_flushing():
             ]
 
 
-def test_param_correctness():
+@pytest.mark.parametrize('use_stream', [False, True])
+def test_param_correctness(use_stream):
     f = Flow().add(uses=PlaceholderExecutor)
     with f:
         with mp.Pool(2) as p:
@@ -408,8 +412,8 @@ def test_param_correctness():
                 p.map(
                     call_api_with_params,
                     [
-                        RequestStructParams(f.port, '/param', 'ab', PARAM),
-                        RequestStructParams(f.port, '/param', 'cd', PARAM),
+                        RequestStructParams(f.port, '/param', 'ab', PARAM, use_stream),
+                        RequestStructParams(f.port, '/param', 'cd', PARAM, use_stream),
                     ],
                 )
             )
@@ -430,8 +434,8 @@ def test_param_correctness():
                 p.map(
                     call_api_with_params,
                     [
-                        RequestStructParams(f.port, '/param', 'ABCD', PARAM1),
-                        RequestStructParams(f.port, '/param', 'ABCD', PARAM2),
+                        RequestStructParams(f.port, '/param', 'ABCD', PARAM1, use_stream),
+                        RequestStructParams(f.port, '/param', 'ABCD', PARAM2, use_stream),
                     ],
                 )
             )
@@ -456,9 +460,9 @@ def test_param_correctness():
                 p.map(
                     call_api_with_params,
                     [
-                        RequestStructParams(f.port, '/param', 'ABC', PARAM1),
-                        RequestStructParams(f.port, '/param', 'ABCD', PARAM2),
-                        RequestStructParams(f.port, '/param', 'D', PARAM1),
+                        RequestStructParams(f.port, '/param', 'ABC', PARAM1, use_stream),
+                        RequestStructParams(f.port, '/param', 'ABCD', PARAM2, use_stream),
+                        RequestStructParams(f.port, '/param', 'D', PARAM1, use_stream),
                     ],
                 )
             )
@@ -570,8 +574,8 @@ async def test_sigterm_handling(signal, uses_with):
         args.uses_with = uses_with
         executor_native(args)
 
+    process = multiprocessing.Process(target=run, args=(args,))
     try:
-        process = multiprocessing.Process(target=run, args=(args,))
         process.start()
         time.sleep(2)
 
