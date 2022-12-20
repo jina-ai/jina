@@ -5,7 +5,7 @@ from multiprocessing import Event, Process
 import aiohttp
 import pytest
 
-from docarray import DocumentArray, Executor, Flow, requests
+from jina import DocumentArray, Executor, Flow, requests
 from jina.helper import random_port
 from jina.types.request.data import DataRequest
 

@@ -5,7 +5,7 @@ import time
 
 import pytest
 
-from docarray import Document, DocumentArray, Executor, requests
+from jina import Document, DocumentArray, Executor, requests
 from jina.clients.request import request_generator
 from jina.parsers import set_gateway_parser
 from jina.serve.networking import GrpcConnectionPool

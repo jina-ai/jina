@@ -1,4 +1,4 @@
-from docarray import DocumentArray, Executor, requests
+from jina import DocumentArray, Executor, requests
 
 
 class TestExecutor(Executor):

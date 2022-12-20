@@ -10,7 +10,7 @@ from typing import Set
 import pytest
 from pytest_kind import cluster
 
-from docarray import Document, Flow
+from jina import Document, Flow
 from tests.k8s.test_k8s import create_all_flow_deployments_and_wait_ready
 
 cluster.KIND_VERSION = 'v0.11.1'

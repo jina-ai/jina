@@ -3,7 +3,7 @@ import functools
 
 import pytest
 
-from docarray import Document, DocumentArray, Executor, requests
+from jina import Document, DocumentArray, Executor, requests
 from jina.serve.runtimes.worker.batch_queue import BatchQueue
 from jina.types.request.data import DataRequest
 

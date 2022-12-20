@@ -3,7 +3,7 @@ import time
 
 import pytest
 
-from docarray import DocumentArray, Executor, Flow, __default_endpoint__, requests
+from jina import DocumentArray, Executor, Flow, __default_endpoint__, requests
 
 TIME_SLEEP_FLOATING = 1.0
 

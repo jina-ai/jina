@@ -3,7 +3,7 @@ import uuid
 import pytest
 
 import jina.excepts
-from docarray import Document, DocumentArray, Executor, Flow, requests
+from jina import Document, DocumentArray, Executor, Flow, requests
 from jina.helper import random_port
 from jina.orchestrate.deployments import Deployment
 from jina.parsers import set_deployment_parser

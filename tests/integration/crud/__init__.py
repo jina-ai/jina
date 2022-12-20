@@ -3,7 +3,7 @@ from typing import Dict, Tuple
 
 import numpy as np
 
-from docarray import Document, DocumentArray, Executor, requests
+from jina import Document, DocumentArray, Executor, requests
 from jina.logging.logger import JinaLogger
 
 
