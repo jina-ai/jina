@@ -7,7 +7,8 @@ import numpy as np
 import pytest
 from docarray.document.generators import from_ndarray
 
-from jina import Document, DocumentArray, Executor, Flow, __windows__, requests
+from jina.constants import __windows__
+from jina import Document, DocumentArray, Executor, Flow, requests
 from jina.enums import FlowBuildLevel, GatewayProtocolType
 from jina.excepts import RuntimeFailToStart
 from jina.helper import random_identity
