@@ -276,15 +276,25 @@ def assert_config_map_config(
 
 
 @pytest.mark.parametrize('deployments_addresses', [None, {'1': 'address.svc'}])
+@pytest.mark.parametrize(
+    'port,protocol',
+    [
+        (['12345'], None),
+        (['12345'], ['grpc']),
+        (['12345', '12344'], ['grpc', 'http']),
+        (['12345', '12344', '12343'], ['grpc', 'http', 'websocket']),
+    ],
+)
 @pytest.mark.parametrize('custom_gateway', ['jinaai/jina:custom-gateway', None])
-def test_k8s_yaml_gateway(deployments_addresses, custom_gateway):
+def test_k8s_yaml_gateway(deployments_addresses, custom_gateway, port, protocol):
     if custom_gateway:
         os.environ['JINA_GATEWAY_IMAGE'] = custom_gateway
     elif 'JINA_GATEWAY_IMAGE' in os.environ:
         del os.environ['JINA_GATEWAY_IMAGE']
-    args = set_gateway_parser().parse_args(
-        ['--env', 'ENV_VAR:ENV_VALUE', '--port', '32465']
-    )  # envs are
+    args_list = ['--env', 'ENV_VAR:ENV_VALUE', '--port', *port]
+    if protocol:
+        args_list.extend(['--protocol', *protocol])
+    args = set_gateway_parser().parse_args(args_list)  # envs are
     # ignored for gateway
     deployment_config = K8sDeploymentConfig(
         args, 'default-namespace', deployments_addresses
@@ -293,7 +303,7 @@ def test_k8s_yaml_gateway(deployments_addresses, custom_gateway):
     assert len(yaml_configs) == 1
     name, configs = yaml_configs[0]
     assert name == 'gateway'
-    assert len(configs) == 3  # 3 configs per yaml (configmap, service and deployment)
+    assert len(configs) == 2 + len(port)  # configmap, deployment and 1 service per port
     config_map = configs[0]
     assert_config_map_config(
         config_map,
@@ -306,24 +316,31 @@ def test_k8s_yaml_gateway(deployments_addresses, custom_gateway):
         },
     )
 
-    service = configs[1]
-    assert service['kind'] == 'Service'
-    assert service['metadata'] == {
-        'name': 'gateway',
-        'namespace': 'default-namespace',
-        'labels': {'app': 'gateway'},
-    }
-    spec_service = service['spec']
-    assert spec_service['type'] == 'ClusterIP'
-    assert len(spec_service['ports']) == 1
-    port = spec_service['ports'][0]
-    assert port['name'] == 'port'
-    assert port['protocol'] == 'TCP'
-    assert port['port'] == 32465
-    assert port['targetPort'] == 32465
-    assert spec_service['selector'] == {'app': 'gateway'}
+    for i, (expected_port, service) in enumerate(zip(port, configs[1 : 1 + len(port)])):
+        assert service['kind'] == 'Service'
+        service_gateway_name = (
+            'gateway'
+            if i == 0
+            else f'gateway-{i}-{protocol[i] if protocol else "grpc"}'
+        )
+        assert service['metadata'] == {
+            'name': service_gateway_name,
+            'namespace': 'default-namespace',
+            'labels': {'app': service_gateway_name},
+        }
+        spec_service = service['spec']
+        assert spec_service['type'] == 'ClusterIP'
+        assert len(spec_service['ports']) == 1
+        actual_port = spec_service['ports'][0]
+        assert actual_port['name'] == 'port'
+        assert actual_port['protocol'] == 'TCP'
+        assert actual_port['port'] == int(expected_port)
+        assert actual_port['targetPort'] == int(expected_port)
+        assert spec_service['selector'] == {'app': 'gateway'}
 
-    deployment = configs[2]
+        assert spec_service['selector'] == {'app': 'gateway'}
+
+    deployment = configs[1 + len(port)]
     assert deployment['kind'] == 'Deployment'
     assert deployment['metadata'] == {
         'name': 'gateway',
@@ -364,7 +381,8 @@ def test_k8s_yaml_gateway(deployments_addresses, custom_gateway):
     assert '--k8s-namespace' in args
     assert args[args.index('--k8s-namespace') + 1] == 'default-namespace'
     assert '--port' in args
-    assert args[args.index('--port') + 1] == '32465'
+    for i, _port in enumerate(port):
+        assert args[args.index('--port') + i + 1] == _port
     assert '--env' not in args
     if deployments_addresses is not None:
         assert '--deployments-addresses' in args

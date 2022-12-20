@@ -367,15 +367,25 @@ def test_worker_services(name: str, shards: str):
 
 
 @pytest.mark.parametrize('deployments_addresses', [None, {'1': 'executor-head:8081'}])
+@pytest.mark.parametrize(
+    'port,protocol',
+    [
+        (['12345'], None),
+        (['12345'], ['grpc']),
+        (['12345', '12344'], ['grpc', 'http']),
+        (['12345', '12344', '12343'], ['grpc', 'http', 'websocket']),
+    ],
+)
 @pytest.mark.parametrize('custom_gateway', ['jinaai/jina:custom-gateway', None])
-def test_docker_compose_gateway(deployments_addresses, custom_gateway):
+def test_docker_compose_gateway(deployments_addresses, custom_gateway, port, protocol):
     if custom_gateway:
         os.environ['JINA_GATEWAY_IMAGE'] = custom_gateway
     elif 'JINA_GATEWAY_IMAGE' in os.environ:
         del os.environ['JINA_GATEWAY_IMAGE']
-    args = set_gateway_parser().parse_args(
-        ['--env', 'ENV_VAR:ENV_VALUE', '--port', '32465']
-    )  # envs are
+    args_list = ['--env', 'ENV_VAR:ENV_VALUE', '--port', *port]
+    if protocol:
+        args_list.extend(['--protocol', *protocol])
+    args = set_gateway_parser().parse_args(args_list)  # envs are
     # ignored for gateway
     deployment_config = DockerComposeConfig(
         args, deployments_addresses=deployments_addresses
@@ -388,12 +398,15 @@ def test_docker_compose_gateway(deployments_addresses, custom_gateway):
         else f'jinaai/jina:{deployment_config.worker_services[0].version}-py38-standard'
     )
     assert gateway_config['entrypoint'] == ['jina']
-    assert gateway_config['ports'] == [f'{args.port[0]}:{args.port[0]}']
-    assert gateway_config['expose'] == [args.port[0]]
+    assert gateway_config['ports'] == [f'{_port}:{_port}' for _port in args.port]
+    assert gateway_config['expose'] == args.port
     args = gateway_config['command']
     assert args[0] == 'gateway'
     assert '--port' in args
-    assert args[args.index('--port') + 1] == '32465'
+
+    for i, _port in enumerate(port):
+        assert args[args.index('--port') + i + 1] == _port
+
     assert '--env' not in args
     if deployments_addresses is not None:
         assert '--deployments-addresses' in args

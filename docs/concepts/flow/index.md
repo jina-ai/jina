@@ -1,5 +1,5 @@
 (flow-cookbook)=
-# Flow
+# {fas}`network-wired` Flow
 
 A {class}`~jina.Flow` orchestrates {class}`~jina.Executor`s into a processing pipeline to accomplish a task.
 Documents "flow" through the pipeline and are processed by Executors.

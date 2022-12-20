@@ -367,6 +367,11 @@ class Flow(
                 f = Flow.load_config('flow.yml')  # load Flow from YAML config
                 with f:
                     f.bock()  # serve Flow
+            
+        All arguments received by {class}`~jina.Flow()` API will be propagated to other entities (Gateway, Executor) with the following exceptions:
+
+        - `uses` and `uses_with` won't be passed to Gateway
+        - `port`, `port_monitoring`, `uses` and `uses_with` won't be passed to Executor
 
         :param asyncio: If set, then the input and output of this Client work in an asynchronous manner.
         :param host: The host of the Gateway, which the client should connect to, by default it is 0.0.0.0.
