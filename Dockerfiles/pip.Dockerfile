@@ -5,6 +5,8 @@ FROM python:${PY_VERSION}-slim
 
 RUN apt-get update && apt-get install --no-install-recommends -y gcc libc6-dev
 
+RUN if (( $PY_VERSION==3.11 )); then apt-get install --no-install-recommends -y gcc-c++ python3-devel ; fi
+
 COPY . /jina/
 
 RUN cd /jina && pip install ."$PIP_TAG"

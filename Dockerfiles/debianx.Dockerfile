@@ -45,6 +45,7 @@ RUN cd /tmp/ && \
     apt-get install --no-install-recommends -y ${APT_PACKAGES}; fi && \
     if [ -n "${PIP_TAG}" ]; then pip install --default-timeout=1000 --compile --extra-index-url $PIP_EXTRA_INDEX_URL ".[${PIP_TAG}]" ; fi && \
     pip install --default-timeout=1000 --compile --extra-index-url ${PIP_EXTRA_INDEX_URL} . && \
+    if (( $PY_VERSION==3.11 )); then apt-get install --no-install-recommends -y gcc-c++ python3-devel ; fi && \
     # now remove apt packages
     if [ -n "${APT_PACKAGES}" ]; then apt-get remove -y --auto-remove ${APT_PACKAGES} && apt-get autoremove && apt-get clean && rm -rf /var/lib/apt/lists/*; fi && \
     rm -rf /tmp/* && rm -rf /jina
