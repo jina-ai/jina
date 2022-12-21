@@ -195,7 +195,7 @@ def new(args: 'Namespace'):
     import os
     import shutil
 
-    from jina import __resources_path__
+    from jina.constants import __resources_path__
 
     shutil.copytree(
         os.path.join(__resources_path__, 'project-template'), os.path.abspath(args.name)
