@@ -65,7 +65,7 @@ class GatewayStreamer:
         :param aio_tracing_client_interceptors: Optional list of aio grpc tracing server interceptors.
         :param tracing_client_interceptor: Optional gprc tracing server interceptor.
         """
-        topology_graph = TopologyGraph(
+        self.topology_graph = TopologyGraph(
             graph_representation=graph_representation,
             graph_conditions=graph_conditions,
             deployments_metadata=deployments_metadata,
@@ -78,25 +78,54 @@ class GatewayStreamer:
         self.runtime_name = runtime_name
         self.aio_tracing_client_interceptors = aio_tracing_client_interceptors
         self.tracing_client_interceptor = tracing_client_interceptor
-
+        self.executor_addresses = executor_addresses
+        self.compression = compression
+        self.metrics_registry = metrics_registry
+        self.meter = meter
+        self.logger = logger
+        self.aio_tracing_client_interceptors = aio_tracing_client_interceptors
+        self.tracing_client_interceptor = tracing_client_interceptor
+        self.prefetch = prefetch
+        # self._connection_pool = self._create_connection_pool(
+        #     executor_addresses,
+        #     compression,
+        #     metrics_registry,
+        #     meter,
+        #     logger,
+        #     aio_tracing_client_interceptors,
+        #     tracing_client_interceptor,
+        # )
+        # request_handler = GatewayRequestHandler(metrics_registry, meter, runtime_name)
+        #
+        # self._streamer = RequestStreamer(
+        #     request_handler=request_handler.handle_request(
+        #         graph=topology_graph, connection_pool=self._connection_pool
+        #     ),
+        #     result_handler=request_handler.handle_result(),
+        #     prefetch=prefetch,
+        #     logger=logger,
+        # )
+        # self._streamer.Call = self._streamer.stream
+        #
+    def _reinit(self):
         self._connection_pool = self._create_connection_pool(
-            executor_addresses,
-            compression,
-            metrics_registry,
-            meter,
-            logger,
-            aio_tracing_client_interceptors,
-            tracing_client_interceptor,
+            self.executor_addresses,
+            self.compression,
+            self.metrics_registry,
+            self.meter,
+            self.logger,
+            self.aio_tracing_client_interceptors,
+            self.tracing_client_interceptor,
         )
-        request_handler = GatewayRequestHandler(metrics_registry, meter, runtime_name)
+        request_handler = GatewayRequestHandler(self.metrics_registry, self.meter, self.runtime_name)
 
         self._streamer = RequestStreamer(
             request_handler=request_handler.handle_request(
-                graph=topology_graph, connection_pool=self._connection_pool
+                graph=self.topology_graph, connection_pool=self._connection_pool
             ),
             result_handler=request_handler.handle_result(),
-            prefetch=prefetch,
-            logger=logger,
+            prefetch=self.prefetch,
+            logger=self.logger,
         )
         self._streamer.Call = self._streamer.stream
 

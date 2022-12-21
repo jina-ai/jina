@@ -85,6 +85,7 @@ class FlaskDummyGateway(Gateway):
         @app.route('/service/<input>', methods=['GET'])
         async def my_service(input: str):
             # step 2: convert input request to Documents
+            self.streamer._reinit()
             docs = DocumentArray([Document(text=input)])
 
             # step 3: send Documents to Executors using GatewayStreamer
