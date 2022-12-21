@@ -82,7 +82,7 @@ class FlaskDummyGateway(Gateway):
         # step 1: create an app and define the service endpoint
         app = Flask(__name__)
 
-        @app.route("/service/<input>", methods=['GET'])
+        @app.route('/service/<input>', methods=['GET'])
         async def my_service(input: str):
             # step 2: convert input request to Documents
             docs = DocumentArray([Document(text=input)])
@@ -99,7 +99,7 @@ class FlaskDummyGateway(Gateway):
             return {'result': result}
 
         # step 5: implement health-check
-        @app.route("/", methods=['GET'])
+        @app.route('/', methods=['GET'])
         def health_check():
             return {}
 
