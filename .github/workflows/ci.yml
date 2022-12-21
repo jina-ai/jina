@@ -399,15 +399,16 @@ jobs:
       matrix:
         core: ['', 'true']
         perf: ['', 'true']
+        python-env: ['3.7', '3.8', '3.9', '3.10', '3.11']
         exclude:
           - core: 'true'
             perf: 'true'
     steps:
       - uses: actions/checkout@v2.5.0
-      - name: Set up Python 3.7
+      - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: 3.7
+          python-version: ${{ matrix.python-env }}
       - name: Prepare enviroment
         run: |
           python -m pip install --upgrade pip

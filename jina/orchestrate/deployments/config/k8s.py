@@ -3,6 +3,7 @@ from argparse import Namespace
 from typing import Dict, List, Optional, Tuple, Union
 
 from jina.constants import (
+    __default_composite_gateway__,
     __default_executor__,
     __default_grpc_gateway__,
     __default_http_gateway__,
@@ -78,6 +79,7 @@ class K8sDeploymentConfig:
                 __default_http_gateway__,
                 __default_websocket_gateway__,
                 __default_grpc_gateway__,
+                __default_composite_gateway__,
             ]:
                 cargs.uses = 'config.yml'
 
@@ -114,6 +116,7 @@ class K8sDeploymentConfig:
                 __default_http_gateway__,
                 __default_websocket_gateway__,
                 __default_grpc_gateway__,
+                __default_composite_gateway__,
             ]:
                 image_name = get_image_name(uses)
 

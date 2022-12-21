@@ -1,7 +1,7 @@
 from itertools import chain
 from typing import Dict, List
 
-from docarray import Document, DocumentArray, Executor, requests
+from jina import Document, DocumentArray, Executor, requests
 
 
 class ExecMerger(Executor):

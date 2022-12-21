@@ -3,7 +3,8 @@ import time
 
 import pytest
 
-from jina import Flow, __cache_path__
+from jina import Flow
+from jina.constants import __cache_path__
 from jina.excepts import RuntimeFailToStart
 from jina.helper import random_port
 from jina.orchestrate.pods.container import ContainerPod

@@ -4,7 +4,7 @@ import time
 
 import pytest
 
-from docarray import Document, Executor, Flow, helper, requests
+from jina import Document, Executor, Flow, helper, requests
 
 
 @pytest.mark.parametrize('protocol', ['grpc', 'http', 'websocket'])

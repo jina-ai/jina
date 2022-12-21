@@ -3,7 +3,8 @@ import os
 import grpc
 import pytest
 
-from jina import Flow, __default_host__
+from jina import Flow
+from jina.constants import __default_host__
 from jina.clients import Client
 from jina.excepts import PortAlreadyUsed
 from jina.helper import is_port_free

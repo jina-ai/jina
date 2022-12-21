@@ -30,7 +30,7 @@ class RequestStreamer:
     A base async request/response streamer.
     """
 
-    class _EndOfStreaming(Exception):
+    class _EndOfStreaming:
         pass
 
     def __init__(
@@ -133,7 +133,7 @@ class RequestStreamer:
                 all_requests_handled.set()
 
         async def end_future():
-            raise self._EndOfStreaming
+            return self._EndOfStreaming()
 
         async def exception_raise(exception):
             raise exception
@@ -194,7 +194,7 @@ class RequestStreamer:
                 future_cancel = asyncio.ensure_future(end_future())
                 result_queue.put_nowait(future_cancel)
             if (
-                (all_requests_handled.is_set() and all_floating_requests_awaited.is_set())
+                all_floating_requests_awaited.is_set()
                 or empty_requests_iterator.is_set()
             ):
                 # It will be waiting for something that will never appear
@@ -207,13 +207,12 @@ class RequestStreamer:
                 and not empty_requests_iterator.is_set()
             ):
                 hanging_response = await floating_results_queue.get()
-                try:
-                    hanging_response.result()
-                    floating_tasks_to_handle.count -= 1
-                    if floating_tasks_to_handle.count == 0 and end_of_iter.is_set():
-                        all_floating_requests_awaited.set()
-                except self._EndOfStreaming:
-                    pass
+                res = hanging_response.result()
+                if isinstance(res, self._EndOfStreaming):
+                    break
+                floating_tasks_to_handle.count -= 1
+                if floating_tasks_to_handle.count == 0 and end_of_iter.is_set():
+                    all_floating_requests_awaited.set()
 
         iterate_requests_task = asyncio.create_task(iterate_requests())
         handle_floating_task = asyncio.create_task(handle_floating_responses())
@@ -239,13 +238,13 @@ class RequestStreamer:
                 else:
                     future = await future_queue.get()
                     await future
-                try:
-                    response = self._result_handler(future.result())
-                    yield response
-                    requests_to_handle.count -= 1
-                    update_all_handled()
-                except self._EndOfStreaming:
-                    pass
+                result = future.result()
+                if isinstance(result, self._EndOfStreaming):
+                    break
+                response = self._result_handler(result)
+                yield response
+                requests_to_handle.count -= 1
+                update_all_handled()
 
         async for response in receive_responses():
             yield response

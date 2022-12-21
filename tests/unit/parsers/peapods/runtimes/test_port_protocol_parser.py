@@ -90,7 +90,7 @@ def test_pod_host_cast(host, expected_host):
 
 
 def test_pod_host_default():
-    from jina import __default_host__
+    from jina.constants import __default_host__
 
     args = set_pod_parser().parse_args([])
     assert args.host == [__default_host__]

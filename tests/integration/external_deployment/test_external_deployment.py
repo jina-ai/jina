@@ -3,7 +3,7 @@ import uuid
 import pytest
 
 import jina.excepts
-from docarray import Document, DocumentArray, Executor, Flow, requests
+from jina import Document, DocumentArray, Executor, Flow, requests
 from jina.helper import random_port
 from jina.orchestrate.deployments import Deployment
 from jina.parsers import set_deployment_parser
@@ -355,7 +355,7 @@ def test_external_flow_with_grpc_metadata():
     from grpc_health.v1 import health, health_pb2, health_pb2_grpc
     from grpc_reflection.v1alpha import reflection
 
-    from jina import __default_host__
+    from jina.constants import __default_host__
     from jina.proto import jina_pb2, jina_pb2_grpc
     from jina.serve.runtimes.gateway import GRPCGateway
     from jina.serve.runtimes.helper import _get_grpc_server_options

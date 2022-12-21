@@ -8,9 +8,9 @@ from threading import Event
 import grpc
 import pytest
 import requests as req
-from docarray import Document
+from jina import Document
 
-from docarray import DocumentArray, Executor, requests
+from jina import DocumentArray, Executor, requests
 from jina.clients.request import request_generator
 from jina.proto import jina_pb2, jina_pb2_grpc
 from jina.serve.networking import GrpcConnectionPool

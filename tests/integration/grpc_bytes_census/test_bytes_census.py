@@ -2,7 +2,7 @@ import os
 
 import pytest
 
-from docarray import DocumentArray, Flow
+from jina import DocumentArray, Flow
 
 os.environ['JINA_GRPC_SEND_BYTES'] = '0'
 os.environ['JINA_GRPC_RECV_BYTES'] = '0'

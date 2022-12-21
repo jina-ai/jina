@@ -4,12 +4,11 @@ import socket
 
 import pytest
 
+from jina.constants import __default_host__, __default_executor__
 from jina import (
     Document,
     DocumentArray,
     Executor,
-    __default_executor__,
-    __default_host__,
     requests,
 )
 from jina.clients.request import request_generator

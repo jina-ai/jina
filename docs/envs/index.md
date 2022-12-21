@@ -1,5 +1,5 @@
 (jina-env-vars)=
-# Environment Variables
+# {octicon}`list-unordered` Environment Variables
 
 Jina uses a number of environment variables to determine different behaviours. To see all supported environment variables and their current values, run
 

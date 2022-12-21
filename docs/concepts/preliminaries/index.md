@@ -1,5 +1,5 @@
 (architecture-overview)=
-# Preliminaries
+# {fas}`egg` Preliminaries
 
 This chapter introduces the basic terminology you will encounter in the docs. But first, look at the code below:
 

@@ -1,4 +1,4 @@
-from docarray import Document, Executor, Flow, requests
+from jina import Document, Executor, Flow, requests
 
 
 def test_target_executor(mocker):
