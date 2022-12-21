@@ -6,7 +6,7 @@ Documents "flow" through the pipeline and are processed by Executors.
 
 You can think of Flow as an interface to configure and launch your {ref}`microservice architecture <architecture-overview>`,
 while the heavy lifting is done by the {ref}`services <executor-cookbook>` themselves.
-In particular, each Flow also launches a *Gateway* service, which can expose all other services through an API that you define.
+In particular, each Flow also launches a {ref}`Gateway <gateway>` service, which can expose all other services through an API that you define.
 
 The most important methods of the `Flow` object are the following:
 

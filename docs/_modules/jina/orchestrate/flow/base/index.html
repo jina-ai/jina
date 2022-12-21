@@ -765,6 +765,11 @@
 <span class="sd">                f = Flow.load_config(&#39;flow.yml&#39;)  # load Flow from YAML config</span>
 <span class="sd">                with f:</span>
 <span class="sd">                    f.bock()  # serve Flow</span>
+<span class="sd">            </span>
+<span class="sd">        All arguments received by {class}`~jina.Flow()` API will be propagated to other entities (Gateway, Executor) with the following exceptions:</span>
+
+<span class="sd">        - `uses` and `uses_with` won&#39;t be passed to Gateway</span>
+<span class="sd">        - `port`, `port_monitoring`, `uses` and `uses_with` won&#39;t be passed to Executor</span>
 
 <span class="sd">        :param asyncio: If set, then the input and output of this Client work in an asynchronous manner.</span>
 <span class="sd">        :param host: The host of the Gateway, which the client should connect to, by default it is 0.0.0.0.</span>
@@ -3281,7 +3286,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 17, 2022</div>
+                            Last updated on Dec 21, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

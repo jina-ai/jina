@@ -520,7 +520,7 @@ If you want to learn more about this limitation, see <a class="reference externa
 </section>
 <section id="scaling-the-gateway">
 <h2>Scaling the Gateway<a class="headerlink" href="#scaling-the-gateway" title="Permalink to this heading">#</a></h2>
-<p>The <a class="reference internal" href="../../concepts/gateway/#flow"><span class="std std-ref">Gateway</span></a> is responsible for providing the API of the <a class="reference internal" href="../../concepts/gateway/#flow"><span class="std std-ref">Flow</span></a>.
+<p>The <a class="reference internal" href="../../concepts/gateway/#gateway"><span class="std std-ref">Gateway</span></a> is responsible for providing the API of the <a class="reference internal" href="../../concepts/flow/basics/#flow"><span class="std std-ref">Flow</span></a>.
 If you have a large Flow with many Clients and many replicated Executors, the Gateway can become the bottleneck.
 In this case you can also scale up the Gateway deployment to be backed by multiple Kubernetes Pods.
 This is done by the regular means of Kubernetes: Either increase the number of replicas in the  <a class="reference internal" href="../../concepts/flow/basics/#kubernetes-export"><span class="std std-ref">generated yaml configuration files</span></a> or <a class="reference external" href="https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#scaling-a-deployment">add replicas while running</a>.
@@ -573,7 +573,7 @@ To expose your Gateway replicas outside Kubernetes, you can add a load balancer 
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 17, 2022</div>
+                            Last updated on Dec 21, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

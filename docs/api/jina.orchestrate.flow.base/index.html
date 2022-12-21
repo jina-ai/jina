@@ -454,6 +454,11 @@
 </pre></div>
 </div>
 </div></blockquote>
+<p>All arguments received by {class}`~jina.Flow()` API will be propagated to other entities (Gateway, Executor) with the following exceptions:</p>
+<ul class="simple">
+<li><p><cite>uses</cite> and <cite>uses_with</cite> won’t be passed to Gateway</p></li>
+<li><p><cite>port</cite>, <cite>port_monitoring</cite>, <cite>uses</cite> and <cite>uses_with</cite> won’t be passed to Executor</p></li>
+</ul>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -1479,7 +1484,7 @@ you can set <cite>JINA_HUB_NO_IMAGE_REBUILD</cite> environment variable.</p>
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 17, 2022</div>
+                            Last updated on Dec 21, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

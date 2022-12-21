@@ -437,7 +437,17 @@
 </pre></div>
 </div>
 </div>
-<input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--2">YAML</label><div class="tab-content docutils">
+</div>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>All arguments received by <a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow()</span></code></a> API will be propagated to other entities (Gateway, Executor) with the following exceptions:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">uses</span></code> and <code class="docutils literal notranslate"><span class="pre">uses_with</span></code> won’t be passed to Gateway</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">port</span></code>, <code class="docutils literal notranslate"><span class="pre">port_monitoring</span></code>, <code class="docutils literal notranslate"><span class="pre">uses</span></code> and <code class="docutils literal notranslate"><span class="pre">uses_with</span></code> won’t be passed to Executor</p></li>
+</ul>
+</div>
+<div class="tab-set docutils">
+<input checked="True" class="tab-input" id="tab-set--1-input--1" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--1">YAML</label><div class="tab-content docutils">
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
 </pre></div>
 </div>
@@ -445,7 +455,7 @@
 </div>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
-<p>An empty Flow contains only <a class="reference internal" href="../../gateway/#flow"><span class="std std-ref">the Gateway</span></a>.</p>
+<p>An empty Flow contains only <a class="reference internal" href="../../gateway/#gateway"><span class="std std-ref">the Gateway</span></a>.</p>
 </div>
 <figure class="align-default">
 <a class="reference internal image-reference" href="../../../_images/zero-flow.svg"><img alt="../../../_images/zero-flow.svg" src="../../../_images/zero-flow.svg" /></a>
@@ -481,7 +491,7 @@
 <li><p>No context manager: manually call <a class="reference internal" href="../../../api/jina/#jina.Flow.start" title="jina.Flow.start"><code class="xref py py-meth docutils literal notranslate"><span class="pre">start()</span></code></a> and <a class="reference internal" href="../../../api/jina/#jina.Flow.close" title="jina.Flow.close"><code class="xref py py-meth docutils literal notranslate"><span class="pre">close()</span></code></a>.</p></li>
 </ul>
 <div class="tab-set docutils">
-<input checked="True" class="tab-input" id="tab-set--1-input--1" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--1">General in Python</label><div class="tab-content docutils">
+<input checked="True" class="tab-input" id="tab-set--2-input--1" name="tab-set--2" type="radio"><label class="tab-label" for="tab-set--2-input--1">General in Python</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
 
 <span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span>
@@ -491,12 +501,12 @@
 </pre></div>
 </div>
 </div>
-<input class="tab-input" id="tab-set--1-input--2" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--2">Jina CLI entrypoint</label><div class="tab-content docutils">
+<input class="tab-input" id="tab-set--2-input--2" name="tab-set--2" type="radio"><label class="tab-label" for="tab-set--2-input--2">Jina CLI entrypoint</label><div class="tab-content docutils">
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina flow --uses flow.yml
 </pre></div>
 </div>
 </div>
-<input class="tab-input" id="tab-set--1-input--3" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--3">Python entrypoint</label><div class="tab-content docutils">
+<input class="tab-input" id="tab-set--2-input--3" name="tab-set--2" type="radio"><label class="tab-label" for="tab-set--2-input--3">Python entrypoint</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
 
 <span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span>
@@ -507,7 +517,7 @@
 </pre></div>
 </div>
 </div>
-<input class="tab-input" id="tab-set--1-input--4" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--4">Python no context manager</label><div class="tab-content docutils">
+<input class="tab-input" id="tab-set--2-input--4" name="tab-set--2" type="radio"><label class="tab-label" for="tab-set--2-input--4">Python no context manager</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
 
 <span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span>
@@ -707,7 +717,7 @@ You can control the access mode, storage class name and capacity of the attached
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 17, 2022</div>
+                            Last updated on Dec 21, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

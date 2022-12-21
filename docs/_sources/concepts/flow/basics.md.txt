@@ -18,6 +18,13 @@ f = Flow()
 ```
 ````
 
+```{important}
+All arguments received by {class}`~jina.Flow()` API will be propagated to other entities (Gateway, Executor) with the following exceptions:
+
+- `uses` and `uses_with` won't be passed to Gateway
+- `port`, `port_monitoring`, `uses` and `uses_with` won't be passed to Executor
+```
+
 `````{tab} YAML
 ```yaml
 jtype: Flow
@@ -25,7 +32,7 @@ jtype: Flow
 `````
 
 ```{tip}
-An empty Flow contains only {ref}`the Gateway<flow>`.
+An empty Flow contains only {ref}`the Gateway<gateway>`.
 ```
 
 ```{figure} zero-flow.svg
