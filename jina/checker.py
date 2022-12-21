@@ -17,7 +17,7 @@ class NetworkChecker:
 
         import time
 
-        from jina import Client
+        from jina.clients import Client
         from jina.logging.profile import TimeContext
         from jina.serve.runtimes.gateway import GatewayRuntime
         from jina.serve.runtimes.worker import WorkerRuntime

@@ -418,7 +418,7 @@ jobs:
           JINA_PIP_INSTALL_CORE: ${{ matrix.core }}
           JINA_PIP_INSTALL_PERF: ${{ matrix.perf }}
       - name: Test basic import
-        run: python -c 'from jina import Executor,requests'
+        run: python -c 'from jina import Executor,requests,Client,Flow,dynamic_batching,Document,DocumentArray'
       - name: Test import all
         run: python -c 'from jina import *'
 

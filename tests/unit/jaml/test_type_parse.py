@@ -4,7 +4,8 @@ import os
 import pytest
 import yaml
 
-from jina import Flow, __default_executor__, requests
+from jina import Flow, requests
+from jina.constants import __default_executor__
 from jina.excepts import BadConfigSource
 from jina.jaml import JAML, JAMLCompatible
 from jina.serve.executors import BaseExecutor

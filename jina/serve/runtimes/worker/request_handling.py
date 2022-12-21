@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Dict, List, Optional, Tuple
 
 from docarray import DocumentArray
 
-from jina import __default_endpoint__
+from jina.constants import __default_endpoint__
 from jina.excepts import BadConfigSource
 from jina.importer import ImportExtensions
 from jina.serve.executors import BaseExecutor

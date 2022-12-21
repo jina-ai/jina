@@ -8,7 +8,7 @@ from threading import Event
 import grpc
 import pytest
 import requests as req
-from docarray import Document
+from jina import Document
 
 from jina import DocumentArray, Executor, requests
 from jina.clients.request import request_generator

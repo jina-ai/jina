@@ -130,7 +130,7 @@ def test_ping():
     ],
 )
 def test_logo_silence(cmd):
-    from jina import __resources_path__
+    from jina.constants import __resources_path__
 
     with open(os.path.join(__resources_path__, 'jina.logo')) as fp:
         logo_str = fp.read()

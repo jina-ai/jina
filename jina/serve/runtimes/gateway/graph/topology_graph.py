@@ -7,7 +7,7 @@ from typing import Dict, List, Optional, Tuple
 
 import grpc.aio
 
-from jina import __default_endpoint__
+from jina.constants import __default_endpoint__
 from jina.excepts import InternalNetworkError
 from jina.logging.logger import JinaLogger
 from jina.serve.networking import GrpcConnectionPool
