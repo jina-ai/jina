@@ -12,7 +12,7 @@ from grpc_health.v1 import health_pb2, health_pb2_grpc
 from grpc_reflection.v1alpha.reflection_pb2 import ServerReflectionRequest
 from grpc_reflection.v1alpha.reflection_pb2_grpc import ServerReflectionStub
 
-from jina import __default_endpoint__
+from jina.constants import __default_endpoint__
 from jina.enums import PollingType
 from jina.excepts import EstablishGrpcConnectionError, InternalNetworkError
 from jina.importer import ImportExtensions

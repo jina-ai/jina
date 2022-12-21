@@ -2,7 +2,7 @@ import asyncio
 from asyncio import Event, Task
 from typing import Any, Callable, Dict, List, Optional
 
-from jina import DocumentArray
+from docarray import DocumentArray
 from jina.types.request.data import DataRequest
 
 

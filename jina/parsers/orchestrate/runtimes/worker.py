@@ -10,7 +10,7 @@ def mixin_worker_runtime_parser(parser):
     """
 
     gp = add_arg_group(parser, title='WorkerRuntime')
-    from jina import __default_executor__
+    from jina.constants import __default_executor__
 
     gp.add_argument(
         '--uses',

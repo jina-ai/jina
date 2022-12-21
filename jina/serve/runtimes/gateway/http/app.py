@@ -1,7 +1,6 @@
 import json
 from typing import TYPE_CHECKING, Dict, List, Optional
 
-from jina import __version__
 from jina.clients.request import request_generator
 from jina.enums import DataInputType
 from jina.excepts import InternalNetworkError
@@ -55,6 +54,7 @@ def get_fastapi_app(
             JinaRequestModel,
             JinaResponseModel,
         )
+    from jina import __version__
 
     app = FastAPI(
         title=title or 'My Jina Service',

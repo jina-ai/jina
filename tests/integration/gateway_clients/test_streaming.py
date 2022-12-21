@@ -9,7 +9,7 @@ from typing import Dict
 
 import pytest
 
-from jina import Document, DocumentArray
+from docarray import Document, DocumentArray
 from jina.clients import Client
 from jina.helper import random_port
 from jina.parsers import set_gateway_parser
@@ -48,7 +48,7 @@ def simple_graph_dict_indexer():
 class DummyMockConnectionPool:
     def send_discover_endpoint(self, *args, **kwargs):
         async def task_wrapper():
-            from jina import __default_endpoint__
+            from jina.constants import __default_endpoint__
             from jina.proto import jina_pb2
 
             ep = jina_pb2.EndpointsProto()
@@ -327,7 +327,11 @@ def test_disable_prefetch_fast_client_slow_executor(
 
 @pytest.mark.parametrize('prefetch', [0, 5])
 @pytest.mark.parametrize('protocol', ['websocket', 'http', 'grpc'])
-def test_multiple_clients(prefetch, protocol, monkeypatch, simple_graph_dict_indexer):
+@pytest.mark.parametrize('use_stream', [True, False])
+def test_multiple_clients(prefetch, protocol, monkeypatch, simple_graph_dict_indexer, use_stream):
+    if not use_stream and protocol != 'grpc':
+        return
+    
     GOOD_CLIENTS = 5
     GOOD_CLIENT_NUM_DOCS = 20
     MALICIOUS_CLIENT_NUM_DOCS = 50
@@ -348,8 +352,8 @@ def test_multiple_clients(prefetch, protocol, monkeypatch, simple_graph_dict_ind
             yield get_document(i)
 
     def client(gen, port):
-        Client(protocol=protocol, port=port).post(
-            on='/index', inputs=gen, request_size=1
+        Client(protocol=protocol, port=port, prefetch=prefetch).post(
+            on='/index', inputs=gen, request_size=1, stream=use_stream
         )
 
     monkeypatch.setattr(
@@ -398,8 +402,8 @@ def test_multiple_clients(prefetch, protocol, monkeypatch, simple_graph_dict_ind
         p.join()
 
     order_of_ids = list(
-        Client(protocol=protocol, port=port)
-        .post(on='/status', inputs=[Document()])[0]
+        Client(protocol=protocol, port=port, prefetch=prefetch)
+        .post(on='/status', inputs=[Document()], stream=use_stream)[0]
         .tags['ids']
     )
     # There must be total 150 docs indexed.
@@ -421,10 +425,5 @@ def test_multiple_clients(prefetch, protocol, monkeypatch, simple_graph_dict_ind
 
     When there are no rules, badguy wins! With rule, you find balance in the world.
     """
-    if protocol == 'http':
-        # There's no prefetch for http.
-        assert set(map(lambda x: x.split('_')[0], order_of_ids[-20:])) == {'goodguy'}
-    elif prefetch == 5:
+    if prefetch == 5 and use_stream and protocol == 'grpc':
         assert set(map(lambda x: x.split('_')[0], order_of_ids[-20:])) == {'badguy'}
-    elif prefetch == 0:
-        assert set(map(lambda x: x.split('_')[0], order_of_ids[-20:])) == {'goodguy'}

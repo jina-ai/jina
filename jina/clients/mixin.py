@@ -176,7 +176,7 @@ class ProfileMixin:
         :param show_table: whether to show the table or not.
         :return: the latency report in a dict.
         """
-        from jina import Document
+        from docarray import Document
 
         st = time.perf_counter()
         r = self.client.post(on='/', inputs=Document(), return_responses=True)
@@ -193,7 +193,7 @@ class AsyncProfileMixin:
         :param show_table: whether to show the table or not.
         :return: the latency report in a dict.
         """
-        from jina import Document
+        from docarray import Document
 
         st = time.perf_counter()
         async for r in self.client.post(on='/', inputs=Document(), return_responses=True):
@@ -257,7 +257,7 @@ class PostMixin:
 
         parameters = _include_results_field_in_param(parameters)
 
-        from jina import DocumentArray
+        from docarray import DocumentArray
 
         return_results = (on_always is None) and (on_done is None)
 

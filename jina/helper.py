@@ -37,7 +37,7 @@ from typing import (
 
 from rich.console import Console
 
-from jina import __windows__
+from jina.constants import __windows__
 
 __all__ = [
     'batch_iterator',
@@ -949,12 +949,11 @@ def get_full_version() -> Optional[Tuple[Dict, Dict]]:
     except:
         __jcloud_version__ = 'not-available'
 
+    from jina.constants import __jina_env__, __unset_msg__, __uptime__
+
     from jina import (
         __docarray_version__,
-        __jina_env__,
         __proto_version__,
-        __unset_msg__,
-        __uptime__,
         __version__,
     )
     from jina.logging.predefined import default_logger
@@ -1401,7 +1400,7 @@ def find_request_binding(target):
     import ast
     import inspect
 
-    from jina import __default_endpoint__
+    from jina.constants import __default_endpoint__
 
     res = {}
 
@@ -1492,7 +1491,7 @@ def extend_rest_interface(app: 'FastAPI') -> 'FastAPI':
 
 
 def get_ci_vendor() -> Optional[str]:
-    from jina import __resources_path__
+    from jina.constants import __resources_path__
 
     with open(os.path.join(__resources_path__, 'ci-vendors.json')) as fp:
         all_cis = json.load(fp)

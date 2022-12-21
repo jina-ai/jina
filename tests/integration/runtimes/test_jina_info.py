@@ -5,7 +5,8 @@ import grpc
 import pytest
 import requests
 
-from jina import __jina_env__, __version__
+from jina import __version__
+from jina.constants import __jina_env__
 from jina.proto import jina_pb2, jina_pb2_grpc
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.worker import WorkerRuntime

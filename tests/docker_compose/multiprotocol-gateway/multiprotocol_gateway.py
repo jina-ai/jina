@@ -4,7 +4,9 @@ from grpc_reflection.v1alpha import reflection
 from pydantic import BaseModel
 from uvicorn import Config, Server
 
-from jina import Gateway, __default_host__
+
+from jina.constants import __default_host__
+from jina import Gateway
 from jina.proto import jina_pb2, jina_pb2_grpc
 
 

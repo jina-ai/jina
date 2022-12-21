@@ -109,7 +109,10 @@ def on_done(response, final_da: DocumentArray):
         ('http', slow_blocking_gen),
     ],
 )
-def test_disable_prefetch_slow_client_fast_executor(protocol, inputs):
+@pytest.mark.parametrize('use_stream', [False, True])
+def test_disable_prefetch_slow_client_fast_executor(protocol, inputs, use_stream):
+    if use_stream and protocol != 'grpc':
+        return
     print(
         f'\n\nRunning disable prefetch, slow client, fast Executor test for \n'
         f'protocol: {protocol}, input: {inputs.__name__}'
@@ -121,6 +124,7 @@ def test_disable_prefetch_slow_client_fast_executor(protocol, inputs):
             inputs=inputs,
             request_size=1,
             on_done=lambda response: on_done(response, final_da),
+            stream=use_stream
         )
 
     assert len(final_da) == INPUT_LEN
@@ -149,7 +153,10 @@ def test_disable_prefetch_slow_client_fast_executor(protocol, inputs):
         ('http', blocking_gen),
     ],
 )
-def test_disable_prefetch_fast_client_slow_executor(protocol, inputs):
+@pytest.mark.parametrize('use_stream', [False, True])
+def test_disable_prefetch_fast_client_slow_executor(protocol, inputs, use_stream):
+    if use_stream and protocol != 'grpc':
+        return
     print(
         f'\n\nRunning disable prefetch, fast client, slow Executor test for \n'
         f'protocol: {protocol}, input: {inputs.__name__}'
@@ -161,6 +168,7 @@ def test_disable_prefetch_fast_client_slow_executor(protocol, inputs):
             inputs=inputs,
             request_size=1,
             on_done=lambda response: on_done(response, final_da),
+            stream=use_stream
         )
 
     assert len(final_da) == INPUT_LEN
@@ -209,7 +217,10 @@ def info_log_level():
 
 @pytest.mark.parametrize('prefetch', [0, 5])
 @pytest.mark.parametrize('protocol', ['websocket', 'http', 'grpc'])
-def test_multiple_clients(prefetch, protocol, info_log_level):
+@pytest.mark.parametrize('use_stream', [False, True])
+def test_multiple_clients(prefetch, protocol, info_log_level, use_stream):
+    if use_stream and protocol != 'grpc':
+        return
     GOOD_CLIENTS = 5
     GOOD_CLIENT_NUM_DOCS = 20
     MALICIOUS_CLIENT_NUM_DOCS = 50
@@ -230,8 +241,8 @@ def test_multiple_clients(prefetch, protocol, info_log_level):
             yield get_document(i)
 
     def client(gen, port):
-        Client(protocol=protocol, port=port).post(
-            on='/index', inputs=gen, request_size=1, return_responses=True
+        Client(protocol=protocol, port=port, prefetch=prefetch).post(
+            on='/index', inputs=gen, request_size=1, return_responses=True, stream=use_stream
         )
 
     pool: List[Process] = []
@@ -259,8 +270,8 @@ def test_multiple_clients(prefetch, protocol, info_log_level):
             p.join()
 
         order_of_ids = list(
-            Client(protocol=protocol, port=f.port)
-            .post(on='/status', inputs=[Document()], return_responses=True)[0]
+            Client(protocol=protocol, port=f.port, prefetch=prefetch)
+            .post(on='/status', inputs=[Document()], return_responses=True, stream=use_stream)[0]
             .docs[0]
             .tags['ids']
         )
@@ -280,10 +291,7 @@ def test_multiple_clients(prefetch, protocol, info_log_level):
 
     When there are no rules, badguy wins! With rule, you find balance in the world.        
     """
-    if protocol == 'http':
-        # There's no prefetch for http.
-        assert set(map(lambda x: x.split('_')[0], order_of_ids[-20:])) == {'goodguy'}
-    elif prefetch == 5:
+    if prefetch == 5 and use_stream: # if stream is False the prefetch is controleed by each client and then it applies per client
         assert set(map(lambda x: x.split('_')[0], order_of_ids[-20:])) == {'badguy'}
     elif prefetch == 0:
         assert set(map(lambda x: x.split('_')[0], order_of_ids[-20:])) == {'goodguy'}

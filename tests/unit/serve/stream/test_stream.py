@@ -3,7 +3,7 @@ import random
 
 import pytest
 
-from jina import Document, DocumentArray
+from docarray import Document, DocumentArray
 from jina.helper import Namespace, random_identity
 from jina.serve.stream import RequestStreamer
 from jina.types.request.data import DataRequest

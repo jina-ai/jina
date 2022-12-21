@@ -1,6 +1,6 @@
 """Argparser module for remote runtime"""
 
-from jina import __default_host__, helper
+from jina.constants import __default_host__
 from jina.parsers.helper import CastHostAction, KVAppendAction, add_arg_group
 from jina.parsers.orchestrate.runtimes.runtime import mixin_base_runtime_parser
 

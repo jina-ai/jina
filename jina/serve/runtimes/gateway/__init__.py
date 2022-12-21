@@ -4,7 +4,6 @@ import urllib
 from http import HTTPStatus
 from typing import TYPE_CHECKING, Optional, Union
 
-from jina import __default_host__
 from jina.enums import GatewayProtocolType
 from jina.excepts import PortAlreadyUsed
 from jina.helper import is_port_free, send_telemetry_event

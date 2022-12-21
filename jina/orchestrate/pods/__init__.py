@@ -5,7 +5,7 @@ import time
 from abc import ABC, abstractmethod
 from typing import Dict, Optional, Type, Union, TYPE_CHECKING
 
-from jina import __ready_msg__, __stop_msg__, __windows__
+from jina.constants import __ready_msg__, __stop_msg__, __windows__
 from jina.enums import PodRoleType
 from jina.excepts import RuntimeFailToStart, RuntimeRunForeverEarlyError
 from jina.helper import typename

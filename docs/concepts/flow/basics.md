@@ -32,7 +32,7 @@ jtype: Flow
 `````
 
 ```{tip}
-An empty Flow contains only {ref}`the Gateway<flow>`.
+An empty Flow contains only {ref}`the Gateway<gateway>`.
 ```
 
 ```{figure} zero-flow.svg
