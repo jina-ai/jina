@@ -4,12 +4,13 @@ import pytest
 import requests
 
 from jina import Flow
+from jina.helper import random_port
 from tests.helper import (
     ProcessExecutor,
     _validate_custom_gateway_process,
     _validate_dummy_custom_gateway_response,
 )
-from tests.unit.yaml.dummy_gateway import DummyGateway
+from tests.unit.yaml.dummy_gateway import DummyGateway, FlaskDummyGateway, DummyExecutor
 from tests.unit.yaml.dummy_gateway_get_streamer import DummyGatewayGetStreamer
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
@@ -134,3 +135,11 @@ def test_flow_custom_gateway_via_flow_uses_disabled():
     with pytest.raises(requests.ConnectionError):
         with flow:
             _ = requests.get(f'http://127.0.0.1:{flow.port}/').json()
+
+
+def test_flow_custom_gateway_with_flask():
+    port = random_port()
+    flow = Flow().config_gateway(uses=FlaskDummyGateway, port=port, protocol='http').add(uses=DummyExecutor)
+
+    with flow:
+        _ = requests.get(f'http://127.0.0.1:{port}/service/aaa').json()
