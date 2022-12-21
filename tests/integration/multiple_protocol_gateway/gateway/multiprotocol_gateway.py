@@ -42,6 +42,10 @@ class MultiProtocolGateway(Gateway):
             self.streamer._streamer, self.grpc_server
         )
 
+        jina_pb2_grpc.add_JinaSingleDataRequestRPCServicer_to_server(
+            self.streamer._streamer, self.grpc_server
+        )
+
         service_names = (
             jina_pb2.DESCRIPTOR.services_by_name['JinaRPC'].full_name,
             reflection.SERVICE_NAME,

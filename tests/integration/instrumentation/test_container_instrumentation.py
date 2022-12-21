@@ -1,7 +1,4 @@
-import os
 import time
-
-import pytest
 
 from jina import Flow
 from tests.integration.instrumentation import (

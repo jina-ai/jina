@@ -21,7 +21,7 @@ def multi_port_gateway_docker_image_built():
 
     client = docker.from_env()
     client.images.build(
-        path=os.path.join(cur_dir, 'gateway/'), tag='multiprotcol-gateway'
+        path=os.path.join(cur_dir, 'gateway/'), tag='multiprotocol-gateway'
     )
     client.close()
     yield
@@ -34,7 +34,7 @@ def multi_port_gateway_docker_image_built():
     'uses',
     [
         'MultiProtocolGateway',
-        'docker://multiprotcol-gateway',
+        'docker://multiprotocol-gateway',
     ],
 )
 @pytest.mark.parametrize('use_stream', [False, True])
