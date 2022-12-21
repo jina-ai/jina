@@ -239,6 +239,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -15476,4 +15477,43 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```b1fc108c```](https://github.com/jina-ai/jina/commit/b1fc108c9f9f8f72af04a0ef60e07272df4cc0eb)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```854f6d2b```](https://github.com/jina-ai/jina/commit/854f6d2b79711ebc4ce2fce5f33f8ae03d58345b)] __-__ fix old docs script (#5459) (*Joan Fontanals*)
  - [[```ce7e5b77```](https://github.com/jina-ai/jina/commit/ce7e5b7760b02790eff777359748392e9d2903ab)] __-__ __version__: the next version will be 3.12.1 (*Jina Dev Bot*)
+
+<a name=release-note-3-13-1></a>
+## Release Note (`3.13.1`)
+
+> Release time: 2022-12-21 12:58:15
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Nan Wang,  Joan Fontanals,  AlaeddineAbdessalem,  Jackmin801,  Anne Yang,  Han Xiao,  Jina Dev Bot,  🙇
+
+
+### 🆕 New Features
+
+ - [[```b4189601```](https://github.com/jina-ai/jina/commit/b4189601136b565fbaa644f76b659d40b39b8358)] __-__ using unary rpc from client respects results_in_order (#5513) (*Joan Fontanals*)
+
+### 🐞 Bug fixes
+
+ - [[```6b56c0cb```](https://github.com/jina-ai/jina/commit/6b56c0cb76f77eab2935c42f252db485d06cc00e)] __-__ do not raise exception to end iteration (#5544) (*Joan Fontanals*)
+ - [[```77e936af```](https://github.com/jina-ai/jina/commit/77e936afd16c7d2bca9c781df891f97e4b25eff3)] __-__ fix installing build essentials for python 3.11 (#5542) (*AlaeddineAbdessalem*)
+ - [[```5e0d0dc4```](https://github.com/jina-ai/jina/commit/5e0d0dc4e5ca1e94d4f8ff2e7210a4b9aae9f3f7)] __-__ install build essentials before pip install for python 3.11 docker image (#5541) (*AlaeddineAbdessalem*)
+ - [[```1ea52c57```](https://github.com/jina-ai/jina/commit/1ea52c57e32bc2b5a278869cc79fba8262e5d3f5)] __-__ add gcc-c++ and python devel for python 3.11 (#5540) (*AlaeddineAbdessalem*)
+ - [[```73ac83ec```](https://github.com/jina-ai/jina/commit/73ac83eca70e4036cb934ae92b46c1799b26f0cd)] __-__ support python 3.11 (#5529) (*Jackmin801*)
+ - [[```3c09e6e2```](https://github.com/jina-ai/jina/commit/3c09e6e214eccc30f64d3003d9fbbc1224071118)] __-__ support composite gateway for k8s export (#5532) (*AlaeddineAbdessalem*)
+
+### 🧼 Code Refactoring
+
+ - [[```fe2d6232```](https://github.com/jina-ai/jina/commit/fe2d6232687edd05aa483e0eabd151f78870b040)] __-__ do the flow readiness check async and not in thread (#5531) (*Joan Fontanals*)
+
+### 📗 Documentation
+
+ - [[```c321d44c```](https://github.com/jina-ai/jina/commit/c321d44ce44de2953f2fca057da4a7a9b1a76aa2)] __-__ fix the reference to gateway (#5546) (*Nan Wang*)
+ - [[```27acb889```](https://github.com/jina-ai/jina/commit/27acb8897beeb5d51f8f8cfb30349671926ab2e0)] __-__ common args inheritence from Flow API (#5535) (*Anne Yang*)
+ - [[```d4075be0```](https://github.com/jina-ai/jina/commit/d4075be08649ebb7feac74b52c19967885876a3e)] __-__ add icons to top-level chapters (*Han Xiao*)
+
+### 🍹 Other Improvements
+
+ - [[```9645c7ab```](https://github.com/jina-ai/jina/commit/9645c7ab9393afe8ca1d61ae118a915ef247a373)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```3f31aa87```](https://github.com/jina-ai/jina/commit/3f31aa87748b9ebd773891493e075c07c6f140cd)] __-__ __version__: the next version will be 3.13.1 (*Jina Dev Bot*)
 

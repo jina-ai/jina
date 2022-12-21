@@ -1,4 +1,4 @@
-(flow)=
+(gateway)=
 
 # {fas}`door-open` Gateway
 

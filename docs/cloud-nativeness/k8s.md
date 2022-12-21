@@ -117,7 +117,7 @@ If you want to learn more about this limitation, see [this](https://kubernetes.i
 ````
 
 ## Scaling the Gateway
-The {ref}`Gateway <flow>` is responsible for providing the API of the {ref}`Flow <flow>`.
+The {ref}`Gateway <gateway>` is responsible for providing the API of the {ref}`Flow <flow>`.
 If you have a large Flow with many Clients and many replicated Executors, the Gateway can become the bottleneck.
 In this case you can also scale up the Gateway deployment to be backed by multiple Kubernetes Pods.
 This is done by the regular means of Kubernetes: Either increase the number of replicas in the  {ref}`generated yaml configuration files <kubernetes-export>` or [add replicas while running](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#scaling-a-deployment).
