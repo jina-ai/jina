@@ -312,5 +312,5 @@ The Flow defaults to `json` if you don't specify a sub-protocol while establishi
 ## See also
 
 - {ref}`Access a Flow with the Client <client>`
-- {ref}`Configure a Flow <flow>`
+- {ref}`Configure a Flow <flow-cookbook>`
 - [Flow REST API reference](https://api.jina.ai/rest/)
