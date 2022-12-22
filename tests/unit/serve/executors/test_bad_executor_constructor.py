@@ -13,7 +13,7 @@ class GoodExecutor(Executor):
 
 
 class GoodExecutor2(Executor):
-    def __init__(self, metas, requests, runtime_args):
+    def __init__(self, metas, requests, runtime_args, dynamic_batching):
         pass
 
     @requests
@@ -24,7 +24,7 @@ class GoodExecutor2(Executor):
 def test_bad_executor_constructor():
     # executor can be used as out of Flow as Python object
     exec1 = GoodExecutor()
-    exec2 = GoodExecutor2({}, {}, {})
+    exec2 = GoodExecutor2({}, {}, {}, {})
 
     # can be used in the Flow
     with Flow().add(uses=GoodExecutor):

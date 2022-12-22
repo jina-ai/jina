@@ -4,7 +4,8 @@ import time
 import pytest
 from docarray import Document
 
-from jina import Flow, __cache_path__
+from jina import Flow
+from jina.constants import __cache_path__
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 

@@ -3,10 +3,11 @@ import os
 import pytest
 import yaml
 
-from jina import Gateway, __default_executor__
+from jina.constants import __default_executor__, __default_host__
 from jina.helper import expand_dict, expand_env_var
 from jina.jaml import JAML
 from jina.serve.executors import BaseExecutor
+from jina import Gateway
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -170,20 +171,37 @@ def test_load_from_dict():
     assert b1.metas.name == 'hello123'
 
 
-def test_load_gateway_external_success():
-    with Gateway.load_config('yaml/test-custom-gateway.yml') as gateway:
-        assert gateway.__class__.__name__ == 'DummyGateway'
+@pytest.mark.parametrize(
+    'yaml_file,gateway_name',
+    [
+        ('test-custom-gateway.yml', 'DummyGateway'),
+        ('test-fastapi-gateway.yml', 'DummyFastAPIGateway'),
+    ],
+)
+def test_load_gateway_external_success(yaml_file, gateway_name):
+    with Gateway.load_config(
+        f'yaml/{yaml_file}', runtime_args={'port': [12345]}
+    ) as gateway:
+        assert gateway.__class__.__name__ == gateway_name
         assert gateway.arg1 == 'hello'
         assert gateway.arg2 == 'world'
         assert gateway.arg3 == 'default-arg3'
 
 
-def test_load_gateway_override_with():
+@pytest.mark.parametrize(
+    'yaml_file,gateway_name',
+    [
+        ('test-custom-gateway.yml', 'DummyGateway'),
+        ('test-fastapi-gateway.yml', 'DummyFastAPIGateway'),
+    ],
+)
+def test_load_gateway_override_with(yaml_file, gateway_name):
     with Gateway.load_config(
-        'yaml/test-custom-gateway.yml',
+        f'yaml/{yaml_file}',
         uses_with={'arg1': 'arg1', 'arg2': 'arg2', 'arg3': 'arg3'},
+        runtime_args={'port': [12345]},
     ) as gateway:
-        assert gateway.__class__.__name__ == 'DummyGateway'
+        assert gateway.__class__.__name__ == gateway_name
         assert gateway.arg1 == 'arg1'
         assert gateway.arg2 == 'arg2'
         assert gateway.arg3 == 'arg3'

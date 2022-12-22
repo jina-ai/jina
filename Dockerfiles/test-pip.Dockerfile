@@ -3,7 +3,7 @@ ARG PIP_TAG
 
 FROM python:${PY_VERSION}-slim
 
-RUN apt-get update && apt-get install --no-install-recommends -y gcc libc6-dev
+RUN apt-get update && apt-get install --no-install-recommends -y gcc libc6-dev net-tools procps htop lsof dnsutils
 
 COPY . /jina/
 
@@ -12,4 +12,6 @@ RUN cat $HOME/.bashrc
 RUN grep -Fxq "# JINA_CLI_BEGIN" $HOME/.bashrc
 
 ENV JINA_OPTOUT_TELEMETRY='true'
+ENV GRPC_ENABLE_FORK_SUPPORT='0'
+ENV JINA_LOG_LEVEL='DEBUG'
 ENTRYPOINT ["jina"]

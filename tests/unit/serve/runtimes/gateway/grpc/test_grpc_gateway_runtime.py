@@ -8,7 +8,7 @@ from multiprocessing import Process
 import grpc
 import pytest
 
-from jina import Document, DocumentArray
+from docarray import Document, DocumentArray
 from jina.clients.request import request_generator
 from jina.helper import random_port
 from jina.parsers import set_gateway_parser
@@ -148,7 +148,7 @@ class DummyMockConnectionPool:
 
     def send_discover_endpoint(self, *args, **kwargs):
         async def task_wrapper():
-            from jina import __default_endpoint__
+            from jina.constants import __default_endpoint__
             from jina.proto import jina_pb2
 
             ep = jina_pb2.EndpointsProto()
@@ -158,7 +158,26 @@ class DummyMockConnectionPool:
         return asyncio.create_task(task_wrapper())
 
 
-def test_grpc_gateway_runtime_handle_messages_linear(linear_graph_dict, monkeypatch):
+async def _test(streamer, stream):
+    responses = []
+    req = request_generator('/', DocumentArray([Document(text='client0-Request')]))
+    if stream:
+        async for resp in streamer.stream(request_iterator=req):
+            responses.append(resp)
+    else:
+        for req in request_generator(
+            '/',
+            DocumentArray([Document(text='client0-Request')]),
+        ):
+            unary_response = await streamer.process_single_data(request=req)
+            responses.append(unary_response)
+    return responses
+
+
+@pytest.mark.parametrize('stream', [True, False])
+def test_grpc_gateway_runtime_handle_messages_linear(
+    linear_graph_dict, monkeypatch, stream
+):
     def process_wrapper():
         monkeypatch.setattr(
             networking.GrpcConnectionPool,
@@ -184,17 +203,8 @@ def test_grpc_gateway_runtime_handle_messages_linear(linear_graph_dict, monkeypa
                 ]
             )
         ) as runtime:
+            responses = asyncio.run(_test(runtime.gateway.streamer, stream))
 
-            async def _test():
-                r = []
-                req = request_generator(
-                    '/', DocumentArray([Document(text='client0-Request')])
-                )
-                async for resp in runtime.gateway.streamer.stream(request_iterator=req):
-                    r.append(resp)
-                return r
-
-            responses = asyncio.run(_test())
         assert len(responses) > 0
         assert len(responses[0].docs) == 1
         assert (
@@ -208,8 +218,9 @@ def test_grpc_gateway_runtime_handle_messages_linear(linear_graph_dict, monkeypa
     assert p.exitcode == 0
 
 
+@pytest.mark.parametrize('stream', [True, False])
 def test_grpc_gateway_runtime_handle_messages_bifurcation(
-    bifurcation_graph_dict, monkeypatch
+    bifurcation_graph_dict, monkeypatch, stream
 ):
     def process_wrapper():
         monkeypatch.setattr(
@@ -236,17 +247,8 @@ def test_grpc_gateway_runtime_handle_messages_bifurcation(
                 ]
             )
         ) as runtime:
+            responses = asyncio.run(_test(runtime.gateway.streamer, stream))
 
-            async def _test():
-                responses = []
-                req = request_generator(
-                    '/', DocumentArray([Document(text='client0-Request')])
-                )
-                async for resp in runtime.gateway.streamer.stream(request_iterator=req):
-                    responses.append(resp)
-                return responses
-
-            responses = asyncio.run(_test())
         assert len(responses) > 0
         assert len(responses[0].docs) == 1
         assert (
@@ -262,8 +264,9 @@ def test_grpc_gateway_runtime_handle_messages_bifurcation(
     assert p.exitcode == 0
 
 
+@pytest.mark.parametrize('stream', [True, False])
 def test_grpc_gateway_runtime_handle_messages_merge_in_gateway(
-    merge_graph_dict_directly_merge_in_gateway, monkeypatch
+    merge_graph_dict_directly_merge_in_gateway, monkeypatch, stream
 ):
     def process_wrapper():
         monkeypatch.setattr(
@@ -290,17 +293,8 @@ def test_grpc_gateway_runtime_handle_messages_merge_in_gateway(
                 ]
             )
         ) as runtime:
+            responses = asyncio.run(_test(runtime.gateway.streamer, stream))
 
-            async def _test():
-                responses = []
-                req = request_generator(
-                    '/', DocumentArray([Document(text='client0-Request')])
-                )
-                async for resp in runtime.gateway.streamer.stream(request_iterator=req):
-                    responses.append(resp)
-                return responses
-
-            responses = asyncio.run(_test())
         assert len(responses) > 0
         assert len(responses[0].docs) == 1
         deployment1_path = (
@@ -319,8 +313,9 @@ def test_grpc_gateway_runtime_handle_messages_merge_in_gateway(
     assert p.exitcode == 0
 
 
+@pytest.mark.parametrize('stream', [True, False])
 def test_grpc_gateway_runtime_handle_messages_merge_in_last_deployment(
-    merge_graph_dict_directly_merge_in_last_deployment, monkeypatch
+    merge_graph_dict_directly_merge_in_last_deployment, monkeypatch, stream
 ):
     def process_wrapper():
         monkeypatch.setattr(
@@ -347,17 +342,8 @@ def test_grpc_gateway_runtime_handle_messages_merge_in_last_deployment(
                 ]
             )
         ) as runtime:
+            responses = asyncio.run(_test(runtime.gateway.streamer, stream))
 
-            async def _test():
-                responses = []
-                req = request_generator(
-                    '/', DocumentArray([Document(text='client0-Request')])
-                )
-                async for resp in runtime.gateway.streamer.stream(request_iterator=req):
-                    responses.append(resp)
-                return responses
-
-            responses = asyncio.run(_test())
         assert len(responses) > 0
         assert len(responses[0].docs) == 1
         deployment1_path = (
@@ -376,8 +362,9 @@ def test_grpc_gateway_runtime_handle_messages_merge_in_last_deployment(
     assert p.exitcode == 0
 
 
+@pytest.mark.parametrize('stream', [True, False])
 def test_grpc_gateway_runtime_handle_messages_complete_graph_dict(
-    complete_graph_dict, monkeypatch
+    complete_graph_dict, monkeypatch, stream
 ):
     def process_wrapper():
         monkeypatch.setattr(
@@ -404,17 +391,8 @@ def test_grpc_gateway_runtime_handle_messages_complete_graph_dict(
                 ]
             )
         ) as runtime:
+            responses = asyncio.run(_test(runtime.gateway.streamer, stream))
 
-            async def _test():
-                responses = []
-                req = request_generator(
-                    '/', DocumentArray([Document(text='client0-Request')])
-                )
-                async for resp in runtime.gateway.streamer.stream(request_iterator=req):
-                    responses.append(resp)
-                return responses
-
-            responses = asyncio.run(_test())
         assert len(responses) > 0
         assert len(responses[0].docs) == 1
         deployment2_path = (
@@ -438,7 +416,8 @@ def test_grpc_gateway_runtime_handle_messages_complete_graph_dict(
     assert p.exitcode == 0
 
 
-def test_grpc_gateway_runtime_handle_empty_graph():
+@pytest.mark.parametrize('stream', [True, False])
+def test_grpc_gateway_runtime_handle_empty_graph(stream):
     def process_wrapper():
         port = random_port()
 
@@ -454,17 +433,8 @@ def test_grpc_gateway_runtime_handle_empty_graph():
                 ]
             )
         ) as runtime:
+            responses = asyncio.run(_test(runtime.gateway.streamer, stream))
 
-            async def _test():
-                responses = []
-                req = request_generator(
-                    '/', DocumentArray([Document(text='client0-Request')])
-                )
-                async for resp in runtime.gateway.streamer.stream(request_iterator=req):
-                    responses.append(resp)
-                return responses
-
-            responses = asyncio.run(_test())
         assert len(responses) > 0
         assert len(responses[0].docs) == 1
         assert responses[0].docs[0].text == f'client0-Request'
@@ -508,7 +478,14 @@ async def test_grpc_gateway_runtime_reflection():
     async with grpc.aio.insecure_channel(f'127.0.0.1:{port}') as channel:
         service_names = await GrpcConnectionPool.get_available_services(channel)
 
-    assert all(service_name in service_names for service_name in ['jina.JinaRPC'])
+    assert all(
+        service_name in service_names
+        for service_name in [
+            'jina.JinaInfoRPC',
+            'jina.JinaRPC',
+            'jina.JinaSingleDataRequestRPC',
+        ]
+    )
 
     p.terminate()
     p.join()

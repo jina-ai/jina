@@ -5,12 +5,12 @@ import os
 from pathlib import Path
 from typing import TYPE_CHECKING, Callable, Dict, List, Optional, Sequence, Union
 
-from jina import __cache_path__
+from jina.constants import __cache_path__
 from jina.helper import iscoroutinefunction
 from jina.importer import ImportExtensions
 
 if TYPE_CHECKING:  # pragma: no cover
-    from jina import DocumentArray
+    from docarray import DocumentArray
 
 
 @functools.lru_cache()
@@ -44,9 +44,9 @@ def avoid_concurrent_lock_cls(cls):
 
             if self.__class__ == cls:
                 with ImportExtensions(
-                        required=False,
-                        help_text=f'FileLock is needed to guarantee non-concurrent initialization of replicas in the '
-                                  f'same machine.',
+                    required=False,
+                    help_text=f'FileLock is needed to guarantee non-concurrent initialization of replicas in the '
+                    f'same machine.',
                 ):
                     import filelock
 
@@ -93,7 +93,8 @@ def _init_requests_by_class(cls):
 
 
 def requests(
-        func: Optional[Callable[
+    func: Optional[
+        Callable[
             [
                 'DocumentArray',
                 Dict,
@@ -102,9 +103,10 @@ def requests(
                 List['DocumentArray'],
             ],
             Optional[Union['DocumentArray', Dict]],
-        ]] = None,
-        *,
-        on: Optional[Union[str, Sequence[str]]] = None,
+        ]
+    ] = None,
+    *,
+    on: Optional[Union[str, Sequence[str]]] = None,
 ):
     """
     `@requests` defines the endpoints of an Executor. It has a keyword `on=` to define the endpoint.
@@ -152,13 +154,15 @@ def requests(
     :param on: the endpoint string, by convention starts with `/`
     :return: decorated function
     """
-    from jina import __args_executor_func__, __default_endpoint__
+    from jina.constants import __args_executor_func__, __default_endpoint__
 
     class FunctionMapper:
         def __init__(self, fn):
+            self._batching_decorator = None
+            fn = self._unwrap_batching_decorator(fn)
             arg_spec = inspect.getfullargspec(fn)
             if not arg_spec.varkw and not __args_executor_func__.issubset(
-                    arg_spec.args
+                arg_spec.args
             ):
                 raise TypeError(
                     f'{fn} accepts only {arg_spec.args} which is fewer than expected, '
@@ -166,9 +170,10 @@ def requests(
                 )
 
             if iscoroutinefunction(fn):
+
                 @functools.wraps(fn)
                 async def arg_wrapper(
-                        executor_instance, *args, **kwargs
+                    executor_instance, *args, **kwargs
                 ):  # we need to get the summary from the executor, so we need to access the self
                     return await fn(executor_instance, *args, **kwargs)
 
@@ -177,22 +182,42 @@ def requests(
 
                 @functools.wraps(fn)
                 def arg_wrapper(
-                        executor_instance, *args, **kwargs
+                    executor_instance, *args, **kwargs
                 ):  # we need to get the summary from the executor, so we need to access the self
                     return fn(executor_instance, *args, **kwargs)
 
                 self.fn = arg_wrapper
 
-        def __set_name__(self, owner, name):
-            _init_requests_by_class(owner)
-            self.fn.class_name = owner.__name__
+        def _unwrap_batching_decorator(self, fn):
+            if type(fn).__name__ == 'DynamicBatchingDecorator':
+                self._batching_decorator = fn
+                return fn.fn
+            else:
+                return fn
+
+        def _inject_owner_attrs(self, owner, name):
+            if not hasattr(owner, 'requests'):
+                owner.requests = {}
             if isinstance(on, (list, tuple)):
                 for o in on:
                     owner.requests_by_class[owner.__name__][o] = self.fn
             else:
-                owner.requests_by_class[owner.__name__][on or __default_endpoint__] = self.fn
+                owner.requests_by_class[owner.__name__][
+                    on or __default_endpoint__
+                ] = self.fn
 
             setattr(owner, name, self.fn)
+
+        def __set_name__(self, owner, name):
+            _init_requests_by_class(owner)
+            if self._batching_decorator:
+                self._batching_decorator._inject_owner_attrs(owner, name)
+            self.fn.class_name = owner.__name__
+            self._inject_owner_attrs(owner, name)
+
+        def __call__(self, *args, **kwargs):
+            # this is needed to make this decorator work in combination with `@requests`
+            return self.fn(*args, **kwargs)
 
     if func:
         return FunctionMapper(func)
@@ -200,10 +225,103 @@ def requests(
         return FunctionMapper
 
 
+def dynamic_batching(
+    func: Callable[
+        [
+            'DocumentArray',
+            Dict,
+            'DocumentArray',
+            List['DocumentArray'],
+            List['DocumentArray'],
+        ],
+        Optional[Union['DocumentArray', Dict]],
+    ] = None,
+    *,
+    preferred_batch_size: Optional[int] = None,
+    timeout: Optional[float] = 10_000,
+):
+    """
+    `@dynamic_batching` defines the dynamic batching behavior of an Executor.
+    Dynamic batching works by collecting Documents from multiple requests in a queue, and passing them to the Executor
+    in batches of specified size.
+    This can improve throughput and resource utilization at the cost of increased latency.
+    TODO(johannes) add docstring example
+
+    :param func: the method to decorate
+    :param preferred_batch_size: target number of Documents in a batch. The batcher will collect requests until `preferred_batch_size` is reached,
+        or until `timeout` is reached. Therefore, the actual batch size can be smaller or larger than `preferred_batch_size`.
+    :param timeout: maximum time in milliseconds to wait for a request to be assigned to a batch.
+        If the oldest request in the queue reaches a waiting time of `timeout`, the batch will be passed to the Executor,
+        even if it contains fewer than `preferred_batch_size` Documents.
+        Default is 10_000ms (10 seconds).
+    :return: decorated function
+    """
+
+    class DynamicBatchingDecorator:
+        def __init__(self, fn):
+            self._requests_decorator = None
+            fn = self._unwrap_requests_decorator(fn)
+            if iscoroutinefunction(fn):
+
+                @functools.wraps(fn)
+                async def arg_wrapper(
+                    executor_instance, *args, **kwargs
+                ):  # we need to get the summary from the executor, so we need to access the self
+                    return await fn(executor_instance, *args, **kwargs)
+
+                self.fn = arg_wrapper
+            else:
+
+                @functools.wraps(fn)
+                def arg_wrapper(
+                    executor_instance, *args, **kwargs
+                ):  # we need to get the summary from the executor, so we need to access the self
+                    return fn(executor_instance, *args, **kwargs)
+
+                self.fn = arg_wrapper
+
+        def _unwrap_requests_decorator(self, fn):
+            if type(fn).__name__ == 'FunctionMapper':
+                self._requests_decorator = fn
+                return fn.fn
+            else:
+                return fn
+
+        def _inject_owner_attrs(self, owner, name):
+            if not hasattr(owner, 'dynamic_batching'):
+                owner.dynamic_batching = {}
+
+            fn_name = self.fn.__name__
+            if not owner.dynamic_batching.get(fn_name):
+                owner.dynamic_batching[fn_name] = {}
+
+            owner.dynamic_batching[fn_name][
+                'preferred_batch_size'
+            ] = preferred_batch_size
+            owner.dynamic_batching[fn_name]['timeout'] = timeout
+            setattr(owner, name, self.fn)
+
+        def __set_name__(self, owner, name):
+            _init_requests_by_class(owner)
+            if self._requests_decorator:
+                self._requests_decorator._inject_owner_attrs(owner, name)
+            self.fn.class_name = owner.__name__
+            self._inject_owner_attrs(owner, name)
+
+        def __call__(self, *args, **kwargs):
+            # this is needed to make this decorator work in combination with `@requests`
+            return self.fn(*args, **kwargs)
+
+    if func:
+        return DynamicBatchingDecorator(func)
+    else:
+        return DynamicBatchingDecorator
+
+
 def monitor(
-        *,
-        name: Optional[str] = None,
-        documentation: Optional[str] = None,
+    *,
+    name: Optional[str] = None,
+    documentation: Optional[str] = None,
 ):
     """
     Decorator and context manager that allows monitoring of an Executor.

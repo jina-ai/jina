@@ -17,7 +17,7 @@ class NetworkChecker:
 
         import time
 
-        from jina import Client
+        from jina.clients import Client
         from jina.logging.profile import TimeContext
         from jina.serve.runtimes.gateway import GatewayRuntime
         from jina.serve.runtimes.worker import WorkerRuntime
@@ -31,15 +31,15 @@ class NetworkChecker:
                 ) as tc:
                     if args.target == 'executor':
                         hostname, port, protocol, _ = parse_host_scheme(args.host)
-                        r = WorkerRuntime.is_ready(f'{hostname}:{port}')
+                        r = WorkerRuntime.is_ready(ctrl_address=f'{hostname}:{port}')
                     elif args.target == 'gateway':
                         hostname, port, protocol, _ = parse_host_scheme(args.host)
                         r = GatewayRuntime.is_ready(
                             f'{hostname}:{port}',
-                            protocol=GatewayProtocolType.from_string(protocol),
+                            protocol=GatewayProtocolType.from_string(protocol)
                         )
                     elif args.target == 'flow':
-                        r = Client(host=args.host).is_flow_ready(timeout=args.timeout)
+                        r = Client(host=args.host).is_flow_ready(timeout=args.timeout / 1000)
                     if not r:
                         default_logger.warning(
                             'not responding, attempt (%d/%d) in 1s'
@@ -51,7 +51,7 @@ class NetworkChecker:
                 if args.attempts > 0:
                     time.sleep(1)
             if total_success < args.attempts:
-                default_logger.warning(
+                default_logger.debug(
                     'message lost %.0f%% (%d/%d) '
                     % (
                         (1 - total_success / args.attempts) * 100,
@@ -60,17 +60,17 @@ class NetworkChecker:
                     )
                 )
             if total_success > 0:
-                default_logger.info(
+                default_logger.debug(
                     'avg. latency: %.0f ms' % (total_time / total_success * 1000)
                 )
 
             if total_success >= args.min_successful_attempts:
-                default_logger.info(
+                default_logger.debug(
                     f'readiness check succeeded {total_success} times!!!'
                 )
                 exit(0)
             else:
-                default_logger.info(
+                default_logger.debug(
                     f'readiness check succeeded {total_success} times, less than {args.min_successful_attempts}'
                 )
         except KeyboardInterrupt:

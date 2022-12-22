@@ -37,17 +37,17 @@ def test_gateway_instrumentation(
     f = Flow(
         protocol=protocol,
         tracing=True,
-        traces_exporter_host='localhost',
+        traces_exporter_host='http://localhost',
         traces_exporter_port=otlp_receiver_port,
     ).add(
         uses=ExecutorTestWithTracing,
         tracing=True,
-        traces_exporter_host='localhost',
+        traces_exporter_host='http://localhost',
         traces_exporter_port=otlp_receiver_port,
     )
 
     with f:
-        from jina import DocumentArray
+        from docarray import DocumentArray
 
         f.post(f'/search', DocumentArray.empty(), continue_on_error=True)
         # give some time for the tracing and metrics exporters to finish exporting.
@@ -74,12 +74,12 @@ def test_gateway_instrumentation(
 def test_executor_instrumentation(jaeger_port, otlp_collector, otlp_receiver_port):
     f = Flow(
         tracing=True,
-        traces_exporter_host='localhost',
+        traces_exporter_host='http://localhost',
         traces_exporter_port=otlp_receiver_port,
     ).add(uses=ExecutorFailureWithTracing)
 
     with f:
-        from jina import DocumentArray
+        from docarray import DocumentArray
 
         f.post(f'/search', DocumentArray.empty(2), continue_on_error=True)
         # give some time for the tracing and metrics exporters to finish exporting.
@@ -104,12 +104,12 @@ def test_executor_instrumentation(jaeger_port, otlp_collector, otlp_receiver_por
 def test_head_instrumentation(jaeger_port, otlp_collector, otlp_receiver_port):
     f = Flow(
         tracing=True,
-        traces_exporter_host='localhost',
+        traces_exporter_host='http://localhost',
         traces_exporter_port=otlp_receiver_port,
     ).add(uses=ExecutorTestWithTracing, shards=2)
 
     with f:
-        from jina import DocumentArray
+        from docarray import DocumentArray
 
         f.post(f'/search', DocumentArray.empty(), continue_on_error=True)
         # give some time for the tracing and metrics exporters to finish exporting.
@@ -150,18 +150,18 @@ def test_flow_metrics(
 ):
     f = Flow(
         metrics=True,
-        metrics_exporter_host='localhost',
+        metrics_exporter_host='http://localhost',
         metrics_exporter_port=otlp_receiver_port,
     ).add(
         uses=ExecutorFailureWithTracing,
         shards=2,
         metrics=True,
-        metrics_exporter_host='localhost',
+        metrics_exporter_host='http://localhost',
         metrics_exporter_port=otlp_receiver_port,
     )
 
     with f:
-        from jina import DocumentArray
+        from docarray import DocumentArray
 
         f.post(f'/search', DocumentArray.empty(2), continue_on_error=True)
         f.post(f'/search', DocumentArray.empty(2), continue_on_error=True)

@@ -1,34 +1,36 @@
 import argparse
 import multiprocessing
 import os
-import threading
 import time
 from abc import ABC, abstractmethod
-from typing import Dict, Optional, Type, Union
+from typing import Dict, Optional, Type, Union, TYPE_CHECKING
 
-from jina import __ready_msg__, __stop_msg__, __windows__
+from jina.constants import __ready_msg__, __stop_msg__, __windows__
 from jina.enums import PodRoleType
 from jina.excepts import RuntimeFailToStart, RuntimeRunForeverEarlyError
 from jina.helper import typename
 from jina.jaml import JAML
 from jina.logging.logger import JinaLogger
 from jina.orchestrate.pods.helper import ConditionalEvent, _get_event
+from jina.parsers.helper import _update_gateway_args
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
+from jina.serve.runtimes.gateway import GatewayRuntime
+
+if TYPE_CHECKING:
+    import threading
 
 __all__ = ['BasePod', 'Pod']
 
-from jina.serve.runtimes.gateway import GatewayRuntime
-
 
 def run(
-    args: 'argparse.Namespace',
-    name: str,
-    runtime_cls: Type[AsyncNewLoopRuntime],
-    envs: Dict[str, str],
-    is_started: Union['multiprocessing.Event', 'threading.Event'],
-    is_shutdown: Union['multiprocessing.Event', 'threading.Event'],
-    is_ready: Union['multiprocessing.Event', 'threading.Event'],
-    jaml_classes: Optional[Dict] = None,
+        args: 'argparse.Namespace',
+        name: str,
+        runtime_cls: Type[AsyncNewLoopRuntime],
+        envs: Dict[str, str],
+        is_started: Union['multiprocessing.Event', 'threading.Event'],
+        is_shutdown: Union['multiprocessing.Event', 'threading.Event'],
+        is_ready: Union['multiprocessing.Event', 'threading.Event'],
+        jaml_classes: Optional[Dict] = None,
 ):
     """Method representing the :class:`BaseRuntime` activity.
 
@@ -73,6 +75,7 @@ def run(
 
     try:
         _set_envs()
+
         runtime = runtime_cls(
             args=args,
         )
@@ -109,8 +112,8 @@ class BasePod(ABC):
     def __init__(self, args: 'argparse.Namespace'):
         self.args = args
 
-        if hasattr(self.args, 'port'):
-            self.args.port = self.args.port
+        if self.args.pod_role == PodRoleType.GATEWAY:
+            _update_gateway_args(self.args)
         self.args.parallel = getattr(self.args, 'shards', 1)
         self.name = self.args.name or self.__class__.__name__
         self.is_forked = False
@@ -136,6 +139,8 @@ class BasePod(ABC):
         self._timeout_ctrl = self.args.timeout_ctrl
 
     def _get_control_address(self):
+        if self.args.pod_role == PodRoleType.GATEWAY:
+            return f'{self.args.host}:{self.args.port[0]}'
         return f'{self.args.host}:{self.args.port}'
 
     def close(self) -> None:
@@ -149,7 +154,7 @@ class BasePod(ABC):
                 self.logger.debug(f'terminate')
                 self._terminate()
                 if not self.is_shutdown.wait(
-                    timeout=self._timeout_ctrl if not __windows__ else 1.0
+                        timeout=self._timeout_ctrl if not __windows__ else 1.0
                 ):
                     if not __windows__:
                         raise Exception(
@@ -196,7 +201,7 @@ class BasePod(ABC):
                 ready_or_shutdown_event=self.ready_or_shutdown.event,
                 ctrl_address=self.runtime_ctrl_address,
                 timeout_ctrl=self._timeout_ctrl,
-                protocol=self.args.protocol,
+                protocol=self.args.protocol[0],
             )
         else:
             return AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
@@ -284,7 +289,7 @@ class BasePod(ABC):
     @abstractmethod
     def start(self):
         """Start the BasePod.
-        This method calls :meth:`start` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.
+        This method calls :meth:`start` in :class:`multiprocesssing.Process`.
         .. #noqa: DAR201
         """
         ...
@@ -305,8 +310,7 @@ class BasePod(ABC):
 
 class Pod(BasePod):
     """
-    :class:`Pod` is a thread/process- container of :class:`BaseRuntime`. It leverages :class:`threading.Thread`
-    or :class:`multiprocessing.Process` to manage the lifecycle of a :class:`BaseRuntime` object in a robust way.
+    :class:`Pod` is a thread/process- container of :class:`BaseRuntime`. It leverages :class:`multiprocessing.Process` to manage the lifecycle of a :class:`BaseRuntime` object in a robust way.
 
     A :class:`Pod` must be equipped with a proper :class:`Runtime` class to work.
     """
@@ -332,7 +336,7 @@ class Pod(BasePod):
 
     def start(self):
         """Start the Pod.
-        This method calls :meth:`start` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.
+        This method calls :meth:`start` in :class:`multiprocesssing.Process`.
         .. #noqa: DAR201
         """
         self.worker.start()
@@ -344,7 +348,7 @@ class Pod(BasePod):
 
     def join(self, *args, **kwargs):
         """Joins the Pod.
-        This method calls :meth:`join` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.
+        This method calls :meth:`join` in :class:`multiprocesssing.Process`.
 
         :param args: extra positional arguments to pass to join
         :param kwargs: extra keyword arguments to pass to join
@@ -355,7 +359,7 @@ class Pod(BasePod):
 
     def _terminate(self):
         """Terminate the Pod.
-        This method calls :meth:`terminate` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.
+        This method calls :meth:`terminate` in :class:`multiprocesssing.Process`.
         """
         self.logger.debug(f'terminating the runtime process')
         self.worker.terminate()

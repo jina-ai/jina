@@ -27,6 +27,7 @@ class PodFactory:
         :return: the created BaseDeployment
         """
         # copy to update but forward original
+            
         cargs = deepcopy(args)
 
         if is_valid_huburi(cargs.uses):
@@ -36,9 +37,9 @@ class PodFactory:
             cargs.uses = HubIO(_hub_args).pull()
 
         if (
-                cargs.pod_role != PodRoleType.HEAD
-                and cargs.uses
-                and cargs.uses.startswith('docker://')
+            cargs.pod_role != PodRoleType.HEAD
+            and cargs.uses
+            and cargs.uses.startswith('docker://')
         ):
             return ContainerPod(cargs)
         else:

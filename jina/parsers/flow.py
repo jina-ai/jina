@@ -21,6 +21,15 @@ def mixin_flow_features_parser(parser):
     )
 
     gp.add_argument(
+        '--reload',
+        action='store_true',
+        default=False,
+        help='If set, auto-reloading on file changes is enabled: the Flow will restart while blocked if  YAML '
+        'configuration source is changed. This also applies apply to underlying Executors, if their source '
+        'code or YAML configuration has changed.',
+    )
+
+    gp.add_argument(
         '--env',
         action=KVAppendAction,
         metavar='KEY: VALUE',

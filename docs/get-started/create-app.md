@@ -1,4 +1,4 @@
-# {octicon}`milestone` Create First Project
+# {fas}`folder-plus` Create First Project
 
 Let's build a toy application with Jina. To start, use Jina CLI to make a new project:
 

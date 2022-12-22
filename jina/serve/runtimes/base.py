@@ -56,7 +56,6 @@ class BaseRuntime:
     ):
         super().__init__()
         self.args = args
-        self.args.port = int(self.args.port)
         if args.name:
             self.name = f'{args.name}/{self.__class__.__name__}'
         else:

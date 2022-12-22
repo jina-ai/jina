@@ -1,15 +1,19 @@
+import json
+import os
 from typing import TYPE_CHECKING, Dict, List, Optional, Sequence, Union
 
 from docarray import DocumentArray
+
 from jina.logging.logger import JinaLogger
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.gateway.graph.topology_graph import TopologyGraph
 from jina.serve.runtimes.gateway.request_handling import GatewayRequestHandler
 from jina.serve.stream import RequestStreamer
+from jina.types.request.data import DataRequest
 
 __all__ = ['GatewayStreamer']
 
-if TYPE_CHECKING: # pragma: no cover
+if TYPE_CHECKING:  # pragma: no cover
     from grpc.aio._interceptor import ClientInterceptor
     from opentelemetry.instrumentation.grpc._client import (
         OpenTelemetryClientInterceptor,
@@ -61,14 +65,16 @@ class GatewayStreamer:
         :param aio_tracing_client_interceptors: Optional list of aio grpc tracing server interceptors.
         :param tracing_client_interceptor: Optional gprc tracing server interceptor.
         """
-        topology_graph = self._create_topology_graph(
-            graph_representation,
-            graph_conditions,
-            deployments_metadata,
-            deployments_no_reduce,
-            timeout_send,
-            retries,
+        topology_graph = TopologyGraph(
+            graph_representation=graph_representation,
+            graph_conditions=graph_conditions,
+            deployments_metadata=deployments_metadata,
+            deployments_no_reduce=deployments_no_reduce,
+            timeout_send=timeout_send,
+            retries=retries,
+            logger=logger,
         )
+
         self.runtime_name = runtime_name
         self.aio_tracing_client_interceptors = aio_tracing_client_interceptors
         self.tracing_client_interceptor = tracing_client_interceptor
@@ -93,25 +99,6 @@ class GatewayStreamer:
             logger=logger,
         )
         self._streamer.Call = self._streamer.stream
-
-    def _create_topology_graph(
-        self,
-        graph_description,
-        graph_conditions,
-        deployments_metadata,
-        deployments_no_reduce,
-        timeout_send,
-        retries,
-    ):
-        # check if it should be in K8s, maybe ConnectionPoolFactory to be created
-        return TopologyGraph(
-            graph_representation=graph_description,
-            graph_conditions=graph_conditions,
-            deployments_metadata=deployments_metadata,
-            deployments_no_reduce=deployments_no_reduce,
-            timeout_send=timeout_send,
-            retries=retries,
-        )
 
     def _create_connection_pool(
         self,
@@ -154,11 +141,12 @@ class GatewayStreamer:
     async def stream_docs(
         self,
         docs: DocumentArray,
-        request_size: int,
+        request_size: int = 100,
         return_results: bool = False,
         exec_endpoint: Optional[str] = None,
         target_executor: Optional[str] = None,
         parameters: Optional[Dict] = None,
+        results_in_order: bool = False,
     ):
         """
         stream documents and stream responses back.
@@ -169,6 +157,7 @@ class GatewayStreamer:
         :param exec_endpoint: The executor endpoint to which to send the Documents
         :param target_executor: A regex expression indicating the Executors that should receive the Request
         :param parameters: Parameters to be attached to the Requests
+        :param results_in_order: return the results in the same order as the request_iterator
         :yield: Yields DocumentArrays or Responses from the Executors
         """
         from jina.types.request.data import DataRequest
@@ -185,7 +174,9 @@ class GatewayStreamer:
                     req.parameters = parameters
                 yield req
 
-        async for resp in self._streamer.stream(_req_generator()):
+        async for resp in self.stream(
+            request_iterator=_req_generator(), results_in_order=results_in_order
+        ):
             if return_results:
                 yield resp
             else:
@@ -199,3 +190,34 @@ class GatewayStreamer:
         await self._connection_pool.close()
 
     Call = stream
+
+    async def process_single_data(
+        self, request: DataRequest, context=None
+    ) -> DataRequest:
+        """Implements request and response handling of a single DataRequest
+        :param request: DataRequest from Client
+        :param context: grpc context
+        :return: response DataRequest
+        """
+        return await self._streamer.process_single_data(request, context)
+
+    @staticmethod
+    def get_streamer():
+        """
+        Return a streamer object based on the current environment context.
+        The streamer object is contructed using runtime arguments stored in the `JINA_STREAMER_ARGS` environment variable.
+        If this method is used outside a Jina context (process not controlled/orchestrated by jina), this method will
+        raise an error.
+        The streamer object does not have tracing/instrumentation capabilities.
+
+        :return: Returns an instance of `GatewayStreamer`
+        """
+        if 'JINA_STREAMER_ARGS' in os.environ:
+            args_dict = json.loads(os.environ['JINA_STREAMER_ARGS'])
+            return GatewayStreamer(**args_dict)
+        else:
+            raise OSError('JINA_STREAMER_ARGS environment variable is not set')
+
+    @staticmethod
+    def _set_env_streamer_args(**kwargs):
+        os.environ['JINA_STREAMER_ARGS'] = json.dumps(kwargs)

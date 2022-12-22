@@ -58,7 +58,7 @@ def test_gateway_ready(port, route, status_code):
     )
     with PodFactory.build_pod(p):
         time.sleep(0.5)
-        a = requests.get(f'http://localhost:{p.port}{route}')
+        a = requests.get(f'http://localhost:{port}{route}')
     assert a.status_code == status_code
 
 
@@ -79,7 +79,8 @@ def test_gateway_index(flow_with_http, test_img_1, test_img_2):
 
 # Timeout is necessary to fail in case of hanging client requests
 @pytest.mark.timeout(60)
-def test_client_websocket(mocker, flow_with_websocket):
+@pytest.mark.parametrize('use_stream', [True, False])
+def test_client_websocket(mocker, flow_with_websocket, use_stream):
     with flow_with_websocket:
         time.sleep(0.5)
         client = Client(
@@ -99,6 +100,37 @@ def test_client_websocket(mocker, flow_with_websocket):
             on_error=on_error_mock,
             on_done=on_done_mock,
             return_responses=True,
+            stream=use_stream,
+        )
+        on_always_mock.assert_called_once()
+        on_done_mock.assert_called_once()
+        on_error_mock.assert_not_called()
+
+
+# Timeout is necessary to fail in case of hanging client requests
+@pytest.mark.timeout(60)
+@pytest.mark.parametrize('use_stream', [True, False])
+def test_client_max_attempts(mocker, flow, use_stream):
+    with flow:
+        time.sleep(0.5)
+        client = Client(
+            host='localhost',
+            port=flow.port,
+        )
+        # Test that a regular index request triggers the correct callbacks
+        on_always_mock = mocker.Mock()
+        on_error_mock = mocker.Mock()
+        on_done_mock = mocker.Mock()
+        client.post(
+            '/',
+            random_docs(1),
+            request_size=1,
+            max_attempts=5,
+            on_always=on_always_mock,
+            on_error=on_error_mock,
+            on_done=on_done_mock,
+            return_responses=True,
+            stream=use_stream,
         )
         on_always_mock.assert_called_once()
         on_done_mock.assert_called_once()
@@ -130,7 +162,8 @@ class MyExec(Executor):
 
 @pytest.mark.slow
 @pytest.mark.parametrize('protocol', ['http', 'websocket', 'grpc'])
-def test_all_sync_clients(protocol, mocker):
+@pytest.mark.parametrize('use_stream', [True, False])
+def test_all_sync_clients(protocol, mocker, use_stream):
     f = Flow(protocol=protocol).add(uses=MyExec)
     docs = list(random_docs(1000))
     m1 = mocker.Mock()
@@ -143,10 +176,12 @@ def test_all_sync_clients(protocol, mocker):
             port=f.port,
             protocol=protocol,
         )
-        c.post('/', on_done=m1)
-        c.post('/foo', docs, on_done=m2)
-        c.post('/foo', on_done=m3)
-        c.post('/foo', docs, parameters={'hello': 'world'}, on_done=m4)
+        c.post('/', on_done=m1, stream=use_stream)
+        c.post('/foo', docs, on_done=m2, stream=use_stream)
+        c.post('/foo', on_done=m3, stream=use_stream)
+        c.post(
+            '/foo', docs, parameters={'hello': 'world'}, on_done=m4, stream=use_stream
+        )
 
     m1.assert_called_once()
     m2.assert_called()

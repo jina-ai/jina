@@ -59,7 +59,7 @@ def _get_configmap_yaml(template: str, params: Dict):
     config_map['metadata']['namespace'] = params.get('namespace')
     if params.get('data'):
         for key, value in params['data'].items():
-            config_map['data'][key] = value
+            config_map['data'][key] = str(value)
     return config_map
 
 

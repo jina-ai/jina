@@ -1,10 +1,10 @@
 import glob
 import os
-from datetime import datetime
 
 import pytest
 
-from jina import Document, Flow, __uptime__, __windows__
+from jina import Document, Flow
+from jina.constants import __uptime__, __windows__
 from jina.enums import LogVerbosity
 from jina.helper import colored
 from jina.logging.logger import JinaLogger
@@ -80,18 +80,6 @@ def test_logging_quiet(caplog):
     # no way to capture logs in multiprocessing
     # see discussion here: https://github.com/pytest-dev/pytest/issues/3037#issuecomment-745050393
 
-    f = Flow().add().add()
-    with f:
-        f.index(Document())
-
     f = Flow().add(quiet=True).add()
-    with f:
-        f.index(Document())
-
-    f = Flow().add(quiet=True).add(quiet=True)
-    with f:
-        f.index(Document())
-
-    f = Flow(quiet=True).add().add()
     with f:
         f.index(Document())

@@ -252,7 +252,8 @@ async def test_deployments_with_executor(port_generator):
 
 
 @pytest.mark.asyncio
-async def test_deployments_with_replicas_advance_faster(port_generator):
+@pytest.mark.parametrize('stream', [True, False])
+async def test_deployments_with_replicas_advance_faster(port_generator, stream):
     head_port = port_generator()
     port = port_generator()
     graph_description = (
@@ -277,7 +278,7 @@ async def test_deployments_with_replicas_advance_faster(port_generator):
 
     c = Client(host='localhost', port=port, asyncio=True)
     input_docs = [Document(text='slow'), Document(text='fast')]
-    responses = c.post('/', inputs=input_docs, request_size=1, return_responses=True)
+    responses = c.post('/', inputs=input_docs, request_size=1, return_responses=True, stream=stream)
     response_list = []
     async for response in responses:
         response_list.append(response)
@@ -322,8 +323,7 @@ def _create_regular_deployment(
     shards=None,
     replicas=None,
 ):
-    args = set_deployment_parser().parse_args([])
-    args.port = port
+    args = set_deployment_parser().parse_args(['--port', str(port)])
     args.name = name
     if shards:
         args.shards = shards

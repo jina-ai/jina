@@ -1,4 +1,4 @@
-from jina import Executor, Flow, requests, DocumentArray
+from jina import DocumentArray, Executor, Flow, requests
 
 
 def test_gateway_metric_labels(monkeypatch_metric_exporter):
@@ -17,7 +17,7 @@ def test_gateway_metric_labels(monkeypatch_metric_exporter):
     with Flow(
         tracing=False,
         metrics=True,
-        metrics_exporter_host='localhost',
+        metrics_exporter_host='http://localhost',
         metrics_exporter_port=4317,
         port=12345,
     ).add(name='first_exec', uses=FirstExec).add(
@@ -36,9 +36,7 @@ def test_gateway_metric_labels(monkeypatch_metric_exporter):
 
     assert (
         'address'
-        in gateway_metric_data_point['jina_sending_request_seconds'][0][
-            'attributes'
-        ]
+        in gateway_metric_data_point['jina_sending_request_seconds'][0]['attributes']
     )
     assert (
         'address'
@@ -46,15 +44,11 @@ def test_gateway_metric_labels(monkeypatch_metric_exporter):
     )
     assert (
         'address'
-        in gateway_metric_data_point['jina_received_response_bytes'][0][
-            'attributes'
-        ]
+        in gateway_metric_data_point['jina_received_response_bytes'][0]['attributes']
     )
     assert (
         'address'
-        in gateway_metric_data_point['jina_sending_request_seconds'][1][
-            'attributes'
-        ]
+        in gateway_metric_data_point['jina_sending_request_seconds'][1]['attributes']
     )
     assert (
         'address'
@@ -62,16 +56,12 @@ def test_gateway_metric_labels(monkeypatch_metric_exporter):
     )
     assert (
         'address'
-        in gateway_metric_data_point['jina_received_response_bytes'][1][
-            'attributes'
-        ]
+        in gateway_metric_data_point['jina_received_response_bytes'][1]['attributes']
     )
 
     assert (
         'deployment'
-        in gateway_metric_data_point['jina_sending_request_seconds'][0][
-            'attributes'
-        ]
+        in gateway_metric_data_point['jina_sending_request_seconds'][0]['attributes']
     )
     assert (
         'deployment'
@@ -79,15 +69,11 @@ def test_gateway_metric_labels(monkeypatch_metric_exporter):
     )
     assert (
         'deployment'
-        in gateway_metric_data_point['jina_received_response_bytes'][0][
-            'attributes'
-        ]
+        in gateway_metric_data_point['jina_received_response_bytes'][0]['attributes']
     )
     assert (
         'deployment'
-        in gateway_metric_data_point['jina_sending_request_seconds'][1][
-            'attributes'
-        ]
+        in gateway_metric_data_point['jina_sending_request_seconds'][1]['attributes']
     )
     assert (
         'deployment'
@@ -95,9 +81,7 @@ def test_gateway_metric_labels(monkeypatch_metric_exporter):
     )
     assert (
         'deployment'
-        in gateway_metric_data_point['jina_received_response_bytes'][1][
-            'attributes'
-        ]
+        in gateway_metric_data_point['jina_received_response_bytes'][1]['attributes']
     )
 
     assert {'first_exec', 'second_exec'} == {
@@ -121,7 +105,7 @@ def test_merge_with_no_reduce(monkeypatch_metric_exporter):
         Flow(
             tracing=False,
             metrics=True,
-            metrics_exporter_host='localhost',
+            metrics_exporter_host='http://localhost',
             metrics_exporter_port=4317,
             port=12345,
         )

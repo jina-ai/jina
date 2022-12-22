@@ -1,4 +1,4 @@
-# Docker image
+# Via Docker Image
 
 Our universal Docker image is ready-to-use on linux/amd64 and linux/arm64. The Docker image name always starts with `jinaai/jina` followed by a tag composed of three parts:
 

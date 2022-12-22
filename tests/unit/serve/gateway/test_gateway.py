@@ -6,17 +6,22 @@ import time
 import pytest
 
 from jina.helper import random_port
-from jina.parsers import set_gateway_parser, set_pod_parser
+from jina.parsers import set_gateway_parser
 from jina.serve.runtimes.gateway import GatewayRuntime
 from jina.serve.runtimes.worker import WorkerRuntime
 from tests.helper import (
+    _generate_pod_args,
     _validate_custom_gateway_process,
     _validate_dummy_custom_gateway_response,
 )
-
 from tests.unit.yaml.dummy_gateway import DummyGateway
+from tests.unit.yaml.dummy_gateway_get_streamer import DummyGatewayGetStreamer
+
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 _dummy_gateway_yaml_path = os.path.join(cur_dir, '../../yaml/test-custom-gateway.yml')
+_dummy_fastapi_gateway_yaml_path = os.path.join(
+    cur_dir, '../../yaml/test-fastapi-gateway.yml'
+)
 
 
 def _create_gateway_runtime(port, uses, uses_with, worker_port):
@@ -58,7 +63,7 @@ def _start_gateway_runtime(uses, uses_with, worker_port):
 
 
 def _create_worker_runtime(port, uses):
-    args = set_pod_parser().parse_args(['--uses', uses, '--port', str(port)])
+    args = _generate_pod_args(['--uses', uses, '--port', str(port)])
 
     with WorkerRuntime(args) as runtime:
         runtime.run_forever()
@@ -82,7 +87,17 @@ def _start_worker_runtime(uses):
     [
         ('DummyGateway', {}, {'arg1': None, 'arg2': None, 'arg3': 'default-arg3'}),
         (
+            'DummyGatewayGetStreamer',
+            {},
+            {'arg1': None, 'arg2': None, 'arg3': 'default-arg3'},
+        ),
+        (
             _dummy_gateway_yaml_path,
+            {},
+            {'arg1': 'hello', 'arg2': 'world', 'arg3': 'default-arg3'},
+        ),
+        (
+            _dummy_fastapi_gateway_yaml_path,
             {},
             {'arg1': 'hello', 'arg2': 'world', 'arg3': 'default-arg3'},
         ),
@@ -92,7 +107,17 @@ def _start_worker_runtime(uses):
             {'arg1': 'arg1', 'arg2': 'arg2', 'arg3': 'arg3'},
         ),
         (
+            'DummyGatewayGetStreamer',
+            {'arg1': 'arg1', 'arg2': 'arg2', 'arg3': 'arg3'},
+            {'arg1': 'arg1', 'arg2': 'arg2', 'arg3': 'arg3'},
+        ),
+        (
             _dummy_gateway_yaml_path,
+            {'arg1': 'arg1', 'arg2': 'arg2', 'arg3': 'arg3'},
+            {'arg1': 'arg1', 'arg2': 'arg2', 'arg3': 'arg3'},
+        ),
+        (
+            _dummy_fastapi_gateway_yaml_path,
             {'arg1': 'arg1', 'arg2': 'arg2', 'arg3': 'arg3'},
             {'arg1': 'arg1', 'arg2': 'arg2', 'arg3': 'arg3'},
         ),
@@ -102,7 +127,17 @@ def _start_worker_runtime(uses):
             {'arg1': 'arg1', 'arg2': None, 'arg3': 'default-arg3'},
         ),
         (
+            'DummyGatewayGetStreamer',
+            {'arg1': 'arg1'},
+            {'arg1': 'arg1', 'arg2': None, 'arg3': 'default-arg3'},
+        ),
+        (
             _dummy_gateway_yaml_path,
+            {'arg1': 'arg1'},
+            {'arg1': 'arg1', 'arg2': 'world', 'arg3': 'default-arg3'},
+        ),
+        (
+            _dummy_fastapi_gateway_yaml_path,
             {'arg1': 'arg1'},
             {'arg1': 'arg1', 'arg2': 'world', 'arg3': 'default-arg3'},
         ),

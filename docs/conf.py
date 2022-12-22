@@ -48,7 +48,11 @@ html_baseurl = 'https://docs.jina.ai'
 sitemap_url_scheme = '{link}'
 sitemap_locales = [None]
 sitemap_filename = "sitemap.xml"
-autodoc_default_options = {"members": True, "inherited-members": True, 'class-doc-from': '__init__',}
+autodoc_default_options = {
+    "members": True,
+    "inherited-members": True,
+    'class-doc-from': '__init__',
+}
 
 html_theme_options = {
     'light_logo': 'logo-light.svg',
@@ -62,12 +66,9 @@ html_theme_options = {
         "color-brand-primary": "#FBCB67",
         "color-brand-content": "#FBCB67",
     },
-
     # PLEASE DO NOT DELETE the empty line between `start-announce` and `end-announce`
     # PLEASE DO NOT DELETE `start-announce`/ `end-announce` it is used for our dev bot to inject announcement from GH
-
     # start-announce
-
     # end-announce
 }
 
@@ -78,9 +79,7 @@ html_css_files = [
     'docbot.css',
     'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css',
 ]
-html_js_files = [
-    'https://cdn.jsdelivr.net/npm/qabot@0.4'
-]
+html_js_files = ['https://cdn.jsdelivr.net/npm/qabot@0.4']
 htmlhelp_basename = slug
 html_show_sourcelink = False
 html_favicon = '_static/favicon.ico'
@@ -169,14 +168,16 @@ ogp_image = 'https://docs.jina.ai/_static/banner.png'
 ogp_use_first_image = True
 ogp_description_length = 300
 ogp_type = 'website'
-ogp_site_name = f'Jina {os.environ.get("SPHINX_MULTIVERSION_VERSION", version)} Documentation'
+ogp_site_name = (
+    f'Jina {os.environ.get("SPHINX_MULTIVERSION_VERSION", version)} Documentation'
+)
 
 ogp_custom_meta_tags = [
     '<meta name="twitter:card" content="summary_large_image">',
     '<meta name="twitter:site" content="@JinaAI_">',
     '<meta name="twitter:creator" content="@JinaAI_">',
-    '<meta name="description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native · MLOps">',
-    '<meta property="og:description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native · MLOps">',
+    '<meta name="description" content="Build multimodal AI services via cloud native technologies · Neural Search · Generative AI · Cloud Native · MLOps">',
+    '<meta property="og:description" content="Build multimodal AI services via cloud native technologies · Neural Search · Generative AI · Cloud Native · MLOps">',
     '''
     <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-48ZDWC8GT6"></script>
@@ -196,13 +197,15 @@ ogp_custom_meta_tags = [
 def configure_qa_bot_ui(app):
     # This sets the server address to <qa-bot>
     server_address = app.config['server_address']
-    js_text = """
+    js_text = (
+        """
         document.addEventListener('DOMContentLoaded', function() { 
             document.querySelector('qa-bot').setAttribute('server', '%s');
         });
-        """ % server_address
+        """
+        % server_address
+    )
     app.add_js_file(None, body=js_text)
-
 
 
 def setup(app):

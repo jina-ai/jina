@@ -355,7 +355,7 @@ def test_external_flow_with_grpc_metadata():
     from grpc_health.v1 import health, health_pb2, health_pb2_grpc
     from grpc_reflection.v1alpha import reflection
 
-    from jina import __default_host__
+    from jina.constants import __default_host__
     from jina.proto import jina_pb2, jina_pb2_grpc
     from jina.serve.runtimes.gateway import GRPCGateway
     from jina.serve.runtimes.helper import _get_grpc_server_options
@@ -424,7 +424,7 @@ def test_external_flow_with_grpc_metadata():
                 )
             reflection.enable_server_reflection(service_names, self.server)
 
-            bind_addr = f'{__default_host__}:{self.port}'
+            bind_addr = f'{self.host}:{self.port}'
 
             if self.ssl_keyfile and self.ssl_certfile:
                 with open(self.ssl_keyfile, 'rb') as f:

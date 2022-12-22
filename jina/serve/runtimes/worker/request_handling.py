@@ -1,10 +1,15 @@
+import asyncio
+import functools
+import json
 from typing import TYPE_CHECKING, Dict, List, Optional, Tuple
 
 from docarray import DocumentArray
-from jina import __default_endpoint__
+
+from jina.constants import __default_endpoint__
 from jina.excepts import BadConfigSource
 from jina.importer import ImportExtensions
 from jina.serve.executors import BaseExecutor
+from jina.serve.runtimes.worker.batch_queue import BatchQueue
 from jina.types.request.data import DataRequest
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -23,14 +28,14 @@ class WorkerRequestHandler:
     _KEY_RESULT = '__results__'
 
     def __init__(
-            self,
-            args: 'argparse.Namespace',
-            logger: 'JinaLogger',
-            metrics_registry: Optional['CollectorRegistry'] = None,
-            tracer_provider: Optional['trace.TracerProvider'] = None,
-            meter_provider: Optional['metrics.MeterProvider'] = None,
-            deployment_name: str = '',
-            **kwargs,
+        self,
+        args: 'argparse.Namespace',
+        logger: 'JinaLogger',
+        metrics_registry: Optional['CollectorRegistry'] = None,
+        tracer_provider: Optional['trace.TracerProvider'] = None,
+        meter_provider: Optional['metrics.MeterProvider'] = None,
+        deployment_name: str = '',
+        **kwargs,
     ):
         """Initialize private parameters and execute private loading functions.
 
@@ -58,18 +63,77 @@ class WorkerRequestHandler:
         )
         self._init_monitoring(metrics_registry, meter)
         self.deployment_name = deployment_name
+        # In order to support batching parameters separately, we have to lazily create batch queues
+        # So we store the config for each endpoint in the initialization
+        self._batchqueue_config: Dict[str, Dict] = {}
+        # the below is of "shape" exec_endpoint_name -> parameters_key -> batch_queue
+        self._batchqueue_instances: Dict[str, Dict[str, BatchQueue]] = {}
+        self._init_batchqueue_dict()
+
+    def _all_batch_queues(self) -> List[BatchQueue]:
+        """Returns a list of all batch queue instances
+        :return: List of all batch queues for this request handler
+        """
+        return [
+            batch_queue
+            for param_to_queue in self._batchqueue_instances.values()
+            for batch_queue in param_to_queue.values()
+        ]
+
+    def _init_batchqueue_dict(self):
+        """Determines how endpoints and method names map to batch queues. Afterwards, this method initializes the
+        dynamic batching state of the request handler:
+            * _batchqueue_instances of "shape" exec_endpoint_name -> parameters_key -> batch_queue
+            * _batchqueue_config mapping each exec_endpoint_name to a dynamic batching configuration
+        """
+        if getattr(self._executor, 'dynamic_batching', None) is not None:
+            # We need to sort the keys into endpoints and functions
+            # Endpoints allow specific configurations while functions allow configs to be applied to all endpoints of the function
+            dbatch_endpoints = []
+            dbatch_functions = []
+            for key, dbatch_config in self._executor.dynamic_batching.items():
+                if key.startswith('/'):
+                    dbatch_endpoints.append((key, dbatch_config))
+                else:
+                    dbatch_functions.append((key, dbatch_config))
+
+            # Specific endpoint configs take precedence over function configs
+            for endpoint, dbatch_config in dbatch_endpoints:
+                self._batchqueue_config[endpoint] = dbatch_config
+
+            # Process function configs
+            func_endpoints: Dict[str, List[str]] = {
+                func.__name__: [] for func in self._executor.requests.values()
+            }
+            for endpoint, func in self._executor.requests.items():
+                func_endpoints[func.__name__].append(endpoint)
+            for func_name, dbatch_config in dbatch_functions:
+                for endpoint in func_endpoints[func_name]:
+                    if endpoint not in self._batchqueue_config:
+                        self._batchqueue_config[endpoint] = dbatch_config
+
+            self.logger.debug(
+                f'Executor Dynamic Batching configs: {self._executor.dynamic_batching}'
+            )
+            self.logger.debug(
+                f'Endpoint Batch Queue Configs: {self._batchqueue_config}'
+            )
+
+            self._batchqueue_instances = {
+                endpoint: {} for endpoint in self._batchqueue_config.keys()
+            }
 
     def _init_monitoring(
-            self,
-            metrics_registry: Optional['CollectorRegistry'] = None,
-            meter: Optional['metrics.Meter'] = None,
+        self,
+        metrics_registry: Optional['CollectorRegistry'] = None,
+        meter: Optional['metrics.Meter'] = None,
     ):
 
         if metrics_registry:
 
             with ImportExtensions(
-                    required=True,
-                    help_text='You need to install the `prometheus_client` to use the montitoring functionality of jina',
+                required=True,
+                help_text='You need to install the `prometheus_client` to use the montitoring functionality of jina',
             ):
                 from prometheus_client import Counter, Summary
 
@@ -125,10 +189,10 @@ class WorkerRequestHandler:
             self._sent_response_size_histogram = None
 
     def _load_executor(
-            self,
-            metrics_registry: Optional['CollectorRegistry'] = None,
-            tracer_provider: Optional['trace.TracerProvider'] = None,
-            meter_provider: Optional['metrics.MeterProvider'] = None,
+        self,
+        metrics_registry: Optional['CollectorRegistry'] = None,
+        tracer_provider: Optional['trace.TracerProvider'] = None,
+        meter_provider: Optional['metrics.MeterProvider'] = None,
     ):
         """
         Load the executor to this runtime, specified by ``uses`` CLI argument.
@@ -142,6 +206,7 @@ class WorkerRequestHandler:
                 uses_with=self.args.uses_with,
                 uses_metas=self.args.uses_metas,
                 uses_requests=self.args.uses_requests,
+                uses_dynamic_batching=self.args.uses_dynamic_batching,
                 runtime_args={  # these are not parsed to the yaml config file but are pass directly during init
                     'workspace': self.args.workspace,
                     'shard_id': self.args.shard_id,
@@ -166,6 +231,52 @@ class WorkerRequestHandler:
         except Exception:
             self.logger.critical(f'can not load the executor from {self.args.uses}')
             raise
+
+    def _refresh_executor(self, changed_files):
+        import copy
+        import importlib
+        import inspect
+        import sys
+
+        try:
+            sys_mod_files_modules = {
+                getattr(module, '__file__', ''): module
+                for module in sys.modules.values()
+            }
+
+            for file in changed_files:
+                if file in sys_mod_files_modules:
+                    file_module = sys_mod_files_modules[file]
+                    # TODO: unable to reload main module (for instance, Executor implementation and Executor.serve are
+                    #  in the same file). Raising a warning for now
+                    if file_module.__name__ == '__main__':
+                        self.logger.warning(
+                            'The main module file was changed, cannot reload Executor, please restart '
+                            'the application'
+                        )
+                    importlib.reload(sys_mod_files_modules[file])
+                else:
+                    self.logger.debug(
+                        f'Changed file {file} was not previously imported.'
+                    )
+        except Exception as exc:
+            self.logger.error(
+                f' Exception when refreshing Executor when changes detected in {changed_files}'
+            )
+            raise exc
+
+        importlib.reload(inspect.getmodule(self._executor.__class__))
+        requests = copy.copy(self._executor.requests)
+        old_cls = self._executor.__class__
+        new_cls = getattr(importlib.import_module(old_cls.__module__), old_cls.__name__)
+        new_executor = new_cls.__new__(new_cls)
+        new_executor.__dict__ = self._executor.__dict__
+        for k, v in requests.items():
+            requests[k] = getattr(new_executor.__class__, requests[k].__name__)
+        self._executor = new_executor
+        self._executor.requests.clear()
+        requests = {k: v.__name__ for k, v in requests.items()}
+        self._executor._add_requests(requests)
 
     @staticmethod
     def _parse_params(parameters: Dict, executor_name: str):
@@ -259,7 +370,7 @@ class WorkerRequestHandler:
         return docs
 
     async def handle(
-            self, requests: List['DataRequest'], tracing_context: Optional['Context'] = None
+        self, requests: List['DataRequest'], tracing_context: Optional['Context'] = None
     ) -> DataRequest:
         """Initialize private parameters and execute private loading functions.
 
@@ -267,49 +378,72 @@ class WorkerRequestHandler:
         :param tracing_context: Optional OpenTelemetry tracing context from the originating request.
         :returns: the processed message
         """
+
         # skip executor if endpoints mismatch
-        if (requests[0].header.exec_endpoint not in self._executor.requests
-                and __default_endpoint__ not in self._executor.requests
-        ):
-            self.logger.debug(
-                f'skip executor: mismatch request, exec_endpoint: {requests[0].header.exec_endpoint}, requests: {self._executor.requests}'
-            )
-            return requests[0]
+        exec_endpoint: str = requests[0].header.exec_endpoint
+        if exec_endpoint not in self._executor.requests:
+            if __default_endpoint__ in self._executor.requests:
+                exec_endpoint = __default_endpoint__
+            else:
+                self.logger.debug(
+                    f'skip executor: endpoint mismatch. '
+                    f'Request endpoint: `{exec_endpoint}`. '
+                    'Available endpoints: '
+                    f'{", ".join(list(self._executor.requests.keys()))}'
+                )
+                return requests[0]
 
         self._record_request_size_monitoring(requests)
 
         params = self._parse_params(requests[0].parameters, self._executor.metas.name)
-        docs = WorkerRequestHandler.get_docs_from_request(
-            requests,
-            field='docs',
-        )
 
-        # executor logic
-        docs_matrix, docs_map = WorkerRequestHandler._get_docs_matrix_from_request(
-            requests
-        )
-        return_data = await self._executor.__acall__(
-            req_endpoint=requests[0].header.exec_endpoint,
-            docs=docs,
-            parameters=params,
-            docs_matrix=docs_matrix,
-            docs_map=docs_map,
-            tracing_context=tracing_context,
-        )
+        if exec_endpoint in self._batchqueue_config:
+            assert len(requests) == 1, 'dynamic batching does not support no_reduce'
 
-        docs = self._set_result(requests, return_data, docs)
+            param_key = json.dumps(params, sort_keys=True)
+            if param_key not in self._batchqueue_instances[exec_endpoint]:
+                self._batchqueue_instances[exec_endpoint][param_key] = BatchQueue(
+                    functools.partial(self._executor.__acall__, exec_endpoint),
+                    output_array_type=self.args.output_array_type,
+                    params=params,
+                    **self._batchqueue_config[exec_endpoint],
+                )
+            # This is necessary because push might need to await for the queue to be emptied
+            task = await self._batchqueue_instances[exec_endpoint][param_key].push(
+                requests[0]
+            )
+            await task
+        else:
+            docs = WorkerRequestHandler.get_docs_from_request(
+                requests,
+                field='docs',
+            )
+
+            docs_matrix, docs_map = WorkerRequestHandler._get_docs_matrix_from_request(
+                requests
+            )
+            return_data = await self._executor.__acall__(
+                req_endpoint=requests[0].header.exec_endpoint,
+                docs=docs,
+                parameters=params,
+                docs_matrix=docs_matrix,
+                docs_map=docs_map,
+                tracing_context=tracing_context,
+            )
+
+            _ = self._set_result(requests, return_data, docs)
 
         for req in requests:
             req.add_executor(self.deployment_name)
 
-        self._record_docs_processed_monitoring(requests, docs)
+        self._record_docs_processed_monitoring(requests, requests[0].docs)
         self._record_response_size_monitoring(requests)
 
         return requests[0]
 
     @staticmethod
     def replace_docs(
-            request: List['DataRequest'], docs: 'DocumentArray', ndarrray_type: str = None
+        request: List['DataRequest'], docs: 'DocumentArray', ndarrray_type: str = None
     ) -> None:
         """Replaces the docs in a message with new Documents.
 
@@ -343,15 +477,16 @@ class WorkerRequestHandler:
                     requests[0].routes.append(route)
                     existing_executor_routes.append(route.executor)
 
-    def close(self):
-        """Close the data request handler, by closing the executor"""
+    async def close(self):
+        """Close the data request handler, by closing the executor and the batch queues."""
         if not self._is_closed:
+            await asyncio.gather(*[q.close() for q in self._all_batch_queues()])
             self._executor.close()
             self._is_closed = True
 
     @staticmethod
     def _get_docs_matrix_from_request(
-            requests: List['DataRequest'],
+        requests: List['DataRequest'],
     ) -> Tuple[Optional[List['DocumentArray']], Optional[Dict[str, 'DocumentArray']]]:
         """
         Returns a docs matrix from a list of DataRequest objects.
@@ -375,7 +510,7 @@ class WorkerRequestHandler:
 
     @staticmethod
     def get_parameters_dict_from_request(
-            requests: List['DataRequest'],
+        requests: List['DataRequest'],
     ) -> 'Dict':
         """
         Returns a parameters dict from a list of DataRequest objects.
@@ -395,8 +530,8 @@ class WorkerRequestHandler:
 
     @staticmethod
     def get_docs_from_request(
-            requests: List['DataRequest'],
-            field: str,
+        requests: List['DataRequest'],
+        field: str,
     ) -> 'DocumentArray':
         """
         Gets a field from the message

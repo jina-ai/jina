@@ -1,4 +1,6 @@
 import argparse
+import asyncio
+import os
 from abc import ABC
 from typing import TYPE_CHECKING, List, Optional
 
@@ -34,6 +36,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         :param kwargs: keyword args
         """
         args = replace_args_with_secrets(args, getattr(args, 'secrets', []))
+        self._hot_reload_task = None
         self._health_servicer = health.aio.HealthServicer()
         super().__init__(args, **kwargs)
 
@@ -141,34 +144,70 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
             self._health_servicer, self._grpc_server
         )
 
+        reflection.enable_server_reflection(service_names, self._grpc_server)     
+        bind_addr = f'{self.args.host}:{self.args.port}'
+        self.logger.debug(f'start listening on {bind_addr}')
+        self._grpc_server.add_insecure_port(bind_addr)
+        await self._grpc_server.start()
         for service in service_names:
             await self._health_servicer.set(
                 service, health_pb2.HealthCheckResponse.SERVING
             )
-        reflection.enable_server_reflection(service_names, self._grpc_server)
-        bind_addr = f'0.0.0.0:{self.args.port}'
-        self.logger.debug(f'start listening on {bind_addr}')
-        self._grpc_server.add_insecure_port(bind_addr)
-        await self._grpc_server.start()
+
+    async def _hot_reload(self):
+        import inspect
+
+        executor_file = inspect.getfile(self._request_handler._executor.__class__)
+        watched_files = set([executor_file] + (self.args.py_modules or []))
+        executor_base_path = os.path.dirname(os.path.abspath(executor_file))
+        extra_paths = [
+            os.path.join(path, name)
+            for path, subdirs, files in os.walk(executor_base_path)
+            for name in files
+        ]
+        extra_python_paths = list(filter(lambda x: x.endswith('.py'), extra_paths))
+        for extra_python_file in extra_python_paths:
+            watched_files.add(extra_python_file)
+
+        with ImportExtensions(
+            required=True,
+            logger=self.logger,
+            help_text='''hot reload requires watchfiles dependency to be installed. You can do `pip install 
+                watchfiles''',
+        ):
+            from watchfiles import awatch
+
+        async for changes in awatch(*watched_files):
+            changed_files = [changed_file for _, changed_file in changes]
+            self.logger.info(
+                f'detected changes in: {changed_files}. Refreshing the Executor'
+            )
+            self._request_handler._refresh_executor(changed_files)
 
     async def async_run_forever(self):
         """Block until the GRPC server is terminated"""
+        self.logger.debug(f'run grpc server forever')
+        if self.args.reload:
+            self._hot_reload_task = asyncio.create_task(self._hot_reload())
         await self._grpc_server.wait_for_termination()
 
     async def async_cancel(self):
         """Stop the GRPC server"""
         self.logger.debug('cancel WorkerRuntime')
-
+        if self._hot_reload_task is not None:
+            self._hot_reload_task.cancel()
+        self.logger.debug('closing the server')
         # 0.5 gives the runtime some time to complete outstanding responses
         # this should be handled better, 1.0 is a rather random number
+        await self._health_servicer.enter_graceful_shutdown()
+        await self._request_handler.close()  # allow pending requests to be processed
         await self._grpc_server.stop(1.0)
         self.logger.debug('stopped GRPC Server')
 
     async def async_teardown(self):
         """Close the data request handler"""
-        await self._health_servicer.enter_graceful_shutdown()
+        self.logger.debug('tearing down WorkerRuntime')
         await self.async_cancel()
-        self._request_handler.close()
 
     async def process_single_data(self, request: DataRequest, context) -> DataRequest:
         """
@@ -189,11 +228,11 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         :returns: the response request
         """
         self.logger.debug('got an endpoint discovery request')
-        endpointsProto = jina_pb2.EndpointsProto()
-        endpointsProto.endpoints.extend(
+        endpoints_proto = jina_pb2.EndpointsProto()
+        endpoints_proto.endpoints.extend(
             list(self._request_handler._executor.requests.keys())
         )
-        return endpointsProto
+        return endpoints_proto
 
     def _extract_tracing_context(
         self, metadata: grpc.aio.Metadata
@@ -214,7 +253,6 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         :param context: grpc context
         :returns: the response request
         """
-
         with MetricsTimer(
             self._summary, self._receiving_request_seconds, self._metric_attributes
         ):
@@ -270,10 +308,32 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         :param context: grpc context
         :returns: the response request
         """
-        infoProto = jina_pb2.JinaInfoProto()
+        info_proto = jina_pb2.JinaInfoProto()
         version, env_info = get_full_version()
         for k, v in version.items():
-            infoProto.jina[k] = str(v)
+            info_proto.jina[k] = str(v)
         for k, v in env_info.items():
-            infoProto.envs[k] = str(v)
-        return infoProto
+            info_proto.envs[k] = str(v)
+        return info_proto
+
+    async def Check(
+        self, request: health_pb2.HealthCheckRequest, context
+    ) -> health_pb2.HealthCheckResponse:
+        """Calls the underlying HealthServicer.Check method with the same arguments
+        :param request: grpc request
+        :param context: grpc request context
+        :returns: the grpc HealthCheckResponse
+        """
+        self.logger.debug(f'Receive Check request')
+        return await self._health_servicer.Check(request, context)
+
+    async def Watch(
+        self, request: health_pb2.HealthCheckRequest, context
+    ) -> health_pb2.HealthCheckResponse:
+        """Calls the underlying HealthServicer.Watch method with the same arguments
+        :param request: grpc request
+        :param context: grpc request context
+        :returns: the grpc HealthCheckResponse
+        """
+        self.logger.debug(f'Receive Watch request')
+        return await self._health_servicer.Watch(request, context)

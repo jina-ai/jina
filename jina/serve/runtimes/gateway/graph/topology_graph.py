@@ -7,8 +7,9 @@ from typing import Dict, List, Optional, Tuple
 
 import grpc.aio
 
-from jina import __default_endpoint__
+from jina.constants import __default_endpoint__
 from jina.excepts import InternalNetworkError
+from jina.logging.logger import JinaLogger
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.helper import _parse_specific_params
 from jina.serve.runtimes.worker.request_handling import WorkerRequestHandler
@@ -39,6 +40,7 @@ class TopologyGraph:
             reduce: bool = True,
             timeout_send: Optional[float] = None,
             retries: Optional[int] = -1,
+            logger: Optional[JinaLogger] = None,
         ):
             self.name = name
             self.outgoing_nodes = []
@@ -54,6 +56,7 @@ class TopologyGraph:
             self._timeout_send = timeout_send
             self._retries = retries
             self.result_in_params_returned = None
+            self.logger = logger or JinaLogger(self.__class__.__name__)
 
         @property
         def leaf(self):
@@ -145,7 +148,8 @@ class TopologyGraph:
                     # avoid sending to executor which does not bind to this endpoint
                     if endpoint is not None and executor_endpoint_mapping is not None:
                         if (
-                            endpoint not in executor_endpoint_mapping[self.name]
+                            self.name in executor_endpoint_mapping
+                            and endpoint not in executor_endpoint_mapping[self.name]
                             and __default_endpoint__
                             not in executor_endpoint_mapping[self.name]
                         ):
@@ -170,6 +174,7 @@ class TopologyGraph:
                             raise result
                         else:
                             resp, metadata = result
+
                         if WorkerRequestHandler._KEY_RESULT in resp.parameters:
                             # Accumulate results from each Node and then add them to the original
                             self.result_in_params_returned = resp.parameters[
@@ -180,6 +185,11 @@ class TopologyGraph:
                         self.parts_to_send.clear()
                     except InternalNetworkError as err:
                         self._handle_internalnetworkerror(err)
+                    except Exception as err:
+                        self.logger.error(
+                            f'Exception sending requests to {self.name}: {err}'
+                        )
+                        raise err
 
                     self.end_time = datetime.utcnow()
                     if metadata and 'is-error' in metadata:
@@ -329,9 +339,11 @@ class TopologyGraph:
         deployments_no_reduce: List[str] = [],
         timeout_send: Optional[float] = 1.0,
         retries: Optional[int] = -1,
+        logger: Optional[JinaLogger] = None,
         *args,
         **kwargs,
     ):
+        self.logger = logger or JinaLogger(self.__class__.__name__)
         num_parts_per_node = defaultdict(int)
         if 'start-gateway' in graph_representation:
             origin_node_names = graph_representation['start-gateway']
@@ -364,6 +376,7 @@ class TopologyGraph:
                 reduce=node_name not in deployments_no_reduce,
                 timeout_send=timeout_send,
                 retries=retries,
+                logger=self.logger,
             )
 
         for node_name, outgoing_node_names in graph_representation.items():

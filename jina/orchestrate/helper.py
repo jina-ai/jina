@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 
-from jina import __cache_path__
+from jina.constants import __cache_path__
 
 
 def generate_default_volume_and_workspace(workspace_id=''):

@@ -62,7 +62,10 @@ def local_hub_executor(tmpdir):
     )
 
 
-def test_use_from_local_hub_deployment_level(mocker, monkeypatch, local_hub_executor):
+@pytest.mark.parametrize('uses', ['jinahub://hello', 'jinaai://jina-ai/hello'])
+def test_use_from_local_hub_deployment_level(
+    mocker, monkeypatch, local_hub_executor, uses
+):
     from hubble.executor.hubio import HubExecutor, HubIO
 
     mock = mocker.Mock()
@@ -91,12 +94,13 @@ def test_use_from_local_hub_deployment_level(mocker, monkeypatch, local_hub_exec
         )
 
     monkeypatch.setattr(HubIO, 'fetch_meta', _mock_fetch)
-    a = set_deployment_parser().parse_args(['--uses', 'jinahub://hello'])
+    a = set_deployment_parser().parse_args(['--uses', uses])
     with Deployment(a):
         pass
 
 
-def test_use_from_local_hub_flow_level(mocker, monkeypatch, local_hub_executor):
+@pytest.mark.parametrize('uses', ['jinahub://hello', 'jinaai://jina-ai/hello'])
+def test_use_from_local_hub_flow_level(mocker, monkeypatch, local_hub_executor, uses):
     from hubble.executor.hubio import HubExecutor, HubIO
 
     mock = mocker.Mock()
@@ -126,5 +130,5 @@ def test_use_from_local_hub_flow_level(mocker, monkeypatch, local_hub_executor):
 
     monkeypatch.setattr(HubIO, 'fetch_meta', _mock_fetch)
 
-    with Flow().add(uses='jinahub://hello', install_requirements=True):
+    with Flow().add(uses=uses, install_requirements=True):
         pass

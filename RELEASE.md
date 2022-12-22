@@ -98,9 +98,11 @@ jinaai/jina:{version}{python_version}{extra}
     - `x.y.z`: the release of a particular version;
     - `x.y`: the alias to the last `x.y.z` patch release, i.e. `x.y` = `x.y.max(z)`;
 - `{python_version}`: The Python version of the image. Possible values:
-    - ` `, `-py37`: Python 3.7;
-    - `-py38` for Python 3.8;
+    - `-py37`: Python 3.7;
+    - ` `, `-py38` for Python 3.8;
     - `-py39` for Python 3.9;
+    - `-py310` for Python 3.10;
+    - `-py311` for Python 3.11;
 - `{extra}`: the extra dependency installed along with Jina. Possible values:
     - ` `: Jina is installed inside the image via `pip install jina`;
     - `-standard`: Jina is installed inside the image via `pip install jina`. It includes all recommended dependencies;  

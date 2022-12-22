@@ -1,5 +1,5 @@
 import numpy as np
-from docarray import DocumentArray, Document, dataclass
+from docarray import Document, DocumentArray, dataclass
 from docarray.typing import Text
 
 from jina import Executor, Flow, requests
@@ -18,8 +18,8 @@ def test_specific_params():
 
     flow = (
         Flow()
-            .add(uses=MyExec, name='exec1', uses_with={'params_awaited': {'key_1': True}})
-            .add(
+        .add(uses=MyExec, name='exec1', uses_with={'params_awaited': {'key_1': True}})
+        .add(
             uses=MyExec,
             name='exec2',
             uses_with={'params_awaited': {'key_1': True, 'key_2': False}},
@@ -65,7 +65,9 @@ def test_specific_params_with_branched_flow():
             assert text2_path == '@.[text2]'
             text1_docs = docs[text1_path]
             text2_docs = docs[text2_path]
-            combined_embeddings = self.model(text1_docs.embeddings, text2_docs.embeddings)
+            combined_embeddings = self.model(
+                text1_docs.embeddings, text2_docs.embeddings
+            )
             docs.embeddings = combined_embeddings
 
     @dataclass
@@ -77,9 +79,13 @@ def test_specific_params_with_branched_flow():
     da = DocumentArray([Document(mmdoc_dataclass)])
     f = (
         Flow()
-            .add(uses=TextEncoderTestSpecific, name='Text1Encoder')
-            .add(uses=TextEncoderTestSpecific, name='Text2Encoder', needs='gateway')
-            .add(uses=EmbeddingCombinerTestSpecific, name='Combiner', needs=['Text1Encoder', 'Text2Encoder'])
+        .add(uses=TextEncoderTestSpecific, name='Text1Encoder')
+        .add(uses=TextEncoderTestSpecific, name='Text2Encoder', needs='gateway')
+        .add(
+            uses=EmbeddingCombinerTestSpecific,
+            name='Combiner',
+            needs=['Text1Encoder', 'Text2Encoder'],
+        )
     )
 
     with f:
@@ -96,4 +102,4 @@ def test_specific_params_with_branched_flow():
 
     assert len(da) == 1
     for d in da:
-        assert d.embedding.shape == (256, )
+        assert d.embedding.shape == (256,)

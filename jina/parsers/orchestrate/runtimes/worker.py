@@ -10,7 +10,7 @@ def mixin_worker_runtime_parser(parser):
     """
 
     gp = add_arg_group(parser, title='WorkerRuntime')
-    from jina import __default_executor__
+    from jina.constants import __default_executor__
 
     gp.add_argument(
         '--uses',
@@ -58,6 +58,15 @@ def mixin_worker_runtime_parser(parser):
         ''',
     )
     gp.add_argument(
+        '--uses-dynamic-batching',
+        action=KVAppendAction,
+        metavar='KEY: VALUE',
+        nargs='*',
+        help='''
+        Dictionary of keyword arguments that will override the `dynamic_batching` configuration in `uses`
+        ''',
+    )
+    gp.add_argument(
         '--py-modules',
         type=str,
         nargs='*',
@@ -68,7 +77,7 @@ The customized python modules need to be imported before loading the executor
 Note that the recommended way is to only import a single module - a simple python file, if your
 executor can be defined in a single file, or an ``__init__.py`` file if you have multiple files,
 which should be structured as a python package. For more details, please see the
-`Executor cookbook <https://docs.jina.ai/fundamentals/executor/executor-files/>`__
+`Executor cookbook <https://docs.jina.ai/concepts/executor/executor-files/>`__
 ''',
     )
 

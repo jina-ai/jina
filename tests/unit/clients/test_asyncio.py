@@ -3,7 +3,7 @@ from math import ceil
 
 import pytest
 
-from jina import Document
+from docarray import Document
 from jina.clients.request.asyncio import request_generator
 
 NUM_INPUT_DOCS = 30

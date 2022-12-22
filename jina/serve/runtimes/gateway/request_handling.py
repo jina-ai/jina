@@ -7,6 +7,7 @@ import grpc.aio
 from docarray import DocumentArray
 from jina.excepts import InternalNetworkError
 from jina.helper import GATEWAY_NAME
+from jina.logging.logger import JinaLogger
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.gateway.graph.topology_graph import TopologyGraph
 from jina.serve.runtimes.helper import _is_param_for_specific_executor
@@ -35,10 +36,12 @@ class GatewayRequestHandler(MonitoringRequestMixin):
         metrics_registry: Optional['CollectorRegistry'] = None,
         meter: Optional['Meter'] = None,
         runtime_name: Optional[str] = None,
+        logger: Optional[JinaLogger] = None,
     ):
         super().__init__(metrics_registry, meter, runtime_name)
         self._executor_endpoint_mapping = None
         self._gathering_endpoints = False
+        self.logger = logger or JinaLogger(self.__class__.__name__)
 
     def handle_request(
         self, graph: 'TopologyGraph', connection_pool: 'GrpcConnectionPool'
@@ -63,11 +66,14 @@ class GatewayRequestHandler(MonitoringRequestMixin):
                 if err_code == grpc.StatusCode.UNAVAILABLE:
                     err._details = (
                         err.details()
-                        + f' |Gateway: Communication error with deployment at address(es) {err.dest_addr}. Head or worker(s) may be down.'
+                        + f' |Gateway: Communication error while gathering endpoints with deployment at address(es) {err.dest_addr}. Head or worker(s) may be down.'
                     )
                     raise err
                 else:
                     raise
+            except Exception as exc:
+                self.logger.error(f' Error gathering endpoints: {exc}')
+                raise exc
 
             self._executor_endpoint_mapping = {}
             for node, (endp, _) in zip(nodes, endpoints):
@@ -205,7 +211,7 @@ class GatewayRequestHandler(MonitoringRequestMixin):
             :return: Returns a request to be returned to the client
             """
             for route in result.routes:
-                if route.executor == 'gateway':
+                if route.executor == GATEWAY_NAME:
                     route.end_time.GetCurrentTime()
 
             self._update_end_request_metrics(result)

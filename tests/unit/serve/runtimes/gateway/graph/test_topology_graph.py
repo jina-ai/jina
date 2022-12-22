@@ -5,7 +5,7 @@ from typing import List
 
 import pytest
 
-from jina import Document, DocumentArray
+from docarray import Document, DocumentArray
 from jina.serve.runtimes.gateway.graph.topology_graph import TopologyGraph
 from jina.types.request import Request
 from jina.types.request.data import DataRequest

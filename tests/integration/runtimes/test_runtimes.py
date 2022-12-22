@@ -11,13 +11,14 @@ import pytest
 from jina import Client, Document, DocumentArray, Executor, requests
 from jina.clients.request import request_generator
 from jina.enums import PollingType
-from jina.parsers import set_gateway_parser, set_pod_parser
+from jina.parsers import set_gateway_parser
 from jina.proto import jina_pb2_grpc
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.gateway import GatewayRuntime
 from jina.serve.runtimes.head import HeadRuntime
 from jina.serve.runtimes.worker import WorkerRuntime
+from tests.helper import _generate_pod_args
 
 
 @pytest.mark.asyncio
@@ -683,7 +684,7 @@ async def _create_worker(pod, port_generator, type='worker', executor=None):
 
 
 def _create_worker_runtime(port, name='', executor=None):
-    args = set_pod_parser().parse_args([])
+    args = _generate_pod_args()
     args.port = port
     args.name = name
     if executor:
@@ -701,7 +702,7 @@ def _create_head_runtime(
     uses_after=None,
     retries=-1,
 ):
-    args = set_pod_parser().parse_args([])
+    args = _generate_pod_args()
     args.port = port
     args.name = name
     args.retries = retries
@@ -804,3 +805,54 @@ async def test_head_runtime_with_offline_shards(port_generator):
     head_process.join()
     for shard_process in shard_processes:
         shard_process.join()
+
+
+def test_runtime_slow_processing_readiness(port_generator):
+    class SlowProcessingExecutor(Executor):
+        @requests
+        def foo(self, **kwargs):
+            time.sleep(10)
+
+    worker_port = port_generator()
+    # create a single worker runtime
+    worker_process = multiprocessing.Process(
+        target=_create_worker_runtime,
+        args=(worker_port, f'pod0', 'SlowProcessingExecutor'),
+    )
+    try:
+        worker_process.start()
+        AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+            timeout=5.0,
+            ctrl_address=f'0.0.0.0:{worker_port}',
+            ready_or_shutdown_event=multiprocessing.Event(),
+        )
+
+        def _send_messages():
+            with grpc.insecure_channel(
+                f'0.0.0.0:{worker_port}',
+                options=GrpcConnectionPool.get_default_grpc_options(),
+            ) as channel:
+                stub = jina_pb2_grpc.JinaSingleDataRequestRPCStub(channel)
+                resp, _ = stub.process_single_data.with_call(
+                    list(request_generator('/', DocumentArray([Document(text='abc')])))[
+                        0
+                    ]
+                )
+                assert resp.docs[0].text == 'abc'
+
+        send_message_process = multiprocessing.Process(target=_send_messages)
+        send_message_process.start()
+
+        for _ in range(50):
+            is_ready = WorkerRuntime.is_ready(f'0.0.0.0:{worker_port}')
+            assert is_ready
+            time.sleep(0.5)
+    except Exception:
+        raise
+    finally:
+        worker_process.terminate()
+        send_message_process.terminate()
+        worker_process.join()
+        send_message_process.join()
+        assert worker_process.exitcode == 0
+        assert send_message_process.exitcode == 0
