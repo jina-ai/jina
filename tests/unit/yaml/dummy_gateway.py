@@ -76,6 +76,19 @@ class DummyGateway(Gateway):
         self.server.should_exit = True
         await self.server.shutdown()
 
+# import psutil
+
+# def get_process_by_name_port(port):
+#     processes = [proc for proc in psutil.process_iter()]
+#     for p in processes:
+#         try:
+#             for c in p.connections():
+#                 if c.status == 'LISTEN' and c.laddr.port == port:
+#                     print(f'found process {p} with port {port}')
+#                     return p
+#         except:
+#             pass
+#     return None
 
 class FlaskDummyGateway(Gateway):
     async def setup_server(self):
@@ -109,7 +122,25 @@ class FlaskDummyGateway(Gateway):
         self.app = app
 
     async def run_server(self):
-        await get_or_reuse_loop().run_in_executor(None, functools.partial(run_simple, hostname=self.host, port=self.port, application=self.app, threaded=False))
+        self._loop = get_or_reuse_loop()
+        await self._loop.run_in_executor(None, functools.partial(run_simple, hostname=self.host, port=self.port, application=self.app, threaded=False))
+        
+    async def shutdown(self):
+        
+        # Attempt 1
+        self._loop.shutdown_default_executor()
+        self._loop.stop()
+        self._loop.close()
+        print(self._loop.is_closed())
+
+        # Attempt 2
+        # os._exit(0)
+        
+        # Attempt 3
+        # import signal
+        # process_python_8080 = get_process_by_name_port(self.port)
+        # print(f'kill process {process_python_8080} with port {self.port}')
+        # os.kill(process_python_8080.pid, signal.SIGKILL)
 
 
 class DummyExecutor(Executor):
