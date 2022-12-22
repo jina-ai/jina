@@ -1,10 +1,10 @@
 import asyncio
 import json
+import threading
 from typing import TYPE_CHECKING, Optional, Tuple
 
 import grpc
 from grpc import RpcError
-
 from jina.clients.base import BaseClient
 from jina.clients.helper import callback_exec
 from jina.excepts import BadClientInput, BadServerFlow, InternalNetworkError
@@ -24,6 +24,8 @@ class GRPCBaseClient(BaseClient):
 
     It manages the asyncio event loop internally, so all interfaces are synchronous from the outside.
     """
+    
+    _lock = threading.RLock()
 
     async def _is_flow_ready(self, **kwargs) -> bool:
         """Sends a dry run to the Flow to validate if the Flow is ready to receive requests
@@ -203,81 +205,82 @@ class GRPCBaseClient(BaseClient):
                 metadata = metadata or ()
                 metadata = metadata + (('__results_in_order__', 'true'),)
 
-            async with GrpcConnectionPool.get_grpc_channel(
-                    f'{self.args.host}:{self.args.port}',
-                    options=options,
-                    asyncio=True,
-                    tls=self.args.tls,
-                    aio_tracing_client_interceptors=self.aio_tracing_client_interceptors(),
-            ) as channel:
-                self.logger.debug(f'connected to {self.args.host}:{self.args.port}')
+            with self._lock:
+                async with GrpcConnectionPool.get_grpc_channel(
+                        f'{self.args.host}:{self.args.port}',
+                        options=options,
+                        asyncio=True,
+                        tls=self.args.tls,
+                        aio_tracing_client_interceptors=self.aio_tracing_client_interceptors(),
+                ) as channel:
+                    self.logger.debug(f'connected to {self.args.host}:{self.args.port}')
 
-                with ProgressBar(
-                        total_length=self._inputs_length, disable=not self.show_progress
-                ) as p_bar:
-                    try:
-                        if stream:
-                            async for resp in self._stream_rpc(
-                                    channel=channel,
-                                    req_iter=req_iter,
-                                    metadata=metadata,
-                                    on_error=on_error,
-                                    on_done=on_done,
-                                    on_always=on_always,
-                                    continue_on_error=continue_on_error,
-                                    p_bar=p_bar,
-                                    **kwargs,
+                    with ProgressBar(
+                            total_length=self._inputs_length, disable=not self.show_progress
+                    ) as p_bar:
+                        try:
+                            if stream:
+                                async for resp in self._stream_rpc(
+                                        channel=channel,
+                                        req_iter=req_iter,
+                                        metadata=metadata,
+                                        on_error=on_error,
+                                        on_done=on_done,
+                                        on_always=on_always,
+                                        continue_on_error=continue_on_error,
+                                        p_bar=p_bar,
+                                        **kwargs,
+                                ):
+                                    yield resp
+                            else:
+                                async for resp in self._unary_rpc(
+                                        channel=channel,
+                                        req_iter=req_iter,
+                                        metadata=metadata,
+                                        on_error=on_error,
+                                        on_done=on_done,
+                                        on_always=on_always,
+                                        continue_on_error=continue_on_error,
+                                        p_bar=p_bar,
+                                        results_in_order=results_in_order,
+                                        **kwargs,
+                                ):
+                                    yield resp
+
+                        except (grpc.aio._call.AioRpcError, InternalNetworkError) as err:
+                            my_code = err.code()
+                            my_details = err.details()
+                            trailing_metadata = extract_trailing_metadata(err)
+                            msg = f'gRPC error: {my_code} {my_details}'
+                            if trailing_metadata:
+                                msg = f'gRPC error: {my_code} {my_details}\n{trailing_metadata}'
+
+                            if my_code == grpc.StatusCode.UNAVAILABLE:
+                                self.logger.error(
+                                    f'{msg}\nThe ongoing request is terminated as the server is not available or closed already.'
+                                )
+                                raise ConnectionError(my_details)
+                            elif my_code == grpc.StatusCode.DEADLINE_EXCEEDED:
+                                self.logger.error(
+                                    f'{msg}\nThe ongoing request is terminated due to a server-side timeout.'
+                                )
+                                raise ConnectionError(my_details)
+                            elif my_code == grpc.StatusCode.INTERNAL:
+                                self.logger.error(
+                                    f'{msg}\ninternal error on the server side'
+                                )
+                                raise err
+                            elif (
+                                    my_code == grpc.StatusCode.UNKNOWN
+                                    and 'asyncio.exceptions.TimeoutError' in my_details
                             ):
-                                yield resp
-                        else:
-                            async for resp in self._unary_rpc(
-                                    channel=channel,
-                                    req_iter=req_iter,
-                                    metadata=metadata,
-                                    on_error=on_error,
-                                    on_done=on_done,
-                                    on_always=on_always,
-                                    continue_on_error=continue_on_error,
-                                    p_bar=p_bar,
-                                    results_in_order=results_in_order,
-                                    **kwargs,
-                            ):
-                                yield resp
-
-                    except (grpc.aio._call.AioRpcError, InternalNetworkError) as err:
-                        my_code = err.code()
-                        my_details = err.details()
-                        trailing_metadata = extract_trailing_metadata(err)
-                        msg = f'gRPC error: {my_code} {my_details}'
-                        if trailing_metadata:
-                            msg = f'gRPC error: {my_code} {my_details}\n{trailing_metadata}'
-
-                        if my_code == grpc.StatusCode.UNAVAILABLE:
-                            self.logger.error(
-                                f'{msg}\nThe ongoing request is terminated as the server is not available or closed already.'
-                            )
-                            raise ConnectionError(my_details)
-                        elif my_code == grpc.StatusCode.DEADLINE_EXCEEDED:
-                            self.logger.error(
-                                f'{msg}\nThe ongoing request is terminated due to a server-side timeout.'
-                            )
-                            raise ConnectionError(my_details)
-                        elif my_code == grpc.StatusCode.INTERNAL:
-                            self.logger.error(
-                                f'{msg}\ninternal error on the server side'
-                            )
-                            raise err
-                        elif (
-                                my_code == grpc.StatusCode.UNKNOWN
-                                and 'asyncio.exceptions.TimeoutError' in my_details
-                        ):
-                            raise BadClientInput(
-                                f'{msg}\n'
-                                'often the case is that you define/send a bad input iterator to jina, '
-                                'please double check your input iterator'
-                            ) from err
-                        else:
-                            raise BadServerFlow(msg) from err
+                                raise BadClientInput(
+                                    f'{msg}\n'
+                                    'often the case is that you define/send a bad input iterator to jina, '
+                                    'please double check your input iterator'
+                                ) from err
+                            else:
+                                raise BadServerFlow(msg) from err
 
         except KeyboardInterrupt:
             self.logger.warning('user cancel the process')
