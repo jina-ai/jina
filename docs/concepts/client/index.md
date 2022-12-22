@@ -148,6 +148,15 @@ Client(host='https://my.awesome.flow:1234', port=4321)
 ```
 ````
 
+````{admonition} Caution
+:class: caution
+
+We apply `RLock` to avoid [this gRPC issue](https://github.com/grpc/grpc/issues/25364), so that `grpc` clients can be used in a multi-threaded environment.
+
+What you should do, is to rely on asynchronous programming or multi-processing rather than multi-threading.
+For instance, if you're building a web server, you can introduce multi-processing based parallelism to your app using 
+`gunicorn`: `gunicorn main:app --workers 4 --worker-class uvicorn.workers.UvicornWorker ...`
+````
 
 (client-compress)=
 ## Enable compression

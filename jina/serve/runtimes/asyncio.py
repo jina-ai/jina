@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Optional, Union
 
 from grpc import RpcError
 
-from jina import __windows__
+from jina.constants import __windows__
 from jina.helper import send_telemetry_event
 from jina.serve.instrumentation import InstrumentationMixin
 from jina.serve.networking import GrpcConnectionPool

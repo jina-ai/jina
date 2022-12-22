@@ -2,7 +2,7 @@ import copy
 from argparse import Namespace
 from typing import Dict, List, Optional, Tuple, Union
 
-from jina import (
+from jina.constants import (
     __default_composite_gateway__,
     __default_executor__,
     __default_grpc_gateway__,

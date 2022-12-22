@@ -10,7 +10,8 @@ import yaml
 from docarray import Document, DocumentArray
 from pytest import FixtureRequest
 
-from jina import Client, Executor, Flow, __cache_path__, dynamic_batching, requests
+from jina import Client, Executor, Flow, dynamic_batching, requests
+from jina.constants import __cache_path__
 from jina.clients.request import request_generator
 from jina.excepts import RuntimeFailToStart
 from jina.helper import random_port

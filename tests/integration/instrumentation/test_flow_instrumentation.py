@@ -47,7 +47,7 @@ def test_gateway_instrumentation(
     )
 
     with f:
-        from jina import DocumentArray
+        from docarray import DocumentArray
 
         f.post(f'/search', DocumentArray.empty(), continue_on_error=True)
         # give some time for the tracing and metrics exporters to finish exporting.
@@ -79,7 +79,7 @@ def test_executor_instrumentation(jaeger_port, otlp_collector, otlp_receiver_por
     ).add(uses=ExecutorFailureWithTracing)
 
     with f:
-        from jina import DocumentArray
+        from docarray import DocumentArray
 
         f.post(f'/search', DocumentArray.empty(2), continue_on_error=True)
         # give some time for the tracing and metrics exporters to finish exporting.
@@ -109,7 +109,7 @@ def test_head_instrumentation(jaeger_port, otlp_collector, otlp_receiver_port):
     ).add(uses=ExecutorTestWithTracing, shards=2)
 
     with f:
-        from jina import DocumentArray
+        from docarray import DocumentArray
 
         f.post(f'/search', DocumentArray.empty(), continue_on_error=True)
         # give some time for the tracing and metrics exporters to finish exporting.
@@ -161,7 +161,7 @@ def test_flow_metrics(
     )
 
     with f:
-        from jina import DocumentArray
+        from docarray import DocumentArray
 
         f.post(f'/search', DocumentArray.empty(2), continue_on_error=True)
         f.post(f'/search', DocumentArray.empty(2), continue_on_error=True)

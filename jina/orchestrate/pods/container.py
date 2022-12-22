@@ -9,7 +9,7 @@ import signal
 import time
 from typing import TYPE_CHECKING, Dict, Optional, Union
 
-from jina import __docker_host__, __windows__
+from jina.constants import __docker_host__, __windows__
 from jina.enums import PodRoleType
 from jina.excepts import BadImageNameError, DockerVersionError
 from jina.helper import random_name, slugify

@@ -70,7 +70,11 @@ def _external_deployment_args_docker(num_shards, port=None):
     'hosts', ['localhost,localhost', ['localhost', 'localhost'], 'localhost']
 )
 @pytest.mark.parametrize('as_list', [True, False])
-def test_distributed_replicas(input_docs, hosts, as_list):
+@pytest.mark.parametrize(
+    'use_stream',
+    [True, False],
+)
+def test_distributed_replicas(input_docs, hosts, as_list, use_stream):
     port1, port2 = random_port(), random_port()
     ports = [port1, port2]
     if not as_list:
@@ -87,7 +91,7 @@ def test_distributed_replicas(input_docs, hosts, as_list):
             external=True,
         )
         with flow:
-            resp = flow.index(inputs=input_docs, request_size=2)
+            resp = flow.index(inputs=input_docs, request_size=2, stream=use_stream)
 
         depl1_id = resp[0].tags['uuid']
         assert any([depl1_id != depl_id for depl_id in resp[1:, 'tags__uuid']])
@@ -124,7 +128,11 @@ def test_distributed_replicas_hosts_mismatch(input_docs):
     'ports_as_list',
     [True, False],
 )
-def test_distributed_replicas_host_parsing(input_docs, hosts_as_list, ports_as_list):
+@pytest.mark.parametrize(
+    'use_stream',
+    [True, False],
+)
+def test_distributed_replicas_host_parsing(input_docs, hosts_as_list, ports_as_list, use_stream):
     port1, port2 = random_port(), random_port()
     args1, args2 = _external_deployment_args(
         num_shards=1, port=port1
@@ -148,7 +156,7 @@ def test_distributed_replicas_host_parsing(input_docs, hosts_as_list, ports_as_l
             external=True,
         )
         with flow:
-            resp = flow.index(inputs=input_docs, request_size=2)
+            resp = flow.index(inputs=input_docs, request_size=2, stream=use_stream)
 
         depl1_id = resp[0].tags['uuid']
         assert any([depl1_id != depl_id for depl_id in resp[1:, 'tags__uuid']])
@@ -161,8 +169,12 @@ def test_distributed_replicas_host_parsing(input_docs, hosts_as_list, ports_as_l
     'ports_as_list',
     [True, False],
 )
+@pytest.mark.parametrize(
+    'use_stream',
+    [True, False],
+)
 def test_distributed_replicas_docker(
-    input_docs, hosts, ports_as_list, replica_docker_image_built
+    input_docs, hosts, ports_as_list, replica_docker_image_built, use_stream
 ):
     port1, port2 = random_port(), random_port()
     args1, args2 = _external_deployment_args_docker(
@@ -182,7 +194,7 @@ def test_distributed_replicas_docker(
             external=True,
         )
         with flow:
-            resp = flow.index(inputs=input_docs, request_size=2)
+            resp = flow.index(inputs=input_docs, request_size=2, stream=use_stream)
 
         depl1_id = resp[0].tags['uuid']
         assert any([depl1_id != depl_id for depl_id in resp[1:, 'tags__uuid']])

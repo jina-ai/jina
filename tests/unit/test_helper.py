@@ -5,7 +5,8 @@ import numpy as np
 import psutil
 import pytest
 
-from jina import Executor, Flow, __default_endpoint__
+from jina import Executor, Flow
+from jina.constants import __default_endpoint__
 from jina.clients.helper import _safe_callback, pprint_routes
 from jina.excepts import BadClientCallback, NotSupportedError
 from jina.helper import (

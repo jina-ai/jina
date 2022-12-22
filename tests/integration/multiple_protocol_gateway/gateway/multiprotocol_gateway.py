@@ -4,7 +4,8 @@ from grpc_reflection.v1alpha import reflection
 from pydantic import BaseModel
 from uvicorn import Config, Server
 
-from jina import Gateway, __default_host__
+from jina import Gateway
+from jina.constants import __default_host__
 from jina.proto import jina_pb2, jina_pb2_grpc
 
 
@@ -38,6 +39,10 @@ class MultiProtocolGateway(Gateway):
         self.grpc_server = grpc.aio.server()
 
         jina_pb2_grpc.add_JinaRPCServicer_to_server(
+            self.streamer._streamer, self.grpc_server
+        )
+
+        jina_pb2_grpc.add_JinaSingleDataRequestRPCServicer_to_server(
             self.streamer._streamer, self.grpc_server
         )
 

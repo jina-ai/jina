@@ -1,10 +1,10 @@
 import glob
 import os
-from datetime import datetime
 
 import pytest
 
-from jina import Document, Flow, __uptime__, __windows__
+from jina import Document, Flow
+from jina.constants import __uptime__, __windows__
 from jina.enums import LogVerbosity
 from jina.helper import colored
 from jina.logging.logger import JinaLogger

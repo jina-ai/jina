@@ -8,7 +8,7 @@ from typing import List
 import grpc
 import pytest
 
-from jina import Document, DocumentArray
+from docarray import Document, DocumentArray
 from jina.clients.request import request_generator
 from jina.enums import PollingType
 from jina.proto import jina_pb2_grpc

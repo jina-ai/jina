@@ -8,7 +8,7 @@ from multiprocessing import Process
 import grpc
 import pytest
 
-from jina import Document, DocumentArray
+from docarray import Document, DocumentArray
 from jina.clients.request import request_generator
 from jina.helper import random_port
 from jina.parsers import set_gateway_parser
@@ -148,7 +148,7 @@ class DummyMockConnectionPool:
 
     def send_discover_endpoint(self, *args, **kwargs):
         async def task_wrapper():
-            from jina import __default_endpoint__
+            from jina.constants import __default_endpoint__
             from jina.proto import jina_pb2
 
             ep = jina_pb2.EndpointsProto()

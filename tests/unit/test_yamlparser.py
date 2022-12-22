@@ -3,10 +3,11 @@ import os
 import pytest
 import yaml
 
-from jina import Gateway, __default_executor__, __default_host__
+from jina.constants import __default_executor__, __default_host__
 from jina.helper import expand_dict, expand_env_var
 from jina.jaml import JAML
 from jina.serve.executors import BaseExecutor
+from jina import Gateway
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 

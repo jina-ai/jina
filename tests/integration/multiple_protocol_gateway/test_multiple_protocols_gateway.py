@@ -20,9 +20,8 @@ def multi_port_gateway_docker_image_built():
     import docker
 
     client = docker.from_env()
-    print('building container image')
     client.images.build(
-        path=os.path.join(cur_dir, 'gateway/'), tag='multiprotcol-gateway'
+        path=os.path.join(cur_dir, 'gateway/'), tag='multiprotocol-gateway'
     )
     client.close()
     yield
@@ -35,10 +34,11 @@ def multi_port_gateway_docker_image_built():
     'uses',
     [
         'MultiProtocolGateway',
-        'docker://multiprotcol-gateway',
+        'docker://multiprotocol-gateway',
     ],
 )
-def test_multiple_protocols_gateway(multi_port_gateway_docker_image_built, uses):
+@pytest.mark.parametrize('use_stream', [False, True])
+def test_multiple_protocols_gateway(multi_port_gateway_docker_image_built, uses, use_stream):
     http_port = random_port()
     grpc_port = random_port()
     flow = Flow().config_gateway(
@@ -47,7 +47,7 @@ def test_multiple_protocols_gateway(multi_port_gateway_docker_image_built, uses)
     assert flow.port == [http_port, grpc_port]
     grpc_client = Client(protocol='grpc', port=grpc_port)
     with flow:
-        grpc_client.post('/', inputs=Document())
+        grpc_client.post('/', inputs=Document(), stream=use_stream)
         resp = requests.get(f'http://localhost:{http_port}').json()
         assert resp['protocol'] == 'http'
         assert AsyncNewLoopRuntime.is_ready(f'localhost:{grpc_port}')

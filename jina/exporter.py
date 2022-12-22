@@ -1,6 +1,6 @@
 import json
 
-from jina import Flow, __version__
+from jina.orchestrate.flow.base import Flow
 from jina.jaml import JAML
 from jina.logging.predefined import default_logger
 from jina.schemas import get_full_schema
@@ -43,6 +43,7 @@ def export_schema(args):
 
     :param args: args from CLI
     """
+    from jina import __version__
     if args.yaml_path:
         dump_api = api_to_dict()
         for yp in args.yaml_path:

@@ -20,7 +20,7 @@ if TYPE_CHECKING:  # pragma: no cover
     from docarray.document import DocumentSourceType
     from docarray.document.mixins.content import DocumentContentType
 
-    from jina import Document
+    from docarray import Document
     from jina.types.request import Request
 
     SingletonDataType = Union[

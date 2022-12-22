@@ -3,7 +3,8 @@ import time
 
 import pytest
 
-from jina import DocumentArray, Executor, Flow, __default_endpoint__, requests
+from jina import DocumentArray, Executor, Flow, requests
+from jina.constants import __default_endpoint__
 
 TIME_SLEEP_FLOATING = 1.0
 
