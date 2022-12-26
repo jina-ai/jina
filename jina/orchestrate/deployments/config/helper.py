@@ -69,7 +69,7 @@ def get_base_executor_version():
         return 'master'
 
 
-def construct_runtime_container_args(cargs, uses_metas, uses_with, pod_type):
+def construct_runtime_container_args(cargs, uses_metas, uses_with, env_from_secret, pod_type):
     """
     Construct a set of Namespace arguments into a list of arguments to pass to a container entrypoint
     :param cargs: The namespace arguments
@@ -85,6 +85,7 @@ def construct_runtime_container_args(cargs, uses_metas, uses_with, pod_type):
 
     taboo = {
         'uses_with',
+        'env_from_secret',
         'uses_metas',
         'volumes',
         'uses_before',
@@ -112,6 +113,8 @@ def construct_runtime_container_args(cargs, uses_metas, uses_with, pod_type):
         container_args.extend(['--uses-metas', json.dumps(uses_metas)])
     if uses_with is not None:
         container_args.extend(['--uses-with', json.dumps(uses_with)])
+    if env_from_secret is not None:
+        container_args.extend(['--env-from-secret', json.dumps(env_from_secret)])
     container_args.append('--native')
     return container_args
 
