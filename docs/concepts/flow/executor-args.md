@@ -12,6 +12,7 @@
 | `native` | If set, only native Executors is allowed, and the Executor is always run inside WorkerRuntime. | `boolean` | `False` |
 | `uses` | The config of the executor, it could be one of the followings:<br>        * the string literal of an Executor class name<br>        * an Executor YAML file (.yml, .yaml, .jaml)<br>        * a Jina Hub Executor (must start with `jinahub://` or `jinahub+docker://`)<br>        * a docker image (must start with `docker://`)<br>        * the string literal of a YAML config (must start with `!` or `jtype: `)<br>        * the string literal of a JSON config<br><br>        When use it under Python, one can use the following values additionally:<br>        - a Python dict that represents the config<br>        - a text file stream has `.read()` interface | `string` | `BaseExecutor` |
 | `uses_with` | Dictionary of keyword arguments that will override the `with` configuration in `uses` | `object` | `None` |
+| `env_from_secret` | Dictionary of keyword arguments that will override the `env_from_secret` configuration | `object` | `None` |
 | `uses_metas` | Dictionary of keyword arguments that will override the `metas` configuration in `uses` | `object` | `None` |
 | `uses_requests` | Dictionary of keyword arguments that will override the `requests` configuration in `uses` | `object` | `None` |
 | `uses_dynamic_batching` | Dictionary of keyword arguments that will override the `dynamic_batching` configuration in `uses` | `object` | `None` |
