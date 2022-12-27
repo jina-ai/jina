@@ -259,6 +259,44 @@ Jina provides the Gateway with a list of ports and protocols to expose. Therefor
 on multiple ports using different protocols.
 ```
 
+(executor-streamer)=
+## Calling an Individual Executor with {class}`~jina.serve.streamer.ExecutorStreamer`
+{class}`~jina.serve.streamer.ExecutorStreamer` allows you to interface with individual Executors from the Gateway. An instance of 
+this class knows where each Executor lives and allows you to call them individually. 
+An `executor` object (instance of {class}`~jina.serve.streamer.ExecutorStreamer`) is injected by Jina to your gateway class.
+
+After transforming requests that arrive to the gateway server into Documents, you can call the Executor in your Python code 
+using `self.executor['executor_name'](args)`.
+This method expects a DocumentArray object and an endpoint exposed by the Executor (similar to Jina Client). 
+It returns a 'coroutine' which returns a DocumentArray.
+
+Here is an example of calling an individual Executor named 'executor1':
+```{code-block} python
+---
+emphasize-lines: 13
+---
+from jina.serve.runtimes.gateway.http.fastapi import FastAPIBaseGateway
+from jina import Document, DocumentArray
+from fastapi import FastAPI
+
+
+class MyGateway(FastAPIBaseGateway):
+    @property
+    def app(self):
+        app = FastAPI()
+
+        @app.get("/endpoint")
+        async def get(text: str):
+            docs = await self.executor['executor1'](exec_endpoint='/', docs=DocumentArray([Document(text=text)]), parameters={'k': 'v'})
+            return {'result': [doc.text for doc in docs]}
+
+        return app
+```
+
+Keep in mind that calling Executors individually bypasses the Flow topology.
+You should only use this method for testing or if your use case is simple and does not require a pipeline of executors.
+Otherwise, it is recommended to construct a Flow and use the {class}`~jina.serve.streamer.GatewayStreamer` to send Documents through the entire Flow.
+
 (user-defined-arguments)=
 ### User-defined parameters
 You can also set other parameters by implementing a custom constructor `__init__`.You can also override constructor 
