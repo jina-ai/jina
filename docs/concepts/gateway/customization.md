@@ -261,8 +261,8 @@ on multiple ports using different protocols.
 
 (executor-streamer)=
 ## Calling an Individual Executor with {class}`~jina.serve.streamer.ExecutorStreamer`
-{class}`~jina.serve.streamer.ExecutorStreamer` allows you to interface with individual Executors from the Gateway. An instance of 
-this class knows where each Executor lives and allows you to call them individually. 
+{class}`~jina.serve.streamer.ExecutorStreamer` allows you to interface with individual Executors from the Gateway.
+An instance of this class knows where each Executor lives and allows you to call them individually. 
 An `executor` object (instance of {class}`~jina.serve.streamer.ExecutorStreamer`) is injected by Jina to your gateway class.
 
 After transforming requests that arrive to the gateway server into Documents, you can call the Executor in your Python code 
