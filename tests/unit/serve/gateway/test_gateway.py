@@ -157,3 +157,50 @@ def test_custom_gateway_no_executors(uses, uses_with, expected):
 
     assert gateway_process.exitcode == 0
     assert worker_process.exitcode == 0
+
+
+@pytest.mark.parametrize(
+    "protocol",
+    [
+        'grpc',
+        'http',
+    ]
+)
+def test_stream_individual_executor(protocol):
+    from docarray import DocumentArray, Document
+
+    from jina.serve.runtimes.gateway.http.fastapi import FastAPIBaseGateway
+    from jina import Flow, Executor, requests
+
+
+    PARAMETERS = {'dog': 'woof'}
+
+    class MyGateway(FastAPIBaseGateway):
+        @property
+        def app(self):
+            from fastapi import FastAPI
+
+            app = FastAPI(title='Custom FastAPI Gateway')
+
+            @app.get("/endpoint")
+            async def get(text: str):
+                docs = await self.executor['executor1'](exec_endpoint='/', docs=DocumentArray([Document(text=text), Document(text=text.upper())]), parameters=PARAMETERS)
+                return {'result': [doc.text for doc in docs]}
+
+            return app
+
+    class FirstExec(Executor):
+        @requests
+        def func(self, docs, **kwargs):
+            for doc in docs:
+                doc.text += ' THIS SHOULD NOT HAVE HAPPENED!'
+    class SecondExec(Executor):
+        @requests
+        def func(self, docs, parameters, **kwargs):
+            for doc in docs:
+                doc.text += f' Second(parameters={str(parameters)})'
+
+    with Flow().config_gateway(uses=MyGateway, protocol=protocol).add(uses=FirstExec, name='executor0').add(uses=SecondExec, name='executor1') as flow:
+        import requests
+        r = requests.get(f"http://localhost:{flow.port}/endpoint?text=meow")
+        assert r.json()['result'] == [f"meow Second(parameters={str(PARAMETERS)})", f"MEOW Second(parameters={str(PARAMETERS)})"]
