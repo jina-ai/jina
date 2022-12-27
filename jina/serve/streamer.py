@@ -224,31 +224,33 @@ class GatewayStreamer:
 
 
 class ExecutorStreamer:
-    def __init__(self, gateway_streamer: GatewayStreamer) -> None:
-        self._gateway_streamer = gateway_streamer
-    
+    def __init__(self, connection_pool: GrpcConnectionPool) -> None:
+        self._connection_pool: GrpcConnectionPool = connection_pool
+
     def __getitem__(self, executor_name: str):
         async def _acall_executor(
             docs: DocumentArray,
             request_size: int = 100,
-            return_results: bool = False,
             exec_endpoint: Optional[str] = None,
             parameters: Optional[Dict] = None,
-            results_in_order: bool = False,
+            **kwargs,
         ):
-            result_docs = DocumentArray.empty()
-            async for _docs in self._gateway_streamer.stream_docs(
-                exec_endpoint=exec_endpoint,
-                docs=docs,
-                parameters=parameters,
-                request_size=request_size,
-                return_results=return_results,
-                results_in_order=results_in_order,
-                target_executor=executor_name
-            ):
-                result_docs.extend(_docs)
+            from jina.clients.request import request_generator
+            resp, _ = await self._connection_pool.send_requests_once(
+                requests=list(request_generator(
+                    exec_endpoint=exec_endpoint,
+                    data=docs,
+                    request_size=request_size,
+                    target_executor=executor_name,
+                    parameters=parameters,
+                    **kwargs
+                )),
+                deployment=executor_name,
+                head=True,
+                endpoint=exec_endpoint
+            )
             
-            return result_docs
+            return resp.docs
         
         return _acall_executor
             

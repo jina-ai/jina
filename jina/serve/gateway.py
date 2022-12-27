@@ -114,7 +114,7 @@ class BaseGateway(JAMLCompatible, metaclass=GatewayType):
             prefetch=self.runtime_args.prefetch,
         )
 
-        self.executor = ExecutorStreamer(self.streamer)
+        self.executor = ExecutorStreamer(self.streamer._connection_pool)
 
     def _add_runtime_args(self, _runtime_args: Optional[Dict]):
         from jina.parsers import set_gateway_runtime_args_parser
