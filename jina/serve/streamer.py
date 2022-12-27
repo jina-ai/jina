@@ -235,16 +235,14 @@ class ExecutorStreamer:
             parameters: Optional[Dict] = None,
             **kwargs,
         ):
-            from jina.clients.request import request_generator
+            req = DataRequest()
+            req.header.exec_endpoint = exec_endpoint
+            req.header.target_executor = executor_name
+            req.parameters = parameters
+            req.data.docs = docs
+
             resp, _ = await self._connection_pool.send_requests_once(
-                requests=list(request_generator(
-                    exec_endpoint=exec_endpoint,
-                    data=docs,
-                    request_size=request_size,
-                    target_executor=executor_name,
-                    parameters=parameters,
-                    **kwargs
-                )),
+                requests=[req],
                 deployment=executor_name,
                 head=True,
                 endpoint=exec_endpoint
