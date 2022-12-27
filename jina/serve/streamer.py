@@ -221,3 +221,34 @@ class GatewayStreamer:
     @staticmethod
     def _set_env_streamer_args(**kwargs):
         os.environ['JINA_STREAMER_ARGS'] = json.dumps(kwargs)
+
+
+class ExecutorStreamer:
+    def __init__(self, gateway_streamer: GatewayStreamer) -> None:
+        self._gateway_streamer = gateway_streamer
+    
+    def __getitem__(self, executor_name: str):
+        async def _acall_executor(
+            docs: DocumentArray,
+            request_size: int = 100,
+            return_results: bool = False,
+            exec_endpoint: Optional[str] = None,
+            parameters: Optional[Dict] = None,
+            results_in_order: bool = False,
+        ):
+            result_docs = DocumentArray.empty()
+            async for _docs in self._gateway_streamer.stream_docs(
+                exec_endpoint=exec_endpoint,
+                docs=docs,
+                parameters=parameters,
+                request_size=request_size,
+                return_results=return_results,
+                results_in_order=results_in_order,
+                target_executor=executor_name
+            ):
+                result_docs.extend(_docs)
+            
+            return result_docs
+        
+        return _acall_executor
+            
