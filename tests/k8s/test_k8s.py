@@ -619,7 +619,7 @@ async def test_flow_with_env_from_secret(
     app_client = client.AppsV1Api(api_client=api_client)
 
     try:
-        dump_path = os.path.join('./', 'test-flow-with-env-from-secret')
+        dump_path = os.path.join(str(tmpdir), 'test-flow-with-env-from-secret')
         k8s_flow_env_from_secret.to_kubernetes_yaml(dump_path, k8s_namespace=namespace)
 
         # create namespace
@@ -647,37 +647,7 @@ async def test_flow_with_env_from_secret(
             logger=logger,
         )
 
-        # get pod name
-        executor_pod_name = core_client.list_namespaced_pod(
-            namespace=namespace,
-            label_selector=f'app=test-executor',
-        ).items[0].metadata.name
-
         # get username and password from pod env
-        from kubernetes.stream import stream
-        username = stream(core_client.connect_get_namespaced_pod_exec,
-            executor_pod_name,
-            namespace,
-            command=['sh', '-c', 'echo $SECRET_USERNAME'],
-            stderr=True,
-            stdin=False,
-            stdout=True,
-            tty=False,
-        ).strip("\n")
-
-        password = stream(core_client.connect_get_namespaced_pod_exec,
-            executor_pod_name,
-            namespace,
-            command=['sh', '-c', 'echo $SECRET_PASSWORD'],
-            stderr=True,
-            stdin=False,
-            stdout=True,
-            tty=False,
-        ).strip("\n")
-
-        assert username == 'jina'
-        assert password == '123456'
-
         resp = await run_test(
             flow=k8s_flow_env_from_secret,
             namespace=namespace,
