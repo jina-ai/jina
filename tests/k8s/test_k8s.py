@@ -191,6 +191,19 @@ def k8s_flow_configmap(docker_images, jina_k3_env):
 
 
 @pytest.fixture
+def k8s_flow_env_from_secret(docker_images, jina_k3_env):
+    flow = Flow(name='k8s-flow-env-from-secret', port=9090, protocol='http').add(
+        name='test_executor',
+        uses=f'docker://{docker_images[0]}',
+        env_from_secret={
+            'SECRET_USERNAME': {'name': 'mysecret', 'key': 'username'},
+            'SECRET_PASSWORD': {'name': 'mysecret', 'key': 'password'},
+        },
+    )
+    return flow
+
+
+@pytest.fixture
 def k8s_flow_gpu(docker_images):
     flow = Flow(name='k8s-flow-gpu', port=9090, protocol='http').add(
         name='test_executor',
@@ -587,6 +600,81 @@ async def test_flow_with_configmap(k8s_flow_configmap, docker_images, tmpdir, lo
                     text=True,
                 ).stdout.strip("\n")
                 print(out)
+        raise exc
+
+
+@pytest.mark.timeout(3600)
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    'docker_images', [['test-executor', 'jinaai/jina']], indirect=True
+)
+async def test_flow_with_env_from_secret(
+    k8s_flow_env_from_secret, docker_images, tmpdir, logger
+):
+    from kubernetes import client
+
+    namespace = f'test-flow-with-env-from-secret'.lower()
+    api_client = client.ApiClient()
+    core_client = client.CoreV1Api(api_client=api_client)
+    app_client = client.AppsV1Api(api_client=api_client)
+
+    try:
+        dump_path = os.path.join('./', 'test-flow-with-env-from-secret')
+        k8s_flow_env_from_secret.to_kubernetes_yaml(dump_path, k8s_namespace=namespace)
+
+        await create_all_flow_deployments_and_wait_ready(
+            dump_path,
+            namespace=namespace,
+            api_client=api_client,
+            app_client=app_client,
+            core_client=core_client,
+            deployment_replicas_expected={
+                'gateway': 1,
+                'test-executor': 1,
+            },
+            logger=logger,
+        )
+
+        # forward_args = [
+        #     ['mysecret', 'username', 'jina'],
+        #     ['mysecret', 'password', '123456'],
+        # ]
+        # for forward in forward_args:
+        #     shell_set_secret(k8s_cluster._cluster.kubectl_path, *forward)
+        
+        proc = subprocess.run(
+            f'kubectl -n {namespace} create secret generic mysecret --from-literal=username=jina --from-literal=password=123456',
+            shell=True,
+            capture_output=True,
+            text=True,
+        )
+
+        import subprocess
+
+        executor_pod_name = core_client.list_namespaced_pod(
+            namespace=namespace,
+            label_selector=f'app=test-executor',
+        ).items[0].metadata.name
+
+        username = subprocess.run(
+            f'kubectl -n {namespace} exec -t {executor_pod_name} -- sh -c "echo $SECRET_USERNAME" ',
+            shell=True,
+            capture_output=True,
+            text=True,
+        ).stdout.strip("\n")
+        
+        password = subprocess.run(
+            f'kubectl -n {namespace} exec -t {executor_pod_name} -- sh -c "echo $SECRET_PASSWORD" ',
+            shell=True,
+            capture_output=True,
+            text=True,
+        ).stdout.strip("\n")
+
+        assert username == 'jina'
+        assert password == '123456'
+
+    except Exception as exc:
+        logger.error(f' Exception raised {exc}')
         raise exc
 
 
