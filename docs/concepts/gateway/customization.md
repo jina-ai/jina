@@ -261,12 +261,9 @@ on multiple ports using different protocols.
 
 (executor-streamer)=
 ## Calling an Individual Executor
-{class}`~jina.serve.streamer.ExecutorStreamer` allows you to interface with individual Executors from the Gateway.
-An instance of this class knows where each Executor lives and allows you to call them individually. 
-An `executor` object (instance of {class}`~jina.serve.streamer.ExecutorStreamer`) is injected by Jina to your gateway class.
+An `executor` object is injected by Jina to your gateway class which allows you to interface with individual Executors from the Gateway.
 
-After transforming requests that arrive to the gateway server into Documents, you can call the Executor in your Python code 
-using `self.executor['executor_name'](args)`.
+After transforming requests that arrive to the gateway server into Documents, you can call the Executor in your Python code using `self.executor['executor_name'].post(args)`.
 This method expects a DocumentArray object and an endpoint exposed by the Executor (similar to Jina Client). 
 It returns a 'coroutine' which returns a DocumentArray.
 
@@ -287,7 +284,7 @@ class MyGateway(FastAPIBaseGateway):
 
         @app.get("/endpoint")
         async def get(text: str):
-            docs = await self.executor['executor1'](exec_endpoint='/', docs=DocumentArray([Document(text=text)]), parameters={'k': 'v'})
+            docs = await self.executor['executor1'].post(exec_endpoint='/', docs=DocumentArray([Document(text=text)]), parameters={'k': 'v'})
             return {'result': [doc.text for doc in docs]}
 
         return app
