@@ -622,6 +622,13 @@ async def test_flow_with_env_from_secret(
         dump_path = os.path.join('./', 'test-flow-with-env-from-secret')
         k8s_flow_env_from_secret.to_kubernetes_yaml(dump_path, k8s_namespace=namespace)
 
+        subprocess.run(
+            f'kubectl -n {namespace} create secret generic mysecret --from-literal=username=jina --from-literal=password=123456',
+            shell=True,
+            capture_output=True,
+            text=True,
+        )
+
         await create_all_flow_deployments_and_wait_ready(
             dump_path,
             namespace=namespace,
@@ -633,20 +640,6 @@ async def test_flow_with_env_from_secret(
                 'test-executor': 1,
             },
             logger=logger,
-        )
-
-        # forward_args = [
-        #     ['mysecret', 'username', 'jina'],
-        #     ['mysecret', 'password', '123456'],
-        # ]
-        # for forward in forward_args:
-        #     shell_set_secret(k8s_cluster._cluster.kubectl_path, *forward)
-        
-        proc = subprocess.run(
-            f'kubectl -n {namespace} create secret generic mysecret --from-literal=username=jina --from-literal=password=123456',
-            shell=True,
-            capture_output=True,
-            text=True,
         )
 
         import subprocess
