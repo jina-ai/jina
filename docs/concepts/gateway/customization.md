@@ -260,7 +260,7 @@ on multiple ports using different protocols.
 ```
 
 (executor-streamer)=
-## Calling an Individual Executor with {class}`~jina.serve.streamer.ExecutorStreamer`
+## Calling an Individual Executor
 {class}`~jina.serve.streamer.ExecutorStreamer` allows you to interface with individual Executors from the Gateway.
 An instance of this class knows where each Executor lives and allows you to call them individually. 
 An `executor` object (instance of {class}`~jina.serve.streamer.ExecutorStreamer`) is injected by Jina to your gateway class.
@@ -292,10 +292,6 @@ class MyGateway(FastAPIBaseGateway):
 
         return app
 ```
-
-Keep in mind that calling Executors individually bypasses the Flow topology.
-You should only use this method for testing or if your use case is simple and does not require a pipeline of executors.
-Otherwise, it is recommended to construct a Flow and use the {class}`~jina.serve.streamer.GatewayStreamer` to send Documents through the entire Flow.
 
 (user-defined-arguments)=
 ### User-defined parameters
