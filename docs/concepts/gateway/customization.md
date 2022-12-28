@@ -284,7 +284,7 @@ class MyGateway(FastAPIBaseGateway):
 
         @app.get("/endpoint")
         async def get(text: str):
-            docs = await self.executor['executor1'].post(exec_endpoint='/', docs=DocumentArray([Document(text=text)]), parameters={'k': 'v'})
+            docs = await self.executor['executor1'].post(on='/', inputs=DocumentArray([Document(text=text)]), parameters={'k': 'v'})
             return {'result': [doc.text for doc in docs]}
 
         return app
