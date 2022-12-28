@@ -678,6 +678,19 @@ async def test_flow_with_env_from_secret(
         assert username == 'jina'
         assert password == '123456'
 
+        resp = await run_test(
+            flow=k8s_flow_env_from_secret,
+            namespace=namespace,
+            core_client=core_client,
+            endpoint='/env',
+        )
+
+        docs = resp[0].docs
+        assert len(docs) == 10
+        for doc in docs:
+            assert doc.tags['SECRET_USERNAME'] == 'jina'
+            assert doc.tags['SECRET_PASSWORD'] == '123456'
+
     except Exception as exc:
         logger.error(f' Exception raised {exc}')
         raise exc
