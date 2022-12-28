@@ -129,7 +129,7 @@ class K8sDeploymentConfig:
             if cargs.uses != __default_executor__:
                 cargs.uses = 'config.yml'
             return construct_runtime_container_args(
-                cargs, uses_metas, uses_with, env_from_secret, pod_type
+                cargs, uses_metas, uses_with, pod_type, env_from_secret
             )
 
         def get_runtime_yamls(

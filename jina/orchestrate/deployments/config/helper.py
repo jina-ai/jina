@@ -69,13 +69,14 @@ def get_base_executor_version():
         return 'master'
 
 
-def construct_runtime_container_args(cargs, uses_metas, uses_with, env_from_secret, pod_type):
+def construct_runtime_container_args(cargs, uses_metas, uses_with, pod_type, env_from_secret=None):
     """
     Construct a set of Namespace arguments into a list of arguments to pass to a container entrypoint
     :param cargs: The namespace arguments
     :param uses_metas: The uses_metas to override
     :param uses_with: The uses_with to override
     :param pod_type: The pod_type
+    :param env_from_secret: The env_from_secret
     :return: Arguments to pass to container
     """
     import json
