@@ -20,6 +20,7 @@ def get_template_yamls(
     shard_id: Optional[int] = None,
     port: Optional[Union[int, List[int]]] = None,
     env: Optional[Dict] = None,
+    env_from_secret: Optional[Dict] = None,
     gpus: Optional[Union[int, str]] = None,
     image_name_uses_before: Optional[str] = None,
     image_name_uses_after: Optional[str] = None,
@@ -97,6 +98,7 @@ def get_template_yamls(
         'jina_deployment_name': jina_deployment_name,
         'shard_id': f'\"{shard_id}\"' if shard_id is not None else '\"\"',
         'pod_type': pod_type,
+        'env_from_secret': env_from_secret,
         'protocol': str(protocols[0]).lower() if protocols[0] is not None else '',
         'volume_path': volumes[0] if volumes is not None else None,
     }
