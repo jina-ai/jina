@@ -622,14 +622,17 @@ async def test_flow_with_env_from_secret(
         dump_path = os.path.join('./', 'test-flow-with-env-from-secret')
         k8s_flow_env_from_secret.to_kubernetes_yaml(dump_path, k8s_namespace=namespace)
 
-        import subprocess
+        # create namespace
+        core_client.create_namespace(client.V1Namespace(metadata=client.V1ObjectMeta(name=namespace)))
 
-        subprocess.run(
-            f'kubectl -n {namespace} create secret generic mysecret --from-literal=username=jina --from-literal=password=123456',
-            shell=True,
-            capture_output=True,
-            text=True,
+        # create secret
+        secret = client.V1Secret(
+            api_version='v1',
+            kind='Secret',
+            metadata=client.V1ObjectMeta(name='mysecret'),
+            string_data={'username': 'jina', 'password': '123456'}
         )
+        core_client.create_namespaced_secret(namespace=namespace, body=secret)
 
         await create_all_flow_deployments_and_wait_ready(
             dump_path,
@@ -644,24 +647,33 @@ async def test_flow_with_env_from_secret(
             logger=logger,
         )
 
+        # get pod name
         executor_pod_name = core_client.list_namespaced_pod(
             namespace=namespace,
             label_selector=f'app=test-executor',
         ).items[0].metadata.name
 
-        username = subprocess.run(
-            f'kubectl -n {namespace} exec -t {executor_pod_name} -- sh -c "echo $SECRET_USERNAME" ',
-            shell=True,
-            capture_output=True,
-            text=True,
-        ).stdout.strip("\n")
-        
-        password = subprocess.run(
-            f'kubectl -n {namespace} exec -t {executor_pod_name} -- sh -c "echo $SECRET_PASSWORD" ',
-            shell=True,
-            capture_output=True,
-            text=True,
-        ).stdout.strip("\n")
+        # get username and password from pod env
+        from kubernetes.stream import stream
+        username = stream(core_client.connect_get_namespaced_pod_exec,
+            executor_pod_name,
+            namespace,
+            command=['sh', '-c', 'echo $SECRET_USERNAME'],
+            stderr=True,
+            stdin=False,
+            stdout=True,
+            tty=False,
+        ).strip("\n")
+
+        password = stream(core_client.connect_get_namespaced_pod_exec,
+            executor_pod_name,
+            namespace,
+            command=['sh', '-c', 'echo $SECRET_PASSWORD'],
+            stderr=True,
+            stdin=False,
+            stdout=True,
+            tty=False,
+        ).strip("\n")
 
         assert username == 'jina'
         assert password == '123456'
