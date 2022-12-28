@@ -76,7 +76,7 @@ class BaseGateway(JAMLCompatible, metaclass=GatewayType):
 
         import json
 
-        from jina.serve.streamer import GatewayStreamer, ExecutorStreamer
+        from jina.serve.streamer import GatewayStreamer, _ExecutorStreamer
 
         graph_description = json.loads(self.runtime_args.graph_description)
         graph_conditions = json.loads(self.runtime_args.graph_conditions)
@@ -114,7 +114,7 @@ class BaseGateway(JAMLCompatible, metaclass=GatewayType):
             prefetch=self.runtime_args.prefetch,
         )
 
-        self.executor = {executor_name: ExecutorStreamer(self.streamer._connection_pool, executor_name=executor_name) for executor_name in deployments_addresses.keys()}
+        self.executor = {executor_name: _ExecutorStreamer(self.streamer._connection_pool, executor_name=executor_name) for executor_name in deployments_addresses.keys()}
 
     def _add_runtime_args(self, _runtime_args: Optional[Dict]):
         from jina.parsers import set_gateway_runtime_args_parser

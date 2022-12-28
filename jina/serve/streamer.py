@@ -223,23 +223,23 @@ class GatewayStreamer:
         os.environ['JINA_STREAMER_ARGS'] = json.dumps(kwargs)
 
 
-class ExecutorStreamer:
+class _ExecutorStreamer:
     def __init__(self, connection_pool: GrpcConnectionPool, executor_name: str) -> None:
         self._connection_pool: GrpcConnectionPool = connection_pool
         self.executor_name = executor_name
 
     async def post(
         self,
-        docs: DocumentArray,
+        inputs: DocumentArray,
         request_size: int = 100,
-        exec_endpoint: Optional[str] = None,
+        on: Optional[str] = None,
         parameters: Optional[Dict] = None,
         **kwargs,
     ):
         reqs = []
-        for docs_batch in docs.batch(batch_size=request_size, shuffle=False):
+        for docs_batch in inputs.batch(batch_size=request_size, shuffle=False):
             req = DataRequest()
-            req.header.exec_endpoint = exec_endpoint
+            req.header.exec_endpoint = on
             req.header.target_executor = self.executor_name
             req.parameters = parameters
             req.data.docs = docs_batch
@@ -249,7 +249,7 @@ class ExecutorStreamer:
             requests=reqs,
             deployment=self.executor_name,
             head=True,
-            endpoint=exec_endpoint
+            endpoint=on
         )
         
         return resp.docs
