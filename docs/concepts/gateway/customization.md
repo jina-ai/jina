@@ -224,6 +224,37 @@ class MyGateway(FastAPIBaseGateway):
         return app
 ```
 
+(executor-streamer)=
+## Calling an Individual Executor
+An `executor` object is injected by Jina to your gateway class which allows you to interface with individual Executors from the Gateway.
+
+After transforming requests that arrive to the gateway server into Documents, you can call the Executor in your Python code using `self.executor['executor_name'].post(args)`.
+This method expects a DocumentArray object and an endpoint exposed by the Executor (similar to Jina Client). 
+It returns a 'coroutine' which returns a DocumentArray.
+
+Here is an example of calling an individual Executor named 'executor1':
+```{code-block} python
+---
+emphasize-lines: 13
+---
+from jina.serve.runtimes.gateway.http.fastapi import FastAPIBaseGateway
+from jina import Document, DocumentArray
+from fastapi import FastAPI
+
+
+class MyGateway(FastAPIBaseGateway):
+    @property
+    def app(self):
+        app = FastAPI()
+
+        @app.get("/endpoint")
+        async def get(text: str):
+            docs = await self.executor['executor1'].post(on='/', inputs=DocumentArray([Document(text=text)]), parameters={'k': 'v'})
+            return {'result': [doc.text for doc in docs]}
+
+        return app
+```
+
 ## Gateway arguments
 (gateway-runtime-arguments)=
 ### Runtime attributes
@@ -257,37 +288,6 @@ class MyGateway(Gateway):
 
 Jina provides the Gateway with a list of ports and protocols to expose. Therefore, a custom Gateway can handle requests 
 on multiple ports using different protocols.
-```
-
-(executor-streamer)=
-## Calling an Individual Executor
-An `executor` object is injected by Jina to your gateway class which allows you to interface with individual Executors from the Gateway.
-
-After transforming requests that arrive to the gateway server into Documents, you can call the Executor in your Python code using `self.executor['executor_name'].post(args)`.
-This method expects a DocumentArray object and an endpoint exposed by the Executor (similar to Jina Client). 
-It returns a 'coroutine' which returns a DocumentArray.
-
-Here is an example of calling an individual Executor named 'executor1':
-```{code-block} python
----
-emphasize-lines: 13
----
-from jina.serve.runtimes.gateway.http.fastapi import FastAPIBaseGateway
-from jina import Document, DocumentArray
-from fastapi import FastAPI
-
-
-class MyGateway(FastAPIBaseGateway):
-    @property
-    def app(self):
-        app = FastAPI()
-
-        @app.get("/endpoint")
-        async def get(text: str):
-            docs = await self.executor['executor1'].post(on='/', inputs=DocumentArray([Document(text=text)]), parameters={'k': 'v'})
-            return {'result': [doc.text for doc in docs]}
-
-        return app
 ```
 
 (user-defined-arguments)=
