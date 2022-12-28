@@ -622,6 +622,8 @@ async def test_flow_with_env_from_secret(
         dump_path = os.path.join('./', 'test-flow-with-env-from-secret')
         k8s_flow_env_from_secret.to_kubernetes_yaml(dump_path, k8s_namespace=namespace)
 
+        import subprocess
+
         subprocess.run(
             f'kubectl -n {namespace} create secret generic mysecret --from-literal=username=jina --from-literal=password=123456',
             shell=True,
@@ -641,8 +643,6 @@ async def test_flow_with_env_from_secret(
             },
             logger=logger,
         )
-
-        import subprocess
 
         executor_pod_name = core_client.list_namespaced_pod(
             namespace=namespace,
