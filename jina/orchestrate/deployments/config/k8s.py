@@ -103,6 +103,7 @@ class K8sDeploymentConfig:
                 monitoring=self.common_args.monitoring,
                 port_monitoring=self.common_args.port_monitoring,
                 protocol=self.common_args.protocol,
+                timeout_ready=self.common_args.timeout_ready,
             )
 
         def _get_image_name(self, uses: Optional[str]):
@@ -212,6 +213,7 @@ class K8sDeploymentConfig:
                 monitoring=cargs.monitoring,
                 port_monitoring=cargs.port_monitoring,
                 volumes=getattr(cargs, 'volumes', None),
+                timeout_ready=cargs.timeout_ready,
             )
 
     def __init__(
