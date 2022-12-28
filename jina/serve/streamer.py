@@ -224,31 +224,33 @@ class GatewayStreamer:
 
 
 class ExecutorStreamer:
-    def __init__(self, connection_pool: GrpcConnectionPool) -> None:
+    def __init__(self, connection_pool: GrpcConnectionPool, executor_name: str) -> None:
         self._connection_pool: GrpcConnectionPool = connection_pool
+        self.executor_name = executor_name
 
-    def __getitem__(self, executor_name: str):
-        async def _acall_executor(
-            docs: DocumentArray,
-            request_size: int = 100,
-            exec_endpoint: Optional[str] = None,
-            parameters: Optional[Dict] = None,
-            **kwargs,
-        ):
+    async def post(
+        self,
+        docs: DocumentArray,
+        request_size: int = 100,
+        exec_endpoint: Optional[str] = None,
+        parameters: Optional[Dict] = None,
+        **kwargs,
+    ):
+        reqs = []
+        for docs_batch in docs.batch(batch_size=request_size, shuffle=False):
             req = DataRequest()
             req.header.exec_endpoint = exec_endpoint
-            req.header.target_executor = executor_name
+            req.header.target_executor = self.executor_name
             req.parameters = parameters
-            req.data.docs = docs
+            req.data.docs = docs_batch
+            reqs.append(req)
 
-            resp, _ = await self._connection_pool.send_requests_once(
-                requests=[req],
-                deployment=executor_name,
-                head=True,
-                endpoint=exec_endpoint
-            )
-            
-            return resp.docs
+        resp, _ = await self._connection_pool.send_requests_once(
+            requests=reqs,
+            deployment=self.executor_name,
+            head=True,
+            endpoint=exec_endpoint
+        )
         
-        return _acall_executor
-            
+        return resp.docs
+        

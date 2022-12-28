@@ -184,7 +184,7 @@ def test_stream_individual_executor(protocol):
 
             @app.get("/endpoint")
             async def get(text: str):
-                docs = await self.executor['executor1'](exec_endpoint='/', docs=DocumentArray([Document(text=text), Document(text=text.upper())]), parameters=PARAMETERS)
+                docs = await self.executor['executor1'].post(exec_endpoint='/', docs=DocumentArray([Document(text=text), Document(text=text.upper())]), parameters=PARAMETERS)
                 return {'result': [doc.text for doc in docs]}
 
             return app
