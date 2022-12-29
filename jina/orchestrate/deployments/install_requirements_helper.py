@@ -205,13 +205,15 @@ def install_package_dependencies(
         if requirements_file.exists():
             _install_requirements(requirements_file)
 
-
 def _get_package_path_from_uses(uses: str) -> Optional['Path']:
     if isinstance(uses, str) and os.path.exists(uses):
         from pathlib import Path
         return Path(os.path.dirname(os.path.abspath(uses)))
     else:
-        from jina.logging.predefined import default_logger
-        default_logger.warning(
-            f'Error getting the directory name from {uses}. `--install-requirements` option is only valid when `uses` is a configuration file.')
+        from hubble.executor.helper import is_valid_huburi
+        if not is_valid_huburi(uses):
+            from jina.logging.predefined import default_logger
+            
+            default_logger.warning(
+                f'Error getting the directory name from {uses}. `--install-requirements` option is only valid when `uses` is a configuration file.')
         return None
