@@ -1564,9 +1564,7 @@ async def test_really_slow_executor_liveness_probe_works(docker_images, tmpdir, 
     [['slow-load-executor']],
     indirect=True,
 )
-async def test_flow_multiple_protocols_custom_gateway(
-    logger, docker_images, tmpdir, k8s_cluster
-):
+async def test_flow_slow_load_executor(logger, docker_images, tmpdir, k8s_cluster):
     from kubernetes import client
 
     api_client = client.ApiClient()
@@ -1575,7 +1573,7 @@ async def test_flow_multiple_protocols_custom_gateway(
     try:
         port = random_port()
         flow = Flow().add(
-            name='slow-load-executor',
+            name='slow_load_executor',
             uses=f'docker://{docker_images[0]}',
             port=port,
             timeout_ready=60,
