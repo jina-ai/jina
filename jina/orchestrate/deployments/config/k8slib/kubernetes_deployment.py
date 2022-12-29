@@ -1,6 +1,7 @@
 import json
 import math
 import os
+import warnings
 from argparse import Namespace
 from typing import Dict, List, Optional, Tuple, Union
 
@@ -85,9 +86,10 @@ def get_template_yamls(
         protocols = protocol
 
     if timeout_ready == -1:
-        raise ValueError(
-            'value timeout_ready=-1 is not supported in Kubernetes. Please set an explicit value'
+        warnings.warn(
+            'timeout_ready=-1 is not supported, setting timeout_ready to 10 minutes'
         )
+        timeout_ready = 600000
     failure_threshold = max(math.ceil((timeout_ready / 1000) / PERIOD_SECONDS), 3)
 
     template_params = {
