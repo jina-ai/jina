@@ -169,7 +169,7 @@ f = (
     .add(name='encoder', uses='jinaai+docker://jina-ai/CLIPEncoder', replicas=2)
     .add(
         name='indexer',
-        uses='jinaai+docker://jina-ai/ANNLiteIndexer',
+        uses='jinaai+docker://jina-ai/AnnLiteIndexer',
         uses_with={'dim': 512},
         shards=2,
     )
@@ -212,6 +212,7 @@ kubectl apply -R -f ./k8s_flow
 
 You can customize the environment variables that are available inside runtime, either defined directly or read from a [Kubernetes secret](https://kubernetes.io/docs/concepts/configuration/secret/):
 
+````{tab} with Python
 ```python
 from jina import Flow
 
@@ -219,7 +220,57 @@ f = (
     Flow(port=8080)
     .add(
         name='indexer',
-        uses='jinaai+docker://jina-ai/ANNLiteIndexer',
+        uses='jinaai+docker://jina-ai/AnnLiteIndexer',
+        uses_with={'dim': 512},
+        env={'k1': 'v1', 'k2': 'v2'},
+        env_from_secret={
+            'SECRET_USERNAME': {'name': 'mysecret', 'key': 'username'},
+            'SECRET_PASSWORD': {'name': 'mysecret', 'key': 'password'},
+        },
+    )
+)
+
+f.to_kubernetes_yaml('./k8s_flow', k8s_namespace='custom-namespace')
+```
+````
+````{tab} with flow YAML
+In a `flow.yml` file :
+```yaml
+jtype: Flow
+version: '1'
+with:
+  protocol: http
+executors:
+- name: indexer
+  uses: jinaai+docker://jina-ai/AnnLiteIndexer
+  uses_with:
+    dim: 512
+  env:
+    k1: v1
+    k2: v2
+  env_from_secret:
+    SECRET_USERNAME:
+      name: mysecret
+      key: username
+    SECRET_PASSWORD:
+      name: mysecret
+      key: password
+```
+
+You can generate Kubernetes YAML configs using `jina export`:
+```shell
+jina export kubernetes flow.yml ./k8s_flow --k8s-namespace custom-namespace
+```
+````
+
+```python
+from jina import Flow
+
+f = (
+    Flow(port=8080)
+    .add(
+        name='indexer',
+        uses='jinaai+docker://jina-ai/AnnLiteIndexer',
         uses_with={'dim': 512},
         env={'k1': 'v1', 'k2': 'v2'},
         env_from_secret={
