@@ -208,6 +208,7 @@ class K8sDeploymentConfig:
                 pod_type=self.pod_type,
                 shard_id=self.shard_id,
                 env=cargs.env,
+                env_from_secret=cargs.env_from_secret,
                 gpus=cargs.gpus if hasattr(cargs, 'gpus') else None,
                 monitoring=cargs.monitoring,
                 port_monitoring=cargs.port_monitoring,

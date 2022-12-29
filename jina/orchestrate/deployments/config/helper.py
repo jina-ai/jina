@@ -92,6 +92,7 @@ def construct_runtime_container_args(cargs, uses_metas, uses_with, pod_type):
         'workspace_id',
         'noblock_on_start',
         'env',
+        'env_from_secret',
     }
 
     if pod_type == PodRoleType.HEAD:
