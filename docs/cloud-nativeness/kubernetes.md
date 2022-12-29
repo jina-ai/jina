@@ -263,26 +263,6 @@ jina export kubernetes flow.yml ./k8s_flow --k8s-namespace custom-namespace
 ```
 ````
 
-```python
-from jina import Flow
-
-f = (
-    Flow(port=8080)
-    .add(
-        name='indexer',
-        uses='jinaai+docker://jina-ai/AnnLiteIndexer',
-        uses_with={'dim': 512},
-        env={'k1': 'v1', 'k2': 'v2'},
-        env_from_secret={
-            'SECRET_USERNAME': {'name': 'mysecret', 'key': 'username'},
-            'SECRET_PASSWORD': {'name': 'mysecret', 'key': 'password'},
-        },
-    )
-)
-
-f.to_kubernetes_yaml('./k8s_flow', k8s_namespace='custom-namespace')
-```
-
 After creating the namespace, you need to create the secrets mentioned above:
 
 ```shell
