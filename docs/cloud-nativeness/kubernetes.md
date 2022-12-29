@@ -232,7 +232,7 @@ f = (
 f.to_kubernetes_yaml('./k8s_flow', k8s_namespace='custom-namespace')
 ```
 
-After creating the namespace, you need to create the secrets metioned above:
+After creating the namespace, you need to create the secrets mentioned above:
 
 ```shell
 kubectl -n custom-namespace create secret generic mysecret --from-literal=username=jina --from-literal=password=123456
