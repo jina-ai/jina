@@ -210,7 +210,7 @@ kubectl apply -R -f ./k8s_flow
 
 ### Deploy Flow with custom environment variables and secrets
 
-You can customize the environment variables that are available inside runtime, either defined directly or read from a Kubernetes secret:
+You can customize the environment variables that are available inside runtime, either defined directly or read from a [Kubernetes secret](https://kubernetes.io/docs/concepts/configuration/secret/):
 
 ```python
 from jina import Flow
