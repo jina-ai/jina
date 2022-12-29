@@ -1555,3 +1555,58 @@ async def test_really_slow_executor_liveness_probe_works(docker_images, tmpdir, 
                 ).stdout.strip("\n")
                 print(out)
         raise exc
+
+
+@pytest.mark.asyncio
+@pytest.mark.timeout(3600)
+@pytest.mark.parametrize(
+    'docker_images',
+    [['slow-load-executor']],
+    indirect=True,
+)
+async def test_flow_multiple_protocols_custom_gateway(
+    logger, docker_images, tmpdir, k8s_cluster
+):
+    from kubernetes import client
+
+    api_client = client.ApiClient()
+    core_client = client.CoreV1Api(api_client=api_client)
+    app_client = client.AppsV1Api(api_client=api_client)
+    try:
+        port = random_port()
+        flow = Flow().add(
+            name='slow-load-executor',
+            uses=f'docker://{docker_images[0]}',
+            port=port,
+            timeout_ready=60,
+        )
+
+        dump_path = os.path.join(str(tmpdir), 'k8s-slow-load-executor')
+        namespace = 'slow-load-executor'
+        flow.to_kubernetes_yaml(dump_path, k8s_namespace=namespace)
+
+        await create_all_flow_deployments_and_wait_ready(
+            dump_path,
+            namespace=namespace,
+            api_client=api_client,
+            app_client=app_client,
+            core_client=core_client,
+            deployment_replicas_expected={'gateway': 1, 'slow-load-executor': 1},
+            logger=logger,
+        )
+
+        executor_pod_name = (
+            core_client.list_namespaced_pod(
+                namespace=namespace, label_selector='app=slow-load-executor'
+            )
+            .items[0]
+            .metadata.name
+        )
+        with shell_portforward(
+            k8s_cluster._cluster.kubectl_path, executor_pod_name, port, port, namespace
+        ):
+            assert AsyncNewLoopRuntime.is_ready(f'localhost:{port}')
+
+    except Exception as exc:
+        logger.error(f' Exception raised {exc}')
+        raise exc
