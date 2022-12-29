@@ -1576,7 +1576,7 @@ async def test_flow_slow_load_executor(logger, docker_images, tmpdir, k8s_cluste
             name='slow_load_executor',
             uses=f'docker://{docker_images[0]}',
             port=port,
-            timeout_ready=60,
+            timeout_ready=65000,
         )
 
         dump_path = os.path.join(str(tmpdir), 'k8s-slow-load-executor')
