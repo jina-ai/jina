@@ -1,10 +1,12 @@
+import asyncio
 import copy
 import json
+import multiprocessing
 import os
 import re
 import subprocess
-import asyncio
-
+import threading
+import time
 from abc import abstractmethod
 from argparse import Namespace
 from collections import defaultdict
@@ -15,15 +17,25 @@ from typing import Dict, List, Optional, Set, Union
 from hubble.executor.helper import replace_secret_of_hub_uri
 from hubble.executor.hubio import HubIO
 
-from jina.constants import __default_executor__, __default_host__, __docker_host__
+from jina.constants import (
+    __default_executor__,
+    __default_host__,
+    __docker_host__,
+    __windows__,
+)
 from jina.enums import DeploymentRoleType, PodRoleType, PollingType
 from jina.helper import (
+    ArgNamespace,
     CatchAllCleanupContextManager,
     parse_host_scheme,
-    random_port
+    random_port,
 )
-from jina.orchestrate.deployments.install_requirements_helper import install_package_dependencies, _get_package_path_from_uses
+from jina.orchestrate.deployments.install_requirements_helper import (
+    _get_package_path_from_uses,
+    install_package_dependencies,
+)
 from jina.orchestrate.pods.factory import PodFactory
+from jina.parsers import set_deployment_parser
 from jina.parsers.helper import _update_gateway_args
 from jina.serve.networking import host_is_local, in_docker
 
@@ -192,7 +204,9 @@ class Deployment(BaseDeployment):
                 pod.wait_start_success()
 
         async def async_wait_start_success(self):
-            await asyncio.gather(*[pod.async_wait_start_success() for pod in self._pods])
+            await asyncio.gather(
+                *[pod.async_wait_start_success() for pod in self._pods]
+            )
 
         def __enter__(self):
             for _args in self.args:
@@ -213,9 +227,15 @@ class Deployment(BaseDeployment):
                 raise closing_exception
 
     def __init__(
-        self, args: Union['Namespace', Dict], needs: Optional[Set[str]] = None
+        self,
+        args: Union['Namespace', Dict, None] = None,
+        needs: Optional[Set[str]] = None,
+        **kwargs,
     ):
         super().__init__()
+        parser = set_deployment_parser()
+        if args is None:
+            args = ArgNamespace.kwargs2namespace(kwargs, parser, True)
         self.args = args
         self.args.polling = (
             args.polling if hasattr(args, 'polling') else PollingType.ANY
@@ -877,7 +897,8 @@ class Deployment(BaseDeployment):
                         )  # the first index is for the head
                         _args.port_monitoring = (
                             random_port()
-                            if port_monitoring_index >= len(self.args.all_port_monitoring)
+                            if port_monitoring_index
+                            >= len(self.args.all_port_monitoring)
                             else self.args.all_port_monitoring[
                                 port_monitoring_index
                             ]  # we skip the head port here
@@ -1065,3 +1086,34 @@ class Deployment(BaseDeployment):
 
             mermaid_graph.append('end;')
         return mermaid_graph
+
+    def block(
+        self, stop_event: Optional[Union[threading.Event, multiprocessing.Event]] = None
+    ):
+        """Block the Deployment until `stop_event` is set or user hits KeyboardInterrupt
+
+        :param stop_event: a threading event or a multiprocessing event that once set will resume the control flow
+            to main thread.
+        """
+        try:
+            if stop_event is None:
+                self._stop_event = (
+                    threading.Event()
+                )  #: this allows `.close` to close the Flow from another thread/proc
+                if not __windows__:
+                    self._stop_event.wait()
+                else:
+                    while True:
+                        if self._stop_event.is_set():
+                            break
+                        time.sleep(0.5)
+            else:
+                if not __windows__:
+                    stop_event.wait()
+                else:
+                    while True:
+                        if stop_event.is_set():
+                            break
+                        time.sleep(0.5)
+        except KeyboardInterrupt:
+            pass
