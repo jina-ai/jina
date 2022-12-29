@@ -62,6 +62,14 @@ def mixin_pod_parser(parser, pod_type: str = 'worker'):
         help='The map of environment variables that are available inside runtime',
     )
 
+    gp.add_argument(
+        '--env-from-secret',
+        action=KVAppendAction,
+        metavar='KEY: VALUE',
+        nargs='*',
+        help='The map of environment variables that are read from kubernetes cluster secrets',
+    )
+
     # hidden CLI used for internal only
 
     gp.add_argument(

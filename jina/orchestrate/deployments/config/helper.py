@@ -69,14 +69,13 @@ def get_base_executor_version():
         return 'master'
 
 
-def construct_runtime_container_args(cargs, uses_metas, uses_with, pod_type, env_from_secret=None):
+def construct_runtime_container_args(cargs, uses_metas, uses_with, pod_type):
     """
     Construct a set of Namespace arguments into a list of arguments to pass to a container entrypoint
     :param cargs: The namespace arguments
     :param uses_metas: The uses_metas to override
     :param uses_with: The uses_with to override
     :param pod_type: The pod_type
-    :param env_from_secret: The env_from_secret
     :return: Arguments to pass to container
     """
     import json
@@ -86,7 +85,6 @@ def construct_runtime_container_args(cargs, uses_metas, uses_with, pod_type, env
 
     taboo = {
         'uses_with',
-        'env_from_secret',
         'uses_metas',
         'volumes',
         'uses_before',
@@ -94,6 +92,7 @@ def construct_runtime_container_args(cargs, uses_metas, uses_with, pod_type, env
         'workspace_id',
         'noblock_on_start',
         'env',
+        'env_from_secret',
     }
 
     if pod_type == PodRoleType.HEAD:
@@ -114,8 +113,6 @@ def construct_runtime_container_args(cargs, uses_metas, uses_with, pod_type, env
         container_args.extend(['--uses-metas', json.dumps(uses_metas)])
     if uses_with is not None:
         container_args.extend(['--uses-with', json.dumps(uses_with)])
-    if env_from_secret is not None:
-        container_args.extend(['--env-from-secret', json.dumps(env_from_secret)])
     container_args.append('--native')
     return container_args
 
