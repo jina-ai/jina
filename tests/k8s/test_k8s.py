@@ -202,6 +202,18 @@ def k8s_flow_env_from_secret(docker_images, jina_k3_env):
     )
     return flow
 
+@pytest.fixture
+def k8s_dummy_secret():
+    from kubernetes import client
+    
+    secret = client.V1Secret(
+        api_version='v1',
+        kind='Secret',
+        metadata=client.V1ObjectMeta(name='mysecret'),
+        string_data={'username': 'jina', 'password': '123456'}
+    )
+    return secret
+
 
 @pytest.fixture
 def k8s_flow_gpu(docker_images):
@@ -609,7 +621,7 @@ async def test_flow_with_configmap(k8s_flow_configmap, docker_images, tmpdir, lo
     'docker_images', [['test-executor', 'jinaai/jina']], indirect=True
 )
 async def test_flow_with_env_from_secret(
-    k8s_flow_env_from_secret, docker_images, tmpdir, logger
+    k8s_flow_env_from_secret, k8s_dummy_secret, docker_images, tmpdir, logger
 ):
     from kubernetes import client
 
@@ -626,13 +638,7 @@ async def test_flow_with_env_from_secret(
         core_client.create_namespace(client.V1Namespace(metadata=client.V1ObjectMeta(name=namespace)))
 
         # create secret
-        secret = client.V1Secret(
-            api_version='v1',
-            kind='Secret',
-            metadata=client.V1ObjectMeta(name='mysecret'),
-            string_data={'username': 'jina', 'password': '123456'}
-        )
-        core_client.create_namespaced_secret(namespace=namespace, body=secret)
+        core_client.create_namespaced_secret(namespace=namespace, body=k8s_dummy_secret)
 
         await create_all_flow_deployments_and_wait_ready(
             dump_path,
