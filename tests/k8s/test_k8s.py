@@ -1571,11 +1571,10 @@ async def test_flow_slow_load_executor(logger, docker_images, tmpdir, k8s_cluste
     core_client = client.CoreV1Api(api_client=api_client)
     app_client = client.AppsV1Api(api_client=api_client)
     try:
-        port = random_port()
+        port = 8080
         flow = Flow().add(
             name='slow_load_executor',
             uses=f'docker://{docker_images[0]}',
-            port=port,
             timeout_ready=65000,
         )
 
