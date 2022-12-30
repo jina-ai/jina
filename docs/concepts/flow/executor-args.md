@@ -29,6 +29,7 @@
 | `runtime_cls` | The runtime class to run inside the Pod | `string` | `WorkerRuntime` |
 | `timeout_ready` | The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting forever | `number` | `600000` |
 | `env` | The map of environment variables that are available inside runtime | `object` | `None` |
+| `env_from_secret` | The map of environment variables that are read from kubernetes cluster secrets | `object` | `None` |
 | `floating` | If set, the current Pod/Deployment can not be further chained, and the next `.add()` will chain after the last Pod/Deployment not this current one. | `boolean` | `False` |
 | `reload` | If set, the Executor will restart while serving if YAML configuration source or Executor modules are changed. If YAML configuration is changed, the whole deployment is reloaded and new processes will be restarted. If only Python modules of the Executor have changed, they will be reloaded to the interpreter without restarting process. | `boolean` | `False` |
 | `install_requirements` | If set, try to install `requirements.txt` from the local Executor if exists in the Executor folder. If using Hub, install `requirements.txt` in the Hub Executor bundle to local. | `boolean` | `False` |

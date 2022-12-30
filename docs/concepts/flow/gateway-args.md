@@ -36,6 +36,7 @@
 | `runtime_cls` | The runtime class to run inside the Pod | `string` | `GatewayRuntime` |
 | `timeout_ready` | The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting forever | `number` | `600000` |
 | `env` | The map of environment variables that are available inside runtime | `object` | `None` |
+| `env_from_secret` | The map of environment variables that are read from kubernetes cluster secrets | `object` | `None` |
 | `floating` | If set, the current Pod/Deployment can not be further chained, and the next `.add()` will chain after the last Pod/Deployment not this current one. | `boolean` | `False` |
 | `reload` | If set, the Gateway will restart while serving if YAML configuration source is changed. | `boolean` | `False` |
 | `port` | The port for input data to bind the gateway server to, by default, random ports between range [49152, 65535] will be assigned. The port argument can be either 1 single value in case only 1 protocol is used or multiple values when many protocols are used. | `number` | `random in [49152, 65535]` |
