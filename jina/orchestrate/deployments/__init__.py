@@ -35,7 +35,7 @@ from jina.orchestrate.deployments.install_requirements_helper import (
     install_package_dependencies,
 )
 from jina.orchestrate.pods.factory import PodFactory
-from jina.parsers import set_deployment_parser
+from jina.parsers import set_deployment_parser, set_gateway_parser
 from jina.parsers.helper import _update_gateway_args
 from jina.serve.networking import host_is_local, in_docker
 
@@ -230,9 +230,16 @@ class Deployment(BaseDeployment):
         self,
         args: Union['Namespace', Dict, None] = None,
         needs: Optional[Set[str]] = None,
+        include_gateway: bool = False,
         **kwargs,
     ):
         super().__init__()
+        gateway_kwargs = {}
+        if include_gateway:
+            for field in ['protocol', 'port', 'host']:
+                if field in kwargs:
+                    gateway_kwargs[field] = kwargs.pop(field)
+
         parser = set_deployment_parser()
         if args is None:
             args = ArgNamespace.kwargs2namespace(kwargs, parser, True)
@@ -270,9 +277,23 @@ class Deployment(BaseDeployment):
         self.uses_before_pod = None
         self.uses_after_pod = None
         self.head_pod = None
+        self.gateway_pod = None
         self.shards = {}
         self._update_port_monitoring_args()
         self.update_pod_args()
+
+        if include_gateway:
+            gateway_parser = set_gateway_parser()
+            args = ArgNamespace.kwargs2namespace(gateway_kwargs, gateway_parser, True)
+
+            args.deployments_addresses = f'{{"executor": ["0.0.0.0:{self.port}"]}}'
+            args.graph_description = (
+                '{"start-gateway": ["executor"], "executor": ["end-gateway"]}'
+            )
+            self.pod_args['gateway'] = args
+        else:
+            self.pod_args['gateway'] = None
+
         self._sandbox_deployed = False
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
@@ -579,6 +600,7 @@ class Deployment(BaseDeployment):
             ([self.pod_args['uses_before']] if self.pod_args['uses_before'] else [])
             + ([self.pod_args['uses_after']] if self.pod_args['uses_after'] else [])
             + ([self.pod_args['head']] if self.pod_args['head'] else [])
+            + ([self.pod_args['gateway']] if self.pod_args['gateway'] else [])
         )
         for shard_id in self.pod_args['pods']:
             all_args += self.pod_args['pods'][shard_id]
@@ -596,6 +618,8 @@ class Deployment(BaseDeployment):
         if self.uses_before_pod is not None:
             num_pods += 1
         if self.uses_after_pod is not None:
+            num_pods += 1
+        if self.gateway_pod is not None:
             num_pods += 1
         if self.shards:  # external deployments
             for shard_id in self.shards:
@@ -660,6 +684,12 @@ class Deployment(BaseDeployment):
                 _args.noblock_on_start = True
             self.head_pod = PodFactory.build_pod(_args)
             self.enter_context(self.head_pod)
+        if self.pod_args['gateway'] is not None:
+            _args = self.pod_args['gateway']
+            if getattr(self.args, 'noblock_on_start', False):
+                _args.noblock_on_start = True
+            self.gateway_pod = PodFactory.build_pod(_args)
+            self.enter_context(self.gateway_pod)
         for shard_id in self.pod_args['pods']:
             self.shards[shard_id] = self._ReplicaSet(
                 self.args,
@@ -686,6 +716,8 @@ class Deployment(BaseDeployment):
                 self.uses_after_pod.wait_start_success()
             if self.head_pod is not None:
                 self.head_pod.wait_start_success()
+            if self.gateway_pod is not None:
+                self.gateway_pod.wait_start_success()
             for shard_id in self.shards:
                 self.shards[shard_id].wait_start_success()
         except:
@@ -709,6 +741,8 @@ class Deployment(BaseDeployment):
                 coros.append(self.uses_after_pod.async_wait_start_success())
             if self.head_pod is not None:
                 coros.append(self.head_pod.async_wait_start_success())
+            if self.gateway_pod is not None:
+                coros.append(self.gateway_pod.async_wait_start_success())
             for shard_id in self.shards:
                 coros.append(self.shards[shard_id].async_wait_start_success())
             await asyncio.gather(*coros)
@@ -725,6 +759,8 @@ class Deployment(BaseDeployment):
                 self.uses_after_pod.join()
             if self.head_pod is not None:
                 self.head_pod.join()
+            if self.gateway_pod is not None:
+                self.gateway_pod.join()
             if self.shards:
                 for shard_id in self.shards:
                     self.shards[shard_id].join()
@@ -756,6 +792,8 @@ class Deployment(BaseDeployment):
             is_ready = self.uses_before_pod.is_ready.is_set()
         if is_ready and self.uses_after_pod is not None:
             is_ready = self.uses_after_pod.is_ready.is_set()
+        if is_ready and self.gateway_pod is not None:
+            is_ready = self.gateway_pod.is_ready.is_set()
         return is_ready
 
     @staticmethod
