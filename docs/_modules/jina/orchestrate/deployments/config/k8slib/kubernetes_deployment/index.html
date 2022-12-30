@@ -6,7 +6,7 @@
         <link rel="canonical" href="https://docs.jina.ai/_modules/jina/orchestrate/deployments/config/k8slib/kubernetes_deployment.html" />
 
     <link rel="shortcut icon" href="../../../../../../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
-        <title>jina.orchestrate.deployments.config.k8slib.kubernetes_deployment - Jina 3.13.1 documentation</title>
+        <title>jina.orchestrate.deployments.config.k8slib.kubernetes_deployment - Jina 3.13.2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/copybutton.css" />
@@ -140,7 +140,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../../../../">
-                <div class="brand">Jina 3.13.1 documentation</div>
+                <div class="brand">Jina 3.13.2 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -398,12 +398,16 @@
                 <article role="main">
                     <h1>Source code for jina.orchestrate.deployments.config.k8slib.kubernetes_deployment</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">math</span>
 <span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">from</span> <span class="nn">argparse</span> <span class="kn">import</span> <span class="n">Namespace</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">from</span> <span class="nn">jina.orchestrate.deployments.config.k8slib</span> <span class="kn">import</span> <span class="n">kubernetes_tools</span>
 <span class="kn">from</span> <span class="nn">jina.serve.networking</span> <span class="kn">import</span> <span class="n">GrpcConnectionPool</span>
+
+<span class="n">PERIOD_SECONDS</span> <span class="o">=</span> <span class="mi">5</span>
 
 
 <div class="viewcode-block" id="get_template_yamls"><a class="viewcode-back" href="../../../../../../../api/jina.orchestrate.deployments.config.k8slib.kubernetes_deployment/#jina.orchestrate.deployments.config.k8slib.kubernetes_deployment.get_template_yamls">[docs]</a><span class="k">def</span> <span class="nf">get_template_yamls</span><span class="p">(</span>
@@ -430,6 +434,7 @@
     <span class="n">port_monitoring</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">protocol</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">volumes</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">timeout_ready</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">600000</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Get the yaml description of a service on Kubernetes</span>
 
@@ -456,6 +461,9 @@
 <span class="sd">    :param port_monitoring: port which will be exposed, for the prometheus server, by the deployed containers</span>
 <span class="sd">    :param protocol: In case of being a Gateway, the protocol or protocols list used to expose its server</span>
 <span class="sd">    :param volumes: If volumes are passed to Executors, Jina will create a StatefulSet instead of Deployment and include the first volume in the volume mounts</span>
+<span class="sd">    :param timeout_ready: The timeout in milliseconds of a Pod waits for the runtime to be ready. This parameter will be</span>
+<span class="sd">        reflected in Kubernetes in the startup configuration where the failureThreshold will be calculated depending on</span>
+<span class="sd">        timeout_ready. Value -1 is not supported for kubernetes</span>
 <span class="sd">    :return: Return a dictionary with all the yaml configuration needed for a deployment</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># we can always assume the ports are the same for all executors since they run on different k8s pods</span>
@@ -475,6 +483,13 @@
         <span class="n">protocols</span> <span class="o">=</span> <span class="p">[</span><span class="n">protocol</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">protocols</span> <span class="o">=</span> <span class="n">protocol</span>
+
+    <span class="k">if</span> <span class="n">timeout_ready</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="s1">&#39;timeout_ready=-1 is not supported, setting timeout_ready to 10 minutes&#39;</span>
+        <span class="p">)</span>
+        <span class="n">timeout_ready</span> <span class="o">=</span> <span class="mi">600000</span>
+    <span class="n">failure_threshold</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">((</span><span class="n">timeout_ready</span> <span class="o">/</span> <span class="mi">1000</span><span class="p">)</span> <span class="o">/</span> <span class="n">PERIOD_SECONDS</span><span class="p">),</span> <span class="mi">3</span><span class="p">)</span>
 
     <span class="n">template_params</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
@@ -498,6 +513,8 @@
         <span class="s1">&#39;pod_type&#39;</span><span class="p">:</span> <span class="n">pod_type</span><span class="p">,</span>
         <span class="s1">&#39;protocol&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">protocols</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">if</span> <span class="n">protocols</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
         <span class="s1">&#39;volume_path&#39;</span><span class="p">:</span> <span class="n">volumes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">volumes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="s1">&#39;period_seconds&#39;</span><span class="p">:</span> <span class="n">PERIOD_SECONDS</span><span class="p">,</span>
+        <span class="s1">&#39;failure_threshold&#39;</span><span class="p">:</span> <span class="n">failure_threshold</span><span class="p">,</span>
     <span class="p">}</span>
 
     <span class="k">if</span> <span class="n">gpus</span> <span class="ow">and</span> <span class="n">gpus</span> <span class="o">!=</span> <span class="s1">&#39;all&#39;</span><span class="p">:</span>
@@ -668,7 +685,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 21, 2022</div>
+                            Last updated on Dec 30, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
