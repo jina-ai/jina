@@ -1,10 +1,14 @@
 import json
+import math
 import os
+import warnings
 from argparse import Namespace
 from typing import Dict, List, Optional, Tuple, Union
 
 from jina.orchestrate.deployments.config.k8slib import kubernetes_tools
 from jina.serve.networking import GrpcConnectionPool
+
+PERIOD_SECONDS = 5
 
 
 def get_template_yamls(
@@ -32,6 +36,7 @@ def get_template_yamls(
     port_monitoring: Optional[int] = None,
     protocol: Optional[Union[str, List[str]]] = None,
     volumes: Optional[List[str]] = None,
+    timeout_ready: int = 600000,
 ) -> List[Dict]:
     """Get the yaml description of a service on Kubernetes
 
@@ -59,6 +64,9 @@ def get_template_yamls(
     :param port_monitoring: port which will be exposed, for the prometheus server, by the deployed containers
     :param protocol: In case of being a Gateway, the protocol or protocols list used to expose its server
     :param volumes: If volumes are passed to Executors, Jina will create a StatefulSet instead of Deployment and include the first volume in the volume mounts
+    :param timeout_ready: The timeout in milliseconds of a Pod waits for the runtime to be ready. This parameter will be
+        reflected in Kubernetes in the startup configuration where the failureThreshold will be calculated depending on
+        timeout_ready. Value -1 is not supported for kubernetes
     :return: Return a dictionary with all the yaml configuration needed for a deployment
     """
     # we can always assume the ports are the same for all executors since they run on different k8s pods
@@ -78,6 +86,13 @@ def get_template_yamls(
         protocols = [protocol]
     else:
         protocols = protocol
+
+    if timeout_ready == -1:
+        warnings.warn(
+            'timeout_ready=-1 is not supported, setting timeout_ready to 10 minutes'
+        )
+        timeout_ready = 600000
+    failure_threshold = max(math.ceil((timeout_ready / 1000) / PERIOD_SECONDS), 3)
 
     template_params = {
         'name': name,
@@ -102,6 +117,8 @@ def get_template_yamls(
         'env_from_secret': env_from_secret,
         'protocol': str(protocols[0]).lower() if protocols[0] is not None else '',
         'volume_path': volumes[0] if volumes is not None else None,
+        'period_seconds': PERIOD_SECONDS,
+        'failure_threshold': failure_threshold,
     }
 
     if gpus and gpus != 'all':
