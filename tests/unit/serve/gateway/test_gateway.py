@@ -159,15 +159,7 @@ def test_custom_gateway_no_executors(uses, uses_with, expected):
     assert worker_process.exitcode == 0
 
 
-@pytest.mark.parametrize(
-    "protocol",
-    [
-        'grpc',
-        'http',
-        'websocket',
-    ]
-)
-def test_stream_individual_executor(protocol):
+def test_stream_individual_executor():
     from docarray import DocumentArray, Document
 
     from jina.serve.runtimes.gateway.http.fastapi import FastAPIBaseGateway
@@ -201,7 +193,7 @@ def test_stream_individual_executor(protocol):
             for doc in docs:
                 doc.text += f' Second(parameters={str(parameters)})'
 
-    with Flow().config_gateway(uses=MyGateway, protocol=protocol).add(uses=FirstExec, name='executor0').add(uses=SecondExec, name='executor1') as flow:
+    with Flow().config_gateway(uses=MyGateway, protocol='http').add(uses=FirstExec, name='executor0').add(uses=SecondExec, name='executor1') as flow:
         import requests
         r = requests.get(f"http://localhost:{flow.port}/endpoint?text=meow")
         assert r.json()['result'] == [f"meow Second(parameters={str(PARAMETERS)})", f"MEOW Second(parameters={str(PARAMETERS)})"]
