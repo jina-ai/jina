@@ -55,10 +55,10 @@ class BaseGateway(JAMLCompatible, metaclass=GatewayType):
     """
 
     def __init__(
-            self,
-            name: Optional[str] = 'gateway',
-            runtime_args: Optional[Dict] = None,
-            **kwargs,
+        self,
+        name: Optional[str] = 'gateway',
+        runtime_args: Optional[Dict] = None,
+        **kwargs,
     ):
         """
         :param name: Gateway pod name
@@ -78,11 +78,11 @@ class BaseGateway(JAMLCompatible, metaclass=GatewayType):
 
         from jina.serve.streamer import GatewayStreamer
 
-        graph_description = json.loads(runtime_args.graph_description)
-        graph_conditions = json.loads(runtime_args.graph_conditions)
-        deployments_addresses = json.loads(runtime_args.deployments_addresses)
-        deployments_metadata = json.loads(runtime_args.deployments_metadata)
-        deployments_no_reduce = json.loads(runtime_args.deployments_no_reduce)
+        graph_description = json.loads(self.runtime_args.graph_description)
+        graph_conditions = json.loads(self.runtime_args.graph_conditions)
+        deployments_addresses = json.loads(self.runtime_args.deployments_addresses)
+        deployments_metadata = json.loads(self.runtime_args.deployments_metadata)
+        deployments_no_reduce = json.loads(self.runtime_args.deployments_no_reduce)
 
         self.streamer = GatewayStreamer(
             graph_representation=graph_description,
@@ -90,10 +90,10 @@ class BaseGateway(JAMLCompatible, metaclass=GatewayType):
             graph_conditions=graph_conditions,
             deployments_metadata=deployments_metadata,
             deployments_no_reduce=deployments_no_reduce,
-            timeout_send=timeout_send,
+            timeout_send=self.runtime_args.timeout_send,
             retries=self.runtime_args.retries,
             compression=self.runtime_args.compression,
-            runtime_name=runtime_name,
+            runtime_name=self.runtime_args.runtime_name,
             prefetch=self.runtime_args.prefetch,
             logger=self.logger,
             metrics_registry=self.runtime_args.metrics_registry,

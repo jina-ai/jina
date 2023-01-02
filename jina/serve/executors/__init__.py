@@ -897,7 +897,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         snapshot_directory: str,
     ) -> jina_pb2.SnapshotStatusProto:
         id = str(uuid.uuid4())
-        print(f'Generated snapshot id: {id}')
+        self.logger.debug(f'Generated snapshot id: {id}')
         return jina_pb2.SnapshotStatusProto(
             id=jina_pb2.SnapshotId(value=id),
             status=jina_pb2.SnapshotStatusProto.Status.RUNNING,
@@ -909,6 +909,13 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         ...
 
     async def snapshot(self, request, context) -> jina_pb2.SnapshotStatusProto:
+        """
+        method to start a snapshot process of the Executor
+        :param request: the empty request
+        :param context: grpc context
+
+        :return: the status of the snapshot
+        """
         if (
             self._snapshot
             and self._snapshot_process
@@ -931,7 +938,14 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
     async def snapshot_status(
         self, request: jina_pb2.SnapshotId, context
     ) -> jina_pb2.SnapshotStatusProto:
-        print(f'Checking status of snapshot : {request.value}')
+        """
+        method to start a snapshot process of the Executor
+        :param request: the snapshot Id to get the status from
+        :param context: grpc context
+
+        :return: the status of the snapshot
+        """
+        self.logger.debug(f'Checking status of snapshot : {request.value}')
         if not self._snapshot or (self._snapshot.id.value != request.value):
             return jina_pb2.SnapshotStatusProto(
                 id=jina_pb2.SnapshotId(value=request.value),

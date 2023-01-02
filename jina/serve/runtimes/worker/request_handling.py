@@ -200,6 +200,7 @@ class WorkerRequestHandler:
         :param metrics_registry: Optional prometheus metrics registry that will be passed to the executor so that it can expose metrics
         :param tracer_provider: Optional tracer_provider that will be provided to the executor for tracing
         :param meter_provider: Optional meter_provider that will be provided to the executor for metrics
+        :param snapshot_parent_directory: Parent directory where Executor snapshots may be stored
         """
         try:
             self._executor: BaseExecutor = BaseExecutor.load_config(

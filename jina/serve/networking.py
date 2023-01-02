@@ -3,7 +3,7 @@ import ipaddress
 import os
 from collections import defaultdict
 from dataclasses import dataclass
-from typing import Dict, List, Optional, Sequence, Tuple, Union, Set
+from typing import Dict, List, Optional, Sequence, Set, Tuple, Union
 from urllib.parse import urlparse
 
 import grpc

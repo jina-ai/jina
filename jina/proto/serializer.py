@@ -1,5 +1,4 @@
 import os
-from re import S
 from typing import Iterable, List, Union
 
 from jina.proto import jina_pb2
