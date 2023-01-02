@@ -45,12 +45,12 @@ If you change the Docker images in your Docker Compose generated file, ensure th
 the Gateway are built with the same Jina version to guarantee compatibility.
 ````
 
-## Example: Index and search images using CLIPEncoder and ANNLiteIndexer
+## Example: Index and search images using CLIPEncoder and AnnLiteIndexer
 
 Install [`Docker Compose`](https://docs.docker.com/compose/install/) locally to follow this how-to.
 
 This example shows how to build and deploy a Flow with Docker Compose, using [`CLIPImageEncoder`](https://cloud.jina.ai/executor/0hnlmu3q)
-as an image encoder and [`ANNLiteIndexer`](https://cloud.jina.ai/executor/7yypg8qk) as an indexer to perform fast nearest
+as an image encoder and [`AnnLiteIndexer`](https://cloud.jina.ai/executor/7yypg8qk) as an indexer to perform fast nearest
 neighbor retrieval on image embeddings.
 
 ### Deploy the Flow

@@ -58,7 +58,8 @@ spec:
               - executor
               - 127.0.0.1:{port_uses}
           initialDelaySeconds: 5
-          periodSeconds: 5
+          periodSeconds: {period_seconds}
+          failureThreshold: {failure_threshold}
           timeoutSeconds: 10
         livenessProbe:
           exec:
@@ -107,7 +108,8 @@ spec:
               - executor
               - 127.0.0.1:{port_uses_before}
           initialDelaySeconds: 5
-          periodSeconds: 5
+          periodSeconds: {period_seconds}
+          failureThreshold: {failure_threshold}
           timeoutSeconds: 10
         livenessProbe:
           exec:
@@ -156,7 +158,8 @@ spec:
               - executor
               - 127.0.0.1:{port_uses_after}
           initialDelaySeconds: 5
-          periodSeconds: 5
+          periodSeconds: {period_seconds}
+          failureThreshold: {failure_threshold}
           timeoutSeconds: 10
         livenessProbe:
           exec:
