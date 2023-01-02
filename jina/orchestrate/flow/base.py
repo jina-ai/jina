@@ -158,74 +158,64 @@ class Flow(
     # overload_inject_start_gateway_flow
     @overload
     def __init__(
-        self,
-        *,
-        compression: Optional[str] = None,
-        cors: Optional[bool] = False,
-        deployments_addresses: Optional[str] = '{}',
-        deployments_disable_reduce: Optional[str] = '[]',
-        deployments_metadata: Optional[str] = '{}',
-        description: Optional[str] = None,
-        disable_auto_volume: Optional[bool] = False,
-        docker_kwargs: Optional[dict] = None,
-        entrypoint: Optional[str] = None,
-        env: Optional[dict] = None,
-        exit_on_exceptions: Optional[List[str]] = [],
-        expose_endpoints: Optional[str] = None,
-        expose_graphql_endpoint: Optional[bool] = False,
-        floating: Optional[bool] = False,
-        gpus: Optional[str] = None,
-        graph_conditions: Optional[str] = '{}',
-        graph_description: Optional[str] = '{}',
-        grpc_server_options: Optional[dict] = None,
-        host: Optional[str] = '0.0.0.0',
-        host_in: Optional[str] = '0.0.0.0',
-        log_config: Optional[str] = None,
-        metrics: Optional[bool] = False,
-        metrics_exporter_host: Optional[str] = None,
-        metrics_exporter_port: Optional[int] = None,
-        monitoring: Optional[bool] = False,
-        name: Optional[str] = 'gateway',
-        native: Optional[bool] = False,
-        no_crud_endpoints: Optional[bool] = False,
-        no_debug_endpoints: Optional[bool] = False,
-        output_array_type: Optional[str] = None,
-        polling: Optional[str] = 'ANY',
-        port: Optional[str] = None,
-        port_monitoring: Optional[str] = None,
-        prefetch: Optional[int] = 1000,
-        protocol: Optional[str] = 'GRPC',
-        proxy: Optional[bool] = False,
-        py_modules: Optional[List[str]] = None,
-        quiet: Optional[bool] = False,
-        quiet_error: Optional[bool] = False,
-        replicas: Optional[int] = 1,
-        retries: Optional[int] = -1,
-        runtime_cls: Optional[str] = 'GatewayRuntime',
-        shards: Optional[int] = 1,
-        ssl_certfile: Optional[str] = None,
-        ssl_keyfile: Optional[str] = None,
-        timeout_ctrl: Optional[int] = 60,
-        timeout_ready: Optional[int] = 600000,
-        timeout_send: Optional[int] = None,
-        title: Optional[str] = None,
-        traces_exporter_host: Optional[str] = None,
-        traces_exporter_port: Optional[int] = None,
-        tracing: Optional[bool] = False,
-        uses: Optional[Union[str, Type['BaseExecutor'], dict]] = None,
-        uses_with: Optional[dict] = None,
-        uvicorn_kwargs: Optional[dict] = None,
-        volumes: Optional[List[str]] = None,
-        workspace: Optional[str] = None,
-        **kwargs,
-    ):
+            self,*,
+            compression: Optional[str] = None,
+            cors: Optional[bool] = False,
+            deployments_addresses: Optional[str] = '{}',
+            deployments_metadata: Optional[str] = '{}',
+            deployments_no_reduce: Optional[str] = '[]',
+            description: Optional[str] = None,
+            docker_kwargs: Optional[dict] = None,
+            entrypoint: Optional[str] = None,
+            env: Optional[dict] = None,
+            env_from_secret: Optional[dict] = None,
+            expose_endpoints: Optional[str] = None,
+            expose_graphql_endpoint: Optional[bool] = False,
+            floating: Optional[bool] = False,
+            graph_conditions: Optional[str] = '{}',
+            graph_description: Optional[str] = '{}',
+            grpc_server_options: Optional[dict] = None,
+            host: Optional[str] = '0.0.0.0',
+            log_config: Optional[str] = None,
+            metrics: Optional[bool] = False,
+            metrics_exporter_host: Optional[str] = None,
+            metrics_exporter_port: Optional[int] = None,
+            monitoring: Optional[bool] = False,
+            name: Optional[str] = 'gateway',
+            no_crud_endpoints: Optional[bool] = False,
+            no_debug_endpoints: Optional[bool] = False,
+            port: Optional[int] = None,
+            port_monitoring: Optional[int] = None,
+            prefetch: Optional[int] = 1000,
+            protocol: Optional[Union[str, List[str]]] = ['GRPC'],
+            proxy: Optional[bool] = False,
+            py_modules: Optional[List[str]] = None,
+            quiet: Optional[bool] = False,
+            quiet_error: Optional[bool] = False,
+            reload: Optional[bool] = False,
+            retries: Optional[int] = -1,
+            runtime_cls: Optional[str] = 'GatewayRuntime',
+            ssl_certfile: Optional[str] = None,
+            ssl_keyfile: Optional[str] = None,
+            timeout_ctrl: Optional[int] = 60,
+            timeout_ready: Optional[int] = 600000,
+            timeout_send: Optional[int] = None,
+            title: Optional[str] = None,
+            traces_exporter_host: Optional[str] = None,
+            traces_exporter_port: Optional[int] = None,
+            tracing: Optional[bool] = False,
+            uses: Optional[Union[str, Type['BaseExecutor'], dict]] = None,
+            uses_with: Optional[dict] = None,
+            uvicorn_kwargs: Optional[dict] = None,
+            workspace: Optional[str] = None,
+            **kwargs):
         """Create a Flow. Flow is how Jina streamlines and scales Executors. This overloaded method provides arguments from `jina gateway` CLI.
 
         :param compression: The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.
         :param cors: If set, a CORS middleware is added to FastAPI frontend to allow cross-origin access.
         :param deployments_addresses: JSON dictionary with the input addresses of each Deployment
-        :param deployments_disable_reduce: list JSON disabling the built-in merging mechanism for each Deployment listed
         :param deployments_metadata: JSON dictionary with the request metadata for each Deployment
+        :param deployments_no_reduce: list JSON disabling the built-in merging mechanism for each Deployment listed
         :param description: The description of this HTTP server. It will be used in automatics docs such as Swagger UI.
         :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker '
           container. 
@@ -403,13 +393,8 @@ class Flow(
         :param compression: The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.
         :param cors: If set, a CORS middleware is added to FastAPI frontend to allow cross-origin access.
         :param deployments_addresses: JSON dictionary with the input addresses of each Deployment
-<<<<<<< HEAD
-        :param deployments_disable_reduce: list JSON disabling the built-in merging mechanism for each Deployment listed
-        :param deployments_metadata: JSON dictionary with the request metadata for each Deployment
-=======
         :param deployments_metadata: JSON dictionary with the request metadata for each Deployment
         :param deployments_no_reduce: list JSON disabling the built-in merging mechanism for each Deployment listed
->>>>>>> 3a66c8b48ba00a1ed84dd7b368fbf3d84fdbdef2
         :param description: The description of this HTTP server. It will be used in automatics docs such as Swagger UI.
         :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker '
           container. 
@@ -622,12 +607,12 @@ class Flow(
     @allowed_levels([FlowBuildLevel.EMPTY])
     def _add_gateway(
         self,
-        needs: str,
+        needs: Union[str, Set[str]],
         graph_description: Dict[str, List[str]],
         deployments_addresses: Dict[str, List[str]],
         deployments_metadata: Dict[str, Dict[str, str]],
         graph_conditions: Dict[str, Dict],
-        deployments_disabled_reduce: List[str],
+        deployments_no_reduce: List[str],
         **kwargs,
     ):
         kwargs.update(
@@ -658,7 +643,7 @@ class Flow(
         args.graph_conditions = json.dumps(graph_conditions)
         args.deployments_addresses = json.dumps(deployments_addresses)
         args.deployments_metadata = json.dumps(deployments_metadata)
-        args.deployments_disable_reduce = json.dumps(deployments_disabled_reduce)
+        args.deployments_no_reduce = json.dumps(deployments_no_reduce)
         self._deployment_nodes[GATEWAY_NAME] = Deployment(args, needs)
 
     def _get_deployments_metadata(self) -> Dict[str, Dict[str, str]]:

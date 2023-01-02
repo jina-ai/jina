@@ -169,19 +169,6 @@ def mixin_gateway_protocol_parser(parser):
     :param parser: the parser configure
     """
 
-    parser.add_argument(
-        '--deployments-addresses',
-        type=str,
-        help='JSON dictionary with the input addresses of each Deployment',
-        default='{}',
-    )
-
-    parser.add_argument(
-        '--deployments-metadata',
-        type=str,
-        help='JSON dictionary with the request metadata for each Deployment',
-        default='{}',
-    )
     from jina.enums import GatewayProtocolType
 
     parser.add_argument(

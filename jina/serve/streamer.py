@@ -32,7 +32,7 @@ class GatewayStreamer:
             executor_addresses: Dict[str, Union[str, List[str]]],
             graph_conditions: Dict = {},
             deployments_metadata: Dict[str, Dict[str, str]] = {},
-            deployments_disable_reduce: List[str] = [],
+            deployments_no_reduce: List[str] = [],
             timeout_send: Optional[float] = None,
             retries: int = 0,
             compression: Optional[str] = None,
@@ -52,7 +52,7 @@ class GatewayStreamer:
         :param graph_conditions: Dictionary stating which filtering conditions each Executor in the graph requires to receive Documents.
         :param deployments_metadata: Dictionary with the metadata of each Deployment. Each executor deployment can have a list of key-value pairs to
             provide information associated with the request to the deployment.
-        :param deployments_disable_reduce: list of Executor disabling the built-in merging mechanism.
+        :param deployments_no_reduce: list of Executor disabling the built-in merging mechanism.
         :param timeout_send: Timeout to be considered when sending requests to Executors
         :param retries: Number of retries to try to make successfull sendings to Executors
         :param compression: The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.
@@ -69,7 +69,7 @@ class GatewayStreamer:
             graph_representation=graph_representation,
             graph_conditions=graph_conditions,
             deployments_metadata=deployments_metadata,
-            deployments_disable_reduce=deployments_disable_reduce,
+            deployments_no_reduce=deployments_no_reduce,
             timeout_send=timeout_send,
             retries=retries,
             logger=logger,

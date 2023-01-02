@@ -15,7 +15,7 @@ from jina.serve.networking import GrpcConnectionPool
 from jina.serve.stream import RequestStreamer
 from jina.types.request.data import Request
 
-if TYPE_CHECKING: # pragma: no cover
+if TYPE_CHECKING:  # pragma: no cover
     from jina.clients.base import CallbackFnType, InputType
 
 

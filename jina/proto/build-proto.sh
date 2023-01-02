@@ -22,7 +22,7 @@ SRC_NAME="${MODULE}.proto"
 
 COMP_PROTO_OUT_NAME="${MODULE}_pb2.py"
 COMP_GRPC_OUT_NAME="${MODULE}_pb2_grpc.py"
-OUT_FOLDER="${2:-pb}/"
+OUT_FOLDER="${2:-pb2}/"
 
 VER_FILE=../__init__.py
 
