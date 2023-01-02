@@ -1,4 +1,5 @@
 """Argparser module for Flow"""
+
 from jina.parsers.base import set_base_parser
 from jina.parsers.helper import KVAppendAction, add_arg_group
 from jina.parsers.orchestrate.base import mixin_essential_parser
@@ -17,6 +18,15 @@ def mixin_flow_features_parser(parser):
         '--uses',
         type=str,
         help='The YAML path represents a flow. It can be either a local file path or a URL.',
+    )
+
+    gp.add_argument(
+        '--reload',
+        action='store_true',
+        default=False,
+        help='If set, auto-reloading on file changes is enabled: the Flow will restart while blocked if  YAML '
+        'configuration source is changed. This also applies apply to underlying Executors, if their source '
+        'code or YAML configuration has changed.',
     )
 
     gp.add_argument(

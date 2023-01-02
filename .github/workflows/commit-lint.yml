@@ -29,7 +29,7 @@ jobs:
               repo: context.repo.repo,
               comment_id: ${{ steps.fc.outputs.comment-id }},
             })
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2.5.0
         with:
           fetch-depth: 0
       - run: "echo \"module.exports = {extends: ['@commitlint/config-conventional']}\" > commitlint.config.js"

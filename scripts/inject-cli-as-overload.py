@@ -34,6 +34,8 @@ def _cli_to_schema(
         pv['default_literal'] = pv['default']
         if isinstance(pv['default'], str):
             pv['default_literal'] = "'" + pv['default'] + "'"
+        elif isinstance(pv['default'], list):
+            pv['default_literal'] = [str(item) for item in pv['default']]
         if p['default_random']:
             pv['default_literal'] = None
 
@@ -42,6 +44,9 @@ def _cli_to_schema(
             pv['default_literal'] = None
         if p['name'] in {'uses', 'uses_before', 'uses_after'} and target != 'flow':
             pv['type'] = 'Union[str, Type[\'BaseExecutor\'], dict]'
+        if p['name'] == 'protocol':
+            pv['type'] = 'Union[str, List[str]]'
+            print(_schema)
 
         pv['description'] = pv['description'].replace('\n', '\n' + ' ' * 10)
 
@@ -278,6 +283,26 @@ entries = [
         overload_fn='Client',
         class_method=False,
     ),
+    dict(
+        cli_entrypoint='gateway',
+        doc_str_title='Configure the Gateway inside a Flow. The Gateway exposes your Flow logic as a service to the internet according to the protocol and configuration you choose.',
+        doc_str_return='the new Flow object',
+        return_type=None,
+        filepath='../jina/orchestrate/flow/base.py',
+        overload_fn='config_gateway',
+        class_method=True,
+        regex_tag='config_gateway',
+    ),
+    dict(
+        cli_entrypoint='deployment',
+        doc_str_title='Serve this Executor in a temporary Flow. Useful in testing an Executor in remote settings.',
+        doc_str_return='None',
+        return_type=None,
+        filepath='../jina/serve/executors/__init__.py',
+        overload_fn='serve',
+        class_method=True,
+        regex_tag='executor_serve',
+    ),
 ]
 
 # param
@@ -305,6 +330,15 @@ implementation_stub_entries = [
         class_method=True,
         overload_tags=['client_flow', 'gateway_flow', 'flow'],
         regex_tag='flow',
+    ),
+    dict(
+        doc_str_return='the new Flow object',
+        return_type="Union['Flow', 'AsyncFlow']",
+        filepath='../jina/orchestrate/flow/base.py',
+        overload_fn='config_gateway',
+        class_method=True,
+        overload_tags=['config_gateway'],
+        regex_tag='config_gateway',
     ),
     dict(
         doc_str_return='the new Client object',

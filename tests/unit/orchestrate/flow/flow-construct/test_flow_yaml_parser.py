@@ -65,8 +65,11 @@ def test_load_dump_load(tmpdir):
     f2.save_config(str(Path(tmpdir) / 'a1.yml'))
 
 
-def test_load_modify_dump_load(tmpdir):
-    f: Flow = Flow.load_config('yaml/flow-gateway.yml')
+@pytest.mark.parametrize(
+    'yaml_file', ['yaml/flow-gateway.yml', 'yaml/flow-gateway-api.yml']
+)
+def test_load_modify_dump_load(tmpdir, yaml_file):
+    f: Flow = Flow.load_config(yaml_file)
     # assert vars inside `with`
     assert f._kwargs['name'] == 'abc'
     assert f.port == 12345
@@ -74,9 +77,9 @@ def test_load_modify_dump_load(tmpdir):
     # assert executor args
     assert f._deployment_nodes['custom1'].args.uses == 'jinahub://CustomExecutor1'
     assert f._deployment_nodes['custom2'].args.uses == 'CustomExecutor2'
-    assert int(f._deployment_nodes['custom2'].args.port) == 23456
+    assert f._deployment_nodes['custom2'].args.port == [23456]
 
-    # change args inside `with`
+    # change args inside the gateway configuration
     f.port = 12346
     f.protocol = GatewayProtocolType.WEBSOCKET
     # change executor args
@@ -94,7 +97,7 @@ def test_load_modify_dump_load(tmpdir):
     # assert args modified in code
     assert f1.port == 12346
     assert f1.protocol == GatewayProtocolType.WEBSOCKET
-    assert int(f1._deployment_nodes['custom2'].args.port) == 23457
+    assert f1._deployment_nodes['custom2'].args.port == [23457]
 
 
 def test_dump_load_build(monkeypatch):
@@ -122,30 +125,30 @@ def test_dump_load_build(monkeypatch):
     # these were passed by the user
     assert f.port == f1.port
     assert f.protocol == f1.protocol
-    assert int(f['executor1'].args.port) == int(f1['executor1'].args.port)
+    assert f['executor1'].args.port == f1['executor1'].args.port
     assert f['executor2'].args.host == f1['executor2'].args.host
     # this was set during `load_config`
-    assert int(f['executor2'].args.port) == int(f1['executor2'].args.port)
+    assert f['executor2'].args.port == f1['executor2'].args.port
 
     monkeypatch.setenv('JINA_FULL_CLI', 'true')
     f2: Flow = Flow.load_config(JAML.dump(f)).build()
     # these were passed by the user
-    assert int(f.port) == int(f2.port)
+    assert f.port == f2.port
     # validate gateway args (set during build)
-    assert int(f['gateway'].args.port) == int(f2['gateway'].args.port)
+    assert f['gateway'].args.port == f2['gateway'].args.port
 
 
 def test_load_flow_with_port():
     f = Flow.load_config('yaml/test-flow-port.yml')
     with f:
-        assert int(f.port) == 12345
+        assert f.port == 12345
 
 
 def test_load_flow_from_cli():
     a = set_flow_parser().parse_args(['--uses', 'yaml/test-flow-port.yml'])
     f = Flow.load_config(a.uses)
     with f:
-        assert int(f.port) == 12345
+        assert f.port == 12345
 
 
 def test_load_flow_from_yaml():
@@ -198,3 +201,18 @@ def test_flow_yaml_override_with_protocol():
     assert f2.protocol == GatewayProtocolType.HTTP
     f3 = Flow.load_config(path, uses_with={'protocol': 'websocket'})
     assert f3.protocol == GatewayProtocolType.WEBSOCKET
+
+
+@pytest.mark.parametrize(
+    'yaml_file',
+    ['yaml/flow_with_gateway.yml', 'yaml/test-flow-custom-gateway-nested-config.yml'],
+)
+def test_load_flow_with_gateway(yaml_file):
+    path = os.path.join(cur_dir.parent.parent.parent, yaml_file)
+    flow = Flow.load_config(
+        path,
+    )
+    with flow:
+        # protocol and port are overridden by the gateway configuration
+        assert flow.protocol == GatewayProtocolType.HTTP
+        assert flow.port == 12344

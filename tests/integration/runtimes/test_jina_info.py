@@ -5,17 +5,18 @@ import grpc
 import pytest
 import requests
 
-from jina import __jina_env__, __version__
-from jina.parsers import set_pod_parser
+from jina import __version__
+from jina.constants import __jina_env__
 from jina.proto import jina_pb2, jina_pb2_grpc
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.worker import WorkerRuntime
+from tests.helper import _generate_pod_args
 
 from .test_runtimes import _create_gateway_runtime, _create_head_runtime
 
 
 def _create_worker_runtime(port, name='', executor=None):
-    args = set_pod_parser().parse_args([])
+    args = _generate_pod_args()
     args.port = port
     args.name = name
     if executor:

@@ -8,20 +8,20 @@ from typing import List
 import grpc
 import pytest
 
-from jina import Document, DocumentArray
+from docarray import Document, DocumentArray
 from jina.clients.request import request_generator
 from jina.enums import PollingType
-from jina.parsers import set_pod_parser
 from jina.proto import jina_pb2_grpc
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.head import HeadRuntime
 from jina.types.request import Request
 from jina.types.request.data import DataRequest
+from tests.helper import _generate_pod_args
 
 
 def test_regular_data_case():
-    args = set_pod_parser().parse_args([])
+    args = _generate_pod_args()
     args.polling = PollingType.ANY
     connection_list_dict = {0: [f'fake_ip:8080']}
     args.connection_list = json.dumps(connection_list_dict)
@@ -45,9 +45,9 @@ def test_regular_data_case():
 @pytest.mark.parametrize('disable_reduce', [False, True])
 def test_message_merging(disable_reduce):
     if not disable_reduce:
-        args = set_pod_parser().parse_args([])
+        args = _generate_pod_args()
     else:
-        args = set_pod_parser().parse_args(['--disable-reduce'])
+        args = _generate_pod_args(['--no-reduce'])
     args.polling = PollingType.ALL
     connection_list_dict = {0: [f'ip1:8080'], 1: [f'ip2:8080'], 2: [f'ip3:8080']}
     args.connection_list = json.dumps(connection_list_dict)
@@ -67,7 +67,7 @@ def test_message_merging(disable_reduce):
 
 
 def test_uses_before_uses_after():
-    args = set_pod_parser().parse_args([])
+    args = _generate_pod_args()
     args.polling = PollingType.ALL
     args.uses_before_address = 'fake_address'
     args.uses_after_address = 'fake_address'
@@ -104,7 +104,7 @@ def test_decompress(monkeypatch):
         decompress,
     )
 
-    args = set_pod_parser().parse_args([])
+    args = _generate_pod_args()
     args.polling = PollingType.ANY
     connection_list_dict = {0: [f'fake_ip:8080']}
     args.connection_list = json.dumps(connection_list_dict)
@@ -129,7 +129,7 @@ def test_decompress(monkeypatch):
 
 @pytest.mark.parametrize('polling', ['any', 'all'])
 def test_dynamic_polling(polling):
-    args = set_pod_parser().parse_args(
+    args = _generate_pod_args(
         [
             '--polling',
             json.dumps(
@@ -174,7 +174,7 @@ def test_dynamic_polling(polling):
 
 @pytest.mark.parametrize('polling', ['any', 'all'])
 def test_base_polling(polling):
-    args = set_pod_parser().parse_args(
+    args = _generate_pod_args(
         [
             '--polling',
             polling,
@@ -215,7 +215,7 @@ def test_base_polling(polling):
 
 @pytest.mark.asyncio
 async def test_head_runtime_reflection():
-    args = set_pod_parser().parse_args([])
+    args = _generate_pod_args()
     cancel_event, handle_queue, runtime_thread = _create_runtime(args)
 
     assert AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
@@ -239,7 +239,7 @@ async def test_head_runtime_reflection():
 
 
 def test_timeout_behaviour():
-    args = set_pod_parser().parse_args(['--timeout-send', '100'])
+    args = _generate_pod_args(['--timeout-send', '100'])
     args.polling = PollingType.ANY
     connection_list_dict = {0: [f'fake_ip:8080']}
     args.connection_list = json.dumps(connection_list_dict)
@@ -275,6 +275,7 @@ def _create_runtime(args):
             request: List[Request],
             connection,
             endpoint,
+            metadata: dict = None,
             timeout=1.0,
             retries=-1,
         ) -> asyncio.Task:

@@ -6,10 +6,11 @@ import pytest
 from docarray import DocumentArray
 
 from jina import Client, Executor, requests
-from jina.parsers import set_gateway_parser, set_pod_parser
+from jina.parsers import set_gateway_parser
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.gateway import GatewayRuntime
 from jina.serve.runtimes.worker import WorkerRuntime
+from tests.helper import _generate_pod_args
 
 from .test_runtimes import _create_gateway_runtime, _create_head_runtime
 
@@ -26,7 +27,7 @@ class DummyExec(Executor):
 
 
 def _create_worker_runtime(port, name='', executor=None):
-    args = set_pod_parser().parse_args([])
+    args = _generate_pod_args()
     args.port = port
     args.uses = 'DummyExec'
     args.name = name
@@ -738,12 +739,12 @@ def _test_custom_retry(gateway_port, error_ports, protocol, retries, capfd):
     out, err = capfd.readouterr()
     if retries > 0:  # do as many retries as specified
         for i in range(retries):
-            assert f'retry attempt {i+1}/{retries}' in out
+            assert f'attempt {i+1}/{retries}' in out
     elif retries == 0:  # do no retries
-        assert 'retry attempt' not in out
+        assert 'attempt' not in out
     elif retries < 0:  # use default retry policy, doing at least 3 retries
         for i in range(3):
-            assert f'retry attempt {i+1}' in out
+            assert f'attempt {i+1}' in out
 
 
 @pytest.mark.parametrize('retries', [-1, 0, 5])

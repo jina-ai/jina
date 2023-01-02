@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 
-from jina.parsers.helper import _set_gateway_uses
+from jina.parsers.helper import _update_gateway_args
 
 if TYPE_CHECKING:
     from argparse import Namespace
@@ -58,8 +58,8 @@ def executor_native(args: 'Namespace'):
 
     with runtime_cls(args) as rt:
         name = (
-            rt._data_request_handler._executor.metas.name
-            if hasattr(rt, '_data_request_handler')
+            rt._worker_request_handler._executor.metas.name
+            if hasattr(rt, '_worker_request_handler')
             else rt.name
         )
         rt.logger.info(f'Executor {name} started')
@@ -74,6 +74,10 @@ def executor(args: 'Namespace'):
 
     :returns: return the same as `pod` or `worker_runtime`
     """
+    args.host = args.host[0]
+    args.port = args.port[0]
+    args.port_monitoring = args.port_monitoring[0]
+        
     if args.native:
         return executor_native(args)
     else:
@@ -90,7 +94,7 @@ def worker_runtime(args: 'Namespace'):
 
     with WorkerRuntime(args) as runtime:
         runtime.logger.info(
-            f'Executor {runtime._data_request_handler._executor.metas.name} started'
+            f'Executor {runtime._worker_request_handler._executor.metas.name} started'
         )
         runtime.run_forever()
 
@@ -103,7 +107,8 @@ def gateway(args: 'Namespace'):
     """
     from jina.serve.runtimes import get_runtime
 
-    _set_gateway_uses(args)
+    args.port_monitoring = args.port_monitoring[0]
+    _update_gateway_args(args)
 
     runtime_cls = get_runtime('GatewayRuntime')
 
@@ -190,7 +195,7 @@ def new(args: 'Namespace'):
     import os
     import shutil
 
-    from jina import __resources_path__
+    from jina.constants import __resources_path__
 
     shutil.copytree(
         os.path.join(__resources_path__, 'project-template'), os.path.abspath(args.name)

@@ -6,7 +6,7 @@ from typing import Dict
 
 import pytest
 
-from jina import Document, DocumentArray
+from docarray import Document, DocumentArray
 from jina.helper import random_port
 from jina.parsers import set_gateway_parser
 from jina.serve import networking
@@ -84,6 +84,7 @@ class DummyNoDocAccessMockConnectionPool:
         requests,
         deployment: str,
         head: bool,
+        metadata: dict = None,
         endpoint: str = None,
         timeout: float = 1.0,
         retries: int = -1,
@@ -109,6 +110,7 @@ class DummyMockConnectionPool:
         requests,
         deployment: str,
         head: bool,
+        metadata: dict = None,
         shard_id=None,
         endpoint: str = None,
         timeout: float = 1.0,
@@ -136,7 +138,7 @@ class DummyMockConnectionPool:
 
     def send_discover_endpoint(self, *args, **kwargs):
         async def task_wrapper():
-            from jina import __default_endpoint__
+            from jina.constants import __default_endpoint__
             from jina.proto import jina_pb2
 
             ep = jina_pb2.EndpointsProto()

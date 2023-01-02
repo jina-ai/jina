@@ -1,5 +1,5 @@
 {% set name = "jina" %}
-{% set version = "3.0.0" %}
+{% set version = "3.11.0" %}
 
 package:
   name: {{ name|lower }}-split
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: d8c033d34f31a7086385242087fd8d1d567699eddad67f401ef8b216c9636cff
+  sha256: 49a7fec74b3b0927143d73ce787c7e3fe5e52fa2a1079323248a20590d2bf49f
 
 build:
   number: 0
@@ -36,10 +36,16 @@ outputs:
       run:
         - __unix
         - python >=3.7
-        - docarray >=0.6.3
-        - grpcio >=1.33.1
+        - docarray >=0.16.4
+        - grpcio >=1.46.0,<1.48.1
+        - grpcio-health-checking >=1.46.0,<1.48.1
+        - grpcio-reflection >=1.46.0,<1.48.1
+        - jina-hubble-sdk ==0.23.3
         - numpy
-        - protobuf >=3.19.1
+        - opentelemetry-api >=1.12.0
+        - opentelemetry-instrumentation-grpc >=0.33b0
+        - packaging >=20.0
+        - protobuf >=3.20.0
         - pyyaml >=5.3.1
   - name: jina-perf
     test:
@@ -64,12 +70,22 @@ outputs:
       run:
         - __unix
         - python >=3.7
-        - docarray >=0.6.3
-        - grpcio >=1.33.1
-        - lz4 <3.1.2
+        - docarray >=0.16.4
+        - grpcio >=1.46.0,<1.48.1
+        - grpcio-health-checking >=1.46.0,<1.48.1
+        - grpcio-reflection >=1.46.0,<1.48.1
+        - jina-hubble-sdk ==0.23.3
         - numpy
-        - protobuf >=3.19.1
-        - python-kubernetes >=18.20.0
+        - opentelemetry-api >=1.12.0
+        - opentelemetry-exporter-otlp >=1.12.0
+        - opentelemetry-instrumentation-aiohttp-client >=0.33b0
+        - opentelemetry-instrumentation-fastapi >=0.33b0
+        - opentelemetry-instrumentation-grpc >=0.33b0
+        - opentelemetry-sdk >=1.12.0
+        - opentelemetry-semantic-conventions >=0.33b0
+        - packaging >=20.0
+        - prometheus_client
+        - protobuf >=3.20.0
         - pyyaml >=5.3.1
         - uvloop
   - name: jina
@@ -97,22 +113,31 @@ outputs:
         - aiohttp
         - aiostream
         - cryptography
-        - docarray >=0.6.3
+        - docarray >=0.16.4
         - docker-py
-        - fastapi
+        - fastapi >=0.76.0
         - filelock
-        - grpcio >=1.33.1
-        - lz4 <3.1.2
+        - grpcio >=1.46.0,<1.48.1
+        - grpcio-health-checking >=1.46.0,<1.48.1
+        - grpcio-reflection >=1.46.0,<1.48.1
+        - jina-hubble-sdk ==0.23.3
         - numpy
+        - opentelemetry-api >=1.12.0
+        - opentelemetry-exporter-otlp >=1.12.0
+        - opentelemetry-instrumentation-aiohttp-client >=0.33b0
+        - opentelemetry-instrumentation-fastapi >=0.33b0
+        - opentelemetry-instrumentation-grpc >=0.33b0
+        - opentelemetry-sdk >=1.12.0
+        - opentelemetry-semantic-conventions >=0.33b0
+        - packaging >=20.0
         - pathspec
-        - protobuf >=3.19.1
+        - prometheus_client
+        - protobuf >=3.20.0
         - pydantic
-        - python-kubernetes >=18.20.0
         - python-multipart
         - pyyaml >=5.3.1
         - requests
-        - rich
-        - uvicorn >=0.14.0,<=0.16.0
+        - uvicorn
         - uvloop
         - websockets
 
@@ -121,12 +146,11 @@ about:
   license: Apache-2.0
   license_family: Apache
   license_file: LICENSE
-  summary: Build cross-modal and multi-modal applications on the cloud
+  summary: "Build multimodal AI services via cloud native technologies \xB7 Neural Search \xB7 Generative AI \xB7 Cloud Native"
   doc_url: https://docs.jina.ai
 
 extra:
   recipe-maintainers:
-    - tadejsv
     - JoanFM
     - nan-wang
     - hanxiao

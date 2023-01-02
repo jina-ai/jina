@@ -6,11 +6,17 @@ import aiohttp
 import pytest
 
 from jina import DocumentArray, Executor, Flow, requests
+from jina.helper import random_port
 from jina.types.request.data import DataRequest
 
 INPUT_DA_LEN = 2
 NUM_CLIENTS = 3
-GATEWAY_PORT = 12345
+
+
+@pytest.fixture()
+def gateway_port():
+    port = random_port()
+    yield port
 
 
 class DummyExecutor(Executor):
@@ -20,8 +26,8 @@ class DummyExecutor(Executor):
             d.text += f'{d.id} is fooed!'
 
 
-def ws_flow(start_event, stop_event):
-    with Flow(protocol='websocket', port_expose=GATEWAY_PORT).add(
+def ws_flow(start_event, stop_event, gateway_port):
+    with Flow(protocol='websocket', port_expose=gateway_port).add(
         uses=DummyExecutor
     ) as f:
         start_event.set()
@@ -49,15 +55,12 @@ def bytes_requestify(da: DocumentArray, exec_endpoint='/foo'):
 
 
 @pytest.fixture
-def flow_context():
+def flow_context(gateway_port):
     start_event = Event()
     stop_event = Event()
     p = Process(
         target=ws_flow,
-        args=(
-            start_event,
-            stop_event,
-        ),
+        args=(start_event, stop_event, gateway_port),
     )
     p.start()
     start_event.wait()
@@ -66,10 +69,10 @@ def flow_context():
     p.join()
 
 
-async def json_sending_client():
+async def json_sending_client(gateway_port):
     async with aiohttp.ClientSession() as session:
         async with session.ws_connect(
-            f'ws://localhost:{GATEWAY_PORT}/',
+            f'ws://localhost:{gateway_port}/',
         ) as ws:
             for da in input_da_gen():
                 request = json_requestify(da)
@@ -82,10 +85,10 @@ async def json_sending_client():
                     assert doc['text'] == f'{doc["id"]} is fooed!'
 
 
-async def bytes_sending_client():
+async def bytes_sending_client(gateway_port):
     async with aiohttp.ClientSession() as session:
         async with session.ws_connect(
-            f'ws://localhost:{GATEWAY_PORT}/',
+            f'ws://localhost:{gateway_port}/',
             protocols=('bytes',),
         ) as ws:
             for da in input_da_gen():
@@ -101,20 +104,20 @@ async def bytes_sending_client():
 
 
 @pytest.mark.asyncio
-async def test_json_single_client(flow_context):
-    await json_sending_client()
+async def test_json_single_client(flow_context, gateway_port):
+    await json_sending_client(gateway_port)
 
 
 @pytest.mark.asyncio
-async def test_json_multiple_clients(flow_context):
-    await asyncio.wait([json_sending_client() for i in range(NUM_CLIENTS)])
+async def test_json_multiple_clients(flow_context, gateway_port):
+    await asyncio.wait([json_sending_client(gateway_port) for _ in range(NUM_CLIENTS)])
 
 
 @pytest.mark.asyncio
-async def test_bytes_single_client(flow_context):
-    await bytes_sending_client()
+async def test_bytes_single_client(flow_context, gateway_port):
+    await bytes_sending_client(gateway_port)
 
 
 @pytest.mark.asyncio
-async def test_bytes_multiple_clients(flow_context):
-    await asyncio.wait([bytes_sending_client() for i in range(NUM_CLIENTS)])
+async def test_bytes_multiple_clients(flow_context, gateway_port):
+    await asyncio.wait([bytes_sending_client(gateway_port) for _ in range(NUM_CLIENTS)])

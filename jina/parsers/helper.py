@@ -1,9 +1,11 @@
 """Module for helper functions in the parser"""
+
 import argparse
 import os
 from typing import Tuple
 
 from jina.enums import GatewayProtocolType
+from jina.logging.predefined import default_logger
 
 _SHOW_ALL_ARGS = 'JINA_FULL_CLI' in os.environ
 
@@ -260,14 +262,89 @@ class _ColoredHelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
         return lines
 
 
-def _set_gateway_uses(args: 'argparse.Namespace'):
-    gateway_dict = {
-        GatewayProtocolType.GRPC: 'GRPCGateway',
-        GatewayProtocolType.WEBSOCKET: 'WebSocketGateway',
-        GatewayProtocolType.HTTP: 'HTTPGateway',
-    }
-    if not args.uses:
-        args.uses = gateway_dict[args.protocol]
+def _get_gateway_class(protocol):
+    from jina.serve.runtimes.gateway.grpc import GRPCGateway
+    from jina.serve.runtimes.gateway.http import HTTPGateway
+    from jina.serve.runtimes.gateway.websocket import WebSocketGateway
 
+    gateway_dict = {
+        GatewayProtocolType.GRPC: GRPCGateway,
+        GatewayProtocolType.WEBSOCKET: WebSocketGateway,
+        GatewayProtocolType.HTTP: HTTPGateway,
+    }
+    return gateway_dict[protocol]
+
+
+def _set_gateway_uses(args: 'argparse.Namespace'):
+    if not args.uses:
+        if len(args.protocol) == 1 and len(args.port) == 1:
+            args.uses = _get_gateway_class(args.protocol[0]).__name__
+        elif len(args.protocol) == len(args.port):
+            from jina.serve.runtimes.gateway.composite import CompositeGateway
+
+            args.uses = CompositeGateway.__name__
+        else:
+            raise ValueError(
+                'You need to specify as much protocols as ports if you want to use a jina built-in gateway'
+            )
+
+
+def _update_gateway_args(args: 'argparse.Namespace'):
+    from jina.helper import random_ports
+
+    if not args.port:
+        args.port = random_ports(len(args.protocol))
+    _set_gateway_uses(args)
+
+
+class CastToIntAction(argparse.Action):
+    """argparse action to cast a list of values to int"""
+
+    def __call__(self, parser, args, values, option_string=None):
+        """
+        call the CastToIntAction
+
+
+        .. # noqa: DAR401
+        :param parser: the parser
+        :param args: args to initialize the values
+        :param values: the values to add to the parser
+        :param option_string: inherited, not used
+        """
+        d = []
+        for value in values:
+            value = value.split(',')
+            d.extend([_port_to_int(port) for port in value])
+        setattr(args, self.dest, d)
+
+
+def _port_to_int(port):
+    try:
+        return int(port)
+    except ValueError:
+        default_logger.warning(
+            f'port {port} is not an integer and cannot be cast to one'
+        )
+        return port
+
+
+class CastHostAction(argparse.Action):
+    """argparse action to cast a list of values to int"""
+
+    def __call__(self, parser, args, values, option_string=None):
+        """
+        call the CastHostAction
+
+
+        .. # noqa: DAR401
+        :param parser: the parser
+        :param args: args to initialize the values
+        :param values: the values to add to the parser
+        :param option_string: inherited, not used
+        """
+        d = []
+        for value in values:
+            d.extend(value.split(','))
+        setattr(args, self.dest, d)
 
 _chf = _ColoredHelpFormatter

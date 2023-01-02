@@ -71,6 +71,11 @@ class RecipeDumper(yaml.SafeDumper):
 # Get requirements from the extra-requirements.txt file
 #######################################################
 
+NON_EXISTING_CONDA_PACKAGES = [
+    'jcloud',
+    'opentelemetry-exporter-otlp-proto-grpc',
+    'opentelemetry-exporter-prometheus',
+]
 extra_deps = get_extra_requires('extra-requirements.txt')
 reqs = {}
 
@@ -82,6 +87,17 @@ reqs['standard'] = reqs['perf'].union(extra_deps['standard'])
 
 for key in list(reqs.keys()):
     reqs[key] = sorted(list(reqs[key]))
+    ids_to_remove = []
+    for i, v in enumerate(reqs[key]):
+        remove = False
+        for non_existing in NON_EXISTING_CONDA_PACKAGES:
+            if non_existing in v:
+                remove = True
+        if remove:
+            ids_to_remove.append(i)
+
+    for _i in reversed(ids_to_remove):
+        del reqs[key][_i]
 
 
 ######################################
@@ -166,7 +182,7 @@ recipe_object = {
         'license': 'Apache-2.0',
         'license_family': 'Apache',
         'license_file': 'LICENSE',
-        'summary': 'Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native',
+        'summary': 'Build multimodal AI services via cloud native technologies · Neural Search · Generative AI · Cloud Native',
         'doc_url': 'https://docs.jina.ai',
     },
     'extra': {

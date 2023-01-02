@@ -1,7 +1,6 @@
 """Argparser module for Deployment runtimes"""
 import argparse
 
-from jina import helper
 from jina.enums import DeploymentRoleType
 from jina.parsers.helper import _SHOW_ALL_ARGS, KVAppendAction, add_arg_group
 
@@ -19,6 +18,7 @@ def mixin_base_deployment_parser(parser):
         help='The executor attached before the Pods described by --uses, typically before sending to all '
         'shards, accepted type follows `--uses`. This argument only applies for sharded Deployments (shards > 1).',
     )
+
     gp.add_argument(
         '--uses-after',
         type=str,

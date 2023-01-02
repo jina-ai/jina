@@ -15,10 +15,17 @@ jobs:
   token-check:
     runs-on: ubuntu-latest
     steps:
-      - run: echo "success!"
-        if: "${{ github.event.inputs.release_token }} == ${{ env.release_token }}"
+      - name: Check release token
+        id: token-check
+        run: | 
+          touch SUCCESS
+        if: inputs.release_token == env.release_token
         env:
           release_token: ${{ secrets.JINA_CORE_RELEASE_TOKEN }}
+      - name: Fail release token
+        run: |
+          [[ -f SUCCESS ]]
+
 
   regular-release:
     needs: token-check
@@ -27,12 +34,14 @@ jobs:
       fail-fast: false
       matrix:
         pip_tag: [ "", "perf", "standard", "devel"]  # default: "" = core
-        py_version: [ "3.7", "3.8", "3.9" ]  # default "" = 3.7
+        py_version: [ "3.7", "3.8", "3.9" , "3.10", "3.11"]  # default "" = 3.7
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2.5.0
+        with:
+          fetch-depth: 100
       - name: Set envs and versions
         run: |
-          DEFAULT_PY_VERSION="3.7"
+          DEFAULT_PY_VERSION="3.8"
           VCS_REF=${{ github.ref }}
           echo "VCS_REF=$VCS_REF" >> $GITHUB_ENV
           echo "Will build $VCS_REF"
@@ -62,6 +71,7 @@ jobs:
               PIP_TAG=-${PIP_TAG}
           fi
           
+          git fetch --depth=1 origin +refs/tags/*:refs/tags/*
           LAST_VER_TAG=$(git tag -l | sort -V | tail -n1)
           PRE_VERSION=-dev$(git rev-list $LAST_VER_TAG..HEAD --count)
 
@@ -70,14 +80,14 @@ jobs:
             if [[ "${{ matrix.py_version }}" == "$DEFAULT_PY_VERSION" ]]; then
               echo "TAG_ALIAS=\
                               jinaai/jina:master${PY_TAG}${PIP_TAG}, \
-                              jinaai/jina:master${PIP_TAG} \
-                              jinaai/jina:${JINA_VERSION}${PRE_VERSION}${PIP_TAG} \
+                              jinaai/jina:master${PIP_TAG}, \
+                              jinaai/jina:${JINA_VERSION}${PRE_VERSION}${PIP_TAG}, \
                               jinaai/jina:${JINA_VERSION}${PRE_VERSION}${PY_TAG}${PIP_TAG}" \
                               >> $GITHUB_ENV
             else
               # on every CD
               echo "TAG_ALIAS=\
-                              jinaai/jina:master${PY_TAG}${PIP_TAG} \
+                              jinaai/jina:master${PY_TAG}${PIP_TAG}, \
                               jinaai/jina:${JINA_VERSION}${PRE_VERSION}${PY_TAG}${PIP_TAG}" \
                               >> $GITHUB_ENV
             fi

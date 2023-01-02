@@ -26,6 +26,7 @@ def image_name_tag_map():
         'test-executor': '0.13.1',
         'executor-merger': '0.1.1',
         'custom-gateway': '0.1.1',
+        'multiprotocol-gateway': '0.1.1',
         'jinaai/jina': 'test-pip',
     }
 

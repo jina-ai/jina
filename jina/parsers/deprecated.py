@@ -5,7 +5,10 @@ DEPRECATED_ARGS_MAPPING = {
     'port_expose': 'port',
     'parallel': 'One of "shards" (when dividing data in indexers) or "replicas" (replicating Executors for performance and reliability)',
     'port_in': 'port',
+    'host_in': 'host',
     'https': 'tls',
+    'disable_reduce': 'no_reduce',
+    'deployments_disable_reduce': 'deployments_no_reduce',
 }
 
 

@@ -1,0 +1,108 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: otel-collector
+  labels:
+    app: opentelemetry
+    component: otel-collector
+spec:
+  ports:
+  - name: otlp-grpc # Default endpoint for OpenTelemetry gRPC receiver.
+    port: 4317
+  - name: otlp-http # Default endpoint for OpenTelemetry HTTP receiver.
+    port: 4318
+  - name: metrics # Default endpoint for querying metrics.
+    port: 8888
+  - name: more-metrics
+    port: 8889
+  selector:
+    component: otel-collector
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: otel-collector-cm
+  labels:
+    app: opentelemetry
+    component: otel-collector-cm
+data:
+  otel-collector-config: |
+    receivers:
+      otlp:
+        protocols:
+          grpc:
+
+    exporters:
+      prometheus:
+        endpoint: "0.0.0.0:8889"
+        resource_to_telemetry_conversion:
+          enabled: true
+      
+      otlphttp:
+        endpoint: "http://otlphttp-mirror:8000"
+        compression: none
+
+    processors:
+      batch:
+
+    service:
+      extensions: []
+      pipelines:
+        metrics:
+          receivers: [otlp]
+          processors: [batch]
+          exporters: [prometheus, otlphttp]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: otel-collector
+  labels:
+    app: opentelemetry
+    component: otel-collector
+spec:
+  selector:
+    matchLabels:
+      app: opentelemetry
+      component: otel-collector
+  minReadySeconds: 5
+  progressDeadlineSeconds: 120
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: opentelemetry
+        component: otel-collector
+    spec:
+      containers:
+      - command:
+          - "/otelcol"
+          - "--config=/conf/otel-collector-config.yaml"
+        image: otel/opentelemetry-collector:0.64.1
+        name: otel-collector
+        env:
+        - name: 'OTEL_METRIC_EXPORT_INTERVAL'
+          value: '200'
+        resources:
+          limits:
+            cpu: 1
+            memory: 2Gi
+          requests:
+            cpu: 200m
+            memory: 400Mi
+        ports:
+        - containerPort: 4317
+        - containerPort: 4318
+        - containerPort: 8888
+        - containerPort: 8889
+        volumeMounts:
+        - name: otel-collector-vol
+          mountPath: /conf
+      volumes:
+        - name: otel-collector-vol
+          configMap:
+            name: otel-collector-cm
+            items:
+              - key: otel-collector-config
+                path: otel-collector-config.yaml

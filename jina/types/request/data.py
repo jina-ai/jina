@@ -232,11 +232,10 @@ class DataRequest(Request):
         :return: dict representation of the object
         """
         da = self.docs
-        self.proto.data.docs.CopyFrom(DocumentArray().to_protobuf())
         from google.protobuf.json_format import MessageToDict
 
         d = MessageToDict(
-            self.proto, preserving_proto_field_name=True, use_integers_for_enums=True
+            self.proto_wo_data, preserving_proto_field_name=True, use_integers_for_enums=True
         )
         d['data'] = da.to_dict()
         return d
@@ -259,6 +258,7 @@ class DataRequest(Request):
     @property
     def parameters(self) -> Dict:
         """Return the `parameters` field of this DataRequest as a Python dict
+
         :return: a Python dict view of the parameters.
         """
         # if u get this u need to have it decompressed
@@ -267,6 +267,7 @@ class DataRequest(Request):
     @parameters.setter
     def parameters(self, value: Dict):
         """Set the `parameters` field of this Request to a Python dict
+
         :param value: a Python dict
         """
         self.proto_wo_data.parameters.Clear()
@@ -289,6 +290,35 @@ class DataRequest(Request):
         :return: the status object of this request
         """
         return self.proto_wo_data.header.status
+
+    @property
+    def last_executor(self):
+        """
+        Returns the name of the last Executor that has processed this Request
+
+        :return: the name of the last Executor that processed this Request
+        """
+        if len(self.proto_wo_data.routes) > 0:
+            return self.proto_wo_data.routes[-1].executor
+
+    def add_executor(self, executor_name: str):
+        """
+        Adds Executor the the request routes
+
+        :param executor_name: name of the Executor processing the Request to be added to the routes
+        """
+        route_proto = jina_pb2.RouteProto()
+        route_proto.executor = executor_name
+        self.proto_wo_data.routes.append(route_proto)
+
+    @property
+    def routes(self):
+        """
+        Returns the routes from the request
+
+        :return: the routes object of this request
+        """
+        return self.proto_wo_data.routes
 
     @property
     def request_id(self):

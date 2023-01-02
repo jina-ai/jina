@@ -5,7 +5,7 @@ from typing import List
 
 import pytest
 
-from jina import Document, DocumentArray
+from docarray import Document, DocumentArray
 from jina.serve.runtimes.gateway.graph.topology_graph import TopologyGraph
 from jina.types.request import Request
 from jina.types.request.data import DataRequest
@@ -551,6 +551,7 @@ class DummyMockConnectionPool:
         requests: List[Request],
         deployment: str,
         head: bool,
+        metadata: dict = None,
         endpoint: str = None,
         timeout: float = 1.0,
         retries: int = -1,
@@ -580,10 +581,21 @@ class DummyMockConnectionPool:
 
 
 class DummyMockGatewayRuntime:
-    def __init__(self, graph_representation, conditions={}, *args, **kwargs):
+    def __init__(
+        self,
+        graph_representation,
+        conditions={},
+        deployments_metadata={},
+        *args,
+        **kwargs,
+    ):
         super().__init__(*args, **kwargs)
         self.connection_pool = DummyMockConnectionPool(*args, **kwargs)
-        self.graph = TopologyGraph(graph_representation, conditions)
+        self.graph = TopologyGraph(
+            graph_representation,
+            graph_conditions=conditions,
+            deployments_metadata=deployments_metadata,
+        )
 
     async def receive_from_client(self, client_id, msg: 'DataRequest'):
         graph = copy.deepcopy(self.graph)
@@ -964,6 +976,48 @@ async def test_message_ordering_two_joins_graph(
             == filtered_client_resps[0].docs[0].text
         )
         assert path02 or path03 or path12 or path13
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    'deployments_metadata',
+    [
+        ({}),
+        (
+            {
+                'deployment1': {'key1': 'value1'},
+                'deployment2': {'key2': 'value2'},
+            }
+        ),
+    ],
+)
+async def test_deployment_metadata_in_graph(linear_graph_dict, deployments_metadata):
+    runtime = DummyMockGatewayRuntime(
+        linear_graph_dict, deployments_metadata=deployments_metadata
+    )
+    for node in runtime.graph.origin_nodes:
+        if node.name in deployments_metadata:
+            assert node._metadata == deployments_metadata[node.name]
+
+    resps = await asyncio.gather(
+        runtime.receive_from_client(0, create_req_from_text('client0-Request')),
+        runtime.receive_from_client(1, create_req_from_text('client1-Request')),
+        runtime.receive_from_client(2, create_req_from_text('client2-Request')),
+        runtime.receive_from_client(3, create_req_from_text('client3-Request')),
+        runtime.receive_from_client(4, create_req_from_text('client4-Request')),
+        runtime.receive_from_client(5, create_req_from_text('client5-Request')),
+        runtime.receive_from_client(6, create_req_from_text('client6-Request')),
+        runtime.receive_from_client(7, create_req_from_text('client7-Request')),
+        runtime.receive_from_client(8, create_req_from_text('client8-Request')),
+        runtime.receive_from_client(9, create_req_from_text('client9-Request')),
+    )
+    assert len(resps) == 10
+    for client_id, client_resps in resps:
+        assert len(client_resps) == 1
+        assert (
+            f'client{client_id}-Request-client{client_id}-deployment0-client{client_id}-deployment1-client{client_id}-deployment2-client{client_id}-deployment3'
+            == client_resps[0].docs[0].text
+        )
 
 
 def test_empty_graph():

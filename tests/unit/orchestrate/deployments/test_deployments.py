@@ -1,24 +1,40 @@
 import json
 import os
+import socket
 
 import pytest
 
+from jina.constants import __default_host__, __default_executor__
 from jina import (
     Document,
     DocumentArray,
     Executor,
-    __default_executor__,
-    __default_host__,
     requests,
 )
 from jina.clients.request import request_generator
 from jina.enums import PollingType
+from jina.excepts import RuntimeFailToStart
 from jina.orchestrate.deployments import Deployment
 from jina.parsers import set_deployment_parser, set_gateway_parser
 from jina.serve.networking import GrpcConnectionPool
 from tests.unit.test_helper import MyDummyExecutor
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
+
+
+def get_deployment_args_with_host(hostname, runtime_cls):
+    args = [
+        '--name',
+        'host_args',
+        '--host',
+        hostname,
+        '--runtime-cls',
+        runtime_cls,
+    ]
+    if runtime_cls != 'GatewayRuntime':
+        return set_deployment_parser().parse_args(args)
+    else:
+        return set_gateway_parser().parse_args(args)
 
 
 @pytest.fixture(scope='function')
@@ -59,10 +75,25 @@ def test_name(pod_args):
         assert pod.name == 'test'
 
 
-def test_host(pod_args):
-    with Deployment(pod_args) as pod:
-        assert pod.host == __default_host__
+@pytest.mark.parametrize(
+    'runtime_cls', ['GatewayRuntime', 'WorkerRuntime', 'HeadRuntime']
+)
+@pytest.mark.parametrize('hostname', ['localhost', '127.0.0.1', '0.0.0.0'])
+def test_host(hostname, runtime_cls):
+    with Deployment(get_deployment_args_with_host(hostname, runtime_cls)) as pod:
+        assert pod.host == hostname
         assert pod.head_host is None
+
+
+@pytest.mark.parametrize(
+    'runtime_cls', ['GatewayRuntime', 'WorkerRuntime', 'HeadRuntime']
+)
+def test_wrong_hostname(runtime_cls):
+    with pytest.raises(RuntimeFailToStart):
+        with Deployment(
+            get_deployment_args_with_host('inexisting.hostname.local', runtime_cls)
+        ) as pod:
+            pass
 
 
 def test_is_ready(pod_args):
@@ -148,6 +179,16 @@ def test_pod_context_shards_replicas(shards):
     Deployment(args).start().close()
 
 
+@pytest.mark.parametrize('metadata', [{'key1': 'value1', 'key2': 'value2'}])
+def test_pod_context_grpc_metadata(metadata):
+    args_list = []
+    for k, v in metadata.items():
+        args_list.extend(['--grpc-metadata', f'{k}:{v}'])
+    args = set_deployment_parser().parse_args(args_list)
+    with Deployment(args) as bp:
+        assert bp.grpc_metadata == metadata
+
+
 class AppendNameExecutor(Executor):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -161,7 +202,7 @@ class AppendNameExecutor(Executor):
 
 @pytest.mark.slow
 def test_pod_activates_replicas():
-    args_list = ['--replicas', '3', '--shards', '2', '--disable-reduce']
+    args_list = ['--replicas', '3', '--shards', '2', '--no-reduce']
     args = set_deployment_parser().parse_args(args_list)
     args.uses = 'AppendNameExecutor'
     with Deployment(args) as pod:
@@ -320,92 +361,6 @@ def test_pod_args_remove_uses_ba():
     )
     with Deployment(args) as p:
         assert p.num_pods == 2
-
-
-@pytest.mark.parametrize('replicas', [1])
-@pytest.mark.parametrize(
-    'upload_files',
-    [[os.path.join(cur_dir, __file__), os.path.join(cur_dir, '__init__.py')]],
-)
-@pytest.mark.parametrize(
-    'uses, uses_before, uses_after, py_modules, expected',
-    [
-        (
-            os.path.join(cur_dir, '../../yaml/dummy_ext_exec.yml'),
-            '',
-            '',
-            [
-                os.path.join(cur_dir, '../../yaml/dummy_exec.py'),
-                os.path.join(cur_dir, '__init__.py'),
-            ],
-            [
-                os.path.join(cur_dir, '../../yaml/dummy_ext_exec.yml'),
-                os.path.join(cur_dir, '../../yaml/dummy_exec.py'),
-                os.path.join(cur_dir, __file__),
-                os.path.join(cur_dir, '__init__.py'),
-            ],
-        ),
-        (
-            os.path.join(cur_dir, '../../yaml/dummy_ext_exec.yml'),
-            os.path.join(cur_dir, '../../yaml/dummy_exec.py'),
-            os.path.join(cur_dir, '../../yaml/dummy_ext_exec.yml'),
-            [
-                os.path.join(cur_dir, '../../yaml/dummy_exec.py'),
-                os.path.join(cur_dir, '../../yaml/dummy_ext_exec.yml'),
-            ],
-            [
-                os.path.join(cur_dir, '../../yaml/dummy_ext_exec.yml'),
-                os.path.join(cur_dir, '../../yaml/dummy_exec.py'),
-                os.path.join(cur_dir, __file__),
-                os.path.join(cur_dir, '__init__.py'),
-            ],
-        ),
-        (
-            'non_existing1.yml',
-            'non_existing3.yml',
-            'non_existing4.yml',
-            ['non_existing1.py', 'non_existing2.py'],
-            [os.path.join(cur_dir, __file__), os.path.join(cur_dir, '__init__.py')],
-        ),
-    ],
-)
-def test_pod_upload_files(
-    replicas,
-    upload_files,
-    uses,
-    uses_before,
-    uses_after,
-    py_modules,
-    expected,
-):
-    args = set_deployment_parser().parse_args(
-        [
-            '--uses',
-            uses,
-            '--uses-before',
-            uses_before,
-            '--uses-after',
-            uses_after,
-            '--py-modules',
-            *py_modules,
-            '--upload-files',
-            *upload_files,
-            '--replicas',
-            str(replicas),
-        ]
-    )
-    pod = Deployment(args)
-    for k, v in pod.pod_args.items():
-        if k in ['head', 'tail']:
-            if v:
-                pass
-                # assert sorted(v.upload_files) == sorted(expected)
-        elif v is not None and k == 'pods':
-            for shard_id in v:
-                for pod in v[shard_id]:
-                    print(sorted(pod.upload_files))
-                    print(sorted(expected))
-                    assert sorted(pod.upload_files) == sorted(expected)
 
 
 class DynamicPollingExecutor(Executor):
@@ -574,7 +529,7 @@ def test_pod_remote_pod_replicas_host(num_shards, num_replicas):
             __default_host__,
         ]
     )
-    assert args.host == __default_host__
+    assert args.host == [__default_host__]
     with Deployment(args) as pod:
         assert pod.num_pods == num_shards * num_replicas + (1 if num_shards > 1 else 0)
         pod_args = dict(pod.pod_args['pods'])

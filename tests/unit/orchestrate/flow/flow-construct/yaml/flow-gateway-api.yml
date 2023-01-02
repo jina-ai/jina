@@ -1,0 +1,16 @@
+jtype: Flow
+version: 1
+gateway:
+  port: 12345
+  protocol: http
+with:
+  name: abc
+  port: 12344
+  protocol: grpc
+executors:
+  - name: custom1
+    uses: jinahub://CustomExecutor1
+  - name: custom2
+    uses: CustomExecutor2
+    port: 23456
+    port_out: 34567

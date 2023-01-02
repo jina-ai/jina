@@ -11,7 +11,7 @@ from jina.helper import T, parse_client, send_telemetry_event, typename
 from jina.logging.logger import JinaLogger
 from jina.logging.predefined import default_logger
 
-if TYPE_CHECKING: # pragma: no cover
+if TYPE_CHECKING:  # pragma: no cover
     from jina.clients.request import GeneratorSourceType
     from jina.types.request import Request, Response
 

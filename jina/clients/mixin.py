@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, AsyncGenerator, Dict, List, Optional, Union
 from jina.helper import deprecate_by, get_or_reuse_loop, run_async
 from jina.importer import ImportExtensions
 
-if TYPE_CHECKING: # pragma: no cover
+if TYPE_CHECKING:  # pragma: no cover
     from docarray import DocumentArray
 
     from jina.clients.base import CallbackFnType, InputType
@@ -35,11 +35,11 @@ class MutateMixin:
     """The GraphQL Mutation Mixin for Client and Flow"""
 
     def mutate(
-            self,
-            mutation: str,
-            variables: Optional[dict] = None,
-            timeout: Optional[float] = None,
-            headers: Optional[dict] = None,
+        self,
+        mutation: str,
+        variables: Optional[dict] = None,
+        timeout: Optional[float] = None,
+        headers: Optional[dict] = None,
     ):
         """Perform a GraphQL mutation
 
@@ -70,11 +70,11 @@ class AsyncMutateMixin(MutateMixin):
     """The async GraphQL Mutation Mixin for Client and Flow"""
 
     async def mutate(
-            self,
-            mutation: str,
-            variables: Optional[dict] = None,
-            timeout: Optional[float] = None,
-            headers: Optional[dict] = None,
+        self,
+        mutation: str,
+        variables: Optional[dict] = None,
+        timeout: Optional[float] = None,
+        headers: Optional[dict] = None,
     ):
         """Perform a GraphQL mutation, asynchronously
 
@@ -123,14 +123,14 @@ def _render_response_table(r, st, ed, show_table: bool = True):
     elapsed = (ed - st) * 1000
     route = r.routes
     gateway_time = (
-            route[0].end_time.ToMilliseconds() - route[0].start_time.ToMilliseconds()
+        route[0].end_time.ToMilliseconds() - route[0].start_time.ToMilliseconds()
     )
     exec_time = {}
 
     if len(route) > 1:
         for r in route[1:]:
             exec_time[r.executor] = (
-                    r.end_time.ToMilliseconds() - r.start_time.ToMilliseconds()
+                r.end_time.ToMilliseconds() - r.start_time.ToMilliseconds()
             )
     network_time = elapsed - gateway_time
     server_network = gateway_time - sum(exec_time.values())
@@ -176,10 +176,10 @@ class ProfileMixin:
         :param show_table: whether to show the table or not.
         :return: the latency report in a dict.
         """
-        from jina import Document
+        from docarray import Document
 
         st = time.perf_counter()
-        r = self.client.post('/', Document, return_responses=True)
+        r = self.client.post(on='/', inputs=Document(), return_responses=True)
         ed = time.perf_counter()
         return _render_response_table(r[0], st, ed, show_table=show_table)
 
@@ -193,10 +193,10 @@ class AsyncProfileMixin:
         :param show_table: whether to show the table or not.
         :return: the latency report in a dict.
         """
-        from jina import Document
+        from docarray import Document
 
         st = time.perf_counter()
-        async for r in self.client.post('/', Document, return_responses=True):
+        async for r in self.client.post(on='/', inputs=Document(), return_responses=True):
             ed = time.perf_counter()
             return _render_response_table(r, st, ed, show_table=show_table)
 
@@ -205,23 +205,25 @@ class PostMixin:
     """The Post Mixin class for Client and Flow"""
 
     def post(
-            self,
-            on: str,
-            inputs: Optional['InputType'] = None,
-            on_done: Optional['CallbackFnType'] = None,
-            on_error: Optional['CallbackFnType'] = None,
-            on_always: Optional['CallbackFnType'] = None,
-            parameters: Optional[Dict] = None,
-            target_executor: Optional[str] = None,
-            request_size: int = 100,
-            show_progress: bool = False,
-            continue_on_error: bool = False,
-            return_responses: bool = False,
-            max_attempts: int = 1,
-            initial_backoff: float = 0.5,
-            max_backoff: float = 0.1,
-            backoff_multiplier: float = 1.5,
-            **kwargs,
+        self,
+        on: str,
+        inputs: Optional['InputType'] = None,
+        on_done: Optional['CallbackFnType'] = None,
+        on_error: Optional['CallbackFnType'] = None,
+        on_always: Optional['CallbackFnType'] = None,
+        parameters: Optional[Dict] = None,
+        target_executor: Optional[str] = None,
+        request_size: int = 100,
+        show_progress: bool = False,
+        continue_on_error: bool = False,
+        return_responses: bool = False,
+        max_attempts: int = 1,
+        initial_backoff: float = 0.5,
+        max_backoff: float = 0.1,
+        backoff_multiplier: float = 1.5,
+        results_in_order: bool = False,
+        stream: bool = True,
+        **kwargs,
     ) -> Optional[Union['DocumentArray', List['Response']]]:
         """Post a general data request to the Flow.
 
@@ -240,6 +242,8 @@ class PostMixin:
         :param initial_backoff: The first retry will happen with a delay of random(0, initial_backoff)
         :param max_backoff: The maximum accepted backoff after the exponential incremental delay
         :param backoff_multiplier: The n-th attempt will occur at random(0, min(initialBackoff*backoffMultiplier**(n-1), maxBackoff))
+        :param results_in_order: return the results in the same order as the inputs
+        :param stream: Applicable only to grpc client. If True, the requests are sent to the target using the gRPC streaming interface otherwise the gRPC unary interface will be used. The value is True by default.
         :param kwargs: additional parameters
         :return: None or DocumentArray containing all response Documents
 
@@ -253,7 +257,7 @@ class PostMixin:
 
         parameters = _include_results_field_in_param(parameters)
 
-        from jina import DocumentArray
+        from docarray import DocumentArray
 
         return_results = (on_always is None) and (on_done is None)
 
@@ -282,6 +286,8 @@ class PostMixin:
             initial_backoff=initial_backoff,
             max_backoff=max_backoff,
             backoff_multiplier=backoff_multiplier,
+            results_in_order=results_in_order,
+            stream=stream,
             **kwargs,
         )
 
@@ -296,23 +302,25 @@ class AsyncPostMixin:
     """The Async Post Mixin class for AsyncClient and AsyncFlow"""
 
     async def post(
-            self,
-            on: str,
-            inputs: Optional['InputType'] = None,
-            on_done: Optional['CallbackFnType'] = None,
-            on_error: Optional['CallbackFnType'] = None,
-            on_always: Optional['CallbackFnType'] = None,
-            parameters: Optional[Dict] = None,
-            target_executor: Optional[str] = None,
-            request_size: int = 100,
-            show_progress: bool = False,
-            continue_on_error: bool = False,
-            return_responses: bool = False,
-            max_attempts: int = 1,
-            initial_backoff: float = 0.5,
-            max_backoff: float = 0.1,
-            backoff_multiplier: float = 1.5,
-            **kwargs,
+        self,
+        on: str,
+        inputs: Optional['InputType'] = None,
+        on_done: Optional['CallbackFnType'] = None,
+        on_error: Optional['CallbackFnType'] = None,
+        on_always: Optional['CallbackFnType'] = None,
+        parameters: Optional[Dict] = None,
+        target_executor: Optional[str] = None,
+        request_size: int = 100,
+        show_progress: bool = False,
+        continue_on_error: bool = False,
+        return_responses: bool = False,
+        max_attempts: int = 1,
+        initial_backoff: float = 0.5,
+        max_backoff: float = 0.1,
+        backoff_multiplier: float = 1.5,
+        results_in_order: bool = False,
+        stream: bool = True,
+        **kwargs,
     ) -> AsyncGenerator[None, Union['DocumentArray', 'Response']]:
         """Async Post a general data request to the Flow.
 
@@ -331,6 +339,8 @@ class AsyncPostMixin:
         :param initial_backoff: The first retry will happen with a delay of random(0, initial_backoff)
         :param max_backoff: The maximum accepted backoff after the exponential incremental delay
         :param backoff_multiplier: The n-th attempt will occur at random(0, min(initialBackoff*backoffMultiplier**(n-1), maxBackoff))
+        :param results_in_order: return the results in the same order as the inputs
+        :param stream: Applicable only to grpc client. If True, the requests are sent to the target using the gRPC streaming interface otherwise the gRPC unary interface will be used. The value is True by default.
         :param kwargs: additional parameters, can be used to pass metadata or authentication information in the server call
         :yield: Response object
 
@@ -344,19 +354,21 @@ class AsyncPostMixin:
         parameters = _include_results_field_in_param(parameters)
 
         async for result in c._get_results(
-                inputs=inputs,
-                on_done=on_done,
-                on_error=on_error,
-                on_always=on_always,
-                exec_endpoint=on,
-                target_executor=target_executor,
-                parameters=parameters,
-                request_size=request_size,
-                max_attempts=max_attempts,
-                initial_backoff=initial_backoff,
-                max_backoff=max_backoff,
-                backoff_multiplier=backoff_multiplier,
-                **kwargs,
+            inputs=inputs,
+            on_done=on_done,
+            on_error=on_error,
+            on_always=on_always,
+            exec_endpoint=on,
+            target_executor=target_executor,
+            parameters=parameters,
+            request_size=request_size,
+            max_attempts=max_attempts,
+            initial_backoff=initial_backoff,
+            max_backoff=max_backoff,
+            backoff_multiplier=backoff_multiplier,
+            results_in_order=results_in_order,
+            stream=stream,
+            **kwargs,
         ):
             if not return_responses:
                 yield result.data.docs

@@ -4,6 +4,7 @@ from os import path
 
 from setuptools import find_packages, setup
 from setuptools.command.develop import develop
+from setuptools.command.egg_info import egg_info
 from setuptools.command.install import install
 
 if sys.version_info < (3, 7, 0):
@@ -89,6 +90,14 @@ class PostInstallCommand(install):
         register_ac()
 
 
+class PostEggInfoCommand(egg_info):
+    """Post-installation for egg info mode."""
+
+    def run(self):
+        egg_info.run(self)
+        register_ac()
+
+
 def get_extra_requires(path, add_all=True):
     import re
     from collections import defaultdict
@@ -140,12 +149,20 @@ if os.environ.get('JINA_PIP_INSTALL_CORE'):
 elif os.environ.get('JINA_PIP_INSTALL_PERF'):
     final_deps = perf_deps
 
+if sys.version_info.major == 3 and sys.version_info.minor >= 11:
+    for dep in list(final_deps):
+        if dep.startswith('grpcio'):
+            final_deps.remove(dep)
+    final_deps.add('grpcio>=1.49.0')
+    final_deps.add('grpcio-health-checking>=1.49.0')
+    final_deps.add('grpcio-reflection>=1.49.0')
+
 setup(
     name=pkg_name,
     packages=find_packages(),
     version=__version__,
     include_package_data=True,
-    description='Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native · MLOps',
+    description='Build multimodal AI services via cloud native technologies · Neural Search · Generative AI · MLOps',
     author='Jina AI',
     author_email='hello@jina.ai',
     license='Apache 2.0',
@@ -154,7 +171,6 @@ setup(
     long_description=_long_description,
     long_description_content_type='text/markdown',
     zip_safe=False,
-    setup_requires=['setuptools>=18.0', 'wheel'],
     install_requires=list(final_deps),
     extras_require=all_deps,
     entry_points={
@@ -165,6 +181,7 @@ setup(
     cmdclass={
         'develop': PostDevelopCommand,
         'install': PostInstallCommand,
+        'egg_info': PostEggInfoCommand,
     },
     classifiers=[
         'Development Status :: 5 - Production/Stable',
@@ -195,6 +212,6 @@ setup(
         'Source': 'https://github.com/jina-ai/jina/',
         'Tracker': 'https://github.com/jina-ai/jina/issues',
     },
-    keywords='jina cloud-native cross-modal multi-modal neural-search query search index elastic neural-network encoding '
+    keywords='jina cloud-native cross-modal multimodal neural-search query search index elastic neural-network encoding '
     'embedding serving docker container image video audio deep-learning mlops',
 )

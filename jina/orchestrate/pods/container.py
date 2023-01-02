@@ -2,14 +2,14 @@ import argparse
 import asyncio
 import copy
 import multiprocessing
+import threading
 import os
 import re
 import signal
-import threading
 import time
-from typing import TYPE_CHECKING, Callable, Dict, Optional, Union
+from typing import TYPE_CHECKING, Dict, Optional, Union
 
-from jina import __docker_host__, __windows__
+from jina.constants import __docker_host__, __windows__
 from jina.enums import PodRoleType
 from jina.excepts import BadImageNameError, DockerVersionError
 from jina.helper import random_name, slugify
@@ -24,7 +24,7 @@ from jina.orchestrate.pods.container_helper import (
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.gateway import GatewayRuntime
 
-if TYPE_CHECKING: # pragma: no cover
+if TYPE_CHECKING:  # pragma: no cover
     from docker.client import DockerClient
 
 
@@ -98,7 +98,9 @@ def _docker_run(
         raise BadImageNameError(f'image: {uses_img} can not be found local & remote.')
 
     _volumes = {}
-    if not args.disable_auto_volume and not args.volumes:
+    if not getattr(args, 'disable_auto_volume', None) and not getattr(
+        args, 'volumes', None
+    ):
         (
             generated_volumes,
             workspace_in_container,
@@ -108,7 +110,7 @@ def _docker_run(
             workspace_in_container if not args.workspace else args.workspace
         )
 
-    if args.volumes:
+    if getattr(args, 'volumes', None):
         for p in args.volumes:
             paths = p.split(':')
             local_path = paths[0]
@@ -123,12 +125,16 @@ def _docker_run(
             }
 
     device_requests = []
-    if args.gpus:
+    if getattr(args, 'gpus', None):
         device_requests = get_gpu_device_requests(args.gpus)
         del args.gpus
 
     _args = ArgNamespace.kwargs2list(non_defaults)
-    ports = {f'{args.port}/tcp': args.port} if not net_mode else None
+
+    if args.pod_role == PodRoleType.GATEWAY:
+        ports = {f'{_port}/tcp': _port for _port in args.port} if not net_mode else None
+    else:
+        ports = {f'{args.port}/tcp': args.port} if not net_mode else None
 
     docker_kwargs = args.docker_kwargs or {}
     container = client.containers.run(
@@ -228,7 +234,7 @@ def run(
         def _is_ready():
             if args.pod_role == PodRoleType.GATEWAY:
                 return GatewayRuntime.is_ready(
-                    runtime_ctrl_address, protocol=args.protocol
+                    runtime_ctrl_address, protocol=args.protocol[0]
                 )
             else:
                 return AsyncNewLoopRuntime.is_ready(runtime_ctrl_address)
@@ -284,8 +290,7 @@ def run(
 
 class ContainerPod(BasePod):
     """
-    :class:`ContainerPod` starts a runtime of :class:`BaseRuntime` inside a container. It leverages :class:`threading.Thread`
-    or :class:`multiprocessing.Process` to manage the logs and the lifecycle of docker container object in a robust way.
+    :class:`ContainerPod` starts a runtime of :class:`BaseRuntime` inside a container. It leverages :class:`multiprocessing.Process` to manage the logs and the lifecycle of docker container object in a robust way.
     """
 
     def __init__(self, args: 'argparse.Namespace'):
@@ -325,7 +330,10 @@ class ContainerPod(BasePod):
             else:
                 ctrl_host = self.args.host
 
-            ctrl_address = f'{ctrl_host}:{self.args.port}'
+            if self.args.pod_role == PodRoleType.GATEWAY:
+                ctrl_address = f'{ctrl_host}:{self.args.port[0]}'
+            else:
+                ctrl_address = f'{ctrl_host}:{self.args.port}'
 
             net_node, runtime_ctrl_address = self._get_network_for_dind_linux(
                 client, ctrl_address
@@ -348,7 +356,10 @@ class ContainerPod(BasePod):
             try:
                 bridge_network = client.networks.get('bridge')
                 if bridge_network:
-                    runtime_ctrl_address = f'{bridge_network.attrs["IPAM"]["Config"][0]["Gateway"]}:{self.args.port}'
+                    if self.args.pod_role == PodRoleType.GATEWAY:
+                        runtime_ctrl_address = f'{bridge_network.attrs["IPAM"]["Config"][0]["Gateway"]}:{self.args.port[0]}'
+                    else:
+                        runtime_ctrl_address = f'{bridge_network.attrs["IPAM"]["Config"][0]["Gateway"]}:{self.args.port}'
             except Exception as ex:
                 self.logger.warning(
                     f'Unable to set control address from "bridge" network: {ex!r}'
@@ -371,7 +382,6 @@ class ContainerPod(BasePod):
 
     def start(self):
         """Start the ContainerPod.
-        This method calls :meth:`start` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.
         .. #noqa: DAR201
         """
         self.worker = multiprocessing.Process(
@@ -396,7 +406,7 @@ class ContainerPod(BasePod):
 
     def _terminate(self):
         """Terminate the Pod.
-        This method calls :meth:`terminate` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.
+        This method kills the container inside the Pod
         """
         # terminate the docker
         try:
@@ -409,7 +419,6 @@ class ContainerPod(BasePod):
 
     def join(self, *args, **kwargs):
         """Joins the Pod.
-        This method calls :meth:`join` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.
 
         :param args: extra positional arguments to pass to join
         :param kwargs: extra keyword arguments to pass to join

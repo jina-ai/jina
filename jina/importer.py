@@ -5,7 +5,7 @@ import warnings
 from types import SimpleNamespace
 from typing import Optional
 
-from jina import __resources_path__
+from jina.constants import __resources_path__
 
 IMPORTED = SimpleNamespace()
 IMPORTED.executors = False
@@ -147,8 +147,10 @@ class PathImporter:
             if not os.path.isfile(path):
                 try:
                     importlib.import_module(path)
-                except:
+                except ModuleNotFoundError:
                     not_python_module_paths.append(path)
+                except:
+                    raise
             else:
                 not_python_module_paths.append(path)
 

@@ -19,7 +19,7 @@ jobs:
       !endsWith(github.event.head_commit.message, 'reformatted by jina-dev-bot')
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2.5.0
         with:
 #          submodules: true
           fetch-depth: 100
@@ -31,12 +31,12 @@ jobs:
           password: ${{ secrets.DOCKERHUB_DEVBOT_PWD }}
           repository: jinaai/jina
           readme-filepath: ./README-trunc.md
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2.5.0
         with:
           repository: jina-ai/api
           path: schema
           token: ${{ secrets.JINA_DEV_BOT }}
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v4
         with:
           python-version: 3.7
       - uses: actions/setup-node@v2
@@ -98,11 +98,12 @@ jobs:
     env:
       release_token: ${{ secrets.JINA_CORE_RELEASE_TOKEN }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2.5.0
       - id: set-matrix
         run: |
           sudo apt-get install jq
-          echo "::set-output name=matrix::$(bash scripts/get-all-test-paths.sh)"
+          export value=$(bash scripts/get-all-test-paths.sh)
+          echo "matrix=$value" >> $GITHUB_OUTPUT
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
 
@@ -115,11 +116,11 @@ jobs:
         python-version: [3.7]
         test-path: ${{fromJson(needs.prep-testbed.outputs.matrix)}}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2.5.0
 #        with:
 #          submodules: true
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
       - name: Prepare environment
@@ -137,7 +138,7 @@ jobs:
         run: |
           pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml --timeout=600 -v -s --ignore-glob='tests/integration/hub_usage/dummyhub*' ${{ matrix.test-path }}
           echo "flag it as jina for codeoverage"
-          echo "::set-output name=codecov_flag::jina"
+          echo "codecov_flag=jina" >> $GITHUB_OUTPUT
         timeout-minutes: 30
         env:
           JINAHUB_USERNAME: ${{ secrets.JINAHUB_USERNAME }}
@@ -150,7 +151,7 @@ jobs:
         with:
           files: "coverage.xml"
       - name: Upload coverage from test to Codecov
-        uses: codecov/codecov-action@v1
+        uses: codecov/codecov-action@v3.1.1
         if: steps.check_files.outputs.files_exists == 'true' && ${{ matrix.python-version }} == '3.7'
         with:
           file: coverage.xml
@@ -166,15 +167,16 @@ jobs:
       matrix:
         core: ['', 'true']
         perf: ['', 'true']
+        python-env: ['3.7', '3.8', '3.9', '3.10', '3.11']
         exclude: 
           - core: 'true'
             perf: 'true'
     steps:
-      - uses: actions/checkout@v2
-      - name: Set up Python 3.7
-        uses: actions/setup-python@v2
+      - uses: actions/checkout@v2.5.0
+      - name: Set up Python
+        uses: actions/setup-python@v4
         with:
-          python-version: 3.7
+          python-version: ${{ matrix.python-env }}
       - name: Prepare enviroment
         run: |
           python -m pip install --upgrade pip
@@ -184,7 +186,7 @@ jobs:
           JINA_PIP_INSTALL_CORE: ${{ matrix.core }}
           JINA_PIP_INSTALL_PERF: ${{ matrix.perf }}
       - name: Test basic import
-        run: python -c 'from jina import Executor,requests'
+        run: python -c 'from jina import Executor,requests,Client,Flow,dynamic_batching,Document,DocumentArray'
   docker-image-test:
     needs: update-schema
     runs-on: ubuntu-latest
@@ -202,7 +204,7 @@ jobs:
       #        uses: styfle/cancel-workflow-action@0.9.0
       #        with:
       #          access_token: ${{ github.token }}
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2.5.0
       - name: Set up Docker Buildx
         id: buildx
         uses: docker/setup-buildx-action@v1
@@ -233,9 +235,9 @@ jobs:
       #        uses: styfle/cancel-workflow-action@0.9.0
       #        with:
       #          access_token: ${{ github.token }}
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2.5.0
       - name: Set up Python 3.7
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: 3.7
       - name: Test hubapp with hubpods
@@ -250,9 +252,9 @@ jobs:
     needs: update-schema
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2.5.0
       - name: Set up Python 3.7
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: 3.7
       - name: Prepare enviroment
@@ -270,7 +272,7 @@ jobs:
           export LINKERD2_VERSION=stable-2.11.4
           curl --proto '=https' --tlsv1.2 -sSfL https://run.linkerd.io/install | sh
           pytest -v -s --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml ./tests/k8s/test_k8s.py ./tests/k8s/test_graceful_request_handling.py
-        timeout-minutes: 30
+        timeout-minutes: 45
         env:
           JINA_K8S_USE_TEST_PIP: 1
       - name: Check codecov file
@@ -279,7 +281,7 @@ jobs:
         with:
           files: "coverage.xml"
       - name: Upload coverage from test to Codecov
-        uses: codecov/codecov-action@v2
+        uses: codecov/codecov-action@v3.1.1
         if: steps.check_files.outputs.files_exists == 'true' && ${{ matrix.python-version }} == '3.7'
         with:
           file: coverage.xml
@@ -291,9 +293,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: update-schema
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2.5.0
       - name: Set up Python 3.7
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: 3.7
       - name: Prepare enviroment
@@ -306,13 +308,13 @@ jobs:
           export JINA_LOG_LEVEL="ERROR"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Test k8s
+      - name: Test k8s failures
         run: |
           export LINKERD2_VERSION=stable-2.11.4
           curl --proto '=https' --tlsv1.2 -sSfL https://run.linkerd.io/install | sh
           curl --proto '=https' --tlsv1.2 -sSfL https://linkerd.github.io/linkerd-smi/install | sh
           pytest -v -s --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml ./tests/k8s/test_k8s_failures.py
-        timeout-minutes: 30
+        timeout-minutes: 45
         env:
           JINA_K8S_USE_TEST_PIP: 1
       - name: Check codecov file
@@ -321,7 +323,7 @@ jobs:
         with:
           files: "coverage.xml"
       - name: Upload coverage from test to Codecov
-        uses: codecov/codecov-action@v2
+        uses: codecov/codecov-action@v3.1.1
         if: steps.check_files.outputs.files_exists == 'true' && ${{ matrix.python-version }} == '3.7'
         with:
           file: coverage.xml
@@ -333,9 +335,9 @@ jobs:
     needs: update-schema
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2.5.0
       - name: Set up Python 3.7
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: 3.7
       - name: Prepare enviroment
@@ -358,7 +360,7 @@ jobs:
         with:
           files: "coverage.xml"
       - name: Upload coverage from test to Codecov
-        uses: codecov/codecov-action@v1
+        uses: codecov/codecov-action@v3.1.1
         if: steps.check_files.outputs.files_exists == 'true' && ${{ matrix.python-version }} == '3.7'
         with:
           file: coverage.xml
@@ -370,7 +372,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: update-schema
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2.5.0
         with:
           fetch-depth: 0
       - run: |

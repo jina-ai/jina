@@ -75,6 +75,10 @@ export RELEASE_VER=$(sed -n '/^__version__/p' $INIT_FILE | cut -d \' -f2)
 LAST_VER=$(git tag -l | sort -V | tail -n1)
 printf "last version: \e[1;32m$LAST_VER\e[0m\n"
 
+# Update new _versions.json if necessary
+python ./scripts/prepend_version_json.py --version "v$RELEASE_VER"
+git add ./docs/_versions.json
+
 if [[ $1 == "final" ]]; then
   printf "this will be a final release: \e[1;33m$RELEASE_VER\e[0m\n"
 

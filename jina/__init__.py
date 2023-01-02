@@ -7,20 +7,16 @@ sub-modules, as described below.
 
 """
 
-import datetime as _datetime
 import os as _os
 import platform as _platform
 import signal as _signal
 import sys as _sys
 import warnings as _warnings
-from pathlib import Path as _Path
 
 import docarray as _docarray
 
 if _sys.version_info < (3, 7, 0):
     raise OSError(f'Jina requires Python >= 3.7, but yours is {_sys.version_info}')
-
-__windows__ = _sys.platform == 'win32'
 
 
 def _warning_on_one_line(message, category, filename, lineno, *args, **kwargs):
@@ -65,7 +61,7 @@ elif _sys.version_info >= (3, 8, 0) and _platform.system() == 'Darwin':
 # this is managed by git tag and updated on every release
 # NOTE: this represents the NEXT release version
 
-__version__ = '3.11.1'
+__version__ = '3.13.2'
 
 # do not change this line manually
 # this is managed by proto/build-proto.sh and updated on every execution
@@ -77,77 +73,6 @@ except AttributeError as e:
     raise RuntimeError(
         '`docarray` dependency is not installed correctly, please reinstall with `pip install -U --force-reinstall docarray`'
     )
-
-__uptime__ = _datetime.datetime.now().isoformat()
-
-# update on MacOS
-# 1. clean this tuple,
-# 2. grep -rohEI --exclude-dir=jina/hub --exclude-dir=tests --include \*.py "\'JINA_.*?\'" jina  | sort -u | sed "s/$/,/g"
-# 3. copy all lines EXCEPT the first (which is the grep command in the last line)
-__jina_env__ = (
-    'JINA_DEFAULT_HOST',
-    'JINA_DEFAULT_TIMEOUT_CTRL',
-    'JINA_DEPLOYMENT_NAME',
-    'JINA_DISABLE_UVLOOP',
-    'JINA_EARLY_STOP',
-    'JINA_FULL_CLI',
-    'JINA_GATEWAY_IMAGE',
-    'JINA_GRPC_RECV_BYTES',
-    'JINA_GRPC_SEND_BYTES',
-    'JINA_HUB_NO_IMAGE_REBUILD',
-    'JINA_LOG_CONFIG',
-    'JINA_LOG_LEVEL',
-    'JINA_LOG_NO_COLOR',
-    'JINA_MP_START_METHOD',
-    'JINA_OPTOUT_TELEMETRY',
-    'JINA_RANDOM_PORT_MAX',
-    'JINA_RANDOM_PORT_MIN',
-    'JINA_LOCKS_ROOT',
-    'JINA_OPTOUT_TELEMETRY',
-    'JINA_K8S_ACCESS_MODES',
-    'JINA_K8S_STORAGE_CLASS_NAME',
-    'JINA_K8S_STORAGE_CAPACITY',
-)
-
-__default_host__ = _os.environ.get(
-    'JINA_DEFAULT_HOST', '127.0.0.1' if __windows__ else '0.0.0.0'
-)
-__docker_host__ = 'host.docker.internal'
-__default_executor__ = 'BaseExecutor'
-__default_gateway__ = 'BaseGateway'
-__default_http_gateway__ = 'HTTPGateway'
-__default_websocket_gateway__ = 'WebSocketGateway'
-__default_grpc_gateway__ = 'GRPCGateway'
-__default_endpoint__ = '/default'
-__ready_msg__ = 'ready and listening'
-__stop_msg__ = 'terminated'
-__unset_msg__ = '(unset)'
-__args_executor_func__ = {
-    'docs',
-    'parameters',
-    'docs_matrix',
-}
-__args_executor_init__ = {'metas', 'requests', 'runtime_args'}
-__resources_path__ = _os.path.join(
-    _os.path.dirname(_sys.modules['jina'].__file__), 'resources'
-)
-__cache_path__ = f'{_os.path.expanduser("~")}/.cache/{__package__}'
-if not _Path(__cache_path__).exists():
-    _Path(__cache_path__).mkdir(parents=True, exist_ok=True)
-
-_names_with_underscore = [
-    '__version__',
-    '__proto_version__',
-    '__default_host__',
-    '__ready_msg__',
-    '__stop_msg__',
-    '__jina_env__',
-    '__uptime__',
-    '__default_endpoint__',
-    '__default_executor__',
-    '__unset_msg__',
-    '__windows__',
-]
 
 try:
     _signal.signal(_signal.SIGINT, _signal.default_int_handler)
@@ -211,10 +136,7 @@ from jina.orchestrate.flow.base import Flow
 
 # Executor
 from jina.serve.executors import BaseExecutor as Executor
-from jina.serve.executors.decorators import monitor, requests
+from jina.serve.executors.decorators import dynamic_batching, monitor, requests
 
 # Custom Gateway
 from jina.serve.gateway import BaseGateway as Gateway
-
-__all__ = [_s for _s in dir() if not _s.startswith('_')]
-__all__.extend(_names_with_underscore)

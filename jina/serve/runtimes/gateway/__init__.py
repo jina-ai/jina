@@ -1,25 +1,22 @@
 import argparse
 import asyncio
-import os
 import urllib
-from abc import ABC
 from http import HTTPStatus
 from typing import TYPE_CHECKING, Optional, Union
 
-from jina import __default_host__
 from jina.enums import GatewayProtocolType
 from jina.excepts import PortAlreadyUsed
-from jina.helper import is_port_free
-from jina.parsers.helper import _set_gateway_uses
+from jina.helper import is_port_free, send_telemetry_event
+from jina.parsers.helper import _update_gateway_args
 from jina.serve.gateway import BaseGateway
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 
-if TYPE_CHECKING: # pragma: no cover
+if TYPE_CHECKING:  # pragma: no cover
     import multiprocessing
     import threading
 
-
 # Keep these imports even if not used, since YAML parser needs to find them in imported modules
+from jina.serve.runtimes.gateway.composite import CompositeGateway
 from jina.serve.runtimes.gateway.grpc import GRPCGateway
 from jina.serve.runtimes.gateway.http import HTTPGateway
 from jina.serve.runtimes.gateway.websocket import WebSocketGateway
@@ -46,7 +43,7 @@ class GatewayRuntime(AsyncNewLoopRuntime):
         self.timeout_send = args.timeout_send
         if self.timeout_send:
             self.timeout_send /= 1e3  # convert ms to seconds
-        _set_gateway_uses(args)
+        _update_gateway_args(args)
         super().__init__(args, cancel_event, **kwargs)
 
     async def async_setup(self):
@@ -55,7 +52,7 @@ class GatewayRuntime(AsyncNewLoopRuntime):
 
         Setup the uvicorn server.
         """
-        if not (is_port_free(__default_host__, self.args.port)):
+        if not (is_port_free(self.args.host, self.args.port)):
             raise PortAlreadyUsed(f'port:{self.args.port}')
 
         uses_with = self.args.uses_with or {}
@@ -64,7 +61,6 @@ class GatewayRuntime(AsyncNewLoopRuntime):
             uses_with=dict(
                 name=self.name,
                 grpc_server_options=self.args.grpc_server_options,
-                port=self.args.port,
                 title=self.args.title,
                 description=self.args.description,
                 no_debug_endpoints=self.args.no_debug_endpoints,
@@ -81,53 +77,87 @@ class GatewayRuntime(AsyncNewLoopRuntime):
             uses_metas={},
             runtime_args={  # these are not parsed to the yaml config file but are pass directly during init
                 'name': self.args.name,
+                'port': self.args.port,
+                'protocol': self.args.protocol,
+                'host': self.args.host,
+                'tracing': self.tracing,
+                'tracer_provider': self.tracer_provider,
+                'grpc_tracing_server_interceptors': self.aio_tracing_server_interceptors(),
+                'graph_description': self.args.graph_description,
+                'graph_conditions': self.args.graph_conditions,
+                'deployments_addresses': self.args.deployments_addresses,
+                'deployments_metadata': self.args.deployments_metadata,
+                'deployments_no_reduce': self.args.deployments_no_reduce,
+                'timeout_send': self.timeout_send,
+                'retries': self.args.retries,
+                'compression': self.args.compression,
+                'runtime_name': self.args.name,
+                'prefetch': self.args.prefetch,
+                'metrics_registry': self.metrics_registry,
+                'meter': self.meter,
+                'aio_tracing_client_interceptors': self.aio_tracing_client_interceptors(),
+                'tracing_client_interceptor': self.tracing_client_interceptor(),
             },
             py_modules=self.args.py_modules,
             extra_search_paths=self.args.extra_search_paths,
         )
 
-        self.gateway.inject_dependencies(
-            args=self.args,
-            timeout_send=self.timeout_send,
-            metrics_registry=self.metrics_registry,
-            meter=self.meter,
-            runtime_name=self.args.name,
-            tracing=self.tracing,
-            tracer_provider=self.tracer_provider,
-            grpc_tracing_server_interceptors=self.aio_tracing_server_interceptors(),
-            aio_tracing_client_interceptors=self.aio_tracing_client_interceptors(),
-            tracing_client_interceptor=self.tracing_client_interceptor(),
-        )
         await self.gateway.setup_server()
+
+    def _send_telemetry_event(self):
+        is_custom_gateway = self.gateway.__class__ not in [
+            CompositeGateway,
+            GRPCGateway,
+            HTTPGateway,
+            WebSocketGateway,
+        ]
+        send_telemetry_event(
+            event='start',
+            obj=self,
+            entity_id=self._entity_id,
+            is_custom_gateway=is_custom_gateway,
+            protocol=self.args.protocol,
+        )
 
     async def _wait_for_cancel(self):
         """Do NOT override this method when inheriting from :class:`GatewayPod`"""
         # handle terminate signals
-        while not self.is_cancel.is_set() and not self.gateway.should_exit:
+        while not self.is_cancel.is_set() and not getattr(
+            self.gateway, '_should_exit', False
+        ):
             await asyncio.sleep(0.1)
 
         await self.async_cancel()
 
     async def async_teardown(self):
         """Shutdown the server."""
-        await self.gateway.teardown()
+        await self.gateway.streamer.close()
+        await self.gateway.shutdown()
         await self.async_cancel()
 
     async def async_cancel(self):
         """Stop the server."""
-        await self.gateway.stop_server()
+        await self.gateway.streamer.close()
+        await self.gateway.shutdown()
 
     async def async_run_forever(self):
         """Running method of the server."""
         await self.gateway.run_server()
+        self.is_cancel.set()
 
     @staticmethod
-    def is_ready(ctrl_address: str, protocol: Optional[str] = 'grpc', **kwargs) -> bool:
+    def is_ready(
+        ctrl_address: str,
+        protocol: Optional[str] = 'grpc',
+        timeout: float = 1.0,
+        **kwargs,
+    ) -> bool:
         """
         Check if status is ready.
 
         :param ctrl_address: the address where the control request needs to be sent
         :param protocol: protocol of the gateway runtime
+        :param timeout: timeout of grpc call in seconds
         :param kwargs: extra keyword arguments
 
         :return: True if status is ready else False.
@@ -141,7 +171,9 @@ class GatewayRuntime(AsyncNewLoopRuntime):
             res = AsyncNewLoopRuntime.is_ready(ctrl_address)
         else:
             try:
-                conn = urllib.request.urlopen(url=f'http://{ctrl_address}')
+                conn = urllib.request.urlopen(
+                    url=f'http://{ctrl_address}', timeout=timeout
+                )
                 res = conn.code == HTTPStatus.OK
             except:
                 res = False

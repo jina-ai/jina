@@ -1,3 +1,4 @@
+from jina.schemas.gateway import schema_gateway
 from jina.schemas.helper import _cli_to_schema
 from jina_cli.export import api_to_dict
 
@@ -32,6 +33,7 @@ schema_flow = {
                 'items': {'$ref': '#/definitions/Jina::Deployment'},
                 'minItems': 1,
             },
+            'gateway': schema_gateway['Jina::Gateway'],
         },
         'type': 'object',
         'additionalProperties': False,

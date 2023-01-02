@@ -1,6 +1,6 @@
 """Module wrapping the Client of Jina."""
 import argparse
-from typing import TYPE_CHECKING, Optional, Union, overload
+from typing import TYPE_CHECKING, List, Optional, Union, overload
 
 from jina.helper import parse_client
 
@@ -16,37 +16,32 @@ if TYPE_CHECKING:  # pragma: no cover
 
 # overload_inject_start_client
 @overload
-def Client(
-    *,
-    asyncio: Optional[bool] = False,
-    host: Optional[str] = '0.0.0.0',
-    metrics: Optional[bool] = False,
-    metrics_exporter_host: Optional[str] = None,
-    metrics_exporter_port: Optional[int] = None,
-    port: Optional[int] = None,
-    protocol: Optional[str] = 'GRPC',
-    proxy: Optional[bool] = False,
-    tls: Optional[bool] = False,
-    traces_exporter_host: Optional[str] = None,
-    traces_exporter_port: Optional[int] = None,
-    tracing: Optional[bool] = False,
-    **kwargs
-) -> Union[
-    'AsyncWebSocketClient',
-    'WebSocketClient',
-    'AsyncGRPCClient',
-    'GRPCClient',
-    'HTTPClient',
-    'AsyncHTTPClient',
-]:
+def Client(*, 
+    asyncio: Optional[bool] = False, 
+    host: Optional[str] = '0.0.0.0', 
+    metrics: Optional[bool] = False, 
+    metrics_exporter_host: Optional[str] = None, 
+    metrics_exporter_port: Optional[int] = None, 
+    port: Optional[int] = None, 
+    prefetch: Optional[int] = 1000, 
+    protocol: Optional[Union[str, List[str]]] = 'GRPC', 
+    proxy: Optional[bool] = False, 
+    tls: Optional[bool] = False, 
+    traces_exporter_host: Optional[str] = None, 
+    traces_exporter_port: Optional[int] = None, 
+    tracing: Optional[bool] = False, 
+    **kwargs) -> Union['AsyncWebSocketClient', 'WebSocketClient', 'AsyncGRPCClient', 'GRPCClient', 'HTTPClient', 'AsyncHTTPClient']:
     """Create a Client. Client is how user interact with Flow
 
     :param asyncio: If set, then the input and output of this Client work in an asynchronous manner.
-    :param host: The host address of the runtime, by default it is 0.0.0.0. In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts, separated by commas. Then, every resulting address will be considered as one replica of the Executor.
+    :param host: The host of the Gateway, which the client should connect to, by default it is 0.0.0.0.
     :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.
     :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.
     :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.
     :param port: The port of the Gateway, which the client should connect to.
+    :param prefetch: Number of requests fetched from the client before feeding into the first Executor. 
+              
+              Used to control the speed of data input into a Flow. 0 disables prefetch (1000 requests is the default)
     :param protocol: Communication protocol between server and client.
     :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
     :param tls: If set, connect to gateway using tls encryption
@@ -92,11 +87,14 @@ def Client(
         c.post(on='/index', inputs=Document(text='hello!'))
 
     :param asyncio: If set, then the input and output of this Client work in an asynchronous manner.
-    :param host: The host address of the runtime, by default it is 0.0.0.0. In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts, separated by commas. Then, every resulting address will be considered as one replica of the Executor.
+    :param host: The host of the Gateway, which the client should connect to, by default it is 0.0.0.0.
     :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.
     :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.
     :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.
     :param port: The port of the Gateway, which the client should connect to.
+    :param prefetch: Number of requests fetched from the client before feeding into the first Executor. 
+              
+              Used to control the speed of data input into a Flow. 0 disables prefetch (1000 requests is the default)
     :param protocol: Communication protocol between server and client.
     :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
     :param tls: If set, connect to gateway using tls encryption

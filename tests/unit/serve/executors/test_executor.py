@@ -2,25 +2,24 @@ import asyncio
 import multiprocessing
 import os
 import time
-from copy import deepcopy
 from multiprocessing import Process
 from threading import Event
-from unittest import mock
 
 import pytest
 import yaml
 from docarray import Document, DocumentArray
+from pytest import FixtureRequest
 
-from jina import Client, Executor, Flow, __cache_path__, requests
+from jina import Client, Executor, Flow, dynamic_batching, requests
+from jina.constants import __cache_path__
 from jina.clients.request import request_generator
 from jina.excepts import RuntimeFailToStart
-from jina.parsers import set_pod_parser
+from jina.helper import random_port
 from jina.serve.executors.metas import get_default_metas
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.worker import WorkerRuntime
-
-PORT = 12350
+from tests.helper import _generate_pod_args
 
 
 class WorkspaceExec(Executor):
@@ -34,9 +33,19 @@ class MyServeExec(Executor):
     def foo(self, docs, **kwargs):
         docs.texts = ['foo' for _ in docs]
 
+    @requests(on='/bar')
+    def bar(self, docs, **kwargs):
+        docs.texts = ['bar' for _ in docs]
+
+
+@pytest.fixture()
+def exposed_port():
+    port = random_port()
+    yield port
+
 
 @pytest.fixture(autouse=False)
-def served_exec():
+def served_exec(request: FixtureRequest, exposed_port):
     import threading
     import time
 
@@ -44,10 +53,18 @@ def served_exec():
         MyServeExec.serve(**kwargs)
 
     e = threading.Event()
+
+    kwargs = {'port_expose': exposed_port, 'stop_event': e}
+    enable_dynamic_batching = request.param
+    if enable_dynamic_batching:
+        kwargs['uses_dynamic_batching'] = {
+            '/bar': {'preferred_batch_size': 4, 'timeout': 5000}
+        }
+
     t = threading.Thread(
         name='serve-exec',
         target=serve_exec,
-        kwargs={'port_expose': PORT, 'stop_event': e},
+        kwargs=kwargs,
     )
     t.start()
     time.sleep(3)  # allow Flow to start
@@ -58,10 +75,11 @@ def served_exec():
     t.join()
 
 
-def test_executor_load_from_hub():
-    exec = Executor.from_hub(
-        'jinahub://DummyHubExecutor', uses_metas={'name': 'hello123'}
-    )
+@pytest.mark.parametrize(
+    'uses', ['jinaai://jina-ai/DummyHubExecutor']
+)
+def test_executor_load_from_hub(uses):
+    exec = Executor.from_hub(uses, uses_metas={'name': 'hello123'})
     da = DocumentArray([Document()])
     exec.foo(da)
     assert da.texts == ['hello']
@@ -78,7 +96,7 @@ def test_executor_import_with_external_dependencies(capsys):
 
 def test_executor_with_pymodule_path():
     with pytest.raises(FileNotFoundError):
-        ex = Executor.load_config(
+        _ = Executor.load_config(
             '''
         jtype: BaseExecutor
         py_modules:
@@ -385,10 +403,11 @@ async def test_async_apply():
     assert da1.texts == ['hello'] * N
 
 
-def test_serve(served_exec):
-    docs = Client(port=PORT).post(on='/foo', inputs=DocumentArray.empty(5))
+@pytest.mark.parametrize('served_exec', [False, True], indirect=True)
+def test_serve(served_exec, exposed_port):
+    docs = Client(port=exposed_port).post(on='/bar', inputs=DocumentArray.empty(5))
 
-    assert docs.texts == ['foo' for _ in docs]
+    assert docs.texts == ['bar' for _ in docs]
 
 
 def test_set_workspace(tmpdir):
@@ -421,11 +440,15 @@ def test_default_workspace(tmpdir):
     'exec_type',
     [Executor.StandaloneExecutorType.EXTERNAL, Executor.StandaloneExecutorType.SHARED],
 )
-def test_to_k8s_yaml(tmpdir, exec_type):
+@pytest.mark.parametrize(
+    'uses',
+    ['jinahub+docker://DummyHubExecutor', 'jinaai+docker://jina-ai/DummyHubExecutor'],
+)
+def test_to_k8s_yaml(tmpdir, exec_type, uses):
     Executor.to_kubernetes_yaml(
         output_base_path=tmpdir,
         port_expose=2020,
-        uses='jinahub+docker://DummyHubExecutor',
+        uses=uses,
         executor_type=exec_type,
     )
 
@@ -463,12 +486,16 @@ def test_to_k8s_yaml(tmpdir, exec_type):
     'exec_type',
     [Executor.StandaloneExecutorType.EXTERNAL, Executor.StandaloneExecutorType.SHARED],
 )
-def test_to_docker_compose_yaml(tmpdir, exec_type):
+@pytest.mark.parametrize(
+    'uses',
+    ['jinaai+docker://jina-ai/DummyHubExecutor'],
+)
+def test_to_docker_compose_yaml(tmpdir, exec_type, uses):
     compose_file = os.path.join(tmpdir, 'compose.yml')
     Executor.to_docker_compose_yaml(
         output_path=compose_file,
         port_expose=2020,
-        uses='jinahub+docker://DummyHubExecutor',
+        uses=uses,
         executor_type=exec_type,
     )
 
@@ -502,7 +529,7 @@ async def test_blocking_sync_exec():
                 doc.text = 'BlockingExecutor'
             return docs
 
-    args = set_pod_parser().parse_args(['--uses', 'BlockingExecutor'])
+    args = _generate_pod_args(['--uses', 'BlockingExecutor'])
 
     cancel_event = multiprocessing.Event()
 
@@ -544,3 +571,96 @@ async def test_blocking_sync_exec():
 
     cancel_event.set()
     runtime_thread.join()
+
+
+def test_executors_inheritance_binding():
+    class A(Executor):
+        @requests(on='/index')
+        def a(self, **kwargs):
+            pass
+
+        @requests
+        def default_a(self, **kwargs):
+            pass
+
+    class B(A):
+        @requests(on='/index')
+        def b(self, **kwargs):
+            pass
+
+    class C(B):
+        pass
+
+    assert set(A().requests.keys()) == {'/index', '/default', '_jina_dry_run_'}
+    assert A().requests['/index'] == A.a
+    assert A().requests['/default'] == A.default_a
+    assert set(B().requests.keys()) == {'/index', '/default', '_jina_dry_run_'}
+    assert B().requests['/index'] == B.b
+    assert B().requests['/default'] == A.default_a
+    assert set(C().requests.keys()) == {'/index', '/default', '_jina_dry_run_'}
+    assert C().requests['/index'] == B.b
+    assert C().requests['/default'] == A.default_a
+
+
+@pytest.mark.parametrize(
+    'inputs,expected_values',
+    [
+        (
+            dict(preferred_batch_size=4, timeout=5_000),
+            dict(preferred_batch_size=4, timeout=5_000),
+        ),
+        (
+            dict(preferred_batch_size=4, timeout=5_000),
+            dict(preferred_batch_size=4, timeout=5_000),
+        ),
+        (
+            dict(preferred_batch_size=4),
+            dict(preferred_batch_size=4, timeout=10_000),
+        ),
+    ],
+)
+def test_dynamic_batching(inputs, expected_values):
+    class MyExec(Executor):
+        @dynamic_batching(**inputs)
+        def foo(self, docs, **kwargs):
+            pass
+
+    exec = MyExec()
+    assert exec.dynamic_batching['foo'] == expected_values
+
+
+@pytest.mark.parametrize(
+    'inputs,expected_values',
+    [
+        (
+            dict(preferred_batch_size=4, timeout=5_000),
+            dict(preferred_batch_size=4, timeout=5_000),
+        ),
+        (
+            dict(preferred_batch_size=4, timeout=5_000),
+            dict(preferred_batch_size=4, timeout=5_000),
+        ),
+        (
+            dict(preferred_batch_size=4),
+            dict(preferred_batch_size=4, timeout=10_000),
+        ),
+    ],
+)
+def test_combined_decorators(inputs, expected_values):
+    class MyExecutor(Executor):
+        @dynamic_batching(**inputs)
+        @requests(on='/foo')
+        def foo(self, docs, **kwargs):
+            pass
+
+    exec = MyExecutor()
+    assert exec.dynamic_batching['foo'] == expected_values
+
+    class MyExecutor2(Executor):
+        @requests(on='/foo')
+        @dynamic_batching(**inputs)
+        def foo(self, docs, **kwargs):
+            pass
+
+    exec = MyExecutor2()
+    assert exec.dynamic_batching['foo'] == expected_values

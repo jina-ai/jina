@@ -6,16 +6,16 @@ from typing import TYPE_CHECKING
 from hubble.executor.helper import is_valid_huburi
 from hubble.executor.hubio import HubIO
 
-from jina.enums import GatewayProtocolType, PodRoleType
-from jina.parsers.helper import _set_gateway_uses
+from jina.enums import PodRoleType
+from jina.parsers.helper import _update_gateway_args
 
-if TYPE_CHECKING: # pragma: no cover
+if TYPE_CHECKING:  # pragma: no cover
     from argparse import Namespace
 
 
 def _get_event(obj) -> multiprocessing.Event:
     if isinstance(obj, multiprocessing.Process) or isinstance(
-        obj, multiprocessing.context.ForkProcess
+            obj, multiprocessing.context.ForkProcess
     ):
         return multiprocessing.Event()
     elif isinstance(obj, multiprocessing.context.SpawnProcess):
@@ -82,8 +82,8 @@ def update_runtime_cls(args, copy=False) -> 'Namespace':
         _hub_args.no_usage = True
         _args.uses = HubIO(_hub_args).pull()
 
-    if hasattr(_args, 'protocol'):
-        _set_gateway_uses(_args)
+    if hasattr(_args, 'protocol') and _args.pod_role == PodRoleType.GATEWAY:
+        _update_gateway_args(_args)
     if _args.pod_role == PodRoleType.HEAD:
         _args.runtime_cls = 'HeadRuntime'
 

@@ -3,10 +3,11 @@ import multiprocessing
 import pytest
 
 from jina import DocumentArray, Executor, requests
-from jina.parsers import set_pod_parser
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.worker import WorkerRuntime
 from jina.serve.streamer import GatewayStreamer
+from jina.types.request.data import DataRequest
+from tests.helper import _generate_pod_args
 
 
 class StreamerTestExecutor(Executor):
@@ -18,7 +19,7 @@ class StreamerTestExecutor(Executor):
 
 
 def _create_worker_runtime(port, name=''):
-    args = set_pod_parser().parse_args([])
+    args = _generate_pod_args()
     args.port = port
     args.name = name
     args.uses = 'StreamerTestExecutor'
@@ -58,9 +59,10 @@ def _setup(pod0_port, pod1_port):
         ({'pod0__text_to_add': 'param_pod0 '}, 'pod0', 'param_pod0 '),
     ],
 )
+@pytest.mark.parametrize('results_in_order', [False, True])
 @pytest.mark.asyncio
 async def test_custom_gateway(
-    port_generator, parameters, target_executor, expected_text
+    port_generator, parameters, target_executor, expected_text, results_in_order
 ):
     pod0_port = port_generator()
     pod1_port = port_generator()
@@ -84,6 +86,7 @@ async def test_custom_gateway(
             request_size=10,
             parameters=parameters,
             target_executor=target_executor,
+            results_in_order=results_in_order,
         ):
             num_resp += 1
             resp.extend(r)
@@ -92,6 +95,12 @@ async def test_custom_gateway(
         assert len(resp) == 60
         for doc in resp:
             assert doc.text == expected_text
+
+        request = DataRequest()
+        request.data.docs = DocumentArray.empty(60)
+        unary_response = await gateway_streamer.process_single_data(request=request)
+        assert len(unary_response.docs) == 60
+
     except Exception:
         assert False
     finally:  # clean up runtimes

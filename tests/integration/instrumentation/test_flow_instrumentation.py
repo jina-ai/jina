@@ -37,17 +37,17 @@ def test_gateway_instrumentation(
     f = Flow(
         protocol=protocol,
         tracing=True,
-        traces_exporter_host='localhost',
+        traces_exporter_host='http://localhost',
         traces_exporter_port=otlp_receiver_port,
     ).add(
         uses=ExecutorTestWithTracing,
         tracing=True,
-        traces_exporter_host='localhost',
+        traces_exporter_host='http://localhost',
         traces_exporter_port=otlp_receiver_port,
     )
 
     with f:
-        from jina import DocumentArray
+        from docarray import DocumentArray
 
         f.post(f'/search', DocumentArray.empty(), continue_on_error=True)
         # give some time for the tracing and metrics exporters to finish exporting.
@@ -74,12 +74,12 @@ def test_gateway_instrumentation(
 def test_executor_instrumentation(jaeger_port, otlp_collector, otlp_receiver_port):
     f = Flow(
         tracing=True,
-        traces_exporter_host='localhost',
+        traces_exporter_host='http://localhost',
         traces_exporter_port=otlp_receiver_port,
     ).add(uses=ExecutorFailureWithTracing)
 
     with f:
-        from jina import DocumentArray
+        from docarray import DocumentArray
 
         f.post(f'/search', DocumentArray.empty(2), continue_on_error=True)
         # give some time for the tracing and metrics exporters to finish exporting.
@@ -94,7 +94,7 @@ def test_executor_instrumentation(jaeger_port, otlp_collector, otlp_receiver_por
     assert len(spans_with_error(server_spans)) == 0
     assert len(spans_with_error(client_spans)) == 0
     assert len(internal_spans) == 2
-    # Errors reported by DataRequestHandler and request method level spans
+    # Errors reported by WorkerRequestHandler and request method level spans
     assert len(spans_with_error(internal_spans)) == 2
 
     trace_ids = get_trace_ids(client_traces)
@@ -104,12 +104,12 @@ def test_executor_instrumentation(jaeger_port, otlp_collector, otlp_receiver_por
 def test_head_instrumentation(jaeger_port, otlp_collector, otlp_receiver_port):
     f = Flow(
         tracing=True,
-        traces_exporter_host='localhost',
+        traces_exporter_host='http://localhost',
         traces_exporter_port=otlp_receiver_port,
     ).add(uses=ExecutorTestWithTracing, shards=2)
 
     with f:
-        from jina import DocumentArray
+        from docarray import DocumentArray
 
         f.post(f'/search', DocumentArray.empty(), continue_on_error=True)
         # give some time for the tracing and metrics exporters to finish exporting.
@@ -150,18 +150,18 @@ def test_flow_metrics(
 ):
     f = Flow(
         metrics=True,
-        metrics_exporter_host='localhost',
+        metrics_exporter_host='http://localhost',
         metrics_exporter_port=otlp_receiver_port,
     ).add(
         uses=ExecutorFailureWithTracing,
         shards=2,
         metrics=True,
-        metrics_exporter_host='localhost',
+        metrics_exporter_host='http://localhost',
         metrics_exporter_port=otlp_receiver_port,
     )
 
     with f:
-        from jina import DocumentArray
+        from docarray import DocumentArray
 
         f.post(f'/search', DocumentArray.empty(2), continue_on_error=True)
         f.post(f'/search', DocumentArray.empty(2), continue_on_error=True)
@@ -182,9 +182,7 @@ def test_flow_metrics(
         prometheus_client, 'jina_sending_request_seconds'
     )
     assert len(sending_requests_seconds_metrics) > 0
-    assert sending_requests_seconds_exported_jobs.issubset(
-        ['gateway/rep-0', 'executor0/head']
-    )
+    assert sending_requests_seconds_exported_jobs == {'gateway/rep-0', 'executor0/head'}
 
     (
         receiving_request_seconds_metrics,
@@ -193,14 +191,12 @@ def test_flow_metrics(
         prometheus_client, 'jina_receiving_request_seconds'
     )
     assert len(receiving_request_seconds_metrics) > 0
-    assert receiving_request_seconds_exported_jobs.issubset(
-        [
-            'gateway/rep-0',
-            'executor0/head',
-            'executor0/shard-0/rep-0',
-            'executor0/shard-1/rep-0',
-        ]
-    )
+    assert receiving_request_seconds_exported_jobs == {
+        'gateway/rep-0',
+        'executor0/head',
+        'executor0/shard-0/rep-0',
+        'executor0/shard-1/rep-0',
+    }
 
     (
         received_response_bytes_metrics,
@@ -209,9 +205,7 @@ def test_flow_metrics(
         prometheus_client, 'jina_received_response_bytes'
     )
     assert len(received_response_bytes_metrics) > 0
-    assert received_response_bytes_exported_jobs.issubset(
-        ['gateway/rep-0', 'executor0/head']
-    )
+    assert received_response_bytes_exported_jobs == {'gateway/rep-0', 'executor0/head'}
 
     (
         sent_requests_bytes_metrics,
@@ -220,9 +214,7 @@ def test_flow_metrics(
         prometheus_client, 'jina_sent_request_bytes'
     )
     assert len(sent_requests_bytes_metrics) > 0
-    assert sent_requests_bytes_exported_jobs.issubset(
-        ['gateway/rep-0', 'executor0/head']
-    )
+    assert sent_requests_bytes_exported_jobs == {'gateway/rep-0', 'executor0/head'}
 
     (
         sent_response_bytes_metrics,
@@ -231,13 +223,12 @@ def test_flow_metrics(
         prometheus_client, 'jina_sent_response_bytes'
     )
     assert len(sent_response_bytes_metrics) > 0
-    assert sent_response_bytes_exported_jobs.issubset(
-        [
-            'gateway/rep-0',
-            'executor0/shard-0/rep-0',
-            'executor0/shard-1/rep-0',
-        ]
-    )
+    assert sent_response_bytes_exported_jobs == {
+        'gateway/rep-0',
+        'executor0/shard-0/rep-0',
+        'executor0/shard-1/rep-0',
+        'executor0/head',
+    }
 
     (
         number_of_pending_requests_metrics,
@@ -246,21 +237,22 @@ def test_flow_metrics(
         prometheus_client, 'jina_number_of_pending_requests'
     )
     assert len(number_of_pending_requests_metrics) > 0
-    assert number_of_pending_requests_exported_jobs.issubset(['gateway/rep-0'])
+    assert number_of_pending_requests_exported_jobs == {
+        'gateway/rep-0',
+        'executor0/head',
+    }
 
     (
         failed_requests_metrics,
         failed_requests_exported_jobs,
     ) = get_metrics_and_exported_jobs_by_name(prometheus_client, 'jina_failed_requests')
     assert len(failed_requests_metrics) > 0
-    assert failed_requests_exported_jobs.issubset(
-        [
-            'gateway/rep-0',
-            'executor0/head',
-            'executor0/shard-0/rep-0',
-            'executor0/shard-1/rep-0',
-        ]
-    )
+    assert failed_requests_exported_jobs == {
+        'gateway/rep-0',
+        'executor0/head',
+        'executor0/shard-0/rep-0',
+        'executor0/shard-1/rep-0',
+    }
 
     (
         successful_requests_metrics,
@@ -269,9 +261,12 @@ def test_flow_metrics(
         prometheus_client, 'jina_successful_requests'
     )
     assert len(successful_requests_metrics) > 0
-    assert successful_requests_exported_jobs.issubset(
-        ['gateway/rep-0', 'executor0/shard-0/rep-0', 'executor0/shard-1/rep-0']
-    )
+    assert successful_requests_exported_jobs == {
+        'gateway/rep-0',
+        'executor0/shard-0/rep-0',
+        'executor0/shard-1/rep-0',
+        'executor0/head',
+    }
 
     (
         received_request_bytes_metrics,
@@ -280,9 +275,12 @@ def test_flow_metrics(
         prometheus_client, 'jina_received_request_bytes'
     )
     assert len(received_request_bytes_metrics) > 0
-    assert received_request_bytes_exported_jobs.issubset(
-        ['gateway/rep-0', 'executor0/shard-0/rep-0', 'executor0/shard-1/rep-0']
-    )
+    assert received_request_bytes_exported_jobs == {
+        'gateway/rep-0',
+        'executor0/shard-0/rep-0',
+        'executor0/shard-1/rep-0',
+        'executor0/head',
+    }
 
     (
         process_requests_seconds_metrics,
@@ -291,9 +289,10 @@ def test_flow_metrics(
         prometheus_client, 'jina_process_request_seconds'
     )
     assert len(process_requests_seconds_metrics) > 0
-    assert process_requests_seconds_exported_jobs.issubset(
-        ['executor0/shard-0/rep-0', 'executor0/shard-1/rep-0']
-    )
+    assert process_requests_seconds_exported_jobs == {
+        'executor0/shard-0/rep-0',
+        'executor0/shard-1/rep-0',
+    }
 
     # filter by attributes/labels
     (
@@ -305,9 +304,10 @@ def test_flow_metrics(
         {'executor_endpoint': '/search'},
     )
     assert len(process_requests_seconds_search_endpoint) > 0
-    assert process_requests_seconds_search_endpoint_exported_jobs.issubset(
-        ['executor0/shard-0/rep-0', 'executor0/shard-1/rep-0']
-    )
+    assert process_requests_seconds_search_endpoint_exported_jobs == {
+        'executor0/shard-0/rep-0',
+        'executor0/shard-1/rep-0',
+    }
 
     (
         process_requests_seconds_executor,
@@ -318,9 +318,10 @@ def test_flow_metrics(
         {'executor': 'ExecutorFailureWithTracing'},
     )
     assert len(process_requests_seconds_executor) > 0
-    assert process_requests_seconds_executor_exported_jobs == set(
-        {'executor0/shard-0/rep-0', 'executor0/shard-1/rep-0'}
-    )
+    assert process_requests_seconds_executor_exported_jobs == {
+        'executor0/shard-0/rep-0',
+        'executor0/shard-1/rep-0',
+    }
 
     (
         process_requests_seconds_runtime,
@@ -331,9 +332,7 @@ def test_flow_metrics(
         {'runtime_name': 'executor0/shard-0/rep-0'},
     )
     assert len(process_requests_seconds_runtime) > 0
-    assert process_requests_seconds_runtime_exported_jobs == set(
-        {'executor0/shard-0/rep-0'}
-    )
+    assert process_requests_seconds_runtime_exported_jobs == {'executor0/shard-0/rep-0'}
 
     (
         sending_request_seconds_runtime,
@@ -344,7 +343,7 @@ def test_flow_metrics(
         {'runtime_name': 'gateway/rep-0'},
     )
     assert len(sending_request_seconds_runtime) > 0
-    assert sending_request_seconds_runtime_exported_jobs == set({'gateway/rep-0'})
+    assert sending_request_seconds_runtime_exported_jobs == {'gateway/rep-0'}
 
     (
         sending_request_seconds_runtime,
@@ -355,4 +354,4 @@ def test_flow_metrics(
         {'runtime_name': 'executor0/head'},
     )
     assert len(sending_request_seconds_runtime) > 0
-    assert sending_request_seconds_runtime_exported_jobs == set({'executor0/head'})
+    assert sending_request_seconds_runtime_exported_jobs == {'executor0/head'}

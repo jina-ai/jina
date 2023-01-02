@@ -21,7 +21,7 @@ jobs:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
       - id: docs_updated
         if: contains( github.event.pull_request.labels.*.name, 'area/docs')
-        run: echo '::set-output name=docs::true'
+        run: echo "docs=true" >> $GITHUB_OUTPUT
     outputs:
       docs: ${{ steps.docs_updated.outputs.docs }}
 
@@ -32,11 +32,11 @@ jobs:
     steps:
       - run: |
           echo "BRANCH_NAME=${{ github.head_ref }}" >> $GITHUB_ENV
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2.5.0
         with:
           repository: jina-ai/jina
           ref: ${{ env.BRANCH_NAME }}
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v4
         with:
           python-version: 3.7
       - uses: actions/setup-node@v2

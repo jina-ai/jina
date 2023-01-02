@@ -2,7 +2,8 @@ import copy
 from argparse import Namespace
 from typing import Dict, List, Optional, Tuple, Union
 
-from jina import (
+from jina.constants import (
+    __default_composite_gateway__,
     __default_executor__,
     __default_grpc_gateway__,
     __default_http_gateway__,
@@ -55,7 +56,7 @@ class K8sDeploymentConfig:
             self.k8s_deployments_metadata = k8s_deployments_metadata
 
         def get_gateway_yamls(
-                self,
+            self,
         ) -> List[Dict]:
             cargs = copy.copy(self.deployment_args)
             cargs.deployments_addresses = self.k8s_deployments_addresses
@@ -63,14 +64,12 @@ class K8sDeploymentConfig:
             from jina.parsers import set_gateway_parser
 
             taboo = {
-                'uses_with',
                 'uses_metas',
                 'volumes',
                 'uses_before',
                 'uses_after',
                 'workspace',
                 'workspace_id',
-                'upload_files',
                 'noblock_on_start',
                 'env',
             }
@@ -80,6 +79,7 @@ class K8sDeploymentConfig:
                 __default_http_gateway__,
                 __default_websocket_gateway__,
                 __default_grpc_gateway__,
+                __default_composite_gateway__,
             ]:
                 cargs.uses = 'config.yml'
 
@@ -103,6 +103,7 @@ class K8sDeploymentConfig:
                 monitoring=self.common_args.monitoring,
                 port_monitoring=self.common_args.port_monitoring,
                 protocol=self.common_args.protocol,
+                timeout_ready=self.common_args.timeout_ready,
             )
 
         def _get_image_name(self, uses: Optional[str]):
@@ -116,6 +117,7 @@ class K8sDeploymentConfig:
                 __default_http_gateway__,
                 __default_websocket_gateway__,
                 __default_grpc_gateway__,
+                __default_composite_gateway__,
             ]:
                 image_name = get_image_name(uses)
 
@@ -131,7 +133,7 @@ class K8sDeploymentConfig:
             )
 
         def get_runtime_yamls(
-                self,
+            self,
         ) -> List[Dict]:
             cargs = copy.copy(self.deployment_args)
 
@@ -207,10 +209,12 @@ class K8sDeploymentConfig:
                 pod_type=self.pod_type,
                 shard_id=self.shard_id,
                 env=cargs.env,
+                env_from_secret=cargs.env_from_secret,
                 gpus=cargs.gpus if hasattr(cargs, 'gpus') else None,
                 monitoring=cargs.monitoring,
                 port_monitoring=cargs.port_monitoring,
-                volumes=getattr(cargs, 'volumes', None)
+                volumes=getattr(cargs, 'volumes', None),
+                timeout_ready=cargs.timeout_ready,
             )
 
     def __init__(
@@ -332,6 +336,7 @@ class K8sDeploymentConfig:
 
         for i in range(shards):
             cargs = copy.deepcopy(args)
+            cargs.host = args.host[0]
             cargs.shard_id = i
             cargs.uses_before = None
             cargs.uses_after = None
@@ -350,7 +355,7 @@ class K8sDeploymentConfig:
         return parsed_args
 
     def to_kubernetes_yaml(
-            self,
+        self,
     ) -> List[Tuple[str, List[Dict]]]:
         """
         Return a list of dictionary configurations. One for each deployment in this Deployment

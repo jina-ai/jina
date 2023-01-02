@@ -2,7 +2,6 @@ import logging
 import os
 from typing import Optional
 
-from jina import __default_host__
 from jina.importer import ImportExtensions
 from jina.serve.gateway import BaseGateway
 from jina.serve.runtimes.gateway.websocket.app import get_fastapi_app
@@ -13,7 +12,6 @@ class WebSocketGateway(BaseGateway):
 
     def __init__(
         self,
-        port: Optional[int] = None,
         ssl_keyfile: Optional[str] = None,
         ssl_certfile: Optional[str] = None,
         uvicorn_kwargs: Optional[dict] = None,
@@ -21,7 +19,6 @@ class WebSocketGateway(BaseGateway):
         **kwargs
     ):
         """Initialize the gateway
-        :param port: The port of the Gateway, which the client should connect to.
         :param ssl_keyfile: the path to the key file
         :param ssl_certfile: the path to the certificate file
         :param uvicorn_kwargs: Dictionary of kwargs arguments that will be passed to Uvicorn server when starting the server
@@ -30,7 +27,6 @@ class WebSocketGateway(BaseGateway):
         :param kwargs: keyword args
         """
         super().__init__(**kwargs)
-        self.port = port
         self.ssl_keyfile = ssl_keyfile
         self.ssl_certfile = ssl_certfile
         self.uvicorn_kwargs = uvicorn_kwargs
@@ -70,7 +66,6 @@ class WebSocketGateway(BaseGateway):
                 if not config.loaded:
                     config.load()
                 self.lifespan = config.lifespan_class(config)
-                self.install_signal_handlers()
                 await self.startup(sockets=sockets)
                 if self.should_exit:
                     return
@@ -104,7 +99,7 @@ class WebSocketGateway(BaseGateway):
         self.server = UviServer(
             config=Config(
                 app=self.app,
-                host=__default_host__,
+                host=self.host,
                 port=self.port,
                 ws_max_size=1024 * 1024 * 1024,
                 log_level=os.getenv('JINA_LOG_LEVEL', 'error').lower(),
@@ -114,25 +109,11 @@ class WebSocketGateway(BaseGateway):
 
         await self.server.setup()
 
-    async def teardown(self):
+    async def shutdown(self):
         """Free other resources allocated with the server, e.g, gateway object, ..."""
-        await super().teardown()
-        await self.server.shutdown()
-
-    async def stop_server(self):
-        """
-        Stop WebSocket server
-        """
         self.server.should_exit = True
+        await self.server.shutdown()
 
     async def run_server(self):
         """Run WebSocket server forever"""
         await self.server.serve()
-
-    @property
-    def should_exit(self) -> bool:
-        """
-        Boolean flag that indicates whether the gateway server should exit or not
-        :return: boolean flag
-        """
-        return self.server.should_exit

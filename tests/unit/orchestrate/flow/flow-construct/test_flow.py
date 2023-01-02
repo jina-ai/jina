@@ -7,8 +7,9 @@ import numpy as np
 import pytest
 from docarray.document.generators import from_ndarray
 
-from jina import Document, DocumentArray, Executor, Flow, __windows__, requests
-from jina.enums import FlowBuildLevel
+from jina.constants import __windows__
+from jina import Document, DocumentArray, Executor, Flow, requests
+from jina.enums import FlowBuildLevel, GatewayProtocolType
 from jina.excepts import RuntimeFailToStart
 from jina.helper import random_identity
 from jina.orchestrate.deployments import BaseDeployment
@@ -351,10 +352,12 @@ def test_return_results_sync_flow(protocol, on_done):
 @pytest.mark.parametrize(
     'input,expected_host,expected_port',
     [
-        ('0.0.0.0', '0.0.0.0', None),
-        ('0.0.0.0:12345', '0.0.0.0', '12345'),
-        ('123.124.125.0:45678', '123.124.125.0', '45678'),
-        ('api.jina.ai:45678', 'api.jina.ai', '45678'),
+        ('0.0.0.0', ['0.0.0.0'], None),
+        ('0.0.0.0:12345', ['0.0.0.0'], ['12345']),
+        ('123.124.125.0:45678', ['123.124.125.0'], ['45678']),
+        ('api.jina.ai:45678', ['api.jina.ai'], ['45678']),
+        (['api.jina.ai','123.124.125.0'], ['api.jina.ai','123.124.125.0'], None),
+        (['api.jina.ai:12345','123.124.125.0:45678'], ['api.jina.ai','123.124.125.0'], ['12345','45678']),
     ],
 )
 def test_flow_host_expose_shortcut(input, expected_host, expected_port):
@@ -596,6 +599,41 @@ def test_gateway_only_flows_no_error(capsys, protocol):
     assert not captured.err
 
 
+@pytest.mark.slow
+def test_load_flow_with_custom_gateway(tmpdir):
+    # flow params are overridden by gateway params here
+    f = (
+        Flow(protocol='grpc', port=12344)
+        .config_gateway(uses='HTTPGateway', protocol='http', port=12345)
+        .add(name='executor')
+    )
+
+    with f:
+        _validate_flow(f)
+
+    f.save_config(os.path.join(str(tmpdir), 'tmp.yml'))
+    f = Flow.load_config(os.path.join(str(tmpdir), 'tmp.yml'))
+
+    assert f.port == 12345
+    assert f.protocol == GatewayProtocolType.HTTP
+
+    with Flow.load_config(os.path.join(str(tmpdir), 'tmp.yml')) as f:
+        assert f.port == 12345
+        assert f.protocol == GatewayProtocolType.HTTP
+        _validate_flow(f)
+
+
+@pytest.mark.slow
+def test_flow_multi_protocol_aliases():
+    f = Flow(ports=[12345, 12345, 12345], protocols=['http', 'grpc', 'websocket'])
+    assert f.port == [12345, 12345, 12345]
+    assert f.protocol == [
+        GatewayProtocolType.HTTP,
+        GatewayProtocolType.GRPC,
+        GatewayProtocolType.WEBSOCKET,
+    ]
+
+
 def _validate_flow(f):
     graph_dict = f._get_graph_representation()
     addresses = f._get_deployments_addresses()
@@ -617,3 +655,68 @@ def test_set_port_deployment(port_generator):
     with Flow().add(uses=Executor, port=port) as f:
         assert int(f._deployment_nodes['executor0'].pod_args['pods'][0][0].port) == port
         f.index(inputs=[])
+
+
+def test_set_deployment_grpc_metadata():
+    f = Flow().add(name='my_exec', uses=Executor, grpc_metadata={'key': 'value'})
+
+    with f:
+        metadata = f._get_deployments_metadata()
+        assert metadata['my_exec'] == {'key': 'value'}
+
+        k8s_metadata = f._get_k8s_deployments_metadata()
+        assert metadata == k8s_metadata
+
+        assert f._deployment_nodes['gateway'].args.deployments_metadata == json.dumps(
+            metadata
+        )
+
+        assert f._deployment_nodes['my_exec'].pod_args['pods'][0][0].grpc_metadata == {
+            'key': 'value'
+        }
+
+        f.post('/', inputs=Document())
+
+
+@pytest.mark.parametrize(
+    'port,expected_port',
+    [
+        ('12345', '12345'),
+        ([12345], 12345),
+        ([12345, 12344], [12345, 12344]),
+    ],
+)
+@pytest.mark.parametrize(
+    'protocol,expected_protocol',
+    [
+        ('http', GatewayProtocolType.HTTP),
+        (['GRPC'], GatewayProtocolType.GRPC),
+        (['grpc', 'http'], [GatewayProtocolType.GRPC, GatewayProtocolType.HTTP]),
+    ],
+)
+def test_flow_port_protocol_api(port, expected_port, protocol, expected_protocol):
+    f = Flow(port=port, protocol=protocol)
+    assert f.port == expected_port
+    assert f.protocol == expected_protocol
+
+
+@pytest.mark.parametrize(
+    'port,expected_port',
+    [
+        ('12345', '12345'),
+        ([12345], 12345),
+        ([12345, 12344], [12345, 12344]),
+    ],
+)
+@pytest.mark.parametrize(
+    'protocol,expected_protocol',
+    [
+        ('http', GatewayProtocolType.HTTP),
+        (['GRPC'], GatewayProtocolType.GRPC),
+        (['grpc', 'http'], [GatewayProtocolType.GRPC, GatewayProtocolType.HTTP]),
+    ],
+)
+def test_gateway_port_protocol_api(port, expected_port, protocol, expected_protocol):
+    f = Flow().config_gateway(port=port, protocol=protocol)
+    assert f.port == expected_port
+    assert f.protocol == expected_protocol

@@ -9,7 +9,7 @@ jobs:
   benchmark-release:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2.5.0
       - run: |
           TAG=$(echo $GITHUB_REF | cut -d '/' -f 3)
           echo "TAG=$TAG" >> $GITHUB_ENV

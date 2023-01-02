@@ -3,7 +3,8 @@ import os
 from argparse import Namespace
 from typing import Dict, List, Optional, Tuple, Union
 
-from jina import (
+from jina.constants import (
+    __default_composite_gateway__,
     __default_executor__,
     __default_grpc_gateway__,
     __default_http_gateway__,
@@ -66,14 +67,12 @@ class DockerComposeConfig:
             from jina.parsers import set_gateway_parser
 
             taboo = {
-                'uses_with',
                 'uses_metas',
                 'volumes',
                 'uses_before',
                 'uses_after',
                 'workspace',
                 'workspace_id',
-                'upload_files',
                 'noblock_on_start',
                 'env',
             }
@@ -82,6 +81,7 @@ class DockerComposeConfig:
                 __default_http_gateway__,
                 __default_websocket_gateway__,
                 __default_grpc_gateway__,
+                __default_composite_gateway__,
             ]:
                 cargs.uses = 'config.yml'
 
@@ -92,11 +92,9 @@ class DockerComposeConfig:
 
             container_args = ['gateway'] + _args
 
-            protocol = str(non_defaults.get('protocol', 'grpc')).lower()
+            protocol = str(non_defaults.get('protocol', ['grpc'])[0]).lower()
 
-            ports = [f'{cargs.port}'] + (
-                [f'{cargs.port_monitoring}'] if cargs.monitoring else []
-            )
+            ports = cargs.port + ([cargs.port_monitoring] if cargs.monitoring else [])
 
             envs = [f'JINA_LOG_LEVEL={os.getenv("JINA_LOG_LEVEL", "INFO")}']
             if cargs.env:
@@ -109,7 +107,7 @@ class DockerComposeConfig:
                 'expose': ports,
                 'ports': [f'{_port}:{_port}' for _port in ports],
                 'healthcheck': {
-                    'test': f'jina ping gateway {protocol}://127.0.0.1:{cargs.port}',
+                    'test': f'jina ping gateway {protocol}://127.0.0.1:{cargs.port[0]}',
                     'interval': '2s',
                 },
                 'environment': envs,
@@ -127,6 +125,7 @@ class DockerComposeConfig:
                 __default_http_gateway__,
                 __default_websocket_gateway__,
                 __default_grpc_gateway__,
+                __default_composite_gateway__,
             ]:
                 image_name = get_image_name(uses)
 
@@ -353,6 +352,7 @@ class DockerComposeConfig:
             uses_before_cargs.uses_with = None
             uses_before_cargs.uses_metas = None
             uses_before_cargs.env = None
+            uses_before_cargs.host = args.host[0]
             uses_before_cargs.port = port
             uses_before_cargs.uses_before_address = None
             uses_before_cargs.uses_after_address = None
@@ -376,6 +376,7 @@ class DockerComposeConfig:
             uses_after_cargs.uses_with = None
             uses_after_cargs.uses_metas = None
             uses_after_cargs.env = None
+            uses_after_cargs.host = args.host[0]
             uses_after_cargs.port = port
             uses_after_cargs.uses_before_address = None
             uses_after_cargs.uses_after_address = None
@@ -402,6 +403,7 @@ class DockerComposeConfig:
                 cargs.pod_role = PodRoleType.GATEWAY
             else:
                 cargs.port = port
+                cargs.host = args.host[0]
             parsed_args['services'].append(cargs)
 
         return parsed_args

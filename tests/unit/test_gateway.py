@@ -6,12 +6,13 @@ import numpy as np
 import pytest
 
 from jina import Client, Document, Flow
+from jina.helper import random_port
 
 
 @pytest.mark.slow
 @pytest.mark.parametrize('protocol', ['websocket', 'http'])
 def test_gateway_concurrency(protocol, reraise):
-    port = 12345
+    port = random_port()
     CONCURRENCY = 2
 
     def _validate(req, start, status_codes, durations, index):
@@ -36,7 +37,7 @@ def test_gateway_concurrency(protocol, reraise):
             for result in results:
                 on_done(result)
 
-    f = Flow(protocol=protocol, port=port).add(parallel=2)
+    f = Flow(protocol=protocol, port=port).add(replicas=2)
     with f:
         threads = []
         status_codes = [None] * CONCURRENCY
@@ -65,7 +66,7 @@ def test_gateway_concurrency(protocol, reraise):
     assert rate < 0.1
 
 
-def test_grpc_custom_otpions():
+def test_grpc_custom_options():
 
     f = Flow(grpc_server_options={'grpc.max_send_message_length': -1})
     with f:

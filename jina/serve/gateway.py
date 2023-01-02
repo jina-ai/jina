@@ -1,22 +1,12 @@
 import abc
-import argparse
-from typing import TYPE_CHECKING, Optional, Sequence
+from types import SimpleNamespace
+from typing import Dict, Optional
 
 from jina.jaml import JAMLCompatible
 from jina.logging.logger import JinaLogger
 from jina.serve.helper import store_init_kwargs, wrap_func
-from jina.serve.streamer import GatewayStreamer
 
 __all__ = ['BaseGateway']
-
-if TYPE_CHECKING: # pragma: no cover
-    from grpc.aio._interceptor import ClientInterceptor, ServerInterceptor
-    from opentelemetry import trace
-    from opentelemetry.instrumentation.grpc._client import (
-        OpenTelemetryClientInterceptor,
-    )
-    from opentelemetry.metrics import Meter
-    from prometheus_client import CollectorRegistry
 
 
 class GatewayType(type(JAMLCompatible), type):
@@ -48,7 +38,10 @@ class GatewayType(type(JAMLCompatible), type):
             reg_cls_set.add(cls_id)
             setattr(cls, '_registered_class', reg_cls_set)
             wrap_func(
-                cls, ['__init__'], store_init_kwargs, taboo={'self', 'args', 'kwargs'}
+                cls,
+                ['__init__'],
+                store_init_kwargs,
+                taboo={'self', 'args', 'kwargs', 'runtime_args'},
             )
         return cls
 
@@ -62,59 +55,34 @@ class BaseGateway(JAMLCompatible, metaclass=GatewayType):
     """
 
     def __init__(
-        self,
-        name: Optional[str] = 'gateway',
-        **kwargs,
+            self,
+            name: Optional[str] = 'gateway',
+            runtime_args: Optional[Dict] = None,
+            **kwargs,
     ):
         """
         :param name: Gateway pod name
+        :param runtime_args: a dict of arguments injected from :class:`Runtime` during runtime
         :param kwargs: additional extra keyword arguments to avoid failing when extra params ara passed that are not expected
         """
-        self.streamer = None
+        self._add_runtime_args(runtime_args)
         self.name = name
-        # TODO: original implementation also passes args, maybe move this to a setter/initializer func
         self.logger = JinaLogger(self.name)
+        self.tracing = self.runtime_args.tracing
+        self.tracer_provider = self.runtime_args.tracer_provider
+        self.grpc_tracing_server_interceptors = (
+            self.runtime_args.grpc_tracing_server_interceptors
+        )
 
-    def inject_dependencies(
-        self,
-        args: 'argparse.Namespace' = None,
-        timeout_send: Optional[float] = None,
-        metrics_registry: Optional['CollectorRegistry'] = None,
-        meter: Optional['Meter'] = None,
-        runtime_name: Optional[str] = None,
-        tracing: Optional[bool] = False,
-        tracer_provider: Optional['trace.TracerProvider'] = None,
-        grpc_tracing_server_interceptors: Optional[
-            Sequence['ServerInterceptor']
-        ] = None,
-        aio_tracing_client_interceptors: Optional[Sequence['ClientInterceptor']] = None,
-        tracing_client_interceptor: Optional['OpenTelemetryClientInterceptor'] = None,
-    ):
-        """
-        Set additional dependencies by providing runtime parameters.
-        :param args: runtime args
-        :param timeout_send: grpc connection timeout
-        :param metrics_registry: metric registry when monitoring is enabled
-        :param meter: optional OpenTelemetry meter that can provide instruments for collecting metrics
-        :param runtime_name: name of the runtime providing the streamer
-        :param tracing: Enables tracing if set to True.
-        :param tracer_provider: If tracing is enabled the tracer_provider will be used to instrument the code.
-        :param grpc_tracing_server_interceptors: List of async io gprc server tracing interceptors for tracing requests.
-        :param aio_tracing_client_interceptors: List of async io gprc client tracing interceptors for tracing requests if asycnio is True.
-        :param tracing_client_interceptor: A gprc client tracing interceptor for tracing requests if asyncio is False.
-        """
-        self.tracing = tracing
-        self.tracer_provider = tracer_provider
-        self.grpc_tracing_server_interceptors = grpc_tracing_server_interceptors
         import json
 
         from jina.serve.streamer import GatewayStreamer
 
-        graph_description = json.loads(args.graph_description)
-        graph_conditions = json.loads(args.graph_conditions)
-        deployments_addresses = json.loads(args.deployments_addresses)
-        deployments_metadata = json.loads(args.deployments_metadata)
-        deployments_disable_reduce = json.loads(args.deployments_disable_reduce)
+        graph_description = json.loads(runtime_args.graph_description)
+        graph_conditions = json.loads(runtime_args.graph_conditions)
+        deployments_addresses = json.loads(runtime_args.deployments_addresses)
+        deployments_metadata = json.loads(runtime_args.deployments_metadata)
+        deployments_disable_reduce = json.loads(runtime_args.deployments_disable_reduce)
 
         self.streamer = GatewayStreamer(
             graph_representation=graph_description,
@@ -123,16 +91,75 @@ class BaseGateway(JAMLCompatible, metaclass=GatewayType):
             deployments_metadata=deployments_metadata,
             deployments_disable_reduce=deployments_disable_reduce,
             timeout_send=timeout_send,
-            retries=args.retries,
-            compression=args.compression,
+            retries=self.runtime_args.retries,
+            compression=self.runtime_args.compression,
             runtime_name=runtime_name,
-            prefetch=args.prefetch,
+            prefetch=self.runtime_args.prefetch,
             logger=self.logger,
-            metrics_registry=metrics_registry,
-            meter=meter,
-            aio_tracing_client_interceptors=aio_tracing_client_interceptors,
-            tracing_client_interceptor=tracing_client_interceptor,
+            metrics_registry=self.runtime_args.metrics_registry,
+            meter=self.runtime_args.meter,
+            aio_tracing_client_interceptors=self.runtime_args.aio_tracing_client_interceptors,
+            tracing_client_interceptor=self.runtime_args.tracing_client_interceptor,
         )
+        GatewayStreamer._set_env_streamer_args(
+            graph_representation=graph_description,
+            executor_addresses=deployments_addresses,
+            graph_conditions=graph_conditions,
+            deployments_metadata=deployments_metadata,
+            deployments_disable_reduce=deployments_disable_reduce,
+            timeout_send=self.runtime_args.timeout_send,
+            retries=self.runtime_args.retries,
+            compression=self.runtime_args.compression,
+            runtime_name=self.runtime_args.runtime_name,
+            prefetch=self.runtime_args.prefetch,
+        )
+
+    def _add_runtime_args(self, _runtime_args: Optional[Dict]):
+        from jina.parsers import set_gateway_runtime_args_parser
+
+        parser = set_gateway_runtime_args_parser()
+        default_args = parser.parse_args([])
+        default_args_dict = dict(vars(default_args))
+        _runtime_args = _runtime_args or {}
+        runtime_set_args = {
+            'tracer_provider': None,
+            'grpc_tracing_server_interceptors': None,
+            'runtime_name': 'test',
+            'metrics_registry': None,
+            'meter': None,
+            'aio_tracing_client_interceptors': None,
+            'tracing_client_interceptor': None,
+        }
+        runtime_args_dict = {**runtime_set_args, **default_args_dict, **_runtime_args}
+        self.runtime_args = SimpleNamespace(**runtime_args_dict)
+
+    @property
+    def port(self):
+        """Gets the first port of the port list argument. To be used in the regular case where a Gateway exposes a single port
+        :return: The first port to be exposed
+        """
+        return self.runtime_args.port[0]
+
+    @property
+    def ports(self):
+        """Gets all the list of ports from the runtime_args as a list.
+        :return: The lists of ports to be exposed
+        """
+        return self.runtime_args.port
+
+    @property
+    def protocols(self):
+        """Gets all the list of protocols from the runtime_args as a list.
+        :return: The lists of protocols to be exposed
+        """
+        return self.runtime_args.protocol
+
+    @property
+    def host(self):
+        """Gets the host from the runtime_args
+        :return: The host where to bind the gateway
+        """
+        return self.runtime_args.host
 
     @abc.abstractmethod
     async def setup_server(self):
@@ -144,24 +171,10 @@ class BaseGateway(JAMLCompatible, metaclass=GatewayType):
         """Run server forever"""
         ...
 
-    async def teardown(self):
-        """Free other resources allocated with the server, e.g, gateway object, ..."""
-        await self.streamer.close()
-
     @abc.abstractmethod
-    async def stop_server(self):
-        """Stop server"""
+    async def shutdown(self):
+        """Shutdown the server and free other allocated resources, e.g, streamer object, health check service, ..."""
         ...
-
-    # some servers need to set a flag useful in handling termination signals
-    # e.g, HTTPGateway/ WebSocketGateway
-    @property
-    def should_exit(self) -> bool:
-        """
-        Boolean flag that indicates whether the gateway server should exit or not
-        :return: boolean flag
-        """
-        return False
 
     def __enter__(self):
         return self

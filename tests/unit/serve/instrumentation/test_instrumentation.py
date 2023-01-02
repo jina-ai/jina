@@ -80,3 +80,32 @@ def test_timer_decorator(metrics_setup):
     )
     assert 'time_taken_decorator' == histogram_metric['name']
     assert 1 == histogram_metric['data']['data_points'][0]['count']
+    assert {} == histogram_metric['data']['data_points'][0]['attributes']
+
+    labels = {
+        'cat': 'meow',
+        'dog': 'woof',
+    }
+
+    @MetricsTimer(summary, histogram, labels)
+    def _sleep():
+        time.sleep(0.1)
+
+    _sleep()
+
+    # Prometheus samples
+    summary_count_sample = [
+        sample.value for sample in list(summary._samples()) if '_count' == sample.name
+    ]
+    assert 2.0 == summary_count_sample[0]
+    # OpenTelemetry samples
+    histogram_metric = json.loads(
+        metric_reader.get_metrics_data()
+        .resource_metrics[0]
+        .scope_metrics[0]
+        .metrics[0]
+        .to_json()
+    )
+    assert 'time_taken_decorator' == histogram_metric['name']
+    assert 1 == histogram_metric['data']['data_points'][0]['count']
+    assert labels == histogram_metric['data']['data_points'][0]['attributes']

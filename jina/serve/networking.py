@@ -3,7 +3,7 @@ import ipaddress
 import os
 from collections import defaultdict
 from dataclasses import dataclass
-from typing import Dict, List, Optional, Sequence, Set, Tuple, Union
+from typing import Dict, List, Optional, Sequence, Tuple, Union, Set
 from urllib.parse import urlparse
 
 import grpc
@@ -12,12 +12,13 @@ from grpc_health.v1 import health_pb2, health_pb2_grpc
 from grpc_reflection.v1alpha.reflection_pb2 import ServerReflectionRequest
 from grpc_reflection.v1alpha.reflection_pb2_grpc import ServerReflectionStub
 
-from jina import __default_endpoint__
+from jina.constants import __default_endpoint__
 from jina.enums import PollingType
-from jina.excepts import EstablishGrpcConnectionError
+from jina.excepts import EstablishGrpcConnectionError, InternalNetworkError
 from jina.importer import ImportExtensions
 from jina.logging.logger import JinaLogger
 from jina.proto import jina_pb2, jina_pb2_grpc
+from jina.serve.helper import format_grpc_error
 from jina.serve.instrumentation import MetricsTimer
 from jina.types.request import Request
 from jina.types.request.data import DataRequest
@@ -26,7 +27,7 @@ TLS_PROTOCOL_SCHEMES = ['grpcs', 'https', 'wss']
 
 from typing import TYPE_CHECKING
 
-if TYPE_CHECKING: # pragma: no cover
+if TYPE_CHECKING:  # pragma: no cover
     from grpc.aio._interceptor import ClientInterceptor
     from opentelemetry.instrumentation.grpc._client import (
         OpenTelemetryClientInterceptor,
@@ -64,19 +65,39 @@ class _NetworkingHistograms:
     send_requests_bytes_metrics: Optional['Histogram'] = None
     histogram_metric_labels: Dict[str, str] = None
 
-    def record_sending_requests_time_metrics(self, value: int):
+    def _get_labels(
+        self, additional_labels: Optional[Dict[str, str]] = None
+    ) -> Optional[Dict[str, str]]:
+
+        if self.histogram_metric_labels is None:
+            return None
+        if additional_labels is None:
+            return self.histogram_metric_labels
+        return {**self.histogram_metric_labels, **additional_labels}
+
+    def record_sending_requests_time_metrics(
+        self, value: int, additional_labels: Optional[Dict[str, str]] = None
+    ):
+        labels = self._get_labels(additional_labels)
+
         if self.sending_requests_time_metrics:
-            self.sending_requests_time_metrics.record(
-                value, self.histogram_metric_labels
-            )
+            self.sending_requests_time_metrics.record(value, labels)
 
-    def record_received_response_bytes(self, value: int):
+    def record_received_response_bytes(
+        self, value: int, additional_labels: Optional[Dict[str, str]] = None
+    ):
+        labels = self._get_labels(additional_labels)
+
         if self.received_response_bytes:
-            self.received_response_bytes.record(value, self.histogram_metric_labels)
+            self.received_response_bytes.record(value, labels)
 
-    def record_send_requests_bytes_metrics(self, value: int):
+    def record_send_requests_bytes_metrics(
+        self, value: int, additional_labels: Optional[Dict[str, str]] = None
+    ):
+        labels = self._get_labels(additional_labels)
+
         if self.send_requests_bytes_metrics:
-            self.send_requests_bytes_metrics.record(value, self.histogram_metric_labels)
+            self.send_requests_bytes_metrics.record(value, labels)
 
 
 class ReplicaList:
@@ -92,6 +113,7 @@ class ReplicaList:
         runtime_name: str,
         aio_tracing_client_interceptors: Optional[Sequence['ClientInterceptor']] = None,
         tracing_client_interceptor: Optional['OpenTelemetryClientInterceptor'] = None,
+        deployment_name: str = '',
     ):
         self.runtime_name = runtime_name
         self._connections = []
@@ -104,17 +126,21 @@ class ReplicaList:
         self._destroyed_event = asyncio.Event()
         self.aio_tracing_client_interceptors = aio_tracing_client_interceptors
         self.tracing_client_interceptors = tracing_client_interceptor
+        self._deployment_name = deployment_name
 
-    async def reset_connection(self, address: str) -> Union[grpc.aio.Channel, None]:
+    async def reset_connection(
+        self, address: str, deployment_name: str
+    ) -> Union[grpc.aio.Channel, None]:
         """
         Removes and then re-adds a connection.
         Result is the same as calling :meth:`remove_connection` and then :meth:`add_connection`, but this allows for
         handling of race condition if multiple callers reset a connection at the same time.
 
         :param address: Target address of this connection
+        :param deployment_name: Target deployment of this connection
         :returns: The reset connection or None if there was no connection for the given address
         """
-        self._logger.debug(f'resetting connection to {address}')
+        self._logger.debug(f'resetting connection for {deployment_name} to {address}')
 
         if (
             address in self._address_to_connection_idx
@@ -134,21 +160,22 @@ class ReplicaList:
             self._destroyed_event.set()
             # re-add connection:
             self._address_to_connection_idx[address] = id_to_reset
-            stubs, channel = self._create_connection(address)
+            stubs, channel = self._create_connection(address, deployment_name)
             self._address_to_channel[address] = channel
             self._connections[id_to_reset] = stubs
 
             return connection_to_reset
         return None
 
-    def add_connection(self, address: str):
+    def add_connection(self, address: str, deployment_name: str):
         """
         Add connection with address to the connection list
         :param address: Target address of this connection
+        :param deployment_name: Target deployment of this connection
         """
         if address not in self._address_to_connection_idx:
             self._address_to_connection_idx[address] = len(self._connections)
-            stubs, channel = self._create_connection(address)
+            stubs, channel = self._create_connection(address, deployment_name)
             self._address_to_channel[address] = channel
             self._connections.append(stubs)
 
@@ -187,13 +214,14 @@ class ReplicaList:
 
         return None
 
-    def _create_connection(self, address):
+    def _create_connection(self, address, deployment_name: str):
         parsed_address = urlparse(address)
         address = parsed_address.netloc if parsed_address.netloc else address
         use_tls = parsed_address.scheme in TLS_PROTOCOL_SCHEMES
 
         stubs, channel = GrpcConnectionPool.create_async_channel_stub(
             address,
+            deployment_name=deployment_name,
             metrics=self._metrics,
             histograms=self._histograms,
             tls=use_tls,
@@ -230,12 +258,12 @@ class ReplicaList:
             if all_connections_unavailable:
                 if num_retries <= 0:
                     raise EstablishGrpcConnectionError(
-                        f'Error while resetting connections {self._connections}. Connections cannot be used.'
+                        f'Error while resetting connections {self._connections} for {self._deployment_name}. Connections cannot be used.'
                     )
             elif connection is None:
                 # give control back to async event loop so connection resetting can be completed; then retry
                 self._logger.debug(
-                    f' No valid connection found, give chance for potential resetting of connection'
+                    f' No valid connection found for {self._deployment_name}, give chance for potential resetting of connection'
                 )
                 try:
                     await asyncio.wait_for(
@@ -315,14 +343,22 @@ class GrpcConnectionPool:
             self,
             address,
             channel,
+            deployment_name: str,
             metrics: _NetworkingMetrics,
             histograms: _NetworkingHistograms,
         ):
             self.address = address
             self.channel = channel
+            self.deployment_name = deployment_name
             self._metrics = metrics
             self._histograms = histograms
             self._initialized = False
+
+            if self._histograms:
+                self.stub_specific_labels = {
+                    'deployment': deployment_name,
+                    'address': address,
+                }
 
         # This has to be done lazily, because the target endpoint may not be available
         # when a connection is added
@@ -363,6 +399,35 @@ class GrpcConnectionPool:
             )
             return response, metadata
 
+        def _get_metric_timer(self):
+            if self._histograms.histogram_metric_labels is None:
+                labels = None
+            else:
+                labels = {
+                    **self._histograms.histogram_metric_labels,
+                    **self.stub_specific_labels,
+                }
+
+            return MetricsTimer(
+                self._metrics.sending_requests_time_metrics,
+                self._histograms.sending_requests_time_metrics,
+                labels,
+            )
+
+        def _record_request_bytes_metric(self, nbytes: int):
+            if self._metrics.send_requests_bytes_metrics:
+                self._metrics.send_requests_bytes_metrics.observe(nbytes)
+            self._histograms.record_send_requests_bytes_metrics(
+                nbytes, self.stub_specific_labels
+            )
+
+        def _record_received_bytes_metric(self, nbytes: int):
+            if self._metrics.received_response_bytes:
+                self._metrics.received_response_bytes.observe(nbytes)
+            self._histograms.record_received_response_bytes(
+                nbytes, self.stub_specific_labels
+            )
+
         async def send_requests(
             self,
             requests: List[Request],
@@ -385,85 +450,54 @@ class GrpcConnectionPool:
                 await self._init_stubs()
             request_type = type(requests[0])
 
+            timer = self._get_metric_timer()
             if request_type == DataRequest and len(requests) == 1:
+                request = requests[0]
                 if self.single_data_stub:
+                    self._record_request_bytes_metric(request.nbytes)
                     call_result = self.single_data_stub.process_single_data(
-                        requests[0],
+                        request,
                         metadata=metadata,
                         compression=compression,
                         timeout=timeout,
                     )
-                    if self._metrics.send_requests_bytes_metrics:
-                        self._metrics.send_requests_bytes_metrics.observe(
-                            requests[0].nbytes
-                        )
-                    self._histograms.record_send_requests_bytes_metrics(
-                        requests[0].nbytes
-                    )
-                    with MetricsTimer(
-                        self._metrics.sending_requests_time_metrics,
-                        self._histograms.sending_requests_time_metrics,
-                        self._histograms.histogram_metric_labels,
-                    ):
+                    with timer:
                         metadata, response = (
                             await call_result.trailing_metadata(),
                             await call_result,
                         )
-
-                        if self._metrics.received_response_bytes:
-                            self._metrics.received_response_bytes.observe(
-                                response.nbytes
-                            )
-                        self._histograms.record_received_response_bytes(response.nbytes)
+                        self._record_received_bytes_metric(response.nbytes)
                     return response, metadata
 
                 elif self.stream_stub:
-                    for response in requests:
-                        if self._metrics.send_requests_bytes_metrics:
-                            self._metrics.send_requests_bytes_metrics.observe(
-                                response.nbytes
-                            )
-                        self._histograms.record_send_requests_bytes_metrics(
-                            response.nbytes
-                        )
+                    self._record_request_bytes_metric(request.nbytes)
 
-                    with MetricsTimer(
-                        self._metrics.sending_requests_time_metrics,
-                        self._histograms.sending_requests_time_metrics,
-                        self._histograms.histogram_metric_labels,
-                    ):
+                    with timer:
                         async for response in self.stream_stub.Call(
                             iter(requests),
                             compression=compression,
                             timeout=timeout,
                             metadata=metadata,
                         ):
-                            if self._metrics.received_response_bytes:
-                                self._metrics.received_response_bytes.observe(
-                                    response.nbytes
-                                )
-                            self._histograms.record_received_response_bytes(
-                                response.nbytes
-                            )
-
+                            self._record_received_bytes_metric(response.nbytes)
                             return response, None
+
             if request_type == DataRequest and len(requests) > 1:
                 if self.data_list_stub:
+                    for request in requests:
+                        self._record_request_bytes_metric(request.nbytes)
                     call_result = self.data_list_stub.process_data(
                         requests,
                         metadata=metadata,
                         compression=compression,
                         timeout=timeout,
                     )
-                    with MetricsTimer(
-                        self._metrics.sending_requests_time_metrics,
-                        self._histograms.sending_requests_time_metrics,
-                        self._histograms.histogram_metric_labels,
-                    ):
+                    with timer:
                         metadata, response = (
                             await call_result.trailing_metadata(),
                             await call_result,
                         )
+                        self._record_received_bytes_metric(response.nbytes)
                     return response, metadata
                 else:
                     raise ValueError(
@@ -514,7 +548,7 @@ class GrpcConnectionPool:
             head: bool,
             entity_id: Optional[int] = None,
             increase_access_count: bool = True,
-        ) -> ReplicaList:
+        ) -> Optional[ReplicaList]:
             # returns all replicas of a given deployment, using a given shard
             if deployment in self._deployments:
                 type_ = 'heads' if head else 'shards'
@@ -599,12 +633,13 @@ class GrpcConnectionPool:
             self._add_deployment(deployment)
             if entity_id not in self._deployments[deployment][type]:
                 connection_list = ReplicaList(
-                    self._metrics,
-                    self._histograms,
-                    self._logger,
-                    self.runtime_name,
-                    self.aio_tracing_client_interceptors,
-                    self.tracing_client_interceptor,
+                    metrics=self._metrics,
+                    histograms=self._histograms,
+                    logger=self._logger,
+                    runtime_name=self.runtime_name,
+                    aio_tracing_client_interceptors=self.aio_tracing_client_interceptors,
+                    tracing_client_interceptor=self.tracing_client_interceptor,
+                    deployment_name=deployment,
                 )
                 self._deployments[deployment][type][entity_id] = connection_list
 
@@ -614,10 +649,12 @@ class GrpcConnectionPool:
                 self._logger.debug(
                     f'adding connection for deployment {deployment}/{type}/{entity_id} to {address}'
                 )
-                self._deployments[deployment][type][entity_id].add_connection(address)
+                self._deployments[deployment][type][entity_id].add_connection(
+                    address, deployment_name=deployment
+                )
             else:
                 self._logger.debug(
-                    f'ignoring activation of pod, {address} already known'
+                    f'ignoring activation of pod for deployment {deployment}, {address} already known'
                 )
 
         async def remove_head(self, deployment, address, head_id: Optional[int] = 0):
@@ -775,6 +812,7 @@ class GrpcConnectionPool:
             retries=retries,
         )
 
+
     def send_requests(
         self,
         requests: List[Request],
@@ -833,7 +871,7 @@ class GrpcConnectionPool:
         shard_id: Optional[int] = None,
         timeout: Optional[float] = None,
         retries: Optional[int] = -1,
-    ) -> asyncio.Task:
+    ) -> Optional[asyncio.Task]:
         """Sends a discover Endpoint call to target.
 
         :param deployment: name of the Jina deployment to send the request to
@@ -896,7 +934,7 @@ class GrpcConnectionPool:
         endpoint: Optional[str] = None,
         timeout: Optional[float] = None,
         retries: Optional[int] = -1,
-    ) -> asyncio.Task:
+    ) -> Optional[asyncio.Task]:
         """Send a request to target via only one of the pooled connections
 
         :param requests: request to send
@@ -911,7 +949,7 @@ class GrpcConnectionPool:
         """
         replicas = self._connections.get_replicas(deployment, head, shard_id)
         if replicas:
-            return self._send_requests(
+            result = self._send_requests(
                 requests,
                 replicas,
                 endpoint=endpoint,
@@ -919,6 +957,7 @@ class GrpcConnectionPool:
                 timeout=timeout,
                 retries=retries,
             )
+            return result
         else:
             self._logger.debug(
                 f'no available connections for deployment {deployment} and shard {shard_id}'
@@ -987,8 +1026,9 @@ class GrpcConnectionPool:
         },  # same deployment can have multiple addresses (replicas)
         total_num_tries: int = 1,  # number of retries + 1
         current_address: str = '',  # the specific address that was contacted during this attempt
+        current_deployment: str = '',  # the specific deployment that was contacted during this attempt
         connection_list: Optional[ReplicaList] = None,
-    ):
+    ) -> 'Optional[Union[AioRpcError, InternalNetworkError]]':
         # connection failures, cancelled requests, and timed out requests should be retried
         # all other cases should not be retried and will be raised immediately
         # connection failures have the code grpc.StatusCode.UNAVAILABLE
@@ -996,25 +1036,34 @@ class GrpcConnectionPool:
         # timed out requests have the code grpc.StatusCode.DEADLINE_EXCEEDED
         # requests usually gets cancelled when the server shuts down
         # retries for cancelled requests will hit another replica in K8s
+        self._logger.debug(
+            f'GRPC call to {current_deployment} errored, with error {format_grpc_error(error)} and for the {retry_i + 1}th time.'
+        )
         if (
             error.code() != grpc.StatusCode.UNAVAILABLE
             and error.code() != grpc.StatusCode.CANCELLED
             and error.code() != grpc.StatusCode.DEADLINE_EXCEEDED
+            and error.code() != grpc.StatusCode.UNKNOWN
+            and error.code() != grpc.StatusCode.INTERNAL
         ):
-            raise
+            return error
         elif (
             error.code() == grpc.StatusCode.UNAVAILABLE
             or error.code() == grpc.StatusCode.DEADLINE_EXCEEDED
         ) and retry_i >= total_num_tries - 1:  # retries exhausted. if we land here it already failed once, therefore -1
-            self._logger.debug(f'GRPC call failed, retries exhausted')
+            self._logger.debug(
+                f'GRPC call for {current_deployment} failed, retries exhausted'
+            )
             from jina.excepts import InternalNetworkError
 
             # after connection failure the gRPC `channel` gets stuck in a failure state for a few seconds
             # removing and re-adding the connection (stub) is faster & more reliable than just waiting
             if connection_list:
-                await connection_list.reset_connection(current_address)
+                await connection_list.reset_connection(
+                    current_address, current_deployment
+                )
 
-            raise InternalNetworkError(
+            return InternalNetworkError(
                 og_exception=error,
                 request_id=request_id,
                 dest_addr=tried_addresses,
@@ -1022,9 +1071,10 @@ class GrpcConnectionPool:
             )
         else:
             self._logger.debug(
-                f'GRPC call failed with code {error.code()}, retry attempt {retry_i + 1}/{total_num_tries - 1}.'
+                f'GRPC call to deployment {current_deployment} failed with error {format_grpc_error(error)}, for retry attempt {retry_i + 1}/{total_num_tries - 1}.'
                 f' Trying next replica, if available.'
             )
+            return None
 
     def _send_requests(
         self,
@@ -1034,7 +1084,7 @@ class GrpcConnectionPool:
         metadata: Optional[Dict[str, str]] = None,
         timeout: Optional[float] = None,
         retries: Optional[int] = -1,
-    ) -> asyncio.Task:
+    ) -> 'asyncio.Task[Union[Tuple, AioRpcError, InternalNetworkError]]':
         # this wraps the awaitable object from grpc as a coroutine so it can be used as a task
         # the grpc call function is not a coroutine but some _AioCall
 
@@ -1067,15 +1117,20 @@ class GrpcConnectionPool:
                         timeout=timeout,
                     )
                 except AioRpcError as e:
-                    await self._handle_aiorpcerror(
+                    error = await self._handle_aiorpcerror(
                         error=e,
                         retry_i=i,
                         request_id=requests[0].request_id,
                         tried_addresses=tried_addresses,
                         total_num_tries=total_num_tries,
                         current_address=current_connection.address,
+                        current_deployment=current_connection.deployment_name,
                         connection_list=connections,
                     )
+                    if error:
+                        return error
+                except Exception as e:
+                    return e
 
         return asyncio.create_task(task_wrapper())
 
@@ -1110,14 +1165,17 @@ class GrpcConnectionPool:
                         timeout=timeout,
                     )
                 except AioRpcError as e:
-                    await self._handle_aiorpcerror(
+                    error = await self._handle_aiorpcerror(
                         error=e,
                         retry_i=i,
                         tried_addresses=tried_addresses,
                         current_address=connection.address,
+                        current_deployment=connection.deployment_name,
                         connection_list=connection_list,
                         total_num_tries=total_num_tries,
                     )
+                    if error:
+                        raise error
                 except AttributeError:
                     return default_endpoints_proto, None
 
@@ -1379,6 +1437,7 @@ class GrpcConnectionPool:
     @staticmethod
     def create_async_channel_stub(
         address,
+        deployment_name: str,
         metrics: _NetworkingMetrics,
         histograms: _NetworkingHistograms,
         tls=False,
@@ -1389,6 +1448,7 @@ class GrpcConnectionPool:
         Creates an async GRPC Channel. This channel has to be closed eventually!
 
         :param address: the address to create the connection to, like 127.0.0.0.1:8080
+        :param deployment_name: the name of the deployment (e.g. executor0)
         :param tls: if True, use tls for the grpc channel
         :param root_certificates: the path to the root certificates for tls, only u
         :param metrics: NetworkingMetrics object that contain optional metrics
@@ -1405,7 +1465,9 @@ class GrpcConnectionPool:
         )
 
         return (
-            GrpcConnectionPool.ConnectionStubs(address, channel, metrics, histograms),
+            GrpcConnectionPool.ConnectionStubs(
+                address, channel, deployment_name, metrics, histograms
+            ),
             channel,
         )
 
@@ -1461,7 +1523,7 @@ def host_is_local(hostname):
     import socket
 
     fqn = socket.getfqdn(hostname)
-    if fqn in ("localhost", "0.0.0.0") or hostname == '0.0.0.0':
+    if fqn in ('localhost', '0.0.0.0') or hostname == '0.0.0.0':
         return True
 
     try:

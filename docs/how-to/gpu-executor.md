@@ -10,13 +10,12 @@ reducing response latency by anything from 5 to 100 times, depending on the mode
 ```{admonition} Important
 :class: caution
 
-This tutorial assumes familiarity with basic Jina concepts, such as Document, [Executor](../fundamentals/executor/index), and [Flow](../fundamentals/executor/index). Some knowledge of [Jina Hub](../fundamentals/executor/hub/index) is also needed for the last part of the tutorial.
+This tutorial assumes familiarity with basic Jina concepts, such as Document, [Executor](../concepts/executor/index), and [Flow](../concepts/executor/index). Some knowledge of [Executor Hub](../concepts/executor/hub/index) is also needed for the last part of the tutorial.
 ```
 
 ## Jina and GPUs in a nutshell
 
-For a thorough walkthrough of using GPU resources in your code, check the full tutorial in the
-[next section](#Prerequisites).
+For a thorough walkthrough of using GPU resources in your code, check the full tutorial in the {ref}`next section <gpu-prerequisites>`.
 
 If you already know how to use your GPU, just proceed like you usually would in your machine learning framework of choice.
 Jina lets you use GPUs like you would in a Python script or Docker 
@@ -106,6 +105,7 @@ Just like that, your code runs on GPU, inside a Jina Flow.
 Next, we will go through a more fleshed out example in detail, where we use a language model to embed text in our
 Documents - all on GPU, and thus blazingly fast.
 
+(gpu-prerequisites)=
 ## Prerequisites
 
 For this tutorial, you will need to work on a machine with an NVIDIA graphics card. If you
@@ -127,12 +127,12 @@ pip install jina
 ## Setting up the Executor
 
 
-```{admonition} Jina Hub
+```{admonition} Executor Hub
 :class: hint
 
-Let's create an Executor using [Jina Hub](https://hub.jina.ai/). This still creates your Executor locally
+Let's create an Executor using [Executor Hub](https://cloud.jina.ai/). This still creates your Executor locally
 and privately, but makes it quick and easy to run your
-Executor inside a Docker container, or (if you so choose) to publish it to Jina Hub later.
+Executor inside a Docker container, or (if you so choose) to publish it to Executor Hub later.
 ```
 
 We'll create a simple sentence encoder, and start by creating the Executor 
@@ -182,7 +182,7 @@ In the end, you should be greeted with suggested next steps.
 │  │             ╰────────────────────────────────────────────────╯                       │  │
 │  │   Docker…   The Dockerfile describes how this executor will be built.                │  │
 │  │   execut…   The main logic file of the Executor.                                     │  │
-│  │   manife…   Metadata for the Executor, for better appeal on Jina Hub.                │  │
+│  │   manife…   Metadata for the Executor, for better appeal on Executor Hub.                │  │
 │  │                                                                                      │  │
 │  │               Field   Description                                                    │  │
 │  │              ────────────────────────────────────────────────────────────────────    │  │
@@ -195,7 +195,7 @@ In the end, you should be greeted with suggested next steps.
 │  │   requir…   The Python dependencies of the Executor.                                 │  │
 │  │                                                                                      │  │
 │  ╰──────────────────────────────────────────────────────────────────────────────────────╯  │
-│  ╭────────────────────────────── 3. Share it to Jina Hub ───────────────────────────────╮  │
+│  ╭────────────────────────────── 3. Share it to Executor Hub ───────────────────────────────╮  │
 │  │   1 jina hub push /home/ubuntu/SentenceEncoder                                       │  │
 │  ╰──────────────────────────────────────────────────────────────────────────────────────╯  │
 ╰────────────────────────────────────────────────────────────────────────────────────────────╯
@@ -450,14 +450,14 @@ Run `python main.py` again and you can see that no downloading happens inside th
 
 ## Using GPU with Hub Executors
 
-We now saw how to use GPU with our Executor locally, and when using it in a Docker container. What about when we use Executors from Jina Hub - is there any difference?
+We now saw how to use GPU with our Executor locally, and when using it in a Docker container. What about when we use Executors from Executor Hub - is there any difference?
 
-Nope! Not only that, many Executors on Jina Hub already come with a GPU-enabled version pre-built, usually under the `gpu` tag (see [Jina Hub tags](hub_tags)). Let's modify our example to use the pre-built `TransformerTorchEncoder` from Jina Hub:
+Nope! Not only that, many Executors on Executor Hub already come with a GPU-enabled version pre-built, usually under the `gpu` tag (see [Executor Hub tags](hub_tags)). Let's modify our example to use the pre-built `TransformerTorchEncoder` from Executor Hub:
 
 ```diff
 f = Flow().add(
 -   uses='docker://sentence-encoder',
-+   uses='jinahub+docker://TransformerTorchEncoder/latest-gpu',
++   uses='jinaai+docker://jina-ai/TransformerTorchEncoder:latest-gpu',
     uses_with={'device': 'cuda'},
     gpus='all',
     # This has to be an absolute path, replace /home/ubuntu with your home directory
@@ -470,7 +470,7 @@ The first time you run the script, downloading the Docker image takes some time 
 ```{admonition} Important
 :class: caution
 
-When using GPU encoders from Jina Hub, always use `jinahub+docker://`, and not `jinahub://`. As discussed above, these encoders may need CUDA installed (or other system dependencies), and installing that properly can be tricky. For that reason, use Docker images, which already come with all these dependencies pre-installed.
+When using GPU encoders from Executor Hub, always use `jinaai+docker://`, and not `jinaai://`. As discussed above, these encoders may need CUDA installed (or other system dependencies), and installing that properly can be tricky. For that reason, use Docker images, which already come with all these dependencies pre-installed.
 ```
 
 
@@ -481,6 +481,6 @@ Let's recap this tutorial:
 1. Using Executors on a GPU locally is no different to using a GPU in a standalone script. You pass the device you want your Executor to use in the initialization.
 2. To use an Executor on a GPU inside a Docker container, pass `gpus='all'`.
 3. Use volumes (bind mounts), so you don't have to download large files each time you start the Executor.
-4. Use GPU with Executors from Jina Hub - just use the Executor with the `gpu` tag.
+4. Use GPU with Executors from Executor Hub - just use the Executor with the `gpu` tag.
 
 When you start building your own Executor, check what system requirements (CUDA and similar) are needed, and install them locally (and in the `Dockerfile`) accordingly.

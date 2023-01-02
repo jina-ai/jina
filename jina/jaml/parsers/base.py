@@ -3,7 +3,7 @@ from abc import ABC
 from functools import reduce
 from typing import TYPE_CHECKING, Any, Dict, Optional, Set, Type, Union
 
-if TYPE_CHECKING: # pragma: no cover
+if TYPE_CHECKING:  # pragma: no cover
     from jina.orchestrate.flow.base import Flow
     from jina.serve.executors import BaseExecutor
 

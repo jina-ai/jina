@@ -37,7 +37,7 @@ The term "final release" is relative to "developmental release" as described bel
 The recommended way of installing Jina is `pip install -U jina`
 
 `"standard"` include extra dependencies that enables:
-- Jina Hub + Docker support
+- Executor Hub + Docker support
 - FastAPI + Websocket support (required when using `Flow(protocol='http')` or `Flow(protocol='websocket')`)
 - the best compression via LZ4 algorithm
 - the best async eventloop management via `uvloop`
@@ -98,9 +98,11 @@ jinaai/jina:{version}{python_version}{extra}
     - `x.y.z`: the release of a particular version;
     - `x.y`: the alias to the last `x.y.z` patch release, i.e. `x.y` = `x.y.max(z)`;
 - `{python_version}`: The Python version of the image. Possible values:
-    - ` `, `-py37`: Python 3.7;
-    - `-py38` for Python 3.8;
+    - `-py37`: Python 3.7;
+    - ` `, `-py38` for Python 3.8;
     - `-py39` for Python 3.9;
+    - `-py310` for Python 3.10;
+    - `-py311` for Python 3.11;
 - `{extra}`: the extra dependency installed along with Jina. Possible values:
     - ` `: Jina is installed inside the image via `pip install jina`;
     - `-standard`: Jina is installed inside the image via `pip install jina`. It includes all recommended dependencies;  

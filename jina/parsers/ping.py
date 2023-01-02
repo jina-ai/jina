@@ -1,4 +1,5 @@
 """Argparser module for pinging"""
+
 from jina.parsers.base import set_base_parser
 
 
@@ -16,7 +17,7 @@ def set_ping_parser(parser=None):
         type=str,
         choices=['flow', 'executor', 'gateway'],
         help='The target type to ping. For `executor` and `gateway`, checks the readiness of the individual service. '
-             'For `flow` it checks the connectivity of the complete microservice architecture.',
+        'For `flow` it checks the connectivity of the complete microservice architecture.',
         default='executor',
     )
 

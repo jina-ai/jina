@@ -11,7 +11,7 @@ from jina.types.request import Request
 from jina.types.request.data import DataRequest
 from jina.types.request.status import StatusMessage
 
-if TYPE_CHECKING: # pragma: no cover
+if TYPE_CHECKING:  # pragma: no cover
     from opentelemetry import trace
 
     from jina.logging.logger import JinaLogger
@@ -155,7 +155,9 @@ class HTTPClientlet(AioHttpClientlet):
         :param kwargs: keyword arguments to make sure compatible API with other clients
         :return: send get message
         """
-        return await self.session.get(url=self.url).__aenter__()
+        return await self.session.get(
+            url=self.url, timeout=kwargs.get('timeout', None)
+        ).__aenter__()
 
     async def recv_message(self):
         """Receive message for HTTP (sleep)

@@ -2,13 +2,34 @@ import functools
 from timeit import default_timer
 from typing import TYPE_CHECKING, Dict, Optional, Sequence
 
-if TYPE_CHECKING: # pragma: no cover
+if TYPE_CHECKING:  # pragma: no cover
     from grpc.aio._interceptor import ClientInterceptor, ServerInterceptor
     from opentelemetry.instrumentation.grpc._client import (
         OpenTelemetryClientInterceptor,
     )
     from opentelemetry.metrics import Histogram
     from prometheus_client import Summary
+
+ENV_RESOURCE_ATTRIBUTES = [
+    'K8S_NAMESPACE_NAME',
+    'K8S_DEPLOYMENT_NAME',
+    'K8S_STATEFULSET_NAME',
+    'K8S_CLUSTER_NAME',
+    'K8S_NODE_NAME',
+    'K8S_POD_NAME',
+]
+
+
+def _get_resource_attributes(service_name: str):
+    import os
+
+    from opentelemetry.semconv.resource import ResourceAttributes
+
+    attributes = {ResourceAttributes.SERVICE_NAME: service_name}
+    for attribute in ENV_RESOURCE_ATTRIBUTES:
+        if attribute in os.environ:
+            attributes[ResourceAttributes.__dict__[attribute]] = os.environ[attribute]
+    return attributes
 
 
 class InstrumentationMixin:
@@ -32,16 +53,15 @@ class InstrumentationMixin:
             from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import (
                 OTLPSpanExporter,
             )
-            from opentelemetry.sdk.resources import SERVICE_NAME, Resource
+            from opentelemetry.sdk.resources import Resource
             from opentelemetry.sdk.trace import TracerProvider
             from opentelemetry.sdk.trace.export import BatchSpanProcessor
 
-            resource = Resource(attributes={SERVICE_NAME: name})
+            resource = Resource(attributes=_get_resource_attributes(name))
             provider = TracerProvider(resource=resource)
             processor = BatchSpanProcessor(
                 OTLPSpanExporter(
                     endpoint=f'{traces_exporter_host}:{traces_exporter_port}',
-                    insecure=True,
                 )
             )
             provider.add_span_processor(processor)
@@ -57,14 +77,13 @@ class InstrumentationMixin:
             )
             from opentelemetry.sdk.metrics import MeterProvider
             from opentelemetry.sdk.metrics.export import PeriodicExportingMetricReader
-            from opentelemetry.sdk.resources import SERVICE_NAME, Resource
+            from opentelemetry.sdk.resources import Resource
 
-            resource = Resource(attributes={SERVICE_NAME: name})
+            resource = Resource(attributes=_get_resource_attributes(name))
 
             metric_reader = PeriodicExportingMetricReader(
                 OTLPMetricExporter(
                     endpoint=f'{metrics_exporter_host}:{metrics_exporter_port}',
-                    insecure=True,
                 )
             )
             meter_provider = MeterProvider(
@@ -83,7 +102,7 @@ class InstrumentationMixin:
         :returns: A service-side aio interceptor object.
         '''
         if self.tracing:
-            from jina.serve.instrumentation._aio_server import (
+            from opentelemetry.instrumentation.grpc._aio_server import (
                 OpenTelemetryAioServerInterceptor,
             )
 
@@ -99,7 +118,7 @@ class InstrumentationMixin:
         '''
 
         if self.tracing:
-            from jina.serve.instrumentation._aio_client import (
+            from opentelemetry.instrumentation.grpc._aio_client import (
                 StreamStreamAioClientInterceptor,
                 StreamUnaryAioClientInterceptor,
                 UnaryStreamAioClientInterceptor,
@@ -138,14 +157,18 @@ class MetricsTimer:
         self,
         summary_metric: Optional['Summary'],
         histogram: Optional['Histogram'],
-        histogram_metric_labels: Dict[str, str] = {},
+        histogram_metric_labels: Optional[Dict[str, str]] = None,
     ) -> None:
+        if histogram_metric_labels is None:
+            histogram_metric_labels = {}
         self._summary_metric = summary_metric
         self._histogram = histogram
         self._histogram_metric_labels = histogram_metric_labels
 
     def _new_timer(self):
-        return self.__class__(self._summary_metric, self._histogram)
+        return self.__class__(
+            self._summary_metric, self._histogram, self._histogram_metric_labels
+        )
 
     def __enter__(self):
         self._start = default_timer()

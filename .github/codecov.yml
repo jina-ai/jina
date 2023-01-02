@@ -3,6 +3,8 @@ codecov:
   allow_coverage_offsets: true
 ignore:
   - "jina/resources"
+  - "jina/serve/instrumentation/_aio_client.py"
+  - "jina/serve/instrumentation/_aio_server.py"
 coverage:
   status:
     project:

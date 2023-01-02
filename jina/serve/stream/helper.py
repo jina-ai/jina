@@ -29,20 +29,23 @@ class AsyncRequestsIterator:
     """Iterator to allow async iteration of blocking/non-blocking iterator from the Client"""
 
     def __init__(
-        self,
-        iterator: Union[Iterator, AsyncIterator],
-        request_counter: Optional[_RequestsCounter] = None,
-        prefetch: int = 0,
+            self,
+            iterator: Union[Iterator, AsyncIterator],
+            request_counter: Optional[_RequestsCounter] = None,
+            prefetch: int = 0,
+            iterate_sync_in_thread: bool = True,
     ) -> None:
         """Async request iterator
 
         :param iterator: request iterator
         :param request_counter: counter of the numbers of request being handled at a given moment
         :param prefetch: The max amount of requests to be handled at a given moment (0 disables feature)
+        :param iterate_sync_in_thread: if True, blocking iterators will call __next__ in a Thread.
         """
         self.iterator = iterator
         self._request_counter = request_counter
         self._prefetch = prefetch
+        self._iterate_sync_in_thread = iterate_sync_in_thread
 
     def iterator__next__(self):
         """
@@ -61,14 +64,24 @@ class AsyncRequestsIterator:
 
     async def __anext__(self):
         if isinstance(self.iterator, Iterator):
-
             """
             An `Iterator` indicates "blocking" code, which might block all tasks in the event loop.
             Hence we iterate in the default executor provided by asyncio.
             """
-            request = await get_or_reuse_loop().run_in_executor(
-                None, self.iterator__next__
-            )
+
+            if not self._iterate_sync_in_thread:
+                async def _get_next():
+                    try:
+                        req = self.iterator.__next__()
+                    except StopIteration:
+                        req = None
+                    return req
+
+                request = await asyncio.create_task(_get_next())
+            else:
+                request = await get_or_reuse_loop().run_in_executor(
+                    None, self.iterator__next__
+                )
 
             """
             `iterator.__next__` can be executed directly and that'd raise `StopIteration` in the executor,

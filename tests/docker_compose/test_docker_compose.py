@@ -8,7 +8,9 @@ import docker
 import pytest
 import requests as req
 
-from jina import Document, Flow
+from jina import Client, Document, Flow
+from jina.helper import random_port
+from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from tests.helper import (
     _validate_custom_gateway_process,
     _validate_dummy_custom_gateway_response,
@@ -336,14 +338,18 @@ async def test_flow_with_workspace(logger, docker_images, tmpdir):
     indirect=True,
 )
 async def test_flow_with_custom_gateway(logger, docker_images, tmpdir):
-    flow = Flow(
-        name='docker-compose-flow-custom-gateway',
-        port=9090,
-        protocol='http',
-        uses=f'docker://{docker_images[0]}',
-    ).add(
-        name='test_executor',
-        uses=f'docker://{docker_images[1]}',
+    flow = (
+        Flow(name='docker-compose-flow-custom-gateway')
+        .config_gateway(
+            port=9090,
+            protocol='http',
+            uses=f'docker://{docker_images[0]}',
+            uses_with={'arg1': 'overridden-hello'},
+        )
+        .add(
+            name='test_executor',
+            uses=f'docker://{docker_images[1]}',
+        )
     )
 
     dump_path = os.path.join(str(tmpdir), 'docker-compose-flow-custom-gateway.yml')
@@ -352,7 +358,8 @@ async def test_flow_with_custom_gateway(logger, docker_images, tmpdir):
     with DockerComposeFlow(dump_path):
 
         _validate_dummy_custom_gateway_response(
-            flow.port, {'arg1': 'hello', 'arg2': 'world', 'arg3': 'default-arg3'}
+            flow.port,
+            {'arg1': 'overridden-hello', 'arg2': 'world', 'arg3': 'default-arg3'},
         )
         _validate_custom_gateway_process(
             flow.port,
@@ -367,3 +374,35 @@ async def test_flow_with_custom_gateway(logger, docker_images, tmpdir):
                 },
             },
         )
+
+
+@pytest.mark.asyncio
+@pytest.mark.timeout(3600)
+@pytest.mark.parametrize(
+    'docker_images',
+    [['multiprotocol-gateway']],
+    indirect=True,
+)
+@pytest.mark.parametrize('stream', [False, True])
+def test_flow_with_multiprotocol_gateway(logger, docker_images, tmpdir, stream):
+    http_port = random_port()
+    grpc_port = random_port()
+    flow = Flow().config_gateway(
+        uses=f'docker://{docker_images[0]}',
+        port=[http_port, grpc_port],
+        protocol=['http', 'grpc'],
+    )
+
+    dump_path = os.path.join(
+        str(tmpdir), 'docker-compose-flow-multiprotocol-gateway.yml'
+    )
+    flow.to_docker_compose_yaml(dump_path)
+
+    with DockerComposeFlow(dump_path):
+        import requests
+
+        grpc_client = Client(protocol='grpc', port=grpc_port)
+        grpc_client.post('/', inputs=Document(), stream=stream)
+        resp = requests.get(f'http://localhost:{http_port}').json()
+        assert resp['protocol'] == 'http'
+        assert AsyncNewLoopRuntime.is_ready(f'localhost:{grpc_port}')

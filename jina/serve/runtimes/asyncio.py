@@ -1,6 +1,5 @@
 import argparse
 import asyncio
-import os
 import signal
 import time
 from abc import ABC, abstractmethod
@@ -8,18 +7,22 @@ from typing import TYPE_CHECKING, Optional, Union
 
 from grpc import RpcError
 
-from jina import __windows__
+from jina.constants import __windows__
 from jina.helper import send_telemetry_event
-from jina.importer import ImportExtensions
 from jina.serve.instrumentation import InstrumentationMixin
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.base import BaseRuntime
 from jina.serve.runtimes.monitoring import MonitoringMixin
 from jina.types.request.data import DataRequest
 
-if TYPE_CHECKING: # pragma: no cover
+if TYPE_CHECKING:  # pragma: no cover
     import multiprocessing
     import threading
+
+HANDLED_SIGNALS = (
+    signal.SIGINT,  # Unix signal 2. Sent by Ctrl+C.
+    signal.SIGTERM,  # Unix signal 15. Sent by `kill <pid>`.
+)
 
 
 class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, InstrumentationMixin, ABC):
@@ -39,31 +42,26 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, InstrumentationMixin, AB
         self._loop = asyncio.new_event_loop()
         asyncio.set_event_loop(self._loop)
         self.is_cancel = cancel_event or asyncio.Event()
-        if not __windows__:
-            # TODO: windows event loops don't support signal handlers
-            try:
-                for signame in {'SIGINT', 'SIGTERM'}:
-                    self._loop.add_signal_handler(
-                        getattr(signal, signame),
-                        lambda *args, **kwargs: self.is_cancel.set(),
-                    )
-            except (ValueError, RuntimeError) as exc:
-                self.logger.warning(
-                    f' The runtime {self.__class__.__name__} will not be able to handle termination signals. '
-                    f' {repr(exc)}'
-                )
-        else:
-            with ImportExtensions(
-                required=True,
-                logger=self.logger,
-                help_text='''If you see a 'DLL load failed' error, please reinstall `pywin32`.
-                If you're using conda, please use the command `conda install -c anaconda pywin32`''',
-            ):
-                import win32api
 
-            win32api.SetConsoleCtrlHandler(
-                lambda *args, **kwargs: self.is_cancel.set(), True
-            )
+        if not __windows__:
+
+            def _cancel(sig):
+                def _inner_cancel(*args, **kwargs):
+                    self.logger.debug(f'Received signal {sig.name}')
+                    self.is_cancel.set(),
+
+                return _inner_cancel
+
+            for sig in HANDLED_SIGNALS:
+                self._loop.add_signal_handler(sig, _cancel(sig), sig, None)
+        else:
+
+            def _cancel(signum, frame):
+                self.logger.debug(f'Received signal {signum}')
+                self.is_cancel.set(),
+
+            for sig in HANDLED_SIGNALS:
+                signal.signal(sig, _cancel)
 
         self._setup_monitoring()
         self._setup_instrumentation(
@@ -75,9 +73,12 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, InstrumentationMixin, AB
             metrics_exporter_host=self.args.metrics_exporter_host,
             metrics_exporter_port=self.args.metrics_exporter_port,
         )
-        send_telemetry_event(event='start', obj=self, entity_id=self._entity_id)
         self._start_time = time.time()
         self._loop.run_until_complete(self.async_setup())
+        self._send_telemetry_event()
+
+    def _send_telemetry_event(self):
+        send_telemetry_event(event='start', obj=self, entity_id=self._entity_id)
 
     def run_forever(self):
         """
@@ -163,34 +164,25 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, InstrumentationMixin, AB
     # Static methods used by the Pod to communicate with the `Runtime` in the separate process
 
     @staticmethod
-    def activate(**kwargs):
-        """
-        Activate the runtime, does not apply to these runtimes
-
-        :param kwargs: extra keyword arguments
-        """
-        # does not apply to this types of runtimes
-        pass
-
-    @staticmethod
-    def is_ready(ctrl_address: str, **kwargs) -> bool:
+    def is_ready(ctrl_address: str, timeout: float = 1.0, **kwargs) -> bool:
         """
         Check if status is ready.
 
         :param ctrl_address: the address where the control request needs to be sent
+        :param timeout: timeout of the health check in seconds
         :param kwargs: extra keyword arguments
 
         :return: True if status is ready else False.
         """
-
         try:
             from grpc_health.v1 import health_pb2, health_pb2_grpc
 
             response = GrpcConnectionPool.send_health_check_sync(
-                ctrl_address, timeout=1.0
+                ctrl_address, timeout=timeout
             )
-            # TODO: Get the proper value of the ServingStatus SERVING KEY
-            return response.status == 1
+            return (
+                response.status == health_pb2.HealthCheckResponse.ServingStatus.SERVING
+            )
         except RpcError:
             return False
 

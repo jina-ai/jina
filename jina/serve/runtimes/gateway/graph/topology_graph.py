@@ -7,11 +7,12 @@ from typing import Dict, List, Optional, Tuple
 
 import grpc.aio
 
-from jina import __default_endpoint__
+from jina.constants import __default_endpoint__
 from jina.excepts import InternalNetworkError
+from jina.logging.logger import JinaLogger
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.helper import _parse_specific_params
-from jina.serve.runtimes.request_handlers.data_request_handler import DataRequestHandler
+from jina.serve.runtimes.worker.request_handling import WorkerRequestHandler
 from jina.types.request.data import DataRequest
 
 
@@ -39,6 +40,7 @@ class TopologyGraph:
             reduce: bool = True,
             timeout_send: Optional[float] = None,
             retries: Optional[int] = -1,
+            logger: Optional[JinaLogger] = None,
         ):
             self.name = name
             self.outgoing_nodes = []
@@ -54,6 +56,7 @@ class TopologyGraph:
             self._timeout_send = timeout_send
             self._retries = retries
             self.result_in_params_returned = None
+            self.logger = logger or JinaLogger(self.__class__.__name__)
 
         @property
         def leaf(self):
@@ -125,10 +128,10 @@ class TopologyGraph:
                 request.parameters = _parse_specific_params(
                     request.parameters, self.name
                 )
-                if copy_request_at_send:
-                    self.parts_to_send.append(copy.deepcopy(request))
-                else:
-                    self.parts_to_send.append(request)
+                req_to_send = (
+                    copy.deepcopy(request) if copy_request_at_send else request
+                )
+                self.parts_to_send.append(req_to_send)
                 # this is a specific needs
                 if len(self.parts_to_send) == self.number_of_parts:
                     self.start_time = datetime.utcnow()
@@ -139,13 +142,14 @@ class TopologyGraph:
                         )
                     if self._reduce and len(self.parts_to_send) > 1:
                         self.parts_to_send = [
-                            DataRequestHandler.reduce_requests(self.parts_to_send)
+                            WorkerRequestHandler.reduce_requests(self.parts_to_send)
                         ]
 
                     # avoid sending to executor which does not bind to this endpoint
                     if endpoint is not None and executor_endpoint_mapping is not None:
                         if (
-                            endpoint not in executor_endpoint_mapping[self.name]
+                            self.name in executor_endpoint_mapping
+                            and endpoint not in executor_endpoint_mapping[self.name]
                             and __default_endpoint__
                             not in executor_endpoint_mapping[self.name]
                         ):
@@ -157,7 +161,7 @@ class TopologyGraph:
                         return request, metadata
                     # otherwise, send to executor and get response
                     try:
-                        resp, metadata = await connection_pool.send_requests_once(
+                        result = await connection_pool.send_requests_once(
                             requests=self.parts_to_send,
                             deployment=self.name,
                             metadata=self._metadata,
@@ -166,16 +170,26 @@ class TopologyGraph:
                             timeout=self._timeout_send,
                             retries=self._retries,
                         )
-                        if DataRequestHandler._KEY_RESULT in resp.parameters:
+                        if issubclass(type(result), BaseException):
+                            raise result
+                        else:
+                            resp, metadata = result
+
+                        if WorkerRequestHandler._KEY_RESULT in resp.parameters:
                             # Accumulate results from each Node and then add them to the original
                             self.result_in_params_returned = resp.parameters[
-                                DataRequestHandler._KEY_RESULT
+                                WorkerRequestHandler._KEY_RESULT
                             ]
                         request.parameters = request_input_parameters
                         resp.parameters = request_input_parameters
                         self.parts_to_send.clear()
                     except InternalNetworkError as err:
                         self._handle_internalnetworkerror(err)
+                    except Exception as err:
+                        self.logger.error(
+                            f'Exception sending requests to {self.name}: {err}'
+                        )
+                        raise err
 
                     self.end_time = datetime.utcnow()
                     if metadata and 'is-error' in metadata:
@@ -325,9 +339,11 @@ class TopologyGraph:
         deployments_disable_reduce: List[str] = [],
         timeout_send: Optional[float] = 1.0,
         retries: Optional[int] = -1,
+        logger: Optional[JinaLogger] = None,
         *args,
         **kwargs,
     ):
+        self.logger = logger or JinaLogger(self.__class__.__name__)
         num_parts_per_node = defaultdict(int)
         if 'start-gateway' in graph_representation:
             origin_node_names = graph_representation['start-gateway']
@@ -360,6 +376,7 @@ class TopologyGraph:
                 reduce=node_name not in deployments_disable_reduce,
                 timeout_send=timeout_send,
                 retries=retries,
+                logger=self.logger,
             )
 
         for node_name, outgoing_node_names in graph_representation.items():

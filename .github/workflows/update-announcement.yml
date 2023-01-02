@@ -17,20 +17,27 @@ jobs:
   token-check:
     runs-on: ubuntu-latest
     steps:
-      - run: echo "success!"
-        if: "${{ github.event.inputs.release_token }} == ${{ env.release_token }}"
+      - name: Check release token
+        id: token-check
+        run: | 
+          touch SUCCESS
+        if: inputs.release_token == env.release_token
         env:
           release_token: ${{ secrets.JINA_CORE_RELEASE_TOKEN }}
+      - name: Fail release token
+        run: |
+          [[ -f SUCCESS ]]
+
 
   update-announcement:
     needs: token-check
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2.5.0
         with:
           token: ${{ secrets.JINA_DEV_BOT }}
           fetch-depth: 0
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v4
         with:
           python-version: 3.7
       - run: |

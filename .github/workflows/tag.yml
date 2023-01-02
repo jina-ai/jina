@@ -14,13 +14,13 @@ jobs:
   update-schema:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2.5.0
+      - uses: actions/checkout@v2.5.0
         with:
           repository: jina-ai/api
           path: schema
           token: ${{ secrets.JINA_DEV_BOT }}
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v4
         with:
           python-version: 3.7
       - uses: actions/setup-node@v2
@@ -66,7 +66,7 @@ jobs:
         with:
           workflow: Manual Docs Build
           token: ${{ secrets.JINA_DEV_BOT }}
-          inputs: '{ "release_token": "${{ env.release_token }}", "triggered_by": "TAG"}'
+          inputs: '{ "release_token": "${{ env.release_token }}", "triggered_by": "TAG", "build_old_docs": "TRUE"}'
         env:
           release_token: ${{ secrets.JINA_CORE_RELEASE_TOKEN }}
 
@@ -87,10 +87,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v2.5.0
         with:
           ref: 'master'
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v4
         with:
           python-version: 3.7
       - run: |

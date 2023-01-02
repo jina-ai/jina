@@ -1,8 +1,6 @@
-import argparse
 import json
 from typing import TYPE_CHECKING, Dict, List, Optional
 
-from jina import __version__
 from jina.clients.request import request_generator
 from jina.enums import DataInputType
 from jina.excepts import InternalNetworkError
@@ -10,7 +8,7 @@ from jina.helper import get_full_version
 from jina.importer import ImportExtensions
 from jina.logging.logger import JinaLogger
 
-if TYPE_CHECKING: # pragma: no cover
+if TYPE_CHECKING:  # pragma: no cover
     from opentelemetry import trace
 
     from jina.serve.streamer import GatewayStreamer
@@ -22,7 +20,7 @@ def get_fastapi_app(
     description: str,
     no_debug_endpoints: bool,
     no_crud_endpoints: bool,
-    expose_endpoints: bool,
+    expose_endpoints: Optional[str],
     expose_graphql_endpoint: bool,
     cors: bool,
     logger: 'JinaLogger',
@@ -38,7 +36,7 @@ def get_fastapi_app(
     :param no_debug_endpoints: If set, `/status` `/post` endpoints are removed from HTTP interface.
     :param no_crud_endpoints: If set, `/index`, `/search`, `/update`, `/delete` endpoints are removed from HTTP interface.
 
-              Any executor that has `@requests(on=...)` bind with those values will receive data requests.
+              Any executor that has `@requests(on=...)` bound with those values will receive data requests.
     :param expose_endpoints: A JSON string that represents a map from executor endpoints (`@requests(on=...)`) to HTTP endpoints.
     :param expose_graphql_endpoint: If set, /graphql endpoint is added to HTTP interface.
     :param cors: If set, a CORS middleware is added to FastAPI frontend to allow cross-origin access.
@@ -56,6 +54,7 @@ def get_fastapi_app(
             JinaRequestModel,
             JinaResponseModel,
         )
+    from jina import __version__
 
     app = FastAPI(
         title=title or 'My Jina Service',
@@ -93,21 +92,6 @@ def get_fastapi_app(
                 '`--no-debug-endpoints` in `Flow`/`Gateway`.',
             }
         )
-
-        from jina.serve.runtimes.gateway.http.models import JinaHealthModel
-
-        @app.get(
-            path='/',
-            summary='Get the health of Jina Gateway service',
-            response_model=JinaHealthModel,
-        )
-        async def _gateway_health():
-            """
-            Get the health of this Gateway service.
-            .. # noqa: DAR201
-
-            """
-            return {}
 
         from docarray import DocumentArray
 
@@ -388,8 +372,8 @@ def get_fastapi_app(
         :param request_iterator: request iterator, with length of 1
         :return: the first result from the request iterator
         """
-        async for k in streamer.stream(request_iterator=request_iterator):
-            request_dict = k.to_dict()
-            return request_dict
+        async for result in streamer.stream(request_iterator=request_iterator):
+            result_dict = result.to_dict()
+            return result_dict
 
     return app

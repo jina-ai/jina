@@ -1,11 +1,9 @@
 import argparse
-import asyncio
-import contextlib
 import json
 import os
 from abc import ABC
 from collections import defaultdict
-from typing import Dict, List, Optional, Tuple
+from typing import List
 
 import grpc
 from grpc_health.v1 import health, health_pb2, health_pb2_grpc
@@ -14,13 +12,11 @@ from grpc_reflection.v1alpha import reflection
 from jina.enums import PollingType
 from jina.excepts import InternalNetworkError
 from jina.helper import get_full_version
-from jina.importer import ImportExtensions
 from jina.proto import jina_pb2, jina_pb2_grpc
-from jina.serve.instrumentation import MetricsTimer
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
+from jina.serve.runtimes.head.request_handling import HeaderRequestHandler
 from jina.serve.runtimes.helper import _get_grpc_server_options
-from jina.serve.runtimes.request_handlers.data_request_handler import DataRequestHandler
 from jina.types.request.data import DataRequest, Response
 
 
@@ -40,7 +36,7 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
         :param args: args from CLI
         :param kwargs: keyword args
         """
-        self._health_servicer = health.HealthServicer(experimental_non_blocking=True)
+        self._health_servicer = health.aio.HealthServicer()
 
         super().__init__(args, **kwargs)
         if args.name is None:
@@ -57,32 +53,6 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
             tracing_client_interceptor=self.tracing_client_interceptor(),
         )
         self._retries = self.args.retries
-
-        if self.metrics_registry:
-            with ImportExtensions(
-                required=True,
-                help_text='You need to install the `prometheus_client` to use the montitoring functionality of jina',
-            ):
-                from prometheus_client import Summary
-
-            self._summary = Summary(
-                'receiving_request_seconds',
-                'Time spent processing request',
-                registry=self.metrics_registry,
-                namespace='jina',
-                labelnames=('runtime_name',),
-            ).labels(self.args.name)
-        else:
-            self._summary = None
-
-        if self.meter:
-            self._receiving_reqeust_seconds_metric = self.meter.create_histogram(
-                name='jina_receiving_request_seconds',
-                description='Time spent processing request',
-            )
-        else:
-            self._receiving_reqeust_seconds_metric = None
-        self._metric_lables = {'runtime_name': self.args.name}
 
         polling = getattr(args, 'polling', self.DEFAULT_POLLING.name)
         try:
@@ -142,7 +112,13 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
             self.connection_pool.add_connection(
                 deployment='uses_after', address=self.uses_after_address
             )
-        self._reduce = not args.disable_reduce
+        self._reduce = not args.no_reduce
+        self.request_handler = HeaderRequestHandler(
+            logger=self.logger,
+            metrics_registry=self.metrics_registry,
+            meter=self.meter,
+            runtime_name=self.name,
+        )
 
     def _default_polling_dict(self, default_polling):
         return defaultdict(
@@ -178,10 +154,12 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
         )
 
         for service in service_names:
-            self._health_servicer.set(service, health_pb2.HealthCheckResponse.SERVING)
+            await self._health_servicer.set(
+                service, health_pb2.HealthCheckResponse.SERVING
+            )
         reflection.enable_server_reflection(service_names, self._grpc_server)
-
-        bind_addr = f'0.0.0.0:{self.args.port}'
+     
+        bind_addr = f'{self.args.host}:{self.args.port}'
         self._grpc_server.add_insecure_port(bind_addr)
         self.logger.debug(f'start listening on {bind_addr}')
         await self._grpc_server.start()
@@ -198,7 +176,7 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
 
     async def async_teardown(self):
         """Close the connection pool"""
-        self._health_servicer.enter_graceful_shutdown()
+        await self._health_servicer.enter_graceful_shutdown()
         await self.async_cancel()
         await self.connection_pool.close()
 
@@ -237,15 +215,21 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
         :returns: the response request
         """
         try:
-            with MetricsTimer(
-                self._summary,
-                self._receiving_reqeust_seconds_metric,
-                self._metric_lables,
-            ):
-                endpoint = dict(context.invocation_metadata()).get('endpoint')
-                response, metadata = await self._handle_data_request(requests, endpoint)
-                context.set_trailing_metadata(metadata.items())
-                return response
+            endpoint = dict(context.invocation_metadata()).get('endpoint')
+            self.logger.debug(f'recv {len(requests)} DataRequest(s)')
+            response, metadata = await self.request_handler._handle_data_request(
+                requests=requests,
+                connection_pool=self.connection_pool,
+                uses_before_address=self.uses_before_address,
+                uses_after_address=self.uses_after_address,
+                retries=self._retries,
+                reduce=self._reduce,
+                timeout_send=self.timeout_send,
+                polling_type=self._polling[endpoint],
+                deployment_name=self._deployment_name,
+            )
+            context.set_trailing_metadata(metadata.items())
+            return response
         except InternalNetworkError as err:  # can't connect, Flow broken, interrupt the streaming through gRPC error mechanism
             return self._handle_internalnetworkerror(
                 err=err, context=context, response=Response()
@@ -301,83 +285,6 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
             )
 
         return response
-
-    async def _handle_data_request(
-        self, requests: List[DataRequest], endpoint: Optional[str]
-    ) -> Tuple[DataRequest, Dict]:
-        self.logger.debug(f'recv {len(requests)} DataRequest(s)')
-
-        DataRequestHandler.merge_routes(requests)
-
-        uses_before_metadata = None
-        if self.uses_before_address:
-            (
-                response,
-                uses_before_metadata,
-            ) = await self.connection_pool.send_requests_once(
-                requests,
-                deployment='uses_before',
-                timeout=self.timeout_send,
-                retries=self._retries,
-            )
-            requests = [response]
-
-        worker_send_tasks = self.connection_pool.send_requests(
-            requests=requests,
-            deployment=self._deployment_name,
-            polling_type=self._polling[endpoint],
-            timeout=self.timeout_send,
-            retries=self._retries,
-        )
-
-        worker_results = await asyncio.gather(*worker_send_tasks)
-
-        if len(worker_results) == 0:
-            raise RuntimeError(
-                f'Head {self.name} did not receive a response when sending message to worker pods'
-            )
-
-        worker_results, metadata = zip(*worker_results)
-
-        response_request = worker_results[0]
-        uses_after_metadata = None
-        if self.uses_after_address:
-            (
-                response_request,
-                uses_after_metadata,
-            ) = await self.connection_pool.send_requests_once(
-                worker_results,
-                deployment='uses_after',
-                timeout=self.timeout_send,
-                retries=self._retries,
-            )
-        elif len(worker_results) > 1 and self._reduce:
-            DataRequestHandler.reduce_requests(worker_results)
-        elif len(worker_results) > 1 and not self._reduce:
-            # worker returned multiple responsed, but the head is configured to skip reduction
-            # just concatenate the docs in this case
-            response_request.data.docs = DataRequestHandler.get_docs_from_request(
-                requests, field='docs'
-            )
-
-        merged_metadata = self._merge_metadata(
-            metadata, uses_after_metadata, uses_before_metadata
-        )
-
-        return response_request, merged_metadata
-
-    def _merge_metadata(self, metadata, uses_after_metadata, uses_before_metadata):
-        merged_metadata = {}
-        if uses_before_metadata:
-            for key, value in uses_before_metadata:
-                merged_metadata[key] = value
-        for meta in metadata:
-            for key, value in meta:
-                merged_metadata[key] = value
-        if uses_after_metadata:
-            for key, value in uses_after_metadata:
-                merged_metadata[key] = value
-        return merged_metadata
 
     async def _status(self, empty, context) -> jina_pb2.JinaInfoProto:
         """
