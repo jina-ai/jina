@@ -64,7 +64,6 @@ def _add_docs(req, batch, data_type, _kwargs):
     for content in batch:
         if isinstance(content, tuple) and len(content) == 2:
             d, data_type = _new_doc_from_data(content[0], data_type, **_kwargs)
-            gt, _ = _new_doc_from_data(content[1], data_type, **_kwargs)
             da.append(d)
         else:
             d, data_type = _new_doc_from_data(content, data_type, **_kwargs)
