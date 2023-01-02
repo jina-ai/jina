@@ -164,9 +164,7 @@ class HeaderRequestHandler(MonitoringRequestMixin):
         elif len(worker_results) > 1 and not reduce:
             # worker returned multiple responses, but the head is configured to skip reduction
             # just concatenate the docs in this case
-            response_request.data.docs = WorkerRequestHandler.get_docs_from_request(
-                requests, field='docs'
-            )
+            response_request.data.docs = WorkerRequestHandler.get_docs_from_request(requests)
 
         merged_metadata = self._merge_metadata(
             metadata,
