@@ -1456,7 +1456,7 @@ def dunder_get(_dict: Any, key: str) -> Any:
     return dunder_get(result, part2) if part2 else result
 
 
-if TYPE_CHECKING:
+if TYPE_CHECKING: # pragma: no cover
     from fastapi import FastAPI
 
 

@@ -1,11 +1,11 @@
 import argparse
+import tempfile
 from abc import ABC
 from typing import TYPE_CHECKING, List
 
 import grpc
 from grpc_health.v1 import health, health_pb2, health_pb2_grpc
 from grpc_reflection.v1alpha import reflection
-
 from jina.excepts import RuntimeTerminated
 from jina.helper import get_full_version
 from jina.importer import ImportExtensions
@@ -16,7 +16,7 @@ from jina.serve.runtimes.helper import _get_grpc_server_options
 from jina.serve.runtimes.request_handlers.data_request_handler import DataRequestHandler
 from jina.types.request.data import DataRequest
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from opentelemetry.propagate import Context
 
 
@@ -104,6 +104,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
             self.metrics_registry,
             self.tracer_provider,
             self.meter_provider,
+            self.args.snapshot_parent_directory,
         )
         await self._async_setup_grpc_server()
 
@@ -136,6 +137,14 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         # Mark all services as healthy.
         health_pb2_grpc.add_HealthServicer_to_server(
             self._health_servicer, self._grpc_server
+        )
+
+        jina_pb2_grpc.add_JinaExecutorSnapshotServicer_to_server(
+            self._data_request_handler._executor, self._grpc_server
+        )
+
+        jina_pb2_grpc.add_JinaExecutorSnapshotProgressServicer_to_server(
+            self._data_request_handler._executor, self._grpc_server
         )
 
         for service in service_names:

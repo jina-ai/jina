@@ -1,21 +1,19 @@
 from typing import TYPE_CHECKING, Dict, List, Optional
 
 from docarray import DocumentArray
-
 from jina import __default_endpoint__
 from jina.excepts import BadConfigSource
 from jina.importer import ImportExtensions
 from jina.serve.executors import BaseExecutor
 from jina.types.request.data import DataRequest
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     import argparse
 
+    from jina.logging.logger import JinaLogger
     from opentelemetry import metrics, trace
     from opentelemetry.context.context import Context
     from prometheus_client import CollectorRegistry
-
-    from jina.logging.logger import JinaLogger
 
 
 class DataRequestHandler:
@@ -30,6 +28,7 @@ class DataRequestHandler:
         metrics_registry: Optional['CollectorRegistry'] = None,
         tracer_provider: Optional['trace.TracerProvider'] = None,
         meter_provider: Optional['metrics.MeterProvider'] = None,
+        snapshot_parent_directory: Optional[str] = None,
         **kwargs,
     ):
         """Initialize private parameters and execute private loading functions.
@@ -50,6 +49,7 @@ class DataRequestHandler:
             metrics_registry=metrics_registry,
             tracer_provider=tracer_provider,
             meter_provider=meter_provider,
+            snapshot_parent_directory=snapshot_parent_directory,
         )
         meter = (
             meter_provider.get_meter(self.__class__.__name__)
@@ -70,9 +70,8 @@ class DataRequestHandler:
                 required=True,
                 help_text='You need to install the `prometheus_client` to use the montitoring functionality of jina',
             ):
-                from prometheus_client import Counter, Summary
-
                 from jina.serve.monitoring import _SummaryDeprecated
+                from prometheus_client import Counter, Summary
 
                 self._document_processed_metrics = Counter(
                     'document_processed',
@@ -128,6 +127,7 @@ class DataRequestHandler:
         metrics_registry: Optional['CollectorRegistry'] = None,
         tracer_provider: Optional['trace.TracerProvider'] = None,
         meter_provider: Optional['metrics.MeterProvider'] = None,
+        snapshot_parent_directory: Optional[str] = None,
     ):
         """
         Load the executor to this runtime, specified by ``uses`` CLI argument.
@@ -150,6 +150,7 @@ class DataRequestHandler:
                     'metrics_registry': metrics_registry,
                     'tracer_provider': tracer_provider,
                     'meter_provider': meter_provider,
+                    'snapshot_parent_directory': snapshot_parent_directory,
                 },
                 py_modules=self.args.py_modules,
                 extra_search_paths=self.args.extra_search_paths,

@@ -9,7 +9,7 @@ from jina.enums import PodRoleType
 from jina.orchestrate.pods import Pod
 from jina.orchestrate.pods.container import ContainerPod
 
-if TYPE_CHECKING:
+if TYPE_CHECKING: # pragma: no cover
     from jina.orchestrate.pods import BasePod
 
 

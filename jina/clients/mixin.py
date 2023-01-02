@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, AsyncGenerator, Dict, List, Optional, Union
 from jina.helper import deprecate_by, get_or_reuse_loop, run_async
 from jina.importer import ImportExtensions
 
-if TYPE_CHECKING:
+if TYPE_CHECKING: # pragma: no cover
     from docarray import DocumentArray
 
     from jina.clients.base import CallbackFnType, InputType

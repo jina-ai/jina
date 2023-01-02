@@ -14,7 +14,7 @@ from jina.serve.stream import RequestStreamer
 from jina.types.request import Request
 from jina.types.request.data import DataRequest
 
-if TYPE_CHECKING:
+if TYPE_CHECKING: # pragma: no cover
     from jina.clients.base import CallbackFnType, InputType
 
 

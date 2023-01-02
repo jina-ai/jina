@@ -2,7 +2,7 @@ import functools
 from timeit import default_timer
 from typing import TYPE_CHECKING, Dict, Optional, Sequence
 
-if TYPE_CHECKING:
+if TYPE_CHECKING: # pragma: no cover
     from grpc.aio._interceptor import ClientInterceptor, ServerInterceptor
     from opentelemetry.instrumentation.grpc._client import (
         OpenTelemetryClientInterceptor,

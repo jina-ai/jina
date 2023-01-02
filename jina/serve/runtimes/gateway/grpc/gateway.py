@@ -118,7 +118,6 @@ class GRPCGateway(BaseGateway):
         :returns: the response request
         """
         from docarray import DocumentArray
-
         from jina.clients.request import request_generator
         from jina.enums import DataInputType
         from jina.serve.executors import __dry_run_endpoint__

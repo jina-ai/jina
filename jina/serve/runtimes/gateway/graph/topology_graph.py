@@ -35,6 +35,7 @@ class TopologyGraph:
             number_of_parts: int = 1,
             floating: bool = False,
             filter_condition: dict = None,
+            metadata: Optional[Dict] = None,
             reduce: bool = True,
             timeout_send: Optional[float] = None,
             retries: Optional[int] = -1,
@@ -48,6 +49,7 @@ class TopologyGraph:
             self.end_time = None
             self.status = None
             self._filter_condition = filter_condition
+            self._metadata = metadata
             self._reduce = reduce
             self._timeout_send = timeout_send
             self._retries = retries
@@ -59,12 +61,18 @@ class TopologyGraph:
 
         def _update_requests_with_filter_condition(self, need_copy):
             for i in range(len(self.parts_to_send)):
-                req = self.parts_to_send[i] if not need_copy else copy.deepcopy(self.parts_to_send[i])
+                req = (
+                    self.parts_to_send[i]
+                    if not need_copy
+                    else copy.deepcopy(self.parts_to_send[i])
+                )
                 filtered_docs = req.docs.find(self._filter_condition)
                 req.data.docs = filtered_docs
                 self.parts_to_send[i] = req
 
-        def _update_request_by_params(self, deployment_name: str, request_input_parameters: Dict):
+        def _update_request_by_params(
+            self, deployment_name: str, request_input_parameters: Dict
+        ):
             specific_parameters = _parse_specific_params(
                 request_input_parameters, deployment_name
             )
@@ -104,7 +112,7 @@ class TopologyGraph:
             executor_endpoint_mapping: Optional[Dict] = None,
             target_executor_pattern: Optional[str] = None,
             request_input_parameters: Dict = {},
-            copy_request_at_send: bool = False
+            copy_request_at_send: bool = False,
         ):
             # Check my condition and send request with the condition
             metadata = {}
@@ -126,7 +134,9 @@ class TopologyGraph:
                     self.start_time = datetime.utcnow()
                     self._update_request_by_params(self.name, request_input_parameters)
                     if self._filter_condition is not None:
-                        self._update_requests_with_filter_condition(need_copy=not copy_request_at_send)
+                        self._update_requests_with_filter_condition(
+                            need_copy=not copy_request_at_send
+                        )
                     if self._reduce and len(self.parts_to_send) > 1:
                         self.parts_to_send = [
                             DataRequestHandler.reduce_requests(self.parts_to_send)
@@ -150,6 +160,7 @@ class TopologyGraph:
                         resp, metadata = await connection_pool.send_requests_once(
                             requests=self.parts_to_send,
                             deployment=self.name,
+                            metadata=self._metadata,
                             head=True,
                             endpoint=endpoint,
                             timeout=self._timeout_send,
@@ -157,7 +168,9 @@ class TopologyGraph:
                         )
                         if DataRequestHandler._KEY_RESULT in resp.parameters:
                             # Accumulate results from each Node and then add them to the original
-                            self.result_in_params_returned = resp.parameters[DataRequestHandler._KEY_RESULT]
+                            self.result_in_params_returned = resp.parameters[
+                                DataRequestHandler._KEY_RESULT
+                            ]
                         request.parameters = request_input_parameters
                         resp.parameters = request_input_parameters
                         self.parts_to_send.clear()
@@ -181,7 +194,7 @@ class TopologyGraph:
             target_executor_pattern: Optional[str] = None,
             request_input_parameters: Dict = {},
             request_input_has_specific_params: bool = False,
-            copy_request_at_send: bool = False
+            copy_request_at_send: bool = False,
         ) -> List[Tuple[bool, asyncio.Task]]:
             """
             Gets all the tasks corresponding from all the subgraphs born from this node
@@ -227,7 +240,7 @@ class TopologyGraph:
                     executor_endpoint_mapping=executor_endpoint_mapping,
                     target_executor_pattern=target_executor_pattern,
                     request_input_parameters=request_input_parameters,
-                    copy_request_at_send=copy_request_at_send
+                    copy_request_at_send=copy_request_at_send,
                 )
             )
             if self.leaf:  # I am like a leaf
@@ -246,7 +259,8 @@ class TopologyGraph:
                     target_executor_pattern=target_executor_pattern,
                     request_input_parameters=request_input_parameters,
                     request_input_has_specific_params=request_input_has_specific_params,
-                    copy_request_at_send=num_outgoing_nodes > 1 and request_input_has_specific_params
+                    copy_request_at_send=num_outgoing_nodes > 1
+                    and request_input_has_specific_params,
                 )
                 # We are interested in the last one, that will be the task that awaits all the previous
                 hanging_tasks_tuples.extend(t)
@@ -307,6 +321,7 @@ class TopologyGraph:
         self,
         graph_representation: Dict,
         graph_conditions: Dict = {},
+        deployments_metadata: Dict = {},
         deployments_disable_reduce: List[str] = [],
         timeout_send: Optional[float] = 1.0,
         retries: Optional[int] = -1,
@@ -333,6 +348,7 @@ class TopologyGraph:
         nodes = {}
         for node_name in node_set:
             condition = graph_conditions.get(node_name, None)
+            metadata = deployments_metadata.get(node_name, None)
             nodes[node_name] = self._ReqReplyNode(
                 name=node_name,
                 number_of_parts=num_parts_per_node[node_name]
@@ -340,6 +356,7 @@ class TopologyGraph:
                 else 1,
                 floating=node_name in floating_deployment_set,
                 filter_condition=condition,
+                metadata=metadata,
                 reduce=node_name not in deployments_disable_reduce,
                 timeout_send=timeout_send,
                 retries=retries,

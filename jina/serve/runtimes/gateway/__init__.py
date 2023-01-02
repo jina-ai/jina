@@ -14,7 +14,7 @@ from jina.parsers.helper import _set_gateway_uses
 from jina.serve.gateway import BaseGateway
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 
-if TYPE_CHECKING:
+if TYPE_CHECKING: # pragma: no cover
     import multiprocessing
     import threading
 

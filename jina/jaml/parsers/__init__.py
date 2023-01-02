@@ -23,7 +23,7 @@ def _get_all_parser(cls: Type['JAMLCompatible']):
     elif issubclass(cls, BaseGateway):
         return _get_gateway_parser()
     else:
-        return _get_default_parser()
+        raise NotImplementedError(f'No parser exists for cls {cls.__name__}')
 
 
 def _get_flow_parser():
@@ -42,12 +42,6 @@ def _get_gateway_parser():
     from jina.jaml.parsers.gateway.legacy import GatewayLegacyParser
 
     return [GatewayLegacyParser], GatewayLegacyParser
-
-
-def _get_default_parser():
-    from jina.jaml.parsers.default.v1 import V1Parser
-
-    return [V1Parser], V1Parser
 
 
 def get_parser(

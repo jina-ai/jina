@@ -26,7 +26,7 @@ TLS_PROTOCOL_SCHEMES = ['grpcs', 'https', 'wss']
 
 from typing import TYPE_CHECKING
 
-if TYPE_CHECKING:
+if TYPE_CHECKING: # pragma: no cover
     from grpc.aio._interceptor import ClientInterceptor
     from opentelemetry.instrumentation.grpc._client import (
         OpenTelemetryClientInterceptor,
@@ -384,6 +384,7 @@ class GrpcConnectionPool:
             if not self._initialized:
                 await self._init_stubs()
             request_type = type(requests[0])
+
             if request_type == DataRequest and len(requests) == 1:
                 if self.single_data_stub:
                     call_result = self.single_data_stub.process_single_data(
@@ -432,7 +433,10 @@ class GrpcConnectionPool:
                         self._histograms.histogram_metric_labels,
                     ):
                         async for response in self.stream_stub.Call(
-                            iter(requests), compression=compression, timeout=timeout
+                            iter(requests),
+                            compression=compression,
+                            timeout=timeout,
+                            metadata=metadata,
                         ):
                             if self._metrics.received_response_bytes:
                                 self._metrics.received_response_bytes.observe(
@@ -743,6 +747,7 @@ class GrpcConnectionPool:
         shard_id: Optional[int] = None,
         polling_type: PollingType = PollingType.ANY,
         endpoint: Optional[str] = None,
+        metadata: Optional[Dict[str, str]] = None,
         timeout: Optional[float] = None,
         retries: Optional[int] = -1,
     ) -> List[asyncio.Task]:
@@ -753,6 +758,7 @@ class GrpcConnectionPool:
         :param shard_id: Send to a specific shard of the deployment, ignored for polling ALL
         :param polling_type: defines if the message should be send to any or all pooled connections for the target
         :param endpoint: endpoint to target with the request
+        :param metadata: metadata to send with the request
         :param timeout: timeout for sending the requests
         :param retries: number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
         :return: list of asyncio.Task items for each send call
@@ -764,6 +770,7 @@ class GrpcConnectionPool:
             shard_id=shard_id,
             polling_type=polling_type,
             endpoint=endpoint,
+            metadata=metadata,
             timeout=timeout,
             retries=retries,
         )
@@ -776,6 +783,7 @@ class GrpcConnectionPool:
         shard_id: Optional[int] = None,
         polling_type: PollingType = PollingType.ANY,
         endpoint: Optional[str] = None,
+        metadata: Optional[Dict[str, str]] = None,
         timeout: Optional[float] = None,
         retries: Optional[int] = -1,
     ) -> List[asyncio.Task]:
@@ -787,6 +795,7 @@ class GrpcConnectionPool:
         :param shard_id: Send to a specific shard of the deployment, ignored for polling ALL
         :param polling_type: defines if the request should be send to any or all pooled connections for the target
         :param endpoint: endpoint to target with the requests
+        :param metadata: metadata to send with the requests
         :param timeout: timeout for sending the requests
         :param retries: number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
         :return: list of asyncio.Task items for each send call
@@ -806,7 +815,12 @@ class GrpcConnectionPool:
 
         for replica_list in connections:
             task = self._send_requests(
-                requests, replica_list, endpoint, timeout=timeout, retries=retries
+                requests,
+                replica_list,
+                endpoint=endpoint,
+                metadata=metadata,
+                timeout=timeout,
+                retries=retries,
             )
             results.append(task)
 
@@ -846,6 +860,7 @@ class GrpcConnectionPool:
         self,
         request: Request,
         deployment: str,
+        metadata: Optional[Dict[str, str]] = None,
         head: bool = False,
         shard_id: Optional[int] = None,
         timeout: Optional[float] = None,
@@ -854,6 +869,7 @@ class GrpcConnectionPool:
         """Send msg to target via only one of the pooled connections
         :param request: request to send
         :param deployment: name of the Jina deployment to send the message to
+        :param metadata: metadata to send with the request
         :param head: If True it is send to the head, otherwise to the worker pods
         :param shard_id: Send to a specific shard of the deployment, ignored for polling ALL
         :param timeout: timeout for sending the requests
@@ -863,6 +879,7 @@ class GrpcConnectionPool:
         return self.send_requests_once(
             [request],
             deployment=deployment,
+            metadata=metadata,
             head=head,
             shard_id=shard_id,
             timeout=timeout,
@@ -873,6 +890,7 @@ class GrpcConnectionPool:
         self,
         requests: List[Request],
         deployment: str,
+        metadata: Optional[Dict[str, str]] = None,
         head: bool = False,
         shard_id: Optional[int] = None,
         endpoint: Optional[str] = None,
@@ -883,6 +901,7 @@ class GrpcConnectionPool:
 
         :param requests: request to send
         :param deployment: name of the Jina deployment to send the request to
+        :param metadata: metadata to send with the request
         :param head: If True it is send to the head, otherwise to the worker pods
         :param shard_id: Send to a specific shard of the deployment, ignored for polling ALL
         :param endpoint: endpoint to target with the requests
@@ -893,7 +912,12 @@ class GrpcConnectionPool:
         replicas = self._connections.get_replicas(deployment, head, shard_id)
         if replicas:
             return self._send_requests(
-                requests, replicas, endpoint, timeout=timeout, retries=retries
+                requests,
+                replicas,
+                endpoint=endpoint,
+                metadata=metadata,
+                timeout=timeout,
+                retries=retries,
             )
         else:
             self._logger.debug(
@@ -1007,13 +1031,21 @@ class GrpcConnectionPool:
         requests: List[Request],
         connections: ReplicaList,
         endpoint: Optional[str] = None,
+        metadata: Optional[Dict[str, str]] = None,
         timeout: Optional[float] = None,
         retries: Optional[int] = -1,
     ) -> asyncio.Task:
         # this wraps the awaitable object from grpc as a coroutine so it can be used as a task
         # the grpc call function is not a coroutine but some _AioCall
+
+        if endpoint:
+            metadata = metadata or {}
+            metadata['endpoint'] = endpoint
+
+        if metadata:
+            metadata = tuple(metadata.items())
+
         async def task_wrapper():
-            metadata = (('endpoint', endpoint),) if endpoint else None
             tried_addresses = set()
             if retries is None or retries < 0:
                 total_num_tries = (

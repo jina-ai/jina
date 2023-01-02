@@ -10,7 +10,7 @@ from pydantic import BaseConfig, BaseModel, Field, create_model, root_validator
 
 from jina.proto.jina_pb2 import DataRequestProto, JinaInfoProto, RouteProto, StatusProto
 
-if TYPE_CHECKING:
+if TYPE_CHECKING: # pragma: no cover
     from google.protobuf.pyext.cpp_message import GeneratedProtocolMessageType
 
 PROTO_TO_PYDANTIC_MODELS = SimpleNamespace()

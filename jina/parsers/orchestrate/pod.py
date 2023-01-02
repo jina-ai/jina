@@ -185,3 +185,10 @@ def mixin_pod_parser(parser, pod_type: str = 'worker'):
         default=None,
         help='If tracing is enabled, this port will be used to configure the metrics exporter agent.',
     )
+
+    parser.add_argument(
+        '--snapshot-parent-directory',
+        type=str,
+        default=None,
+        help='A parent directory for storing all snapshots.',
+    )

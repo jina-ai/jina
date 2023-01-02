@@ -9,7 +9,7 @@ from jina.serve.streamer import GatewayStreamer
 
 __all__ = ['BaseGateway']
 
-if TYPE_CHECKING:
+if TYPE_CHECKING: # pragma: no cover
     from grpc.aio._interceptor import ClientInterceptor, ServerInterceptor
     from opentelemetry import trace
     from opentelemetry.instrumentation.grpc._client import (
@@ -113,12 +113,14 @@ class BaseGateway(JAMLCompatible, metaclass=GatewayType):
         graph_description = json.loads(args.graph_description)
         graph_conditions = json.loads(args.graph_conditions)
         deployments_addresses = json.loads(args.deployments_addresses)
+        deployments_metadata = json.loads(args.deployments_metadata)
         deployments_disable_reduce = json.loads(args.deployments_disable_reduce)
 
         self.streamer = GatewayStreamer(
             graph_representation=graph_description,
             executor_addresses=deployments_addresses,
             graph_conditions=graph_conditions,
+            deployments_metadata=deployments_metadata,
             deployments_disable_reduce=deployments_disable_reduce,
             timeout_send=timeout_send,
             retries=args.retries,

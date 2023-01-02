@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, List
 from jina.excepts import FlowBuildLevelError
 
 # noinspection PyUnreachableCode
-if TYPE_CHECKING:
+if TYPE_CHECKING: # pragma: no cover
     from jina.enums import FlowBuildLevel
     from jina.orchestrate.flow.base import Flow
 

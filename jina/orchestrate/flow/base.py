@@ -87,7 +87,7 @@ class FlowType(type(ExitStack), type(JAMLCompatible)):
 
 _regex_port = r'(.*?):([0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$'
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from jina.clients.base import BaseClient
     from jina.orchestrate.flow.asyncio import AsyncFlow
     from jina.serve.executors import BaseExecutor
@@ -161,6 +161,7 @@ class Flow(
         cors: Optional[bool] = False,
         deployments_addresses: Optional[str] = '{}',
         deployments_disable_reduce: Optional[str] = '[]',
+        deployments_metadata: Optional[str] = '{}',
         description: Optional[str] = None,
         disable_auto_volume: Optional[bool] = False,
         docker_kwargs: Optional[dict] = None,
@@ -219,8 +220,9 @@ class Flow(
 
         :param compression: The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.
         :param cors: If set, a CORS middleware is added to FastAPI frontend to allow cross-origin access.
-        :param deployments_addresses: dictionary JSON with the input addresses of each Deployment
+        :param deployments_addresses: JSON dictionary with the input addresses of each Deployment
         :param deployments_disable_reduce: list JSON disabling the built-in merging mechanism for each Deployment listed
+        :param deployments_metadata: JSON dictionary with the request metadata for each Deployment
         :param description: The description of this HTTP server. It will be used in automatics docs such as Swagger UI.
         :param disable_auto_volume: Do not automatically mount a volume for dockerized Executors.
         :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker '
@@ -422,8 +424,9 @@ class Flow(
         :param tracing: If set, the sdk implementation of the OpenTelemetry tracer will be available and will be enabled for automatic tracing of requests and customer span creation. Otherwise a no-op implementation will be provided.
         :param compression: The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.
         :param cors: If set, a CORS middleware is added to FastAPI frontend to allow cross-origin access.
-        :param deployments_addresses: dictionary JSON with the input addresses of each Deployment
+        :param deployments_addresses: JSON dictionary with the input addresses of each Deployment
         :param deployments_disable_reduce: list JSON disabling the built-in merging mechanism for each Deployment listed
+        :param deployments_metadata: JSON dictionary with the request metadata for each Deployment
         :param description: The description of this HTTP server. It will be used in automatics docs such as Swagger UI.
         :param disable_auto_volume: Do not automatically mount a volume for dockerized Executors.
         :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker '
@@ -662,6 +665,7 @@ class Flow(
         needs: str,
         graph_description: Dict[str, List[str]],
         deployments_addresses: Dict[str, List[str]],
+        deployments_metadata: Dict[str, Dict[str, str]],
         graph_conditions: Dict[str, Dict],
         deployments_disabled_reduce: List[str],
         **kwargs,
@@ -690,8 +694,20 @@ class Flow(
         args.graph_description = json.dumps(graph_description)
         args.graph_conditions = json.dumps(graph_conditions)
         args.deployments_addresses = json.dumps(deployments_addresses)
+        args.deployments_metadata = json.dumps(deployments_metadata)
         args.deployments_disable_reduce = json.dumps(deployments_disabled_reduce)
         self._deployment_nodes[GATEWAY_NAME] = Deployment(args, needs)
+
+    def _get_deployments_metadata(self) -> Dict[str, Dict[str, str]]:
+        """Get the metadata of all deployments in the Flow
+
+        :return: a dictionary of deployment name and its metadata
+        """
+        return {
+            name: deployment.grpc_metadata
+            for name, deployment in self._deployment_nodes.items()
+            if deployment.grpc_metadata
+        }
 
     def _get_deployments_addresses(self) -> Dict[str, List[str]]:
         graph_dict = {}
@@ -749,6 +765,15 @@ class Flow(
             ]
 
         return graph_dict if graph_dict else None
+
+    def _get_k8s_deployments_metadata(self) -> Dict[str, List[str]]:
+        graph_dict = {}
+
+        for node, v in self._deployment_nodes.items():
+            if v.grpc_metadata:
+                graph_dict[node] = v.grpc_metadata
+
+        return graph_dict or None
 
     def _get_docker_compose_deployments_addresses(self) -> Dict[str, List[str]]:
         graph_dict = {}
@@ -884,6 +909,7 @@ class Flow(
         floating: Optional[bool] = False,
         force_update: Optional[bool] = False,
         gpus: Optional[str] = None,
+        grpc_metadata: Optional[dict] = None,
         grpc_server_options: Optional[dict] = None,
         host: Optional[str] = '0.0.0.0',
         host_in: Optional[str] = '0.0.0.0',
@@ -952,6 +978,7 @@ class Flow(
               - To access specified gpus based on device id, use `--gpus device=[YOUR-GPU-DEVICE-ID]`
               - To access specified gpus based on multiple device id, use `--gpus device=[YOUR-GPU-DEVICE-ID1],device=[YOUR-GPU-DEVICE-ID2]`
               - To specify more parameters, use `--gpus device=[YOUR-GPU-DEVICE-ID],runtime=nvidia,capabilities=display
+        :param grpc_metadata: The metadata to be passed to the gRPC request.
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
         :param host: The host address of the runtime, by default it is 0.0.0.0. In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts, separated by commas. Then, every resulting address will be considered as one replica of the Executor.
         :param host_in: The host address for binding to, by default it is 0.0.0.0
@@ -1107,6 +1134,7 @@ class Flow(
               - To access specified gpus based on device id, use `--gpus device=[YOUR-GPU-DEVICE-ID]`
               - To access specified gpus based on multiple device id, use `--gpus device=[YOUR-GPU-DEVICE-ID1],device=[YOUR-GPU-DEVICE-ID2]`
               - To specify more parameters, use `--gpus device=[YOUR-GPU-DEVICE-ID],runtime=nvidia,capabilities=display
+        :param grpc_metadata: The metadata to be passed to the gRPC request.
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
         :param host: The host address of the runtime, by default it is 0.0.0.0. In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts, separated by commas. Then, every resulting address will be considered as one replica of the Executor.
         :param host_in: The host address for binding to, by default it is 0.0.0.0
@@ -1257,7 +1285,6 @@ class Flow(
                 deployment_role=deployment_role,
             )
         )
-
         parser = set_deployment_parser()
         if deployment_role == DeploymentRoleType.GATEWAY:
             parser = set_gateway_parser()
@@ -1452,6 +1479,7 @@ class Flow(
                 needs={op_flow._last_deployment},
                 graph_description=op_flow._get_graph_representation(),
                 deployments_addresses=op_flow._get_deployments_addresses(),
+                deployments_metadata=op_flow._get_deployments_metadata(),
                 graph_conditions=op_flow._get_graph_conditions(),
                 deployments_disabled_reduce=op_flow._get_disabled_reduce_deployments(),
                 uses=op_flow.args.uses,
@@ -2406,6 +2434,9 @@ class Flow(
                 k8s_deployments_addresses=self._get_k8s_deployments_addresses(
                     k8s_namespace
                 )
+                if node == 'gateway'
+                else None,
+                k8s_deployments_metadata=self._get_k8s_deployments_metadata()
                 if node == 'gateway'
                 else None,
             )

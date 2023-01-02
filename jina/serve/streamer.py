@@ -1,7 +1,6 @@
 from typing import TYPE_CHECKING, Dict, List, Optional, Sequence, Union
 
 from docarray import DocumentArray
-
 from jina.logging.logger import JinaLogger
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.gateway.graph.topology_graph import TopologyGraph
@@ -10,7 +9,7 @@ from jina.serve.stream import RequestStreamer
 
 __all__ = ['GatewayStreamer']
 
-if TYPE_CHECKING:
+if TYPE_CHECKING: # pragma: no cover
     from grpc.aio._interceptor import ClientInterceptor
     from opentelemetry.instrumentation.grpc._client import (
         OpenTelemetryClientInterceptor,
@@ -29,6 +28,7 @@ class GatewayStreamer:
         graph_representation: Dict,
         executor_addresses: Dict[str, Union[str, List[str]]],
         graph_conditions: Dict = {},
+        deployments_metadata: Dict[str, Dict[str, str]] = {},
         deployments_disable_reduce: List[str] = [],
         timeout_send: Optional[float] = None,
         retries: int = 0,
@@ -47,6 +47,8 @@ class GatewayStreamer:
             will be considered to be floating, and they will be "flagged" so that the user can ignore their tasks and not await them.
         :param executor_addresses: dictionary JSON with the input addresses of each Deployment. Each Executor can have one single address or a list of addrresses for each Executor
         :param graph_conditions: Dictionary stating which filtering conditions each Executor in the graph requires to receive Documents.
+        :param deployments_metadata: Dictionary with the metadata of each Deployment. Each executor deployment can have a list of key-value pairs to
+            provide information associated with the request to the deployment.
         :param deployments_disable_reduce: list of Executor disabling the built-in merging mechanism.
         :param timeout_send: Timeout to be considered when sending requests to Executors
         :param retries: Number of retries to try to make successfull sendings to Executors
@@ -62,6 +64,7 @@ class GatewayStreamer:
         topology_graph = self._create_topology_graph(
             graph_representation,
             graph_conditions,
+            deployments_metadata,
             deployments_disable_reduce,
             timeout_send,
             retries,
@@ -95,6 +98,7 @@ class GatewayStreamer:
         self,
         graph_description,
         graph_conditions,
+        deployments_metadata,
         deployments_disable_reduce,
         timeout_send,
         retries,
@@ -103,6 +107,7 @@ class GatewayStreamer:
         return TopologyGraph(
             graph_representation=graph_description,
             graph_conditions=graph_conditions,
+            deployments_metadata=deployments_metadata,
             deployments_disable_reduce=deployments_disable_reduce,
             timeout_send=timeout_send,
             retries=retries,

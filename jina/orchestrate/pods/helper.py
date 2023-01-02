@@ -9,7 +9,7 @@ from hubble.executor.hubio import HubIO
 from jina.enums import GatewayProtocolType, PodRoleType
 from jina.parsers.helper import _set_gateway_uses
 
-if TYPE_CHECKING:
+if TYPE_CHECKING: # pragma: no cover
     from argparse import Namespace
 
 

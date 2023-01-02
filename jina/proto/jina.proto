@@ -5,6 +5,7 @@ import "google/protobuf/empty.proto";
 import "docarray.proto";
 
 package jina;
+option go_package = "github.com/jina-ai/jina-raft/jina";
 
 /**
  * Represents a the route paths of this message as perceived by the Gateway
@@ -193,3 +194,55 @@ service JinaInfoRPC {
     }
 }
 
+/**
+* An ID representation for the Snapshot Job
+*/
+message SnapshotId {
+    string value = 1;
+}
+
+/**
+* Represents the status of a Snapshot.
+*/
+message SnapshotStatusProto {
+
+    SnapshotId id = 1; // An ID for the Snapshot Job.
+
+    enum Status {
+        STATE_UNSPECIFIED = 0;
+        
+        QUEUED = 1; // Snapshot Job is admitted (validated and persisted) and waiting for resources.
+        
+        SCHEDULED = 2; // Snapshot Job is scheduled to run as soon as resource allocation is ready.
+        
+        RUNNING = 3; // Resource allocation has been successful. Snapshot Job is RUNNING.
+        
+        SUCCEEDED = 4; // Snapshot Job has finished successfully.
+        
+        FAILED = 5; // Snapshot Job has failed.
+
+        NOT_FOUND = 6; // If the specific snapshot id is unknown or not found
+    }
+
+    // status code
+    Status status = 2;
+    
+    // snapshot directory
+    string snapshot_directory = 3;
+}
+
+/**
+* jina gRPC service to trigger a snapshot at the Executor Runtime.
+*/
+service JinaExecutorSnapshot {
+    rpc snapshot (google.protobuf.Empty) returns (SnapshotStatusProto) {
+    }
+}
+
+/**
+* jina gRPC service to trigger a snapshot at the Executor Runtime.
+*/
+service JinaExecutorSnapshotProgress {
+    rpc snapshot_status (SnapshotId) returns (SnapshotStatusProto) {
+    }
+}

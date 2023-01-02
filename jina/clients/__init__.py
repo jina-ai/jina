@@ -8,7 +8,7 @@ __all__ = ['Client']
 
 from jina.enums import GatewayProtocolType
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from jina.clients.grpc import AsyncGRPCClient, GRPCClient
     from jina.clients.http import AsyncHTTPClient, HTTPClient
     from jina.clients.websocket import AsyncWebSocketClient, WebSocketClient
