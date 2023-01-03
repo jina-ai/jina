@@ -3,13 +3,13 @@
 from typing import TYPE_CHECKING, AsyncIterator, Dict, Optional
 
 from jina.clients.request.helper import _new_data_request, _new_data_request_from_batch
+from jina.enums import DataInputType
 from jina.importer import ImportExtensions
 from jina.logging.predefined import default_logger
-from jina.enums import DataInputType
-from jina.types.request import Request
 
 if TYPE_CHECKING:  # pragma: no cover
     from jina.clients.request import GeneratorSourceType
+    from jina.types.request import Request
 
 
 async def request_generator(

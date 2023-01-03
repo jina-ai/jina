@@ -1,5 +1,5 @@
 """Module for helper functions for clients."""
-from typing import Tuple
+from typing import Tuple, Optional
 
 from docarray import Document, DocumentArray
 from jina.enums import DataInputType
@@ -7,7 +7,7 @@ from jina.types.request.data import DataRequest
 
 
 def _new_data_request_from_batch(
-    _kwargs, batch, data_type, endpoint, target, parameters
+    _kwargs, batch, data_type: DataInputType, endpoint: str, target: Optional[str], parameters: Optional[dict]
 ):
     req = _new_data_request(endpoint, target, parameters)
 
@@ -17,12 +17,11 @@ def _new_data_request_from_batch(
     return req
 
 
-def _new_data_request(endpoint, target, parameters):
+def _new_data_request(endpoint: str, target: Optional[str], parameters: Optional[dict]):
     req = DataRequest()
 
     # set up header
-    if endpoint:
-        req.header.exec_endpoint = endpoint
+    req.header.exec_endpoint = endpoint
     if target:
         req.header.target_executor = target
     # add parameters field
@@ -59,7 +58,7 @@ def _new_doc_from_data(
         return _build_doc_from_content()
 
 
-def _add_docs(req, batch, data_type, _kwargs):
+def _add_docs(req: DataRequest, batch, data_type: DataInputType, _kwargs):
     da = DocumentArray()
     for content in batch:
         d, data_type = _new_doc_from_data(content, data_type, **_kwargs)

@@ -38,7 +38,7 @@ if TYPE_CHECKING:  # pragma: no cover
 
 def request_generator(
     exec_endpoint: str,
-    data: 'GeneratorSourceType',
+    data: Optional['GeneratorSourceType'] = None,
     request_size: int = 0,
     data_type: DataInputType = DataInputType.AUTO,
     target_executor: Optional[str] = None,
@@ -57,8 +57,6 @@ def request_generator(
     :param kwargs: additional arguments
     :yield: request
     """
-
-    _kwargs = dict(extra_kwargs=kwargs)
 
     try:
         if data is None:
