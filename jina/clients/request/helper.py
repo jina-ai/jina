@@ -62,10 +62,6 @@ def _new_doc_from_data(
 def _add_docs(req, batch, data_type, _kwargs):
     da = DocumentArray()
     for content in batch:
-        if isinstance(content, tuple) and len(content) == 2:
-            d, data_type = _new_doc_from_data(content[0], data_type, **_kwargs)
-            da.append(d)
-        else:
-            d, data_type = _new_doc_from_data(content, data_type, **_kwargs)
-            da.append(d)
+        d, data_type = _new_doc_from_data(content, data_type, **_kwargs)
+        da.append(d)
     req.data.docs = da
