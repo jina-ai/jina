@@ -6,15 +6,15 @@ from jina.clients.request.helper import _new_data_request, _new_data_request_fro
 from jina.enums import DataInputType
 from jina.importer import ImportExtensions
 from jina.logging.predefined import default_logger
-from jina.types.request import Request
 
 if TYPE_CHECKING:  # pragma: no cover
     from jina.clients.request import GeneratorSourceType
+    from jina.types.request import Request
 
 
 async def request_generator(
     exec_endpoint: str,
-    data: 'GeneratorSourceType',
+    data: Optional['GeneratorSourceType'] = None,
     request_size: int = 0,
     data_type: DataInputType = DataInputType.AUTO,
     target_executor: Optional[str] = None,
@@ -34,8 +34,6 @@ async def request_generator(
     :yield: request
     """
 
-    _kwargs = dict(extra_kwargs=kwargs)
-
     try:
         if data is None:
             # this allows empty inputs, i.e. a data request with only parameters
@@ -48,7 +46,6 @@ async def request_generator(
 
             async for batch in aiostream.stream.chunks(data, request_size):
                 yield _new_data_request_from_batch(
-                    _kwargs=kwargs,
                     batch=batch,
                     data_type=data_type,
                     endpoint=exec_endpoint,

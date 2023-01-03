@@ -118,3 +118,14 @@ def test_flow_multiprotocol_ports_protocols_mismatch():
         'You need to specify as much protocols as ports if you want to use a jina built-in gateway'
         in err_info.value.args[0]
     )
+
+
+def test_flow_multiprotocol_with_monitoring():
+    ports = [random_port(), random_port(), random_port()]
+    protocols = PROTOCOLS
+    flow = Flow().config_gateway(port=ports, protocol=protocols, monitoring=True)
+    
+    with flow:
+        for port, protocol in zip(ports, protocols):
+            client = Client(port=port, protocol=protocol)
+            client.post('/', inputs=[Document()])
