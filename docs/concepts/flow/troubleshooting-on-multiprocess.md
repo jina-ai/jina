@@ -137,10 +137,10 @@ Cannot re-initialize CUDA in forked subprocess. To use CUDA with multiprocessing
     Inline functions, such as nested or lambda functions are not picklable. Use `functools.partial` instead.
 
 
-## Using Multiprocessing Fork on MacOS
+## Using Multiprocessing Fork on macOS
 
 Apple has changed the rules for using Objective-C between `fork()` and `exec()` since macOS 10.13.
-This may break some codes that use `fork()` in MacOS.
+This may break some codes that use `fork()` in macOS.
 For example, the Flow may not be able to start properly with error messages similar to:
 
 ```bash
