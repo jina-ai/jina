@@ -41,3 +41,15 @@ def test_asyncio_bad_input_generator():
     # exception not handled
     data = ['text' for _ in range(20)]
     request_generator('/', data, request_size=10)
+
+
+@pytest.mark.asyncio
+async def test_asyncio_bad_input_generator2():
+    async def input_function():
+        data = [Document() for _ in range(NUM_INPUT_DOCS)]
+        for doc in data:
+            yield 42
+
+    with pytest.raises(TypeError):
+        async for req in request_generator(exec_endpoint='/', data=input_function(), request_size=10):
+            print(req.docs.summary())
