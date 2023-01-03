@@ -60,7 +60,7 @@ Applications built with Jina enjoy the following features out of the box:
 pip install jina
 ```
 
-Find more install options on [Apple Silicon/Windows](https://docs.jina.ai/get-started/install/).
+Find more install options on [Apple Silicon](https://docs.jina.ai/get-started/install/apple-silicon-m1-m2/)/[Windows](https://docs.jina.ai/get-started/install/windows/).
 
 
 ## Get Started
