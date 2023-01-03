@@ -1,10 +1,8 @@
-> The best way to know more about contributing and how to get started is to **[join us on Slack](https://slack.jina.ai)** and ask questions in our public channels.
+> The best way to know more about contributing and how to get started is to **[join us on Slack](https://jina.ai/slack)** and ask questions in our public channels.
 
 # Contributing to Jina
 
 Thanks for your interest in contributing to Jina. We're grateful for your initiative! ❤️
-
-I'm Alex C-G, Open Source Evangelist for Jina. I'm all about getting our new contributors up-to-speed, and that's what we'll do below.
 
 In this guide, we're going to go through the steps for each kind of contribution, and good and bad examples of what to do. We look forward to your contributions!
 
