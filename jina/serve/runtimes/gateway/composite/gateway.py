@@ -1,6 +1,7 @@
 import copy
 from typing import List, Optional
 
+from jina.helper import deepcopy_with_ignore_attrs
 from jina.serve.gateway import BaseGateway
 
 
@@ -21,10 +22,11 @@ class CompositeGateway(BaseGateway):
         self.gateways: List[BaseGateway] = []
         for port, protocol in zip(self.ports, self.protocols):
             gateway_cls = _get_gateway_class(protocol)
-            runtime_args = copy.deepcopy(self.runtime_args)
+            # ignore metrics_registry since it is not copyable
+            runtime_args = deepcopy_with_ignore_attrs(self.runtime_args, ['metrics_registry'])
             runtime_args.port = [port]
             runtime_args.protocol = [protocol]
-            gateway_kwargs = copy.deepcopy(kwargs)
+            gateway_kwargs = {k: v for k, v in kwargs.items() if k != 'runtime_args'}
             gateway_kwargs['runtime_args'] = dict(vars(runtime_args))
             gateway = gateway_cls(**gateway_kwargs)
             self.gateways.append(gateway)

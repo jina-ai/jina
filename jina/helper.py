@@ -54,6 +54,7 @@ __all__ = [
     'get_public_ip',
     'get_internal_ip',
     'convert_tuple_to_list',
+    'deepcopy_with_ignore_attrs',
     'run_async',
     'deprecated_alias',
     'retry',
@@ -1263,6 +1264,25 @@ def convert_tuple_to_list(d: Dict):
             d[k] = list(v)
         elif isinstance(v, dict):
             convert_tuple_to_list(v)
+
+
+def deepcopy_with_ignore_attrs(
+    obj: Any, ignore_attrs: List[str]
+) -> Any:
+    """Deep copy an object and ignore some attributes
+
+    :param obj: the object to copy
+    :param ignore_attrs: the attributes to ignore
+    :return: the copied object
+    """
+    import copy
+    
+    memo = {}
+    for k in ignore_attrs:
+        if hasattr(obj, k):
+            memo[id(getattr(obj, k))] = None # getattr(obj, k)
+    
+    return copy.deepcopy(obj, memo)
 
 
 def is_jupyter() -> bool:  # pragma: no cover
