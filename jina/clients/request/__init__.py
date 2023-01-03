@@ -69,7 +69,6 @@ def request_generator(
                 data = [data]
             for batch in batch_iterator(data, request_size):
                 yield _new_data_request_from_batch(
-                    _kwargs=kwargs,
                     batch=batch,
                     data_type=data_type,
                     endpoint=exec_endpoint,

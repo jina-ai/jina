@@ -14,7 +14,7 @@ if TYPE_CHECKING:  # pragma: no cover
 
 async def request_generator(
     exec_endpoint: str,
-    data: 'GeneratorSourceType',
+    data: Optional['GeneratorSourceType'] = None,
     request_size: int = 0,
     data_type: DataInputType = DataInputType.AUTO,
     target_executor: Optional[str] = None,
@@ -46,7 +46,6 @@ async def request_generator(
 
             async for batch in aiostream.stream.chunks(data, request_size):
                 yield _new_data_request_from_batch(
-                    _kwargs=kwargs,
                     batch=batch,
                     data_type=data_type,
                     endpoint=exec_endpoint,

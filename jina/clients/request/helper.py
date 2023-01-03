@@ -7,12 +7,12 @@ from jina.types.request.data import DataRequest
 
 
 def _new_data_request_from_batch(
-    _kwargs, batch, data_type: DataInputType, endpoint: str, target: Optional[str], parameters: Optional[dict]
+    batch, data_type: DataInputType, endpoint: str, target: Optional[str], parameters: Optional[dict]
 ):
     req = _new_data_request(endpoint, target, parameters)
 
     # add docs fields
-    _add_docs(req, batch, data_type, _kwargs)
+    _add_docs(req, batch, data_type)
 
     return req
 
@@ -58,9 +58,9 @@ def _new_doc_from_data(
         return _build_doc_from_content()
 
 
-def _add_docs(req: DataRequest, batch, data_type: DataInputType, _kwargs):
+def _add_docs(req: DataRequest, batch, data_type: DataInputType):
     da = DocumentArray()
     for content in batch:
-        d, data_type = _new_doc_from_data(content, data_type, **_kwargs)
+        d, data_type = _new_doc_from_data(content, data_type)
         da.append(d)
     req.data.docs = da
