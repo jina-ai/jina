@@ -115,7 +115,7 @@ class Deployment(BaseOrchestrator):
         self,
         args: Union['Namespace', Dict, None] = None,
         needs: Optional[Set[str]] = None,
-        include_gateway: bool = False,
+        include_gateway: bool = True,
         **kwargs,
     ):
         super().__init__()

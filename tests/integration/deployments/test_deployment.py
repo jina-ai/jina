@@ -278,7 +278,9 @@ async def test_deployments_with_replicas_advance_faster(port_generator, stream):
 
     c = Client(host='localhost', port=port, asyncio=True)
     input_docs = [Document(text='slow'), Document(text='fast')]
-    responses = c.post('/', inputs=input_docs, request_size=1, return_responses=True, stream=stream)
+    responses = c.post(
+        '/', inputs=input_docs, request_size=1, return_responses=True, stream=stream
+    )
     response_list = []
     async for response in responses:
         response_list.append(response)
@@ -336,7 +338,7 @@ def _create_regular_deployment(
         args.uses_after = executor if executor else 'NameChangeExecutor'
     if uses_before:
         args.uses_before = executor if executor else 'NameChangeExecutor'
-    return Deployment(args)
+    return Deployment(args, include_gateway=False)
 
 
 def _create_gateway_deployment(
@@ -354,7 +356,8 @@ def _create_gateway_deployment(
                 '--port',
                 str(port),
             ]
-        )
+        ),
+        include_gateway=False,
     )
 
 
