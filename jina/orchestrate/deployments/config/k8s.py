@@ -103,6 +103,7 @@ class K8sDeploymentConfig:
                 monitoring=self.common_args.monitoring,
                 port_monitoring=self.common_args.port_monitoring,
                 protocol=self.common_args.protocol,
+                timeout_ready=self.common_args.timeout_ready,
             )
 
         def _get_image_name(self, uses: Optional[str]):
@@ -208,10 +209,12 @@ class K8sDeploymentConfig:
                 pod_type=self.pod_type,
                 shard_id=self.shard_id,
                 env=cargs.env,
+                env_from_secret=cargs.env_from_secret,
                 gpus=cargs.gpus if hasattr(cargs, 'gpus') else None,
                 monitoring=cargs.monitoring,
                 port_monitoring=cargs.port_monitoring,
                 volumes=getattr(cargs, 'volumes', None),
+                timeout_ready=cargs.timeout_ready,
             )
 
     def __init__(

@@ -16,8 +16,16 @@ def test_flow_to_k8s_yaml(tmpdir, protocol, flow_port):
         flow_kwargs['port'] = flow_port
     flow = (
         Flow(**flow_kwargs)
-        .add(name='executor0', uses_with={'param': 0})
-        .add(name='executor1', shards=2, uses_with={'param': 0})
+        .add(name='executor0', uses_with={'param': 0}, timeout_ready=60000)
+        .add(
+            name='executor1',
+            shards=2,
+            uses_with={'param': 0},
+            env_from_secret={
+                'SECRET_USERNAME': {'name': 'mysecret', 'key': 'username'},
+                'SECRET_PASSWORD': {'name': 'mysecret', 'key': 'password'},
+            },
+        )
         .add(
             name='executor2',
             uses_before='docker://image',
@@ -141,6 +149,13 @@ def test_flow_to_k8s_yaml(tmpdir, protocol, flow_port):
     assert executor0_objects[2]['metadata']['namespace'] == namespace
     assert executor0_objects[2]['metadata']['name'] == 'executor0'
     assert executor0_objects[2]['spec']['replicas'] == 1
+
+    executor0_startup_probe = executor0_objects[2]['spec']['template']['spec'][
+        'containers'
+    ][0]['startupProbe']
+    assert executor0_startup_probe['failureThreshold'] == 12
+    assert executor0_startup_probe['periodSeconds'] == 5
+
     executor0_args = executor0_objects[2]['spec']['template']['spec']['containers'][0][
         'args'
     ]
@@ -226,6 +241,14 @@ def test_flow_to_k8s_yaml(tmpdir, protocol, flow_port):
             'name': 'K8S_POD_NAME',
             'valueFrom': {'fieldRef': {'fieldPath': 'metadata.name'}},
         },
+        {
+            'name': 'SECRET_USERNAME',
+            'valueFrom': {'secretKeyRef': {'name': 'mysecret', 'key': 'username'}},
+        },
+        {
+            'name': 'SECRET_PASSWORD',
+            'valueFrom': {'secretKeyRef': {'name': 'mysecret', 'key': 'password'}},
+        },
     ]
 
     executor1_shard0_objects = yaml_dicts_per_deployment['executor1-0']
@@ -280,6 +303,14 @@ def test_flow_to_k8s_yaml(tmpdir, protocol, flow_port):
             'name': 'K8S_POD_NAME',
             'valueFrom': {'fieldRef': {'fieldPath': 'metadata.name'}},
         },
+        {
+            'name': 'SECRET_USERNAME',
+            'valueFrom': {'secretKeyRef': {'name': 'mysecret', 'key': 'username'}},
+        },
+        {
+            'name': 'SECRET_PASSWORD',
+            'valueFrom': {'secretKeyRef': {'name': 'mysecret', 'key': 'password'}},
+        },
     ]
 
     executor1_shard1_objects = yaml_dicts_per_deployment['executor1-1']
@@ -332,6 +363,14 @@ def test_flow_to_k8s_yaml(tmpdir, protocol, flow_port):
         {
             'name': 'K8S_POD_NAME',
             'valueFrom': {'fieldRef': {'fieldPath': 'metadata.name'}},
+        },
+        {
+            'name': 'SECRET_USERNAME',
+            'valueFrom': {'secretKeyRef': {'name': 'mysecret', 'key': 'username'}},
+        },
+        {
+            'name': 'SECRET_PASSWORD',
+            'valueFrom': {'secretKeyRef': {'name': 'mysecret', 'key': 'password'}},
         },
     ]
 

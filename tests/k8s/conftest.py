@@ -4,11 +4,11 @@ import subprocess
 import tempfile
 import time
 from pathlib import Path
-from typing import List, Dict
-from pytest import FixtureRequest
+from typing import Dict, List
 
 import docker
 import pytest
+from pytest import FixtureRequest
 from pytest_kind import KindCluster
 
 from jina.logging.logger import JinaLogger
@@ -161,6 +161,7 @@ def image_name_tag_map() -> Dict[str, str]:
         'custom-gateway': '0.1.1',
         'test-stateful-executor': '0.13.1',
         'multiprotocol-gateway': '0.1.1',
+        'slow-load-executor': '0.1.1',
     }
 
 

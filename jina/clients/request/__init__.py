@@ -38,7 +38,7 @@ if TYPE_CHECKING:  # pragma: no cover
 
 def request_generator(
     exec_endpoint: str,
-    data: 'GeneratorSourceType',
+    data: Optional['GeneratorSourceType'] = None,
     request_size: int = 0,
     data_type: DataInputType = DataInputType.AUTO,
     target_executor: Optional[str] = None,
@@ -58,8 +58,6 @@ def request_generator(
     :yield: request
     """
 
-    _kwargs = dict(extra_kwargs=kwargs)
-
     try:
         if data is None:
             # this allows empty inputs, i.e. a data request with only parameters
@@ -71,7 +69,6 @@ def request_generator(
                 data = [data]
             for batch in batch_iterator(data, request_size):
                 yield _new_data_request_from_batch(
-                    _kwargs=kwargs,
                     batch=batch,
                     data_type=data_type,
                     endpoint=exec_endpoint,
