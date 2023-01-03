@@ -8,7 +8,7 @@ from jina.types.request.data import DataRequest
 
 def _new_data_request_from_batch(
     batch, data_type: DataInputType, endpoint: str, target: Optional[str], parameters: Optional[dict]
-):
+) -> DataRequest:
     req = _new_data_request(endpoint, target, parameters)
 
     # add docs fields
@@ -17,7 +17,7 @@ def _new_data_request_from_batch(
     return req
 
 
-def _new_data_request(endpoint: str, target: Optional[str], parameters: Optional[dict]):
+def _new_data_request(endpoint: str, target: Optional[str], parameters: Optional[dict]) -> DataRequest:
     req = DataRequest()
 
     # set up header
@@ -37,8 +37,7 @@ def _new_doc_from_data(
         return Document(content=data, **kwargs), DataInputType.CONTENT
 
     if data_type == DataInputType.DICT:
-        doc = Document.from_dict(data)
-        return doc, DataInputType.DICT
+        return Document.from_dict(data), DataInputType.DICT
     if data_type == DataInputType.AUTO or data_type == DataInputType.DOCUMENT:
         if isinstance(data, Document):
             # if incoming is already primitive type Document, then all good, best practice!
@@ -58,7 +57,7 @@ def _new_doc_from_data(
         return _build_doc_from_content()
 
 
-def _add_docs(req: DataRequest, batch, data_type: DataInputType):
+def _add_docs(req: DataRequest, batch, data_type: DataInputType) -> None:
     da = DocumentArray()
     for content in batch:
         d, data_type = _new_doc_from_data(content, data_type)
