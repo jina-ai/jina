@@ -31,10 +31,10 @@ def _new_data_request(endpoint: str, target: Optional[str], parameters: Optional
 
 
 def _new_doc_from_data(
-    data, data_type: DataInputType, **kwargs
+    data, data_type: DataInputType
 ) -> Tuple['Document', 'DataInputType']:
     def _build_doc_from_content():
-        return Document(content=data, **kwargs), DataInputType.CONTENT
+        return Document(content=data), DataInputType.CONTENT
 
     if data_type == DataInputType.DICT:
         return Document.from_dict(data), DataInputType.DICT
@@ -45,8 +45,8 @@ def _new_doc_from_data(
         elif isinstance(data, dict):
             return Document.from_dict(data), DataInputType.DICT
         try:
-            d = Document(data, **kwargs)
-            return d, DataInputType.DOCUMENT
+            d = Document(data)
+            return d, DataInputType.DOCUMENT # NOT HIT
         except ValueError:
             # AUTO has a fallback, now reconsider it as content
             if data_type == DataInputType.AUTO:
