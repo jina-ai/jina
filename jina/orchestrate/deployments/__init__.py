@@ -16,6 +16,8 @@ from typing import Dict, List, Optional, Set, Union
 
 from hubble.executor.helper import replace_secret_of_hub_uri
 from hubble.executor.hubio import HubIO
+from rich import print
+from rich.panel import Panel
 
 from jina.constants import (
     __default_executor__,
@@ -23,7 +25,7 @@ from jina.constants import (
     __docker_host__,
     __windows__,
 )
-from jina.enums import DeploymentRoleType, PodRoleType, PollingType
+from jina.enums import DeploymentRoleType, GatewayProtocolType, PodRoleType, PollingType
 from jina.helper import (
     ArgNamespace,
     CatchAllCleanupContextManager,
@@ -34,6 +36,7 @@ from jina.orchestrate.deployments.install_requirements_helper import (
     _get_package_path_from_uses,
     install_package_dependencies,
 )
+from jina.orchestrate.orchestrator import BaseOrchestrator
 from jina.orchestrate.pods.factory import PodFactory
 from jina.parsers import set_deployment_parser, set_gateway_parser
 from jina.parsers.helper import _update_gateway_args
@@ -42,129 +45,7 @@ from jina.serve.networking import host_is_local, in_docker
 WRAPPED_SLICE_BASE = r'\[[-\d:]+\]'
 
 
-class BaseDeployment(ExitStack):
-    """A BaseDeployment is an immutable set of pods.
-    Internally, the pods can run with the process/thread backend.
-    They can be also run in their own containers on remote machines.
-    """
-
-    @abstractmethod
-    def start(self) -> 'BaseDeployment':
-        """Start to run all :class:`Pod` in this BaseDeployment.
-
-        .. note::
-            If one of the :class:`Pod` fails to start, make sure that all of them
-            are properly closed.
-        """
-        ...
-
-    @property
-    def role(self) -> 'DeploymentRoleType':
-        """Return the role of this :class:`BaseDeployment`.
-
-        .. # noqa: DAR201
-        """
-        return self.args.deployment_role
-
-    @property
-    def name(self) -> str:
-        """The name of this :class:`BaseDeployment`.
-
-
-        .. # noqa: DAR201
-        """
-        return self.args.name
-
-    @property
-    def head_host(self) -> str:
-        """Get the host of the HeadPod of this deployment
-        .. # noqa: DAR201
-        """
-        return self.head_args.host if self.head_args else None
-
-    @property
-    def head_port(self):
-        """Get the port of the HeadPod of this deployment
-        .. # noqa: DAR201
-        """
-        return self.head_args.port if self.head_args else None
-
-    @property
-    def head_port_monitoring(self):
-        """Get the port_monitoring of the HeadPod of this deployment
-        .. # noqa: DAR201
-        """
-        return self.head_args.port_monitoring if self.head_args else None
-
-    def __enter__(self) -> 'BaseDeployment':
-        with CatchAllCleanupContextManager(self):
-            return self.start()
-
-    @staticmethod
-    def _copy_to_head_args(args: Namespace) -> Namespace:
-        """
-        Set the outgoing args of the head router
-
-        :param args: basic arguments
-        :return: enriched head arguments
-        """
-
-        _head_args = copy.deepcopy(args)
-        _head_args.polling = args.polling
-        _head_args.port = args.port[0]
-        _head_args.host = args.host[0]
-        _head_args.uses = args.uses
-        _head_args.pod_role = PodRoleType.HEAD
-        _head_args.runtime_cls = 'HeadRuntime'
-        _head_args.replicas = 1
-
-        if args.name:
-            _head_args.name = f'{args.name}/head'
-        else:
-            _head_args.name = f'head'
-
-        return _head_args
-
-    @property
-    @abstractmethod
-    def head_args(self) -> Namespace:
-        """Get the arguments for the `head` of this BaseDeployment.
-
-        .. # noqa: DAR201
-        """
-        ...
-
-    @abstractmethod
-    def join(self):
-        """Wait until all deployment and pods exit."""
-        ...
-
-    @property
-    @abstractmethod
-    def _mermaid_str(self) -> List[str]:
-        """String that will be used to represent the Deployment graphically when `Flow.plot()` is invoked
-
-
-        .. # noqa: DAR201
-        """
-        ...
-
-    @property
-    def deployments(self) -> List[Dict]:
-        """Get deployments of the deployment. The BaseDeployment just gives one deployment.
-
-        :return: list of deployments
-        """
-        return [
-            {
-                'name': self.name,
-                'head_host': self.head_host,
-                'head_port': self.head_port,
-            }
-        ]
-
-
-class Deployment(BaseDeployment):
+class Deployment(BaseOrchestrator):
     """A Deployment is an immutable set of pods, which run in replicas. They share the same input and output socket.
     Internally, the pods can run with the process/thread backend. They can be also run in their own containers
     :param args: arguments parsed from the CLI
@@ -216,6 +97,7 @@ class Deployment(BaseDeployment):
             return self
 
         def __exit__(self, exc_type, exc_val, exc_tb):
+            super().__exit__(exc_type, exc_val, exc_tb)
             closing_exception = None
             for pod in self._pods:
                 try:
@@ -399,6 +281,83 @@ class Deployment(BaseDeployment):
         return is_valid_sandbox_uri(uses)
 
     @property
+    def role(self) -> 'DeploymentRoleType':
+        """Return the role of this :class:`Deployment`.
+
+        .. # noqa: DAR201
+        """
+        return self.args.deployment_role
+
+    @property
+    def name(self) -> str:
+        """The name of this :class:`Deployment`.
+
+
+        .. # noqa: DAR201
+        """
+        return self.args.name
+
+    @property
+    def head_host(self) -> str:
+        """Get the host of the HeadPod of this deployment
+        .. # noqa: DAR201
+        """
+        return self.head_args.host if self.head_args else None
+
+    @property
+    def head_port(self):
+        """Get the port of the HeadPod of this deployment
+        .. # noqa: DAR201
+        """
+        return self.head_args.port if self.head_args else None
+
+    @property
+    def head_port_monitoring(self):
+        """Get the port_monitoring of the HeadPod of this deployment
+        .. # noqa: DAR201
+        """
+        return self.head_args.port_monitoring if self.head_args else None
+
+    @staticmethod
+    def _copy_to_head_args(args: Namespace) -> Namespace:
+        """
+        Set the outgoing args of the head router
+
+        :param args: basic arguments
+        :return: enriched head arguments
+        """
+
+        _head_args = copy.deepcopy(args)
+        _head_args.polling = args.polling
+        _head_args.port = args.port[0]
+        _head_args.host = args.host[0]
+        _head_args.uses = args.uses
+        _head_args.pod_role = PodRoleType.HEAD
+        _head_args.runtime_cls = 'HeadRuntime'
+        _head_args.replicas = 1
+
+        if args.name:
+            _head_args.name = f'{args.name}/head'
+        else:
+            _head_args.name = f'head'
+
+        return _head_args
+
+    @property
+    def deployments(self) -> List[Dict]:
+        """Get deployments of the deployment. The Deployment just gives one deployment.
+
+        :return: list of deployments
+        """
+        return [
+            {
+                'name': self.name,
+                'head_host': self.head_host,
+                'head_port': self.head_port,
+            }
+        ]
+
+    @property
     def _is_docker(self) -> bool:
         """
         Check if this deployment is to be run in docker.
@@ -454,7 +413,9 @@ class Deployment(BaseDeployment):
         """
         :return: the protocol of this deployment
         """
-        protocol = getattr(self.args, 'protocol', ['grpc'])
+        args = self.pod_args['gateway'] or self.args
+
+        protocol = getattr(args, 'protocol', ['grpc'])
         if not isinstance(protocol, list):
             protocol = [protocol]
         protocol = [str(_p) + ('s' if self.tls_enabled else '') for _p in protocol]
@@ -471,7 +432,7 @@ class Deployment(BaseDeployment):
         .. # noqa: DAR201
         """
         # note this will be never out of boundary
-        return self.pod_args['pods'][0][0]
+        return self.pod_args['gateway'] or self.pod_args['pods'][0][0]
 
     @property
     def host(self) -> str:
@@ -592,7 +553,7 @@ class Deployment(BaseDeployment):
 
     @property
     def all_args(self) -> List[Namespace]:
-        """Get all arguments of all Pods in this BaseDeployment.
+        """Get all arguments of all Pods in this Deployment.
 
         .. # noqa: DAR201
         """
@@ -626,7 +587,7 @@ class Deployment(BaseDeployment):
                 num_pods += self.shards[shard_id].num_pods
         return num_pods
 
-    def __eq__(self, other: 'BaseDeployment'):
+    def __eq__(self, other: 'Deployment'):
         return self.num_pods == other.num_pods and self.name == other.name
 
     @staticmethod
@@ -652,7 +613,7 @@ class Deployment(BaseDeployment):
 
     def start(self) -> 'Deployment':
         """
-        Start to run all :class:`Pod` in this BaseDeployment.
+        Start to run all :class:`Pod` in this Deployment.
 
         :return: started deployment
 
@@ -697,6 +658,14 @@ class Deployment(BaseDeployment):
                 self.head_pod,
             )
             self.enter_context(self.shards[shard_id])
+
+        if self.pod_args['gateway']:
+            all_panels = []
+            self._get_summary_table(all_panels)
+
+            from rich.rule import Rule
+
+            print(Rule(':tada: Deployment is ready to serve!'), *all_panels)
 
         return self
 
@@ -993,6 +962,7 @@ class Deployment(BaseDeployment):
             'head': None,
             'uses_before': None,
             'uses_after': None,
+            'gateway': None,
             'pods': {},
         }
 
@@ -1022,7 +992,7 @@ class Deployment(BaseDeployment):
                     f'{uses_after_args.host}:{uses_after_args.port}'
                 )
 
-            parsed_args['head'] = BaseDeployment._copy_to_head_args(args)
+            parsed_args['head'] = Deployment._copy_to_head_args(args)
 
         parsed_args['pods'] = self._set_pod_args()
 
@@ -1155,3 +1125,90 @@ class Deployment(BaseDeployment):
                         time.sleep(0.5)
         except KeyboardInterrupt:
             pass
+
+    def _get_summary_table(self, all_panels: List[Panel]):
+        address_table = self._init_table()
+
+        if not isinstance(self.protocol, list):
+            _protocols = [str(self.protocol)]
+        else:
+            _protocols = [str(_p) for _p in self.protocol]
+
+        if not isinstance(self.port, list):
+            _ports = [self.port]
+        else:
+            _ports = [str(_p) for _p in self.port]
+
+        for _port, _protocol in zip(_ports, _protocols):
+
+            address_table.add_row(':chains:', 'Protocol', _protocol)
+
+            _protocol = _protocol.lower()
+            address_table.add_row(
+                ':house:',
+                'Local',
+                f'[link={_protocol}://{self.host}:{_port}]{self.host}:{_port}[/]',
+            )
+            address_table.add_row(
+                ':lock:',
+                'Private',
+                f'[link={_protocol}://{self.address_private}:{_port}]{self.address_private}:{_port}[/]',
+            )
+
+            if self.address_public:
+                address_table.add_row(
+                    ':earth_africa:',
+                    'Public',
+                    f'[link={_protocol}://{self.address_public}:{_port}]{self.address_public}:{_port}[/]',
+                )
+
+        all_panels.append(
+            Panel(
+                address_table,
+                title=':link: [b]Endpoint[/]',
+                expand=False,
+            )
+        )
+
+        if self.protocol == GatewayProtocolType.HTTP:
+
+            http_ext_table = self._init_table()
+
+            _address = [
+                f'[link={_protocol}://localhost:{self.port}/docs]Local[/]',
+                f'[link={_protocol}://{self.address_private}:{self.port}/docs]Private[/]',
+            ]
+            if self.address_public:
+                _address.append(
+                    f'[link={_protocol}://{self.address_public}:{self.port}/docs]Public[/]'
+                )
+            http_ext_table.add_row(
+                ':speech_balloon:',
+                'Swagger UI',
+                '.../docs',
+            )
+
+            _address = [
+                f'[link={_protocol}://localhost:{self.port}/redoc]Local[/]',
+                f'[link={_protocol}://{self.address_private}:{self.port}/redoc]Private[/]',
+            ]
+
+            if self.address_public:
+                _address.append(
+                    f'[link={_protocol}://{self.address_public}:{self.port}/redoc]Public[/]'
+                )
+
+            http_ext_table.add_row(
+                ':books:',
+                'Redoc',
+                '.../redoc',
+            )
+
+            all_panels.append(
+                Panel(
+                    http_ext_table,
+                    title=':gem: [b]HTTP extension[/]',
+                    expand=False,
+                )
+            )
+        return all_panels
