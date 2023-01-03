@@ -109,7 +109,6 @@ class Flow(
     ProfileMixin,
     HealthCheckMixin,
     JAMLCompatible,
-    BaseOrchestrator,
     metaclass=FlowType,
 ):
     """Flow is how Jina streamlines and distributes Executors."""

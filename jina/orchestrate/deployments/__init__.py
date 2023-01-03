@@ -97,7 +97,6 @@ class Deployment(BaseOrchestrator):
             return self
 
         def __exit__(self, exc_type, exc_val, exc_tb):
-            super().__exit__(exc_type, exc_val, exc_tb)
             closing_exception = None
             for pod in self._pods:
                 try:
@@ -107,6 +106,10 @@ class Deployment(BaseOrchestrator):
                         closing_exception = exc
             if exc_val is None and closing_exception is not None:
                 raise closing_exception
+
+    # overload_inject_start_deployment
+
+    # overload_inject_end_deployment
 
     def __init__(
         self,
