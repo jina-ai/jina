@@ -259,9 +259,9 @@ Bonus: **Know when to break the rules**. Documentation writing is as much art as
 
 [MyST](https://myst-parser.readthedocs.io/en/latest/) Elements Usage
 
-1. Use the `{tab}` element to show multiple ways of doing one thing. [Example](https://docs.jina.ai/concepts/flow/create-flow/#instantiate-a-flow) 
-2. Use the `{admonition}` boxes with care. We recommend restricting yourself to [Hint](https://docs.jina.ai/concepts/flow/create-flow/#create-a-flow), [Caution](https://docs.jina.ai/concepts/flow/flow-api/#add-graphql-endpoint) and [See Also](https://docs.jina.ai/concepts/flow/flow-api/#add-graphql-endpoint).
-3. Use `{dropdown}` to hide optional content, such as long code snippets or console output. [Example](https://docs.jina.ai/concepts/flow/access-flow-api/#use-http-client-to-send-request)
+1. Use the `{tab}` element to show multiple ways of doing one thing. [Example](https://docs.jina.ai/concepts/flow/basics/#start-and-stop) 
+2. Use the `{admonition}` boxes with care. We recommend restricting yourself to [Hint](https://docs.jina.ai/concepts/flow/basics/#create), [Caution](https://docs.jina.ai/concepts/gateway/customize-http-endpoints/#enable-graphql-endpoint) and [See Also](https://docs.jina.ai/concepts/gateway/customize-http-endpoints/#enable-graphql-endpoint).
+3. Use `{dropdown}` to hide optional content, such as long code snippets or console output. [Example](https://docs.jina.ai/concepts/client/third-party-clients/#use-curl)
 
 ### Building documentation on your local machine
 
