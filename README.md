@@ -74,7 +74,7 @@ Document, Executor and Flow are three fundamental concepts in Jina.
 - [**Executor**](https://docs.jina.ai/concepts/executor/) is a Python class with functions that use Documents as IO.
 - [**Flow**](https://docs.jina.ai/concepts/flow/) ties Executors together into a pipeline and exposes it with an API gateway.
 
-[The full glossary is explained here.](https://docs.jina.ai/concepts/architecture-overview/)
+[The full glossary is explained here.](https://docs.jina.ai/concepts/preliminaries/#)
 
 
 ---
