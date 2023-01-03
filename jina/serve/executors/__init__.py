@@ -5,11 +5,7 @@ import functools
 import inspect
 import multiprocessing
 import os
-import tempfile
-import uuid
 import warnings
-from abc import abstractmethod
-from multiprocessing import Process
 from types import SimpleNamespace
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, Union, overload
 
@@ -25,7 +21,6 @@ from jina.helper import (
 from jina.importer import ImportExtensions
 from jina.jaml import JAML, JAMLCompatible, env_var_regex, internal_var_regex
 from jina.logging.logger import JinaLogger
-from jina.proto import jina_pb2
 from jina.serve.executors.decorators import avoid_concurrent_lock_cls
 from jina.serve.executors.decorators import (
     _init_requests_by_class,
@@ -169,17 +164,6 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         if type(self) == BaseExecutor:
             self.requests[__default_endpoint__] = self._dry_run_func
 
-        if not self.runtime_args.snapshot_parent_directory:
-            self._snapshot_parent_directory = tempfile.mkdtemp()
-            self.logger.warning(
-                f'A temporary directory for storing snapshots has been created at {self._snapshot_parent_directory}. This directory will not be automatically deleted.'
-            )
-        else:
-            self._snapshot_parent_directory = (
-                self.runtime_args.snapshot_parent_directory
-            )
-        self._snapshot = None
-        self._snapshot_process = None
         try:
             self._lock = (
                 asyncio.Lock()
@@ -892,77 +876,5 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
         return contextlib.nullcontext()
 
-    def _create_snapshot_status(
-        self,
-        snapshot_directory: str,
-    ) -> jina_pb2.SnapshotStatusProto:
-        id = str(uuid.uuid4())
-        self.logger.debug(f'Generated snapshot id: {id}')
-        return jina_pb2.SnapshotStatusProto(
-            id=jina_pb2.SnapshotId(value=id),
-            status=jina_pb2.SnapshotStatusProto.Status.RUNNING,
-            snapshot_directory=os.path.join(snapshot_directory, id),
-        )
-
-    @abstractmethod
-    def _run_snapshot_job(self, id: str, snapshot_directory: str):
-        ...
-
-    async def snapshot(self, request, context) -> jina_pb2.SnapshotStatusProto:
-        """
-        method to start a snapshot process of the Executor
-        :param request: the empty request
-        :param context: grpc context
-
-        :return: the status of the snapshot
-        """
-        if (
-            self._snapshot
-            and self._snapshot_process
-            and self._snapshot_process.is_alive()
-        ):
-            raise RuntimeError(
-                f'A snapshot with id {self._snapshot.id.value} is currently in progress. Cannot start another.'
-            )
-        else:
-            self._snapshot = self._create_snapshot_status(
-                self._snapshot_parent_directory
-            )
-            self._snapshot_process = Process(
-                target=self._run_snapshot_job,
-                args=(self._snapshot.id.value, self._snapshot.snapshot_directory),
-            )
-            self._snapshot_process.start()
-            return self._snapshot
-
-    async def snapshot_status(
-        self, request: jina_pb2.SnapshotId, context
-    ) -> jina_pb2.SnapshotStatusProto:
-        """
-        method to start a snapshot process of the Executor
-        :param request: the snapshot Id to get the status from
-        :param context: grpc context
-
-        :return: the status of the snapshot
-        """
-        self.logger.debug(f'Checking status of snapshot : {request.value}')
-        if not self._snapshot or (self._snapshot.id.value != request.value):
-            return jina_pb2.SnapshotStatusProto(
-                id=jina_pb2.SnapshotId(value=request.value),
-                status=jina_pb2.SnapshotStatusProto.Status.NOT_FOUND,
-            )
-        elif self._snapshot_process and self._snapshot_process.is_alive():
-            return jina_pb2.SnapshotStatusProto(
-                id=jina_pb2.SnapshotId(value=request.value),
-                status=jina_pb2.SnapshotStatusProto.Status.RUNNING,
-            )
-        elif self._snapshot_process and not self._snapshot_process.is_alive():
-            return jina_pb2.SnapshotStatusProto(
-                id=jina_pb2.SnapshotId(value=request.value),
-                status=jina_pb2.SnapshotStatusProto.Status.SUCCEEDED,
-            )
-
-        return jina_pb2.SnapshotStatusProto(
-            id=jina_pb2.SnapshotId(value=request.value),
-            status=jina_pb2.SnapshotStatusProto.Status.NOT_FOUND,
-        )
+    def _snapshot(self, snapshot_directory: str):
+        pass

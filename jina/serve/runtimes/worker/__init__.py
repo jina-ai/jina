@@ -1,6 +1,9 @@
 import argparse
 import asyncio
+import threading
 import os
+import uuid
+import tempfile
 from abc import ABC
 from typing import TYPE_CHECKING, List, Optional
 
@@ -25,9 +28,9 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
     """Runtime procedure leveraging :class:`Grpclet` for sending DataRequests"""
 
     def __init__(
-        self,
-        args: argparse.Namespace,
-        **kwargs,
+            self,
+            args: argparse.Namespace,
+            **kwargs,
     ):
         """Initialize grpc and data request handling.
         :param args: args from CLI
@@ -35,7 +38,19 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         """
         self._hot_reload_task = None
         self._health_servicer = health.aio.HealthServicer()
+        self._snapshot = None
+        self._snapshot_thread = None
+
         super().__init__(args, **kwargs)
+        if not self.args.snapshot_parent_directory:
+            self._snapshot_parent_directory = tempfile.mkdtemp()
+            self.logger.warning(
+                f'A temporary directory for storing snapshots has been created at {self._snapshot_parent_directory}. This directory will not be automatically deleted.'
+            )
+        else:
+            self._snapshot_parent_directory = (
+                self.args.snapshot_parent_directory
+            )
 
     async def async_setup(self):
         """
@@ -43,8 +58,8 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         """
         if self.metrics_registry:
             with ImportExtensions(
-                required=True,
-                help_text='You need to install the `prometheus_client` to use the montitoring functionality of jina',
+                    required=True,
+                    help_text='You need to install the `prometheus_client` to use the montitoring functionality of jina',
             ):
                 from prometheus_client import Counter, Summary
 
@@ -115,7 +130,6 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         """
         Start the WorkerRequestHandler and wait for the GRPC server to start
         """
-
         self._grpc_server = grpc.aio.server(
             options=_get_grpc_server_options(self.args.grpc_server_options),
             interceptors=self.aio_tracing_server_interceptors(),
@@ -130,6 +144,15 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
             self, self._grpc_server
         )
         jina_pb2_grpc.add_JinaInfoRPCServicer_to_server(self, self._grpc_server)
+
+        jina_pb2_grpc.add_JinaExecutorSnapshotServicer_to_server(
+            self, self._grpc_server
+        )
+
+        jina_pb2_grpc.add_JinaExecutorSnapshotProgressServicer_to_server(
+            self, self._grpc_server
+        )
+
         service_names = (
             jina_pb2.DESCRIPTOR.services_by_name['JinaSingleDataRequestRPC'].full_name,
             jina_pb2.DESCRIPTOR.services_by_name['JinaDataRequestRPC'].full_name,
@@ -140,14 +163,6 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         # Mark all services as healthy.
         health_pb2_grpc.add_HealthServicer_to_server(
             self._health_servicer, self._grpc_server
-        )
-
-        jina_pb2_grpc.add_JinaExecutorSnapshotServicer_to_server(
-            self._data_request_handler._executor, self._grpc_server
-        )
-
-        jina_pb2_grpc.add_JinaExecutorSnapshotProgressServicer_to_server(
-            self._data_request_handler._executor, self._grpc_server
         )
 
         reflection.enable_server_reflection(service_names, self._grpc_server)
@@ -176,9 +191,9 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
             watched_files.add(extra_python_file)
 
         with ImportExtensions(
-            required=True,
-            logger=self.logger,
-            help_text='''hot reload requires watchfiles dependency to be installed. You can do `pip install 
+                required=True,
+                logger=self.logger,
+                help_text='''hot reload requires watchfiles dependency to be installed. You can do `pip install 
                 watchfiles''',
         ):
             from watchfiles import awatch
@@ -241,7 +256,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         return endpoints_proto
 
     def _extract_tracing_context(
-        self, metadata: grpc.aio.Metadata
+            self, metadata: grpc.aio.Metadata
     ) -> Optional['Context']:
         if self.tracer:
             from opentelemetry.propagate import extract
@@ -260,7 +275,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         :returns: the response request
         """
         with MetricsTimer(
-            self._summary, self._receiving_request_seconds, self._metric_attributes
+                self._summary, self._receiving_request_seconds, self._metric_attributes
         ):
             try:
                 if self.logger.debug_enabled:
@@ -298,8 +313,8 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
                     )
 
                 if (
-                    self.args.exit_on_exceptions
-                    and type(ex).__name__ in self.args.exit_on_exceptions
+                        self.args.exit_on_exceptions
+                        and type(ex).__name__ in self.args.exit_on_exceptions
                 ):
                     self.logger.info('Exiting because of "--exit-on-exceptions".')
                     raise RuntimeTerminated
@@ -323,7 +338,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         return info_proto
 
     async def Check(
-        self, request: health_pb2.HealthCheckRequest, context
+            self, request: health_pb2.HealthCheckRequest, context
     ) -> health_pb2.HealthCheckResponse:
         """Calls the underlying HealthServicer.Check method with the same arguments
         :param request: grpc request
@@ -334,7 +349,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         return await self._health_servicer.Check(request, context)
 
     async def Watch(
-        self, request: health_pb2.HealthCheckRequest, context
+            self, request: health_pb2.HealthCheckRequest, context
     ) -> health_pb2.HealthCheckResponse:
         """Calls the underlying HealthServicer.Watch method with the same arguments
         :param request: grpc request
@@ -343,3 +358,74 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         """
         self.logger.debug(f'Receive Watch request')
         return await self._health_servicer.Watch(request, context)
+
+    def _create_snapshot_status(
+            self,
+            snapshot_directory: str,
+    ) -> jina_pb2.SnapshotStatusProto:
+        _id = str(uuid.uuid4())
+        self.logger.debug(f'Generated snapshot id: {_id}')
+        return jina_pb2.SnapshotStatusProto(
+            id=jina_pb2.SnapshotId(value=_id),
+            status=jina_pb2.SnapshotStatusProto.Status.RUNNING,
+            snapshot_directory=os.path.join(snapshot_directory, _id),
+        )
+
+    async def snapshot(self, request, context) -> jina_pb2.SnapshotStatusProto:
+        """
+        method to start a snapshot process of the Executor
+        :param request: the empty request
+        :param context: grpc context
+
+        :return: the status of the snapshot
+        """
+        if (
+                self._snapshot
+                and self._snapshot_thread
+                and self._snapshot_thread.is_alive()
+        ):
+            raise RuntimeError(
+                f'A snapshot with id {self._snapshot.id.value} is currently in progress. Cannot start another.'
+            )
+        else:
+            self._snapshot = self._create_snapshot_status(
+                self.args.snapshot_parent_directory,
+            )
+            self._snapshot_thread = threading.Thread(
+                target=self._request_handler._executor._snaphsot,
+                args=(self._snapshot.snapshot_directory),
+            )
+            self._snapshot_thread.start()
+            return self._snapshot
+
+    async def snapshot_status(
+            self, request: jina_pb2.SnapshotId, context
+    ) -> jina_pb2.SnapshotStatusProto:
+        """
+        method to start a snapshot process of the Executor
+        :param request: the snapshot Id to get the status from
+        :param context: grpc context
+
+        :return: the status of the snapshot
+        """
+        self.logger.debug(f'Checking status of snapshot : {request.value}')
+        if not self._snapshot or (self._snapshot.id.value != request.value):
+            return jina_pb2.SnapshotStatusProto(
+                id=jina_pb2.SnapshotId(value=request.value),
+                status=jina_pb2.SnapshotStatusProto.Status.NOT_FOUND,
+            )
+        elif self._snapshot_thread and self._snapshot_thread.is_alive():
+            return jina_pb2.SnapshotStatusProto(
+                id=jina_pb2.SnapshotId(value=request.value),
+                status=jina_pb2.SnapshotStatusProto.Status.RUNNING,
+            )
+        elif self._snapshot_thread and not self._snapshot_thread.is_alive():
+            return jina_pb2.SnapshotStatusProto(
+                id=jina_pb2.SnapshotId(value=request.value),
+                status=jina_pb2.SnapshotStatusProto.Status.SUCCEEDED,
+            )
+
+        return jina_pb2.SnapshotStatusProto(
+            id=jina_pb2.SnapshotId(value=request.value),
+            status=jina_pb2.SnapshotStatusProto.Status.NOT_FOUND,
+        )
