@@ -21,7 +21,6 @@ from jina.helper import (
 from jina.importer import ImportExtensions
 from jina.jaml import JAML, JAMLCompatible, env_var_regex, internal_var_regex
 from jina.logging.logger import JinaLogger
-from jina.serve.executors.decorators import avoid_concurrent_lock_cls
 from jina.serve.executors.decorators import (
     _init_requests_by_class,
     avoid_concurrent_lock_cls,
