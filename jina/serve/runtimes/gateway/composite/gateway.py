@@ -1,7 +1,6 @@
 import copy
-from typing import List, Optional
+from typing import Any, List, Optional
 
-from jina.helper import deepcopy_with_ignore_attrs
 from jina.serve.gateway import BaseGateway
 
 
@@ -23,7 +22,9 @@ class CompositeGateway(BaseGateway):
         for port, protocol in zip(self.ports, self.protocols):
             gateway_cls = _get_gateway_class(protocol)
             # ignore metrics_registry since it is not copyable
-            runtime_args = deepcopy_with_ignore_attrs(self.runtime_args, ['metrics_registry'])
+            runtime_args = self._deepcopy_with_ignore_attrs(
+                self.runtime_args, ['metrics_registry']
+            )
             runtime_args.port = [port]
             runtime_args.protocol = [protocol]
             gateway_kwargs = {k: v for k, v in kwargs.items() if k != 'runtime_args'}
@@ -47,6 +48,22 @@ class CompositeGateway(BaseGateway):
         """Run GRPC server forever"""
         for gateway in self.gateways:
             await gateway.run_server()
+
+    @staticmethod
+    def _deepcopy_with_ignore_attrs(obj: Any, ignore_attrs: List[str]) -> Any:
+        """Deep copy an object and ignore some attributes
+
+        :param obj: the object to copy
+        :param ignore_attrs: the attributes to ignore
+        :return: the copied object
+        """
+
+        memo = {}
+        for k in ignore_attrs:
+            if hasattr(obj, k):
+                memo[id(getattr(obj, k))] = None  # getattr(obj, k)
+
+        return copy.deepcopy(obj, memo)
 
     @property
     def _should_exit(self) -> bool:
