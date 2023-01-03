@@ -379,6 +379,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
 
         :return: the status of the snapshot
         """
+        self.logger.debug(f' Calling snapshot')
         if (
                 self._snapshot
                 and self._snapshot_thread
@@ -392,8 +393,8 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
                 self.args.snapshot_parent_directory,
             )
             self._snapshot_thread = threading.Thread(
-                target=self._request_handler._executor._snaphsot,
-                args=(self._snapshot.snapshot_directory),
+                target=self._request_handler._executor.snapshot,
+                args=(self._snapshot.snapshot_directory, ),
             )
             self._snapshot_thread.start()
             return self._snapshot

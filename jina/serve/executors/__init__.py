@@ -875,5 +875,5 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
         return contextlib.nullcontext()
 
-    def _snapshot(self, snapshot_directory: str):
+    def snapshot(self, snapshot_directory: str):
         pass
