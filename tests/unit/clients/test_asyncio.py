@@ -46,10 +46,17 @@ def test_asyncio_bad_input_generator():
 @pytest.mark.asyncio
 async def test_asyncio_bad_input_generator2():
     async def input_function():
-        data = [Document() for _ in range(NUM_INPUT_DOCS)]
-        for doc in data:
+        for _ in range(NUM_INPUT_DOCS):
             yield 42
 
     with pytest.raises(TypeError):
-        async for req in request_generator(exec_endpoint='/', data=input_function(), request_size=10):
+        async for req in request_generator(exec_endpoint='/', data=input_function(), request_size=REQUEST_SIZE):
+            print(req.docs.summary())
+
+    async def input_function():
+        yield Document()
+        yield 42
+
+    with pytest.raises(ValueError):
+        async for req in request_generator(exec_endpoint='/', data=input_function(), request_size=REQUEST_SIZE):
             print(req.docs.summary())
