@@ -20,7 +20,7 @@ A big thanks to our community member [Peter Willemsen](https://jina-ai.slack.com
 
 ```{admonition} Available Protocols
 :class: caution
-Jina Flows can use one of {ref}`three protocols <flow-protocol>`: gRPC, HTTP, or Websocket. 
+Jina Flows can use one of {ref}`three protocols <flow-protocol>`: gRPC, HTTP, or WebSocket. 
 Only Flows that use HTTP can be accessed via the methods described below.
 ```
 
