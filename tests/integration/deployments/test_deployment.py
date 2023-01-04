@@ -406,14 +406,14 @@ def served_depl(request: FixtureRequest, exposed_port):
     import threading
     import time
 
-    def serve_depl(**kwargs):
+    def serve_depl(stop_event, **kwargs):
         depl = Deployment(uses=MyServeExec, **kwargs)
         with depl:
-            depl.block()
+            depl.block(stop_event)
 
-    e = threading.Event()
+    stop_event = threading.Event()
 
-    kwargs = {'port': exposed_port, 'stop_event': e}
+    kwargs = {'port': exposed_port}
     enable_dynamic_batching = request.param
     if enable_dynamic_batching:
         kwargs['uses_dynamic_batching'] = {
@@ -423,19 +423,20 @@ def served_depl(request: FixtureRequest, exposed_port):
     t = threading.Thread(
         name='serve-depl',
         target=serve_depl,
+        args=(stop_event,),
         kwargs=kwargs,
     )
     t.start()
-    time.sleep(3)  # allow Flow to start
+    time.sleep(3)  # allow Deployment to start
 
     yield
 
-    e.set()  # set event and stop (unblock) the Flow
+    stop_event.set()  # set event and stop (unblock) the Deployment
     t.join()
 
 
 @pytest.mark.parametrize('served_depl', [False, True], indirect=True)
-def test_serve(served_depl, exposed_port):
+def test_deployment_dynamic_batching(served_depl, exposed_port):
     docs = Client(port=exposed_port).post(on='/bar', inputs=DocumentArray.empty(5))
 
     assert docs.texts == ['bar' for _ in docs]
