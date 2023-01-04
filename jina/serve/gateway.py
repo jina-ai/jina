@@ -1,4 +1,5 @@
 import abc
+import time
 from types import SimpleNamespace
 from typing import Dict, Optional
 
@@ -175,6 +176,31 @@ class BaseGateway(JAMLCompatible, metaclass=GatewayType):
     async def shutdown(self):
         """Shutdown the server and free other allocated resources, e.g, streamer object, health check service, ..."""
         ...
+
+    async def warmup(self):
+        '''Run client._is_flow_ready() request to trigger the dry_run endpoint on each executor.
+        This forces the gateway to establish connection and open a gRPC channel to each executor so that the first
+        request doesn't need to experience the penalty of eastablishing a brand new gRPC channel.
+        '''
+        self.logger.debug('Running warmup')
+        from jina import Client
+
+        timeout = time.time() + 60 * 5  # 5 minutes from now
+
+        while True:
+            dry_run_responses = []
+            for port, protocol in zip(self.ports, self.protocols):
+                client = Client(
+                    host=f'{protocol}://{self.runtime_args.host}:{port}',
+                    asyncio=True,
+                    continue_on_error=True,
+                )
+                dry_run_responses.append(await client.is_flow_ready())
+
+            if time.time() > timeout or all(dry_run_responses):
+                break
+
+            time.sleep(0.2)
 
     def __enter__(self):
         return self

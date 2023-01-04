@@ -108,6 +108,7 @@ class WebSocketGateway(BaseGateway):
         )
 
         await self.server.setup()
+        await self.warmup()
 
     async def shutdown(self):
         """Free other resources allocated with the server, e.g, gateway object, ..."""

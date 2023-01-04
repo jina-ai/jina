@@ -106,6 +106,7 @@ class FastAPIBaseGateway(BaseGateway):
         )
 
         await self.server.setup()
+        await self.warmup()
 
     async def shutdown(self):
         """
