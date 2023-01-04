@@ -364,3 +364,19 @@ def _create_gateway_deployment(
 async def async_inputs():
     for _ in range(20):
         yield Document(text='client0-Request')
+
+
+class DummyExecutor(Executor):
+    @requests(on='/foo')
+    def foo(self, docs, **kwargs):
+        ...
+
+
+@pytest.mark.parametrize(
+    'uses', [DummyExecutor, 'jinahub+docker://DummyHubExecutor', 'executor.yml']
+)
+def test_deployment_uses(uses):
+    depl = Deployment(uses=uses)
+
+    with depl:
+        pass
