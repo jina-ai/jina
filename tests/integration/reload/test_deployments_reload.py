@@ -6,7 +6,7 @@ import time
 
 import pytest
 
-from jina import Client, DocumentArray, Executor, Flow, requests
+from jina import Client, DocumentArray, Executor, Flow, requests, Deployment
 from jina.helper import random_port
 
 cur_dir = os.path.dirname(__file__)
@@ -30,7 +30,12 @@ def flow_run(flow, stop_event):
         flow.block(stop_event)
 
 
-def test_deployment_reload(tmpdir):
+def deployment_run(depl, stop_event):
+    with depl:
+        depl.block(stop_event)
+
+
+def test_flow_reload(tmpdir):
     stop_event = threading.Event()
 
     flow = Flow().add(
@@ -56,6 +61,41 @@ def test_deployment_reload(tmpdir):
             for doc in res:
                 assert doc.text == 'MyExecutorAfterReload'
         client = Client(port=flow.port, protocol=str(flow.protocol))
+        res = client.post(on='/', inputs=DocumentArray.empty(10))
+        assert len(res) == 10
+        for doc in res:
+            assert doc.text == 'MyExecutorBeforeReload'
+    finally:
+        stop_event.set()
+        t.join()
+
+
+def test_deployment_reload(tmpdir):
+    stop_event = threading.Event()
+
+    depl = Deployment(
+        uses=os.path.join(os.path.join(cur_dir, 'exec'), 'config.yml'), reload=True
+    )
+    t = threading.Thread(target=deployment_run, args=(depl, stop_event))
+    t.start()
+    time.sleep(5)
+    try:
+        client = Client(port=depl.port, protocol=str(depl.protocol))
+        res = client.post(on='/', inputs=DocumentArray.empty(10))
+        assert len(res) == 10
+        for doc in res:
+            assert doc.text == 'MyExecutorBeforeReload'
+        with _update_file(
+            os.path.join(os.path.join(cur_dir, 'exec'), 'config_alt.yml'),
+            os.path.join(os.path.join(cur_dir, 'exec'), 'config.yml'),
+            str(tmpdir),
+        ):
+            client = Client(port=depl.port, protocol=str(depl.protocol))
+            res = client.post(on='/', inputs=DocumentArray.empty(10))
+            assert len(res) == 10
+            for doc in res:
+                assert doc.text == 'MyExecutorAfterReload'
+        client = Client(port=depl.port, protocol=str(depl.protocol))
         res = client.post(on='/', inputs=DocumentArray.empty(10))
         assert len(res) == 10
         for doc in res:
