@@ -290,7 +290,8 @@ class Deployment(BaseOrchestrator):
     ):
         super().__init__()
         gateway_kwargs = {}
-        if include_gateway:
+        self._include_gateway = include_gateway
+        if self._include_gateway:
             # arguments exclusive to the gateway
             for field in ['protocol', 'port']:
                 if field in kwargs:
@@ -343,7 +344,7 @@ class Deployment(BaseOrchestrator):
         self._update_port_monitoring_args()
         self.update_pod_args()
 
-        if include_gateway:
+        if self._include_gateway:
             gateway_parser = set_gateway_parser()
             args = ArgNamespace.kwargs2namespace(gateway_kwargs, gateway_parser, True)
 
@@ -1291,9 +1292,9 @@ class Deployment(BaseOrchestrator):
                 f'change in Executor configuration YAML {changed_file} observed, reloading Executor deployment'
             )
             self.__exit__(None, None, None)
-            old_args, old_needs = self.args, self.needs
-            # TODO: probably this is problematic
-            new_deployment = Deployment(old_args, old_needs, include_gateway=False)
+            new_deployment = Deployment(
+                self.args, self.needs, include_gateway=self._include_gateway
+            )
             self.__dict__ = new_deployment.__dict__
             self.__enter__()
 
