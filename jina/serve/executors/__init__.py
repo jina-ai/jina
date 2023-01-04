@@ -4,6 +4,7 @@ import copy
 import functools
 import inspect
 import multiprocessing
+import threading
 import os
 import warnings
 from types import SimpleNamespace
@@ -170,6 +171,8 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         except RuntimeError:
             self._lock = contextlib.AsyncExitStack()
 
+        self._write_lock = threading.Lock() # watch because this makes it no serializable
+
     def _dry_run_func(self, *args, **kwargs):
         pass
 
@@ -248,6 +251,22 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             # we need to copy so that different instances with different (requests) in input do not disturb one another
             self._requests = copy.copy(self.requests_by_class[self.__class__.__name__])
             return self._requests
+
+    @property
+    def write_endpoints(self):
+        """
+        Get the list of endpoints bound to write methods
+
+        :return: Returns the list of endpoints bound to write methods
+        """
+        if hasattr(self, '_write_methods'):
+            endpoints = []
+            for endpoint, fn in self.requests.items():
+                if fn.__name__ in self._write_methods:
+                    endpoints.append(endpoint)
+            return endpoints
+        else:
+            return []
 
     def _add_requests(self, _requests: Optional[Dict]):
         if _requests:
@@ -874,6 +893,10 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             )
 
         return contextlib.nullcontext()
+
+    def run_snapshot(self, snapshot_directory: str):
+        with self._write_lock:
+            self.snapshot(snapshot_directory)
 
     def snapshot(self, snapshot_directory: str):
         pass

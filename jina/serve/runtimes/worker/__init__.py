@@ -253,6 +253,9 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         endpoints_proto.endpoints.extend(
             list(self._request_handler._executor.requests.keys())
         )
+        endpoints_proto.write_endpoints.extend(
+            list(self._request_handler._executor.write_endpoints)
+        )
         return endpoints_proto
 
     def _extract_tracing_context(
@@ -393,7 +396,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
                 self.args.snapshot_parent_directory,
             )
             self._snapshot_thread = threading.Thread(
-                target=self._request_handler._executor.snapshot,
+                target=self._request_handler._executor.run_snapshot,
                 args=(self._snapshot.snapshot_directory, ),
             )
             self._snapshot_thread.start()

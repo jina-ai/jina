@@ -53,6 +53,7 @@ message EndpointsProto {
 
     // list of endpoints exposed by an Executor
     repeated string endpoints = 1;
+    repeated string write_endpoints = 2;
 }
 
 /**
