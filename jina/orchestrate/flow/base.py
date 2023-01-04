@@ -1504,7 +1504,7 @@ class Flow(
         .. highlight:: bash
         .. code-block:: bash
 
-            Flow -- PUB-SUB -- BaseDeployment(_pass) -- Flow
+            Flow -- PUB-SUB -- Deployment(_pass) -- Flow
                     |
                     -- PUB-SUB -- InspectDeployment (Hanging)
 
