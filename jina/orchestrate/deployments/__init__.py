@@ -26,6 +26,7 @@ from jina.constants import (
 from jina.enums import DeploymentRoleType, GatewayProtocolType, PodRoleType, PollingType
 from jina.helper import ArgNamespace, parse_host_scheme, random_port
 from jina.importer import ImportExtensions
+from jina.logging.logger import JinaLogger
 from jina.orchestrate.deployments.install_requirements_helper import (
     _get_package_path_from_uses,
     install_package_dependencies,
@@ -352,6 +353,8 @@ class Deployment(BaseOrchestrator):
             self.pod_args['gateway'] = None
 
         self._sandbox_deployed = False
+
+        self.logger = JinaLogger(self.__class__.__name__, **vars(self.args))
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
         super().__exit__(exc_type, exc_val, exc_tb)
