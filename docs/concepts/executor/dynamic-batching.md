@@ -108,7 +108,7 @@ Then, in your `config.yaml` file, you can enable dynamic batching on the `/bar` 
 ``` yaml
 jtype: MyExecutor
 py_modules:
-    - my_executor.yaml
+    - my_executor.py
 dynamic_batching:
   /bar:
     preferred_batch_size: 10
