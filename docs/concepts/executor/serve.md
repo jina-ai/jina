@@ -45,7 +45,6 @@ In other words:
 This separation also aims at enhancing the reusability of Executors: the same implementation of an Executor can be 
 served in multiple ways/configurations using Deployment.
 
-Serve the Executor:
 ````{tab} Python class
 
 ```python
@@ -60,7 +59,7 @@ class MyExec(Executor):
 
 
 with Deployment(uses=MyExec, port=12345, replicas=2) as dep:
-    dep.block()
+    print(dep.post(inputs=DocumentArray.empty(1), on='/foo').texts)
 ```
 ````
 
@@ -76,7 +75,7 @@ py_modules:
 from jina import Deployment
 
 with Deployment(uses='executor.yaml', port=12345, replicas=2) as dep:
-    dep.block()
+    print(dep.post(inputs=DocumentArray.empty(1), on='/foo').texts)
 ```
 ````
 
@@ -86,7 +85,7 @@ with Deployment(uses='executor.yaml', port=12345, replicas=2) as dep:
 from jina import Deployment
 
 with Deployment(uses='jinaai://my-username/MyExec/', port=12345, replicas=2) as dep:
-    dep.block()
+    print(dep.post(inputs=DocumentArray.empty(1), on='/foo').texts)
 ```
 
 ````
@@ -97,7 +96,7 @@ with Deployment(uses='jinaai://my-username/MyExec/', port=12345, replicas=2) as 
 from jina import Deployment
 
 with Deployment(uses='docker://my-executor-image', port=12345, replicas=2) as dep:
-    dep.block()
+    print(dep.post(inputs=DocumentArray.empty(1), on='/foo').texts)
 ```
 
 ````
@@ -110,17 +109,6 @@ with Deployment(uses='docker://my-executor-image', port=12345, replicas=2) as de
 │  🔒     Private     192.168.3.147:12345   │
 │  🌍      Public    87.191.159.105:12345   │
 ╰───────────────────────────────────────────╯
-```
-
-Access the served Executor:
-
-```python
-from jina import Client, DocumentArray, Document
-
-print(Client(port=12345).post(inputs=DocumentArray.empty(1), on='/foo').texts)
-```
-
-```shell
 ['executed MyExec']
 ```
 
