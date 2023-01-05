@@ -1,7 +1,6 @@
 import asyncio
 import copy
 import json
-import multiprocessing
 import os
 import re
 import subprocess
@@ -42,6 +41,7 @@ from jina.serve.networking import host_is_local, in_docker
 WRAPPED_SLICE_BASE = r'\[[-\d:]+\]'
 
 if TYPE_CHECKING:
+    import multiprocessing
     from jina.clients.base import BaseClient
     from jina.serve.executors import BaseExecutor
 
@@ -293,7 +293,7 @@ class Deployment(PostMixin, BaseOrchestrator):
         self._include_gateway = include_gateway
         if self._include_gateway:
             # arguments exclusive to the gateway
-            for field in ['protocol', 'port']:
+            for field in ['port']:
                 if field in kwargs:
                     self._gateway_kwargs[field] = kwargs.pop(field)
 
@@ -1295,7 +1295,8 @@ class Deployment(PostMixin, BaseOrchestrator):
         return mermaid_graph
 
     def block(
-        self, stop_event: Optional[Union[threading.Event, multiprocessing.Event]] = None
+        self,
+        stop_event: Optional[Union['threading.Event', 'multiprocessing.Event']] = None,
     ):
         """Block the Deployment until `stop_event` is set or user hits KeyboardInterrupt
 
@@ -1390,45 +1391,4 @@ class Deployment(PostMixin, BaseOrchestrator):
             )
         )
 
-        if self.protocol == GatewayProtocolType.HTTP:
-
-            http_ext_table = self._init_table()
-
-            _address = [
-                f'[link={_protocol}://localhost:{self.port}/docs]Local[/]',
-                f'[link={_protocol}://{self.address_private}:{self.port}/docs]Private[/]',
-            ]
-            if self.address_public:
-                _address.append(
-                    f'[link={_protocol}://{self.address_public}:{self.port}/docs]Public[/]'
-                )
-            http_ext_table.add_row(
-                ':speech_balloon:',
-                'Swagger UI',
-                '.../docs',
-            )
-
-            _address = [
-                f'[link={_protocol}://localhost:{self.port}/redoc]Local[/]',
-                f'[link={_protocol}://{self.address_private}:{self.port}/redoc]Private[/]',
-            ]
-
-            if self.address_public:
-                _address.append(
-                    f'[link={_protocol}://{self.address_public}:{self.port}/redoc]Public[/]'
-                )
-
-            http_ext_table.add_row(
-                ':books:',
-                'Redoc',
-                '.../redoc',
-            )
-
-            all_panels.append(
-                Panel(
-                    http_ext_table,
-                    title=':gem: [b]HTTP extension[/]',
-                    expand=False,
-                )
-            )
         return all_panels
