@@ -6,7 +6,7 @@ import time
 
 import pytest
 
-from jina import Client, DocumentArray, Executor, Flow, requests, Deployment
+from jina import Client, Deployment, DocumentArray, Executor, Flow, requests
 from jina.helper import random_port
 
 cur_dir = os.path.dirname(__file__)
@@ -80,8 +80,7 @@ def test_deployment_reload(tmpdir):
     t.start()
     time.sleep(5)
     try:
-        client = Client(port=depl.port, protocol=str(depl.protocol))
-        res = client.post(on='/', inputs=DocumentArray.empty(10))
+        res = depl.post(on='/', inputs=DocumentArray.empty(10))
         assert len(res) == 10
         for doc in res:
             assert doc.text == 'MyExecutorBeforeReload'
@@ -90,13 +89,11 @@ def test_deployment_reload(tmpdir):
             os.path.join(os.path.join(cur_dir, 'exec'), 'config.yml'),
             str(tmpdir),
         ):
-            client = Client(port=depl.port, protocol=str(depl.protocol))
-            res = client.post(on='/', inputs=DocumentArray.empty(10))
+            res = depl.post(on='/', inputs=DocumentArray.empty(10))
             assert len(res) == 10
             for doc in res:
                 assert doc.text == 'MyExecutorAfterReload'
-        client = Client(port=depl.port, protocol=str(depl.protocol))
-        res = client.post(on='/', inputs=DocumentArray.empty(10))
+        res = depl.post(on='/', inputs=DocumentArray.empty(10))
         assert len(res) == 10
         for doc in res:
             assert doc.text == 'MyExecutorBeforeReload'
