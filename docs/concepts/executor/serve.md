@@ -1,19 +1,17 @@
 (serve-executor-standalone)=
 # Serve
 
-{class}`~jina.Executor`s can be served and remotely accessed over gRPC.
-This means, you can use a Jina {class}`~jina.Executor` to create a gRPC-based service for a variety of tasks: model 
-inference, data processing, generative AI, search service,...
+{class}`~jina.Executor`s can be served and accessed over gRPC, allowing you to use them to create a gRPC-based service for various tasks such as model inference, data processing, generative AI, and search services.
 
 There are different options for deploying and running a standalone Executor:
-* Run the Executor directly from Python with the `.serve()` class method
+* Run the Executor directly from Python with the {class}`~jina.orchestrate.deployments.Deployment` class
 * Run the static {meth}`~jina.serve.executors.BaseExecutor.to_kubernetes_yaml()` method to generate K8s deployment configuration files
 * Run the static {meth}`~jina.serve.executors.BaseExecutor.to_docker_compose_yaml()` method to generate a Docker Compose service file
 
 
 
 ```{seealso}
-Executors can also be combined to build a set of microservices constituting a pipeline. We will see in a later step how 
+Executors can also be combined to form a pipeline of microservices. We will see in a later step how 
 to achieve this with the {ref}`Flow <flow-cookbook>`
 ```
 
