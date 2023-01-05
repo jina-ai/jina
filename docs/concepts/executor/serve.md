@@ -189,4 +189,3 @@ The above example runs the `DummyHubExecutor` from Executor Hub locally on your 
 The Executor you use needs to be already containerized and stored in an accessible registry. We recommend Executor Hub for this.
 ````
 
-(reload-executor)=
