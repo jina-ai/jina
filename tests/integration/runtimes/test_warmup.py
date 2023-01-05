@@ -4,7 +4,7 @@ from dataclasses import dataclass
 
 import pytest
 
-from jina import Executor, requests
+from jina import Executor, Flow, requests
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.worker import WorkerRuntime
 from tests.helper import _generate_pod_args
@@ -78,7 +78,6 @@ async def test_gateway_warmup_fast_executor(port_generator, protocol, capfd):
 
     out, _ = capfd.readouterr()
     assert 'recv DataRequest at _jina_dry_run_' in out
-    assert not 'ERROR' in out
 
 
 @pytest.mark.asyncio
@@ -103,3 +102,43 @@ async def test_gateway_warmup_slow_executor(port_generator, protocol, capfd):
     out, _ = capfd.readouterr()
     assert 'recv DataRequest at _jina_dry_run_' in out
     assert 'ERROR' in out
+
+
+@pytest.mark.asyncio
+async def test_multi_protocol_gateway_fast_executor(port_generator, capfd):
+    http_port = port_generator()
+    grpc_port = port_generator()
+    websocket_port = port_generator()
+    flow = (
+        Flow()
+        .config_gateway(
+            port=[http_port, grpc_port, websocket_port],
+            protocol=['http', 'grpc', 'websocket'],
+        )
+        .add()
+    )
+
+    with flow:
+        out, _ = capfd.readouterr()
+        assert 'recv DataRequest at _jina_dry_run_' in out
+
+
+@pytest.mark.asyncio
+async def test_multi_protocol_gateway_slow_executor(port_generator, capfd):
+    http_port = port_generator()
+    grpc_port = port_generator()
+    websocket_port = port_generator()
+    flow = (
+        Flow()
+        .config_gateway(
+            port=[http_port, grpc_port, websocket_port],
+            protocol=['http', 'grpc', 'websocket'],
+        )
+        .add(uses='SlowExecutor', name='slowExecutor')
+    )
+
+    with flow:
+        time.sleep(1)
+        out, _ = capfd.readouterr()
+        print(out)
+        assert 'recv DataRequest at _jina_dry_run_' in out

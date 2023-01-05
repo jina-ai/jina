@@ -1,3 +1,4 @@
+import asyncio
 from typing import TYPE_CHECKING, AsyncIterator, Optional
 
 import grpc
@@ -99,12 +100,13 @@ class GRPCGateway(BaseGateway):
 
     async def shutdown(self):
         """Free other resources allocated with the server, e.g, gateway object, ..."""
+        await super().shutdown()
         await self.server.stop(0)
         await self.health_servicer.enter_graceful_shutdown()
 
     async def run_server(self):
         """Run GRPC server forever"""
-        await self.warmup()
+        self._warmup_task = asyncio.create_task(self.warmup())
         await self.server.wait_for_termination()
 
     async def dry_run(self, empty, context) -> jina_pb2.StatusProto:

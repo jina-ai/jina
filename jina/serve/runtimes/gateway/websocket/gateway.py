@@ -1,3 +1,4 @@
+import asyncio
 import logging
 import os
 from typing import Optional
@@ -107,11 +108,12 @@ class WebSocketGateway(BaseGateway):
             )
         )
 
+        self._warmup_task = asyncio.create_task(self.warmup())
         await self.server.setup()
-        await self.warmup()
 
     async def shutdown(self):
         """Free other resources allocated with the server, e.g, gateway object, ..."""
+        await super().shutdown()
         self.server.should_exit = True
         await self.server.shutdown()
 

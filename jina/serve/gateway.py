@@ -115,6 +115,8 @@ class BaseGateway(JAMLCompatible, metaclass=GatewayType):
             prefetch=self.runtime_args.prefetch,
         )
 
+        self._warmup_task = None
+
     def _add_runtime_args(self, _runtime_args: Optional[Dict]):
         from jina.parsers import set_gateway_runtime_args_parser
 
@@ -172,17 +174,17 @@ class BaseGateway(JAMLCompatible, metaclass=GatewayType):
         """Run server forever"""
         ...
 
-    @abc.abstractmethod
     async def shutdown(self):
         """Shutdown the server and free other allocated resources, e.g, streamer object, health check service, ..."""
-        ...
+        if self._warmup_task and not self._warmup_task.done():
+            self._warmup_task.cancel()
 
     async def warmup(self):
         '''Run client._is_flow_ready() request to trigger the dry_run endpoint on each executor.
         This forces the gateway to establish connection and open a gRPC channel to each executor so that the first
         request doesn't need to experience the penalty of eastablishing a brand new gRPC channel.
         '''
-        self.logger.debug('Running warmup')
+        self.logger.debug(f'Running warmup for {self.__class__}')
         from jina import Client
 
         timeout = time.time() + 60 * 5  # 5 minutes from now

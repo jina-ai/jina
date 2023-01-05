@@ -1,3 +1,4 @@
+import asyncio
 import copy
 from typing import List, Optional
 
@@ -33,18 +34,27 @@ class CompositeGateway(BaseGateway):
         """
         setup GRPC server
         """
+        tasks = []
         for gateway in self.gateways:
-            await gateway.setup_server()
+            tasks.append(asyncio.create_task(gateway.setup_server()))
+
+        await asyncio.gather(*tasks)
 
     async def shutdown(self):
         """Free other resources allocated with the server, e.g, gateway object, ..."""
+        shutdown_tasks = []
         for gateway in self.gateways:
-            await gateway.shutdown()
+            shutdown_tasks.append(asyncio.create_task(gateway.shutdown()))
+
+        await asyncio.gather(*shutdown_tasks)
 
     async def run_server(self):
         """Run GRPC server forever"""
+        run_server_tasks = []
         for gateway in self.gateways:
-            await gateway.run_server()
+            run_server_tasks.append(asyncio.create_task(gateway.run_server()))
+
+        await asyncio.gather(*run_server_tasks)
 
     @property
     def _should_exit(self) -> bool:

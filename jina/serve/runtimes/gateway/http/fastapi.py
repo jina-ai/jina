@@ -1,3 +1,4 @@
+import asyncio
 import logging
 import os
 from abc import abstractmethod
@@ -105,13 +106,14 @@ class FastAPIBaseGateway(BaseGateway):
             )
         )
 
+        self._warmup_task = asyncio.create_task(self.warmup())
         await self.server.setup()
-        await self.warmup()
 
     async def shutdown(self):
         """
         Free resources allocated when setting up HTTP server
         """
+        await super().shutdown()
         self.server.should_exit = True
         await self.server.shutdown()
 
