@@ -5,7 +5,7 @@
 
 There are different options for deploying and running a standalone Executor:
 * Run the Executor directly from Python with the {class}`~jina.orchestrate.deployments.Deployment` class
-* Run the static {meth}`~jina.serve.executors.BaseExecutor.to_kubernetes_yaml()` method to generate K8s deployment configuration files
+* Run the static {meth}`~jina.serve.executors.BaseExecutor.to_kubernetes_yaml()` method to generate Kubernetes deployment configuration files
 * Run the static {meth}`~jina.serve.executors.BaseExecutor.to_docker_compose_yaml()` method to generate a Docker Compose service file
 
 
@@ -36,13 +36,12 @@ Both served and shared Executors can be used as part of a Flow, by adding them a
 ## Serve directly
 An {class}`~jina.Executor` can be served using the {class}`~jina.orchestrate.deployments.Deployment` class.
 
-The {class}`~jina.orchestrate.deployments.Deployment` class aims at separating the deployment configuration from the 
-serving logic. 
+The {class}`~jina.orchestrate.deployments.Deployment` class aims to separate the deployment configuration from the serving logic.
 In other words:
 * the Executor cares about defining the logic to serve, which endpoints to define and what data to accept.
-* the Deployment layer cares about how to orchestrate this service, how many replicas or shards,...
+* the Deployment layer cares about how to orchestrate this service, how many replicas or shards, etc.
 
-This separation also aims at enhancing the reusability of Executors: the same implementation of an Executor can be 
+This separation also aims to enhance the reusability of Executors: the same implementation of an Executor can be 
 served in multiple ways/configurations using Deployment.
 
 Serve the Executor:
