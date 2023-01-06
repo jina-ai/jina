@@ -76,6 +76,7 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, InstrumentationMixin, AB
         self._start_time = time.time()
         self._loop.run_until_complete(self.async_setup())
         self._send_telemetry_event()
+        self.warmup_task = None
 
     def _send_telemetry_event(self):
         send_telemetry_event(event='start', obj=self, entity_id=self._entity_id)
@@ -160,6 +161,22 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, InstrumentationMixin, AB
     async def async_run_forever(self):
         """The async method to run until it is stopped."""
         ...
+
+    async def cancel_warmup_task(self):
+        '''Cancel warmup task if exists and is not completed. Cancellation is required if the Flow is being terminated before the
+        task is successful or hasn't reached the max timeout.
+        '''
+        if self.warmup_task:
+            self.logger.debug(
+                f'Cancelling warmup task {self.warmup_task} if not done or cancelled.'
+            )
+            try:
+                if not self.warmup_task.done() and not self.warmup_task.cancelled():
+                    self.warmup_task.cancel()
+                    await self.warmup_task
+                    self.warmup_task.exception()
+            except:
+                pass
 
     # Static methods used by the Pod to communicate with the `Runtime` in the separate process
 

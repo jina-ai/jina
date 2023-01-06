@@ -131,17 +131,20 @@ class GatewayRuntime(AsyncNewLoopRuntime):
 
     async def async_teardown(self):
         """Shutdown the server."""
+        await self.cancel_warmup_task()
         await self.gateway.streamer.close()
         await self.gateway.shutdown()
         await self.async_cancel()
 
     async def async_cancel(self):
         """Stop the server."""
+        await self.cancel_warmup_task()
         await self.gateway.streamer.close()
         await self.gateway.shutdown()
 
     async def async_run_forever(self):
         """Running method of the server."""
+        self.warmup_task = asyncio.create_task(self.gateway.streamer.warmup())
         await self.gateway.run_server()
         self.is_cancel.set()
 

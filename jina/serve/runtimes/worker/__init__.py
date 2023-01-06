@@ -142,7 +142,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
             self._health_servicer, self._grpc_server
         )
 
-        reflection.enable_server_reflection(service_names, self._grpc_server)     
+        reflection.enable_server_reflection(service_names, self._grpc_server)
         bind_addr = f'{self.args.host}:{self.args.port}'
         self.logger.debug(f'start listening on {bind_addr}')
         self._grpc_server.add_insecure_port(bind_addr)
@@ -185,6 +185,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
     async def async_run_forever(self):
         """Block until the GRPC server is terminated"""
         self.logger.debug(f'run grpc server forever')
+        self.warmup_task = asyncio.create_task(self._request_handler.warmup_executor())
         if self.args.reload:
             self._hot_reload_task = asyncio.create_task(self._hot_reload())
         await self._grpc_server.wait_for_termination()
@@ -192,6 +193,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
     async def async_cancel(self):
         """Stop the GRPC server"""
         self.logger.debug('cancel WorkerRuntime')
+        await self.cancel_warmup_task()
         if self._hot_reload_task is not None:
             self._hot_reload_task.cancel()
         self.logger.debug('closing the server')
