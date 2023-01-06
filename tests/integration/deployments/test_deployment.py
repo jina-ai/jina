@@ -4,6 +4,7 @@ import time
 
 import pytest
 from docarray import Document, DocumentArray
+from pytest import FixtureRequest
 
 from jina import Client, Document, Executor, requests
 from jina.enums import PollingType
@@ -394,8 +395,54 @@ class MyServeExec(Executor):
         docs.texts = ['bar' for _ in docs]
 
 
+@pytest.fixture()
+def exposed_port():
+    port = random_port()
+    yield port
+
+
+@pytest.fixture(autouse=False)
+def served_depl(request: FixtureRequest, exposed_port):
+    import threading
+    import time
+
+    def serve_depl(stop_event, **kwargs):
+        depl = Deployment(uses=MyServeExec, **kwargs)
+        with depl:
+            depl.block(stop_event)
+
+    stop_event = threading.Event()
+
+    kwargs = {'port': exposed_port}
+    enable_dynamic_batching = request.param
+    if enable_dynamic_batching:
+        kwargs['uses_dynamic_batching'] = {
+            '/bar': {'preferred_batch_size': 4, 'timeout': 5000}
+        }
+
+    t = threading.Thread(
+        name='serve-depl',
+        target=serve_depl,
+        args=(stop_event,),
+        kwargs=kwargs,
+    )
+    t.start()
+    time.sleep(3)  # allow Deployment to start
+
+    yield
+
+    stop_event.set()  # set event and stop (unblock) the Deployment
+    t.join()
+
+
+@pytest.mark.parametrize('served_depl', [False, True], indirect=True)
+def test_deployment_dynamic_batching(served_depl, exposed_port):
+    docs = Client(port=exposed_port).post(on='/bar', inputs=DocumentArray.empty(5))
+    assert docs.texts == ['bar' for _ in docs]
+
+
 @pytest.mark.parametrize('enable_dynamic_batching', [False, True])
-def test_deployment_dynamic_batching(enable_dynamic_batching):
+def test_deployment_client_dynamic_batching(enable_dynamic_batching):
     kwargs = {'port': random_port()}
     if enable_dynamic_batching:
         kwargs['uses_dynamic_batching'] = {
