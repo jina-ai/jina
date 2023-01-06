@@ -63,8 +63,9 @@ def test_gateway_instrumentation(
     (server_spans, client_spans, internal_spans) = partition_spans_by_kind(
         client_traces
     )
-    assert len(server_spans) == 5
-    assert len(client_spans) == 5
+    # operations '/jina.JinaSingleDataRequestRPC/process_single_data' and '/jina.JinaRPC/Call'
+    assert len(server_spans) == 2
+    assert len(client_spans) == 2
     assert len(internal_spans) == num_internal_spans
 
     trace_ids = get_trace_ids(client_traces)
@@ -121,8 +122,9 @@ def test_head_instrumentation(jaeger_port, otlp_collector, otlp_receiver_port):
     (server_spans, client_spans, internal_spans) = partition_spans_by_kind(
         client_traces
     )
-    assert len(server_spans) == 11
-    assert len(client_spans) == 11
+    # operations 3 times '/jina.JinaSingleDataRequestRPC/process_single_data' and 1 times '/jina.JinaRPC/Call'
+    assert len(server_spans) == 4
+    assert len(client_spans) == 4
     assert len(internal_spans) == 4
 
     services = get_services(jaeger_port)
