@@ -115,14 +115,14 @@ with Deployment(uses='docker://my-executor-image', port=12345, replicas=2) as de
 ['executed MyExec']
 ```
 
-```{hint}
+````{hint}
 You can use `dep.block()` to serve forever:
 
 ```python
 with Deployment(uses=MyExec, port=12345, replicas=2) as dep:
     dep.block()
 ```
-```
+````
 
 The {class}`~jina.orchestrate.deployments.Deployment` class accepts configuration options similar to 
 {ref}`Executor configuration with Flows <flow-configure-executors>`.
