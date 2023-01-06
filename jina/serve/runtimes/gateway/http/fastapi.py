@@ -106,7 +106,7 @@ class FastAPIBaseGateway(BaseGateway):
             )
         )
 
-        self._warmup_task = asyncio.create_task(self.warmup())
+        self._warmup_task = asyncio.create_task(self.streamer.warmup())
         await self.server.setup()
 
     async def shutdown(self):

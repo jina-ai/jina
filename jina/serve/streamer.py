@@ -1,9 +1,12 @@
 import json
 import os
+import time
 from typing import TYPE_CHECKING, Dict, List, Optional, Sequence, Union
 
-from docarray import DocumentArray
+import grpc
+from docarray import Document, DocumentArray
 
+from jina.excepts import InternalNetworkError
 from jina.logging.logger import JinaLogger
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.gateway.graph.topology_graph import TopologyGraph
@@ -65,6 +68,7 @@ class GatewayStreamer:
         :param aio_tracing_client_interceptors: Optional list of aio grpc tracing server interceptors.
         :param tracing_client_interceptor: Optional gprc tracing server interceptor.
         """
+        self.logger = logger
         topology_graph = TopologyGraph(
             graph_representation=graph_representation,
             graph_conditions=graph_conditions,
@@ -221,3 +225,30 @@ class GatewayStreamer:
     @staticmethod
     def _set_env_streamer_args(**kwargs):
         os.environ['JINA_STREAMER_ARGS'] = json.dumps(kwargs)
+
+    async def warmup(self):
+        '''Run requests to trigger the dry_run endpoint on each executor.
+        This forces the gateway to establish connection and open a gRPC channel to each executor so that the first
+        request doesn't need to experience the penalty of eastablishing a brand new gRPC channel.
+        '''
+        from jina.serve.executors import __dry_run_endpoint__
+
+        self.logger.debug(f'Running warmup')
+        timeout = time.time() + 60 * 5  # 5 minutes from now
+
+        while True:
+            successful_warmup_response = False
+            da = DocumentArray([Document()])
+            try:
+                async for _ in self.stream_docs(
+                    docs=da, exec_endpoint=__dry_run_endpoint__, request_size=1
+                ):
+                    pass
+                successful_warmup_response = True
+            except:
+                pass
+
+            if time.time() > timeout or successful_warmup_response:
+                break
+
+            time.sleep(0.2)

@@ -106,7 +106,7 @@ class GRPCGateway(BaseGateway):
 
     async def run_server(self):
         """Run GRPC server forever"""
-        self._warmup_task = asyncio.create_task(self.warmup())
+        self._warmup_task = asyncio.create_task(self.streamer.warmup())
         await self.server.wait_for_termination()
 
     async def dry_run(self, empty, context) -> jina_pb2.StatusProto:
