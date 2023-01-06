@@ -21,7 +21,9 @@ async def create_all_flow_deployments_and_wait_ready(
         'metadata': {'name': f'{namespace}'},
     }
     try:
+        print('creating namespace')
         utils.create_from_dict(api_client, namespace_object)
+        print('namespace created')
     except:
         pass
     deployment_set = set(os.listdir(flow_dump_path))
@@ -36,11 +38,13 @@ async def create_all_flow_deployments_and_wait_ready(
             }
         for file in file_set:
             try:
+                print(f'creating pod {deployment_name} on file {file}')
                 utils.create_from_yaml(
                     api_client,
                     yaml_file=os.path.join(flow_dump_path, deployment_name, file),
                     namespace=namespace,
                 )
+                print('pod created')
             except Exception:
                 # some objects are not successfully created since they exist from previous files
                 pass
@@ -48,12 +52,14 @@ async def create_all_flow_deployments_and_wait_ready(
     # wait for all the pods to be up
     while True:
         namespaced_pods = core_client.list_namespaced_pod(namespace)
+        print(f'pods up: {namespaced_pods}')
         if namespaced_pods.items is not None and len(namespaced_pods.items) == 4:
             break
         await asyncio.sleep(1.0)
 
     # wait for all the pods to be up
     resp = app_client.list_namespaced_deployment(namespace=namespace)
+    print(f'deployments {resp}')
     deployment_names = set([item.metadata.name for item in resp.items])
     assert deployment_names == {
         'gateway',
@@ -68,6 +74,9 @@ async def create_all_flow_deployments_and_wait_ready(
         for deployment_name in deployment_names:
             api_response = app_client.read_namespaced_deployment(
                 name=deployment_name, namespace=namespace
+            )
+            print(
+                f'waiting for deployment {deployment_name}, received response: {api_response}'
             )
             expected_num_replicas = expected_replicas[deployment_name]
             if (
@@ -248,6 +257,7 @@ async def test_no_message_lost_during_kill(logger, docker_images, tmpdir):
     flow.to_kubernetes_yaml(dump_path, k8s_namespace=namespace)
     from kubernetes import client
 
+    print('creating pods')
     api_client = client.ApiClient()
     core_client = client.CoreV1Api(api_client=api_client)
     app_client = client.AppsV1Api(api_client=api_client)
