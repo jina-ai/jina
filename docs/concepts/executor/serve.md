@@ -58,7 +58,8 @@ class MyExec(Executor):
 
 
 with Deployment(uses=MyExec, port=12345, replicas=2) as dep:
-    print(dep.post(inputs=DocumentArray.empty(1), on='/foo').texts)
+    docs = dep.post(inputs=DocumentArray.empty(1), on='/foo')
+    print(docs.texts)
 ```
 ````
 
@@ -74,7 +75,8 @@ py_modules:
 from jina import Deployment
 
 with Deployment(uses='executor.yaml', port=12345, replicas=2) as dep:
-    print(dep.post(inputs=DocumentArray.empty(1), on='/foo').texts)
+    docs = dep.post(inputs=DocumentArray.empty(1), on='/foo')
+    print(docs.texts)
 ```
 ````
 
@@ -84,7 +86,8 @@ with Deployment(uses='executor.yaml', port=12345, replicas=2) as dep:
 from jina import Deployment
 
 with Deployment(uses='jinaai://my-username/MyExec/', port=12345, replicas=2) as dep:
-    print(dep.post(inputs=DocumentArray.empty(1), on='/foo').texts)
+    docs = dep.post(inputs=DocumentArray.empty(1), on='/foo')
+    print(docs.texts)
 ```
 
 ````
@@ -95,7 +98,8 @@ with Deployment(uses='jinaai://my-username/MyExec/', port=12345, replicas=2) as 
 from jina import Deployment
 
 with Deployment(uses='docker://my-executor-image', port=12345, replicas=2) as dep:
-    print(dep.post(inputs=DocumentArray.empty(1), on='/foo').texts)
+    docs = dep.post(inputs=DocumentArray.empty(1), on='/foo')
+    print(docs.texts)
 ```
 
 ````
@@ -111,6 +115,14 @@ with Deployment(uses='docker://my-executor-image', port=12345, replicas=2) as de
 ['executed MyExec']
 ```
 
+```{hint}
+You can use `dep.block()` to serve forever:
+
+```python
+with Deployment(uses=MyExec, port=12345, replicas=2) as dep:
+    dep.block()
+```
+```
 
 The {class}`~jina.orchestrate.deployments.Deployment` class accepts configuration options similar to 
 {ref}`Executor configuration with Flows <flow-configure-executors>`.
