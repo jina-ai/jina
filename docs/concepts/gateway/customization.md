@@ -226,7 +226,7 @@ class MyGateway(FastAPIBaseGateway):
 
 (executor-streamer)=
 ## Calling an Individual Executor
-An `executor` object is injected by Jina to your gateway class which allows you to interface with individual Executors from the Gateway.
+An `executor` object is injected by Jina to your gateway class which allows you to call individual Executors from the Gateway.
 
 After transforming requests that arrive to the gateway server into Documents, you can call the Executor in your Python code using `self.executor['executor_name'].post(args)`.
 This method expects a DocumentArray object and an endpoint exposed by the Executor (similar to Jina Client). 
