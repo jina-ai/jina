@@ -539,7 +539,7 @@ class WorkerRequestHandler:
         if len(requests) > 1:
             result = DocumentArray(
                     d
-                    for r in reversed(requests)
+                    for r in requests
                     for d in getattr(r, 'docs')
             )
         else:
