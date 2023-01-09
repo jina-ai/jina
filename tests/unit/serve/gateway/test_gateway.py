@@ -159,7 +159,7 @@ def test_custom_gateway_no_executors(uses, uses_with, expected):
     assert worker_process.exitcode == 0
 
 
-def test_stream_individual_executor():
+def test_stream_individual_executor_simple():
     from docarray import DocumentArray, Document
 
     from jina.serve.runtimes.gateway.http.fastapi import FastAPIBaseGateway
@@ -178,7 +178,7 @@ def test_stream_individual_executor():
             @app.get("/endpoint")
             async def get(text: str):
                 docs = await self.executor['executor1'].post(on='/', inputs=DocumentArray([Document(text=text), Document(text=text.upper())]), parameters=PARAMETERS)
-                return {'result': [doc.text for doc in docs]}
+                return {'result': docs.texts}
 
             return app
 
@@ -197,3 +197,54 @@ def test_stream_individual_executor():
         import requests
         r = requests.get(f"http://localhost:{flow.port}/endpoint?text=meow")
         assert r.json()['result'] == [f"meow Second(parameters={str(PARAMETERS)})", f"MEOW Second(parameters={str(PARAMETERS)})"]
+
+
+@pytest.mark.parametrize(
+    'n_replicas, n_shards',
+    [
+        (1, 1),
+        (2, 1),
+        (1, 2),
+        (2, 2),
+    ]
+)
+def test_stream_individual_executor_multirequest(n_replicas: int, n_shards: int):
+    from docarray import DocumentArray, Document
+
+    from jina.serve.runtimes.gateway.http.fastapi import FastAPIBaseGateway
+    from jina import Flow, Executor, requests
+
+
+    PARAMETERS = {'dog': 'woof'}
+
+    class MyGateway(FastAPIBaseGateway):
+        @property
+        def app(self):
+            from fastapi import FastAPI
+
+            app = FastAPI(title='Custom FastAPI Gateway')
+
+            @app.get("/endpoint")
+            async def get(text: str):
+                docs = await self.executor['executor1'].post(on='/', inputs=DocumentArray([Document(text=f"{text} {i}") for i in range(20)]), parameters=PARAMETERS, request_size=5)
+                return {'result': docs.texts}
+
+            return app
+
+    class FirstExec(Executor):
+        @requests
+        def func(self, docs, **kwargs):
+            for doc in docs:
+                doc.text += ' THIS SHOULD NOT HAVE HAPPENED!'
+    class SecondExec(Executor):
+        @requests
+        def func(self, docs, parameters, **kwargs):
+            for doc in docs:
+                doc.text += f' Second(parameters={str(parameters)})'
+
+    with Flow().config_gateway(uses=MyGateway, protocol='http').add(uses=FirstExec, name='executor0').add(
+        uses=SecondExec, name='executor1', replicas=n_replicas, shards=n_shards
+    ) as flow:
+        import requests
+        r = requests.get(f"http://localhost:{flow.port}/endpoint?text=meow")
+        assert set(r.json()['result']) == set([f"meow {i} Second(parameters={str(PARAMETERS)})" for i in range(20)])
