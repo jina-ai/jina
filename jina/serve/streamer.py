@@ -1,3 +1,4 @@
+import asyncio
 import json
 import os
 import threading
@@ -259,7 +260,7 @@ class GatewayStreamer:
                 ):
                     return
 
-                time.sleep(0.2)
+                await asyncio.sleep(0.2)
         except Exception as ex:
             self.logger.error(f'error with warmup up task', ex)
             return
