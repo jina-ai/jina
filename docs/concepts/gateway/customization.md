@@ -231,6 +231,7 @@ An `executor` object is injected by Jina to your gateway class which allows you 
 After transforming requests that arrive to the gateway server into Documents, you can call the Executor in your Python code using `self.executor['executor_name'].post(args)`.
 This method expects a DocumentArray object and an endpoint exposed by the Executor (similar to Jina Client). 
 It returns a 'coroutine' which returns a DocumentArray.
+Check the method documentation for more information: {meth}`~ jina.serve.streamer._ExecutorStreamer.post()`
 
 Here is an example of calling an individual Executor named 'executor1':
 ```{code-block} python
