@@ -1,6 +1,7 @@
 import argparse
 import asyncio
 import signal
+import threading
 import time
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Optional, Union
@@ -77,6 +78,7 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, InstrumentationMixin, AB
         self._loop.run_until_complete(self.async_setup())
         self._send_telemetry_event()
         self.warmup_task = None
+        self.warmup_stop_event = threading.Event()
 
     def _send_telemetry_event(self):
         send_telemetry_event(event='start', obj=self, entity_id=self._entity_id)
@@ -171,8 +173,8 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, InstrumentationMixin, AB
                 f'Cancelling warmup task {self.warmup_task} if not done or cancelled.'
             )
             try:
-                if not self.warmup_task.done() and not self.warmup_task.cancelled():
-                    self.warmup_task.cancel()
+                if not self.warmup_task.done():
+                    self.warmup_stop_event.set()
                     await self.warmup_task
                     self.warmup_task.exception()
             except:

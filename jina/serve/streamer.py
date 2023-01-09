@@ -1,13 +1,11 @@
-import asyncio
 import json
 import os
+import threading
 import time
 from typing import TYPE_CHECKING, Dict, List, Optional, Sequence, Union
 
-import grpc
 from docarray import Document, DocumentArray
 
-from jina.excepts import InternalNetworkError
 from jina.logging.logger import JinaLogger
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.gateway.graph.topology_graph import TopologyGraph
@@ -227,10 +225,11 @@ class GatewayStreamer:
     def _set_env_streamer_args(**kwargs):
         os.environ['JINA_STREAMER_ARGS'] = json.dumps(kwargs)
 
-    async def warmup(self):
+    async def warmup(self, stop_event: threading.Event):
         '''Run requests to trigger the dry_run endpoint on each executor.
         This forces the gateway to establish connection and open a gRPC channel to each executor so that the first
         request doesn't need to experience the penalty of eastablishing a brand new gRPC channel.
+        :param stop_event: signal to indicate if an early termination of the task is required for graceful teardown.
         '''
         from jina.serve.executors import __dry_run_endpoint__
 
@@ -238,7 +237,7 @@ class GatewayStreamer:
         timeout = time.time() + 60 * 5  # 5 minutes from now
 
         try:
-            while True:
+            while True and not stop_event.is_set():
                 successful_warmup_response = False
                 da = DocumentArray([Document()])
                 try:
@@ -254,5 +253,5 @@ class GatewayStreamer:
                     return
 
                 time.sleep(0.2)
-        except asyncio.CancelledError:
+        except Exception as ex:
             return
