@@ -177,7 +177,8 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, InstrumentationMixin, AB
                     self.warmup_stop_event.set()
                     await self.warmup_task
                     self.warmup_task.exception()
-            except:
+            except Exception as ex:
+                self.logger.error(f'exception during warmup task cancellation', ex)
                 pass
 
     # Static methods used by the Pod to communicate with the `Runtime` in the separate process

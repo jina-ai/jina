@@ -1114,6 +1114,45 @@ class GrpcConnectionPool:
 
         return asyncio.create_task(task_wrapper())
 
+    async def warmup(
+        self,
+        targets: Set[str],
+    ) -> List[bool]:
+        '''Executes discovery endpoint requests against the provided targets and the channel from the ReplicaList.
+        :param targets: set of executor targets that needs warmup.
+        :return: dictionary of target and a bool value if the request was successful.
+        '''
+        target_warmup_responses = dict()
+
+        async def task_wrapper(target_warmup_responses, target, channel):
+            try:
+                stub = jina_pb2_grpc.JinaDiscoverEndpointsRPCStub(channel)
+                call_result = stub.endpoint_discovery(
+                    jina_pb2.google_dot_protobuf_dot_empty__pb2.Empty(),
+                )
+                await call_result
+                target_warmup_responses[target] = True
+            except Exception as ex:
+                target_warmup_responses[target] = False
+
+        tasks = []
+        for _, deployment in self._connections._deployments.items():
+            for _, replicas in deployment.items():
+                for _, replica_list in replicas.items():
+                    for target in targets:
+                        channel = replica_list._address_to_channel.get(target, None)
+                        if channel:
+                            tasks.append(
+                                asyncio.create_task(
+                                    task_wrapper(
+                                        target_warmup_responses, target, channel
+                                    )
+                                )
+                            )
+
+        await asyncio.gather(*tasks)
+        return target_warmup_responses
+
     @staticmethod
     def __aio_channel_with_tracing_interceptor(
         address,

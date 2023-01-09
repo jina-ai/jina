@@ -81,6 +81,7 @@ class GatewayStreamer:
         self.runtime_name = runtime_name
         self.aio_tracing_client_interceptors = aio_tracing_client_interceptors
         self.tracing_client_interceptor = tracing_client_interceptor
+        self._executor_addresses = executor_addresses
 
         self._connection_pool = self._create_connection_pool(
             executor_addresses,
@@ -235,23 +236,30 @@ class GatewayStreamer:
 
         self.logger.debug(f'Running warmup')
         timeout = time.time() + 60 * 5  # 5 minutes from now
+        pending_targets = {
+            target
+            for targets in self._executor_addresses.values()
+            for target in targets
+        }
 
         try:
             while True and not stop_event.is_set():
-                successful_warmup_response = False
-                da = DocumentArray([Document()])
-                try:
-                    async for _ in self.stream_docs(
-                        docs=da, exec_endpoint=__dry_run_endpoint__, request_size=1
-                    ):
-                        pass
-                    successful_warmup_response = True
-                except Exception:
-                    pass
+                target_warmup_responses = await self._connection_pool.warmup(
+                    targets=pending_targets
+                )
 
-                if time.time() > timeout or successful_warmup_response:
+                for target, response in target_warmup_responses.items():
+                    if response:
+                        pending_targets.remove(target)
+
+                if (
+                    time.time() > timeout
+                    or len(pending_targets) == 0
+                    or all(target_warmup_responses.values())
+                ):
                     return
 
                 time.sleep(0.2)
         except Exception as ex:
+            self.logger.error(f'error with warmup up task', ex)
             return
