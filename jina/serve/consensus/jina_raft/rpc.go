@@ -1,23 +1,23 @@
 package server
 
 import (
-	"context"
-	"log"
-	"time"
+    "context"
+    "log"
+    "time"
 
-	"github.com/Jille/raft-grpc-leader-rpc/rafterrors"
-	"google.golang.org/protobuf/proto"
+    "github.com/Jille/raft-grpc-leader-rpc/rafterrors"
+    "github.com/golang/protobuf/proto"
 
-	"github.com/hashicorp/raft"
-	pb "jina-raft/jina-go-proto"
+    "github.com/hashicorp/raft"
+    pb "jraft/jina-go-proto"
 )
 
 
 type RpcInterface struct {
-	Executor *executorFSM
-	Raft     *raft.Raft
-	pb.UnimplementedJinaSingleDataRequestRPCServer
-	pb.UnimplementedJinaGatewayDryRunRPCServer
+    Executor *executorFSM
+    Raft     *raft.Raft
+    pb.UnimplementedJinaSingleDataRequestRPCServer
+    pb.UnimplementedJinaGatewayDryRunRPCServer
 }
 
 
@@ -26,9 +26,9 @@ type RpcInterface struct {
  * This is used to send requests to Executors when a list of requests is not needed
  */
 func (rpc RpcInterface) ProcessSingleData(
-	ctx context.Context,
-	dataRequestProto *pb.DataRequestProto) (*pb.DataRequestProto, error) {
-	endpoint := dataRequestProto.Header.ExecEndpoint
+    ctx context.Context,
+    dataRequestProto *pb.DataRequestProto) (*pb.DataRequestProto, error) {
+    endpoint := dataRequestProto.Header.ExecEndpoint
     found := false
 
     // Loop through the list and check if the search string is in the list

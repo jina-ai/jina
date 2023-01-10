@@ -1,4 +1,4 @@
-module jina-raft
+module jraft
 
 go 1.19
 

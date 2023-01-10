@@ -318,6 +318,7 @@ class Pod(BasePod):
     def __init__(self, args: 'argparse.Namespace'):
         super().__init__(args)
         self.runtime_cls = self._get_runtime_cls()
+        # if statefgul, have a raft_worker
         self.worker = multiprocessing.Process(
             target=run,
             kwargs={
