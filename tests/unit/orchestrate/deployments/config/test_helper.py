@@ -47,12 +47,15 @@ def test_get_image_name(mocker, monkeypatch, uses):
     mock = mocker.Mock()
 
     def _mock_fetch(*args, **kwargs):
-        param_rebuild_image = args[3] if len(args) > 3 else None
+        positional_param_rebuild_image = args[2] if len(args) > 2 else None
+        keyword_param_rebuild_image = (
+            kwargs['rebuild_image'] if 'rebuild_image' in kwargs else True
+        )
         mock(
             name=args[0],
-            rebuild_image=param_rebuild_image
-            if param_rebuild_image is not None
-            else True,
+            rebuild_image=positional_param_rebuild_image
+            if positional_param_rebuild_image is not None
+            else keyword_param_rebuild_image,
         )
 
         return (
