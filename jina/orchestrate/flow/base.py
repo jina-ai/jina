@@ -1292,7 +1292,7 @@ class Flow(
         uses_with: Optional[dict] = None, 
         uvicorn_kwargs: Optional[dict] = None, 
         workspace: Optional[str] = None, 
-        **kwargs):
+        **kwargs) -> Union['Flow', 'AsyncFlow']:
         """Configure the Gateway inside a Flow. The Gateway exposes your Flow logic as a service to the internet according to the protocol and configuration you choose.
 
         :param compression: The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.
