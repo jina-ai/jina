@@ -458,6 +458,7 @@ def test_docker_compose_yaml_regular_deployment(
         image_required=True,
         rebuild_image=True,
         *,
+        prefer_platform=None,
         secret=None,
         force=False,
     ):
