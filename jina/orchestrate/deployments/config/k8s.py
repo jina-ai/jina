@@ -11,7 +11,7 @@ from jina.constants import (
 )
 from jina.enums import PodRoleType
 from jina.excepts import NoContainerizedError
-from jina.orchestrate.deployments import BaseDeployment
+from jina.orchestrate.deployments import Deployment
 from jina.orchestrate.deployments.config.helper import (
     construct_runtime_container_args,
     get_base_executor_version,
@@ -292,7 +292,7 @@ class K8sDeploymentConfig:
         if args.name != 'gateway':
             # head deployment only exists for sharded deployments
             if shards > 1:
-                parsed_args['head_deployment'] = BaseDeployment._copy_to_head_args(
+                parsed_args['head_deployment'] = Deployment._copy_to_head_args(
                     self.args
                 )
                 parsed_args['head_deployment'].gpus = None
