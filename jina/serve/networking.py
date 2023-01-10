@@ -1,6 +1,8 @@
 import asyncio
 import ipaddress
 import os
+import threading
+import time
 from collections import defaultdict
 from dataclasses import dataclass
 from typing import Dict, List, Optional, Sequence, Set, Tuple, Union
@@ -613,9 +615,6 @@ class GrpcConnectionPool:
                     return self._get_connection_list(
                         deployment, type_, 0, increase_access_count
                     )
-                self._logger.debug(
-                    f'did not find a connection for deployment {deployment}, type {type_} and entity_id {entity_id}. There are {len(self._deployments[deployment][type_]) if deployment in self._deployments else 0} available connections for this deployment and type. '
-                )
                 return None
 
         def _add_deployment(self, deployment: str):
@@ -1117,39 +1116,68 @@ class GrpcConnectionPool:
     async def warmup(
         self,
         deployment: str,
-    ) -> Tuple[str, bool]:
+        stop_event: threading.Event,
+    ):
         '''Executes discovery endpoint requests against the provided deployment from the ReplicaList. A single task
         is created for each replica.
         :param deployment: deployment name and the replicas that needs to be warmed up.
-        :return: dictionary of target and a bool value if the request was successful.
+        :param stop_event: signal to indicate if an early termination of the task is required for graceful teardown.
         '''
-        replica_warmup_responses = []
 
         async def task_wrapper(target_warmup_responses, target, channel):
             try:
-                stub = jina_pb2_grpc.JinaDiscoverEndpointsRPCStub(channel)
-                call_result = stub.endpoint_discovery(
-                    jina_pb2.google_dot_protobuf_dot_empty__pb2.Empty(),
+                stub = jina_pb2_grpc.JinaInfoRPCStub(channel=channel)
+                call_result = stub._status(
+                    request=jina_pb2.google_dot_protobuf_dot_empty__pb2.Empty(),
                 )
                 await call_result
-                target_warmup_responses.append(True)
-            except Exception as ex:
-                target_warmup_responses.append(False)
+                target_warmup_responses[target] = True
+            except Exception:
+                target_warmup_responses[target] = False
 
-        tasks = []
-        deployment_to_connections = self._connections._deployments.get(deployment, None)
-        if deployment_to_connections:
-            for _, replicas in deployment_to_connections.items():
-                for _, replica_list in replicas.items():
-                    for target, channel in replica_list._address_to_channel.items():
-                        tasks.append(
-                            asyncio.create_task(
-                                task_wrapper(replica_warmup_responses, target, channel)
-                            )
+        try:
+            timeout = time.time() + 60 * 5  # 5 minutes from now
+            warmed_up_targets = set()
+
+            while not stop_event.is_set():
+                # refresh channels in case connection has been reset due to InternalNetworkError
+                target_to_channel = self.__extract_target_to_channel(deployment)
+                for warmed_target in warmed_up_targets:
+                    target_to_channel.pop(warmed_target)
+
+                replica_warmup_responses = {}
+                tasks = []
+                for target, channel in target_to_channel.items():
+                    tasks.append(
+                        asyncio.create_task(
+                            task_wrapper(replica_warmup_responses, target, channel)
                         )
+                    )
+                await asyncio.gather(*tasks, return_exceptions=True)
 
-        await asyncio.gather(*tasks)
-        return (deployment, all(replica_warmup_responses))
+                for target, response in replica_warmup_responses.items():
+                    if response:
+                        warmed_up_targets.add(target)
+
+                if time.time() > timeout or len(target_to_channel) == 0:
+                    return
+
+                await asyncio.sleep(0.2)
+        except Exception as ex:
+            self._logger.error(f'error with warmup up task: {ex}')
+            return
+
+    def __extract_target_to_channel(self, deployment):
+        replica_set = set()
+        replica_set.update(self._connections.get_replicas_all_shards(deployment))
+        replica_set.add(
+            self._connections.get_replicas(deployment=deployment, head=True)
+        )
+
+        target_to_channel = {}
+        for replica_list in filter(None, replica_set):
+            target_to_channel.update(replica_list._address_to_channel)
+        return target_to_channel
 
     @staticmethod
     def __aio_channel_with_tracing_interceptor(

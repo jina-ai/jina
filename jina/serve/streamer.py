@@ -233,35 +233,21 @@ class GatewayStreamer:
         request doesn't need to experience the penalty of eastablishing a brand new gRPC channel.
         :param stop_event: signal to indicate if an early termination of the task is required for graceful teardown.
         '''
-        from jina.serve.executors import __dry_run_endpoint__
-
-        self.logger.debug('Running warmup')
-        timeout = time.time() + 60 * 5  # 5 minutes from now
-        pending_deployments = {key for key in self._executor_addresses.keys()}
+        self.logger.debug(f'Running GatewayRuntime warmup')
+        deployments = {key for key in self._executor_addresses.keys()}
 
         try:
-            while not stop_event.is_set():
-                deployment_warmup_tasks = []
-                for deployment in pending_deployments:
-                    deployment_warmup_tasks.append(
-                        asyncio.create_task(
-                            self._connection_pool.warmup(deployment=deployment)
+            deployment_warmup_tasks = []
+            for deployment in deployments:
+                deployment_warmup_tasks.append(
+                    asyncio.create_task(
+                        self._connection_pool.warmup(
+                            deployment=deployment, stop_event=stop_event
                         )
                     )
-
-                deployment_warmup_responses = await asyncio.gather(
-                    *deployment_warmup_tasks
                 )
 
-                for task_response in deployment_warmup_responses:
-                    deployment, warmup_response = task_response
-                    if warmup_response:
-                        pending_deployments.remove(deployment)
-
-                if time.time() > timeout or len(pending_deployments) == 0:
-                    return
-
-                await asyncio.sleep(0.2)
+            await asyncio.gather(*deployment_warmup_tasks, return_exceptions=True)
         except Exception as ex:
-            self.logger.error(f'error with warmup up task', ex)
+            self.logger.error(f'error with GatewayRuntime warmup up task: {ex}')
             return

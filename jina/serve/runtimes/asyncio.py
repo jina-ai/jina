@@ -169,9 +169,9 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, InstrumentationMixin, AB
         task is successful or hasn't reached the max timeout.
         '''
         if self.warmup_task:
-            self.logger.debug(f'Cancelling warmup task if not done or cancelled.')
             try:
                 if not self.warmup_task.done():
+                    self.logger.debug(f'Cancelling warmup task.')
                     self.warmup_stop_event.set()
                     await self.warmup_task
                     self.warmup_task.exception()

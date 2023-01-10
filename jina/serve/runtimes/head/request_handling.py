@@ -1,6 +1,9 @@
 import asyncio
-from typing import TYPE_CHECKING, Dict, Optional, Tuple
+import threading
+import time
+from typing import TYPE_CHECKING, Dict, List, Optional, Tuple
 
+from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.monitoring import MonitoringRequestMixin
 from jina.serve.runtimes.worker.request_handling import WorkerRequestHandler
 
@@ -164,7 +167,9 @@ class HeaderRequestHandler(MonitoringRequestMixin):
         elif len(worker_results) > 1 and not reduce:
             # worker returned multiple responses, but the head is configured to skip reduction
             # just concatenate the docs in this case
-            response_request.data.docs = WorkerRequestHandler.get_docs_from_request(requests)
+            response_request.data.docs = WorkerRequestHandler.get_docs_from_request(
+                requests
+            )
 
         merged_metadata = self._merge_metadata(
             metadata,
@@ -177,3 +182,33 @@ class HeaderRequestHandler(MonitoringRequestMixin):
         self._update_end_request_metrics(response_request)
 
         return response_request, merged_metadata
+
+    async def warmup(
+        self,
+        connection_pool: GrpcConnectionPool,
+        stop_event: threading.Event,
+        deployments: List[str],
+    ):
+        '''Executes discovery endpoint requests against the deployments from the connection pool. A single task is created for each replica.
+        :param connection_pool: GrpcConnectionPool that implements the warmup to the connected deployments.
+        :param stop_event: signal to indicate if an early termination of the task is required for graceful teardown.
+        :param deployments: list of deployments that need to be warmed up.
+        '''
+        self.logger.debug(f'Running HeadRuntime warmup')
+
+        try:
+            deployment_warmup_tasks = []
+            for deployment in deployments:
+                deployment_warmup_tasks.append(
+                    asyncio.create_task(
+                        connection_pool.warmup(
+                            deployment=deployment,
+                            stop_event=stop_event,
+                        )
+                    )
+                )
+
+            await asyncio.gather(*deployment_warmup_tasks, return_exceptions=True)
+        except Exception as ex:
+            self.logger.error(f'error with HeadRuntime warmup up task: {ex}')
+            return

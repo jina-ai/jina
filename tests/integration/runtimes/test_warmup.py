@@ -32,7 +32,27 @@ async def test_gateway_warmup_fast_executor(protocol, capfd):
     with flow:
         time.sleep(1)
         out, _ = capfd.readouterr()
-        assert 'got an endpoint discovery request' in out
+        assert 'recv _status' in out
+        assert out.count('recv _status') == 1
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize('protocol', ['grpc', 'http', 'websocket'])
+async def test_gateway_warmup_with_replicas_and_shards(protocol, capfd):
+    flow = (
+        Flow(protocol=protocol)
+        .add(name='executor0', shards=2)
+        .add(name='executor1', replicas=2)
+    )
+
+    with flow:
+        time.sleep(1)
+        out, _ = capfd.readouterr()
+        assert 'recv _status' in out
+        # 2 calls from gateway runtime to deployments
+        # 2 calls from head to shards
+        # 1 call from the gateway to the head runtime warmup adds an additional call to any shard
+        assert out.count('recv _status') == 5
 
 
 @pytest.mark.asyncio
@@ -50,12 +70,13 @@ async def test_gateway_warmup_slow_executor(
             time.sleep(1)
             stop_event.set()
             out, _ = capfd.readouterr()
-            assert not 'got an endpoint discovery request' in out
+            assert not 'recv _status' in out
         else:
             # requires high sleep time to account for Flow readiness and properly capture the output logs
             time.sleep(SLOW_EXECUTOR_SLEEP_TIME * 3)
             out, _ = capfd.readouterr()
-            assert 'got an endpoint discovery request' in out
+            assert 'recv _status' in out
+            assert out.count('recv _status') == 1
     finally:
         if not stop_event.is_set():
             stop_event.set()
@@ -79,7 +100,8 @@ async def test_multi_protocol_gateway_warmup_fast_executor(port_generator, capfd
     with flow:
         time.sleep(1)
         out, _ = capfd.readouterr()
-        assert 'got an endpoint discovery request' in out
+        assert 'recv _status' in out
+        assert out.count('recv _status') == 1
 
 
 @pytest.mark.asyncio
@@ -106,12 +128,13 @@ async def test_multi_protocol_gateway_warmup_slow_executor(
             time.sleep(1)
             stop_event.set()
             out, _ = capfd.readouterr()
-            assert not 'got an endpoint discovery request' in out
+            assert not 'recv _status' in out
         else:
             # requires high sleep time to account for Flow readiness and properly capture the output logs
             time.sleep(SLOW_EXECUTOR_SLEEP_TIME * 3)
             out, _ = capfd.readouterr()
-            assert 'got an endpoint discovery request' in out
+            assert 'recv _status' in out
+            assert out.count('recv _status') == 1
     finally:
         if not stop_event.is_set():
             stop_event.set()
