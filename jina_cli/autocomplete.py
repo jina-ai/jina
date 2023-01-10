@@ -209,10 +209,10 @@ ac_table = {
         'hub pull': [
             '--help',
             '--no-usage',
-            '--install-requirements',
             '--force-update',
             '--force',
             '--prefer-platform',
+            '--install-requirements',
         ],
         'hub status': ['--help', '--id', '--verbose', '--replay'],
         'hub list': ['--help'],
