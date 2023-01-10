@@ -1,3 +1,4 @@
+import asyncio
 import json
 import os
 from typing import TYPE_CHECKING, Dict, List, Optional, Sequence, Union
@@ -245,12 +246,19 @@ class _ExecutorStreamer:
             req.data.docs = docs_batch
             reqs.append(req)
 
-        resp, _ = await self._connection_pool.send_requests_once(
-            requests=reqs,
+        tasks = [
+        self._connection_pool.send_requests_once(
+            requests=[req],
             deployment=self.executor_name,
             head=True,
             endpoint=on
-        )
+        ) for req in reqs]
+
+        results = await asyncio.gather(*tasks)
         
-        return resp.docs
+        docs = DocumentArray.empty()
+        for resp,_ in results:
+            docs.extend(resp.docs)
+        
+        return docs
         
