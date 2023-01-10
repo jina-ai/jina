@@ -134,6 +134,9 @@ from jina.orchestrate.flow.asyncio import AsyncFlow
 # Flow
 from jina.orchestrate.flow.base import Flow
 
+# Deployment
+from jina.orchestrate.deployments import Deployment
+
 # Executor
 from jina.serve.executors import BaseExecutor as Executor
 from jina.serve.executors.decorators import dynamic_batching, monitor, requests
