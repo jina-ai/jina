@@ -70,16 +70,8 @@ def test_use_from_local_hub_deployment_level(
 
     mock = mocker.Mock()
 
-    def _mock_fetch(
-        name,
-        tag,
-        image_required=True,
-        rebuild_image=True,
-        *,
-        secret=None,
-        force=False,
-    ):
-        mock(name=name)
+    def _mock_fetch(*args, **kwargs):
+        mock(name=args[0])
         return (
             HubExecutor(
                 uuid='hello',
@@ -105,16 +97,8 @@ def test_use_from_local_hub_flow_level(mocker, monkeypatch, local_hub_executor, 
 
     mock = mocker.Mock()
 
-    def _mock_fetch(
-        name,
-        tag,
-        image_required=True,
-        rebuild_image=True,
-        *,
-        secret=None,
-        force=False,
-    ):
-        mock(name=name)
+    def _mock_fetch(*args, **kwargs):
+        mock(name=args[0])
         return (
             HubExecutor(
                 uuid='hello',

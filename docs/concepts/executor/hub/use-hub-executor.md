@@ -149,6 +149,27 @@ You can find the Executor by running `docker images`. You can also indicate whic
 ```bash
 jina hub pull jinaai+docker://jina-ai/DummyExecutor:v1.0.0
 ```
+### Platform awareness of hub images 
+
+````{admonition} Hint
+:class: hint
+As of January 10, 2023 `jina hub pull` is platform aware. It will automatically select docker images base on your native CPU architecture (if available).
+````
+If you prefer a specific platform, for example, preferring `amd64` on an `arm64` machine, you can explicitly pull with `--prefer-platform`:
+
+````{admonition} Caution
+:class: caution
+When you specify `--prefer-platform` you probably want to also specify `--force` to overwrite the existing image in local cache.
+````
+
+````{admonition} Note
+:class: note
+If the image you specify doesn't support your preferred platform, it will not respect your platform preference.
+````
+
+```bash
+jina hub pull --force --prefer-platform linux/amd64 jinaai+docker://jina-ai/DummyExecutor:v1.0.0
+```
 
 ### Pull the source code
 

@@ -256,3 +256,8 @@ def mixin_hub_pull_options_parser(parser):
         default=False,
         help='If set, always pull the latest Hub Executor bundle even it exists on local',
     )
+    gp.add_argument(
+        '--prefer-platform',
+        type=str,
+        help='The preferred target Docker platform. (e.g. "linux/amd64", "linux/arm64")',
+    )

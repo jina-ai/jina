@@ -42,29 +42,19 @@ def test_to_compatible_name():
     assert to_compatible_name('executor/hey-ha_HO') == 'executor-hey-ha-ho'
 
 
-@pytest.mark.parametrize(
-    'uses', ['jinaai://jina-ai/DummyExecutor']
-)
+@pytest.mark.parametrize('uses', ['jinaai://jina-ai/DummyExecutor'])
 def test_get_image_name(mocker, monkeypatch, uses):
     mock = mocker.Mock()
 
-    def _mock_fetch(
-        name,
-        tag,
-        image_required=True,
-        rebuild_image=True,
-        *,
-        secret=None,
-        force=False,
-    ):
-        mock(name=name, rebuild_image=rebuild_image)
+    def _mock_fetch(*args, **kwargs):
+        mock(name=args[0], rebuild_image=args[3])
 
         return (
             HubExecutor(
                 uuid='hello',
-                name=name,
+                name=args[0],
                 tag='v0',
-                image_name=f'jinahub/{name}',
+                image_name=f'jinahub/{args[0]}',
                 md5sum=None,
                 visibility=True,
                 archive_url=None,

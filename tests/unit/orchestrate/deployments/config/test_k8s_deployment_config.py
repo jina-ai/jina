@@ -433,21 +433,13 @@ def test_k8s_yaml_regular_deployment(
     polling,
     monkeypatch,
 ):
-    def _mock_fetch(
-        name,
-        tag,
-        image_required=True,
-        rebuild_image=True,
-        *,
-        secret=None,
-        force=False,
-    ):
+    def _mock_fetch(*args, **kwargs):
         return (
             HubExecutor(
                 uuid='hello',
                 name='alias_dummy',
                 tag='v0',
-                image_name=f'jinahub/{name}',
+                image_name=f'jinahub/{args[0]}',
                 md5sum=None,
                 visibility=True,
                 archive_url=None,
