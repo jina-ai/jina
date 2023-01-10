@@ -235,29 +235,30 @@ class GatewayStreamer:
         '''
         from jina.serve.executors import __dry_run_endpoint__
 
-        self.logger.debug(f'Running warmup')
+        self.logger.debug('Running warmup')
         timeout = time.time() + 60 * 5  # 5 minutes from now
-        pending_targets = {
-            target
-            for targets in self._executor_addresses.values()
-            for target in targets
-        }
+        pending_deployments = {key for key in self._executor_addresses.keys()}
 
         try:
-            while True and not stop_event.is_set():
-                target_warmup_responses = await self._connection_pool.warmup(
-                    targets=pending_targets
+            while not stop_event.is_set():
+                deployment_warmup_tasks = []
+                for deployment in pending_deployments:
+                    deployment_warmup_tasks.append(
+                        asyncio.create_task(
+                            self._connection_pool.warmup(deployment=deployment)
+                        )
+                    )
+
+                deployment_warmup_responses = await asyncio.gather(
+                    *deployment_warmup_tasks
                 )
 
-                for target, response in target_warmup_responses.items():
-                    if response:
-                        pending_targets.remove(target)
+                for task_response in deployment_warmup_responses:
+                    deployment, warmup_response = task_response
+                    if warmup_response:
+                        pending_deployments.remove(deployment)
 
-                if (
-                    time.time() > timeout
-                    or len(pending_targets) == 0
-                    or all(target_warmup_responses.values())
-                ):
+                if time.time() > timeout or len(pending_deployments) == 0:
                     return
 
                 await asyncio.sleep(0.2)

@@ -169,16 +169,13 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, InstrumentationMixin, AB
         task is successful or hasn't reached the max timeout.
         '''
         if self.warmup_task:
+            self.logger.debug(f'Cancelling warmup task if not done or cancelled.')
             try:
                 if not self.warmup_task.done():
-                    self.logger.debug(
-                        'Cancelling warmup task if not done or cancelled.'
-                    )
                     self.warmup_stop_event.set()
                     await self.warmup_task
                     self.warmup_task.exception()
-            except Exception as ex:
-                self.logger.error(f'exception during warmup task cancellation', ex)
+            except:
                 pass
 
     # Static methods used by the Pod to communicate with the `Runtime` in the separate process
