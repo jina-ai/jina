@@ -58,7 +58,7 @@ class MyExec(Executor):
 
 
 with Deployment(uses=MyExec, port=12345, replicas=2) as dep:
-    docs = dep.post(inputs=DocumentArray.empty(1), on='/foo')
+    docs = dep.post(on='/foo', inputs=DocumentArray.empty(1))
     print(docs.texts)
 ```
 ````
@@ -75,7 +75,7 @@ py_modules:
 from jina import Deployment
 
 with Deployment(uses='executor.yaml', port=12345, replicas=2) as dep:
-    docs = dep.post(inputs=DocumentArray.empty(1), on='/foo')
+    docs = dep.post(on='/foo', inputs=DocumentArray.empty(1))
     print(docs.texts)
 ```
 ````
@@ -86,7 +86,7 @@ with Deployment(uses='executor.yaml', port=12345, replicas=2) as dep:
 from jina import Deployment
 
 with Deployment(uses='jinaai://my-username/MyExec/', port=12345, replicas=2) as dep:
-    docs = dep.post(inputs=DocumentArray.empty(1), on='/foo')
+    docs = dep.post(on='/foo', inputs=DocumentArray.empty(1))
     print(docs.texts)
 ```
 
@@ -98,7 +98,7 @@ with Deployment(uses='jinaai://my-username/MyExec/', port=12345, replicas=2) as 
 from jina import Deployment
 
 with Deployment(uses='docker://my-executor-image', port=12345, replicas=2) as dep:
-    docs = dep.post(inputs=DocumentArray.empty(1), on='/foo')
+    docs = dep.post(on='/foo', inputs=DocumentArray.empty(1))
     print(docs.texts)
 ```
 
