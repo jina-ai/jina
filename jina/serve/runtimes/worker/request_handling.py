@@ -596,11 +596,3 @@ class WorkerRequestHandler:
         WorkerRequestHandler.replace_parameters(requests[0], params)
 
         return requests[0]
-
-    async def warmup_executor(self):
-        '''Run requests to trigger the dry_run endpoint on each executor.
-        This forces the gateway to establish connection and open a gRPC channel to each executor so that the first
-        request doesn't need to experience the penalty of eastablishing a brand new gRPC channel.
-        '''
-        self.logger.debug('Running executor warmup')
-        self._executor.warmup()

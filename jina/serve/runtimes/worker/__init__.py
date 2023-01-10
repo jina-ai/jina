@@ -185,7 +185,6 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
     async def async_run_forever(self):
         """Block until the GRPC server is terminated"""
         self.logger.debug(f'run grpc server forever')
-        self.warmup_task = asyncio.create_task(self._request_handler.warmup_executor())
         if self.args.reload:
             self._hot_reload_task = asyncio.create_task(self._hot_reload())
         await self._grpc_server.wait_for_termination()
@@ -193,7 +192,6 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
     async def async_cancel(self):
         """Stop the GRPC server"""
         self.logger.debug('cancel WorkerRuntime')
-        await self.cancel_warmup_task()
         if self._hot_reload_task is not None:
             self._hot_reload_task.cancel()
         self.logger.debug('closing the server')
