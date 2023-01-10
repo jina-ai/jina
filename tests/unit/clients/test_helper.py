@@ -32,6 +32,24 @@ async def test_http_clientlet():
             url=f'http://localhost:{port}/post', logger=logger
         ) as iolet:
             request = _new_data_request('/', None, {'a': 'b'})
+            assert request.header.target_executor == ''
+            r = await iolet.send_message(request)
+            response = DataRequest(await r.json())
+    assert response.header.exec_endpoint == '/'
+    assert response.parameters == {'a': 'b'}
+
+
+@pytest.mark.asyncio
+async def test_http_clientlet_target():
+    from jina.helper import random_port
+
+    port = random_port()
+    with Flow(port=port, protocol='http').add():
+        async with HTTPClientlet(
+            url=f'http://localhost:{port}/post', logger=logger
+        ) as iolet:
+            request = _new_data_request('/', 'nothing', {'a': 'b'})
+            assert request.header.target_executor == 'nothing'
             r = await iolet.send_message(request)
             response = DataRequest(await r.json())
     assert response.header.exec_endpoint == '/'
