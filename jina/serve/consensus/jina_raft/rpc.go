@@ -65,7 +65,7 @@ func (rpc RpcInterface) ProcessSingleData(
         }
     } else {
         log.Printf("Calling a Read Endpoint")
-        return rpc.Executor.Read(dataRequestProto)
+        return rpc.Executor.Read(ctx, dataRequestProto)
     }
 }
 

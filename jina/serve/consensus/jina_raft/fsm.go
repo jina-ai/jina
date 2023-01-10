@@ -91,23 +91,6 @@ func (fsm *executorFSM) Apply(l *raft.Log) interface{} {
     return response
 }
 
-func (fsm *executorFSM) Read(dataRequestProto *pb.DataRequestProto) (*pb.DataRequestProto, error) {
-    log.Printf("executorFSM call Read endpoint")
-    conn, err := fsm.executor.newConnection()
-    if err != nil {
-        return nil, err
-    }
-    defer conn.Close()
-    client := pb.NewJinaSingleDataRequestRPCClient(conn)
-    response, err := client.ProcessSingleData(context.Background(), dataRequestProto)
-    if err != nil {
-        log.Fatalf("Error calling read endpoint: %v", err)
-        return nil, err
-    }
-
-    return response, err
-}
-
 func (fsm *executorFSM) Snapshot() (raft.FSMSnapshot, error) {
     // Make sure that any future calls to f.Apply() don't change the snapshot.
     log.Printf("executorFSM method Snapshot")
@@ -161,6 +144,23 @@ func (fsm *executorFSM) Restore(r io.ReadCloser) error {
     _, err = client.ProcessSingleData(context.Background(), dataRequestProto)
 
     return err
+}
+
+func (fsm *executorFSM) Read(ctx context.Context, dataRequestProto *pb.DataRequestProto) (*pb.DataRequestProto, error) {
+    log.Printf("executorFSM call Read endpoint")
+    conn, err := fsm.executor.newConnection()
+    if err != nil {
+        return nil, err
+    }
+    defer conn.Close()
+    client := pb.NewJinaSingleDataRequestRPCClient(conn)
+    response, err := client.ProcessSingleData(ctx, dataRequestProto)
+    if err != nil {
+        log.Fatalf("Error calling read endpoint: %v", err)
+        return nil, err
+    }
+
+    return response, err
 }
 
 func (fsm *executorFSM) EndpointDiscovery(ctx context.Context, empty *empty.Empty) (*pb.EndpointsProto, error) {
