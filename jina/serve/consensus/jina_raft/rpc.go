@@ -7,6 +7,7 @@ import (
 
     "github.com/Jille/raft-grpc-leader-rpc/rafterrors"
     "github.com/golang/protobuf/proto"
+    empty "github.com/golang/protobuf/ptypes/empty"
 
     "github.com/hashicorp/raft"
     pb "jraft/jina-go-proto"
@@ -66,4 +67,16 @@ func (rpc RpcInterface) ProcessSingleData(
         log.Printf("Calling a Read Endpoint")
         return rpc.Executor.Read(dataRequestProto)
     }
+}
+
+func (rpc RpcInterface) EndpointDiscovery(ctx context.Context, empty *empty.Empty) (*pb.EndpointsProto, error) {
+    return rpc.Executor.EndpointDiscovery(ctx, empty)
+}
+
+func (rpc RpcInterface) DryRun(ctx context.Context, empty *empty.Empty) (*pb.StatusProto, error) {
+    return rpc.Executor.DryRun(ctx, empty)
+}
+
+func (rpc RpcInterface) XStatus(ctx context.Context, empty *empty.Empty) (*pb.JinaInfoProto, error) {
+   return rpc.Executor.XStatus(ctx, empty)
 }

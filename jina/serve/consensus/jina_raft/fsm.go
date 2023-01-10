@@ -10,6 +10,7 @@ import (
 
     "google.golang.org/protobuf/proto"
     "google.golang.org/protobuf/types/known/emptypb"
+    empty "github.com/golang/protobuf/ptypes/empty"
 
     "github.com/hashicorp/raft"
     pb "jraft/jina-go-proto"
@@ -137,6 +138,7 @@ func (fsm *executorFSM) Snapshot() (raft.FSMSnapshot, error) {
 }
 
 func (fsm *executorFSM) Restore(r io.ReadCloser) error {
+    // I think restore here is not well set
     log.Printf("executorFSM method Restore")
     bytes, err := io.ReadAll(r)
     if err != nil {
@@ -161,19 +163,55 @@ func (fsm *executorFSM) Restore(r io.ReadCloser) error {
     return err
 }
 
-func (fsm *executorFSM) DryRun(ctx context.Context, empty *emptypb.Empty) (*pb.StatusProto, error) {
+func (fsm *executorFSM) EndpointDiscovery(ctx context.Context, empty *empty.Empty) (*pb.EndpointsProto, error) {
+    log.Printf("executorFSM call EndpointDiscovery")
     conn, err := fsm.executor.newConnection()
     if err != nil {
-        log.Fatalf("dialing failed: %v", err)
+        return nil, err
+    }
+    defer conn.Close()
+    client := pb.NewJinaDiscoverEndpointsRPCClient(conn)
+    response, err := client.EndpointDiscovery(ctx, empty)
+    if err != nil {
+        log.Fatalf("Error calling EndpointDiscovery endpoint: %v", err)
+        return nil, err
+    }
+
+    return response, err
+}
+
+
+func (fsm *executorFSM) DryRun(ctx context.Context, empty *empty.Empty) (*pb.StatusProto, error) {
+    log.Printf("executorFSM call DryRun")
+    conn, err := fsm.executor.newConnection()
+    if err != nil {
         return nil, err
     }
     defer conn.Close()
     client := pb.NewJinaGatewayDryRunRPCClient(conn)
-
     response, err := client.DryRun(ctx, empty)
-
     if err != nil {
-        log.Fatalf("error calling RPC: %v", err)
+        log.Fatalf("Error calling DryRun endpoint: %v", err)
+        return nil, err
     }
-    return response, nil
+
+    return response, err
 }
+
+func (fsm *executorFSM) XStatus(ctx context.Context, empty *empty.Empty) (*pb.JinaInfoProto, error) {
+    log.Printf("executorFSM call Status")
+    conn, err := fsm.executor.newConnection()
+    if err != nil {
+        return nil, err
+    }
+    defer conn.Close()
+    client := pb.NewJinaInfoRPCClient(conn)
+    response, err := client.XStatus(ctx, empty)
+    if err != nil {
+        log.Fatalf("Error calling Status endpoint: %v", err)
+        return nil, err
+    }
+
+    return response, err
+}
+
