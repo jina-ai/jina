@@ -47,7 +47,13 @@ def test_get_image_name(mocker, monkeypatch, uses):
     mock = mocker.Mock()
 
     def _mock_fetch(*args, **kwargs):
-        mock(name=args[0], rebuild_image=args[3])
+        param_rebuild_image = args[3] if len(args) > 3 else None
+        mock(
+            name=args[0],
+            rebuild_image=param_rebuild_image
+            if param_rebuild_image is not None
+            else True,
+        )
 
         return (
             HubExecutor(
