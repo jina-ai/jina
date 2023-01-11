@@ -228,7 +228,7 @@ export JCLOUD_NO_INTERACTIVE=1
 
 ### Update Flow
 
-You can update a flow by providing an updated yml file of the Flow
+You can update a Flow by providing an updated YAML.
 
 To update a Flow:
 
@@ -242,9 +242,9 @@ jc update super-mustang-c6cf06bc5b flow.yml
 
 ### Pause / Resume Flow
 
-You can pause a Flow, so that all the executors and the gateway are scaled to 0. And the paused flow can be resumed, so that all the executors and the gateway are scaled to desired number of replicas.
+You have the option to `pause` a Flow that is not currently in use but may be needed later. This will allow the Flow to be resumed later when it is needed again by using `resume`.
 
-To pause a Flow
+To pause a Flow:
 
 ```bash
 jc pause super-mustang-c6cf06bc5b
@@ -254,7 +254,7 @@ jc pause super-mustang-c6cf06bc5b
 :width: 70%
 ```
 
-To resume a Flow
+To resume a Flow:
 
 ```bash
 jc resume super-mustang-c6cf06bc5b
@@ -264,11 +264,11 @@ jc resume super-mustang-c6cf06bc5b
 :width: 70%
 ```
 
-### Restart Flow, executor or gateway
+### Restart Flow, Executor or Gateway
 
-You can restart a Flow, which means restarting all the executors and gateway. If the requirement to is to restart a particular executor or gateway, you can do that as well.
+In the event that a restart is necessary for a Flow, there are two options available: restarting all Executors and the Gateway associated with the Flow, or selectively restarting only a specific Executor or the Gateway.
 
-To restart a Flow
+To restart a Flow:
 
 ```bash
 jc restart super-mustang-c6cf06bc5b
@@ -278,7 +278,7 @@ jc restart super-mustang-c6cf06bc5b
 :width: 70%
 ```
 
-To restart the gateway
+To restart the Gateway:
 
 ```bash
 jc restart super-mustang-c6cf06bc5b --gateway
@@ -288,7 +288,7 @@ jc restart super-mustang-c6cf06bc5b --gateway
 :width: 70%
 ```
 
-To restart an executor
+To restart an Executor:
 
 ```bash
 jc restart super-mustang-c6cf06bc5b --executor executor0
@@ -299,9 +299,8 @@ jc restart super-mustang-c6cf06bc5b --executor executor0
 ```
 
 ### Scale an Executor
-You can scale an executor to meet the computation expectations (if autoscale is not chosen)
+You can also manually scale any Executor.
 
-To scale an executor
 ```bash
 jc scale good-martin-ca6bfdef84 --executor executor0 --replicas 2
 ```
