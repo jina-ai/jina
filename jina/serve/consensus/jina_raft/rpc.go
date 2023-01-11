@@ -29,6 +29,7 @@ type RpcInterface struct {
 func (rpc RpcInterface) ProcessSingleData(
     ctx context.Context,
     dataRequestProto *pb.DataRequestProto) (*pb.DataRequestProto, error) {
+    log.Printf("ProcessSingleData")
     endpoint := dataRequestProto.Header.ExecEndpoint
     found := false
 

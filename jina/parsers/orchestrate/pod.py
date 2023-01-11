@@ -108,6 +108,23 @@ def mixin_pod_parser(parser, pod_type: str = 'worker'):
         help='If set, the current Pod/Deployment can not be further chained, '
              'and the next `.add()` will chain after the last Pod/Deployment not this current one.',
     )
+
+    gp.add_argument(
+        '--stateful',
+        action='store_true',
+        default=False,
+        help='If set, start consensus module to make sure write operations are properly replicated between all the replicas',
+    )
+
+    gp.add_argument(
+        '--replica-id',
+        type=int,
+        default=0,
+        help='defines the replica identifier for the executor. It is used when `stateful` is set to true'
+        if _SHOW_ALL_ARGS
+        else argparse.SUPPRESS,
+    )
+
     if pod_type != 'gateway':
         gp.add_argument(
             '--reload',

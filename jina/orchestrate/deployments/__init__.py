@@ -1041,6 +1041,7 @@ class Deployment(BaseOrchestrator):
             for replica_id in range(replicas):
                 _args = copy.deepcopy(self.args)
                 _args.shard_id = shard_id
+                _args.replica_id = replica_id
                 # for gateway pods, the pod role shouldn't be changed
                 if _args.pod_role != PodRoleType.GATEWAY:
                     _args.pod_role = PodRoleType.WORKER

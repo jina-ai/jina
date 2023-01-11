@@ -368,7 +368,8 @@ class GrpcConnectionPool:
             )
             stubs = defaultdict(lambda: None)
             for service in available_services:
-                stubs[service] = self.STUB_MAPPING[service](self.channel)
+                if service in self.STUB_MAPPING:
+                    stubs[service] = self.STUB_MAPPING[service](self.channel)
             self.data_list_stub = stubs['jina.JinaDataRequestRPC']
             self.single_data_stub = stubs['jina.JinaSingleDataRequestRPC']
             self.stream_stub = stubs['jina.JinaRPC']

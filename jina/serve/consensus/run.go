@@ -81,7 +81,7 @@ func NewRaft(ctx context.Context, myID, myAddress string, raftDir string, raftBo
 
 
 func Run(myAddr string, raftId string, raftDir string, raftBootstrap bool, executorTarget string) {
-    log.Printf("Calling Run %s, %s, %s, %s", myAddr, raftId, raftDir, executorTarget)
+    log.Printf("Calling Run %s, %s, %s, %p, %s", myAddr, raftId, raftDir, raftBootstrap, executorTarget)
     if raftId == "" {
         log.Fatalf("flag --raft_id is required")
     }
@@ -108,6 +108,7 @@ func Run(myAddr string, raftId string, raftDir string, raftBootstrap bool, execu
     })
     tm.Register(grpcServer)
     leaderhealth.Setup(raft, grpcServer, []string{"Health"})
+
     raftadmin.Register(grpcServer, raft)
     reflection.Register(grpcServer)
     if err := grpcServer.Serve(sock); err != nil {
