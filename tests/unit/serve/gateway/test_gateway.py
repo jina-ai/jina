@@ -208,6 +208,9 @@ def test_stream_individual_executor_simple():
     ]
 )
 def test_stream_individual_executor_multirequest(n_replicas: int, n_shards: int):
+    N_DOCS: int = 100
+    BATCH_SIZE: int = 5
+
     from docarray import DocumentArray, Document
 
     from jina.serve.runtimes.gateway.http.fastapi import FastAPIBaseGateway
@@ -226,7 +229,7 @@ def test_stream_individual_executor_multirequest(n_replicas: int, n_shards: int)
 
             @app.get("/endpoint")
             async def get(text: str):
-                docs = await self.executor['executor1'].post(on='/', inputs=DocumentArray([Document(text=f"{text} {i}") for i in range(20)]), parameters=PARAMETERS, request_size=5)
+                docs = await self.executor['executor1'].post(on='/', inputs=DocumentArray([Document(text=f"{text} {i}") for i in range(N_DOCS)]), parameters=PARAMETERS, request_size=BATCH_SIZE)
                 pids = set([doc.tags['pid'] for doc in docs])
                 return {'result': docs.texts, 'pids': pids}
 
@@ -251,6 +254,6 @@ def test_stream_individual_executor_multirequest(n_replicas: int, n_shards: int)
         r = requests.get(f"http://localhost:{flow.port}/endpoint?text=meow")
 
         # Make sure the results are correct
-        assert set(r.json()['result']) == set([f"meow {i} Second(parameters={str(PARAMETERS)})" for i in range(20)])
+        assert set(r.json()['result']) == set([f"meow {i} Second(parameters={str(PARAMETERS)})" for i in range(N_DOCS)])
         # Make sure we are sending to all replicas and shards
         assert len(r.json()['pids']) == n_replicas * n_shards
