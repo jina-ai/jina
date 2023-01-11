@@ -228,9 +228,9 @@ class GatewayStreamer:
         os.environ['JINA_STREAMER_ARGS'] = json.dumps(kwargs)
 
     async def warmup(self, stop_event: threading.Event):
-        '''Run requests to trigger the dry_run endpoint on each executor.
-        This forces the gateway to establish connection and open a gRPC channel to each executor so that the first
-        request doesn't need to experience the penalty of eastablishing a brand new gRPC channel.
+        '''Executes warmup task on each deployment. This forces the gateway to establish connection and open a
+        gRPC channel to each executor so that the first request doesn't need to experience the penalty of
+        eastablishing a brand new gRPC channel.
         :param stop_event: signal to indicate if an early termination of the task is required for graceful teardown.
         '''
         self.logger.debug(f'Running GatewayRuntime warmup')

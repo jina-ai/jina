@@ -187,28 +187,19 @@ class HeaderRequestHandler(MonitoringRequestMixin):
         self,
         connection_pool: GrpcConnectionPool,
         stop_event: threading.Event,
-        deployments: List[str],
+        deployment: str,
     ):
-        '''Executes discovery endpoint requests against the deployments from the connection pool. A single task is created for each replica.
+        '''Executes warmup task against the deployments from the connection pool.
         :param connection_pool: GrpcConnectionPool that implements the warmup to the connected deployments.
         :param stop_event: signal to indicate if an early termination of the task is required for graceful teardown.
-        :param deployments: list of deployments that need to be warmed up.
+        :param deployment: deployment name that need to be warmed up.
         '''
         self.logger.debug(f'Running HeadRuntime warmup')
 
         try:
-            deployment_warmup_tasks = []
-            for deployment in deployments:
-                deployment_warmup_tasks.append(
-                    asyncio.create_task(
-                        connection_pool.warmup(
-                            deployment=deployment,
-                            stop_event=stop_event,
-                        )
-                    )
-                )
-
-            await asyncio.gather(*deployment_warmup_tasks, return_exceptions=True)
+            await asyncio.create_task(
+                connection_pool.warmup(deployment=deployment, stop_event=stop_event)
+            )
         except Exception as ex:
             self.logger.error(f'error with HeadRuntime warmup up task: {ex}')
             return

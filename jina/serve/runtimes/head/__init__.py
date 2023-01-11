@@ -166,16 +166,11 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
         await self._grpc_server.start()
 
     def _warmup(self):
-        warmup_deployments = [self._deployment_name]
-        if self.uses_before_address:
-            warmup_deployments.append('uses_before')
-        if self.uses_after_address:
-            warmup_deployments.append('uses_after')
         self.warmup_task = asyncio.create_task(
             self.request_handler.warmup(
                 connection_pool=self.connection_pool,
                 stop_event=self.warmup_stop_event,
-                deployments=warmup_deployments,
+                deployment=self._deployment_name,
             )
         )
 
