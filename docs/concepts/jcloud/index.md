@@ -226,6 +226,90 @@ export JCLOUD_NO_INTERACTIVE=1
 ```
 
 
+### Update Flow
+
+You can update a flow by providing an updated yml file of the Flow
+
+To update a Flow:
+
+```bash
+jc update super-mustang-c6cf06bc5b flow.yml
+```
+
+```{figure} img/update_flow.png
+:width: 70%
+```
+
+### Pause / Resume Flow
+
+You can pause a Flow, so that all the executors and the gateway are scaled to 0. And the paused flow can be resumed, so that all the executors and the gateway are scaled to desired number of replicas.
+
+To pause a Flow
+
+```bash
+jc pause super-mustang-c6cf06bc5b
+```
+
+```{figure} img/pause_flow.png
+:width: 70%
+```
+
+To resume a Flow
+
+```bash
+jc resume super-mustang-c6cf06bc5b
+```
+
+```{figure} img/resume_flow.png
+:width: 70%
+```
+
+### Restart Flow, executor or gateway
+
+You can restart a Flow, which means restarting all the executors and gateway. If the requirement to is to restart a particular executor or gateway, you can do that as well.
+
+To restart a Flow
+
+```bash
+jc restart super-mustang-c6cf06bc5b
+```
+
+```{figure} img/restart_flow.png
+:width: 70%
+```
+
+To restart the gateway
+
+```bash
+jc restart super-mustang-c6cf06bc5b --gateway
+```
+
+```{figure} img/restart_gateway.png
+:width: 70%
+```
+
+To restart an executor
+
+```bash
+jc restart super-mustang-c6cf06bc5b --executor executor0
+```
+
+```{figure} img/restart_executor.png
+:width: 70%
+```
+
+### Scale an Executor
+You can scale an executor to meet the computation expectations (if autoscale is not chosen)
+
+To scale an executor
+```bash
+jc scale good-martin-ca6bfdef84 --executor executor0 --replicas 2
+```
+
+```{figure} img/scale_executor.png
+:width: 70%
+```
+
 ## Restrictions
 
 JCloud scales according to your needs. You can demand different resources (GPU/RAM/CPU/storage/instance-capacity) based on the needs of your Flows and Executors. If you have specific resource requirements, please contact us [on Slack](https://jina.ai/slack) or raise a [GitHub issue](https://github.com/jina-ai/jcloud/issues/new/choose).
