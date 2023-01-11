@@ -106,6 +106,14 @@ func Run(myAddr string, raftId string, raftDir string, raftBootstrap bool, execu
         Executor: executorFSM,
         Raft:     raft,
     })
+    pb.RegisterJinaDiscoverEndpointsRPCServer(grpcServer, &jinaraft.RpcInterface{
+        Executor: executorFSM,
+        Raft:     raft,
+    })
+    pb.RegisterJinaInfoRPCServer(grpcServer, &jinaraft.RpcInterface{
+        Executor: executorFSM,
+        Raft:     raft,
+    })
     tm.Register(grpcServer)
     leaderhealth.Setup(raft, grpcServer, []string{"Health"})
 

@@ -18,7 +18,8 @@ type RpcInterface struct {
     Executor *executorFSM
     Raft     *raft.Raft
     pb.UnimplementedJinaSingleDataRequestRPCServer
-    pb.UnimplementedJinaGatewayDryRunRPCServer
+    pb.UnimplementedJinaDiscoverEndpointsRPCServer
+    pb.UnimplementedJinaInfoRPCServer
 }
 
 
@@ -71,13 +72,11 @@ func (rpc RpcInterface) ProcessSingleData(
 }
 
 func (rpc RpcInterface) EndpointDiscovery(ctx context.Context, empty *empty.Empty) (*pb.EndpointsProto, error) {
+    log.Printf("EndpointDiscovery")
     return rpc.Executor.EndpointDiscovery(ctx, empty)
 }
 
-func (rpc RpcInterface) DryRun(ctx context.Context, empty *empty.Empty) (*pb.StatusProto, error) {
-    return rpc.Executor.DryRun(ctx, empty)
-}
-
 func (rpc RpcInterface) XStatus(ctx context.Context, empty *empty.Empty) (*pb.JinaInfoProto, error) {
+    log.Printf("XStatus")
    return rpc.Executor.XStatus(ctx, empty)
 }

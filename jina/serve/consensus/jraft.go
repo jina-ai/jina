@@ -12,11 +12,13 @@ int PyArg_ParseTuple_wrapped(PyObject * args, char **a, char **b, char **c, bool
     return PyArg_ParseTuple(args, "sssps", a, b, c, d, e);
 }
 
-//void run(char* myAddr, char* raftId, char* raftDir, bool raftBootstrap, char* executorTarget);
 PyObject * run(PyObject* , PyObject*);
+
+//PyObject * add_voter(PyObject* , PyObject*);
 
 static PyMethodDef methods[] = {
     {"run", (PyCFunction)run, METH_VARARGS, "Run the raft Node server"},
+//    {"add_voter", (PyCFunction)add_voter, METH_VARARGS, "Client to add voter"},
     {NULL, NULL, 0, NULL}
 };
 

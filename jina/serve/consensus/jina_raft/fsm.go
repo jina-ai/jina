@@ -181,23 +181,6 @@ func (fsm *executorFSM) EndpointDiscovery(ctx context.Context, empty *empty.Empt
 }
 
 
-func (fsm *executorFSM) DryRun(ctx context.Context, empty *empty.Empty) (*pb.StatusProto, error) {
-    log.Printf("executorFSM call DryRun")
-    conn, err := fsm.executor.newConnection()
-    if err != nil {
-        return nil, err
-    }
-    defer conn.Close()
-    client := pb.NewJinaGatewayDryRunRPCClient(conn)
-    response, err := client.DryRun(ctx, empty)
-    if err != nil {
-        log.Fatalf("Error calling DryRun endpoint: %v", err)
-        return nil, err
-    }
-
-    return response, err
-}
-
 func (fsm *executorFSM) XStatus(ctx context.Context, empty *empty.Empty) (*pb.JinaInfoProto, error) {
     log.Printf("executorFSM call Status")
     conn, err := fsm.executor.newConnection()
