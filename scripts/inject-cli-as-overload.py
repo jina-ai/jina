@@ -303,6 +303,16 @@ entries = [
         class_method=True,
         regex_tag='executor_serve',
     ),
+    dict(
+        cli_entrypoint='deployment',
+        doc_str_title='Create a Deployment to serve or deploy and Executor or Gateway',
+        doc_str_return='None',
+        return_type=None,
+        filepath='../jina/orchestrate/deployments/__init__.py',
+        overload_fn='__init__',
+        class_method=True,
+        regex_tag='deployment',
+    ),
 ]
 
 # param

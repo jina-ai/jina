@@ -723,18 +723,19 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         :param kwargs: other kwargs accepted by the Flow, full list can be found `here <https://docs.jina.ai/api/jina.orchestrate.flow.base/>`
 
         """
-        from jina.orchestrate.flow.base import Flow
+        from jina.orchestrate.deployments import Deployment
 
-        f = Flow(**kwargs).add(
+        dep = Deployment(
             uses=cls,
             uses_with=uses_with,
             uses_metas=uses_metas,
             uses_requests=uses_requests,
             uses_dynamic_batching=uses_dynamic_batching,
             reload=reload,
+            **kwargs,
         )
-        with f:
-            f.block(stop_event)
+        with dep:
+            dep.block(stop_event)
 
     class StandaloneExecutorType(BetterEnum):
         """
