@@ -16,6 +16,8 @@ from hubble.executor.hubio import HubIO
 from rich import print
 from rich.panel import Panel
 
+from jina.clients import Client
+from jina.clients.mixin import PostMixin
 from jina.constants import (
     __default_executor__,
     __default_host__,
@@ -41,10 +43,11 @@ WRAPPED_SLICE_BASE = r'\[[-\d:]+\]'
 if TYPE_CHECKING:
     import multiprocessing
 
+    from jina.clients.base import BaseClient
     from jina.serve.executors import BaseExecutor
 
 
-class Deployment(BaseOrchestrator):
+class Deployment(PostMixin, BaseOrchestrator):
     """A Deployment is an immutable set of pods, which run in replicas. They share the same input and output socket.
     Internally, the pods can run with the process/thread backend. They can be also run in their own containers
     :param args: arguments parsed from the CLI
@@ -289,18 +292,18 @@ class Deployment(BaseOrchestrator):
         **kwargs,
     ):
         super().__init__()
-        gateway_kwargs = {}
+        self._gateway_kwargs = {}
         self._include_gateway = include_gateway
         if self._include_gateway:
             # arguments exclusive to the gateway
             for field in ['port']:
                 if field in kwargs:
-                    gateway_kwargs[field] = kwargs.pop(field)
+                    self._gateway_kwargs[field] = kwargs.pop(field)
 
             # arguments common to both gateway and the Executor
             for field in ['host']:
                 if field in kwargs:
-                    gateway_kwargs[field] = kwargs[field]
+                    self._gateway_kwargs[field] = kwargs[field]
 
         parser = set_deployment_parser()
         if args is None:
@@ -346,7 +349,9 @@ class Deployment(BaseOrchestrator):
 
         if self._include_gateway:
             gateway_parser = set_gateway_parser()
-            args = ArgNamespace.kwargs2namespace(gateway_kwargs, gateway_parser, True)
+            args = ArgNamespace.kwargs2namespace(
+                self._gateway_kwargs, gateway_parser, True
+            )
 
             args.deployments_addresses = f'{{"executor": ["0.0.0.0:{self.port}"]}}'
             args.graph_description = (
@@ -500,6 +505,20 @@ class Deployment(BaseOrchestrator):
         .. # noqa: DAR201
         """
         return self.head_args.port_monitoring if self.head_args else None
+
+    @property
+    def client(self) -> 'BaseClient':
+        """Return a :class:`BaseClient` object attach to this Flow.
+
+        .. # noqa: DAR201"""
+
+        kwargs = dict(
+            host=self.host,
+            port=self.port,
+            protocol=self.protocol,
+        )
+        kwargs.update(self._gateway_kwargs)
+        return Client(**kwargs)
 
     @staticmethod
     def _copy_to_head_args(args: Namespace) -> Namespace:
