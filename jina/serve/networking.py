@@ -1128,6 +1128,7 @@ class GrpcConnectionPool:
                 stub = jina_pb2_grpc.JinaInfoRPCStub(channel=channel)
                 call_result = stub._status(
                     request=jina_pb2.google_dot_protobuf_dot_empty__pb2.Empty(),
+                    timeout=0.5,
                 )
                 await call_result
                 target_warmup_responses[target] = True

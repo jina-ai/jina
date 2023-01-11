@@ -197,9 +197,7 @@ class HeaderRequestHandler(MonitoringRequestMixin):
         self.logger.debug(f'Running HeadRuntime warmup')
 
         try:
-            await asyncio.create_task(
-                connection_pool.warmup(deployment=deployment, stop_event=stop_event)
-            )
+            await connection_pool.warmup(deployment=deployment, stop_event=stop_event)
         except Exception as ex:
             self.logger.error(f'error with HeadRuntime warmup up task: {ex}')
             return
