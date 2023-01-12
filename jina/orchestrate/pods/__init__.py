@@ -350,7 +350,6 @@ class Pod(BasePod):
         self.runtime_cls = self._get_runtime_cls()
         cargs = None
         if self.args.stateful:
-            self.logger.warning(f' RUN RAFT for replica {self.args.replica_id}')
             cargs_stateful = copy.deepcopy(args)
             self.raft_worker = multiprocessing.Process(target=run_raft,
                                                        kwargs={

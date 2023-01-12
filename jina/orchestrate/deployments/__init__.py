@@ -97,6 +97,7 @@ class Deployment(PostMixin, BaseOrchestrator):
                 *[pod.async_wait_start_success() for pod in self._pods]
             )
             if self._pods[0].args.stateful:
+                await asyncio.sleep(5) # TODO: Remove. We need to make add_voter fail properly and repeat until successful
                 import jraft
                 leader_address = f'{self._pods[0].args.host}:{self._pods[0].args.port}'
                 for pod in self._pods[1:]:
