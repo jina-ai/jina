@@ -202,8 +202,7 @@ class ReplicaList:
             )
             idx_to_delete = self._address_to_connection_idx.pop(address)
             popped_connection = self._connections.pop(idx_to_delete)
-            closing_channel = self._address_to_channel[address]
-            self._address_to_channel.pop(address)
+            closing_channel = self._address_to_channel.pop(address)
             await self._destroy_connection(
                 closing_channel, grace=GRACE_PERIOD_DESTROY_CONNECTION
             )
