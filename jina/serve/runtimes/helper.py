@@ -93,8 +93,6 @@ _DEFAULT_GRPC_OPTION = {
     # allow grpc pings from client every 10 seconds
     'grpc.http2.min_ping_interval_without_data_ms': 5000,
     # allow grpc pings from client without data every 5 seconds
-    'grpc.so_reuseport': 1,
-    # Multiple servers (processes or threads) can bind to the same port
 }
 
 
