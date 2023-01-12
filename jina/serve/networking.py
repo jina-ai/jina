@@ -1125,7 +1125,6 @@ class GrpcConnectionPool:
 
         async def task_wrapper(target_warmup_responses, target, channel):
             try:
-                await channel.channel_ready()
                 stub = jina_pb2_grpc.JinaInfoRPCStub(channel=channel)
                 call_result = stub._status(
                     request=jina_pb2.google_dot_protobuf_dot_empty__pb2.Empty(),
