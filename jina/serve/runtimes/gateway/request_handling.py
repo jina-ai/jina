@@ -3,8 +3,8 @@ import copy
 from typing import TYPE_CHECKING, Callable, List, Optional, Tuple
 
 import grpc.aio
-from docarray import DocumentArray
 
+from docarray import DocumentArray
 from jina.excepts import InternalNetworkError
 from jina.helper import GATEWAY_NAME
 from jina.logging.logger import JinaLogger
@@ -147,7 +147,7 @@ class GatewayRequestHandler(MonitoringRequestMixin):
                         and not self._gathering_endpoints
                     ):
                         self._gathering_endpoints = True
-                        await asyncio.create_task(gather_endpoints(request_graph))
+                        asyncio.create_task(gather_endpoints(request_graph))
 
                     partial_responses = await asyncio.gather(*tasks)
                 except Exception:
