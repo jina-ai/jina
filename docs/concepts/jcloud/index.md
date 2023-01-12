@@ -242,7 +242,7 @@ jc update super-mustang-c6cf06bc5b flow.yml
 
 ### Pause / Resume Flow
 
-You have the option to `pause` a Flow that is not currently in use but may be needed later. This will allow the Flow to be resumed later when it is needed again by using `resume`.
+You have the option to pause a Flow that is not currently in use but may be needed later. This will allow the Flow to be resumed later when it is needed again by using `resume`.
 
 To pause a Flow:
 
@@ -266,7 +266,7 @@ jc resume super-mustang-c6cf06bc5b
 
 ### Restart Flow, Executor or Gateway
 
-In the event that a restart is necessary for a Flow, there are two options available: restarting all Executors and the Gateway associated with the Flow, or selectively restarting only a specific Executor or the Gateway.
+If you need to restart a Flow, there are two options: restart all Executors and the Gateway associated with the Flow, or selectively restart only a specific Executor or the Gateway.
 
 To restart a Flow:
 
