@@ -2,7 +2,8 @@ package main
 
 // #include <Python.h>
 // #include <stdbool.h>
-// int PyArg_ParseTuple_wrapped(PyObject * args, char **a, char **b, char **c, bool *d, char **e);
+// int PyArg_ParseTuple_run(PyObject * args, char **a, char **b, char **c, bool *d, char **e);
+// int PyArg_ParseTuple_add_voter(PyObject * args, char **a, char **b, char **c);
 import "C"
 
 
@@ -145,8 +146,24 @@ func run(self *C.PyObject, args *C.PyObject) *C.PyObject {
     var raftDir *C.char
     var raftBootstrap C.bool
     var executorTarget *C.char
-    if C.PyArg_ParseTuple_wrapped(args, &myAddr, &raftId, &raftDir, &raftBootstrap, &executorTarget) != 0 {
+    if C.PyArg_ParseTuple_run(args, &myAddr, &raftId, &raftDir, &raftBootstrap, &executorTarget) != 0 {
         Run(C.GoString(myAddr), C.GoString(raftId), C.GoString(raftDir), raftBootstrap != false, C.GoString(executorTarget))
     }
-    return nil
+    return C.PyLong_FromLong(0)
+}
+
+//export add_voter
+func add_voter(self *C.PyObject, args *C.PyObject) *C.PyObject {
+    var target *C.char
+    var raftId *C.char
+    var voterAddress *C.char
+    log.Printf("ADD VOTER")
+    if C.PyArg_ParseTuple_add_voter(args, &target, &raftId, &voterAddress) != 0 {
+        err := AddVoter(C.GoString(target), C.GoString(raftId), C.GoString(voterAddress))
+        if err != nil {
+            log.Fatalf("Error received calling AddVoter %v", err)
+        }
+    }
+    log.Printf("ADD VOTER AFTER")
+    return C.PyLong_FromLong(0)
 }

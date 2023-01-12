@@ -56,10 +56,10 @@ class Deployment(PostMixin, BaseOrchestrator):
 
     class _ReplicaSet:
         def __init__(
-            self,
-            deployment_args: Namespace,
-            args: List[Namespace],
-            head_pod,
+                self,
+                deployment_args: Namespace,
+                args: List[Namespace],
+                head_pod,
         ):
             self.deployment_args = copy.copy(deployment_args)
             self.args = args
@@ -85,11 +85,23 @@ class Deployment(PostMixin, BaseOrchestrator):
         def wait_start_success(self):
             for pod in self._pods:
                 pod.wait_start_success()
+            if self._pods[0].args.stateful:
+                import jraft
+                leader_address = f'{self._pods[0].args.host}:{self._pods[0].args.port}'
+                for pod in self._pods[1:]:
+                    voter_address = f'{pod.args.host}:{pod.args.port}'
+                    jraft.add_voter(leader_address, str(pod.args.replica_id), voter_address)
 
         async def async_wait_start_success(self):
             await asyncio.gather(
                 *[pod.async_wait_start_success() for pod in self._pods]
             )
+            if self._pods[0].args.stateful:
+                import jraft
+                leader_address = f'{self._pods[0].args.host}:{self._pods[0].args.port}'
+                for pod in self._pods[1:]:
+                    voter_address = f'{pod.args.host}:{pod.args.port}'
+                    jraft.add_voter(leader_address, str(pod.args.replica_id), voter_address)
 
         def __enter__(self):
             for _args in self.args:
@@ -112,65 +124,65 @@ class Deployment(PostMixin, BaseOrchestrator):
     # overload_inject_start_deployment
     @overload
     def __init__(
-        self,*,
-        compression: Optional[str] = None, 
-        connection_list: Optional[str] = None, 
-        disable_auto_volume: Optional[bool] = False, 
-        docker_kwargs: Optional[dict] = None, 
-        entrypoint: Optional[str] = None, 
-        env: Optional[dict] = None, 
-        env_from_secret: Optional[dict] = None, 
-        exit_on_exceptions: Optional[List[str]] = [], 
-        external: Optional[bool] = False, 
-        floating: Optional[bool] = False, 
-        force_update: Optional[bool] = False, 
-        gpus: Optional[str] = None, 
-        grpc_metadata: Optional[dict] = None, 
-        grpc_server_options: Optional[dict] = None, 
-        host: Optional[List[str]] = ['0.0.0.0'], 
-        install_requirements: Optional[bool] = False, 
-        log_config: Optional[str] = None, 
-        metrics: Optional[bool] = False, 
-        metrics_exporter_host: Optional[str] = None, 
-        metrics_exporter_port: Optional[int] = None, 
-        monitoring: Optional[bool] = False, 
-        name: Optional[str] = None, 
-        native: Optional[bool] = False, 
-        no_reduce: Optional[bool] = False, 
-        output_array_type: Optional[str] = None, 
-        polling: Optional[str] = 'ANY', 
-        port: Optional[int] = None, 
-        port_monitoring: Optional[int] = None, 
-        py_modules: Optional[List[str]] = None, 
-        quiet: Optional[bool] = False, 
-        quiet_error: Optional[bool] = False, 
-        reload: Optional[bool] = False, 
-        replicas: Optional[int] = 1, 
-        retries: Optional[int] = -1, 
-        runtime_cls: Optional[str] = 'WorkerRuntime', 
-        shards: Optional[int] = 1, 
-        snapshot_parent_directory: Optional[str] = None, 
-        stateful: Optional[bool] = False, 
-        timeout_ctrl: Optional[int] = 60, 
-        timeout_ready: Optional[int] = 600000, 
-        timeout_send: Optional[int] = None, 
-        tls: Optional[bool] = False, 
-        traces_exporter_host: Optional[str] = None, 
-        traces_exporter_port: Optional[int] = None, 
-        tracing: Optional[bool] = False, 
-        uses: Optional[Union[str, Type['BaseExecutor'], dict]] = 'BaseExecutor', 
-        uses_after: Optional[Union[str, Type['BaseExecutor'], dict]] = None, 
-        uses_after_address: Optional[str] = None, 
-        uses_before: Optional[Union[str, Type['BaseExecutor'], dict]] = None, 
-        uses_before_address: Optional[str] = None, 
-        uses_dynamic_batching: Optional[dict] = None, 
-        uses_metas: Optional[dict] = None, 
-        uses_requests: Optional[dict] = None, 
-        uses_with: Optional[dict] = None, 
-        volumes: Optional[List[str]] = None, 
-        when: Optional[dict] = None, 
-        workspace: Optional[str] = None, 
-        **kwargs):
+            self, *,
+            compression: Optional[str] = None,
+            connection_list: Optional[str] = None,
+            disable_auto_volume: Optional[bool] = False,
+            docker_kwargs: Optional[dict] = None,
+            entrypoint: Optional[str] = None,
+            env: Optional[dict] = None,
+            env_from_secret: Optional[dict] = None,
+            exit_on_exceptions: Optional[List[str]] = [],
+            external: Optional[bool] = False,
+            floating: Optional[bool] = False,
+            force_update: Optional[bool] = False,
+            gpus: Optional[str] = None,
+            grpc_metadata: Optional[dict] = None,
+            grpc_server_options: Optional[dict] = None,
+            host: Optional[List[str]] = ['0.0.0.0'],
+            install_requirements: Optional[bool] = False,
+            log_config: Optional[str] = None,
+            metrics: Optional[bool] = False,
+            metrics_exporter_host: Optional[str] = None,
+            metrics_exporter_port: Optional[int] = None,
+            monitoring: Optional[bool] = False,
+            name: Optional[str] = None,
+            native: Optional[bool] = False,
+            no_reduce: Optional[bool] = False,
+            output_array_type: Optional[str] = None,
+            polling: Optional[str] = 'ANY',
+            port: Optional[int] = None,
+            port_monitoring: Optional[int] = None,
+            py_modules: Optional[List[str]] = None,
+            quiet: Optional[bool] = False,
+            quiet_error: Optional[bool] = False,
+            reload: Optional[bool] = False,
+            replicas: Optional[int] = 1,
+            retries: Optional[int] = -1,
+            runtime_cls: Optional[str] = 'WorkerRuntime',
+            shards: Optional[int] = 1,
+            snapshot_parent_directory: Optional[str] = None,
+            stateful: Optional[bool] = False,
+            timeout_ctrl: Optional[int] = 60,
+            timeout_ready: Optional[int] = 600000,
+            timeout_send: Optional[int] = None,
+            tls: Optional[bool] = False,
+            traces_exporter_host: Optional[str] = None,
+            traces_exporter_port: Optional[int] = None,
+            tracing: Optional[bool] = False,
+            uses: Optional[Union[str, Type['BaseExecutor'], dict]] = 'BaseExecutor',
+            uses_after: Optional[Union[str, Type['BaseExecutor'], dict]] = None,
+            uses_after_address: Optional[str] = None,
+            uses_before: Optional[Union[str, Type['BaseExecutor'], dict]] = None,
+            uses_before_address: Optional[str] = None,
+            uses_dynamic_batching: Optional[dict] = None,
+            uses_metas: Optional[dict] = None,
+            uses_requests: Optional[dict] = None,
+            uses_with: Optional[dict] = None,
+            volumes: Optional[List[str]] = None,
+            when: Optional[dict] = None,
+            workspace: Optional[str] = None,
+            **kwargs):
         """Create a Deployment to serve or deploy and Executor or Gateway
 
         :param compression: The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.
@@ -284,14 +296,15 @@ class Deployment(PostMixin, BaseOrchestrator):
         .. # noqa: DAR101
         .. # noqa: DAR003
         """
+
     # overload_inject_end_deployment
 
     def __init__(
-        self,
-        args: Union['Namespace', Dict, None] = None,
-        needs: Optional[Set[str]] = None,
-        include_gateway: bool = True,
-        **kwargs,
+            self,
+            args: Union['Namespace', Dict, None] = None,
+            needs: Optional[Set[str]] = None,
+            include_gateway: bool = True,
+            **kwargs,
     ):
         super().__init__()
         self._gateway_kwargs = {}
@@ -318,7 +331,7 @@ class Deployment(PostMixin, BaseOrchestrator):
         if getattr(args, 'shards', 1) == 1:
             self.args.polling = PollingType.ANY
         self.needs = (
-            needs or set()
+                needs or set()
         )  #: used in the :class:`jina.flow.Flow` to build the graph
 
         # parse addresses for distributed replicas
@@ -333,7 +346,7 @@ class Deployment(PostMixin, BaseOrchestrator):
             self._parse_addresses_into_host_and_port()
         if len(self.ext_repl_ports) > 1:
             if self.args.replicas != 1 and self.args.replicas != len(
-                self.ext_repl_ports
+                    self.ext_repl_ports
             ):
                 raise ValueError(
                     f'Number of hosts ({len(self.args.host)}) does not match the number of replicas ({self.args.replicas})'
@@ -385,7 +398,7 @@ class Deployment(PostMixin, BaseOrchestrator):
         for i, repl_host in enumerate(self.ext_repl_hosts):
             _hostname, port, scheme, tls = parse_host_scheme(repl_host)
             if (
-                _hostname != self.ext_repl_hosts[i]
+                    _hostname != self.ext_repl_hosts[i]
             ):  # more than just hostname was passed to `host`
                 self.ext_repl_hosts[i] = _hostname
                 self.ext_repl_ports[i] = port
@@ -398,13 +411,13 @@ class Deployment(PostMixin, BaseOrchestrator):
         ext_repl_hosts: List = self.args.host.copy()
         if len(ext_repl_hosts) < len(ext_repl_ports):
             if (
-                len(ext_repl_hosts) == 1
+                    len(ext_repl_hosts) == 1
             ):  # only one host given, assume replicas are on the same host
                 ext_repl_hosts = ext_repl_hosts * len(ext_repl_ports)
                 self.args.host = self.args.host * len(ext_repl_ports)
         elif len(ext_repl_hosts) > len(ext_repl_ports):
             if (
-                len(ext_repl_ports) == 1
+                    len(ext_repl_ports) == 1
             ):  # only one port given, assume replicas are on the same port
                 ext_repl_ports = ext_repl_ports * len(ext_repl_hosts)
                 self.args.port = self.args.port * len(ext_repl_hosts)
@@ -697,7 +710,7 @@ class Deployment(PostMixin, BaseOrchestrator):
         )
 
     def _parse_args(
-        self, args: Namespace
+            self, args: Namespace
     ) -> Dict[str, Optional[Union[List[Namespace], Namespace]]]:
         return self._parse_base_deployment_args(args)
 
@@ -762,10 +775,10 @@ class Deployment(PostMixin, BaseOrchestrator):
         .. # noqa: DAR201
         """
         all_args = (
-            ([self.pod_args['uses_before']] if self.pod_args['uses_before'] else [])
-            + ([self.pod_args['uses_after']] if self.pod_args['uses_after'] else [])
-            + ([self.pod_args['head']] if self.pod_args['head'] else [])
-            + ([self.pod_args['gateway']] if self.pod_args['gateway'] else [])
+                ([self.pod_args['uses_before']] if self.pod_args['uses_before'] else [])
+                + ([self.pod_args['uses_after']] if self.pod_args['uses_after'] else [])
+                + ([self.pod_args['head']] if self.pod_args['head'] else [])
+                + ([self.pod_args['gateway']] if self.pod_args['gateway'] else [])
         )
         for shard_id in self.pod_args['pods']:
             all_args += self.pod_args['pods'][shard_id]
@@ -810,7 +823,7 @@ class Deployment(PostMixin, BaseOrchestrator):
         worker_host = (
             __docker_host__
             if (pod_is_container and (head_is_container or in_docker()))
-            and host_is_local(pod_args.host)
+               and host_is_local(pod_args.host)
             else pod_args.host
         )
         return worker_host
@@ -1021,10 +1034,10 @@ class Deployment(PostMixin, BaseOrchestrator):
         :return: a map from replica id to device id
         """
         if (
-            device_str
-            and isinstance(device_str, str)
-            and device_str.startswith('RR')
-            and replicas >= 1
+                device_str
+                and isinstance(device_str, str)
+                and device_str.startswith('RR')
+                and replicas >= 1
         ):
             try:
                 num_devices = str(subprocess.check_output(['nvidia-smi', '-L'])).count(
@@ -1105,12 +1118,12 @@ class Deployment(PostMixin, BaseOrchestrator):
                         _args.port = random_port()
                     elif shards > 1:
                         port_monitoring_index = (
-                            replica_id + replicas * shard_id + 1
+                                replica_id + replicas * shard_id + 1
                         )  # the first index is for the head
                         _args.port_monitoring = (
                             random_port()
                             if port_monitoring_index
-                            >= len(self.args.all_port_monitoring)
+                               >= len(self.args.all_port_monitoring)
                             else self.args.all_port_monitoring[
                                 port_monitoring_index
                             ]  # we skip the head port here
@@ -1175,8 +1188,8 @@ class Deployment(PostMixin, BaseOrchestrator):
         # also there a no heads created, if there are no shards
         if self.role != DeploymentRoleType.GATEWAY and getattr(args, 'shards', 1) > 1:
             if (
-                getattr(args, 'uses_before', None)
-                and args.uses_before != __default_executor__
+                    getattr(args, 'uses_before', None)
+                    and args.uses_before != __default_executor__
             ):
                 uses_before_args = self._set_uses_before_after_args(
                     args, entity_type='uses_before'
@@ -1186,8 +1199,8 @@ class Deployment(PostMixin, BaseOrchestrator):
                     f'{uses_before_args.host}:{uses_before_args.port}'
                 )
             if (
-                getattr(args, 'uses_after', None)
-                and args.uses_after != __default_executor__
+                    getattr(args, 'uses_after', None)
+                    and args.uses_after != __default_executor__
             ):
                 uses_after_args = self._set_uses_before_after_args(
                     args, entity_type='uses_after'
@@ -1301,8 +1314,8 @@ class Deployment(PostMixin, BaseOrchestrator):
         return mermaid_graph
 
     def block(
-        self,
-        stop_event: Optional[Union['threading.Event', 'multiprocessing.Event']] = None,
+            self,
+            stop_event: Optional[Union['threading.Event', 'multiprocessing.Event']] = None,
     ):
         """Block the Deployment until `stop_event` is set or user hits KeyboardInterrupt
 
@@ -1327,8 +1340,8 @@ class Deployment(PostMixin, BaseOrchestrator):
             if watch_changes and self._is_executor_from_yaml:
 
                 with ImportExtensions(
-                    required=True,
-                    help_text='''reload requires watchfiles dependency to be installed. You can do `pip install 
+                        required=True,
+                        help_text='''reload requires watchfiles dependency to be installed. You can do `pip install 
                     watchfiles''',
                 ):
                     from watchfiles import watch

@@ -103,6 +103,7 @@ def run(
 
 def run_raft(
         args: 'argparse.Namespace',
+        leader: bool,
         is_ready: Union['multiprocessing.Event', 'threading.Event'],
         is_shutdown: Union['multiprocessing.Event', 'threading.Event']
 ):
@@ -122,6 +123,8 @@ def run_raft(
     raft_dir = args.workspace
     raft_bootstrap = False
     executor_target = f'{args.host}:{args.port + 1}'
+    if leader:
+        raft_bootstrap = True
     is_ready.wait()
     jraft.run(address, raft_id, raft_dir, raft_bootstrap, executor_target)
 
@@ -345,22 +348,25 @@ class Pod(BasePod):
     def __init__(self, args: 'argparse.Namespace'):
         super().__init__(args)
         self.runtime_cls = self._get_runtime_cls()
+        cargs = None
         if self.args.stateful:
             self.logger.warning(f' RUN RAFT for replica {self.args.replica_id}')
+            cargs_stateful = copy.deepcopy(args)
             self.raft_worker = multiprocessing.Process(target=run_raft,
                                                        kwargs={
-                                                           'args': copy.deepcopy(args),
+                                                           'args': cargs_stateful,
+                                                           'leader': str(args.replica_id) == '0',
                                                            'is_ready': self.is_ready,
                                                            'is_shutdown': self.is_shutdown,
                                                        },
                                                        name=self.name, daemon=True)
-            args.port += 1
-
+            cargs = copy.deepcopy(cargs_stateful)
+            cargs.port += 1
         # if stateful, have a raft_worker
         self.worker = multiprocessing.Process(
             target=run,
             kwargs={
-                'args': copy.deepcopy(args),
+                'args': cargs or args,
                 'name': self.name,
                 'envs': self._envs,
                 'is_started': self.is_started,
