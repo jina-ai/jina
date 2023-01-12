@@ -180,11 +180,12 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, InstrumentationMixin, AB
             response = GrpcConnectionPool.send_health_check_sync(
                 ctrl_address, timeout=timeout
             )
+            print(response)
             return (
                 response.status == health_pb2.HealthCheckResponse.ServingStatus.SERVING
             )
         except RpcError:
-            return False
+            raise
 
     @classmethod
     def wait_for_ready_or_shutdown(
