@@ -233,6 +233,7 @@ class ReplicaList:
 
     async def _destroy_connection(self, connection, grace=0.5):
         # we should handle graceful termination better, 0.5 is a rather random number here
+        self._logger.debug(f'destroying connection {connection}')
         await connection.close(grace)
 
     async def get_next_connection(self, num_retries=3):
@@ -308,6 +309,7 @@ class ReplicaList:
         Close all connections and clean up internal state
         """
         for address in self._address_to_channel:
+            self._logger.debug(f'closing channel {self._address_to_channel[address]}')
             await self._address_to_channel[address].close(0.5)
         self._address_to_channel.clear()
         self._address_to_connection_idx.clear()
@@ -1138,6 +1140,7 @@ class GrpcConnectionPool:
         :param deployment: deployment name and the replicas that needs to be warmed up.
         :param stop_event: signal to indicate if an early termination of the task is required for graceful teardown.
         '''
+        self._logger.debug(f'starting warmup task for deployment {deployment}')
 
         async def task_wrapper(replica_warmup_responses, target, stub):
             try:
@@ -1147,7 +1150,8 @@ class GrpcConnectionPool:
                 replica_warmup_responses[target] = False
 
         try:
-            timeout = time.time() + 60 * 5  # 5 minutes from now
+            start_time = time.time()
+            timeout = start_time + 60 * 5  # 5 minutes from now
             warmed_up_targets = set()
 
             while not stop_event.is_set():
@@ -1170,7 +1174,11 @@ class GrpcConnectionPool:
                     if response:
                         warmed_up_targets.add(target)
 
-                if time.time() > timeout or len(target_to_stub) == 0:
+                now = time.time()
+                if now > timeout or len(target_to_stub) == 0:
+                    self._logger.debug(
+                        f'completed warmup task for deployment {deployment} after {now - start_time}s.'
+                    )
                     return
 
                 await asyncio.sleep(0.2)
