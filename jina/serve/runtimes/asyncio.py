@@ -18,7 +18,6 @@ from jina.types.request.data import DataRequest
 
 if TYPE_CHECKING:  # pragma: no cover
     import multiprocessing
-    import threading
 
 HANDLED_SIGNALS = (
     signal.SIGINT,  # Unix signal 2. Sent by Ctrl+C.

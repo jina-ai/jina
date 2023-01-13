@@ -1,13 +1,13 @@
 import asyncio
-import threading
-import time
-from typing import TYPE_CHECKING, Dict, List, Optional, Tuple
+from typing import TYPE_CHECKING, Dict, Optional, Tuple
 
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.monitoring import MonitoringRequestMixin
 from jina.serve.runtimes.worker.request_handling import WorkerRequestHandler
 
 if TYPE_CHECKING:  # pragma: no cover
+    import threading
+
     from opentelemetry.metrics import Meter
     from prometheus_client import CollectorRegistry
 
@@ -186,7 +186,7 @@ class HeaderRequestHandler(MonitoringRequestMixin):
     async def warmup(
         self,
         connection_pool: GrpcConnectionPool,
-        stop_event: threading.Event,
+        stop_event: 'threading.Event',
         deployment: str,
     ):
         '''Executes warmup task against the deployments from the connection pool.

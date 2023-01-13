@@ -1,7 +1,6 @@
 import asyncio
 import ipaddress
 import os
-import threading
 import time
 from collections import defaultdict
 from dataclasses import dataclass
@@ -30,6 +29,8 @@ TLS_PROTOCOL_SCHEMES = ['grpcs', 'https', 'wss']
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
+    import threading
+
     from grpc.aio._interceptor import ClientInterceptor
     from opentelemetry.instrumentation.grpc._client import (
         OpenTelemetryClientInterceptor,
@@ -1146,7 +1147,7 @@ class GrpcConnectionPool:
     async def warmup(
         self,
         deployment: str,
-        stop_event: threading.Event,
+        stop_event: 'threading.Event',
     ):
         '''Executes JinaInfoRPC against the provided deployment. A single task is created for each replica connection.
         :param deployment: deployment name and the replicas that needs to be warmed up.
