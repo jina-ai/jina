@@ -226,6 +226,89 @@ export JCLOUD_NO_INTERACTIVE=1
 ```
 
 
+### Update Flow
+
+You can update a Flow by providing an updated YAML.
+
+To update a Flow:
+
+```bash
+jc update super-mustang-c6cf06bc5b flow.yml
+```
+
+```{figure} img/update_flow.png
+:width: 70%
+```
+
+### Pause / Resume Flow
+
+You have the option to pause a Flow that is not currently in use but may be needed later. This will allow the Flow to be resumed later when it is needed again by using `resume`.
+
+To pause a Flow:
+
+```bash
+jc pause super-mustang-c6cf06bc5b
+```
+
+```{figure} img/pause_flow.png
+:width: 70%
+```
+
+To resume a Flow:
+
+```bash
+jc resume super-mustang-c6cf06bc5b
+```
+
+```{figure} img/resume_flow.png
+:width: 70%
+```
+
+### Restart Flow, Executor or Gateway
+
+If you need to restart a Flow, there are two options: restart all Executors and the Gateway associated with the Flow, or selectively restart only a specific Executor or the Gateway.
+
+To restart a Flow:
+
+```bash
+jc restart super-mustang-c6cf06bc5b
+```
+
+```{figure} img/restart_flow.png
+:width: 70%
+```
+
+To restart the Gateway:
+
+```bash
+jc restart super-mustang-c6cf06bc5b --gateway
+```
+
+```{figure} img/restart_gateway.png
+:width: 70%
+```
+
+To restart an Executor:
+
+```bash
+jc restart super-mustang-c6cf06bc5b --executor executor0
+```
+
+```{figure} img/restart_executor.png
+:width: 70%
+```
+
+### Scale an Executor
+You can also manually scale any Executor.
+
+```bash
+jc scale good-martin-ca6bfdef84 --executor executor0 --replicas 2
+```
+
+```{figure} img/scale_executor.png
+:width: 70%
+```
+
 ## Restrictions
 
 JCloud scales according to your needs. You can demand different resources (GPU/RAM/CPU/storage/instance-capacity) based on the needs of your Flows and Executors. If you have specific resource requirements, please contact us [on Slack](https://jina.ai/slack) or raise a [GitHub issue](https://github.com/jina-ai/jcloud/issues/new/choose).
