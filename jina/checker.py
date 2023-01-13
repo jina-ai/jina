@@ -25,6 +25,7 @@ class NetworkChecker:
         try:
             total_time = 0
             total_success = 0
+            timeout = args.timeout / 1000 if args.timeout != -1 else None
             for j in range(args.attempts):
                 with TimeContext(
                     f'ping {args.target} on {args.host} at {j} round', default_logger
@@ -33,19 +34,17 @@ class NetworkChecker:
                         hostname, port, protocol, _ = parse_host_scheme(args.host)
                         r = WorkerRuntime.is_ready(
                             ctrl_address=f'{hostname}:{port}',
-                            timeout=args.timeout / 1000,
+                            timeout=timeout,
                         )
                     elif args.target == 'gateway':
                         hostname, port, protocol, _ = parse_host_scheme(args.host)
                         r = GatewayRuntime.is_ready(
                             f'{hostname}:{port}',
                             protocol=GatewayProtocolType.from_string(protocol),
-                            timeout=args.timeout / 1000,
+                            timeout=timeout,
                         )
                     elif args.target == 'flow':
-                        r = Client(host=args.host).is_flow_ready(
-                            timeout=args.timeout / 1000
-                        )
+                        r = Client(host=args.host).is_flow_ready(timeout=timeout)
                     if not r:
                         default_logger.warning(
                             'not responding, attempt (%d/%d) in 1s'
