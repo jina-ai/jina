@@ -30,6 +30,7 @@ class CompositeGateway(BaseGateway):
             gateway_kwargs = {k: v for k, v in kwargs.items() if k != 'runtime_args'}
             gateway_kwargs['runtime_args'] = dict(vars(runtime_args))
             gateway = gateway_cls(**gateway_kwargs)
+            gateway.streamer = self.streamer
             self.gateways.append(gateway)
 
     async def setup_server(self):
