@@ -321,6 +321,9 @@ class ReplicaList:
         self._address_to_connection_idx.clear()
         self._connections.clear()
         self._rr_counter = 0
+        for stub in self._warmup_stubs:
+            await stub.channel.close(0.5)
+        self._warmup_stubs.clear()
 
     @property
     def warmup_stubs(self):
