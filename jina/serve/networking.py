@@ -377,7 +377,6 @@ class GrpcConnectionPool:
             self.single_data_stub = stubs['jina.JinaSingleDataRequestRPC']
             self.stream_stub = stubs['jina.JinaRPC']
             self.endpoints_discovery_stub = stubs['jina.JinaDiscoverEndpointsRPC']
-            self.info_stub = stubs['jina.JinaInfoRPC']
             self._initialized = True
 
         async def send_discover_endpoint(
@@ -510,21 +509,6 @@ class GrpcConnectionPool:
                     )
             else:
                 raise ValueError(f'Unsupported request type {type(requests[0])}')
-
-        async def send_info_rpc(self, timeout: Optional[float] = None):
-            """
-            Use the JinaInfoRPC stub to send request to the _status endpoint exposed by the Runtime
-            :param timeout: defines timeout for sending request
-            :returns: JinaInfoProto
-            """
-            if not self._initialized:
-                await self._init_stubs()
-
-            call_result = self.info_stub._status(
-                jina_pb2.google_dot_protobuf_dot_empty__pb2.Empty(),
-                timeout=timeout,
-            )
-            return await call_result
 
     class _ConnectionPoolMap:
         def __init__(
@@ -1142,12 +1126,17 @@ class GrpcConnectionPool:
         '''
         self._logger.debug(f'starting warmup task for deployment {deployment}')
 
-        async def task_wrapper(replica_warmup_responses, target, stub):
+        async def task_wrapper(target_warmup_responses, target, channel):
             try:
-                await stub.send_info_rpc(timeout=0.5)
-                replica_warmup_responses[target] = True
+                stub = jina_pb2_grpc.JinaInfoRPCStub(channel=channel)
+                call_result = stub._status(
+                    request=jina_pb2.google_dot_protobuf_dot_empty__pb2.Empty(),
+                    timeout=0.5,
+                )
+                await call_result
+                target_warmup_responses[target] = True
             except Exception:
-                replica_warmup_responses[target] = False
+                target_warmup_responses[target] = False
 
         try:
             start_time = time.time()
@@ -1155,17 +1144,17 @@ class GrpcConnectionPool:
             warmed_up_targets = set()
 
             while not stop_event.is_set():
-                # refresh stubs in case connection has been reset due to InternalNetworkError
-                target_to_stub = self.__extract_target_to_stub(deployment)
+                # refresh channels in case connection has been reset due to InternalNetworkError
+                target_to_channel = self.__extract_target_to_channel(deployment)
                 for warmed_target in warmed_up_targets:
-                    target_to_stub.pop(warmed_target)
+                    target_to_channel.pop(warmed_target)
 
                 replica_warmup_responses = {}
                 tasks = []
-                for target, stub in target_to_stub.items():
+                for target, channel in target_to_channel.items():
                     tasks.append(
                         asyncio.create_task(
-                            task_wrapper(replica_warmup_responses, target, stub)
+                            task_wrapper(replica_warmup_responses, target, channel)
                         )
                     )
                 await asyncio.gather(*tasks, return_exceptions=True)
@@ -1174,11 +1163,7 @@ class GrpcConnectionPool:
                     if response:
                         warmed_up_targets.add(target)
 
-                now = time.time()
-                if now > timeout or len(target_to_stub) == 0:
-                    self._logger.debug(
-                        f'completed warmup task for deployment {deployment} after {now - start_time}s.'
-                    )
+                if time.time() > timeout or len(target_to_channel) == 0:
                     return
 
                 await asyncio.sleep(0.2)
@@ -1186,19 +1171,17 @@ class GrpcConnectionPool:
             self._logger.error(f'error with warmup up task: {ex}')
             return
 
-    def __extract_target_to_stub(self, deployment):
+    def __extract_target_to_channel(self, deployment):
         replica_set = set()
         replica_set.update(self._connections.get_replicas_all_shards(deployment))
         replica_set.add(
             self._connections.get_replicas(deployment=deployment, head=True)
         )
 
-        target_to_stub = {}
+        target_to_channel = {}
         for replica_list in filter(None, replica_set):
-            for connection_stub in replica_list._connections:
-                target_to_stub[connection_stub.address] = connection_stub
-
-        return target_to_stub
+            target_to_channel.update(replica_list._address_to_channel)
+        return target_to_channel
 
     @staticmethod
     def __aio_channel_with_tracing_interceptor(
