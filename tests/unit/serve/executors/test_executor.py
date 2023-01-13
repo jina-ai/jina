@@ -11,8 +11,8 @@ from docarray import Document, DocumentArray
 from pytest import FixtureRequest
 
 from jina import Client, Executor, Flow, dynamic_batching, requests
-from jina.constants import __cache_path__
 from jina.clients.request import request_generator
+from jina.constants import __cache_path__
 from jina.excepts import RuntimeFailToStart
 from jina.helper import random_port
 from jina.serve.executors.metas import get_default_metas
@@ -54,7 +54,7 @@ def served_exec(request: FixtureRequest, exposed_port):
 
     e = threading.Event()
 
-    kwargs = {'port_expose': exposed_port, 'stop_event': e}
+    kwargs = {'port': exposed_port, 'stop_event': e}
     enable_dynamic_batching = request.param
     if enable_dynamic_batching:
         kwargs['uses_dynamic_batching'] = {
@@ -75,9 +75,7 @@ def served_exec(request: FixtureRequest, exposed_port):
     t.join()
 
 
-@pytest.mark.parametrize(
-    'uses', ['jinaai://jina-ai/DummyHubExecutor']
-)
+@pytest.mark.parametrize('uses', ['jinaai://jina-ai/DummyHubExecutor'])
 def test_executor_load_from_hub(uses):
     exec = Executor.from_hub(uses, uses_metas={'name': 'hello123'})
     da = DocumentArray([Document()])

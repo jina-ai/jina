@@ -169,10 +169,11 @@ If your Executor needs high IO, you can use `ebs` instead. Note that:
 - You must pass a storage size parameter (default: `1G`, max `10G`).
 
 ````
+JCloud also supports retaining the data a Flow was using while active. You can set the `retain` argument to `true` to enable this feature.
 
 ```{code-block} yaml
 ---
-emphasize-lines: 5-9,12,15
+emphasize-lines: 5-10,12,15
 ---
 jtype: Flow
 executors:
@@ -183,6 +184,7 @@ executors:
         storage:
           type: ebs
           size: 10G
+          retain: true
   - name: executor2
     uses: jinaai+docker://<username>/Executor2
     jcloud:
@@ -239,12 +241,12 @@ executors:
 
 Below are the defaults and requirements for the configurations:
 
-| Name   | Default     | Allowed                  | Description                                     |
-| ------ | ----------- | ------------------------ | ----------------------------------------------- |
+| Name   | Default     | Allowed                  | Description                                       |
+| ------ | ----------- | ------------------------ | ------------------------------------------------- |
 | min    | 1           | int                      | Minimum number of replicas (`0` means serverless) |
-| max    | 2           | int, up to 5             | Maximum number of replicas                      |
-| metric | concurrency | `concurrency`  /   `rps` | Metric for scaling                              |
-| target | 100         | int                      | Target number after which replicas autoscale    |
+| max    | 2           | int, up to 5             | Maximum number of replicas                        |
+| metric | concurrency | `concurrency`  /   `rps` | Metric for scaling                                |
+| target | 100         | int                      | Target number after which replicas autoscale      |
 
 After JCloud deployment using the autoscaling configuration, the Flow serving part is just the same; the only difference you may notice is it takes a few extra seconds to handle the initial requests since it needs to scale the deployments behind the scenes. Let JCloud handle the scaling from now on, and you should only worry about the code!
 
