@@ -240,7 +240,6 @@ class ReplicaList:
 
     async def _destroy_connection(self, connection, grace=0.5):
         # we should handle graceful termination better, 0.5 is a rather random number here
-        self._logger.debug(f'destroying connection {connection}')
         await connection.close(grace)
 
     async def get_next_connection(self, num_retries=3):
