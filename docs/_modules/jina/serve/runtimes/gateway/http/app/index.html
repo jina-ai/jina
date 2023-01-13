@@ -400,7 +400,6 @@
 <span></span><span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
 
-<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__version__</span>
 <span class="kn">from</span> <span class="nn">jina.clients.request</span> <span class="kn">import</span> <span class="n">request_generator</span>
 <span class="kn">from</span> <span class="nn">jina.enums</span> <span class="kn">import</span> <span class="n">DataInputType</span>
 <span class="kn">from</span> <span class="nn">jina.excepts</span> <span class="kn">import</span> <span class="n">InternalNetworkError</span>
@@ -427,7 +426,7 @@
     <span class="n">tracing</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">tracer_provider</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;trace.TracerProvider&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the app from FastAPI as the REST interface.</span>
 
 <span class="sd">    :param streamer: gateway streamer object</span>
@@ -454,6 +453,7 @@
             <span class="n">JinaRequestModel</span><span class="p">,</span>
             <span class="n">JinaResponseModel</span><span class="p">,</span>
         <span class="p">)</span>
+    <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__version__</span>
 
     <span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">(</span>
         <span class="n">title</span><span class="o">=</span><span class="n">title</span> <span class="ow">or</span> <span class="s1">&#39;My Jina Service&#39;</span><span class="p">,</span>
@@ -509,7 +509,7 @@
             <span class="n">response_model</span><span class="o">=</span><span class="n">PROTO_TO_PYDANTIC_MODELS</span><span class="o">.</span><span class="n">StatusProto</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">async</span> <span class="k">def</span> <span class="nf">_flow_health</span><span class="p">():</span>
-            <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Get the health of the complete Flow service.</span>
 <span class="sd">            .. # noqa: DAR201</span>
 
@@ -540,7 +540,7 @@
             <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Debug&#39;</span><span class="p">],</span>
         <span class="p">)</span>
         <span class="k">async</span> <span class="k">def</span> <span class="nf">_status</span><span class="p">():</span>
-            <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Get the status of this Jina service.</span>
 
 <span class="sd">            This is equivalent to running `jina -vf` from command line.</span>
@@ -564,7 +564,7 @@
         <span class="k">async</span> <span class="k">def</span> <span class="nf">post</span><span class="p">(</span>
             <span class="n">body</span><span class="p">:</span> <span class="n">JinaEndpointRequestModel</span><span class="p">,</span> <span class="n">response</span><span class="p">:</span> <span class="n">Response</span>
         <span class="p">):</span>  <span class="c1"># &#39;response&#39; is a FastAPI response, not a Jina response</span>
-            <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Post a data request to some endpoint.</span>
 
 <span class="sd">            This is equivalent to the following:</span>
@@ -631,7 +631,7 @@
         <span class="k">return</span> <span class="n">header_dict</span>
 
     <span class="k">def</span> <span class="nf">expose_executor_endpoint</span><span class="p">(</span><span class="n">exec_endpoint</span><span class="p">,</span> <span class="n">http_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Exposing an executor endpoint to http endpoint</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Exposing an executor endpoint to http endpoint</span>
 <span class="sd">        :param exec_endpoint: the executor endpoint</span>
 <span class="sd">        :param http_path: the http endpoint</span>
 <span class="sd">        :param kwargs: kwargs accepted by FastAPI</span>
@@ -765,7 +765,7 @@
             <span class="n">app</span><span class="o">.</span><span class="n">include_router</span><span class="p">(</span><span class="n">GraphQLRouter</span><span class="p">(</span><span class="n">schema</span><span class="p">),</span> <span class="n">prefix</span><span class="o">=</span><span class="s1">&#39;/graphql&#39;</span><span class="p">)</span>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_get_singleton_result</span><span class="p">(</span><span class="n">request_iterator</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Streams results from AsyncPrefetchCall as a dict</span>
 
 <span class="sd">        :param request_iterator: request iterator, with length of 1</span>
@@ -790,7 +790,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 30, 2022</div>
+                            Last updated on Jan 13, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

@@ -429,19 +429,19 @@
 <p class="admonition-title">Tip</p>
 <p>Executor uses <code class="docutils literal notranslate"><span class="pre">docarray.DocumentArray</span></code> as input and output data structure. Please <a class="reference external" href="https://docarray.jina.ai">read DocArray’s docs</a> to get an impression how it works.</p>
 </div>
-<p><a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a> is a self-contained component and performs a group of tasks on a <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code>.
+<p><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code> is a self-contained component and performs a group of tasks on a <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code>.
 It encapsulates functions that process <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code>s. Inside the Executor, these functions are decorated with <code class="docutils literal notranslate"><span class="pre">&#64;requests</span></code>. To create an Executor, you need to follow three principles:</p>
 <ol class="arabic simple">
 <li><p>An Executor should subclass directly from the <code class="docutils literal notranslate"><span class="pre">jina.Executor</span></code> class. An Executor can also be a <code class="docutils literal notranslate"><span class="pre">dataclass</span></code></p></li>
 <li><p>An Executor class is a bag of functions with shared state or configuration (via <code class="docutils literal notranslate"><span class="pre">self</span></code>); it can contain an arbitrary number of
 functions with arbitrary names.</p></li>
-<li><p>Functions decorated by <a class="reference internal" href="../../../api/jina/#jina.requests" title="jina.requests"><code class="xref py py-class docutils literal notranslate"><span class="pre">requests</span></code></a> are invoked according to their <code class="docutils literal notranslate"><span class="pre">on=</span></code> endpoint. These functions can be coroutines (<code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">def</span></code>) or regular functions.</p></li>
+<li><p>Functions decorated by <code class="xref py py-class docutils literal notranslate"><span class="pre">requests</span></code> are invoked according to their <code class="docutils literal notranslate"><span class="pre">on=</span></code> endpoint. These functions can be coroutines (<code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">def</span></code>) or regular functions.</p></li>
 </ol>
 <section id="constructor">
 <h2>Constructor<a class="headerlink" href="#constructor" title="Permalink to this heading">#</a></h2>
 <section id="subclass">
 <h3>Subclass<a class="headerlink" href="#subclass" title="Permalink to this heading">#</a></h3>
-<p>Every new Executor should be a subclass of <a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>.</p>
+<p>Every new Executor should be a subclass of <code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code>.</p>
 <p>You can name your Executor class freely.</p>
 </section>
 <section id="init">
@@ -487,7 +487,7 @@ or modify their values before passing them to <code class="docutils literal notr
 <h2>Destructor<a class="headerlink" href="#destructor" title="Permalink to this heading">#</a></h2>
 <p>You might need to execute some logic when your Executor’s destructor is called.</p>
 <p>For example, if you want to persist data to disk (e.g. in-memory indexed data, fine-tuned model,…) you can overwrite the <a class="reference internal" href="../../../api/jina.serve.executors/#jina.serve.executors.BaseExecutor.close" title="jina.serve.executors.BaseExecutor.close"><code class="xref py py-meth docutils literal notranslate"><span class="pre">close()</span></code></a> method and add your logic.</p>
-<p>Jina ensures the <a class="reference internal" href="../../../api/jina.serve.executors/#jina.serve.executors.BaseExecutor.close" title="jina.serve.executors.BaseExecutor.close"><code class="xref py py-meth docutils literal notranslate"><span class="pre">close()</span></code></a> method is executed when the Executor is terminated inside a <a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> or when deployed in any cloud-native environment.</p>
+<p>Jina ensures the <a class="reference internal" href="../../../api/jina.serve.executors/#jina.serve.executors.BaseExecutor.close" title="jina.serve.executors.BaseExecutor.close"><code class="xref py py-meth docutils literal notranslate"><span class="pre">close()</span></code></a> method is executed when the Executor is terminated inside a <code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code> or when deployed in any cloud-native environment.</p>
 <p>You can think of this as Jina using the Executor as a context manager, making sure that the <a class="reference internal" href="../../../api/jina.serve.executors/#jina.serve.executors.BaseExecutor.close" title="jina.serve.executors.BaseExecutor.close"><code class="xref py py-meth docutils literal notranslate"><span class="pre">close()</span></code></a> method is always executed.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span>
 
@@ -615,7 +615,7 @@ As the name suggests, <code class="docutils literal notranslate"><span class="pr
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 30, 2022</div>
+                            Last updated on Jan 13, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

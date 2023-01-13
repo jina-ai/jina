@@ -443,13 +443,13 @@ Nevertheless, you can perform these checks yourself.</p>
 </pre></div>
 </div>
 <p>In another terminal, you can use <a class="reference external" href="https://github.com/fullstorydev/grpcurl">grpcurl</a> to send gRPC requests to your services.</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker pull fullstorydev/grpcurl:latest
-docker run --network<span class="o">=</span><span class="s1">&#39;host&#39;</span> fullstorydev/grpcurl -plaintext <span class="m">127</span>.0.0.1:12346 grpc.health.v1.Health/Check
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>pull<span class="w"> </span>fullstorydev/grpcurl:latest
+docker<span class="w"> </span>run<span class="w"> </span>--network<span class="o">=</span><span class="s1">&#39;host&#39;</span><span class="w"> </span>fullstorydev/grpcurl<span class="w"> </span>-plaintext<span class="w"> </span><span class="m">127</span>.0.0.1:12346<span class="w"> </span>grpc.health.v1.Health/Check
 </pre></div>
 </div>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SERVING&quot;</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SERVING&quot;</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 </section>
@@ -485,7 +485,7 @@ docker run --network<span class="o">=</span><span class="s1">&#39;host&#39;</spa
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 30, 2022</div>
+                            Last updated on Jan 13, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

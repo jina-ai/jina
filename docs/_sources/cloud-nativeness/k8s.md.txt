@@ -58,7 +58,7 @@ Here are possible configuration options you may need to add or change
 - Add `requests` and `limits` for the resources of the different Pods 
 - Set up persistent volume storage to save your data on disk
 - Pass custom configuration to your Executor with `ConfigMap` 
-- Manage credentials of your Executor with secrets
+- Manage credentials of your Executor with Kubernetes secrets, you can use `f.add(..., env_from_secret={'SECRET_PASSWORD': {'name': 'mysecret', 'key': 'password'}})` to map them to Pod environment variables
 - Edit the default rolling update configuration
 
 

@@ -18,6 +18,7 @@ Submodules
    :maxdepth: 4
 
    jina.orchestrate.helper
+   jina.orchestrate.orchestrator
 
 Module contents
 ---------------

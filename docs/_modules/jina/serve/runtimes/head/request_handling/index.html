@@ -412,7 +412,7 @@
 
 
 <div class="viewcode-block" id="HeaderRequestHandler"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.head.request_handling/#jina.serve.runtimes.head.request_handling.HeaderRequestHandler">[docs]</a><span class="k">class</span> <span class="nc">HeaderRequestHandler</span><span class="p">(</span><span class="n">MonitoringRequestMixin</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class that handles the requests arriving to the head and the results extracted from the requests future.</span>
 
 <span class="sd">    :param metrics_registry: optional metrics registry for prometheus. Used if we need to expose metrics from the executor or from the data request handler</span>
@@ -563,9 +563,7 @@
         <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">worker_results</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">reduce</span><span class="p">:</span>
             <span class="c1"># worker returned multiple responses, but the head is configured to skip reduction</span>
             <span class="c1"># just concatenate the docs in this case</span>
-            <span class="n">response_request</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">docs</span> <span class="o">=</span> <span class="n">WorkerRequestHandler</span><span class="o">.</span><span class="n">get_docs_from_request</span><span class="p">(</span>
-                <span class="n">requests</span><span class="p">,</span> <span class="n">field</span><span class="o">=</span><span class="s1">&#39;docs&#39;</span>
-            <span class="p">)</span>
+            <span class="n">response_request</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">docs</span> <span class="o">=</span> <span class="n">WorkerRequestHandler</span><span class="o">.</span><span class="n">get_docs_from_request</span><span class="p">(</span><span class="n">requests</span><span class="p">)</span>
 
         <span class="n">merged_metadata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_merge_metadata</span><span class="p">(</span>
             <span class="n">metadata</span><span class="p">,</span>
@@ -592,7 +590,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 30, 2022</div>
+                            Last updated on Jan 13, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

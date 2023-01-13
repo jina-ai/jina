@@ -403,19 +403,18 @@
 <span class="kn">from</span> <span class="nn">hubble.executor.helper</span> <span class="kn">import</span> <span class="n">is_valid_docker_uri</span><span class="p">,</span> <span class="n">parse_hub_uri</span>
 <span class="kn">from</span> <span class="nn">hubble.executor.hubio</span> <span class="kn">import</span> <span class="n">HubIO</span>
 
-<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span> <span class="nn">jina.constants</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">__default_composite_gateway__</span><span class="p">,</span>
     <span class="n">__default_executor__</span><span class="p">,</span>
     <span class="n">__default_grpc_gateway__</span><span class="p">,</span>
     <span class="n">__default_http_gateway__</span><span class="p">,</span>
     <span class="n">__default_websocket_gateway__</span><span class="p">,</span>
-    <span class="n">__version__</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">jina.enums</span> <span class="kn">import</span> <span class="n">PodRoleType</span>
 
 
 <div class="viewcode-block" id="get_image_name"><a class="viewcode-back" href="../../../../../../api/jina.orchestrate.deployments.config.helper/#jina.orchestrate.deployments.config.helper.get_image_name">[docs]</a><span class="k">def</span> <span class="nf">get_image_name</span><span class="p">(</span><span class="n">uses</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;The image can be provided in different formats by the user.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The image can be provided in different formats by the user.</span>
 <span class="sd">    This function converts it to an image name which can be understood by k8s.</span>
 <span class="sd">    It uses the Hub api to get the image name and the latest tag on Docker Hub.</span>
 
@@ -442,7 +441,7 @@
 
 
 <div class="viewcode-block" id="to_compatible_name"><a class="viewcode-back" href="../../../../../../api/jina.orchestrate.deployments.config.helper/#jina.orchestrate.deployments.config.helper.to_compatible_name">[docs]</a><span class="k">def</span> <span class="nf">to_compatible_name</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Converts the deployment name to a valid name for K8s and docker compose.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Converts the deployment name to a valid name for K8s and docker compose.</span>
 
 <span class="sd">    :param name: name of the deployment</span>
 <span class="sd">    :return: compatible name</span>
@@ -451,13 +450,14 @@
 
 
 <div class="viewcode-block" id="get_base_executor_version"><a class="viewcode-back" href="../../../../../../api/jina.orchestrate.deployments.config.helper/#jina.orchestrate.deployments.config.helper.get_base_executor_version">[docs]</a><span class="k">def</span> <span class="nf">get_base_executor_version</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the version of jina to be used</span>
 <span class="sd">    :return: the version tag</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">import</span> <span class="nn">requests</span>
 
     <span class="k">try</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__version__</span>
         <span class="n">url</span> <span class="o">=</span> <span class="s1">&#39;https://registry.hub.docker.com/v2/repositories/jinaai/jina/tags&#39;</span>
         <span class="n">result</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="n">__version__</span><span class="p">})</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;count&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
@@ -469,7 +469,7 @@
 
 
 <div class="viewcode-block" id="construct_runtime_container_args"><a class="viewcode-back" href="../../../../../../api/jina.orchestrate.deployments.config.helper/#jina.orchestrate.deployments.config.helper.construct_runtime_container_args">[docs]</a><span class="k">def</span> <span class="nf">construct_runtime_container_args</span><span class="p">(</span><span class="n">cargs</span><span class="p">,</span> <span class="n">uses_metas</span><span class="p">,</span> <span class="n">uses_with</span><span class="p">,</span> <span class="n">pod_type</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Construct a set of Namespace arguments into a list of arguments to pass to a container entrypoint</span>
 <span class="sd">    :param cargs: The namespace arguments</span>
 <span class="sd">    :param uses_metas: The uses_metas to override</span>
@@ -491,6 +491,7 @@
         <span class="s1">&#39;workspace_id&#39;</span><span class="p">,</span>
         <span class="s1">&#39;noblock_on_start&#39;</span><span class="p">,</span>
         <span class="s1">&#39;env&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;env_from_secret&#39;</span><span class="p">,</span>
     <span class="p">}</span>
 
     <span class="k">if</span> <span class="n">pod_type</span> <span class="o">==</span> <span class="n">PodRoleType</span><span class="o">.</span><span class="n">HEAD</span><span class="p">:</span>
@@ -516,7 +517,7 @@
 
 
 <div class="viewcode-block" id="validate_uses"><a class="viewcode-back" href="../../../../../../api/jina.orchestrate.deployments.config.helper/#jina.orchestrate.deployments.config.helper.validate_uses">[docs]</a><span class="k">def</span> <span class="nf">validate_uses</span><span class="p">(</span><span class="n">uses</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Validate uses argument</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Validate uses argument</span>
 
 <span class="sd">    :param uses: uses argument</span>
 <span class="sd">    :return: boolean indicating whether is a valid uses to be used in K8s or docker compose</span>
@@ -557,7 +558,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 30, 2022</div>
+                            Last updated on Jan 13, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

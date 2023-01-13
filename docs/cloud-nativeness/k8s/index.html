@@ -429,13 +429,13 @@
 </div>
 <p>Jina is a cloud-native framework and therefore runs natively and easily on Kubernetes.
 Deploying a Jina Flow on Kubernetes is actually the recommended way to use Jina in production.</p>
-<p>A <a class="reference internal" href="../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> is composed of different microservices called <a class="reference internal" href="../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>s which natively run in containers. This means that Kubernetes can natively take over the lifetime management of Executors.</p>
-<p>Deploying a <a class="reference internal" href="../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> on Kubernetes means wrapping these microservice containers in the appropriate K8s abstraction (Deployment, StatefulSet, and so on), exposing them internally via K8s service and connecting them together by passing the right set of parameters.</p>
+<p>A <code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code> is composed of different microservices called <code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code>s which natively run in containers. This means that Kubernetes can natively take over the lifetime management of Executors.</p>
+<p>Deploying a <code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code> on Kubernetes means wrapping these microservice containers in the appropriate K8s abstraction (Deployment, StatefulSet, and so on), exposing them internally via K8s service and connecting them together by passing the right set of parameters.</p>
 <section id="automatically-translate-a-flow-to-kubernetes-concept">
 <h2>Automatically translate a Flow to Kubernetes concept<a class="headerlink" href="#automatically-translate-a-flow-to-kubernetes-concept" title="Permalink to this heading">#</a></h2>
 <div class="admonition hint">
 <p class="admonition-title">Hint</p>
-<p>Manually building these Kubernetes YAML object is long and cumbersome. Therefore we provide a helper function <a class="reference internal" href="../../api/jina/#jina.Flow.to_kubernetes_yaml" title="jina.Flow.to_kubernetes_yaml"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_kubernetes_yaml()</span></code></a> that does most of this
+<p>Manually building these Kubernetes YAML object is long and cumbersome. Therefore we provide a helper function <code class="xref py py-meth docutils literal notranslate"><span class="pre">to_kubernetes_yaml()</span></code> that does most of this
 translation work automatically.</p>
 </div>
 <p>This helper function can be called from:</p>
@@ -455,11 +455,11 @@ You, the user, know your use case and requirements the best.
 This means that, while Jina generates configurations for you that run out of the box, as a professional user you should always see them as just a starting point to get you off the ground.</p>
 <div class="admonition hint">
 <p class="admonition-title">Hint</p>
-<p>The export funciton<a class="reference internal" href="../../api/jina/#jina.Flow.to_kubernetes_yaml" title="jina.Flow.to_kubernetes_yaml"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_kubernetes_yaml()</span></code></a> is a helper function to get your stared off the ground. <strong>There are meant to be updated and adapted to every use case</strong></p>
+<p>The export funciton<code class="xref py py-meth docutils literal notranslate"><span class="pre">to_kubernetes_yaml()</span></code> is a helper function to get your stared off the ground. <strong>There are meant to be updated and adapted to every use case</strong></p>
 </div>
 <div class="caution admonition">
 <p class="admonition-title">Matching Jina versions</p>
-<p>If you change the Docker images for <a class="reference internal" href="../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a> and <a class="reference internal" href="../../api/jina/#jina.Gateway" title="jina.Gateway"><code class="xref py py-class docutils literal notranslate"><span class="pre">Gateway</span></code></a> in your Kubernetes-generated file, ensure that all of them are built with the same Jina version to guarantee compatibility.</p>
+<p>If you change the Docker images for <code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code> and <code class="xref py py-class docutils literal notranslate"><span class="pre">Gateway</span></code> in your Kubernetes-generated file, ensure that all of them are built with the same Jina version to guarantee compatibility.</p>
 </div>
 <p>You can’t add basic Kubernetes features like <code class="docutils literal notranslate"><span class="pre">Secrets</span></code>, <code class="docutils literal notranslate"><span class="pre">ConfigMap</span></code> or <code class="docutils literal notranslate"><span class="pre">Labels</span></code> via the Pythonic or YAML interface. This is intentional and doesn’t mean that we don’t support these features. On the contrary, we let you fully express your Kubernetes configuration by using the Kubernetes API to add your own Kubernetes standard to Jina.</p>
 <div class="hint admonition">
@@ -472,7 +472,7 @@ This means that, while Jina generates configurations for you that run out of the
 <li><p>Add <code class="docutils literal notranslate"><span class="pre">requests</span></code> and <code class="docutils literal notranslate"><span class="pre">limits</span></code> for the resources of the different Pods</p></li>
 <li><p>Set up persistent volume storage to save your data on disk</p></li>
 <li><p>Pass custom configuration to your Executor with <code class="docutils literal notranslate"><span class="pre">ConfigMap</span></code></p></li>
-<li><p>Manage credentials of your Executor with secrets</p></li>
+<li><p>Manage credentials of your Executor with Kubernetes secrets, you can use <code class="docutils literal notranslate"><span class="pre">f.add(...,</span> <span class="pre">env_from_secret={'SECRET_PASSWORD':</span> <span class="pre">{'name':</span> <span class="pre">'mysecret',</span> <span class="pre">'key':</span> <span class="pre">'password'}})</span></code> to map them to Pod environment variables</p></li>
 <li><p>Edit the default rolling update configuration</p></li>
 </ul>
 </section>
@@ -535,7 +535,7 @@ To expose your Gateway replicas outside Kubernetes, you can add a load balancer 
 <ul class="simple">
 <li><p><a class="reference internal" href="../kubernetes/#kubernetes"><span class="std std-ref">Step by step deployment of a Jina Flow on Kubernetes</span></a></p></li>
 <li><p><a class="reference internal" href="../../concepts/flow/basics/#kubernetes-export"><span class="std std-ref">Export a Flow to Kubernetes</span></a></p></li>
-<li><p><a class="reference internal" href="../../api/jina/#jina.Flow.to_kubernetes_yaml" title="jina.Flow.to_kubernetes_yaml"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_kubernetes_yaml()</span></code></a></p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_kubernetes_yaml()</span></code></p></li>
 <li><p><a class="reference internal" href="../../concepts/executor/serve/#kubernetes-executor"><span class="std std-ref">Deploy a standalone Executor on Kubernetes</span></a></p></li>
 <li><p><a class="reference external" href="https://kubernetes.io/docs/home/">Kubernetes Documentation</a></p></li>
 </ul>
@@ -573,7 +573,7 @@ To expose your Gateway replicas outside Kubernetes, you can add a load balancer 
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 30, 2022</div>
+                            Last updated on Jan 13, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

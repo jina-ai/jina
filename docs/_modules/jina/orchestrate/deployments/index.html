@@ -397,161 +397,57 @@
                 </div>
                 <article role="main">
                     <h1>Source code for jina.orchestrate.deployments</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">copy</span>
+<span></span><span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">import</span> <span class="nn">copy</span>
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">subprocess</span>
-<span class="kn">import</span> <span class="nn">asyncio</span>
-
-<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">abstractmethod</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">from</span> <span class="nn">argparse</span> <span class="kn">import</span> <span class="n">Namespace</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
-<span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">ExitStack</span>
 <span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">cycle</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">overload</span>
 
 <span class="kn">from</span> <span class="nn">hubble.executor.helper</span> <span class="kn">import</span> <span class="n">replace_secret_of_hub_uri</span>
 <span class="kn">from</span> <span class="nn">hubble.executor.hubio</span> <span class="kn">import</span> <span class="n">HubIO</span>
+<span class="kn">from</span> <span class="nn">rich</span> <span class="kn">import</span> <span class="nb">print</span>
+<span class="kn">from</span> <span class="nn">rich.panel</span> <span class="kn">import</span> <span class="n">Panel</span>
 
-<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__default_executor__</span><span class="p">,</span> <span class="n">__default_host__</span><span class="p">,</span> <span class="n">__docker_host__</span><span class="p">,</span> <span class="n">helper</span>
-<span class="kn">from</span> <span class="nn">jina.enums</span> <span class="kn">import</span> <span class="n">DeploymentRoleType</span><span class="p">,</span> <span class="n">PodRoleType</span><span class="p">,</span> <span class="n">PollingType</span>
-<span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">CatchAllCleanupContextManager</span><span class="p">,</span>
-    <span class="n">parse_host_scheme</span><span class="p">,</span>
+<span class="kn">from</span> <span class="nn">jina.clients</span> <span class="kn">import</span> <span class="n">Client</span>
+<span class="kn">from</span> <span class="nn">jina.clients.mixin</span> <span class="kn">import</span> <span class="n">PostMixin</span>
+<span class="kn">from</span> <span class="nn">jina.constants</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">__default_executor__</span><span class="p">,</span>
+    <span class="n">__default_host__</span><span class="p">,</span>
+    <span class="n">__docker_host__</span><span class="p">,</span>
+    <span class="n">__windows__</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">jina.orchestrate.deployments.install_requirements_helper</span> <span class="kn">import</span> <span class="n">install_package_dependencies</span><span class="p">,</span> <span class="n">_get_package_path_from_uses</span>
+<span class="kn">from</span> <span class="nn">jina.enums</span> <span class="kn">import</span> <span class="n">DeploymentRoleType</span><span class="p">,</span> <span class="n">GatewayProtocolType</span><span class="p">,</span> <span class="n">PodRoleType</span><span class="p">,</span> <span class="n">PollingType</span>
+<span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">ArgNamespace</span><span class="p">,</span> <span class="n">parse_host_scheme</span><span class="p">,</span> <span class="n">random_port</span>
+<span class="kn">from</span> <span class="nn">jina.importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
+<span class="kn">from</span> <span class="nn">jina.logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
+<span class="kn">from</span> <span class="nn">jina.orchestrate.deployments.install_requirements_helper</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">_get_package_path_from_uses</span><span class="p">,</span>
+    <span class="n">install_package_dependencies</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">jina.orchestrate.orchestrator</span> <span class="kn">import</span> <span class="n">BaseOrchestrator</span>
 <span class="kn">from</span> <span class="nn">jina.orchestrate.pods.factory</span> <span class="kn">import</span> <span class="n">PodFactory</span>
+<span class="kn">from</span> <span class="nn">jina.parsers</span> <span class="kn">import</span> <span class="n">set_deployment_parser</span><span class="p">,</span> <span class="n">set_gateway_parser</span>
 <span class="kn">from</span> <span class="nn">jina.parsers.helper</span> <span class="kn">import</span> <span class="n">_update_gateway_args</span>
 <span class="kn">from</span> <span class="nn">jina.serve.networking</span> <span class="kn">import</span> <span class="n">host_is_local</span><span class="p">,</span> <span class="n">in_docker</span>
 
 <span class="n">WRAPPED_SLICE_BASE</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;\[[-\d:]+\]&#39;</span>
 
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">multiprocessing</span>
 
-<div class="viewcode-block" id="BaseDeployment"><a class="viewcode-back" href="../../../../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.BaseDeployment">[docs]</a><span class="k">class</span> <span class="nc">BaseDeployment</span><span class="p">(</span><span class="n">ExitStack</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;A BaseDeployment is an immutable set of pods.</span>
-<span class="sd">    Internally, the pods can run with the process/thread backend.</span>
-<span class="sd">    They can be also run in their own containers on remote machines.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-<div class="viewcode-block" id="BaseDeployment.start"><a class="viewcode-back" href="../../../../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.BaseDeployment.start">[docs]</a>    <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;BaseDeployment&#39;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Start to run all :class:`Pod` in this BaseDeployment.</span>
-
-<span class="sd">        .. note::</span>
-<span class="sd">            If one of the :class:`Pod` fails to start, make sure that all of them</span>
-<span class="sd">            are properly closed.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="o">...</span></div>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">role</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;DeploymentRoleType&#39;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return the role of this :class:`BaseDeployment`.</span>
-
-<span class="sd">        .. # noqa: DAR201</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">deployment_role</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;The name of this :class:`BaseDeployment`.</span>
+    <span class="kn">from</span> <span class="nn">jina.clients.base</span> <span class="kn">import</span> <span class="n">BaseClient</span>
+    <span class="kn">from</span> <span class="nn">jina.serve.executors</span> <span class="kn">import</span> <span class="n">BaseExecutor</span>
 
 
-<span class="sd">        .. # noqa: DAR201</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">name</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">head_host</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Get the host of the HeadPod of this deployment</span>
-<span class="sd">        .. # noqa: DAR201</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_args</span><span class="o">.</span><span class="n">host</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_args</span> <span class="k">else</span> <span class="kc">None</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">head_port</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Get the port of the HeadPod of this deployment</span>
-<span class="sd">        .. # noqa: DAR201</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_args</span><span class="o">.</span><span class="n">port</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_args</span> <span class="k">else</span> <span class="kc">None</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">head_port_monitoring</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Get the port_monitoring of the HeadPod of this deployment</span>
-<span class="sd">        .. # noqa: DAR201</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_args</span><span class="o">.</span><span class="n">port_monitoring</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_args</span> <span class="k">else</span> <span class="kc">None</span>
-
-    <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;BaseDeployment&#39;</span><span class="p">:</span>
-        <span class="k">with</span> <span class="n">CatchAllCleanupContextManager</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
-
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_copy_to_head_args</span><span class="p">(</span><span class="n">args</span><span class="p">:</span> <span class="n">Namespace</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Namespace</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Set the outgoing args of the head router</span>
-
-<span class="sd">        :param args: basic arguments</span>
-<span class="sd">        :return: enriched head arguments</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="n">_head_args</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
-        <span class="n">_head_args</span><span class="o">.</span><span class="n">polling</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">polling</span>
-        <span class="n">_head_args</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">_head_args</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">host</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">_head_args</span><span class="o">.</span><span class="n">uses</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">uses</span>
-        <span class="n">_head_args</span><span class="o">.</span><span class="n">pod_role</span> <span class="o">=</span> <span class="n">PodRoleType</span><span class="o">.</span><span class="n">HEAD</span>
-        <span class="n">_head_args</span><span class="o">.</span><span class="n">runtime_cls</span> <span class="o">=</span> <span class="s1">&#39;HeadRuntime&#39;</span>
-        <span class="n">_head_args</span><span class="o">.</span><span class="n">replicas</span> <span class="o">=</span> <span class="mi">1</span>
-
-        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
-            <span class="n">_head_args</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">/head&#39;</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">_head_args</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;head&#39;</span>
-
-        <span class="k">return</span> <span class="n">_head_args</span>
-
-    <span class="nd">@property</span>
-    <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">head_args</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Namespace</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Get the arguments for the `head` of this BaseDeployment.</span>
-
-<span class="sd">        .. # noqa: DAR201</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="o">...</span>
-
-<div class="viewcode-block" id="BaseDeployment.join"><a class="viewcode-back" href="../../../../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.BaseDeployment.join">[docs]</a>    <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">join</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Wait until all deployment and pods exit.&quot;&quot;&quot;</span>
-        <span class="o">...</span></div>
-
-    <span class="nd">@property</span>
-    <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">_mermaid_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;String that will be used to represent the Deployment graphically when `Flow.plot()` is invoked</span>
-
-
-<span class="sd">        .. # noqa: DAR201</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="o">...</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">deployments</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Get deployments of the deployment. The BaseDeployment just gives one deployment.</span>
-
-<span class="sd">        :return: list of deployments</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">[</span>
-            <span class="p">{</span>
-                <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-                <span class="s1">&#39;head_host&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_host</span><span class="p">,</span>
-                <span class="s1">&#39;head_port&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_port</span><span class="p">,</span>
-            <span class="p">}</span>
-        <span class="p">]</span></div>
-
-
-<div class="viewcode-block" id="Deployment"><a class="viewcode-back" href="../../../../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.Deployment">[docs]</a><span class="k">class</span> <span class="nc">Deployment</span><span class="p">(</span><span class="n">BaseDeployment</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;A Deployment is an immutable set of pods, which run in replicas. They share the same input and output socket.</span>
+<div class="viewcode-block" id="Deployment"><a class="viewcode-back" href="../../../../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.Deployment">[docs]</a><span class="k">class</span> <span class="nc">Deployment</span><span class="p">(</span><span class="n">PostMixin</span><span class="p">,</span> <span class="n">BaseOrchestrator</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A Deployment is an immutable set of pods, which run in replicas. They share the same input and output socket.</span>
 <span class="sd">    Internally, the pods can run with the process/thread backend. They can be also run in their own containers</span>
 <span class="sd">    :param args: arguments parsed from the CLI</span>
 <span class="sd">    :param needs: deployments names of preceding deployments, the output of these deployments are going into the input of this deployment</span>
@@ -590,7 +486,9 @@
                 <span class="n">pod</span><span class="o">.</span><span class="n">wait_start_success</span><span class="p">()</span>
 
         <span class="k">async</span> <span class="k">def</span> <span class="nf">async_wait_start_success</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-            <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">pod</span><span class="o">.</span><span class="n">async_wait_start_success</span><span class="p">()</span> <span class="k">for</span> <span class="n">pod</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pods</span><span class="p">])</span>
+            <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
+                <span class="o">*</span><span class="p">[</span><span class="n">pod</span><span class="o">.</span><span class="n">async_wait_start_success</span><span class="p">()</span> <span class="k">for</span> <span class="n">pod</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pods</span><span class="p">]</span>
+            <span class="p">)</span>
 
         <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">_args</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
@@ -610,10 +508,203 @@
             <span class="k">if</span> <span class="n">exc_val</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">closing_exception</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">closing_exception</span>
 
+    <span class="c1"># overload_inject_start_deployment</span>
+    <span class="nd">@overload</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s1">&#39;Namespace&#39;</span><span class="p">,</span> <span class="n">Dict</span><span class="p">],</span> <span class="n">needs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="p">,</span><span class="o">*</span><span class="p">,</span>
+        <span class="n">compression</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">connection_list</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">disable_auto_volume</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
+        <span class="n">docker_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">entrypoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">env</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">env_from_secret</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">exit_on_exceptions</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[],</span> 
+        <span class="n">external</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
+        <span class="n">floating</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
+        <span class="n">force_update</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
+        <span class="n">gpus</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">grpc_metadata</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">grpc_server_options</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">host</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;0.0.0.0&#39;</span><span class="p">],</span> 
+        <span class="n">install_requirements</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
+        <span class="n">log_config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">metrics</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
+        <span class="n">metrics_exporter_host</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">metrics_exporter_port</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">monitoring</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
+        <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">native</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
+        <span class="n">no_reduce</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
+        <span class="n">output_array_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">polling</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;ANY&#39;</span><span class="p">,</span> 
+        <span class="n">port</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">port_monitoring</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">py_modules</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">quiet</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
+        <span class="n">quiet_error</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
+        <span class="n">reload</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
+        <span class="n">replicas</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> 
+        <span class="n">retries</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> 
+        <span class="n">runtime_cls</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;WorkerRuntime&#39;</span><span class="p">,</span> 
+        <span class="n">shards</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> 
+        <span class="n">timeout_ctrl</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">60</span><span class="p">,</span> 
+        <span class="n">timeout_ready</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">600000</span><span class="p">,</span> 
+        <span class="n">timeout_send</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">tls</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
+        <span class="n">traces_exporter_host</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">traces_exporter_port</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">tracing</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
+        <span class="n">uses</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Type</span><span class="p">[</span><span class="s1">&#39;BaseExecutor&#39;</span><span class="p">],</span> <span class="nb">dict</span><span class="p">]]</span> <span class="o">=</span> <span class="s1">&#39;BaseExecutor&#39;</span><span class="p">,</span> 
+        <span class="n">uses_after</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Type</span><span class="p">[</span><span class="s1">&#39;BaseExecutor&#39;</span><span class="p">],</span> <span class="nb">dict</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">uses_after_address</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">uses_before</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Type</span><span class="p">[</span><span class="s1">&#39;BaseExecutor&#39;</span><span class="p">],</span> <span class="nb">dict</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">uses_before_address</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">uses_dynamic_batching</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">uses_metas</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">uses_requests</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">uses_with</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">volumes</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">when</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">workspace</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a Deployment to serve or deploy and Executor or Gateway</span>
+
+<span class="sd">        :param compression: The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.</span>
+<span class="sd">        :param connection_list: dictionary JSON with a list of connections to configure</span>
+<span class="sd">        :param disable_auto_volume: Do not automatically mount a volume for dockerized Executors.</span>
+<span class="sd">        :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker &#39;</span>
+<span class="sd">          container. </span>
+<span class="sd">          </span>
+<span class="sd">          More details can be found in the Docker SDK docs:  https://docker-py.readthedocs.io/en/stable/</span>
+<span class="sd">        :param entrypoint: The entrypoint command overrides the ENTRYPOINT in Docker image. when not set then the Docker image ENTRYPOINT takes effective.</span>
+<span class="sd">        :param env: The map of environment variables that are available inside runtime</span>
+<span class="sd">        :param env_from_secret: The map of environment variables that are read from kubernetes cluster secrets</span>
+<span class="sd">        :param exit_on_exceptions: List of exceptions that will cause the Executor to shut down.</span>
+<span class="sd">        :param external: The Deployment will be considered an external Deployment that has been started independently from the Flow.This Deployment will not be context managed by the Flow.</span>
+<span class="sd">        :param floating: If set, the current Pod/Deployment can not be further chained, and the next `.add()` will chain after the last Pod/Deployment not this current one.</span>
+<span class="sd">        :param force_update: If set, always pull the latest Hub Executor bundle even it exists on local</span>
+<span class="sd">        :param gpus: This argument allows dockerized Jina Executors to discover local gpu devices.</span>
+<span class="sd">              </span>
+<span class="sd">              Note, </span>
+<span class="sd">              - To access all gpus, use `--gpus all`.</span>
+<span class="sd">              - To access multiple gpus, e.g. make use of 2 gpus, use `--gpus 2`.</span>
+<span class="sd">              - To access specified gpus based on device id, use `--gpus device=[YOUR-GPU-DEVICE-ID]`</span>
+<span class="sd">              - To access specified gpus based on multiple device id, use `--gpus device=[YOUR-GPU-DEVICE-ID1],device=[YOUR-GPU-DEVICE-ID2]`</span>
+<span class="sd">              - To specify more parameters, use `--gpus device=[YOUR-GPU-DEVICE-ID],runtime=nvidia,capabilities=display</span>
+<span class="sd">        :param grpc_metadata: The metadata to be passed to the gRPC request.</span>
+<span class="sd">        :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {&#39;grpc.max_send_message_length&#39;: -1}</span>
+<span class="sd">        :param host: The host of the Gateway, which the client should connect to, by default it is 0.0.0.0. In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts.  Then, every resulting address will be considered as one replica of the Executor.</span>
+<span class="sd">        :param install_requirements: If set, try to install `requirements.txt` from the local Executor if exists in the Executor folder. If using Hub, install `requirements.txt` in the Hub Executor bundle to local.</span>
+<span class="sd">        :param log_config: The YAML config of the logger used in this object.</span>
+<span class="sd">        :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.</span>
+<span class="sd">        :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.</span>
+<span class="sd">        :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.</span>
+<span class="sd">        :param monitoring: If set, spawn an http server with a prometheus endpoint to expose metrics</span>
+<span class="sd">        :param name: The name of this object.</span>
+<span class="sd">          </span>
+<span class="sd">              This will be used in the following places:</span>
+<span class="sd">              - how you refer to this object in Python/YAML/CLI</span>
+<span class="sd">              - visualization</span>
+<span class="sd">              - log message header</span>
+<span class="sd">              - ...</span>
+<span class="sd">          </span>
+<span class="sd">              When not given, then the default naming strategy will apply.</span>
+<span class="sd">        :param native: If set, only native Executors is allowed, and the Executor is always run inside WorkerRuntime.</span>
+<span class="sd">        :param no_reduce: Disable the built-in reduction mechanism. Set this if the reduction is to be handled by the Executor itself by operating on a `docs_matrix` or `docs_map`</span>
+<span class="sd">        :param output_array_type: The type of array `tensor` and `embedding` will be serialized to.</span>
+<span class="sd">          </span>
+<span class="sd">          Supports the same types as `docarray.to_protobuf(.., ndarray_type=...)`, which can be found </span>
+<span class="sd">          `here &lt;https://docarray.jina.ai/fundamentals/document/serialization/#from-to-protobuf&gt;`.</span>
+<span class="sd">          Defaults to retaining whatever type is returned by the Executor.</span>
+<span class="sd">        :param polling: The polling strategy of the Deployment and its endpoints (when `shards&gt;1`).</span>
+<span class="sd">              Can be defined for all endpoints of a Deployment or by endpoint.</span>
+<span class="sd">              Define per Deployment:</span>
+<span class="sd">              - ANY: only one (whoever is idle) Pod polls the message</span>
+<span class="sd">              - ALL: all Pods poll the message (like a broadcast)</span>
+<span class="sd">              Define per Endpoint:</span>
+<span class="sd">              JSON dict, {endpoint: PollingType}</span>
+<span class="sd">              {&#39;/custom&#39;: &#39;ALL&#39;, &#39;/search&#39;: &#39;ANY&#39;, &#39;*&#39;: &#39;ANY&#39;}</span>
+<span class="sd">        :param port: The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (`--external` or `external=True`) this can be a list of ports. Then, every resulting address will be considered as one replica of the Executor.</span>
+<span class="sd">        :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</span>
+<span class="sd">        :param py_modules: The customized python modules need to be imported before loading the executor</span>
+<span class="sd">          </span>
+<span class="sd">          Note that the recommended way is to only import a single module - a simple python file, if your</span>
+<span class="sd">          executor can be defined in a single file, or an ``__init__.py`` file if you have multiple files,</span>
+<span class="sd">          which should be structured as a python package. For more details, please see the</span>
+<span class="sd">          `Executor cookbook &lt;https://docs.jina.ai/concepts/executor/executor-files/&gt;`__</span>
+<span class="sd">        :param quiet: If set, then no log will be emitted from this object.</span>
+<span class="sd">        :param quiet_error: If set, then exception stack information will not be added to the log</span>
+<span class="sd">        :param reload: If set, the Executor will restart while serving if YAML configuration source or Executor modules are changed. If YAML configuration is changed, the whole deployment is reloaded and new processes will be restarted. If only Python modules of the Executor have changed, they will be reloaded to the interpreter without restarting process.</span>
+<span class="sd">        :param replicas: The number of replicas in the deployment</span>
+<span class="sd">        :param retries: Number of retries per gRPC call. If &lt;0 it defaults to max(3, num_replicas)</span>
+<span class="sd">        :param runtime_cls: The runtime class to run inside the Pod</span>
+<span class="sd">        :param shards: The number of shards in the deployment running at the same time. For more details check https://docs.jina.ai/concepts/flow/create-flow/#complex-flow-topologies</span>
+<span class="sd">        :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever</span>
+<span class="sd">        :param timeout_ready: The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting forever</span>
+<span class="sd">        :param timeout_send: The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default</span>
+<span class="sd">        :param tls: If set, connect to deployment using tls encryption</span>
+<span class="sd">        :param traces_exporter_host: If tracing is enabled, this hostname will be used to configure the trace exporter agent.</span>
+<span class="sd">        :param traces_exporter_port: If tracing is enabled, this port will be used to configure the trace exporter agent.</span>
+<span class="sd">        :param tracing: If set, the sdk implementation of the OpenTelemetry tracer will be available and will be enabled for automatic tracing of requests and customer span creation. Otherwise a no-op implementation will be provided.</span>
+<span class="sd">        :param uses: The config of the executor, it could be one of the followings:</span>
+<span class="sd">                  * the string literal of an Executor class name</span>
+<span class="sd">                  * an Executor YAML file (.yml, .yaml, .jaml)</span>
+<span class="sd">                  * a Jina Hub Executor (must start with `jinahub://` or `jinahub+docker://`)</span>
+<span class="sd">                  * a docker image (must start with `docker://`)</span>
+<span class="sd">                  * the string literal of a YAML config (must start with `!` or `jtype: `)</span>
+<span class="sd">                  * the string literal of a JSON config</span>
+<span class="sd">          </span>
+<span class="sd">                  When use it under Python, one can use the following values additionally:</span>
+<span class="sd">                  - a Python dict that represents the config</span>
+<span class="sd">                  - a text file stream has `.read()` interface</span>
+<span class="sd">        :param uses_after: The executor attached after the Pods described by --uses, typically used for receiving from all shards, accepted type follows `--uses`. This argument only applies for sharded Deployments (shards &gt; 1).</span>
+<span class="sd">        :param uses_after_address: The address of the uses-before runtime</span>
+<span class="sd">        :param uses_before: The executor attached before the Pods described by --uses, typically before sending to all shards, accepted type follows `--uses`. This argument only applies for sharded Deployments (shards &gt; 1).</span>
+<span class="sd">        :param uses_before_address: The address of the uses-before runtime</span>
+<span class="sd">        :param uses_dynamic_batching: Dictionary of keyword arguments that will override the `dynamic_batching` configuration in `uses`</span>
+<span class="sd">        :param uses_metas: Dictionary of keyword arguments that will override the `metas` configuration in `uses`</span>
+<span class="sd">        :param uses_requests: Dictionary of keyword arguments that will override the `requests` configuration in `uses`</span>
+<span class="sd">        :param uses_with: Dictionary of keyword arguments that will override the `with` configuration in `uses`</span>
+<span class="sd">        :param volumes: The path on the host to be mounted inside the container. </span>
+<span class="sd">          </span>
+<span class="sd">          Note, </span>
+<span class="sd">          - If separated by `:`, then the first part will be considered as the local host path and the second part is the path in the container system. </span>
+<span class="sd">          - If no split provided, then the basename of that directory will be mounted into container&#39;s root path, e.g. `--volumes=&quot;/user/test/my-workspace&quot;` will be mounted into `/my-workspace` inside the container. </span>
+<span class="sd">          - All volumes are mounted with read-write mode.</span>
+<span class="sd">        :param when: The condition that the documents need to fulfill before reaching the Executor.The condition can be defined in the form of a `DocArray query condition &lt;https://docarray.jina.ai/fundamentals/documentarray/find/#query-by-conditions&gt;`</span>
+<span class="sd">        :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.</span>
+
+<span class="sd">        .. # noqa: DAR202</span>
+<span class="sd">        .. # noqa: DAR101</span>
+<span class="sd">        .. # noqa: DAR003</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+    <span class="c1"># overload_inject_end_deployment</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">args</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s1">&#39;Namespace&#39;</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">needs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">include_gateway</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gateway_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_include_gateway</span> <span class="o">=</span> <span class="n">include_gateway</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_include_gateway</span><span class="p">:</span>
+            <span class="c1"># arguments exclusive to the gateway</span>
+            <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;port&#39;</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_gateway_kwargs</span><span class="p">[</span><span class="n">field</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">field</span><span class="p">)</span>
+
+            <span class="c1"># arguments common to both gateway and the Executor</span>
+            <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;host&#39;</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_gateway_kwargs</span><span class="p">[</span><span class="n">field</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">field</span><span class="p">]</span>
+
+        <span class="n">parser</span> <span class="o">=</span> <span class="n">set_deployment_parser</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">args</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">args</span> <span class="o">=</span> <span class="n">ArgNamespace</span><span class="o">.</span><span class="n">kwargs2namespace</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="n">parser</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">args</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">polling</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">args</span><span class="o">.</span><span class="n">polling</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s1">&#39;polling&#39;</span><span class="p">)</span> <span class="k">else</span> <span class="n">PollingType</span><span class="o">.</span><span class="n">ANY</span>
@@ -648,14 +739,33 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">uses_before_pod</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">uses_after_pod</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">head_pod</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gateway_pod</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">shards</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_update_port_monitoring_args</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update_pod_args</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_include_gateway</span><span class="p">:</span>
+            <span class="n">gateway_parser</span> <span class="o">=</span> <span class="n">set_gateway_parser</span><span class="p">()</span>
+            <span class="n">args</span> <span class="o">=</span> <span class="n">ArgNamespace</span><span class="o">.</span><span class="n">kwargs2namespace</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_gateway_kwargs</span><span class="p">,</span> <span class="n">gateway_parser</span><span class="p">,</span> <span class="kc">True</span>
+            <span class="p">)</span>
+
+            <span class="n">args</span><span class="o">.</span><span class="n">deployments_addresses</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="se">{{</span><span class="s1">&quot;executor&quot;: [&quot;0.0.0.0:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">&quot;]</span><span class="se">}}</span><span class="s1">&#39;</span>
+            <span class="n">args</span><span class="o">.</span><span class="n">graph_description</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s1">&#39;{&quot;start-gateway&quot;: [&quot;executor&quot;], &quot;executor&quot;: [&quot;end-gateway&quot;]}&#39;</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;gateway&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">args</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;gateway&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_sandbox_deployed</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">JinaLogger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="o">**</span><span class="nb">vars</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_val</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__exit__</span><span class="p">(</span><span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_val</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">_parse_addresses_into_host_and_port</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># splits addresses passed to `host` into separate `host` and `port`</span>
@@ -719,7 +829,7 @@
         <span class="p">)</span>  <span class="c1"># this is for the head</span>
 
 <div class="viewcode-block" id="Deployment.update_pod_args"><a class="viewcode-back" href="../../../../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.Deployment.update_pod_args">[docs]</a>    <span class="k">def</span> <span class="nf">update_pod_args</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Update args of all its pods based on Deployment args. Including head/tail&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update args of all its pods based on Deployment args. Including head/tail&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">runtime_cls</span> <span class="o">==</span> <span class="s1">&#39;GatewayRuntime&#39;</span><span class="p">:</span>
             <span class="n">_update_gateway_args</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="n">Dict</span><span class="p">):</span>
@@ -729,7 +839,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_args</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Deployment.update_sandbox_args"><a class="viewcode-back" href="../../../../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.Deployment.update_sandbox_args">[docs]</a>    <span class="k">def</span> <span class="nf">update_sandbox_args</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Update args of all its pods based on the host and port returned by Hubble&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update args of all its pods based on the host and port returned by Hubble&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_sandbox</span><span class="p">:</span>
             <span class="n">host</span><span class="p">,</span> <span class="n">port</span> <span class="o">=</span> <span class="n">HubIO</span><span class="o">.</span><span class="n">deploy_public_sandbox</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_sandbox_deployed</span> <span class="o">=</span> <span class="kc">True</span>
@@ -740,12 +850,12 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;head&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">port</span></div>
 
 <div class="viewcode-block" id="Deployment.update_worker_pod_args"><a class="viewcode-back" href="../../../../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.Deployment.update_worker_pod_args">[docs]</a>    <span class="k">def</span> <span class="nf">update_worker_pod_args</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Update args of all its worker pods based on Deployment args. Does not touch head and tail&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update args of all its worker pods based on Deployment args. Does not touch head and tail&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;pods&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_set_pod_args</span><span class="p">()</span></div>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">is_sandbox</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check if this deployment is a sandbox.</span>
 
 <span class="sd">        :return: True if this deployment is provided as a sandbox, False otherwise</span>
@@ -756,8 +866,99 @@
         <span class="k">return</span> <span class="n">is_valid_sandbox_uri</span><span class="p">(</span><span class="n">uses</span><span class="p">)</span>
 
     <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">role</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;DeploymentRoleType&#39;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the role of this :class:`Deployment`.</span>
+
+<span class="sd">        .. # noqa: DAR201</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">deployment_role</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The name of this :class:`Deployment`.</span>
+
+
+<span class="sd">        .. # noqa: DAR201</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">name</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">head_host</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the host of the HeadPod of this deployment</span>
+<span class="sd">        .. # noqa: DAR201</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_args</span><span class="o">.</span><span class="n">host</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_args</span> <span class="k">else</span> <span class="kc">None</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">head_port</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the port of the HeadPod of this deployment</span>
+<span class="sd">        .. # noqa: DAR201</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_args</span><span class="o">.</span><span class="n">port</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_args</span> <span class="k">else</span> <span class="kc">None</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">head_port_monitoring</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the port_monitoring of the HeadPod of this deployment</span>
+<span class="sd">        .. # noqa: DAR201</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_args</span><span class="o">.</span><span class="n">port_monitoring</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_args</span> <span class="k">else</span> <span class="kc">None</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">client</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;BaseClient&#39;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a :class:`BaseClient` object attach to this Flow.</span>
+
+<span class="sd">        .. # noqa: DAR201&quot;&quot;&quot;</span>
+
+        <span class="n">kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">host</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="p">,</span>
+            <span class="n">port</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="p">,</span>
+            <span class="n">protocol</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_gateway_kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Client</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_copy_to_head_args</span><span class="p">(</span><span class="n">args</span><span class="p">:</span> <span class="n">Namespace</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Namespace</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the outgoing args of the head router</span>
+
+<span class="sd">        :param args: basic arguments</span>
+<span class="sd">        :return: enriched head arguments</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">_head_args</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+        <span class="n">_head_args</span><span class="o">.</span><span class="n">polling</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">polling</span>
+        <span class="n">_head_args</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">_head_args</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">host</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">_head_args</span><span class="o">.</span><span class="n">uses</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">uses</span>
+        <span class="n">_head_args</span><span class="o">.</span><span class="n">pod_role</span> <span class="o">=</span> <span class="n">PodRoleType</span><span class="o">.</span><span class="n">HEAD</span>
+        <span class="n">_head_args</span><span class="o">.</span><span class="n">runtime_cls</span> <span class="o">=</span> <span class="s1">&#39;HeadRuntime&#39;</span>
+        <span class="n">_head_args</span><span class="o">.</span><span class="n">replicas</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
+            <span class="n">_head_args</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">/head&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">_head_args</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;head&#39;</span>
+
+        <span class="k">return</span> <span class="n">_head_args</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">deployments</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get deployments of the deployment. The Deployment just gives one deployment.</span>
+
+<span class="sd">        :return: list of deployments</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="p">{</span>
+                <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="s1">&#39;head_host&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_host</span><span class="p">,</span>
+                <span class="s1">&#39;head_port&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_port</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">]</span>
+
+    <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">_is_docker</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check if this deployment is to be run in docker.</span>
 
 <span class="sd">        :return: True if this deployment is to be run in docker</span>
@@ -769,7 +970,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">_is_executor_from_yaml</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check if this deployment is to be run from YAML configuration.</span>
 
 <span class="sd">        :return: True if this deployment is to be run from YAML configuration</span>
@@ -779,7 +980,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">tls_enabled</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Checks whether secure connection via tls is enabled for this Deployment.</span>
 
 <span class="sd">        :return: True if tls is enabled, False otherwise</span>
@@ -791,7 +992,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">external</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check if this deployment is external.</span>
 
 <span class="sd">        :return: True if this deployment is provided as an external deployment, False otherwise</span>
@@ -800,7 +1001,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">grpc_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the gRPC metadata for this deployment.</span>
 <span class="sd">        :return: The gRPC metadata for this deployment. If the deployment is a gateway, return None.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -808,10 +1009,12 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">protocol</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :return: the protocol of this deployment</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">protocol</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">&#39;protocol&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;grpc&#39;</span><span class="p">])</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;gateway&#39;</span><span class="p">]</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span>
+
+        <span class="n">protocol</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s1">&#39;protocol&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;grpc&#39;</span><span class="p">])</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">protocol</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
             <span class="n">protocol</span> <span class="o">=</span> <span class="p">[</span><span class="n">protocol</span><span class="p">]</span>
         <span class="n">protocol</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">_p</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="s1">&#39;s&#39;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">tls_enabled</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">_p</span> <span class="ow">in</span> <span class="n">protocol</span><span class="p">]</span>
@@ -822,17 +1025,17 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">first_pod_args</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Namespace</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return the first worker pod&#39;s args</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the first worker pod&#39;s args</span>
 
 
 <span class="sd">        .. # noqa: DAR201</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># note this will be never out of boundary</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;pods&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;gateway&#39;</span><span class="p">]</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;pods&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">host</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Get the host name of this deployment</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the host name of this deployment</span>
 
 
 <span class="sd">        .. # noqa: DAR201</span>
@@ -841,14 +1044,14 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">port</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :return: the port of this deployment</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">first_pod_args</span><span class="o">.</span><span class="n">port</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">ports</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Returns a list of ports exposed by this Deployment.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a list of ports exposed by this Deployment.</span>
 <span class="sd">        Exposed means these are the ports a Client/Gateway is supposed to communicate with.</span>
 <span class="sd">        For sharded deployments this will be the head_port.</span>
 <span class="sd">        For non-sharded deployments it will be all replica ports</span>
@@ -867,7 +1070,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">hosts</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Returns a list of host addresses exposed by this Deployment.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a list of host addresses exposed by this Deployment.</span>
 <span class="sd">        Exposed means these are the host a Client/Gateway is supposed to communicate with.</span>
 <span class="sd">        For sharded deployments this will be the head host.</span>
 <span class="sd">        For non-sharded deployments it will be all replica hosts</span>
@@ -880,7 +1083,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">dockerized_uses</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Checks if this Deployment uses a dockerized Executor</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Checks if this Deployment uses a dockerized Executor</span>
 
 <span class="sd">        .. # noqa: DAR201</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -895,7 +1098,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">head_args</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Namespace</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Get the arguments for the `head` of this Deployment.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the arguments for the `head` of this Deployment.</span>
 
 
 <span class="sd">        .. # noqa: DAR201</span>
@@ -904,7 +1107,7 @@
 
     <span class="nd">@head_args</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">head_args</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Set the arguments for the `head` of this Deployment.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the arguments for the `head` of this Deployment.</span>
 
 
 <span class="sd">        .. # noqa: DAR101</span>
@@ -913,7 +1116,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">uses_before_args</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Namespace</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Get the arguments for the `uses_before` of this Deployment.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the arguments for the `uses_before` of this Deployment.</span>
 
 
 <span class="sd">        .. # noqa: DAR201</span>
@@ -922,7 +1125,7 @@
 
     <span class="nd">@uses_before_args</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">uses_before_args</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Set the arguments for the `uses_before` of this Deployment.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the arguments for the `uses_before` of this Deployment.</span>
 
 
 <span class="sd">        .. # noqa: DAR101</span>
@@ -931,7 +1134,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">uses_after_args</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Namespace</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Get the arguments for the `uses_after` of this Deployment.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the arguments for the `uses_after` of this Deployment.</span>
 
 
 <span class="sd">        .. # noqa: DAR201</span>
@@ -940,7 +1143,7 @@
 
     <span class="nd">@uses_after_args</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">uses_after_args</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Set the arguments for the `uses_after` of this Deployment.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the arguments for the `uses_after` of this Deployment.</span>
 
 
 <span class="sd">        .. # noqa: DAR101</span>
@@ -949,7 +1152,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">all_args</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Namespace</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Get all arguments of all Pods in this BaseDeployment.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get all arguments of all Pods in this Deployment.</span>
 
 <span class="sd">        .. # noqa: DAR201</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -957,6 +1160,7 @@
             <span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;uses_before&#39;</span><span class="p">]]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;uses_before&#39;</span><span class="p">]</span> <span class="k">else</span> <span class="p">[])</span>
             <span class="o">+</span> <span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;uses_after&#39;</span><span class="p">]]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;uses_after&#39;</span><span class="p">]</span> <span class="k">else</span> <span class="p">[])</span>
             <span class="o">+</span> <span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;head&#39;</span><span class="p">]]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;head&#39;</span><span class="p">]</span> <span class="k">else</span> <span class="p">[])</span>
+            <span class="o">+</span> <span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;gateway&#39;</span><span class="p">]]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;gateway&#39;</span><span class="p">]</span> <span class="k">else</span> <span class="p">[])</span>
         <span class="p">)</span>
         <span class="k">for</span> <span class="n">shard_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;pods&#39;</span><span class="p">]:</span>
             <span class="n">all_args</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;pods&#39;</span><span class="p">][</span><span class="n">shard_id</span><span class="p">]</span>
@@ -964,7 +1168,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">num_pods</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Get the number of running :class:`Pod`</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the number of running :class:`Pod`</span>
 
 <span class="sd">        .. # noqa: DAR201</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -975,17 +1179,19 @@
             <span class="n">num_pods</span> <span class="o">+=</span> <span class="mi">1</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">uses_after_pod</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">num_pods</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">gateway_pod</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">num_pods</span> <span class="o">+=</span> <span class="mi">1</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">shards</span><span class="p">:</span>  <span class="c1"># external deployments</span>
             <span class="k">for</span> <span class="n">shard_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">shards</span><span class="p">:</span>
                 <span class="n">num_pods</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shards</span><span class="p">[</span><span class="n">shard_id</span><span class="p">]</span><span class="o">.</span><span class="n">num_pods</span>
         <span class="k">return</span> <span class="n">num_pods</span>
 
-    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="s1">&#39;BaseDeployment&#39;</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="s1">&#39;Deployment&#39;</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_pods</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">num_pods</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">name</span>
 
 <div class="viewcode-block" id="Deployment.get_worker_host"><a class="viewcode-back" href="../../../../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.Deployment.get_worker_host">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">get_worker_host</span><span class="p">(</span><span class="n">pod_args</span><span class="p">,</span> <span class="n">pod_is_container</span><span class="p">,</span> <span class="n">head_is_container</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check if the current pod and head are both containerized on the same host</span>
 <span class="sd">        If so __docker_host__ needs to be advertised as the worker&#39;s address to the head</span>
 
@@ -1005,8 +1211,8 @@
         <span class="k">return</span> <span class="n">worker_host</span></div>
 
 <div class="viewcode-block" id="Deployment.start"><a class="viewcode-back" href="../../../../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.Deployment.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Deployment&#39;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Start to run all :class:`Pod` in this BaseDeployment.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Start to run all :class:`Pod` in this Deployment.</span>
 
 <span class="sd">        :return: started deployment</span>
 
@@ -1038,6 +1244,12 @@
                 <span class="n">_args</span><span class="o">.</span><span class="n">noblock_on_start</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">head_pod</span> <span class="o">=</span> <span class="n">PodFactory</span><span class="o">.</span><span class="n">build_pod</span><span class="p">(</span><span class="n">_args</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">head_pod</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;gateway&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">_args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;gateway&#39;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">&#39;noblock_on_start&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+                <span class="n">_args</span><span class="o">.</span><span class="n">noblock_on_start</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">gateway_pod</span> <span class="o">=</span> <span class="n">PodFactory</span><span class="o">.</span><span class="n">build_pod</span><span class="p">(</span><span class="n">_args</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gateway_pod</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">shard_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;pods&#39;</span><span class="p">]:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">shards</span><span class="p">[</span><span class="n">shard_id</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ReplicaSet</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span>
@@ -1046,10 +1258,18 @@
             <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shards</span><span class="p">[</span><span class="n">shard_id</span><span class="p">])</span>
 
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;gateway&#39;</span><span class="p">]:</span>
+            <span class="n">all_panels</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_get_summary_table</span><span class="p">(</span><span class="n">all_panels</span><span class="p">)</span>
+
+            <span class="kn">from</span> <span class="nn">rich.rule</span> <span class="kn">import</span> <span class="n">Rule</span>
+
+            <span class="nb">print</span><span class="p">(</span><span class="n">Rule</span><span class="p">(</span><span class="s1">&#39;:tada: Deployment is ready to serve!&#39;</span><span class="p">),</span> <span class="o">*</span><span class="n">all_panels</span><span class="p">)</span>
+
         <span class="k">return</span> <span class="bp">self</span></div>
 
 <div class="viewcode-block" id="Deployment.wait_start_success"><a class="viewcode-back" href="../../../../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.Deployment.wait_start_success">[docs]</a>    <span class="k">def</span> <span class="nf">wait_start_success</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Block until all pods starts successfully.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Block until all pods starts successfully.</span>
 
 <span class="sd">        If not successful, it will raise an error hoping the outer function to catch it</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1064,6 +1284,8 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">uses_after_pod</span><span class="o">.</span><span class="n">wait_start_success</span><span class="p">()</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_pod</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">head_pod</span><span class="o">.</span><span class="n">wait_start_success</span><span class="p">()</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">gateway_pod</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">gateway_pod</span><span class="o">.</span><span class="n">wait_start_success</span><span class="p">()</span>
             <span class="k">for</span> <span class="n">shard_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">shards</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">shards</span><span class="p">[</span><span class="n">shard_id</span><span class="p">]</span><span class="o">.</span><span class="n">wait_start_success</span><span class="p">()</span>
         <span class="k">except</span><span class="p">:</span>
@@ -1071,7 +1293,7 @@
             <span class="k">raise</span></div>
 
 <div class="viewcode-block" id="Deployment.async_wait_start_success"><a class="viewcode-back" href="../../../../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.Deployment.async_wait_start_success">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_wait_start_success</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Block until all pods starts successfully.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Block until all pods starts successfully.</span>
 
 <span class="sd">        If not successful, it will raise an error hoping the outer function to catch it</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1087,6 +1309,8 @@
                 <span class="n">coros</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uses_after_pod</span><span class="o">.</span><span class="n">async_wait_start_success</span><span class="p">())</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_pod</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">coros</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">head_pod</span><span class="o">.</span><span class="n">async_wait_start_success</span><span class="p">())</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">gateway_pod</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">coros</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gateway_pod</span><span class="o">.</span><span class="n">async_wait_start_success</span><span class="p">())</span>
             <span class="k">for</span> <span class="n">shard_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">shards</span><span class="p">:</span>
                 <span class="n">coros</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shards</span><span class="p">[</span><span class="n">shard_id</span><span class="p">]</span><span class="o">.</span><span class="n">async_wait_start_success</span><span class="p">())</span>
             <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="n">coros</span><span class="p">)</span>
@@ -1095,7 +1319,7 @@
             <span class="k">raise</span></div>
 
 <div class="viewcode-block" id="Deployment.join"><a class="viewcode-back" href="../../../../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.Deployment.join">[docs]</a>    <span class="k">def</span> <span class="nf">join</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Wait until all pods exit&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Wait until all pods exit&quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">uses_before_pod</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">uses_before_pod</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
@@ -1103,6 +1327,8 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">uses_after_pod</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_pod</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">head_pod</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">gateway_pod</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">gateway_pod</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">shards</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">shard_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">shards</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">shards</span><span class="p">[</span><span class="n">shard_id</span><span class="p">]</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
@@ -1116,7 +1342,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">is_ready</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Checks if Deployment is ready</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Checks if Deployment is ready</span>
 
 <span class="sd">        .. note::</span>
 <span class="sd">            A Deployment is ready when all the Pods it contains are ready</span>
@@ -1134,11 +1360,13 @@
             <span class="n">is_ready</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">uses_before_pod</span><span class="o">.</span><span class="n">is_ready</span><span class="o">.</span><span class="n">is_set</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">is_ready</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">uses_after_pod</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">is_ready</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">uses_after_pod</span><span class="o">.</span><span class="n">is_ready</span><span class="o">.</span><span class="n">is_set</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">is_ready</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">gateway_pod</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">is_ready</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gateway_pod</span><span class="o">.</span><span class="n">is_ready</span><span class="o">.</span><span class="n">is_set</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">is_ready</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_parse_devices</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">num_devices</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Parses a list of devices from string, like `start:stop:step` or &#39;num1,num2,num3` or combination of both.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Parses a list of devices from string, like `start:stop:step` or &#39;num1,num2,num3` or combination of both.</span>
 
 <span class="sd">        :param value: a string like</span>
 <span class="sd">        :param num_devices: total number of devices</span>
@@ -1181,7 +1409,7 @@
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_roundrobin_cuda_device</span><span class="p">(</span><span class="n">device_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">replicas</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Parse cuda device string with RR prefix</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Parse cuda device string with RR prefix</span>
 
 <span class="sd">        :param device_str: `RRm:n`, where `RR` is the prefix, m:n is python slice format</span>
 <span class="sd">        :param replicas: the number of replicas</span>
@@ -1262,28 +1490,29 @@
 
                     <span class="k">elif</span> <span class="n">shards</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
                         <span class="n">_args</span><span class="o">.</span><span class="n">port_monitoring</span> <span class="o">=</span> <span class="p">(</span>
-                            <span class="n">helper</span><span class="o">.</span><span class="n">random_port</span><span class="p">()</span>
+                            <span class="n">random_port</span><span class="p">()</span>
                             <span class="k">if</span> <span class="n">replica_id</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">all_port_monitoring</span><span class="p">)</span>
                             <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">all_port_monitoring</span><span class="p">[</span><span class="n">replica_id</span><span class="p">]</span>
                         <span class="p">)</span>
                         <span class="c1"># if there are no shards/replicas, we dont need to distribute ports randomly</span>
                         <span class="c1"># we should rather use the pre assigned one</span>
-                        <span class="n">_args</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">helper</span><span class="o">.</span><span class="n">random_port</span><span class="p">()</span>
+                        <span class="n">_args</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">random_port</span><span class="p">()</span>
                     <span class="k">elif</span> <span class="n">shards</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
                         <span class="n">port_monitoring_index</span> <span class="o">=</span> <span class="p">(</span>
                             <span class="n">replica_id</span> <span class="o">+</span> <span class="n">replicas</span> <span class="o">*</span> <span class="n">shard_id</span> <span class="o">+</span> <span class="mi">1</span>
                         <span class="p">)</span>  <span class="c1"># the first index is for the head</span>
                         <span class="n">_args</span><span class="o">.</span><span class="n">port_monitoring</span> <span class="o">=</span> <span class="p">(</span>
-                            <span class="n">helper</span><span class="o">.</span><span class="n">random_port</span><span class="p">()</span>
-                            <span class="k">if</span> <span class="n">port_monitoring_index</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">all_port_monitoring</span><span class="p">)</span>
+                            <span class="n">random_port</span><span class="p">()</span>
+                            <span class="k">if</span> <span class="n">port_monitoring_index</span>
+                            <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">all_port_monitoring</span><span class="p">)</span>
                             <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">all_port_monitoring</span><span class="p">[</span>
                                 <span class="n">port_monitoring_index</span>
                             <span class="p">]</span>  <span class="c1"># we skip the head port here</span>
                         <span class="p">)</span>
-                        <span class="n">_args</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">helper</span><span class="o">.</span><span class="n">random_port</span><span class="p">()</span>
+                        <span class="n">_args</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">random_port</span><span class="p">()</span>
                     <span class="k">else</span><span class="p">:</span>
-                        <span class="n">_args</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">helper</span><span class="o">.</span><span class="n">random_port</span><span class="p">()</span>
-                        <span class="n">_args</span><span class="o">.</span><span class="n">port_monitoring</span> <span class="o">=</span> <span class="n">helper</span><span class="o">.</span><span class="n">random_port</span><span class="p">()</span>
+                        <span class="n">_args</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">random_port</span><span class="p">()</span>
+                        <span class="n">_args</span><span class="o">.</span><span class="n">port_monitoring</span> <span class="o">=</span> <span class="n">random_port</span><span class="p">()</span>
 
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">_args</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ext_repl_ports</span><span class="p">[</span><span class="n">replica_id</span><span class="p">]</span>
@@ -1304,7 +1533,7 @@
         <span class="n">_args</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
         <span class="n">_args</span><span class="o">.</span><span class="n">pod_role</span> <span class="o">=</span> <span class="n">PodRoleType</span><span class="o">.</span><span class="n">WORKER</span>
         <span class="n">_args</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="n">_args</span><span class="o">.</span><span class="n">host</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">or</span> <span class="n">__default_host__</span>
-        <span class="n">_args</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">helper</span><span class="o">.</span><span class="n">random_port</span><span class="p">()</span>
+        <span class="n">_args</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">random_port</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="n">_args</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
             <span class="n">_args</span><span class="o">.</span><span class="n">name</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39;/</span><span class="si">{</span><span class="n">entity_type</span><span class="si">}</span><span class="s1">-0&#39;</span>
@@ -1332,6 +1561,7 @@
             <span class="s1">&#39;head&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
             <span class="s1">&#39;uses_before&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
             <span class="s1">&#39;uses_after&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="s1">&#39;gateway&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
             <span class="s1">&#39;pods&#39;</span><span class="p">:</span> <span class="p">{},</span>
         <span class="p">}</span>
 
@@ -1361,7 +1591,7 @@
                     <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">uses_after_args</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">uses_after_args</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">&#39;</span>
                 <span class="p">)</span>
 
-            <span class="n">parsed_args</span><span class="p">[</span><span class="s1">&#39;head&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">BaseDeployment</span><span class="o">.</span><span class="n">_copy_to_head_args</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+            <span class="n">parsed_args</span><span class="p">[</span><span class="s1">&#39;head&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Deployment</span><span class="o">.</span><span class="n">_copy_to_head_args</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
 
         <span class="n">parsed_args</span><span class="p">[</span><span class="s1">&#39;pods&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_set_pod_args</span><span class="p">()</span>
 
@@ -1378,7 +1608,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">_mermaid_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;String that will be used to represent the Deployment graphically when `Flow.plot()` is invoked.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;String that will be used to represent the Deployment graphically when `Flow.plot()` is invoked.</span>
 <span class="sd">        It does not include used_before/uses_after</span>
 
 
@@ -1425,7 +1655,7 @@
                     <span class="p">]</span>  <span class="c1"># all the uses should be the same but let&#39;s keep it this</span>
                     <span class="c1"># way</span>
                     <span class="k">for</span> <span class="n">rep_i</span><span class="p">,</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">use</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">names</span><span class="p">,</span> <span class="n">uses</span><span class="p">)):</span>
-                        <span class="n">escaped_uses</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">replace_secret_of_hub_uri</span><span class="p">(</span><span class="n">use</span><span class="p">,</span> <span class="n">secret</span><span class="p">)</span><span class="si">}</span><span class="s1">&quot;&#39;</span>
+                        <span class="n">escaped_uses</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">replace_secret_of_hub_uri</span><span class="p">(</span><span class="n">use</span><span class="p">,</span><span class="w"> </span><span class="n">secret</span><span class="p">)</span><span class="si">}</span><span class="s1">&quot;&#39;</span>
                         <span class="n">shard_mermaid_graph</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">[</span><span class="si">{</span><span class="n">escaped_uses</span><span class="si">}</span><span class="s1">]:::pod;&#39;</span><span class="p">)</span>
                     <span class="n">shard_mermaid_graph</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;end;&#39;</span><span class="p">)</span>
                     <span class="n">shard_mermaid_graph</span> <span class="o">=</span> <span class="p">[</span>
@@ -1436,7 +1666,7 @@
                 <span class="k">if</span> <span class="n">uses_before_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="k">for</span> <span class="n">shard_name</span> <span class="ow">in</span> <span class="n">shard_names</span><span class="p">:</span>
                         <span class="n">escaped_uses_before_uses</span> <span class="o">=</span> <span class="p">(</span>
-                            <span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">replace_secret_of_hub_uri</span><span class="p">(</span><span class="n">uses_before_uses</span><span class="p">,</span> <span class="n">secret</span><span class="p">)</span><span class="si">}</span><span class="s1">&quot;&#39;</span>
+                            <span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">replace_secret_of_hub_uri</span><span class="p">(</span><span class="n">uses_before_uses</span><span class="p">,</span><span class="w"> </span><span class="n">secret</span><span class="p">)</span><span class="si">}</span><span class="s1">&quot;&#39;</span>
                         <span class="p">)</span>
                         <span class="n">mermaid_graph</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                             <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">-head[</span><span class="si">{</span><span class="n">escaped_uses_before_uses</span><span class="si">}</span><span class="s1">]:::HEADTAIL --&gt; </span><span class="si">{</span><span class="n">shard_name</span><span class="si">}</span><span class="s1">;&#39;</span>
@@ -1450,7 +1680,7 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># single shard case, no uses_before or uses_after_considered</span>
                 <span class="n">pod_args</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;pods&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">())[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-                <span class="n">uses</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">replace_secret_of_hub_uri</span><span class="p">(</span><span class="n">pod_args</span><span class="o">.</span><span class="n">uses</span><span class="p">,</span> <span class="n">secret</span><span class="p">)</span><span class="si">}</span><span class="s1">&quot;&#39;</span>
+                <span class="n">uses</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">replace_secret_of_hub_uri</span><span class="p">(</span><span class="n">pod_args</span><span class="o">.</span><span class="n">uses</span><span class="p">,</span><span class="w"> </span><span class="n">secret</span><span class="p">)</span><span class="si">}</span><span class="s1">&quot;&#39;</span>
 
                 <span class="c1"># just put the replicas in parallel</span>
                 <span class="k">if</span> <span class="n">pod_args</span><span class="o">.</span><span class="n">replicas</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
@@ -1462,7 +1692,106 @@
                     <span class="n">mermaid_graph</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">pod_args</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">[&quot;</span><span class="si">{</span><span class="n">uses</span><span class="si">}</span><span class="s1">&quot;]:::pod;&#39;</span><span class="p">)</span>
 
             <span class="n">mermaid_graph</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;end;&#39;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">mermaid_graph</span></div>
+        <span class="k">return</span> <span class="n">mermaid_graph</span>
+
+<div class="viewcode-block" id="Deployment.block"><a class="viewcode-back" href="../../../../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.Deployment.block">[docs]</a>    <span class="k">def</span> <span class="nf">block</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">stop_event</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="s1">&#39;threading.Event&#39;</span><span class="p">,</span> <span class="s1">&#39;multiprocessing.Event&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Block the Deployment until `stop_event` is set or user hits KeyboardInterrupt</span>
+
+<span class="sd">        :param stop_event: a threading event or a multiprocessing event that once set will resume the control flow</span>
+<span class="sd">            to main thread.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">def</span> <span class="nf">_reload_deployment</span><span class="p">(</span><span class="n">changed_file</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;change in Executor configuration YAML </span><span class="si">{</span><span class="n">changed_file</span><span class="si">}</span><span class="s1"> observed, reloading Executor deployment&#39;</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="fm">__exit__</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="n">new_deployment</span> <span class="o">=</span> <span class="n">Deployment</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">needs</span><span class="p">,</span> <span class="n">include_gateway</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_include_gateway</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span> <span class="o">=</span> <span class="n">new_deployment</span><span class="o">.</span><span class="vm">__dict__</span>
+            <span class="bp">self</span><span class="o">.</span><span class="fm">__enter__</span><span class="p">()</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">watch_changes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">reload</span>
+
+            <span class="k">if</span> <span class="n">watch_changes</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_executor_from_yaml</span><span class="p">:</span>
+
+                <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span>
+                    <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="n">help_text</span><span class="o">=</span><span class="s1">&#39;&#39;&#39;reload requires watchfiles dependency to be installed. You can do `pip install </span>
+<span class="s1">                    watchfiles&#39;&#39;&#39;</span><span class="p">,</span>
+                <span class="p">):</span>
+                    <span class="kn">from</span> <span class="nn">watchfiles</span> <span class="kn">import</span> <span class="n">watch</span>
+
+                <span class="n">new_stop_event</span> <span class="o">=</span> <span class="n">stop_event</span> <span class="ow">or</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_executor_from_yaml</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">changes</span> <span class="ow">in</span> <span class="n">watch</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uses</span><span class="p">],</span> <span class="n">stop_event</span><span class="o">=</span><span class="n">new_stop_event</span><span class="p">):</span>
+                        <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">changed_file</span> <span class="ow">in</span> <span class="n">changes</span><span class="p">:</span>
+                            <span class="n">_reload_deployment</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uses</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">wait_event</span> <span class="o">=</span> <span class="n">stop_event</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">wait_event</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_stop_event</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
+                    <span class="n">wait_event</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stop_event</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">__windows__</span><span class="p">:</span>
+                    <span class="n">wait_event</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">wait_event</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
+                            <span class="k">break</span>
+                        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+            <span class="k">pass</span></div>
+
+    <span class="k">def</span> <span class="nf">_get_summary_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">all_panels</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Panel</span><span class="p">]):</span>
+        <span class="n">address_table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_init_table</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">_protocols</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="p">)]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">_protocols</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">_p</span><span class="p">)</span> <span class="k">for</span> <span class="n">_p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">_ports</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">_ports</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">_p</span><span class="p">)</span> <span class="k">for</span> <span class="n">_p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">_port</span><span class="p">,</span> <span class="n">_protocol</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">_ports</span><span class="p">,</span> <span class="n">_protocols</span><span class="p">):</span>
+
+            <span class="n">address_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="s1">&#39;:chains:&#39;</span><span class="p">,</span> <span class="s1">&#39;Protocol&#39;</span><span class="p">,</span> <span class="n">_protocol</span><span class="p">)</span>
+
+            <span class="n">_protocol</span> <span class="o">=</span> <span class="n">_protocol</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+            <span class="n">address_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
+                <span class="s1">&#39;:house:&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;Local&#39;</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s1">&#39;[link=</span><span class="si">{</span><span class="n">_protocol</span><span class="si">}</span><span class="s1">://</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">_port</span><span class="si">}</span><span class="s1">]</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">_port</span><span class="si">}</span><span class="s1">[/]&#39;</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">address_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
+                <span class="s1">&#39;:lock:&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;Private&#39;</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s1">&#39;[link=</span><span class="si">{</span><span class="n">_protocol</span><span class="si">}</span><span class="s1">://</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">address_private</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">_port</span><span class="si">}</span><span class="s1">]</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">address_private</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">_port</span><span class="si">}</span><span class="s1">[/]&#39;</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">address_public</span><span class="p">:</span>
+                <span class="n">address_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
+                    <span class="s1">&#39;:earth_africa:&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;Public&#39;</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s1">&#39;[link=</span><span class="si">{</span><span class="n">_protocol</span><span class="si">}</span><span class="s1">://</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">address_public</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">_port</span><span class="si">}</span><span class="s1">]</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">address_public</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">_port</span><span class="si">}</span><span class="s1">[/]&#39;</span><span class="p">,</span>
+                <span class="p">)</span>
+
+        <span class="n">all_panels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">Panel</span><span class="p">(</span>
+                <span class="n">address_table</span><span class="p">,</span>
+                <span class="n">title</span><span class="o">=</span><span class="s1">&#39;:link: [b]Endpoint[/]&#39;</span><span class="p">,</span>
+                <span class="n">expand</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">all_panels</span></div>
 </pre></div>
                 </article>
             </div>
@@ -1477,7 +1806,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 30, 2022</div>
+                            Last updated on Jan 13, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

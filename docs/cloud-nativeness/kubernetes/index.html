@@ -427,8 +427,8 @@
 <span id="kubernetes"></span><h1>Deploy on Kubernetes<a class="headerlink" href="#deploy-on-kubernetes" title="Permalink to this heading">#</a></h1>
 <p>This how-to will go through deploying a simple Flow using Kubernetes, customizing the Kubernetes configuration
 to your needs, and scaling Executors using replicas and shards.</p>
-<p>Deploying a <a class="reference internal" href="../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> in Kubernetes is the recommended way to use Jina in production.</p>
-<p>Since a <a class="reference internal" href="../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> is composed of <a class="reference internal" href="../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>s which can run in different runtimes depending on how you deploy
+<p>Deploying a <code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code> in Kubernetes is the recommended way to use Jina in production.</p>
+<p>Since a <code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code> is composed of <code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code>s which can run in different runtimes depending on how you deploy
 the Flow, Kubernetes can easily take over the lifetime management of Executors.</p>
 <div class="admonition hint">
 <p class="admonition-title">Hint</p>
@@ -506,15 +506,15 @@ Please adapt this if you named your Executor configuration file differently.</p>
 <p>Next you can actually apply these configuration files to your cluster, using <code class="docutils literal notranslate"><span class="pre">kubectl</span></code>.
 This launches all Flow microservices.</p>
 <p>First, create the namespace you defined earlier:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>kubectl create namespace custom-namespace
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>kubectl<span class="w"> </span>create<span class="w"> </span>namespace<span class="w"> </span>custom-namespace
 </pre></div>
 </div>
 <p>Now, deploy this Flow to your cluster:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>kubectl apply -R -f ./k8s_flow
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>kubectl<span class="w"> </span>apply<span class="w"> </span>-R<span class="w"> </span>-f<span class="w"> </span>./k8s_flow
 </pre></div>
 </div>
 <p>Check that the Pods were created:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>kubectl get pods -n custom-namespace
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>kubectl<span class="w"> </span>get<span class="w"> </span>pods<span class="w"> </span>-n<span class="w"> </span>custom-namespace
 </pre></div>
 </div>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>NAME                              READY   STATUS    RESTARTS   AGE
@@ -555,7 +555,7 @@ You can adapt the Flow from above to work with two replicas for the encoder, and
     <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;encoder&#39;</span><span class="p">,</span> <span class="n">uses</span><span class="o">=</span><span class="s1">&#39;jinaai+docker://jina-ai/CLIPEncoder&#39;</span><span class="p">,</span> <span class="n">replicas</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
     <span class="o">.</span><span class="n">add</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;indexer&#39;</span><span class="p">,</span>
-        <span class="n">uses</span><span class="o">=</span><span class="s1">&#39;jinaai+docker://jina-ai/ANNLiteIndexer&#39;</span><span class="p">,</span>
+        <span class="n">uses</span><span class="o">=</span><span class="s1">&#39;jinaai+docker://jina-ai/AnnLiteIndexer&#39;</span><span class="p">,</span>
         <span class="n">uses_with</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;dim&#39;</span><span class="p">:</span> <span class="mi">512</span><span class="p">},</span>
         <span class="n">shards</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
     <span class="p">)</span>
@@ -584,9 +584,69 @@ You can adapt the Flow from above to work with two replicas for the encoder, and
 <p class="admonition-title">Hint: Cluster cleanup</p>
 <p>If you already have the simple Flow from the first example running on your cluster, make sure to delete it using <code class="docutils literal notranslate"><span class="pre">kubectl</span> <span class="pre">delete</span> <span class="pre">-R</span> <span class="pre">-f</span> <span class="pre">./k8s_flow</span></code>.</p>
 </div>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>kubectl apply -R -f ./k8s_flow
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>kubectl<span class="w"> </span>apply<span class="w"> </span>-R<span class="w"> </span>-f<span class="w"> </span>./k8s_flow
 </pre></div>
 </div>
+</section>
+<section id="deploy-flow-with-custom-environment-variables-and-secrets">
+<h3>Deploy Flow with custom environment variables and secrets<a class="headerlink" href="#deploy-flow-with-custom-environment-variables-and-secrets" title="Permalink to this heading">#</a></h3>
+<p>You can customize the environment variables that are available inside runtime, either defined directly or read from a <a class="reference external" href="https://kubernetes.io/docs/concepts/configuration/secret/">Kubernetes secret</a>:</p>
+<div class="tab-set docutils">
+<input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">with Python</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
+
+<span class="n">f</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">Flow</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">8080</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">add</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;indexer&#39;</span><span class="p">,</span>
+        <span class="n">uses</span><span class="o">=</span><span class="s1">&#39;jinaai+docker://jina-ai/AnnLiteIndexer&#39;</span><span class="p">,</span>
+        <span class="n">uses_with</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;dim&#39;</span><span class="p">:</span> <span class="mi">512</span><span class="p">},</span>
+        <span class="n">env</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;k1&#39;</span><span class="p">:</span> <span class="s1">&#39;v1&#39;</span><span class="p">,</span> <span class="s1">&#39;k2&#39;</span><span class="p">:</span> <span class="s1">&#39;v2&#39;</span><span class="p">},</span>
+        <span class="n">env_from_secret</span><span class="o">=</span><span class="p">{</span>
+            <span class="s1">&#39;SECRET_USERNAME&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;mysecret&#39;</span><span class="p">,</span> <span class="s1">&#39;key&#39;</span><span class="p">:</span> <span class="s1">&#39;username&#39;</span><span class="p">},</span>
+            <span class="s1">&#39;SECRET_PASSWORD&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;mysecret&#39;</span><span class="p">,</span> <span class="s1">&#39;key&#39;</span><span class="p">:</span> <span class="s1">&#39;password&#39;</span><span class="p">},</span>
+        <span class="p">},</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+
+<span class="n">f</span><span class="o">.</span><span class="n">to_kubernetes_yaml</span><span class="p">(</span><span class="s1">&#39;./k8s_flow&#39;</span><span class="p">,</span> <span class="n">k8s_namespace</span><span class="o">=</span><span class="s1">&#39;custom-namespace&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--2">with flow YAML</label><div class="tab-content docutils">
+<p>In a <code class="docutils literal notranslate"><span class="pre">flow.yml</span></code> file :</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span>
+<span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;1&#39;</span>
+<span class="nt">with</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http</span>
+<span class="nt">executors</span><span class="p">:</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">indexer</span>
+<span class="w">  </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinaai+docker://jina-ai/AnnLiteIndexer</span>
+<span class="w">  </span><span class="nt">uses_with</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">dim</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">512</span>
+<span class="w">  </span><span class="nt">env</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">k1</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="w">    </span><span class="nt">k2</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v2</span>
+<span class="w">  </span><span class="nt">env_from_secret</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">SECRET_USERNAME</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mysecret</span>
+<span class="w">      </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">username</span>
+<span class="w">    </span><span class="nt">SECRET_PASSWORD</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mysecret</span>
+<span class="w">      </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">password</span>
+</pre></div>
+</div>
+<p>You can generate Kubernetes YAML configs using <code class="docutils literal notranslate"><span class="pre">jina</span> <span class="pre">export</span></code>:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>jina<span class="w"> </span><span class="nb">export</span><span class="w"> </span>kubernetes<span class="w"> </span>flow.yml<span class="w"> </span>./k8s_flow<span class="w"> </span>--k8s-namespace<span class="w"> </span>custom-namespace
+</pre></div>
+</div>
+</div>
+</div>
+<p>After creating the namespace, you need to create the secrets mentioned above:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>kubectl<span class="w"> </span>-n<span class="w"> </span>custom-namespace<span class="w"> </span>create<span class="w"> </span>secret<span class="w"> </span>generic<span class="w"> </span>mysecret<span class="w"> </span>--from-literal<span class="o">=</span><span class="nv">username</span><span class="o">=</span>jina<span class="w"> </span>--from-literal<span class="o">=</span><span class="nv">password</span><span class="o">=</span><span class="m">123456</span>
+</pre></div>
+</div>
+<p>Then you can apply your configuration.</p>
 </section>
 </section>
 <section id="exposing-the-flow">
@@ -599,12 +659,12 @@ you may want to expose your service to make it reachable by users so that you ca
 <p>Exposing the Flow only works if the environment of your <code class="docutils literal notranslate"><span class="pre">Kubernetes</span> <span class="pre">cluster</span></code> supports <code class="docutils literal notranslate"><span class="pre">External</span> <span class="pre">Loadbalancers</span></code>.</p>
 </div>
 <p>Once the Flow is deployed, you can expose a service:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>kubectl expose deployment gateway --name<span class="o">=</span>gateway-exposed --type LoadBalancer --port <span class="m">80</span> --target-port <span class="m">8080</span> -n custom-namespace
-sleep <span class="m">60</span> <span class="c1"># wait until the external ip is configured</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>kubectl<span class="w"> </span>expose<span class="w"> </span>deployment<span class="w"> </span>gateway<span class="w"> </span>--name<span class="o">=</span>gateway-exposed<span class="w"> </span>--type<span class="w"> </span>LoadBalancer<span class="w"> </span>--port<span class="w"> </span><span class="m">80</span><span class="w"> </span>--target-port<span class="w"> </span><span class="m">8080</span><span class="w"> </span>-n<span class="w"> </span>custom-namespace
+sleep<span class="w"> </span><span class="m">60</span><span class="w"> </span><span class="c1"># wait until the external ip is configured</span>
 </pre></div>
 </div>
 <p>Export the external IP address. This is needed for the client when sending Documents to the Flow in the next section.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">EXTERNAL_IP</span><span class="o">=</span><span class="sb">`</span>kubectl get service gateway-exposed -n custom-namespace -o<span class="o">=</span><span class="nv">jsonpath</span><span class="o">=</span><span class="s1">&#39;{.status.loadBalancer.ingress[0].ip}&#39;</span><span class="sb">`</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">EXTERNAL_IP</span><span class="o">=</span><span class="sb">`</span>kubectl<span class="w"> </span>get<span class="w"> </span>service<span class="w"> </span>gateway-exposed<span class="w"> </span>-n<span class="w"> </span>custom-namespace<span class="w"> </span>-o<span class="o">=</span><span class="nv">jsonpath</span><span class="o">=</span><span class="s1">&#39;{.status.loadBalancer.ingress[0].ip}&#39;</span><span class="sb">`</span>
 </pre></div>
 </div>
 <section id="client">
@@ -641,29 +701,29 @@ sleep <span class="m">60</span> <span class="c1"># wait until the external ip is
 <p>In Kubernetes, you can update your Executors by patching the Deployment corresponding to your Executor.</p>
 <p>For instance, in the example above, you can change the CLIPEncoder’s <code class="docutils literal notranslate"><span class="pre">batch_size</span></code> parameter by changing the content of the Deployment inside the <code class="docutils literal notranslate"><span class="pre">executor.yml</span></code> dumped by <code class="docutils literal notranslate"><span class="pre">.to_kubernetes_yaml</span></code>.</p>
 <p>You need to add <code class="docutils literal notranslate"><span class="pre">--uses_with</span></code> and pass the batch size argument to it. This is passed to the container inside the Deployment:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="w">    </span><span class="nt">spec</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">containers</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">args</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executor</span><span class="w"></span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">--name</span><span class="w"></span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">encoder</span><span class="w"></span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">--k8s-namespace</span><span class="w"></span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">custom-namespace</span><span class="w"></span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">--uses</span><span class="w"></span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">config.yml</span><span class="w"></span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">--port</span><span class="w"></span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&#39;8080&#39;</span><span class="w"></span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">--uses-metas</span><span class="w"></span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&#39;{}&#39;</span><span class="w"></span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">--uses-with</span><span class="w"></span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&#39;{&quot;batch_size&quot;:</span><span class="nv"> </span><span class="s">64}&#39;</span><span class="w"></span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">--native</span><span class="w"></span>
-<span class="w">        </span><span class="nt">command</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jina</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="w">    </span><span class="nt">spec</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">containers</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">args</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executor</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">--name</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">encoder</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">--k8s-namespace</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">custom-namespace</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">--uses</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">config.yml</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">--port</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&#39;8080&#39;</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">--uses-metas</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&#39;{}&#39;</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">--uses-with</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&#39;{&quot;batch_size&quot;:</span><span class="nv"> </span><span class="s">64}&#39;</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">--native</span>
+<span class="w">        </span><span class="nt">command</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jina</span>
 </pre></div>
 </div>
 <p>After doing so, re-apply your configuration so the new Executor will be deployed without affecting the other unchanged Deployments:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>kubectl apply -R -f ./k8s_flow
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>kubectl<span class="w"> </span>apply<span class="w"> </span>-R<span class="w"> </span>-f<span class="w"> </span>./k8s_flow
 </pre></div>
 </div>
 <div class="seealso admonition">
@@ -728,7 +788,7 @@ sleep <span class="m">60</span> <span class="c1"># wait until the external ip is
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 30, 2022</div>
+                            Last updated on Jan 13, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -764,6 +824,7 @@ sleep <span class="m">60</span> <span class="c1"># wait until the external ip is
 <li><a class="reference internal" href="#preliminaries">Preliminaries</a></li>
 <li><a class="reference internal" href="#deploy-a-simple-flow">Deploy a simple Flow</a><ul>
 <li><a class="reference internal" href="#deploy-flow-with-shards-and-replicas">Deploy Flow with shards and replicas</a></li>
+<li><a class="reference internal" href="#deploy-flow-with-custom-environment-variables-and-secrets">Deploy Flow with custom environment variables and secrets</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#exposing-the-flow">Exposing the Flow</a><ul>

@@ -425,7 +425,7 @@
                 <article role="main">
                     <section id="file-structure">
 <h1>File Structure<a class="headerlink" href="#file-structure" title="Permalink to this heading">#</a></h1>
-<p>Besides organizing your <a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a> code inline, you can also write it as an “external” module and then use it via YAML. This is useful when your Executor’s logic is too complicated to fit into a single file.</p>
+<p>Besides organizing your <code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code> code inline, you can also write it as an “external” module and then use it via YAML. This is useful when your Executor’s logic is too complicated to fit into a single file.</p>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
 <p>The best practice is to use <code class="docutils literal notranslate"><span class="pre">jina</span> <span class="pre">hub</span> <span class="pre">new</span></code> to create a new Executor. It automatically generates the files you need in the correct structure.</p>
@@ -433,9 +433,9 @@
 <section id="single-python-file-yaml">
 <h2>Single Python file + YAML<a class="headerlink" href="#single-python-file-yaml" title="Permalink to this heading">#</a></h2>
 <p>When you are only working with a single Python file (let’s call it <code class="docutils literal notranslate"><span class="pre">my_executor.py</span></code>), you can put it at the root of your repository, and import it directly in <code class="docutils literal notranslate"><span class="pre">config.yml</span></code></p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MyExecutor</span><span class="w"></span>
-<span class="nt">py_modules</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_executor.py</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MyExecutor</span>
+<span class="nt">py_modules</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_executor.py</span>
 </pre></div>
 </div>
 </section>
@@ -483,9 +483,9 @@ your repository (as you would normally do with Python packages). Specifically, y
 </pre></div>
 </div>
 <p>Finally, the contents of <code class="docutils literal notranslate"><span class="pre">config.yml</span></code>:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MyExecutor</span><span class="w"></span>
-<span class="nt">py_modules</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executor/__init__.py</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MyExecutor</span>
+<span class="nt">py_modules</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executor/__init__.py</span>
 </pre></div>
 </div>
 <p>Note that only <code class="docutils literal notranslate"><span class="pre">executor/__init__.py</span></code> needs to be listed under <code class="docutils literal notranslate"><span class="pre">py_modules</span></code></p>
@@ -538,7 +538,7 @@ your repository (as you would normally do with Python packages). Specifically, y
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 30, 2022</div>
+                            Last updated on Jan 13, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

@@ -403,7 +403,7 @@
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span>
 
-<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">helper</span>
+<span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">random_port</span>
 <span class="kn">from</span> <span class="nn">jina.enums</span> <span class="kn">import</span> <span class="n">PodRoleType</span>
 <span class="kn">from</span> <span class="nn">jina.parsers.helper</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">_SHOW_ALL_ARGS</span><span class="p">,</span>
@@ -415,7 +415,7 @@
 
 <div class="viewcode-block" id="PodTypeParams"><a class="viewcode-back" href="../../../../../api/jina.parsers.orchestrate.pod/#jina.parsers.orchestrate.pod.PodTypeParams">[docs]</a><span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">PodTypeParams</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Data Class representing possible parameters for each pod type&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Data Class representing possible parameters for each pod type&quot;&quot;&quot;</span>
 
     <span class="n">runtime_cls</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">role_type</span><span class="p">:</span> <span class="n">PodRoleType</span></div>
@@ -431,7 +431,7 @@
 
 
 <div class="viewcode-block" id="mixin_pod_parser"><a class="viewcode-back" href="../../../../../api/jina.parsers.orchestrate.pod/#jina.parsers.orchestrate.pod.mixin_pod_parser">[docs]</a><span class="k">def</span> <span class="nf">mixin_pod_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">pod_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;worker&#39;</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Mixing in arguments required by :class:`Pod` into the given parser.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Mixing in arguments required by :class:`Pod` into the given parser.</span>
 <span class="sd">    :param parser: the parser instance to which we add arguments</span>
 <span class="sd">    :param pod_type: the pod_type configured by the parser. Can be either &#39;worker&#39; for WorkerRuntime or &#39;gateway&#39; for GatewayRuntime</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -459,6 +459,14 @@
         <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;KEY: VALUE&#39;</span><span class="p">,</span>
         <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;*&#39;</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s1">&#39;The map of environment variables that are available inside runtime&#39;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;--env-from-secret&#39;</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="n">KVAppendAction</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;KEY: VALUE&#39;</span><span class="p">,</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;*&#39;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;The map of environment variables that are read from kubernetes cluster secrets&#39;</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="c1"># hidden CLI used for internal only</span>
@@ -526,7 +534,7 @@
 
 
 <div class="viewcode-block" id="mixin_pod_runtime_args_parser"><a class="viewcode-back" href="../../../../../api/jina.parsers.orchestrate.pod/#jina.parsers.orchestrate.pod.mixin_pod_runtime_args_parser">[docs]</a><span class="k">def</span> <span class="nf">mixin_pod_runtime_args_parser</span><span class="p">(</span><span class="n">arg_group</span><span class="p">,</span> <span class="n">pod_type</span><span class="o">=</span><span class="s1">&#39;worker&#39;</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Mixin for runtime arguments of pods</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Mixin for runtime arguments of pods</span>
 <span class="sd">    :param arg_group: the parser instance or args group to which we add arguments</span>
 <span class="sd">    :param pod_type: the pod_type configured by the parser. Can be either &#39;worker&#39; for WorkerRuntime or &#39;gateway&#39; for GatewayRuntime</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -542,7 +550,7 @@
             <span class="s1">&#39;--port-in&#39;</span><span class="p">,</span>
             <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
             <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;+&#39;</span><span class="p">,</span>
-            <span class="n">default</span><span class="o">=</span><span class="p">[</span><span class="n">helper</span><span class="o">.</span><span class="n">random_port</span><span class="p">()],</span>
+            <span class="n">default</span><span class="o">=</span><span class="p">[</span><span class="n">random_port</span><span class="p">()],</span>
             <span class="n">action</span><span class="o">=</span><span class="n">CastToIntAction</span><span class="p">,</span>
             <span class="n">help</span><span class="o">=</span><span class="n">port_description</span><span class="p">,</span>
         <span class="p">)</span>
@@ -575,7 +583,7 @@
         <span class="s1">&#39;--port-monitoring&#39;</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
         <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;+&#39;</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="p">[</span><span class="n">helper</span><span class="o">.</span><span class="n">random_port</span><span class="p">()],</span>
+        <span class="n">default</span><span class="o">=</span><span class="p">[</span><span class="n">random_port</span><span class="p">()],</span>
         <span class="n">action</span><span class="o">=</span><span class="n">CastToIntAction</span><span class="p">,</span>
         <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;port_monitoring&#39;</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;The port on which the prometheus server is exposed, default is a random port between [49152, 65535]&#39;</span><span class="p">,</span>
@@ -635,7 +643,7 @@
 
 
 <div class="viewcode-block" id="mixin_hub_pull_options_parser"><a class="viewcode-back" href="../../../../../api/jina.parsers.orchestrate.pod/#jina.parsers.orchestrate.pod.mixin_hub_pull_options_parser">[docs]</a><span class="k">def</span> <span class="nf">mixin_hub_pull_options_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Add the arguments for hub pull options to the parser</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Add the arguments for hub pull options to the parser</span>
 <span class="sd">    :param parser: the parser configure</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -661,7 +669,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 30, 2022</div>
+                            Last updated on Jan 13, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

@@ -425,7 +425,7 @@
                 <article role="main">
                     <section id="send-receive-data">
 <h1>Send &amp; Receive Data<a class="headerlink" href="#send-receive-data" title="Permalink to this heading">#</a></h1>
-<p>After a <a class="reference internal" href="../../../api/jina/#jina.Client" title="jina.Client"><code class="xref py py-class docutils literal notranslate"><span class="pre">Client</span></code></a> has connected to a <a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a>, it can send requests to the Flow using its <a class="reference internal" href="../../../api/jina.clients.mixin/#jina.clients.mixin.PostMixin.post" title="jina.clients.mixin.PostMixin.post"><code class="xref py py-meth docutils literal notranslate"><span class="pre">post()</span></code></a> method.
+<p>After a <code class="xref py py-class docutils literal notranslate"><span class="pre">Client</span></code> has connected to a <code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code>, it can send requests to the Flow using its <a class="reference internal" href="../../../api/jina.clients.mixin/#jina.clients.mixin.PostMixin.post" title="jina.clients.mixin.PostMixin.post"><code class="xref py py-meth docutils literal notranslate"><span class="pre">post()</span></code></a> method.
 This expects as inputs the <a class="reference internal" href="../../executor/add-endpoints/#exec-endpoint"><span class="std std-ref">Executor endpoint</span></a> that you want to target, as well as a Document or Iterable of Documents:</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">A single Document</label><div class="tab-content docutils">
@@ -488,7 +488,7 @@ Hence, <code class="docutils literal notranslate"><span class="pre">flow.post()<
 </div>
 <section id="send-data-in-batches">
 <h2>Send data in batches<a class="headerlink" href="#send-data-in-batches" title="Permalink to this heading">#</a></h2>
-<p>Especially during indexing, a Client can send up to thousands or millions of Documents to a <a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a>.
+<p>Especially during indexing, a Client can send up to thousands or millions of Documents to a <code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code>.
 Those Documents are internally batched into a <code class="docutils literal notranslate"><span class="pre">Request</span></code>, providing a smaller memory footprint and faster response times thanks
 to <a class="reference internal" href="../callbacks/#callback-functions"><span class="std std-ref">callback functions</span></a>.</p>
 <p>The size of these batches can be controlled with the <code class="docutils literal notranslate"><span class="pre">request_size</span></code> keyword.
@@ -544,7 +544,7 @@ This means you can iterate over Responses one by one, as they come in.</p>
 </section>
 <section id="send-data-to-specific-executors">
 <h2>Send data to specific Executors<a class="headerlink" href="#send-data-to-specific-executors" title="Permalink to this heading">#</a></h2>
-<p>Usually a <a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> will send each request to all <a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>s with matching endpoints as configured. But the <a class="reference internal" href="../../../api/jina/#jina.Client" title="jina.Client"><code class="xref py py-class docutils literal notranslate"><span class="pre">Client</span></code></a> also allows you to only target specific Executors in a Flow using the <code class="docutils literal notranslate"><span class="pre">target_executor</span></code> keyword. The request will then only be processed by the Executors which match the provided target_executor regex. Its usage is shown in the listing below.</p>
+<p>Usually a <code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code> will send each request to all <code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code>s with matching endpoints as configured. But the <code class="xref py py-class docutils literal notranslate"><span class="pre">Client</span></code> also allows you to only target specific Executors in a Flow using the <code class="docutils literal notranslate"><span class="pre">target_executor</span></code> keyword. The request will then only be processed by the Executors which match the provided target_executor regex. Its usage is shown in the listing below.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span>
 
 
@@ -708,7 +708,7 @@ This means you will not receive results until all Requests have been processed, 
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 30, 2022</div>
+                            Last updated on Jan 13, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

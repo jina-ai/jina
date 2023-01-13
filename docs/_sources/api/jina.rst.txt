@@ -24,6 +24,7 @@ Submodules
    :maxdepth: 4
 
    jina.checker
+   jina.constants
    jina.enums
    jina.excepts
    jina.exporter

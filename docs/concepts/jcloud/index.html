@@ -444,8 +444,8 @@
 <div class="admonition hint">
 <p class="admonition-title">Hint</p>
 <p>You can also install just the JCloud CLI without installing the Jina package.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install jcloud
-jc -h
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>jcloud
+jc<span class="w"> </span>-h
 </pre></div>
 </div>
 <p>If you installed the JCloud CLI individually, all of its commands fall under the <code class="docutils literal notranslate"><span class="pre">jc</span></code> or <code class="docutils literal notranslate"><span class="pre">jcloud</span></code> executable.</p>
@@ -466,21 +466,21 @@ jc -h
 <blockquote>
 <div><p>All Executors’ <code class="docutils literal notranslate"><span class="pre">uses</span></code> must follow the format <code class="docutils literal notranslate"><span class="pre">jinaai+docker://&lt;username&gt;/MyExecutor</span></code> (from <a class="reference external" href="https://cloud.jina.ai">Executor Hub</a>) to avoid any local file dependencies:</p>
 </div></blockquote>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># flow.yml</span><span class="w"></span>
-<span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
-<span class="nt">executors</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sentencizer</span><span class="w"></span>
-<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinaai+docker://jina-ai/Sentencizer</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># flow.yml</span>
+<span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span>
+<span class="nt">executors</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sentencizer</span>
+<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinaai+docker://jina-ai/Sentencizer</span>
 </pre></div>
 </div>
 <p>To deploy:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc deploy flow.yml
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>deploy<span class="w"> </span>flow.yml
 </pre></div>
 </div>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
 <p>We recommend testing locally before deployment:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina flow --uses flow.yml
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina<span class="w"> </span>flow<span class="w"> </span>--uses<span class="w"> </span>flow.yml
 </pre></div>
 </div>
 </div>
@@ -490,7 +490,7 @@ jc -h
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
 <p>The best practice of creating a JCloud project is to use:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc new
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>new
 </pre></div>
 </div>
 <p>This ensures the correct project structure accepted by JCloud.</p>
@@ -514,7 +514,7 @@ jc -h
 <li><p><code class="docutils literal notranslate"><span class="pre">.env</span></code> All environment variables used during deployment.</p></li>
 </ul>
 <p>To deploy:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc deploy hello
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>deploy<span class="w"> </span>hello
 </pre></div>
 </div>
 <p>The Flow is successfully deployed when you see:</p>
@@ -538,7 +538,7 @@ jc -h
 <section id="get-status">
 <span id="jcloud-flow-status"></span><h3>Get status<a class="headerlink" href="#get-status" title="Permalink to this heading">#</a></h3>
 <p>To get the status of a Flow:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc status merry-magpie-82b9c0897f
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>status<span class="w"> </span>merry-magpie-82b9c0897f
 </pre></div>
 </div>
 <figure class="align-default">
@@ -556,21 +556,21 @@ jc -h
 <section id="list-flows">
 <h3>List Flows<a class="headerlink" href="#list-flows" title="Permalink to this heading">#</a></h3>
 <p>To list all of your “Serving” Flows:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc list
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>list
 </pre></div>
 </div>
 <figure class="align-default">
 <a class="reference internal image-reference" href="../../_images/list.png"><img alt="../../_images/list.png" src="../../_images/list.png" style="width: 90%;" /></a>
 </figure>
 <p>You can also filter your Flows by passing a phase:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc list --phase Deleted
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>list<span class="w"> </span>--phase<span class="w"> </span>Deleted
 </pre></div>
 </div>
 <figure class="align-default">
 <a class="reference internal image-reference" href="../../_images/list_deleted.png"><img alt="../../_images/list_deleted.png" src="../../_images/list_deleted.png" style="width: 90%;" /></a>
 </figure>
 <p>Or see all Flows:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc list --phase all
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>list<span class="w"> </span>--phase<span class="w"> </span>all
 </pre></div>
 </div>
 <figure class="align-default">
@@ -581,21 +581,85 @@ jc -h
 <h3>Remove Flows<a class="headerlink" href="#remove-flows" title="Permalink to this heading">#</a></h3>
 <p>You can remove a single Flow, multiple Flows or even all Flows by passing different identifiers.</p>
 <p>To remove a single Flow:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc remove merry-magpie-82b9c0897f
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>remove<span class="w"> </span>merry-magpie-82b9c0897f
 </pre></div>
 </div>
 <p>To remove multiple Flows:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc remove merry-magpie-82b9c0897f wondrous-kiwi-b02db6a066
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>remove<span class="w"> </span>merry-magpie-82b9c0897f<span class="w"> </span>wondrous-kiwi-b02db6a066
 </pre></div>
 </div>
 <p>To remove all Flows:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc remove all
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>remove<span class="w"> </span>all
 </pre></div>
 </div>
 <p>By default, removing multiple or all Flows is an interactive process where you must give confirmation before each Flow is deleted. To make it non-interactive, set the below environment variable before running the command:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">JCLOUD_NO_INTERACTIVE</span><span class="o">=</span><span class="m">1</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">JCLOUD_NO_INTERACTIVE</span><span class="o">=</span><span class="m">1</span>
 </pre></div>
 </div>
+</section>
+<section id="update-flow">
+<h3>Update Flow<a class="headerlink" href="#update-flow" title="Permalink to this heading">#</a></h3>
+<p>You can update a Flow by providing an updated YAML.</p>
+<p>To update a Flow:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>update<span class="w"> </span>super-mustang-c6cf06bc5b<span class="w"> </span>flow.yml
+</pre></div>
+</div>
+<figure class="align-default">
+<a class="reference internal image-reference" href="../../_images/update_flow.png"><img alt="../../_images/update_flow.png" src="../../_images/update_flow.png" style="width: 70%;" /></a>
+</figure>
+</section>
+<section id="pause-resume-flow">
+<h3>Pause / Resume Flow<a class="headerlink" href="#pause-resume-flow" title="Permalink to this heading">#</a></h3>
+<p>You have the option to pause a Flow that is not currently in use but may be needed later. This will allow the Flow to be resumed later when it is needed again by using <code class="docutils literal notranslate"><span class="pre">resume</span></code>.</p>
+<p>To pause a Flow:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>pause<span class="w"> </span>super-mustang-c6cf06bc5b
+</pre></div>
+</div>
+<figure class="align-default">
+<a class="reference internal image-reference" href="../../_images/pause_flow.png"><img alt="../../_images/pause_flow.png" src="../../_images/pause_flow.png" style="width: 70%;" /></a>
+</figure>
+<p>To resume a Flow:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>resume<span class="w"> </span>super-mustang-c6cf06bc5b
+</pre></div>
+</div>
+<figure class="align-default">
+<a class="reference internal image-reference" href="../../_images/resume_flow.png"><img alt="../../_images/resume_flow.png" src="../../_images/resume_flow.png" style="width: 70%;" /></a>
+</figure>
+</section>
+<section id="restart-flow-executor-or-gateway">
+<h3>Restart Flow, Executor or Gateway<a class="headerlink" href="#restart-flow-executor-or-gateway" title="Permalink to this heading">#</a></h3>
+<p>If you need to restart a Flow, there are two options: restart all Executors and the Gateway associated with the Flow, or selectively restart only a specific Executor or the Gateway.</p>
+<p>To restart a Flow:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>restart<span class="w"> </span>super-mustang-c6cf06bc5b
+</pre></div>
+</div>
+<figure class="align-default">
+<a class="reference internal image-reference" href="../../_images/restart_flow.png"><img alt="../../_images/restart_flow.png" src="../../_images/restart_flow.png" style="width: 70%;" /></a>
+</figure>
+<p>To restart the Gateway:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>restart<span class="w"> </span>super-mustang-c6cf06bc5b<span class="w"> </span>--gateway
+</pre></div>
+</div>
+<figure class="align-default">
+<a class="reference internal image-reference" href="../../_images/restart_gateway.png"><img alt="../../_images/restart_gateway.png" src="../../_images/restart_gateway.png" style="width: 70%;" /></a>
+</figure>
+<p>To restart an Executor:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>restart<span class="w"> </span>super-mustang-c6cf06bc5b<span class="w"> </span>--executor<span class="w"> </span>executor0
+</pre></div>
+</div>
+<figure class="align-default">
+<a class="reference internal image-reference" href="../../_images/restart_executor.png"><img alt="../../_images/restart_executor.png" src="../../_images/restart_executor.png" style="width: 70%;" /></a>
+</figure>
+</section>
+<section id="scale-an-executor">
+<h3>Scale an Executor<a class="headerlink" href="#scale-an-executor" title="Permalink to this heading">#</a></h3>
+<p>You can also manually scale any Executor.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>scale<span class="w"> </span>good-martin-ca6bfdef84<span class="w"> </span>--executor<span class="w"> </span>executor0<span class="w"> </span>--replicas<span class="w"> </span><span class="m">2</span>
+</pre></div>
+</div>
+<figure class="align-default">
+<a class="reference internal image-reference" href="../../_images/scale_executor.png"><img alt="../../_images/scale_executor.png" src="../../_images/scale_executor.png" style="width: 70%;" /></a>
+</figure>
 </section>
 </section>
 <section id="restrictions">
@@ -645,7 +709,7 @@ jc -h
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 30, 2022</div>
+                            Last updated on Jan 13, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -688,6 +752,10 @@ jc -h
 <li><a class="reference internal" href="#monitoring">Monitoring</a></li>
 <li><a class="reference internal" href="#list-flows">List Flows</a></li>
 <li><a class="reference internal" href="#remove-flows">Remove Flows</a></li>
+<li><a class="reference internal" href="#update-flow">Update Flow</a></li>
+<li><a class="reference internal" href="#pause-resume-flow">Pause / Resume Flow</a></li>
+<li><a class="reference internal" href="#restart-flow-executor-or-gateway">Restart Flow, Executor or Gateway</a></li>
+<li><a class="reference internal" href="#scale-an-executor">Scale an Executor</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#restrictions">Restrictions</a></li>

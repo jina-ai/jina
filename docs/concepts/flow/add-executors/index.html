@@ -425,11 +425,11 @@
                 <article role="main">
                     <section id="add-executors">
 <span id="flow-add-executors"></span><h1>Add Executors<a class="headerlink" href="#add-executors" title="Permalink to this heading">#</a></h1>
-<p>A <a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> orchestrates its <a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>s as a graph and sends requests to all Executors in the order specified by <a class="reference internal" href="../../../api/jina/#jina.Flow.add" title="jina.Flow.add"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add()</span></code></a> or listed in <a class="reference internal" href="../yaml-spec/#flow-yaml-spec"><span class="std std-ref">a YAML file</span></a>.</p>
+<p>A <code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code> orchestrates its <code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code>s as a graph and sends requests to all Executors in the order specified by <code class="xref py py-meth docutils literal notranslate"><span class="pre">add()</span></code> or listed in <a class="reference internal" href="../yaml-spec/#flow-yaml-spec"><span class="std std-ref">a YAML file</span></a>.</p>
 <p>When you start a Flow, Executors always run in <strong>separate processes</strong>. Multiple Executors run in <strong>different processes</strong>. Multiprocessing is the lowest level of separation when you run a Flow locally. When running a Flow on Kubernetes, Docker Swarm, <a class="reference internal" href="../../jcloud/#jcloud"><span class="std std-ref">Jina AI Cloud Hosting</span></a>, different Executors run in different containers, pods or instances.</p>
 <section id="add-executors-sequentially">
 <h2>Add Executors sequentially<a class="headerlink" href="#add-executors-sequentially" title="Permalink to this heading">#</a></h2>
-<p>Executors can be added into a Flow with <a class="reference internal" href="../../../api/jina/#jina.Flow.add" title="jina.Flow.add"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add()</span></code></a>.</p>
+<p>Executors can be added into a Flow with <code class="xref py py-meth docutils literal notranslate"><span class="pre">add()</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
 
 <span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">()</span>
@@ -449,23 +449,23 @@
 <a class="reference internal image-reference" href="../../../_images/named-flow.svg"><img alt="../../../_images/named-flow.svg" src="../../../_images/named-flow.svg" /></a>
 </figure>
 <p>You can also define the above Flow in YAML:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
-<span class="nt">executors</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">myVeryFirstExecutor</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">secondIsBest</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span>
+<span class="nt">executors</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">myVeryFirstExecutor</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">secondIsBest</span>
 </pre></div>
 </div>
 <p>Save it as <code class="docutils literal notranslate"><span class="pre">flow.yml</span></code> and run it:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina flow --uses flow.yml
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina<span class="w"> </span>flow<span class="w"> </span>--uses<span class="w"> </span>flow.yml
 </pre></div>
 </div>
 <p>More Flow YAML specifications can be found in <a class="reference internal" href="../yaml-spec/#flow-yaml-spec"><span class="std std-ref">Flow YAML Specification</span></a>.</p>
 </section>
 <section id="define-topologies-over-executors">
 <h2>Define topologies over Executors<a class="headerlink" href="#define-topologies-over-executors" title="Permalink to this heading">#</a></h2>
-<p><a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a>s are not restricted to sequential execution. Internally they are modeled as graphs, so they can represent any complex, non-cyclic topology.</p>
+<p><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code>s are not restricted to sequential execution. Internally they are modeled as graphs, so they can represent any complex, non-cyclic topology.</p>
 <p>A typical use case for such a Flow is a topology with a common pre-processing part, but different indexers separating embeddings and data.</p>
-<p>To define a custom topology you can use the <code class="docutils literal notranslate"><span class="pre">needs</span></code> keyword when adding an <a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>. By default, a Flow assumes that every Executor needs the previously added Executor.</p>
+<p>To define a custom topology you can use the <code class="docutils literal notranslate"><span class="pre">needs</span></code> keyword when adding an <code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code>. By default, a Flow assumes that every Executor needs the previously added Executor.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span>
 
 
@@ -516,7 +516,7 @@ This automated merging can be disabled with <code class="docutils literal notran
 </section>
 <section id="define-executor-with-uses">
 <h2>Define Executor with <code class="docutils literal notranslate"><span class="pre">uses</span></code><a class="headerlink" href="#define-executor-with-uses" title="Permalink to this heading">#</a></h2>
-<p>An <a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>’s type is defined by the <code class="docutils literal notranslate"><span class="pre">uses</span></code> keyword. Note that some usages are not supported on JCloud due to security reasons and the nature of facilitating local debugging.</p>
+<p>An <code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code>’s type is defined by the <code class="docutils literal notranslate"><span class="pre">uses</span></code> keyword. Note that some usages are not supported on JCloud due to security reasons and the nature of facilitating local debugging.</p>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
@@ -584,8 +584,8 @@ Instead, you can configure a common search path for all Executors:</p>
 </div>
 </section>
 <section id="configure-executors">
-<h2>Configure Executors<a class="headerlink" href="#configure-executors" title="Permalink to this heading">#</a></h2>
-<p>You can set and override <a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a> configuration when adding them to a <a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a>.</p>
+<span id="flow-configure-executors"></span><h2>Configure Executors<a class="headerlink" href="#configure-executors" title="Permalink to this heading">#</a></h2>
+<p>You can set and override <code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code> configuration when adding them to a <code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code>.</p>
 <p>This example shows how to start a Flow with an Executor using the Python API:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
 
@@ -740,7 +740,7 @@ different_name
 </section>
 <section id="unify-output-ndarray-types">
 <h3>Unify output <code class="docutils literal notranslate"><span class="pre">ndarray</span></code> types<a class="headerlink" href="#unify-output-ndarray-types" title="Permalink to this heading">#</a></h3>
-<p>Different <a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>s in a <a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> may depend on different <code class="docutils literal notranslate"><span class="pre">types</span></code> for array-like data such as <code class="docutils literal notranslate"><span class="pre">doc.tensor</span></code> and <code class="docutils literal notranslate"><span class="pre">doc.embedding</span></code>,
+<p>Different <code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code>s in a <code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code> may depend on different <code class="docutils literal notranslate"><span class="pre">types</span></code> for array-like data such as <code class="docutils literal notranslate"><span class="pre">doc.tensor</span></code> and <code class="docutils literal notranslate"><span class="pre">doc.embedding</span></code>,
 often because they were written with different machine learning frameworks.
 As the builder of a Flow you don’t always have control over this, for example when using Executors from Executor Hub.</p>
 <p>To ease the integration of different Executors, a Flow allows you to convert <code class="docutils literal notranslate"><span class="pre">tensor</span></code> and <code class="docutils literal notranslate"><span class="pre">embedding</span></code>
@@ -856,7 +856,7 @@ logging specific information in external services, storing partial results, etc.
     <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
     <span class="n">response</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/endpoint&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">DocumentArray</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
     <span class="n">end_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39; Response time took </span><span class="si">{</span><span class="n">end_time</span> <span class="o">-</span> <span class="n">start_time</span><span class="si">}</span><span class="s1">s&#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39; Response time took </span><span class="si">{</span><span class="n">end_time</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">start_time</span><span class="si">}</span><span class="s1">s&#39;</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39; </span><span class="si">{</span><span class="n">response</span><span class="o">.</span><span class="n">texts</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -943,7 +943,7 @@ the floating Executor has handled the request.</p>
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 30, 2022</div>
+                            Last updated on Jan 13, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

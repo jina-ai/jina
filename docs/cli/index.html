@@ -466,11 +466,12 @@
               <span class="p">[</span><span class="o">--</span><span class="n">entrypoint</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">docker</span><span class="o">-</span><span class="n">kwargs</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
               <span class="p">[</span><span class="o">--</span><span class="n">volumes</span> <span class="p">[</span><span class="n">DIR</span> <span class="p">[</span><span class="n">DIR</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">gpus</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">disable</span><span class="o">-</span><span class="n">auto</span><span class="o">-</span><span class="n">volume</span><span class="p">]</span>
               <span class="p">[</span><span class="o">--</span><span class="n">host</span>  <span class="p">[</span><span class="o">...</span><span class="p">]]</span> <span class="p">[</span><span class="o">--</span><span class="n">runtime</span><span class="o">-</span><span class="bp">cls</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ready</span><span class="p">]</span>
-              <span class="p">[</span><span class="o">--</span><span class="n">env</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">floating</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">reload</span><span class="p">]</span>
-              <span class="p">[</span><span class="o">--</span><span class="n">install</span><span class="o">-</span><span class="n">requirements</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span>  <span class="p">[</span><span class="o">...</span><span class="p">]]</span> <span class="p">[</span><span class="o">--</span><span class="n">monitoring</span><span class="p">]</span>
-              <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">monitoring</span>  <span class="p">[</span><span class="o">...</span><span class="p">]]</span> <span class="p">[</span><span class="o">--</span><span class="n">retries</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">tracing</span><span class="p">]</span>
-              <span class="p">[</span><span class="o">--</span><span class="n">traces</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">host</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">traces</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">port</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">metrics</span><span class="p">]</span>
-              <span class="p">[</span><span class="o">--</span><span class="n">metrics</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">host</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">metrics</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">port</span><span class="p">]</span>
+              <span class="p">[</span><span class="o">--</span><span class="n">env</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
+              <span class="p">[</span><span class="o">--</span><span class="n">env</span><span class="o">-</span><span class="n">from</span><span class="o">-</span><span class="n">secret</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">floating</span><span class="p">]</span>
+              <span class="p">[</span><span class="o">--</span><span class="n">reload</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">install</span><span class="o">-</span><span class="n">requirements</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span>  <span class="p">[</span><span class="o">...</span><span class="p">]]</span>
+              <span class="p">[</span><span class="o">--</span><span class="n">monitoring</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">monitoring</span>  <span class="p">[</span><span class="o">...</span><span class="p">]]</span> <span class="p">[</span><span class="o">--</span><span class="n">retries</span><span class="p">]</span>
+              <span class="p">[</span><span class="o">--</span><span class="n">tracing</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">traces</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">host</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">traces</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">port</span><span class="p">]</span>
+              <span class="p">[</span><span class="o">--</span><span class="n">metrics</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">metrics</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">host</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">metrics</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">port</span><span class="p">]</span>
               <span class="p">[</span><span class="o">--</span><span class="n">force</span><span class="o">-</span><span class="n">update</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">compression</span> <span class="p">{</span><span class="n">NoCompression</span><span class="p">,</span> <span class="n">Deflate</span><span class="p">,</span> <span class="n">Gzip</span><span class="p">}]</span>
               <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">before</span><span class="o">-</span><span class="n">address</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">after</span><span class="o">-</span><span class="n">address</span><span class="p">]</span>
               <span class="p">[</span><span class="o">--</span><span class="n">connection</span><span class="o">-</span><span class="nb">list</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">send</span><span class="p">]</span>
@@ -663,6 +664,9 @@ container.</p>
 <dt><kbd>--env</kbd></dt>
 <dd><p>The map of environment variables that are available inside runtime</p>
 </dd>
+<dt><kbd>--env-from-secret</kbd></dt>
+<dd><p>The map of environment variables that are read from kubernetes cluster secrets</p>
+</dd>
 <dt><kbd>--floating</kbd></dt>
 <dd><p>If set, the current Pod/Deployment can not be further chained, and the next <cite>.add()</cite> will chain after the last Pod/Deployment not this current one.</p>
 <p>Default: False</p>
@@ -677,7 +681,7 @@ container.</p>
 </dd>
 <dt><kbd>--port, --port-in</kbd></dt>
 <dd><p>The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (<cite>–external</cite> or <cite>external=True</cite>) this can be a list of ports. Then, every resulting address will be considered as one replica of the Executor.</p>
-<p>Default: [54198]</p>
+<p>Default: [63957]</p>
 </dd>
 <dt><kbd>--monitoring</kbd></dt>
 <dd><p>If set, spawn an http server with a prometheus endpoint to expose metrics</p>
@@ -685,7 +689,7 @@ container.</p>
 </dd>
 <dt><kbd>--port-monitoring</kbd></dt>
 <dd><p>The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</p>
-<p>Default: [64538]</p>
+<p>Default: [59677]</p>
 </dd>
 <dt><kbd>--retries</kbd></dt>
 <dd><p>Number of retries per gRPC call. If &lt;0 it defaults to max(3, num_replicas)</p>
@@ -1003,11 +1007,12 @@ container.</p>
              <span class="p">[</span><span class="o">--</span><span class="n">deployments</span><span class="o">-</span><span class="n">no</span><span class="o">-</span><span class="n">reduce</span><span class="p">]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">compression</span> <span class="p">{</span><span class="n">NoCompression</span><span class="p">,</span> <span class="n">Deflate</span><span class="p">,</span> <span class="n">Gzip</span><span class="p">}]</span> <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">send</span><span class="p">]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">runtime</span><span class="o">-</span><span class="bp">cls</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ready</span><span class="p">]</span>
-             <span class="p">[</span><span class="o">--</span><span class="n">env</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">floating</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">reload</span><span class="p">]</span>
-             <span class="p">[</span><span class="o">--</span><span class="n">port</span>  <span class="p">[</span><span class="o">...</span><span class="p">]]</span> <span class="p">[</span><span class="o">--</span><span class="n">monitoring</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">monitoring</span>  <span class="p">[</span><span class="o">...</span><span class="p">]]</span>
-             <span class="p">[</span><span class="o">--</span><span class="n">retries</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">tracing</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">traces</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">host</span><span class="p">]</span>
-             <span class="p">[</span><span class="o">--</span><span class="n">traces</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">port</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">metrics</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">metrics</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">host</span><span class="p">]</span>
-             <span class="p">[</span><span class="o">--</span><span class="n">metrics</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">port</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">env</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">env</span><span class="o">-</span><span class="n">from</span><span class="o">-</span><span class="n">secret</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">floating</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">reload</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span>  <span class="p">[</span><span class="o">...</span><span class="p">]]</span> <span class="p">[</span><span class="o">--</span><span class="n">monitoring</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">monitoring</span>  <span class="p">[</span><span class="o">...</span><span class="p">]]</span> <span class="p">[</span><span class="o">--</span><span class="n">retries</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">tracing</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">traces</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">host</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">traces</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">port</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">metrics</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">metrics</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">host</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">metrics</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">port</span><span class="p">]</span>
 </pre></div>
 </div>
 <section id="Named Arguments_repeat6">
@@ -1223,6 +1228,9 @@ which should be structured as a python package.</p>
 <dt><kbd>--env</kbd></dt>
 <dd><p>The map of environment variables that are available inside runtime</p>
 </dd>
+<dt><kbd>--env-from-secret</kbd></dt>
+<dd><p>The map of environment variables that are read from kubernetes cluster secrets</p>
+</dd>
 <dt><kbd>--floating</kbd></dt>
 <dd><p>If set, the current Pod/Deployment can not be further chained, and the next <cite>.add()</cite> will chain after the last Pod/Deployment not this current one.</p>
 <p>Default: False</p>
@@ -1240,7 +1248,7 @@ which should be structured as a python package.</p>
 </dd>
 <dt><kbd>--port-monitoring</kbd></dt>
 <dd><p>The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</p>
-<p>Default: [50110]</p>
+<p>Default: [51940]</p>
 </dd>
 <dt><kbd>--retries</kbd></dt>
 <dd><p>Number of retries per gRPC call. If &lt;0 it defaults to max(3, num_replicas)</p>
@@ -1433,8 +1441,8 @@ which should be structured as a python package.</p>
 <h5>push<a class="headerlink" href="#push" title="Permalink to this heading">#</a></h5>
 <p>Push an executor package to Jina hub</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">hub</span> <span class="n">push</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">usage</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">verbose</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">f</span> <span class="n">DOCKERFILE</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">t</span><span class="p">]</span>
-              <span class="p">[</span><span class="o">--</span><span class="n">protected</span><span class="o">-</span><span class="n">tag</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">force</span><span class="o">-</span><span class="n">update</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">build</span><span class="o">-</span><span class="n">env</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">secret</span><span class="p">]</span>
-              <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">cache</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">public</span> <span class="o">|</span> <span class="o">--</span><span class="n">private</span><span class="p">]</span>
+              <span class="p">[</span><span class="o">--</span><span class="n">protected</span><span class="o">-</span><span class="n">tag</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">force</span><span class="o">-</span><span class="n">update</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">build</span><span class="o">-</span><span class="n">env</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">platform</span><span class="p">]</span>
+              <span class="p">[</span><span class="o">--</span><span class="n">secret</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">cache</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">public</span> <span class="o">|</span> <span class="o">--</span><span class="n">private</span><span class="p">]</span>
               <span class="n">path</span>
 </pre></div>
 </div>
@@ -1473,6 +1481,9 @@ which should be structured as a python package.</p>
 <dt><kbd>--build-env</kbd></dt>
 <dd><p>A list of environment variables. It will be used in project build phase.</p>
 </dd>
+<dt><kbd>--platform</kbd></dt>
+<dd><p>A comma separated list of target Docker platforms. Explicitly set target platform(s) for build. (e.g. “linux/amd64,linux/arm64”)</p>
+</dd>
 <dt><kbd>--secret</kbd></dt>
 <dd><p>The secret for overwrite a Hub executor</p>
 </dd>
@@ -1497,7 +1508,9 @@ which should be structured as a python package.</p>
 <section id="pull">
 <h5>pull<a class="headerlink" href="#pull" title="Permalink to this heading">#</a></h5>
 <p>Download an executor image/package from Jina hub</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">hub</span> <span class="n">pull</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">usage</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">install</span><span class="o">-</span><span class="n">requirements</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">force</span><span class="o">-</span><span class="n">update</span><span class="p">]</span> <span class="n">uri</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">hub</span> <span class="n">pull</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">usage</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">force</span><span class="o">-</span><span class="n">update</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">prefer</span><span class="o">-</span><span class="n">platform</span><span class="p">]</span>
+              <span class="p">[</span><span class="o">--</span><span class="n">install</span><span class="o">-</span><span class="n">requirements</span><span class="p">]</span>
+              <span class="n">uri</span>
 </pre></div>
 </div>
 <section id="Positional Arguments_repeat10">
@@ -1520,12 +1533,15 @@ which should be structured as a python package.</p>
 <section id="Pull arguments_repeat1">
 <h6>Pull arguments<a class="headerlink" href="#Pull arguments_repeat1" title="Permalink to this heading">#</a></h6>
 <dl class="option-list">
-<dt><kbd>--install-requirements</kbd></dt>
-<dd><p>If set, install <cite>requirements.txt</cite> in the Hub Executor bundle to local</p>
-<p>Default: False</p>
-</dd>
 <dt><kbd>--force-update, --force</kbd></dt>
 <dd><p>If set, always pull the latest Hub Executor bundle even it exists on local</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--prefer-platform</kbd></dt>
+<dd><p>The preferred target Docker platform. (e.g. “linux/amd64”, “linux/arm64”)</p>
+</dd>
+<dt><kbd>--install-requirements</kbd></dt>
+<dd><p>If set, install <cite>requirements.txt</cite> in the Hub Executor bundle to local</p>
 <p>Default: False</p>
 </dd>
 </dl>
@@ -1571,14 +1587,14 @@ which should be structured as a python package.</p>
 <h3>cloud<a class="headerlink" href="#cloud" title="Permalink to this heading">#</a></h3>
 <p>Manage Flows on Jina Cloud</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">cloud</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">v</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">loglevel</span> <span class="p">{</span><span class="n">DEBUG</span><span class="p">,</span> <span class="n">INFO</span><span class="p">,</span> <span class="n">CRITICAL</span><span class="p">,</span> <span class="n">NOTSET</span><span class="p">}]</span>
-           <span class="p">{</span><span class="n">login</span><span class="p">,</span> <span class="n">logout</span><span class="p">,</span> <span class="n">deploy</span><span class="p">,</span> <span class="n">normalize</span> <span class="o">...</span> <span class="mi">5</span> <span class="n">more</span> <span class="n">choices</span><span class="p">}</span> <span class="o">...</span>
+           <span class="p">{</span><span class="n">login</span><span class="p">,</span> <span class="n">logout</span><span class="p">,</span> <span class="n">deploy</span><span class="p">,</span> <span class="n">normalize</span> <span class="o">...</span> <span class="mi">10</span> <span class="n">more</span> <span class="n">choices</span><span class="p">}</span> <span class="o">...</span>
 </pre></div>
 </div>
 <section id="Positional Arguments_repeat11">
 <h4>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat11" title="Permalink to this heading">#</a></h4>
 <dl class="option-list">
 <dt><kbd>jc_cli</kbd></dt>
-<dd><p>Possible choices: login, logout, deploy, normalize, list, status, remove, new, survey</p>
+<dd><p>Possible choices: login, logout, deploy, normalize, list, status, remove, new, update, restart, pause, resume, scale, survey</p>
 </dd>
 </dl>
 </section>
@@ -1645,7 +1661,7 @@ which should be structured as a python package.</p>
 <h5>list<a class="headerlink" href="#list_repeat2" title="Permalink to this heading">#</a></h5>
 <p>List all Flows.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">cloud</span> <span class="nb">list</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
-                <span class="p">[</span><span class="o">--</span><span class="n">phase</span> <span class="p">{,</span> <span class="n">Pending</span><span class="p">,</span> <span class="n">Starting</span><span class="p">,</span> <span class="n">Serving</span> <span class="o">...</span> <span class="mi">4</span> <span class="n">more</span> <span class="n">choices</span><span class="p">}]</span>
+                <span class="p">[</span><span class="o">--</span><span class="n">phase</span> <span class="p">{,</span> <span class="n">Pending</span><span class="p">,</span> <span class="n">Starting</span><span class="p">,</span> <span class="n">Serving</span> <span class="o">...</span> <span class="mi">5</span> <span class="n">more</span> <span class="n">choices</span><span class="p">}]</span>
                 <span class="p">[</span><span class="o">--</span><span class="n">name</span><span class="p">]</span>
 </pre></div>
 </div>
@@ -1653,7 +1669,7 @@ which should be structured as a python package.</p>
 <h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat12" title="Permalink to this heading">#</a></h6>
 <dl class="option-list">
 <dt><kbd>--phase</kbd></dt>
-<dd><p>Possible choices: , Pending, Starting, Serving, Failed, Updating, Deleted, All</p>
+<dd><p>Possible choices: , Pending, Starting, Serving, Failed, Updating, Deleted, Paused, All</p>
 <p>Pass the phase of Flows to be listed.</p>
 <p>Default: Serving</p>
 </dd>
@@ -1718,6 +1734,107 @@ which should be structured as a python package.</p>
 </dl>
 </section>
 </section>
+<section id="update">
+<h5>update<a class="headerlink" href="#update" title="Permalink to this heading">#</a></h5>
+<p>Update a Flow</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">cloud</span> <span class="n">update</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="n">flow</span> <span class="n">path</span>
+</pre></div>
+</div>
+<section id="Positional Arguments_repeat17">
+<h6>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat17" title="Permalink to this heading">#</a></h6>
+<dl class="option-list">
+<dt><kbd>flow</kbd></dt>
+<dd><p>The string ID of the flow to be updated</p>
+</dd>
+<dt><kbd>path</kbd></dt>
+<dd><p>The local path to a Jina flow project directory or yml file.</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="restart">
+<h5>restart<a class="headerlink" href="#restart" title="Permalink to this heading">#</a></h5>
+<p>Restart a Flow, executor or gateway</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jc</span> <span class="n">restart</span> <span class="n">flow</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span> <span class="o">--</span><span class="n">gateway</span> <span class="o">|</span> <span class="o">--</span><span class="n">executor</span> <span class="p">]</span>
+</pre></div>
+</div>
+<section id="Positional Arguments_repeat18">
+<h6>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat18" title="Permalink to this heading">#</a></h6>
+<dl class="option-list">
+<dt><kbd>flow</kbd></dt>
+<dd><p>The string ID of the flow to be restarted</p>
+</dd>
+</dl>
+</section>
+<section id="Named Arguments_repeat14">
+<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat14" title="Permalink to this heading">#</a></h6>
+<dl class="option-list">
+<dt><kbd>--gateway</kbd></dt>
+<dd><p>to restart only gateway</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--executor</kbd></dt>
+<dd><p>–executor &lt;executorName&gt; : to restart only executor</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="pause">
+<h5>pause<a class="headerlink" href="#pause" title="Permalink to this heading">#</a></h5>
+<p>Pause a Flow</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">cloud</span> <span class="n">pause</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="n">flow</span>
+</pre></div>
+</div>
+<section id="Positional Arguments_repeat19">
+<h6>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat19" title="Permalink to this heading">#</a></h6>
+<dl class="option-list">
+<dt><kbd>flow</kbd></dt>
+<dd><p>The string ID of the flow to be paused</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="resume">
+<h5>resume<a class="headerlink" href="#resume" title="Permalink to this heading">#</a></h5>
+<p>Resume a paused Flow</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">cloud</span> <span class="n">resume</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="n">flow</span>
+</pre></div>
+</div>
+<section id="Positional Arguments_repeat20">
+<h6>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat20" title="Permalink to this heading">#</a></h6>
+<dl class="option-list">
+<dt><kbd>flow</kbd></dt>
+<dd><p>The string ID of the flow to be resumed</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="scale">
+<h5>scale<a class="headerlink" href="#scale" title="Permalink to this heading">#</a></h5>
+<p>Scale executor of Flow</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">cloud</span> <span class="n">scale</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="o">--</span><span class="n">executor</span>  <span class="o">--</span><span class="n">replicas</span>  <span class="n">flow</span>
+</pre></div>
+</div>
+<section id="Positional Arguments_repeat21">
+<h6>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat21" title="Permalink to this heading">#</a></h6>
+<dl class="option-list">
+<dt><kbd>flow</kbd></dt>
+<dd><p>The string ID of the flow to be resumed</p>
+</dd>
+</dl>
+</section>
+<section id="Named Arguments_repeat15">
+<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat15" title="Permalink to this heading">#</a></h6>
+<dl class="option-list">
+<dt><kbd>--executor</kbd></dt>
+<dd><p>The name of the executor to scale</p>
+</dd>
+<dt><kbd>--replicas</kbd></dt>
+<dd><p>The name of the executor to scale</p>
+</dd>
+</dl>
+</section>
+</section>
 <section id="survey">
 <h5>survey<a class="headerlink" href="#survey" title="Permalink to this heading">#</a></h5>
 <p>Tell us your experience and help us improve.</p>
@@ -1733,8 +1850,8 @@ which should be structured as a python package.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">help</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="n">query</span>
 </pre></div>
 </div>
-<section id="Positional Arguments_repeat17">
-<h4>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat17" title="Permalink to this heading">#</a></h4>
+<section id="Positional Arguments_repeat22">
+<h4>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat22" title="Permalink to this heading">#</a></h4>
 <dl class="option-list">
 <dt><kbd>query</kbd></dt>
 <dd><p>Lookup the usage &amp; mention of the argument name in Jina API. The name can be fuzzy</p>
@@ -1757,8 +1874,9 @@ which should be structured as a python package.</p>
          <span class="p">[</span><span class="o">--</span><span class="n">docker</span><span class="o">-</span><span class="n">kwargs</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
          <span class="p">[</span><span class="o">--</span><span class="n">volumes</span> <span class="p">[</span><span class="n">DIR</span> <span class="p">[</span><span class="n">DIR</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">gpus</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">disable</span><span class="o">-</span><span class="n">auto</span><span class="o">-</span><span class="n">volume</span><span class="p">]</span>
          <span class="p">[</span><span class="o">--</span><span class="n">host</span>  <span class="p">[</span><span class="o">...</span><span class="p">]]</span> <span class="p">[</span><span class="o">--</span><span class="n">runtime</span><span class="o">-</span><span class="bp">cls</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ready</span><span class="p">]</span>
-         <span class="p">[</span><span class="o">--</span><span class="n">env</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">floating</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">reload</span><span class="p">]</span>
-         <span class="p">[</span><span class="o">--</span><span class="n">install</span><span class="o">-</span><span class="n">requirements</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span>  <span class="p">[</span><span class="o">...</span><span class="p">]]</span> <span class="p">[</span><span class="o">--</span><span class="n">monitoring</span><span class="p">]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">env</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">env</span><span class="o">-</span><span class="n">from</span><span class="o">-</span><span class="n">secret</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">floating</span><span class="p">]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">reload</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">install</span><span class="o">-</span><span class="n">requirements</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span>  <span class="p">[</span><span class="o">...</span><span class="p">]]</span> <span class="p">[</span><span class="o">--</span><span class="n">monitoring</span><span class="p">]</span>
          <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">monitoring</span>  <span class="p">[</span><span class="o">...</span><span class="p">]]</span> <span class="p">[</span><span class="o">--</span><span class="n">retries</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">tracing</span><span class="p">]</span>
          <span class="p">[</span><span class="o">--</span><span class="n">traces</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">host</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">traces</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">port</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">metrics</span><span class="p">]</span>
          <span class="p">[</span><span class="o">--</span><span class="n">metrics</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">host</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">metrics</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">port</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">force</span><span class="o">-</span><span class="n">update</span><span class="p">]</span>
@@ -1954,6 +2072,9 @@ container.</p>
 <dt><kbd>--env</kbd></dt>
 <dd><p>The map of environment variables that are available inside runtime</p>
 </dd>
+<dt><kbd>--env-from-secret</kbd></dt>
+<dd><p>The map of environment variables that are read from kubernetes cluster secrets</p>
+</dd>
 <dt><kbd>--floating</kbd></dt>
 <dd><p>If set, the current Pod/Deployment can not be further chained, and the next <cite>.add()</cite> will chain after the last Pod/Deployment not this current one.</p>
 <p>Default: False</p>
@@ -1968,7 +2089,7 @@ container.</p>
 </dd>
 <dt><kbd>--port, --port-in</kbd></dt>
 <dd><p>The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (<cite>–external</cite> or <cite>external=True</cite>) this can be a list of ports. Then, every resulting address will be considered as one replica of the Executor.</p>
-<p>Default: [49157]</p>
+<p>Default: [54701]</p>
 </dd>
 <dt><kbd>--monitoring</kbd></dt>
 <dd><p>If set, spawn an http server with a prometheus endpoint to expose metrics</p>
@@ -1976,7 +2097,7 @@ container.</p>
 </dd>
 <dt><kbd>--port-monitoring</kbd></dt>
 <dd><p>The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</p>
-<p>Default: [52542]</p>
+<p>Default: [49784]</p>
 </dd>
 <dt><kbd>--retries</kbd></dt>
 <dd><p>Number of retries per gRPC call. If &lt;0 it defaults to max(3, num_replicas)</p>
@@ -2051,12 +2172,13 @@ container.</p>
                 <span class="p">[</span><span class="o">--</span><span class="n">entrypoint</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">docker</span><span class="o">-</span><span class="n">kwargs</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
                 <span class="p">[</span><span class="o">--</span><span class="n">volumes</span> <span class="p">[</span><span class="n">DIR</span> <span class="p">[</span><span class="n">DIR</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">gpus</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">disable</span><span class="o">-</span><span class="n">auto</span><span class="o">-</span><span class="n">volume</span><span class="p">]</span>
                 <span class="p">[</span><span class="o">--</span><span class="n">host</span>  <span class="p">[</span><span class="o">...</span><span class="p">]]</span> <span class="p">[</span><span class="o">--</span><span class="n">runtime</span><span class="o">-</span><span class="bp">cls</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ready</span><span class="p">]</span>
-                <span class="p">[</span><span class="o">--</span><span class="n">env</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">floating</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">reload</span><span class="p">]</span>
-                <span class="p">[</span><span class="o">--</span><span class="n">install</span><span class="o">-</span><span class="n">requirements</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span>  <span class="p">[</span><span class="o">...</span><span class="p">]]</span> <span class="p">[</span><span class="o">--</span><span class="n">monitoring</span><span class="p">]</span>
-                <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">monitoring</span>  <span class="p">[</span><span class="o">...</span><span class="p">]]</span> <span class="p">[</span><span class="o">--</span><span class="n">retries</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">tracing</span><span class="p">]</span>
-                <span class="p">[</span><span class="o">--</span><span class="n">traces</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">host</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">traces</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">port</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">metrics</span><span class="p">]</span>
-                <span class="p">[</span><span class="o">--</span><span class="n">metrics</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">host</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">metrics</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">port</span><span class="p">]</span>
-                <span class="p">[</span><span class="o">--</span><span class="n">force</span><span class="o">-</span><span class="n">update</span><span class="p">]</span>
+                <span class="p">[</span><span class="o">--</span><span class="n">env</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
+                <span class="p">[</span><span class="o">--</span><span class="n">env</span><span class="o">-</span><span class="n">from</span><span class="o">-</span><span class="n">secret</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">floating</span><span class="p">]</span>
+                <span class="p">[</span><span class="o">--</span><span class="n">reload</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">install</span><span class="o">-</span><span class="n">requirements</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span>  <span class="p">[</span><span class="o">...</span><span class="p">]]</span>
+                <span class="p">[</span><span class="o">--</span><span class="n">monitoring</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">monitoring</span>  <span class="p">[</span><span class="o">...</span><span class="p">]]</span> <span class="p">[</span><span class="o">--</span><span class="n">retries</span><span class="p">]</span>
+                <span class="p">[</span><span class="o">--</span><span class="n">tracing</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">traces</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">host</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">traces</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">port</span><span class="p">]</span>
+                <span class="p">[</span><span class="o">--</span><span class="n">metrics</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">metrics</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">host</span><span class="p">]</span>
+                <span class="p">[</span><span class="o">--</span><span class="n">metrics</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">port</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">force</span><span class="o">-</span><span class="n">update</span><span class="p">]</span>
                 <span class="p">[</span><span class="o">--</span><span class="n">compression</span> <span class="p">{</span><span class="n">NoCompression</span><span class="p">,</span> <span class="n">Deflate</span><span class="p">,</span> <span class="n">Gzip</span><span class="p">}]</span>
                 <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">before</span><span class="o">-</span><span class="n">address</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">after</span><span class="o">-</span><span class="n">address</span><span class="p">]</span>
                 <span class="p">[</span><span class="o">--</span><span class="n">connection</span><span class="o">-</span><span class="nb">list</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">send</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">before</span><span class="p">]</span>
@@ -2252,6 +2374,9 @@ container.</p>
 <dt><kbd>--env</kbd></dt>
 <dd><p>The map of environment variables that are available inside runtime</p>
 </dd>
+<dt><kbd>--env-from-secret</kbd></dt>
+<dd><p>The map of environment variables that are read from kubernetes cluster secrets</p>
+</dd>
 <dt><kbd>--floating</kbd></dt>
 <dd><p>If set, the current Pod/Deployment can not be further chained, and the next <cite>.add()</cite> will chain after the last Pod/Deployment not this current one.</p>
 <p>Default: False</p>
@@ -2266,7 +2391,7 @@ container.</p>
 </dd>
 <dt><kbd>--port, --port-in</kbd></dt>
 <dd><p>The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (<cite>–external</cite> or <cite>external=True</cite>) this can be a list of ports. Then, every resulting address will be considered as one replica of the Executor.</p>
-<p>Default: [59926]</p>
+<p>Default: [52939]</p>
 </dd>
 <dt><kbd>--monitoring</kbd></dt>
 <dd><p>If set, spawn an http server with a prometheus endpoint to expose metrics</p>
@@ -2274,7 +2399,7 @@ container.</p>
 </dd>
 <dt><kbd>--port-monitoring</kbd></dt>
 <dd><p>The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</p>
-<p>Default: [56890]</p>
+<p>Default: [64135]</p>
 </dd>
 <dt><kbd>--retries</kbd></dt>
 <dd><p>Number of retries per gRPC call. If &lt;0 it defaults to max(3, num_replicas)</p>
@@ -2367,8 +2492,8 @@ container.</p>
             <span class="p">[</span><span class="o">--</span><span class="n">protocol</span> <span class="p">{</span><span class="n">GRPC</span><span class="p">,</span> <span class="n">HTTP</span><span class="p">,</span> <span class="n">WEBSOCKET</span><span class="p">}]</span> <span class="p">[</span><span class="o">--</span><span class="n">prefetch</span><span class="p">]</span>
 </pre></div>
 </div>
-<section id="Named Arguments_repeat14">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat14" title="Permalink to this heading">#</a></h4>
+<section id="Named Arguments_repeat16">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat16" title="Permalink to this heading">#</a></h4>
 <dl class="option-list">
 <dt><kbd>--asyncio</kbd></dt>
 <dd><p>If set, then the input and output of this Client work in an asynchronous manner.</p>
@@ -2468,7 +2593,7 @@ container.</p>
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 30, 2022</div>
+                            Last updated on Jan 13, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -2655,13 +2780,35 @@ container.</p>
 <li><a class="reference internal" href="#Positional Arguments_repeat16">Positional Arguments</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#update">update</a><ul>
+<li><a class="reference internal" href="#Positional Arguments_repeat17">Positional Arguments</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#restart">restart</a><ul>
+<li><a class="reference internal" href="#Positional Arguments_repeat18">Positional Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat14">Named Arguments</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#pause">pause</a><ul>
+<li><a class="reference internal" href="#Positional Arguments_repeat19">Positional Arguments</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#resume">resume</a><ul>
+<li><a class="reference internal" href="#Positional Arguments_repeat20">Positional Arguments</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#scale">scale</a><ul>
+<li><a class="reference internal" href="#Positional Arguments_repeat21">Positional Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat15">Named Arguments</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#survey">survey</a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li><a class="reference internal" href="#help">help</a><ul>
-<li><a class="reference internal" href="#Positional Arguments_repeat17">Positional Arguments</a></li>
+<li><a class="reference internal" href="#Positional Arguments_repeat22">Positional Arguments</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#pod">pod</a><ul>
@@ -2688,7 +2835,7 @@ container.</p>
 </ul>
 </li>
 <li><a class="reference internal" href="#client">client</a><ul>
-<li><a class="reference internal" href="#Named Arguments_repeat14">Named Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat16">Named Arguments</a></li>
 <li><a class="reference internal" href="#ClientGateway arguments">ClientGateway arguments</a></li>
 <li><a class="reference internal" href="#Prefetch arguments_repeat1">Prefetch arguments</a></li>
 </ul>

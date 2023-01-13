@@ -425,7 +425,7 @@
                 <article role="main">
                     <section id="rate-limit">
 <span id="prefetch"></span><h1>Rate Limit<a class="headerlink" href="#rate-limit" title="Permalink to this heading">#</a></h1>
-<p>Requests always reach to the Flow as fast as possible. If a client sends their request faster than the <a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> can process them, this can put a high load on the Flow, which may cause out of memory issues.</p>
+<p>Requests always reach to the Flow as fast as possible. If a client sends their request faster than the <code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code> can process them, this can put a high load on the Flow, which may cause out of memory issues.</p>
 <p>At Gateway, you can control the number of in flight requests <strong>per Client</strong> with the <code class="docutils literal notranslate"><span class="pre">prefetch</span></code> argument. Setting <code class="docutils literal notranslate"><span class="pre">prefetch=2</span></code> lets the API accept only 2 requests per client in parallel, hence limiting the load of the Flow.</p>
 <p>By default <code class="docutils literal notranslate"><span class="pre">prefetch=1000</span></code>. To disable it you can set it to 0.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">requests_generator</span><span class="p">():</span>
@@ -455,17 +455,17 @@
 </div>
 </div>
 <input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--2">YAML</label><div class="tab-content docutils">
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
-<span class="nt">with</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;http&#39;</span><span class="w"></span>
-<span class="w">  </span><span class="nt">prefetch</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span>
+<span class="nt">with</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;http&#39;</span>
+<span class="w">  </span><span class="nt">prefetch</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
 </pre></div>
 </div>
 </div>
 </div>
 <section id="set-timeouts">
 <h2>Set timeouts<a class="headerlink" href="#set-timeouts" title="Permalink to this heading">#</a></h2>
-<p>You can set timeouts for sending requests to the <a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>s within a <a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> by passing the <code class="docutils literal notranslate"><span class="pre">timeout_send</span></code> parameter. The timeout is specified in milliseconds. By default, it is <code class="docutils literal notranslate"><span class="pre">None</span></code> and the timeout is disabled.</p>
+<p>You can set timeouts for sending requests to the <code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code>s within a <code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code> by passing the <code class="docutils literal notranslate"><span class="pre">timeout_send</span></code> parameter. The timeout is specified in milliseconds. By default, it is <code class="docutils literal notranslate"><span class="pre">None</span></code> and the timeout is disabled.</p>
 <p>If you use timeouts, you may also need to set the <a class="reference internal" href="#prefetch"><span class="std std-ref">prefetch</span></a> option in the Flow. Otherwise, requests may queue up at an Executor and eventually time out.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">config_gateway</span><span class="p">(</span><span class="n">timeout_send</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
     <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">Document</span><span class="p">()])</span>
@@ -506,7 +506,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 30, 2022</div>
+                            Last updated on Jan 13, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

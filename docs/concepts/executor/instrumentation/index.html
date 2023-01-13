@@ -440,7 +440,7 @@
 </div>
 <section id="tracing">
 <h2>Tracing<a class="headerlink" href="#tracing" title="Permalink to this heading">#</a></h2>
-<p>Any method that uses the <a class="reference internal" href="../../../api/jina/#jina.requests" title="jina.requests"><code class="xref py py-class docutils literal notranslate"><span class="pre">requests</span></code></a> decorator adds a
+<p>Any method that uses the <code class="xref py py-class docutils literal notranslate"><span class="pre">requests</span></code> decorator adds a
 default tracing span for the defined operation. In addition, the operation span context
 is propagated to the method for creating further user-defined child spans within the
 method.</p>
@@ -493,12 +493,12 @@ method.</p>
 <p class="admonition-title">Hint</p>
 <p>Prometheus-only based metrics collection will be deprecated soon. Refer to <a class="reference internal" href="../../../cloud-nativeness/monitoring/#monitoring"><span class="std std-ref">Monitoring Executor</span></a> section for the deprecated setup.</p>
 </div>
-<p>Any method that uses the <a class="reference internal" href="../../../api/jina/#jina.requests" title="jina.requests"><code class="xref py py-class docutils literal notranslate"><span class="pre">requests</span></code></a> decorator is monitored and creates a
+<p>Any method that uses the <code class="xref py py-class docutils literal notranslate"><span class="pre">requests</span></code> decorator is monitored and creates a
 <a class="reference external" href="https://opentelemetry.io/docs/reference/specification/metrics/data-model/#histogram">histogram</a> which tracks the method’s execution time.</p>
-<p>This section documents adding custom monitoring to the <a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a> with the OpenTelemetry Metrics API.</p>
+<p>This section documents adding custom monitoring to the <code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code> with the OpenTelemetry Metrics API.</p>
 <p>Custom metrics are useful to monitor each sub-part of your Executor(s). Jina lets you leverage
 the <a class="reference external" href="https://opentelemetry.io/docs/reference/specification/metrics/api/#meter">Meter</a> to define useful metrics
-for each of your Executors. We also provide a convenient wrapper, (<a class="reference internal" href="../../../api/jina/#jina.monitor" title="jina.monitor"><code class="xref py py-func docutils literal notranslate"><span class="pre">monitor()</span></code></a>), which lets you monitor
+for each of your Executors. We also provide a convenient wrapper, (<code class="xref py py-func docutils literal notranslate"><span class="pre">monitor()</span></code>), which lets you monitor
 your Executor’s sub-methods.</p>
 <p>When metrics are enabled, each Executor exposes its
 own metrics via the <a class="reference external" href="https://opentelemetry.io/docs/reference/specification/metrics/sdk/#metricexporter">Metric Exporter</a>.</p>
@@ -527,7 +527,7 @@ image embedding. By using custom metrics on these two tasks you can identify pot
 </section>
 <section id="use-the-monitor-decorator">
 <h4>Use the <code class="docutils literal notranslate"><span class="pre">&#64;monitor</span></code> decorator<a class="headerlink" href="#use-the-monitor-decorator" title="Permalink to this heading">#</a></h4>
-<p>Add custom monitoring to a method with the <a class="reference internal" href="../../../api/jina/#jina.monitor" title="jina.monitor"><code class="xref py py-func docutils literal notranslate"><span class="pre">monitor()</span></code></a> decorator:</p>
+<p>Add custom monitoring to a method with the <code class="xref py py-func docutils literal notranslate"><span class="pre">monitor()</span></code> decorator:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">monitor</span>
 
 
@@ -538,7 +538,7 @@ image embedding. By using custom metrics on these two tasks you can identify pot
 </pre></div>
 </div>
 <p>This creates a <a class="reference external" href="https://opentelemetry.io/docs/reference/specification/metrics/data-model/#histogram">Histogram</a> <code class="docutils literal notranslate"><span class="pre">jina_my_method_seconds</span></code> which tracks the execution time of <code class="docutils literal notranslate"><span class="pre">my_method</span></code></p>
-<p>By default, the name and documentation of the metric created by <a class="reference internal" href="../../../api/jina/#jina.monitor" title="jina.monitor"><code class="xref py py-func docutils literal notranslate"><span class="pre">monitor()</span></code></a> are auto-generated based on the function’s name.
+<p>By default, the name and documentation of the metric created by <code class="xref py py-func docutils literal notranslate"><span class="pre">monitor()</span></code> are auto-generated based on the function’s name.
 To set a custom name:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@monitor</span><span class="p">(</span>
     <span class="n">name</span><span class="o">=</span><span class="s1">&#39;my_custom_metrics_seconds&#39;</span><span class="p">,</span> <span class="n">documentation</span><span class="o">=</span><span class="s1">&#39;This is my custom documentation&#39;</span>
@@ -554,7 +554,7 @@ To set a custom name:</p>
 </section>
 <section id="use-opentelemetry-meter">
 <h4>Use OpenTelemetry Meter<a class="headerlink" href="#use-opentelemetry-meter" title="Permalink to this heading">#</a></h4>
-<p>Under the hood, Python <a class="reference external" href="https://opentelemetry.io/docs/concepts/signals/metrics/">OpenTelemetry Metrics API</a> handles the Executor’s metrics feature. The <a class="reference internal" href="../../../api/jina/#jina.monitor" title="jina.monitor"><code class="xref py py-func docutils literal notranslate"><span class="pre">monitor()</span></code></a> decorator is convenient for monitoring an Executor’s sub-methods, but if you need more flexibility, use the <code class="docutils literal notranslate"><span class="pre">self.meter</span></code> Executor class attribute to create supported instruments:</p>
+<p>Under the hood, Python <a class="reference external" href="https://opentelemetry.io/docs/concepts/signals/metrics/">OpenTelemetry Metrics API</a> handles the Executor’s metrics feature. The <code class="xref py py-func docutils literal notranslate"><span class="pre">monitor()</span></code> decorator is convenient for monitoring an Executor’s sub-methods, but if you need more flexibility, use the <code class="docutils literal notranslate"><span class="pre">self.meter</span></code> Executor class attribute to create supported instruments:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">requests</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">DocumentArray</span>
 
 <span class="kn">from</span> <span class="nn">prometheus_client</span> <span class="kn">import</span> <span class="n">Counter</span>
@@ -687,7 +687,7 @@ To set a custom name:</p>
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 30, 2022</div>
+                            Last updated on Jan 13, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

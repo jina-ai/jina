@@ -405,10 +405,10 @@
 
 
 <div class="viewcode-block" id="NetworkChecker"><a class="viewcode-back" href="../../../api/jina.checker/#jina.checker.NetworkChecker">[docs]</a><span class="k">class</span> <span class="nc">NetworkChecker</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Check if a BaseDeployment is running or not.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check if a Deployment is running or not.&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="s1">&#39;argparse.Namespace&#39;</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a new :class:`NetworkChecker`.</span>
 
 <span class="sd">        :param args: args provided by the CLI.</span>
@@ -416,7 +416,7 @@
 
         <span class="kn">import</span> <span class="nn">time</span>
 
-        <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span>
+        <span class="kn">from</span> <span class="nn">jina.clients</span> <span class="kn">import</span> <span class="n">Client</span>
         <span class="kn">from</span> <span class="nn">jina.logging.profile</span> <span class="kn">import</span> <span class="n">TimeContext</span>
         <span class="kn">from</span> <span class="nn">jina.serve.runtimes.gateway</span> <span class="kn">import</span> <span class="n">GatewayRuntime</span>
         <span class="kn">from</span> <span class="nn">jina.serve.runtimes.worker</span> <span class="kn">import</span> <span class="n">WorkerRuntime</span>
@@ -491,7 +491,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 30, 2022</div>
+                            Last updated on Jan 13, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

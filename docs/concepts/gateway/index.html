@@ -425,7 +425,7 @@
                 <article role="main">
                     <section id="gateway">
 <span id="id1"></span><h1><span class="fas fa-door-open"></span> Gateway<a class="headerlink" href="#gateway" title="Permalink to this heading">#</a></h1>
-<p>Every <a class="reference internal" href="../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> has a Gateway component that receives requests over the network, allowing clients to send data
+<p>Every <code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code> has a Gateway component that receives requests over the network, allowing clients to send data
 to the Flow for processing.</p>
 <p>The Gateway is the first destination of a client request and its final destination, meaning that all incoming requests
 are routed to the Gateway and the Gateway is responsible for handling and responding to those requests. The Gateway
@@ -434,7 +434,7 @@ with the Flow using the protocol of their choice.</p>
 <p>In most cases, the Gateway is automatically configured when you initialize a Flow object, so you do not need to
 configure it yourself.</p>
 <p>However, you can always explicitly configure the Gateway in Python using the
-<a class="reference internal" href="../../api/jina/#jina.Flow.config_gateway" title="jina.Flow.config_gateway"><code class="xref py py-meth docutils literal notranslate"><span class="pre">config_gateway()</span></code></a> method, or in YAML. The full YAML specification for configuring the Gateway can be
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">config_gateway()</span></code> method, or in YAML. The full YAML specification for configuring the Gateway can be
 <a class="reference internal" href="yaml-spec/#gateway-yaml-spec"><span class="std std-ref">found here</span></a>.</p>
 <section id="set-protocol-in-python">
 <span id="flow-protocol"></span><h2>Set protocol in Python<a class="headerlink" href="#set-protocol-in-python" title="Permalink to this heading">#</a></h2>
@@ -514,23 +514,23 @@ configure it yourself.</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--1-input--1" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--1">gRPC</label><div class="tab-content docutils">
 <p>Note that gRPC is the default protocol, so you can just omit it.</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
-<span class="nt">gateway</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;grpc&#39;</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span>
+<span class="nt">gateway</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;grpc&#39;</span>
 </pre></div>
 </div>
 </div>
 <input class="tab-input" id="tab-set--1-input--2" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--2">HTTP</label><div class="tab-content docutils">
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
-<span class="nt">gateway</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;http&#39;</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span>
+<span class="nt">gateway</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;http&#39;</span>
 </pre></div>
 </div>
 </div>
 <input class="tab-input" id="tab-set--1-input--3" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--3">WebSocket</label><div class="tab-content docutils">
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
-<span class="nt">gateway</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;websocket&#39;</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span>
+<span class="nt">gateway</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;websocket&#39;</span>
 </pre></div>
 </div>
 </div>
@@ -550,12 +550,12 @@ protocols.</p>
 </div>
 </div>
 <input class="tab-input" id="tab-set--2-input--2" name="tab-set--2" type="radio"><label class="tab-label" for="tab-set--2-input--2">YAML</label><div class="tab-content docutils">
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
-<span class="nt">gateway</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">protocol</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&#39;grpc&#39;</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&#39;http&#39;</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&#39;websocket&#39;</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span>
+<span class="nt">gateway</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">protocol</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&#39;grpc&#39;</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&#39;http&#39;</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&#39;websocket&#39;</span>
 </pre></div>
 </div>
 </div>
@@ -594,7 +594,7 @@ with any Client.</p>
 </section>
 <section id="enable-in-flow-compression">
 <span id="server-compress"></span><h2>Enable in-Flow compression<a class="headerlink" href="#enable-in-flow-compression" title="Permalink to this heading">#</a></h2>
-<p>The communication between <a class="reference internal" href="../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>s inside a <a class="reference internal" href="../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> is done via gRPC. To optimize the
+<p>The communication between <code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code>s inside a <code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code> is done via gRPC. To optimize the
 performance and the bandwidth of these connections, you can
 enable <a class="reference external" href="https://grpc.github.io/grpc/python/grpc.html#compression">compression</a> by specifying <code class="docutils literal notranslate"><span class="pre">compression</span></code> argument to
 the Gateway.</p>
@@ -626,55 +626,55 @@ package itself</p></li>
 </pre></div>
 </div>
 <p>Then, you can use <a class="reference external" href="https://github.com/fullstorydev/grpcurl">grpcurl</a>  sending status check request to the Gateway.</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker pull fullstorydev/grpcurl:latest
-docker run --network<span class="o">=</span><span class="s1">&#39;host&#39;</span> fullstorydev/grpcurl -plaintext <span class="m">127</span>.0.0.1:12345 jina.JinaInfoRPC/_status
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>pull<span class="w"> </span>fullstorydev/grpcurl:latest
+docker<span class="w"> </span>run<span class="w"> </span>--network<span class="o">=</span><span class="s1">&#39;host&#39;</span><span class="w"> </span>fullstorydev/grpcurl<span class="w"> </span>-plaintext<span class="w"> </span><span class="m">127</span>.0.0.1:12345<span class="w"> </span>jina.JinaInfoRPC/_status
 </pre></div>
 </div>
 <p>The error-free output below signifies a correctly running Gateway:</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="nt">&quot;jina&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;architecture&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;######&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;ci-vendor&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;######&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;docarray&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;######&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;grpcio&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;######&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;jina&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;######&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;jina-proto&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;######&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;jina-vcs-tag&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;######&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;platform&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;######&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;platform-release&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;######&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;platform-version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;######&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;processor&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;######&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;proto-backend&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;######&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;protobuf&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;######&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;python&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;######&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;pyyaml&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;######&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;session-id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;######&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;uid&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;######&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;uptime&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;######&quot;</span><span class="w"></span>
-<span class="w">  </span><span class="p">},</span><span class="w"></span>
-<span class="w">  </span><span class="nt">&quot;envs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;JINA_AUTH_TOKEN&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;JINA_DEFAULT_HOST&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;JINA_DEFAULT_TIMEOUT_CTRL&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;JINA_DEPLOYMENT_NAME&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;JINA_DISABLE_HEALTHCHECK_LOGS&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;JINA_DISABLE_UVLOOP&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;JINA_EARLY_STOP&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;JINA_FULL_CLI&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;JINA_GATEWAY_IMAGE&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;JINA_GRPC_RECV_BYTES&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;JINA_GRPC_SEND_BYTES&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;JINA_HUBBLE_REGISTRY&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;JINA_HUB_NO_IMAGE_REBUILD&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;JINA_LOCKS_ROOT&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;JINA_LOG_CONFIG&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;JINA_LOG_LEVEL&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;JINA_LOG_NO_COLOR&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;JINA_MP_START_METHOD&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;JINA_RANDOM_PORT_MAX&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;JINA_RANDOM_PORT_MIN&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span><span class="w"></span>
-<span class="w">  </span><span class="p">}</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;jina&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;architecture&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;######&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;ci-vendor&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;######&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;docarray&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;######&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;grpcio&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;######&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;jina&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;######&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;jina-proto&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;######&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;jina-vcs-tag&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;######&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;platform&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;######&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;platform-release&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;######&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;platform-version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;######&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;processor&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;######&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;proto-backend&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;######&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;protobuf&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;######&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;python&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;######&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;pyyaml&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;######&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;session-id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;######&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;uid&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;######&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;uptime&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;######&quot;</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;envs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;JINA_AUTH_TOKEN&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;JINA_DEFAULT_HOST&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;JINA_DEFAULT_TIMEOUT_CTRL&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;JINA_DEPLOYMENT_NAME&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;JINA_DISABLE_HEALTHCHECK_LOGS&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;JINA_DISABLE_UVLOOP&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;JINA_EARLY_STOP&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;JINA_FULL_CLI&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;JINA_GATEWAY_IMAGE&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;JINA_GRPC_RECV_BYTES&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;JINA_GRPC_SEND_BYTES&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;JINA_HUBBLE_REGISTRY&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;JINA_HUB_NO_IMAGE_REBUILD&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;JINA_LOCKS_ROOT&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;JINA_LOG_CONFIG&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;JINA_LOG_LEVEL&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;JINA_LOG_NO_COLOR&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;JINA_MP_START_METHOD&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;JINA_RANDOM_PORT_MAX&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;JINA_RANDOM_PORT_MIN&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <div class="admonition tip">
@@ -686,53 +686,53 @@ docker run --network<span class="o">=</span><span class="s1">&#39;host&#39;</spa
 <h3>Use HTTP/Websocket<a class="headerlink" href="#use-http-websocket" title="Permalink to this heading">#</a></h3>
 <p>When using HTTP or Websocket as the Gateway protocol, you can use curl to target the <code class="docutils literal notranslate"><span class="pre">/status</span></code> endpoint and get the Jina
 info.</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>curl http://localhost:12345/status
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>http://localhost:12345/status
 </pre></div>
 </div>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="nt">&quot;jina&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;jina&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;######&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;docarray&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;######&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;jina-proto&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;######&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;jina-vcs-tag&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;protobuf&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;######&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;proto-backend&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;######&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;grpcio&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;######&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;pyyaml&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;######&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;python&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;######&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;platform&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;######&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;platform-release&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;######&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;platform-version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;######&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;architecture&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;######&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;processor&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;######&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;uid&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;######&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;session-id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;######&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;uptime&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;######&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;ci-vendor&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span><span class="w"></span>
-<span class="w">  </span><span class="p">},</span><span class="w"></span>
-<span class="w">  </span><span class="nt">&quot;envs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;JINA_AUTH_TOKEN&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;JINA_DEFAULT_HOST&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;JINA_DEFAULT_TIMEOUT_CTRL&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;JINA_DEPLOYMENT_NAME&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;JINA_DISABLE_UVLOOP&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;JINA_EARLY_STOP&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;JINA_FULL_CLI&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;JINA_GATEWAY_IMAGE&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;JINA_GRPC_RECV_BYTES&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;JINA_GRPC_SEND_BYTES&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;JINA_HUBBLE_REGISTRY&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;JINA_HUB_NO_IMAGE_REBUILD&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;JINA_LOG_CONFIG&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;JINA_LOG_LEVEL&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;JINA_LOG_NO_COLOR&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;JINA_MP_START_METHOD&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;JINA_RANDOM_PORT_MAX&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;JINA_RANDOM_PORT_MIN&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;JINA_DISABLE_HEALTHCHECK_LOGS&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;JINA_LOCKS_ROOT&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span><span class="w"></span>
-<span class="w">  </span><span class="p">}</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;jina&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;jina&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;######&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;docarray&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;######&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;jina-proto&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;######&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;jina-vcs-tag&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;protobuf&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;######&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;proto-backend&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;######&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;grpcio&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;######&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;pyyaml&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;######&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;python&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;######&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;platform&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;######&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;platform-release&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;######&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;platform-version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;######&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;architecture&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;######&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;processor&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;######&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;uid&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;######&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;session-id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;######&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;uptime&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;######&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;ci-vendor&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;envs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;JINA_AUTH_TOKEN&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;JINA_DEFAULT_HOST&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;JINA_DEFAULT_TIMEOUT_CTRL&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;JINA_DEPLOYMENT_NAME&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;JINA_DISABLE_UVLOOP&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;JINA_EARLY_STOP&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;JINA_FULL_CLI&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;JINA_GATEWAY_IMAGE&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;JINA_GRPC_RECV_BYTES&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;JINA_GRPC_SEND_BYTES&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;JINA_HUBBLE_REGISTRY&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;JINA_HUB_NO_IMAGE_REBUILD&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;JINA_LOG_CONFIG&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;JINA_LOG_LEVEL&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;JINA_LOG_NO_COLOR&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;JINA_MP_START_METHOD&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;JINA_RANDOM_PORT_MAX&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;JINA_RANDOM_PORT_MIN&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;JINA_DISABLE_HEALTHCHECK_LOGS&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;JINA_LOCKS_ROOT&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(unset)&quot;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 </section>
@@ -780,7 +780,7 @@ info.</p>
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 30, 2022</div>
+                            Last updated on Jan 13, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

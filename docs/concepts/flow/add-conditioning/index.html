@@ -426,10 +426,10 @@
                     <section id="add-conditioning">
 <span id="flow-filter"></span><h1>Add Conditioning<a class="headerlink" href="#add-conditioning" title="Permalink to this heading">#</a></h1>
 <p>Sometimes you may not want all Documents to be processed by all Executors. For example when you process text and images Documents you want to forward them to different Executors, respectively.</p>
-<p>You can set a conditioning for every <a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a> in the Flow. Documents that do not meet the condition will be removed before reaching that Executor. This allows you to build a selection control in the Flow.</p>
+<p>You can set a conditioning for every <code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code> in the Flow. Documents that do not meet the condition will be removed before reaching that Executor. This allows you to build a selection control in the Flow.</p>
 <section id="define-conditions">
 <h2>Define conditions<a class="headerlink" href="#define-conditions" title="Permalink to this heading">#</a></h2>
-<p>To add a condition to an Executor, pass it to the <code class="docutils literal notranslate"><span class="pre">when</span></code> parameter of <a class="reference internal" href="../../../api/jina/#jina.Flow.add" title="jina.Flow.add"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add()</span></code></a> method of the Flow.
+<p>To add a condition to an Executor, pass it to the <code class="docutils literal notranslate"><span class="pre">when</span></code> parameter of <code class="xref py py-meth docutils literal notranslate"><span class="pre">add()</span></code> method of the Flow.
 This then defines <em>when</em> a document is processed by the Executor:</p>
 <p>You can use the <a class="reference external" href="https://docarray.jina.ai/fundamentals/documentarray/find/#query-by-conditions">DocArray query language</a> to specify a filter condition for each Executor.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
@@ -468,17 +468,17 @@ a condition accordingly.</p>
 <span class="p">)</span>  <span class="c1"># only the Document fulfilling the condition is processed and therefore returned.</span>
 </pre></div>
 </div>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="o">[{</span><span class="s1">&#39;key&#39;</span>: <span class="m">5</span>.0<span class="o">}]</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="o">[{</span><span class="s1">&#39;key&#39;</span>:<span class="w"> </span><span class="m">5</span>.0<span class="o">}]</span>
 </pre></div>
 </div>
 </div>
 <input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--2">YAML</label><div class="tab-content docutils">
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
-<span class="nt">executors</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executor</span><span class="w"></span>
-<span class="w">    </span><span class="nt">when</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">tags__key</span><span class="p">:</span><span class="w"></span>
-<span class="w">            </span><span class="nt">$eq</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span>
+<span class="nt">executors</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executor</span>
+<span class="w">    </span><span class="nt">when</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">tags__key</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">$eq</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
 </pre></div>
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Document</span>
@@ -497,7 +497,7 @@ a condition accordingly.</p>
 <span class="p">)</span>  <span class="c1"># only the Document fulfilling the condition is processed and therefore returned.</span>
 </pre></div>
 </div>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="o">[{</span><span class="s1">&#39;key&#39;</span>: <span class="m">5</span>.0<span class="o">}]</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="o">[{</span><span class="s1">&#39;key&#39;</span>:<span class="w"> </span><span class="m">5</span>.0<span class="o">}]</span>
 </pre></div>
 </div>
 </div>
@@ -532,7 +532,7 @@ still be used in the other branch, and also after the branches are re-joined:</p
 <span class="nb">print</span><span class="p">(</span><span class="n">ret</span><span class="p">[:,</span> <span class="s1">&#39;tags&#39;</span><span class="p">])</span>  <span class="c1"># Each Document satisfies one parallel branch/filter</span>
 </pre></div>
 </div>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="o">[{</span><span class="s1">&#39;key&#39;</span>: <span class="m">5</span>.0<span class="o">}</span>, <span class="o">{</span><span class="s1">&#39;key&#39;</span>: <span class="m">4</span>.0<span class="o">}]</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="o">[{</span><span class="s1">&#39;key&#39;</span>:<span class="w"> </span><span class="m">5</span>.0<span class="o">}</span>,<span class="w"> </span><span class="o">{</span><span class="s1">&#39;key&#39;</span>:<span class="w"> </span><span class="m">4</span>.0<span class="o">}]</span>
 </pre></div>
 </div>
 </div>
@@ -583,13 +583,13 @@ This means that you can not only use this feature to build complex logic, but al
 <span class="nb">print</span><span class="p">(</span><span class="n">filtered_image_data</span><span class="o">.</span><span class="n">tensors</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="o">[</span><span class="s1">&#39;hey there!&#39;</span>, <span class="s1">&#39;hey there!&#39;</span><span class="o">]</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="o">[</span><span class="s1">&#39;hey there!&#39;</span>,<span class="w"> </span><span class="s1">&#39;hey there!&#39;</span><span class="o">]</span>
 ---
-<span class="o">[[[</span><span class="m">0</span>.50535537 <span class="m">0</span>.50538128<span class="o">]</span>
-  <span class="o">[</span><span class="m">0</span>.40446746 <span class="m">0</span>.34972967<span class="o">]]</span>
+<span class="o">[[[</span><span class="m">0</span>.50535537<span class="w"> </span><span class="m">0</span>.50538128<span class="o">]</span>
+<span class="w">  </span><span class="o">[</span><span class="m">0</span>.40446746<span class="w"> </span><span class="m">0</span>.34972967<span class="o">]]</span>
 
- <span class="o">[[</span><span class="m">0</span>.04222604 <span class="m">0</span>.70102327<span class="o">]</span>
-  <span class="o">[</span><span class="m">0</span>.12079661 <span class="m">0</span>.65313938<span class="o">]]]</span>
+<span class="w"> </span><span class="o">[[</span><span class="m">0</span>.04222604<span class="w"> </span><span class="m">0</span>.70102327<span class="o">]</span>
+<span class="w">  </span><span class="o">[</span><span class="m">0</span>.12079661<span class="w"> </span><span class="m">0</span>.65313938<span class="o">]]]</span>
 </pre></div>
 </div>
 <p>Each filter selects Documents that contain the desired data fields.
@@ -633,7 +633,7 @@ That’s exactly what you want for your filter!</p>
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 30, 2022</div>
+                            Last updated on Jan 13, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

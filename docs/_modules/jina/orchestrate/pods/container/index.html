@@ -408,7 +408,7 @@
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
-<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__docker_host__</span><span class="p">,</span> <span class="n">__windows__</span>
+<span class="kn">from</span> <span class="nn">jina.constants</span> <span class="kn">import</span> <span class="n">__docker_host__</span><span class="p">,</span> <span class="n">__windows__</span>
 <span class="kn">from</span> <span class="nn">jina.enums</span> <span class="kn">import</span> <span class="n">PodRoleType</span>
 <span class="kn">from</span> <span class="nn">jina.excepts</span> <span class="kn">import</span> <span class="n">BadImageNameError</span><span class="p">,</span> <span class="n">DockerVersionError</span>
 <span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">random_name</span><span class="p">,</span> <span class="n">slugify</span>
@@ -565,7 +565,7 @@
     <span class="n">is_shutdown</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s1">&#39;multiprocessing.Event&#39;</span><span class="p">,</span> <span class="s1">&#39;threading.Event&#39;</span><span class="p">],</span>
     <span class="n">is_ready</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s1">&#39;multiprocessing.Event&#39;</span><span class="p">,</span> <span class="s1">&#39;threading.Event&#39;</span><span class="p">],</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Method to be run in a process that stream logs from a Container</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Method to be run in a process that stream logs from a Container</span>
 
 <span class="sd">    This method is the target for the Pod&#39;s `thread` or `process`</span>
 
@@ -688,7 +688,7 @@
 
 
 <div class="viewcode-block" id="ContainerPod"><a class="viewcode-back" href="../../../../../api/jina.orchestrate.pods.container/#jina.orchestrate.pods.container.ContainerPod">[docs]</a><span class="k">class</span> <span class="nc">ContainerPod</span><span class="p">(</span><span class="n">BasePod</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    :class:`ContainerPod` starts a runtime of :class:`BaseRuntime` inside a container. It leverages :class:`multiprocessing.Process` to manage the logs and the lifecycle of docker container object in a robust way.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -780,7 +780,7 @@
         <span class="k">return</span> <span class="n">container</span>
 
 <div class="viewcode-block" id="ContainerPod.start"><a class="viewcode-back" href="../../../../../api/jina.orchestrate.pods.container/#jina.orchestrate.pods.container.ContainerPod.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Start the ContainerPod.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Start the ContainerPod.</span>
 <span class="sd">        .. #noqa: DAR201</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">worker</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Process</span><span class="p">(</span>
@@ -804,7 +804,7 @@
         <span class="k">return</span> <span class="bp">self</span></div>
 
     <span class="k">def</span> <span class="nf">_terminate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Terminate the Pod.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Terminate the Pod.</span>
 <span class="sd">        This method kills the container inside the Pod</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># terminate the docker</span>
@@ -817,7 +817,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;runtime process properly terminated&#39;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="ContainerPod.join"><a class="viewcode-back" href="../../../../../api/jina.orchestrate.pods.container/#jina.orchestrate.pods.container.ContainerPod.join">[docs]</a>    <span class="k">def</span> <span class="nf">join</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Joins the Pod.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Joins the Pod.</span>
 
 <span class="sd">        :param args: extra positional arguments to pass to join</span>
 <span class="sd">        :param kwargs: extra keyword arguments to pass to join</span>
@@ -851,7 +851,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 30, 2022</div>
+                            Last updated on Jan 13, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

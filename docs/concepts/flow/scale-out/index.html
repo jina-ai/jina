@@ -425,12 +425,12 @@
                 <article role="main">
                     <section id="scale-out">
 <span id="flow-complex-topologies"></span><h1>Scale Out<a class="headerlink" href="#scale-out" title="Permalink to this heading">#</a></h1>
-<p><a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> orchestrates multiple <a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>s.
+<p><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code> orchestrates multiple <code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code>s.
 By default, all Executors run with a single instance. If one Executor in the Flow is particularly slow, then it will reduce the overall throughput of the entire Flow.</p>
 <p>To solve this, you can specify the number of <code class="docutils literal notranslate"><span class="pre">replicas</span></code> to scale out an Executor.</p>
 <section id="replicate-executors">
 <span id="id1"></span><h2>Replicate Executors<a class="headerlink" href="#replicate-executors" title="Permalink to this heading">#</a></h2>
-<p>Replication creates multiple copies of the same <a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>. Each request in the <a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> is then passed to only one replica (instance) of that Executor. <strong>All replicas compete for a request. The idle replica gets the request first.</strong></p>
+<p>Replication creates multiple copies of the same <code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code>. Each request in the <code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code> is then passed to only one replica (instance) of that Executor. <strong>All replicas compete for a request. The idle replica gets the request first.</strong></p>
 <p>This is useful for improving performance and availability:</p>
 <ul class="simple">
 <li><p>If you have slow Executors (e.g. embedding) you can scale up the number of instances to process multiple requests in parallel.</p></li>
@@ -452,7 +452,7 @@ request to exactly one of the three instances. Then the replica sends its result
 </section>
 <section id="replicate-on-multiple-gpus">
 <h2>Replicate on multiple GPUs<a class="headerlink" href="#replicate-on-multiple-gpus" title="Permalink to this heading">#</a></h2>
-<p>To replicate your <a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>s so that each replica uses a different GPU on your machine, you can tell the <a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> to use multiple GPUs by passing <code class="docutils literal notranslate"><span class="pre">CUDA_VISIBLE_DEVICES=RR</span></code> as an environment variable.
+<p>To replicate your <code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code>s so that each replica uses a different GPU on your machine, you can tell the <code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code> to use multiple GPUs by passing <code class="docutils literal notranslate"><span class="pre">CUDA_VISIBLE_DEVICES=RR</span></code> as an environment variable.
 The Flow then assigns each available GPU to replicas in a round-robin fashion.</p>
 <div class="admonition caution">
 <p class="admonition-title">Caution</p>
@@ -474,20 +474,20 @@ The Flow then assigns each available GPU to replicas in a round-robin fashion.</
     <span class="n">f</span><span class="o">.</span><span class="n">block</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nv">CUDA_VISIBLE_DEVICES</span><span class="o">=</span>RR python flow.py
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nv">CUDA_VISIBLE_DEVICES</span><span class="o">=</span>RR<span class="w"> </span>python<span class="w"> </span>flow.py
 </pre></div>
 </div>
 </div>
 <input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--2">YAML</label><div class="tab-content docutils">
 <p>In a <code class="docutils literal notranslate"><span class="pre">flow.yaml</span></code> file</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
-<span class="nt">executors</span><span class="p">:</span><span class="w"></span>
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinaai://jina-ai/CLIPEncoder</span><span class="w"></span>
-<span class="w">  </span><span class="nt">install_requirements</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span>
+<span class="nt">executors</span><span class="p">:</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinaai://jina-ai/CLIPEncoder</span>
+<span class="w">  </span><span class="nt">install_requirements</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True</span>
 <span class="w">  </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span><span class="w">  </span>
 </pre></div>
 </div>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nv">CUDA_VISIBLE_DEVICES</span><span class="o">=</span>RR jina flow --uses flow.yaml
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nv">CUDA_VISIBLE_DEVICES</span><span class="o">=</span>RR<span class="w"> </span>jina<span class="w"> </span>flow<span class="w"> </span>--uses<span class="w"> </span>flow.yaml
 </pre></div>
 </div>
 </div>
@@ -638,7 +638,7 @@ The Flow then assigns each available GPU to replicas in a round-robin fashion.</
 <span class="n">flow</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;ExecutorWithShards&#39;</span><span class="p">,</span> <span class="n">shards</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">polling</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;/custom&#39;</span><span class="p">:</span> <span class="s1">&#39;ALL&#39;</span><span class="p">,</span> <span class="s1">&#39;/search&#39;</span><span class="p">:</span> <span class="s1">&#39;ANY&#39;</span><span class="p">,</span> <span class="s1">&#39;*&#39;</span><span class="p">:</span> <span class="s1">&#39;ANY&#39;</span><span class="p">})</span>
 </pre></div>
 </div>
-<p>The above example results in a <a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> having the Executor <code class="docutils literal notranslate"><span class="pre">ExecutorWithShards</span></code> with the following polling options:</p>
+<p>The above example results in a <code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code> having the Executor <code class="docutils literal notranslate"><span class="pre">ExecutorWithShards</span></code> with the following polling options:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">/index</span></code> has polling <code class="docutils literal notranslate"><span class="pre">ANY</span></code> (the default value is not changed here).</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">/search</span></code> has polling <code class="docutils literal notranslate"><span class="pre">ANY</span></code> as it is explicitly set (usually that should not be necessary).</p></li>
@@ -725,7 +725,7 @@ The Flow then assigns each available GPU to replicas in a round-robin fashion.</
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 30, 2022</div>
+                            Last updated on Jan 13, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

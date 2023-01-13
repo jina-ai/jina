@@ -404,12 +404,12 @@
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Union</span>
 
-<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__cache_path__</span>
+<span class="kn">from</span> <span class="nn">jina.constants</span> <span class="kn">import</span> <span class="n">__cache_path__</span>
 <span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">iscoroutinefunction</span>
 <span class="kn">from</span> <span class="nn">jina.importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
-    <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
+    <span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
 
 
 <span class="nd">@functools</span><span class="o">.</span><span class="n">lru_cache</span><span class="p">()</span>
@@ -422,14 +422,14 @@
     <span class="k">return</span> <span class="n">locks_root</span>
 
 
-<div class="viewcode-block" id="avoid_concurrent_lock_cls"><a class="viewcode-back" href="../../../../../api/jina.serve.executors.decorators/#jina.avoid_concurrent_lock_cls">[docs]</a><span class="k">def</span> <span class="nf">avoid_concurrent_lock_cls</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Wraps a function to lock a filelock for concurrent access with the name of the class to which it applies, to avoid deadlocks</span>
+<div class="viewcode-block" id="avoid_concurrent_lock_cls"><a class="viewcode-back" href="../../../../../api/jina.serve.executors.decorators/#jina.serve.executors.decorators.avoid_concurrent_lock_cls">[docs]</a><span class="k">def</span> <span class="nf">avoid_concurrent_lock_cls</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Wraps a function to lock a filelock for concurrent access with the name of the class to which it applies, to avoid deadlocks</span>
 <span class="sd">    :param cls: the class to which is applied, only when the class corresponds to the instance type, this filelock will apply</span>
 <span class="sd">    :return: the wrapped function</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">avoid_concurrent_lock_wrapper</span><span class="p">(</span><span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Wrap the function around a File Lock to make sure that the function is run by a single replica in the same machine</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Wrap the function around a File Lock to make sure that the function is run by a single replica in the same machine</span>
 <span class="sd">        :param func: the function to decorate</span>
 <span class="sd">        :return: the wrapped function</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -467,7 +467,7 @@
 
 
 <span class="k">def</span> <span class="nf">_init_requests_by_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    To allow inheritance and still have coherent usage of `requests`. Makes sure that a child class inherits requests from parents</span>
 
 <span class="sd">    :param cls: The class.</span>
@@ -491,7 +491,7 @@
         <span class="n">_inherit_from_parent_class_inner</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="requests"><a class="viewcode-back" href="../../../../../api/jina.serve.executors.decorators/#jina.requests">[docs]</a><span class="k">def</span> <span class="nf">requests</span><span class="p">(</span>
+<div class="viewcode-block" id="requests"><a class="viewcode-back" href="../../../../../api/jina.serve.executors.decorators/#jina.serve.executors.decorators.requests">[docs]</a><span class="k">def</span> <span class="nf">requests</span><span class="p">(</span>
     <span class="n">func</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span>
         <span class="n">Callable</span><span class="p">[</span>
             <span class="p">[</span>
@@ -507,7 +507,7 @@
     <span class="o">*</span><span class="p">,</span>
     <span class="n">on</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    `@requests` defines the endpoints of an Executor. It has a keyword `on=` to define the endpoint.</span>
 
 <span class="sd">    A class method decorated with plain `@requests` (without `on=`) is the default handler for all endpoints.</span>
@@ -553,7 +553,7 @@
 <span class="sd">    :param on: the endpoint string, by convention starts with `/`</span>
 <span class="sd">    :return: decorated function</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__args_executor_func__</span><span class="p">,</span> <span class="n">__default_endpoint__</span>
+    <span class="kn">from</span> <span class="nn">jina.constants</span> <span class="kn">import</span> <span class="n">__args_executor_func__</span><span class="p">,</span> <span class="n">__default_endpoint__</span>
 
     <span class="k">class</span> <span class="nc">FunctionMapper</span><span class="p">:</span>
         <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fn</span><span class="p">):</span>
@@ -624,7 +624,7 @@
         <span class="k">return</span> <span class="n">FunctionMapper</span></div>
 
 
-<div class="viewcode-block" id="dynamic_batching"><a class="viewcode-back" href="../../../../../api/jina.serve.executors.decorators/#jina.dynamic_batching">[docs]</a><span class="k">def</span> <span class="nf">dynamic_batching</span><span class="p">(</span>
+<div class="viewcode-block" id="dynamic_batching"><a class="viewcode-back" href="../../../../../api/jina.serve.executors.decorators/#jina.serve.executors.decorators.dynamic_batching">[docs]</a><span class="k">def</span> <span class="nf">dynamic_batching</span><span class="p">(</span>
     <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span>
         <span class="p">[</span>
             <span class="s1">&#39;DocumentArray&#39;</span><span class="p">,</span>
@@ -639,7 +639,7 @@
     <span class="n">preferred_batch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">timeout</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="mi">10_000</span><span class="p">,</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    `@dynamic_batching` defines the dynamic batching behavior of an Executor.</span>
 <span class="sd">    Dynamic batching works by collecting Documents from multiple requests in a queue, and passing them to the Executor</span>
 <span class="sd">    in batches of specified size.</span>
@@ -717,12 +717,12 @@
         <span class="k">return</span> <span class="n">DynamicBatchingDecorator</span></div>
 
 
-<div class="viewcode-block" id="monitor"><a class="viewcode-back" href="../../../../../api/jina.serve.executors.decorators/#jina.monitor">[docs]</a><span class="k">def</span> <span class="nf">monitor</span><span class="p">(</span>
+<div class="viewcode-block" id="monitor"><a class="viewcode-back" href="../../../../../api/jina.serve.executors.decorators/#jina.serve.executors.decorators.monitor">[docs]</a><span class="k">def</span> <span class="nf">monitor</span><span class="p">(</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">documentation</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Decorator and context manager that allows monitoring of an Executor.</span>
 
 <span class="sd">    You can access these metrics by enabling</span>
@@ -815,7 +815,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 30, 2022</div>
+                            Last updated on Jan 13, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

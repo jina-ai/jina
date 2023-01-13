@@ -432,7 +432,7 @@
 
 
 <div class="viewcode-block" id="InstrumentationMixin"><a class="viewcode-back" href="../../../../api/jina.serve.instrumentation/#jina.serve.instrumentation.InstrumentationMixin">[docs]</a><span class="k">class</span> <span class="nc">InstrumentationMixin</span><span class="p">:</span>
-    <span class="sd">&#39;&#39;&#39;Instrumentation mixin for OpenTelemetery Tracing and Metrics handling&#39;&#39;&#39;</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;Instrumentation mixin for OpenTelemetery Tracing and Metrics handling&#39;&#39;&#39;</span>
 
     <span class="k">def</span> <span class="nf">_setup_instrumentation</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -497,7 +497,7 @@
 <div class="viewcode-block" id="InstrumentationMixin.aio_tracing_server_interceptors"><a class="viewcode-back" href="../../../../api/jina.serve.instrumentation/#jina.serve.instrumentation.InstrumentationMixin.aio_tracing_server_interceptors">[docs]</a>    <span class="k">def</span> <span class="nf">aio_tracing_server_interceptors</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="s1">&#39;ServerInterceptor&#39;</span><span class="p">]]:</span>
-        <span class="sd">&#39;&#39;&#39;Create a gRPC aio server interceptor.</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;Create a gRPC aio server interceptor.</span>
 <span class="sd">        :returns: A service-side aio interceptor object.</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">tracing</span><span class="p">:</span>
@@ -512,7 +512,7 @@
 <div class="viewcode-block" id="InstrumentationMixin.aio_tracing_client_interceptors"><a class="viewcode-back" href="../../../../api/jina.serve.instrumentation/#jina.serve.instrumentation.InstrumentationMixin.aio_tracing_client_interceptors">[docs]</a>    <span class="k">def</span> <span class="nf">aio_tracing_client_interceptors</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="s1">&#39;ClientInterceptor&#39;</span><span class="p">]]:</span>
-        <span class="sd">&#39;&#39;&#39;Create a gRPC client aio channel interceptor.</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;Create a gRPC client aio channel interceptor.</span>
 <span class="sd">        :returns: An invocation-side list of aio interceptor objects.</span>
 <span class="sd">        &#39;&#39;&#39;</span>
 
@@ -534,7 +534,7 @@
             <span class="k">return</span> <span class="kc">None</span></div>
 
 <div class="viewcode-block" id="InstrumentationMixin.tracing_client_interceptor"><a class="viewcode-back" href="../../../../api/jina.serve.instrumentation/#jina.serve.instrumentation.InstrumentationMixin.tracing_client_interceptor">[docs]</a>    <span class="k">def</span> <span class="nf">tracing_client_interceptor</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;OpenTelemetryClientInterceptor&#39;</span><span class="p">]:</span>
-        <span class="sd">&#39;&#39;&#39;</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        :returns: a gRPC client interceptor with the global tracing provider.</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">tracing</span><span class="p">:</span>
@@ -548,7 +548,7 @@
 
 
 <div class="viewcode-block" id="MetricsTimer"><a class="viewcode-back" href="../../../../api/jina.serve.instrumentation/#jina.serve.instrumentation.MetricsTimer">[docs]</a><span class="k">class</span> <span class="nc">MetricsTimer</span><span class="p">:</span>
-    <span class="sd">&#39;&#39;&#39;Helper dataclass that accepts optional Summary or Histogram recorders which are used to record the time take to execute</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;Helper dataclass that accepts optional Summary or Histogram recorders which are used to record the time take to execute</span>
 <span class="sd">    the decorated or context managed function</span>
 <span class="sd">    &#39;&#39;&#39;</span>
 
@@ -581,7 +581,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_histogram</span><span class="o">.</span><span class="n">record</span><span class="p">(</span><span class="n">duration</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_histogram_metric_labels</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;function that gets called when this class is used as a decortor</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;function that gets called when this class is used as a decortor</span>
 <span class="sd">        :param f: function that is decorated</span>
 <span class="sd">        :return: wrapped function</span>
 <span class="sd">        &#39;&#39;&#39;</span>
@@ -608,7 +608,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 30, 2022</div>
+                            Last updated on Jan 13, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

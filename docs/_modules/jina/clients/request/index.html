@@ -419,7 +419,7 @@
     <span class="kn">from</span> <span class="nn">docarray.document</span> <span class="kn">import</span> <span class="n">DocumentSourceType</span>
     <span class="kn">from</span> <span class="nn">docarray.document.mixins.content</span> <span class="kn">import</span> <span class="n">DocumentContentType</span>
 
-    <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
+    <span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">Document</span>
     <span class="kn">from</span> <span class="nn">jina.types.request</span> <span class="kn">import</span> <span class="n">Request</span>
 
     <span class="n">SingletonDataType</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span>
@@ -437,14 +437,14 @@
 
 <div class="viewcode-block" id="request_generator"><a class="viewcode-back" href="../../../../api/jina.clients.request/#jina.clients.request.request_generator">[docs]</a><span class="k">def</span> <span class="nf">request_generator</span><span class="p">(</span>
     <span class="n">exec_endpoint</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">data</span><span class="p">:</span> <span class="s1">&#39;GeneratorSourceType&#39;</span><span class="p">,</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;GeneratorSourceType&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">request_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
     <span class="n">data_type</span><span class="p">:</span> <span class="n">DataInputType</span> <span class="o">=</span> <span class="n">DataInputType</span><span class="o">.</span><span class="n">AUTO</span><span class="p">,</span>
     <span class="n">target_executor</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">parameters</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>  <span class="c1"># do not remove this, add on purpose to suppress unknown kwargs</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="s1">&#39;Request&#39;</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Generate a request iterator.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate a request iterator.</span>
 
 <span class="sd">    :param exec_endpoint: the endpoint string, by convention starts with `/`</span>
 <span class="sd">    :param data: data to send, a list of dict/string/bytes that can be converted into a list of `Document` objects</span>
@@ -457,8 +457,6 @@
 <span class="sd">    :yield: request</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">_kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">extra_kwargs</span><span class="o">=</span><span class="n">kwargs</span><span class="p">)</span>
-
     <span class="k">try</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># this allows empty inputs, i.e. a data request with only parameters</span>
@@ -470,7 +468,6 @@
                 <span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="n">data</span><span class="p">]</span>
             <span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="n">batch_iterator</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">request_size</span><span class="p">):</span>
                 <span class="k">yield</span> <span class="n">_new_data_request_from_batch</span><span class="p">(</span>
-                    <span class="n">_kwargs</span><span class="o">=</span><span class="n">kwargs</span><span class="p">,</span>
                     <span class="n">batch</span><span class="o">=</span><span class="n">batch</span><span class="p">,</span>
                     <span class="n">data_type</span><span class="o">=</span><span class="n">data_type</span><span class="p">,</span>
                     <span class="n">endpoint</span><span class="o">=</span><span class="n">exec_endpoint</span><span class="p">,</span>
@@ -496,7 +493,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 30, 2022</div>
+                            Last updated on Jan 13, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

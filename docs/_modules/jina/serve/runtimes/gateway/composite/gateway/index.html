@@ -398,19 +398,19 @@
                 <article role="main">
                     <h1>Source code for jina.serve.runtimes.gateway.composite.gateway</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">copy</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
 
 <span class="kn">from</span> <span class="nn">jina.serve.gateway</span> <span class="kn">import</span> <span class="n">BaseGateway</span>
 
 
 <div class="viewcode-block" id="CompositeGateway"><a class="viewcode-back" href="../../../../../../../api/jina.serve.runtimes.gateway.composite.gateway/#jina.serve.runtimes.gateway.composite.CompositeGateway">[docs]</a><span class="k">class</span> <span class="nc">CompositeGateway</span><span class="p">(</span><span class="n">BaseGateway</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;GRPC Gateway implementation&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;GRPC Gateway implementation&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Initialize the gateway</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the gateway</span>
 <span class="sd">        :param kwargs: keyword args</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
@@ -420,30 +420,49 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">gateways</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">BaseGateway</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">port</span><span class="p">,</span> <span class="n">protocol</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ports</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">protocols</span><span class="p">):</span>
             <span class="n">gateway_cls</span> <span class="o">=</span> <span class="n">_get_gateway_class</span><span class="p">(</span><span class="n">protocol</span><span class="p">)</span>
-            <span class="n">runtime_args</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">runtime_args</span><span class="p">)</span>
+            <span class="c1"># ignore metrics_registry since it is not copyable</span>
+            <span class="n">runtime_args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deepcopy_with_ignore_attrs</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">runtime_args</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;metrics_registry&#39;</span><span class="p">]</span>
+            <span class="p">)</span>
             <span class="n">runtime_args</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="p">[</span><span class="n">port</span><span class="p">]</span>
             <span class="n">runtime_args</span><span class="o">.</span><span class="n">protocol</span> <span class="o">=</span> <span class="p">[</span><span class="n">protocol</span><span class="p">]</span>
-            <span class="n">gateway_kwargs</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="n">gateway_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="o">!=</span> <span class="s1">&#39;runtime_args&#39;</span><span class="p">}</span>
             <span class="n">gateway_kwargs</span><span class="p">[</span><span class="s1">&#39;runtime_args&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">vars</span><span class="p">(</span><span class="n">runtime_args</span><span class="p">))</span>
             <span class="n">gateway</span> <span class="o">=</span> <span class="n">gateway_cls</span><span class="p">(</span><span class="o">**</span><span class="n">gateway_kwargs</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">gateways</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gateway</span><span class="p">)</span>
 
 <div class="viewcode-block" id="CompositeGateway.setup_server"><a class="viewcode-back" href="../../../../../../../api/jina.serve.runtimes.gateway.composite.gateway/#jina.serve.runtimes.gateway.composite.CompositeGateway.setup_server">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">setup_server</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        setup GRPC server</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">gateway</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">gateways</span><span class="p">:</span>
             <span class="k">await</span> <span class="n">gateway</span><span class="o">.</span><span class="n">setup_server</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="CompositeGateway.shutdown"><a class="viewcode-back" href="../../../../../../../api/jina.serve.runtimes.gateway.composite.gateway/#jina.serve.runtimes.gateway.composite.CompositeGateway.shutdown">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Free other resources allocated with the server, e.g, gateway object, ...&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Free other resources allocated with the server, e.g, gateway object, ...&quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">gateway</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">gateways</span><span class="p">:</span>
             <span class="k">await</span> <span class="n">gateway</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="CompositeGateway.run_server"><a class="viewcode-back" href="../../../../../../../api/jina.serve.runtimes.gateway.composite.gateway/#jina.serve.runtimes.gateway.composite.CompositeGateway.run_server">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">run_server</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Run GRPC server forever&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Run GRPC server forever&quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">gateway</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">gateways</span><span class="p">:</span>
             <span class="k">await</span> <span class="n">gateway</span><span class="o">.</span><span class="n">run_server</span><span class="p">()</span></div>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_deepcopy_with_ignore_attrs</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">ignore_attrs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Deep copy an object and ignore some attributes</span>
+
+<span class="sd">        :param obj: the object to copy</span>
+<span class="sd">        :param ignore_attrs: the attributes to ignore</span>
+<span class="sd">        :return: the copied object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">memo</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">ignore_attrs</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+                <span class="n">memo</span><span class="p">[</span><span class="nb">id</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">k</span><span class="p">))]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># getattr(obj, k)</span>
+
+        <span class="k">return</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">memo</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">_should_exit</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
@@ -465,7 +484,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 30, 2022</div>
+                            Last updated on Jan 13, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

@@ -426,7 +426,7 @@
                     <section id="dynamic-batching">
 <span id="executor-dynamic-batching"></span><h1>Dynamic Batching<a class="headerlink" href="#dynamic-batching" title="Permalink to this heading">#</a></h1>
 <p>Dynamic batching allows requests to be accumulated and batched together before being sent to
-an <a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>. The batch is created dynamically depending on the configuration for each endpoint.</p>
+an <code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code>. The batch is created dynamically depending on the configuration for each endpoint.</p>
 <p>This feature is especially relevant for inference tasks where model inference is more optimized when batched to efficiently use GPU resources.</p>
 <section id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Permalink to this heading">#</a></h2>
@@ -441,7 +441,7 @@ are queued together. The Executor endpoint is executed on the queue requests whe
 Creating a batch of requests typically results in better usage of hardware resources and potentially increased throughput.</p>
 <p>You can enable and configure dynamic batching on an Executor endpoint using several methods:</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="../../../api/jina/#jina.dynamic_batching" title="jina.dynamic_batching"><code class="xref py py-class docutils literal notranslate"><span class="pre">dynamic_batching</span></code></a> decorator</p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">dynamic_batching</span></code> decorator</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">uses_dynamic_batching</span></code> Executor parameter</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">dynamic_batching</span></code> section in Executor YAML</p></li>
 </ul>
@@ -523,13 +523,13 @@ Executor section. Suppose the Executor is implemented like this:
 </pre></div>
 </div>
 <p>Then, in your <code class="docutils literal notranslate"><span class="pre">config.yaml</span></code> file, you can enable dynamic batching on the <code class="docutils literal notranslate"><span class="pre">/bar</span></code> endpoint like so:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MyExecutor</span><span class="w"></span>
-<span class="nt">py_modules</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_executor.yaml</span><span class="w"></span>
-<span class="nt">dynamic_batching</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">/bar</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">preferred_batch_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span><span class="w"></span>
-<span class="w">    </span><span class="nt">timeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">200</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MyExecutor</span>
+<span class="nt">py_modules</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_executor.py</span>
+<span class="nt">dynamic_batching</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">/bar</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">preferred_batch_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
+<span class="w">    </span><span class="nt">timeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">200</span>
 </pre></div>
 </div>
 </div>
@@ -580,7 +580,7 @@ if it contains fewer than <code class="docutils literal notranslate"><span class
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 30, 2022</div>
+                            Last updated on Jan 13, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

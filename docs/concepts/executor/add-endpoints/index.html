@@ -428,13 +428,13 @@
 <p>Methods decorated with <code class="docutils literal notranslate"><span class="pre">&#64;requests</span></code> are mapped to network endpoints while serving.</p>
 <section id="decorator">
 <span id="executor-requests"></span><h2>Decorator<a class="headerlink" href="#decorator" title="Permalink to this heading">#</a></h2>
-<p>Executor methods decorated with <a class="reference internal" href="../../../api/jina/#jina.requests" title="jina.requests"><code class="xref py py-class docutils literal notranslate"><span class="pre">requests</span></code></a> are bound to specific network requests, and respond to network queries.</p>
-<p>Both <code class="docutils literal notranslate"><span class="pre">def</span></code> or <code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">def</span></code> functions can be decorated with <a class="reference internal" href="../../../api/jina/#jina.requests" title="jina.requests"><code class="xref py py-class docutils literal notranslate"><span class="pre">requests</span></code></a>.</p>
+<p>Executor methods decorated with <code class="xref py py-class docutils literal notranslate"><span class="pre">requests</span></code> are bound to specific network requests, and respond to network queries.</p>
+<p>Both <code class="docutils literal notranslate"><span class="pre">def</span></code> or <code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">def</span></code> functions can be decorated with <code class="xref py py-class docutils literal notranslate"><span class="pre">requests</span></code>.</p>
 <p>You can import the <code class="docutils literal notranslate"><span class="pre">&#64;requests</span></code> decorator via</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">requests</span>
 </pre></div>
 </div>
-<p><a class="reference internal" href="../../../api/jina/#jina.requests" title="jina.requests"><code class="xref py py-class docutils literal notranslate"><span class="pre">requests</span></code></a> is a decorator that takes an optional <code class="docutils literal notranslate"><span class="pre">on=</span></code> parameter. It binds the decorated method of the Executor to the specified route.</p>
+<p><code class="xref py py-class docutils literal notranslate"><span class="pre">requests</span></code> is a decorator that takes an optional <code class="docutils literal notranslate"><span class="pre">on=</span></code> parameter. It binds the decorated method of the Executor to the specified route.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
 <span class="kn">import</span> <span class="nn">asyncio</span>
 
@@ -462,17 +462,17 @@
     <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/search&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="p">[])</span>
 </pre></div>
 </div>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>────────────────────────── 🎉 Flow is ready to serve! ──────────────────────────
-╭────────────── 🔗 Endpoint ───────────────╮
-│  ⛓     Protocol                    GRPC  │
-│  🏠       Local           <span class="m">0</span>.0.0.0:55925  │
-│  🔒     Private     <span class="m">192</span>.168.1.187:55925  │
-│  🌍      Public    <span class="m">212</span>.231.186.65:55925  │
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>──────────────────────────<span class="w"> </span>🎉<span class="w"> </span>Flow<span class="w"> </span>is<span class="w"> </span>ready<span class="w"> </span>to<span class="w"> </span>serve!<span class="w"> </span>──────────────────────────
+╭──────────────<span class="w"> </span>🔗<span class="w"> </span>Endpoint<span class="w"> </span>───────────────╮
+│<span class="w">  </span>⛓<span class="w">     </span>Protocol<span class="w">                    </span>GRPC<span class="w">  </span>│
+│<span class="w">  </span>🏠<span class="w">       </span>Local<span class="w">           </span><span class="m">0</span>.0.0.0:55925<span class="w">  </span>│
+│<span class="w">  </span>🔒<span class="w">     </span>Private<span class="w">     </span><span class="m">192</span>.168.1.187:55925<span class="w">  </span>│
+│<span class="w">  </span>🌍<span class="w">      </span>Public<span class="w">    </span><span class="m">212</span>.231.186.65:55925<span class="w">  </span>│
 ╰──────────────────────────────────────────╯
 
-Calling foo
-Calling bar
-Calling foo
+Calling<span class="w"> </span>foo
+Calling<span class="w"> </span>bar
+Calling<span class="w"> </span>foo
 </pre></div>
 </div>
 <section id="default-binding">
@@ -503,7 +503,7 @@ The request simply passes through without any processing.</p>
 </section>
 <section id="arguments">
 <h2>Arguments<a class="headerlink" href="#arguments" title="Permalink to this heading">#</a></h2>
-<p>All Executor methods decorated by <code class="docutils literal notranslate"><span class="pre">&#64;requests</span></code> need to follow the signature below to be usable as a microservice inside a <a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a>.
+<p>All Executor methods decorated by <code class="docutils literal notranslate"><span class="pre">&#64;requests</span></code> need to follow the signature below to be usable as a microservice inside a <code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code>.
 The <code class="docutils literal notranslate"><span class="pre">async</span></code> definition is optional.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">DocumentArray</span>
@@ -566,9 +566,9 @@ any other <code class="docutils literal notranslate"><span class="pre">list</spa
 </div>
 <section id="multiple-documentarrays-as-input-argument">
 <h3>Multiple DocumentArrays as input argument<a class="headerlink" href="#multiple-documentarrays-as-input-argument" title="Permalink to this heading">#</a></h3>
-<p>You have seen that <a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a> methods can receive multiple parameters.</p>
+<p>You have seen that <code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code> methods can receive multiple parameters.</p>
 <p><code class="docutils literal notranslate"><span class="pre">docs_matrix</span></code> and <code class="docutils literal notranslate"><span class="pre">docs_map</span></code> are only used in some special cases.</p>
-<p>One case is when an Executor receives messages from more than one incoming <a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a> in the <a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a>:</p>
+<p>One case is when an Executor receives messages from more than one incoming <code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code> in the <code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code>:</p>
 <p>If you set <code class="docutils literal notranslate"><span class="pre">no_reduce</span></code> to True and the Executor has more than one incoming Executor, the Executor will receive all the DocumentArrays coming from previous Executors independently under <code class="docutils literal notranslate"><span class="pre">docs_matrix</span></code> and <code class="docutils literal notranslate"><span class="pre">docs_map</span></code>.
 If <code class="docutils literal notranslate"><span class="pre">no_reduce</span></code> is not set or set to False, <code class="docutils literal notranslate"><span class="pre">docs_map</span></code> and <code class="docutils literal notranslate"><span class="pre">docs_matrix</span></code> will be None and the Executor will receive a single DocumentArray resulting from the reducing of all the incoming ones.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span>
@@ -615,19 +615,19 @@ If <code class="docutils literal notranslate"><span class="pre">no_reduce</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Resulting documents </span><span class="si">{</span><span class="n">returned_docs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>────────────────────────── 🎉 Flow is ready to serve! ──────────────────────────
-╭────────────── 🔗 Endpoint ───────────────╮
-│  ⛓     Protocol                    GRPC  │
-│  🏠       Local           <span class="m">0</span>.0.0.0:55761  │
-│  🔒     Private     <span class="m">192</span>.168.1.187:55761  │
-│  🌍      Public    <span class="m">212</span>.231.186.65:55761  │
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>──────────────────────────<span class="w"> </span>🎉<span class="w"> </span>Flow<span class="w"> </span>is<span class="w"> </span>ready<span class="w"> </span>to<span class="w"> </span>serve!<span class="w"> </span>──────────────────────────
+╭──────────────<span class="w"> </span>🔗<span class="w"> </span>Endpoint<span class="w"> </span>───────────────╮
+│<span class="w">  </span>⛓<span class="w">     </span>Protocol<span class="w">                    </span>GRPC<span class="w">  </span>│
+│<span class="w">  </span>🏠<span class="w">       </span>Local<span class="w">           </span><span class="m">0</span>.0.0.0:55761<span class="w">  </span>│
+│<span class="w">  </span>🔒<span class="w">     </span>Private<span class="w">     </span><span class="m">192</span>.168.1.187:55761<span class="w">  </span>│
+│<span class="w">  </span>🌍<span class="w">      </span>Public<span class="w">    </span><span class="m">212</span>.231.186.65:55761<span class="w">  </span>│
 ╰──────────────────────────────────────────╯
 
-MergeExec processing pairs of Documents <span class="s2">&quot;Exec1&quot;</span> and <span class="s2">&quot;Exec2&quot;</span>
-Resulting documents Document merging from <span class="s2">&quot;Exec1&quot;</span> and <span class="s2">&quot;Exec2&quot;</span>
+MergeExec<span class="w"> </span>processing<span class="w"> </span>pairs<span class="w"> </span>of<span class="w"> </span>Documents<span class="w"> </span><span class="s2">&quot;Exec1&quot;</span><span class="w"> </span>and<span class="w"> </span><span class="s2">&quot;Exec2&quot;</span>
+Resulting<span class="w"> </span>documents<span class="w"> </span>Document<span class="w"> </span>merging<span class="w"> </span>from<span class="w"> </span><span class="s2">&quot;Exec1&quot;</span><span class="w"> </span>and<span class="w"> </span><span class="s2">&quot;Exec2&quot;</span>
 </pre></div>
 </div>
-<p>When merging Documents from more than one upstream <a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>, sometimes you want to control which Documents come from which Executor.
+<p>When merging Documents from more than one upstream <code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code>, sometimes you want to control which Documents come from which Executor.
 Executor will receive the <code class="docutils literal notranslate"><span class="pre">docs_map</span></code> as a dictionary where the key will be the last Executor processing that previous request and the DocumentArray of the request as the values.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">Document</span>
 
@@ -663,22 +663,22 @@ Executor will receive the <code class="docutils literal notranslate"><span class
     <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">Document</span><span class="p">())</span>
 </pre></div>
 </div>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>────────────────────────── 🎉 Flow is ready to serve! ──────────────────────────
-╭────────────── 🔗 Endpoint ───────────────╮
-│  ⛓     Protocol                    GRPC  │
-│  🏠       Local           <span class="m">0</span>.0.0.0:56286  │
-│  🔒     Private     <span class="m">192</span>.168.1.187:56286  │
-│  🌍      Public    <span class="m">212</span>.231.186.65:56286  │
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>──────────────────────────<span class="w"> </span>🎉<span class="w"> </span>Flow<span class="w"> </span>is<span class="w"> </span>ready<span class="w"> </span>to<span class="w"> </span>serve!<span class="w"> </span>──────────────────────────
+╭──────────────<span class="w"> </span>🔗<span class="w"> </span>Endpoint<span class="w"> </span>───────────────╮
+│<span class="w">  </span>⛓<span class="w">     </span>Protocol<span class="w">                    </span>GRPC<span class="w">  </span>│
+│<span class="w">  </span>🏠<span class="w">       </span>Local<span class="w">           </span><span class="m">0</span>.0.0.0:56286<span class="w">  </span>│
+│<span class="w">  </span>🔒<span class="w">     </span>Private<span class="w">     </span><span class="m">192</span>.168.1.187:56286<span class="w">  </span>│
+│<span class="w">  </span>🌍<span class="w">      </span>Public<span class="w">    </span><span class="m">212</span>.231.186.65:56286<span class="w">  </span>│
 ╰──────────────────────────────────────────╯
 
-<span class="o">{</span><span class="s1">&#39;exec1&#39;</span>: &lt;DocumentArray <span class="o">(</span><span class="nv">length</span><span class="o">=</span><span class="m">1</span><span class="o">)</span> at <span class="m">140270975034640</span>&gt;, <span class="s1">&#39;exec2&#39;</span>: &lt;DocumentArray <span class="o">(</span><span class="nv">length</span><span class="o">=</span><span class="m">1</span><span class="o">)</span> at <span class="m">140270975034448</span>&gt;<span class="o">}</span>
+<span class="o">{</span><span class="s1">&#39;exec1&#39;</span>:<span class="w"> </span>&lt;DocumentArray<span class="w"> </span><span class="o">(</span><span class="nv">length</span><span class="o">=</span><span class="m">1</span><span class="o">)</span><span class="w"> </span>at<span class="w"> </span><span class="m">140270975034640</span>&gt;,<span class="w"> </span><span class="s1">&#39;exec2&#39;</span>:<span class="w"> </span>&lt;DocumentArray<span class="w"> </span><span class="o">(</span><span class="nv">length</span><span class="o">=</span><span class="m">1</span><span class="o">)</span><span class="w"> </span>at<span class="w"> </span><span class="m">140270975034448</span>&gt;<span class="o">}</span>
 </pre></div>
 </div>
 </section>
 </section>
 <section id="async-coroutines">
 <span id="async-executors"></span><h2>Async coroutines<a class="headerlink" href="#async-coroutines" title="Permalink to this heading">#</a></h2>
-<p>You can naturally call async coroutines within <a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>’s, allowing you to leverage the power of asynchronous
+<p>You can naturally call async coroutines within <code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code>’s, allowing you to leverage the power of asynchronous
 Python to write concurrent code.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
 
@@ -690,7 +690,7 @@ Python to write concurrent code.</p>
 </pre></div>
 </div>
 <p>This example has a heavy lifting API which we call several times, and we leverage the
-async Python features to speed up the <a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>’s call by calling the API multiple times concurrently. As a counterpart, in an example without <code class="docutils literal notranslate"><span class="pre">coroutines</span></code>, all 50 API calls are queued and nothing is done concurrently.</p>
+async Python features to speed up the <code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code>’s call by calling the API multiple times concurrently. As a counterpart, in an example without <code class="docutils literal notranslate"><span class="pre">coroutines</span></code>, all 50 API calls are queued and nothing is done concurrently.</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">Async coroutines</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span>
@@ -716,16 +716,16 @@ async Python features to speed up the <a class="reference internal" href="../../
     <span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>────────────────────────── 🎉 Flow is ready to serve! ──────────────────────────
-╭────────────── 🔗 Endpoint ───────────────╮
-│  ⛓     Protocol                    GRPC  │
-│  🏠       Local           <span class="m">0</span>.0.0.0:54153  │
-│  🔒     Private     <span class="m">192</span>.168.1.187:54153  │
-│  🌍      Public    <span class="m">212</span>.231.186.65:54153  │
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>──────────────────────────<span class="w"> </span>🎉<span class="w"> </span>Flow<span class="w"> </span>is<span class="w"> </span>ready<span class="w"> </span>to<span class="w"> </span>serve!<span class="w"> </span>──────────────────────────
+╭──────────────<span class="w"> </span>🔗<span class="w"> </span>Endpoint<span class="w"> </span>───────────────╮
+│<span class="w">  </span>⛓<span class="w">     </span>Protocol<span class="w">                    </span>GRPC<span class="w">  </span>│
+│<span class="w">  </span>🏠<span class="w">       </span>Local<span class="w">           </span><span class="m">0</span>.0.0.0:54153<span class="w">  </span>│
+│<span class="w">  </span>🔒<span class="w">     </span>Private<span class="w">     </span><span class="m">192</span>.168.1.187:54153<span class="w">  </span>│
+│<span class="w">  </span>🌍<span class="w">      </span>Public<span class="w">    </span><span class="m">212</span>.231.186.65:54153<span class="w">  </span>│
 ╰──────────────────────────────────────────╯
 
-  DONE ━━━━━━━━━━━━━━━━━━━━━━ <span class="m">0</span>:00:01 <span class="m">100</span>% ETA: <span class="m">0</span>:00:00 <span class="m">50</span> steps <span class="k">done</span> <span class="k">in</span> <span class="m">1</span>      
-                                                        second  
+<span class="w">  </span>DONE<span class="w"> </span>━━━━━━━━━━━━━━━━━━━━━━<span class="w"> </span><span class="m">0</span>:00:01<span class="w"> </span><span class="m">100</span>%<span class="w"> </span>ETA:<span class="w"> </span><span class="m">0</span>:00:00<span class="w"> </span><span class="m">50</span><span class="w"> </span>steps<span class="w"> </span><span class="k">done</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="m">1</span><span class="w">      </span>
+<span class="w">                                                        </span>second<span class="w">  </span>
 </pre></div>
 </div>
 </div>
@@ -753,16 +753,16 @@ async Python features to speed up the <a class="reference internal" href="../../
     <span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>────────────────────────── 🎉 Flow is ready to serve! ──────────────────────────
-╭────────────── 🔗 Endpoint ───────────────╮
-│  ⛓     Protocol                    GRPC  │
-│  🏠       Local           <span class="m">0</span>.0.0.0:52340  │
-│  🔒     Private     <span class="m">192</span>.168.1.187:52340  │
-│  🌍      Public    <span class="m">212</span>.231.186.65:52340  │
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>──────────────────────────<span class="w"> </span>🎉<span class="w"> </span>Flow<span class="w"> </span>is<span class="w"> </span>ready<span class="w"> </span>to<span class="w"> </span>serve!<span class="w"> </span>──────────────────────────
+╭──────────────<span class="w"> </span>🔗<span class="w"> </span>Endpoint<span class="w"> </span>───────────────╮
+│<span class="w">  </span>⛓<span class="w">     </span>Protocol<span class="w">                    </span>GRPC<span class="w">  </span>│
+│<span class="w">  </span>🏠<span class="w">       </span>Local<span class="w">           </span><span class="m">0</span>.0.0.0:52340<span class="w">  </span>│
+│<span class="w">  </span>🔒<span class="w">     </span>Private<span class="w">     </span><span class="m">192</span>.168.1.187:52340<span class="w">  </span>│
+│<span class="w">  </span>🌍<span class="w">      </span>Public<span class="w">    </span><span class="m">212</span>.231.186.65:52340<span class="w">  </span>│
 ╰──────────────────────────────────────────╯
 
-  DONE ━━━━━━━━━━━━━━━━━━━━━━ <span class="m">0</span>:00:50 <span class="m">100</span>% ETA: <span class="m">0</span>:00:00 <span class="m">50</span> steps <span class="k">done</span> <span class="k">in</span> <span class="m">50</span>     
-                                                        seconds        
+<span class="w">  </span>DONE<span class="w"> </span>━━━━━━━━━━━━━━━━━━━━━━<span class="w"> </span><span class="m">0</span>:00:50<span class="w"> </span><span class="m">100</span>%<span class="w"> </span>ETA:<span class="w"> </span><span class="m">0</span>:00:00<span class="w"> </span><span class="m">50</span><span class="w"> </span>steps<span class="w"> </span><span class="k">done</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="m">50</span><span class="w">     </span>
+<span class="w">                                                        </span>seconds<span class="w">        </span>
 </pre></div>
 </div>
 </div>
@@ -808,7 +808,7 @@ async Python features to speed up the <a class="reference internal" href="../../
     <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/status&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()[</span><span class="s2">&quot;parameters&quot;</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="nt">&quot;__results__&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;my_executor/rep-0&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;internal_parameter&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">20.0</span><span class="p">}}}</span><span class="w"></span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="nt">&quot;__results__&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;my_executor/rep-0&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;internal_parameter&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">20.0</span><span class="p">}}}</span>
 </pre></div>
 </div>
 </section>
@@ -846,13 +846,13 @@ Example usage and output<div class="sd-summary-down docutils">
 </div>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="o">[</span>...<span class="o">]</span>
 executor0/rep-0@28271<span class="o">[</span>E<span class="o">]</span>:NotImplementedError<span class="o">(</span><span class="s1">&#39;no time for it&#39;</span><span class="o">)</span>
- add <span class="s2">&quot;--quiet-error&quot;</span> to suppress the exception details
+<span class="w"> </span>add<span class="w"> </span><span class="s2">&quot;--quiet-error&quot;</span><span class="w"> </span>to<span class="w"> </span>suppress<span class="w"> </span>the<span class="w"> </span>exception<span class="w"> </span>details
 <span class="o">[</span>...<span class="o">]</span>
-  File <span class="s2">&quot;/home/joan/jina/jina/jina/serve/executors/decorators.py&quot;</span>, line <span class="m">115</span>, <span class="k">in</span> arg_wrapper
-    <span class="k">return</span> fn<span class="o">(</span>*args, **kwargs<span class="o">)</span>
-  File <span class="s2">&quot;/home/joan/jina/jina/toy.py&quot;</span>, line <span class="m">8</span>, <span class="k">in</span> foo
-    raise NotImplementedError<span class="o">(</span><span class="s1">&#39;no time for it&#39;</span><span class="o">)</span>
-NotImplementedError: no <span class="nb">time</span> <span class="k">for</span> it
+<span class="w">  </span>File<span class="w"> </span><span class="s2">&quot;/home/joan/jina/jina/jina/serve/executors/decorators.py&quot;</span>,<span class="w"> </span>line<span class="w"> </span><span class="m">115</span>,<span class="w"> </span><span class="k">in</span><span class="w"> </span>arg_wrapper
+<span class="w">    </span><span class="k">return</span><span class="w"> </span>fn<span class="o">(</span>*args,<span class="w"> </span>**kwargs<span class="o">)</span>
+<span class="w">  </span>File<span class="w"> </span><span class="s2">&quot;/home/joan/jina/jina/toy.py&quot;</span>,<span class="w"> </span>line<span class="w"> </span><span class="m">8</span>,<span class="w"> </span><span class="k">in</span><span class="w"> </span>foo
+<span class="w">    </span>raise<span class="w"> </span>NotImplementedError<span class="o">(</span><span class="s1">&#39;no time for it&#39;</span><span class="o">)</span>
+NotImplementedError:<span class="w"> </span>no<span class="w"> </span><span class="nb">time</span><span class="w"> </span><span class="k">for</span><span class="w"> </span>it
 NotImplementedError<span class="o">(</span><span class="s1">&#39;no time for it&#39;</span><span class="o">)</span>
 </pre></div>
 </div>
@@ -898,18 +898,18 @@ NotImplementedError<span class="o">(</span><span class="s1">&#39;no time for it&
     <span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>────────────────────────── 🎉 Flow is ready to serve! ──────────────────────────
-╭────────────── 🔗 Endpoint ───────────────╮
-│  ⛓     Protocol                    GRPC  │
-│  🏠       Local           <span class="m">0</span>.0.0.0:58746  │
-│  🔒     Private     <span class="m">192</span>.168.1.187:58746  │
-│  🌍      Public    <span class="m">212</span>.231.186.65:58746  │
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>──────────────────────────<span class="w"> </span>🎉<span class="w"> </span>Flow<span class="w"> </span>is<span class="w"> </span>ready<span class="w"> </span>to<span class="w"> </span>serve!<span class="w"> </span>──────────────────────────
+╭──────────────<span class="w"> </span>🔗<span class="w"> </span>Endpoint<span class="w"> </span>───────────────╮
+│<span class="w">  </span>⛓<span class="w">     </span>Protocol<span class="w">                    </span>GRPC<span class="w">  </span>│
+│<span class="w">  </span>🏠<span class="w">       </span>Local<span class="w">           </span><span class="m">0</span>.0.0.0:58746<span class="w">  </span>│
+│<span class="w">  </span>🔒<span class="w">     </span>Private<span class="w">     </span><span class="m">192</span>.168.1.187:58746<span class="w">  </span>│
+│<span class="w">  </span>🌍<span class="w">      </span>Public<span class="w">    </span><span class="m">212</span>.231.186.65:58746<span class="w">  </span>│
 ╰──────────────────────────────────────────╯
 
- ProcessDocuments: received document with text <span class="s2">&quot;request1&quot;</span>
- PrintExecutor: received document with text: <span class="s2">&quot;I changed the executor in place&quot;</span>
- ProcessDocuments: received document with text: <span class="s2">&quot;request2&quot;</span>
- PrintExecutor: received document with text: <span class="s2">&quot;I returned a different Document&quot;</span>
+<span class="w"> </span>ProcessDocuments:<span class="w"> </span>received<span class="w"> </span>document<span class="w"> </span>with<span class="w"> </span>text<span class="w"> </span><span class="s2">&quot;request1&quot;</span>
+<span class="w"> </span>PrintExecutor:<span class="w"> </span>received<span class="w"> </span>document<span class="w"> </span>with<span class="w"> </span>text:<span class="w"> </span><span class="s2">&quot;I changed the executor in place&quot;</span>
+<span class="w"> </span>ProcessDocuments:<span class="w"> </span>received<span class="w"> </span>document<span class="w"> </span>with<span class="w"> </span>text:<span class="w"> </span><span class="s2">&quot;request2&quot;</span>
+<span class="w"> </span>PrintExecutor:<span class="w"> </span>received<span class="w"> </span>document<span class="w"> </span>with<span class="w"> </span>text:<span class="w"> </span><span class="s2">&quot;I returned a different Document&quot;</span>
 </pre></div>
 </div>
 </section>
@@ -946,7 +946,7 @@ NotImplementedError<span class="o">(</span><span class="s1">&#39;no time for it&
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 30, 2022</div>
+                            Last updated on Jan 13, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

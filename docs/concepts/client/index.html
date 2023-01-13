@@ -425,7 +425,7 @@
                 <article role="main">
                     <section id="client">
 <span id="id1"></span><h1><span class="fas fa-laptop-code"></span> Client<a class="headerlink" href="#client" title="Permalink to this heading">#</a></h1>
-<p><a class="reference internal" href="../../api/jina/#jina.Client" title="jina.Client"><code class="xref py py-class docutils literal notranslate"><span class="pre">Client</span></code></a> enables you to send Documents to a running <a class="reference internal" href="../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a>. Same as Gateway, Client supports four networking protocols: <strong>gRPC</strong>, <strong>HTTP</strong>, <strong>WebSocket</strong> and <strong>GraphQL</strong> with/without TLS.</p>
+<p><code class="xref py py-class docutils literal notranslate"><span class="pre">Client</span></code> enables you to send Documents to a running <code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code>. Same as Gateway, Client supports four networking protocols: <strong>gRPC</strong>, <strong>HTTP</strong>, <strong>WebSocket</strong> and <strong>GraphQL</strong> with/without TLS.</p>
 <p>You may have observed two styles of using a Client in the docs:</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">Implicit, inside a Flow</label><div class="tab-content docutils">
@@ -475,7 +475,7 @@ client <a class="reference internal" href="third-party-clients/#third-party-clie
 <ul class="simple">
 <li><p>the <code class="docutils literal notranslate"><span class="pre">protocol</span></code> it needs to use to communicate with the Flow</p></li>
 <li><p>the <code class="docutils literal notranslate"><span class="pre">host</span></code> and the <code class="docutils literal notranslate"><span class="pre">port</span></code> as exposed by the Flow</p></li>
-<li><p>if it needs to use <code class="docutils literal notranslate"><span class="pre">TLS</span></code> encryption (to connect to a <a class="reference internal" href="../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> that has been <a class="reference internal" href="../gateway/#flow-tls"><span class="std std-ref">configured to use TLS</span></a> in combination with gRPC, http, or websocket)</p></li>
+<li><p>if it needs to use <code class="docutils literal notranslate"><span class="pre">TLS</span></code> encryption (to connect to a <code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code> that has been <a class="reference internal" href="../gateway/#flow-tls"><span class="std std-ref">configured to use TLS</span></a> in combination with gRPC, http, or websocket)</p></li>
 </ul>
 <div class="admonition hint">
 <p class="admonition-title">Hint</p>
@@ -543,9 +543,8 @@ Example: the following code will raise an exception:</p>
 </div>
 <div class="caution admonition">
 <p class="admonition-title">Caution</p>
-<p>In case you instanciate a <code class="docutils literal notranslate"><span class="pre">Client</span></code> object using the <code class="docutils literal notranslate"><span class="pre">grpc</span></code> protocol, keep in mind that <code class="docutils literal notranslate"><span class="pre">grpc</span></code> clients cannot be used in
-a multi-threaded environment (check <a class="reference external" href="https://github.com/grpc/grpc/issues/25364">this gRPC issue</a> for reference).
-What you should do, is to rely on asynchronous programming or multi-processing rather than multi-threading.
+<p>We apply <code class="docutils literal notranslate"><span class="pre">RLock</span></code> to avoid <a class="reference external" href="https://github.com/grpc/grpc/issues/25364">this gRPC issue</a>, so that <code class="docutils literal notranslate"><span class="pre">grpc</span></code> clients can be used in a multi-threaded environment.</p>
+<p>What you should do, is to rely on asynchronous programming or multi-processing rather than multi-threading.
 For instance, if you’re building a web server, you can introduce multi-processing based parallelism to your app using
 <code class="docutils literal notranslate"><span class="pre">gunicorn</span></code>: <code class="docutils literal notranslate"><span class="pre">gunicorn</span> <span class="pre">main:app</span> <span class="pre">--workers</span> <span class="pre">4</span> <span class="pre">--worker-class</span> <span class="pre">uvicorn.workers.UvicornWorker</span> <span class="pre">...</span></code></p>
 </div>
@@ -565,7 +564,7 @@ For instance, if you’re building a web server, you can introduce multi-process
 </section>
 <section id="test-readiness-of-the-flow">
 <h2>Test readiness of the Flow<a class="headerlink" href="#test-readiness-of-the-flow" title="Permalink to this heading">#</a></h2>
-<p><a class="reference internal" href="../../api/jina/#jina.Client" title="jina.Client"><code class="xref py py-class docutils literal notranslate"><span class="pre">Client</span></code></a> offers an API to query these readiness endpoints. You can call <a class="reference internal" href="../../api/jina.clients.mixin/#jina.clients.mixin.HealthCheckMixin.is_flow_ready" title="jina.clients.mixin.HealthCheckMixin.is_flow_ready"><code class="xref py py-meth docutils literal notranslate"><span class="pre">is_flow_ready()</span></code></a> or <a class="reference internal" href="../../api/jina/#jina.Flow.is_flow_ready" title="jina.Flow.is_flow_ready"><code class="xref py py-meth docutils literal notranslate"><span class="pre">is_flow_ready()</span></code></a>. It returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if the Flow is ready, and <code class="docutils literal notranslate"><span class="pre">False</span></code> if it is not.</p>
+<p><code class="xref py py-class docutils literal notranslate"><span class="pre">Client</span></code> offers an API to query these readiness endpoints. You can call <a class="reference internal" href="../../api/jina.clients.mixin/#jina.clients.mixin.HealthCheckMixin.is_flow_ready" title="jina.clients.mixin.HealthCheckMixin.is_flow_ready"><code class="xref py py-meth docutils literal notranslate"><span class="pre">is_flow_ready()</span></code></a> or <code class="xref py py-meth docutils literal notranslate"><span class="pre">is_flow_ready()</span></code>. It returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if the Flow is ready, and <code class="docutils literal notranslate"><span class="pre">False</span></code> if it is not.</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--3-input--1" name="tab-set--3" type="radio"><label class="tab-label" for="tab-set--3-input--1">via Flow</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
@@ -605,7 +604,7 @@ False
     <span class="n">f</span><span class="o">.</span><span class="n">block</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina ping flow grpc://localhost:12345
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina<span class="w"> </span>ping<span class="w"> </span>flow<span class="w"> </span>grpc://localhost:12345
 </pre></div>
 </div>
 <div class="tab-set docutils">
@@ -712,7 +711,7 @@ WARNI… JINA@92986 message lost 100% (3/3)
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 30, 2022</div>
+                            Last updated on Jan 13, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

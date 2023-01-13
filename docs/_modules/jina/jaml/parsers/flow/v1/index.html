@@ -401,15 +401,14 @@
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span>
 
-<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
-<span class="kn">from</span> <span class="nn">jina.enums</span> <span class="kn">import</span> <span class="n">DeploymentRoleType</span>
+<span class="kn">from</span> <span class="nn">jina.orchestrate.flow.base</span> <span class="kn">import</span> <span class="n">Flow</span>
 <span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">GATEWAY_NAME</span><span class="p">,</span> <span class="n">ArgNamespace</span><span class="p">,</span> <span class="n">expand_env_var</span>
 <span class="kn">from</span> <span class="nn">jina.jaml.parsers.base</span> <span class="kn">import</span> <span class="n">VersionedYAMLParser</span>
 <span class="kn">from</span> <span class="nn">jina.parsers</span> <span class="kn">import</span> <span class="n">set_deployment_parser</span><span class="p">,</span> <span class="n">set_gateway_parser</span>
 
 
 <span class="k">def</span> <span class="nf">_get_taboo</span><span class="p">(</span><span class="n">parser</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    :param parser: deployment or gateway parser</span>
 <span class="sd">    :return: set of keys that should not be dumped</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -417,7 +416,7 @@
 
 
 <div class="viewcode-block" id="V1Parser"><a class="viewcode-back" href="../../../../../../api/jina.jaml.parsers.flow.v1/#jina.jaml.parsers.flow.v1.V1Parser">[docs]</a><span class="k">class</span> <span class="nc">V1Parser</span><span class="p">(</span><span class="n">VersionedYAMLParser</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;V1Parser introduces new syntax and features:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;V1Parser introduces new syntax and features:</span>
 
 <span class="sd">        - It has a top-level field ``version``</span>
 <span class="sd">        - ``deployments`` is now a List of Dict (rather than a Dict as prev.)</span>
@@ -452,7 +451,7 @@
 <div class="viewcode-block" id="V1Parser.parse"><a class="viewcode-back" href="../../../../../../api/jina.jaml.parsers.flow.v1/#jina.jaml.parsers.flow.v1.V1Parser.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">runtime_args</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Flow&#39;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param cls: the class registered for dumping/loading</span>
 <span class="sd">        :param data: flow yaml file loaded as python dict</span>
 <span class="sd">        :param runtime_args: Optional runtime_args to be directly passed without being parsed into a yaml config</span>
@@ -485,7 +484,7 @@
         <span class="k">return</span> <span class="n">obj</span></div>
 
 <div class="viewcode-block" id="V1Parser.dump"><a class="viewcode-back" href="../../../../../../api/jina.jaml.parsers.flow.v1/#jina.jaml.parsers.flow.v1.V1Parser.dump">[docs]</a>    <span class="k">def</span> <span class="nf">dump</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="s1">&#39;Flow&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param data: versioned flow object</span>
 <span class="sd">        :return: the dictionary given a versioned flow object</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -553,7 +552,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 30, 2022</div>
+                            Last updated on Jan 13, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

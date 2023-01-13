@@ -432,7 +432,7 @@ Jina does its best to recover from failures, handle them gracefully, and report 
 <h2>Executor errors<a class="headerlink" href="#executor-errors" title="Permalink to this heading">#</a></h2>
 <p>In general there are two places where an Executor level error can happen:</p>
 <ul class="simple">
-<li><p>If an <a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>’s <code class="docutils literal notranslate"><span class="pre">__init__</span></code> method raises an Exception, the <a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> cannot start.
+<li><p>If an <code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code>’s <code class="docutils literal notranslate"><span class="pre">__init__</span></code> method raises an Exception, the <code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code> cannot start.
 In this case this Executor runtime raises the Exception, and the Flow throws a <code class="docutils literal notranslate"><span class="pre">RuntimeFailToStart</span></code> Exception.</p></li>
 <li><p>If one of the Executor’s <code class="docutils literal notranslate"><span class="pre">&#64;requests</span></code> methods raises an Exception, the error message is added to the response
 and sent back to the client. If the gRPC or WebSockets protocols are used, the networking stream is not interrupted and can accept further requests.</p></li>
@@ -449,7 +449,7 @@ by creating a new Pod to replace the terminated one. Termination can be enabled 
 </section>
 <section id="network-errors">
 <h2>Network errors<a class="headerlink" href="#network-errors" title="Permalink to this heading">#</a></h2>
-<p>When a <a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a>’s gateway can’t reach an <a class="reference internal" href="../../preliminaries/#architecture-overview"><span class="std std-ref">Executor or Head</span></a>, the Flow attempts to re-connect
+<p>When a <code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code>’s gateway can’t reach an <a class="reference internal" href="../../preliminaries/#architecture-overview"><span class="std std-ref">Executor or Head</span></a>, the Flow attempts to re-connect
 to the faulty deployment according to a retry policy.
 The same applies to calls to Executors that time out.
 The specifics of this policy depend on the Flow’s environment, as outlined below.</p>
@@ -613,7 +613,7 @@ case the replicas are managed by Kubernetes and only a single address is availab
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 30, 2022</div>
+                            Last updated on Jan 13, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

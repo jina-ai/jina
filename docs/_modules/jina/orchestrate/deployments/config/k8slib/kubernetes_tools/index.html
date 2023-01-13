@@ -416,7 +416,7 @@
 
 
 <div class="viewcode-block" id="get_yaml"><a class="viewcode-back" href="../../../../../../../api/jina.orchestrate.deployments.config.k8slib.kubernetes_tools/#jina.orchestrate.deployments.config.k8slib.kubernetes_tools.get_yaml">[docs]</a><span class="k">def</span> <span class="nf">get_yaml</span><span class="p">(</span><span class="n">template</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Create a resource on Kubernetes based on the `template`. It fills the `template` using the `params`.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a resource on Kubernetes based on the `template`. It fills the `template` using the `params`.</span>
 
 <span class="sd">    :param template: path to the template file.</span>
 <span class="sd">    :param params: dictionary for replacing the placeholders (keys) with the actual values.</span>
@@ -424,9 +424,12 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">template</span> <span class="o">==</span> <span class="s1">&#39;configmap&#39;</span><span class="p">:</span>
         <span class="n">yaml</span> <span class="o">=</span> <span class="n">_get_configmap_yaml</span><span class="p">(</span><span class="n">template</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">template</span> <span class="ow">in</span> <span class="n">DEPLOYMENT_FILES</span> <span class="ow">and</span> <span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;device_plugins&#39;</span><span class="p">):</span>
+    <span class="k">elif</span> <span class="n">template</span> <span class="ow">in</span> <span class="n">DEPLOYMENT_FILES</span><span class="p">:</span>
         <span class="n">yaml</span> <span class="o">=</span> <span class="n">_get_yaml</span><span class="p">(</span><span class="n">template</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
-        <span class="n">yaml</span> <span class="o">=</span> <span class="n">_get_deployment_with_device_plugins</span><span class="p">(</span><span class="n">yaml</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;device_plugins&#39;</span><span class="p">):</span>
+            <span class="n">yaml</span> <span class="o">=</span> <span class="n">_get_deployment_with_device_plugins</span><span class="p">(</span><span class="n">yaml</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;env_from_secret&#39;</span><span class="p">):</span>
+            <span class="n">yaml</span> <span class="o">=</span> <span class="n">_get_deployment_with_env_secret</span><span class="p">(</span><span class="n">yaml</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">yaml</span> <span class="o">=</span> <span class="n">_get_yaml</span><span class="p">(</span><span class="n">template</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
 
@@ -476,6 +479,16 @@
         <span class="s1">&#39;resources&#39;</span>
     <span class="p">]</span> <span class="o">=</span> <span class="n">device_plugins</span>
     <span class="k">return</span> <span class="n">deployment</span>
+
+<span class="k">def</span> <span class="nf">_get_deployment_with_env_secret</span><span class="p">(</span><span class="n">deployment</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;env_from_secret&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">env_var</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">env_var</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">k</span>
+        <span class="n">env_var</span><span class="p">[</span><span class="s1">&#39;valueFrom&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;secretKeyRef&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="n">v</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">],</span> <span class="s1">&#39;key&#39;</span><span class="p">:</span> <span class="n">v</span><span class="p">[</span><span class="s1">&#39;key&#39;</span><span class="p">]}}</span>
+            
+        <span class="n">deployment</span><span class="p">[</span><span class="s1">&#39;spec&#39;</span><span class="p">][</span><span class="s1">&#39;template&#39;</span><span class="p">][</span><span class="s1">&#39;spec&#39;</span><span class="p">][</span><span class="s1">&#39;containers&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;env&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">env_var</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">deployment</span>
 </pre></div>
                 </article>
             </div>
@@ -490,7 +503,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 30, 2022</div>
+                            Last updated on Jan 13, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

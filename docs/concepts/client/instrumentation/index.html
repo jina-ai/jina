@@ -425,7 +425,7 @@
                 <article role="main">
                     <section id="instrumentation">
 <span id="instrumenting-client"></span><h1>Instrumentation<a class="headerlink" href="#instrumentation" title="Permalink to this heading">#</a></h1>
-<p>The <a class="reference internal" href="../../../api/jina/#jina.Client" title="jina.Client"><code class="xref py py-class docutils literal notranslate"><span class="pre">Client</span></code></a> supports request tracing, giving you an end-to-end view of a request’s lifecycle. The client supports <strong>gRPC</strong>, <strong>HTTP</strong> and <strong>WebSocket</strong> protocols.</p>
+<p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">Client</span></code> supports request tracing, giving you an end-to-end view of a request’s lifecycle. The client supports <strong>gRPC</strong>, <strong>HTTP</strong> and <strong>WebSocket</strong> protocols.</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">Implicit, inside a Flow</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
@@ -458,7 +458,7 @@
 <p>Each protocol client creates the first trace ID which will be propagated to the <code class="docutils literal notranslate"><span class="pre">Gateway</span></code>. The <code class="docutils literal notranslate"><span class="pre">Gateway</span></code> then creates child spans using the available trace ID which is further propagated to each Executor request. Using the trace ID, all associated spans can be collected to build a trace view of the whole request lifecycle.</p>
 <div class="caution admonition">
 <p class="admonition-title">Using custom/external tracing context</p>
-<p>The <a class="reference internal" href="../../../api/jina/#jina.Client" title="jina.Client"><code class="xref py py-class docutils literal notranslate"><span class="pre">Client</span></code></a> doesn’t currently support external tracing context which can potentially be extracted from an upstream request.</p>
+<p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">Client</span></code> doesn’t currently support external tracing context which can potentially be extracted from an upstream request.</p>
 </div>
 <p>You can find more about instrumentation from the resources below:</p>
 <ul class="simple">
@@ -499,7 +499,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 30, 2022</div>
+                            Last updated on Jan 13, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

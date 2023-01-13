@@ -405,22 +405,22 @@
 <span class="kn">from</span> <span class="nn">jina.enums</span> <span class="kn">import</span> <span class="n">DataInputType</span>
 <span class="kn">from</span> <span class="nn">jina.importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
 <span class="kn">from</span> <span class="nn">jina.logging.predefined</span> <span class="kn">import</span> <span class="n">default_logger</span>
-<span class="kn">from</span> <span class="nn">jina.types.request</span> <span class="kn">import</span> <span class="n">Request</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
     <span class="kn">from</span> <span class="nn">jina.clients.request</span> <span class="kn">import</span> <span class="n">GeneratorSourceType</span>
+    <span class="kn">from</span> <span class="nn">jina.types.request</span> <span class="kn">import</span> <span class="n">Request</span>
 
 
 <div class="viewcode-block" id="request_generator"><a class="viewcode-back" href="../../../../../api/jina.clients.request.asyncio/#jina.clients.request.asyncio.request_generator">[docs]</a><span class="k">async</span> <span class="k">def</span> <span class="nf">request_generator</span><span class="p">(</span>
     <span class="n">exec_endpoint</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">data</span><span class="p">:</span> <span class="s1">&#39;GeneratorSourceType&#39;</span><span class="p">,</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;GeneratorSourceType&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">request_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
     <span class="n">data_type</span><span class="p">:</span> <span class="n">DataInputType</span> <span class="o">=</span> <span class="n">DataInputType</span><span class="o">.</span><span class="n">AUTO</span><span class="p">,</span>
     <span class="n">target_executor</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">parameters</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>  <span class="c1"># do not remove this, add on purpose to suppress unknown kwargs</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="s1">&#39;Request&#39;</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;An async :function:`request_generator`.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;An async :function:`request_generator`.</span>
 
 <span class="sd">    :param exec_endpoint: the endpoint string, by convention starts with `/`</span>
 <span class="sd">    :param data: the data to use in the request</span>
@@ -432,8 +432,6 @@
 <span class="sd">    :param kwargs: additional arguments</span>
 <span class="sd">    :yield: request</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">_kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">extra_kwargs</span><span class="o">=</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="k">try</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -447,7 +445,6 @@
 
             <span class="k">async</span> <span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="n">aiostream</span><span class="o">.</span><span class="n">stream</span><span class="o">.</span><span class="n">chunks</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">request_size</span><span class="p">):</span>
                 <span class="k">yield</span> <span class="n">_new_data_request_from_batch</span><span class="p">(</span>
-                    <span class="n">_kwargs</span><span class="o">=</span><span class="n">kwargs</span><span class="p">,</span>
                     <span class="n">batch</span><span class="o">=</span><span class="n">batch</span><span class="p">,</span>
                     <span class="n">data_type</span><span class="o">=</span><span class="n">data_type</span><span class="p">,</span>
                     <span class="n">endpoint</span><span class="o">=</span><span class="n">exec_endpoint</span><span class="p">,</span>
@@ -472,7 +469,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 30, 2022</div>
+                            Last updated on Jan 13, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

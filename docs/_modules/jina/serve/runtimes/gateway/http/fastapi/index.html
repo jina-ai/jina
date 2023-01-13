@@ -410,7 +410,7 @@
 
 
 <div class="viewcode-block" id="FastAPIBaseGateway"><a class="viewcode-back" href="../../../../../../../api/jina.serve.runtimes.gateway.http.fastapi/#jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway">[docs]</a><span class="k">class</span> <span class="nc">FastAPIBaseGateway</span><span class="p">(</span><span class="n">BaseGateway</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Base FastAPI gateway. Implement this abstract class in-case you want to build a fastapi-based Gateway by</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base FastAPI gateway. Implement this abstract class in-case you want to build a fastapi-based Gateway by</span>
 <span class="sd">    implementing the `app` property. This property should return a fastapi app. The base Gateway will handle starting</span>
 <span class="sd">    a server and serving the application using that server.&quot;&quot;&quot;</span>
 
@@ -422,7 +422,7 @@
         <span class="n">proxy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Initialize the FastAPIBaseGateway</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the FastAPIBaseGateway</span>
 <span class="sd">        :param ssl_keyfile: the path to the key file</span>
 <span class="sd">        :param ssl_certfile: the path to the certificate file</span>
 <span class="sd">        :param uvicorn_kwargs: Dictionary of kwargs arguments that will be passed to Uvicorn server when starting the server</span>
@@ -446,21 +446,21 @@
     <span class="nd">@property</span>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">app</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Get a FastAPI app&#39;&#39;&#39;</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;Get a FastAPI app&#39;&#39;&#39;</span>
         <span class="o">...</span>
 
 <div class="viewcode-block" id="FastAPIBaseGateway.setup_server"><a class="viewcode-back" href="../../../../../../../api/jina.serve.runtimes.gateway.http.fastapi/#jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway.setup_server">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">setup_server</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize and return GRPC server</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
             <span class="kn">from</span> <span class="nn">uvicorn</span> <span class="kn">import</span> <span class="n">Config</span><span class="p">,</span> <span class="n">Server</span>
 
         <span class="k">class</span> <span class="nc">UviServer</span><span class="p">(</span><span class="n">Server</span><span class="p">):</span>
-            <span class="sd">&quot;&quot;&quot;The uvicorn server.&quot;&quot;&quot;</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;The uvicorn server.&quot;&quot;&quot;</span>
 
             <span class="k">async</span> <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sockets</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-                <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">                </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Setup uvicorn server.</span>
 
 <span class="sd">                :param sockets: sockets of server.</span>
@@ -474,7 +474,7 @@
                     <span class="k">return</span>
 
             <span class="k">async</span> <span class="k">def</span> <span class="nf">serve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-                <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">                </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Start the server.</span>
 
 <span class="sd">                :param kwargs: keyword arguments</span>
@@ -507,14 +507,14 @@
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="FastAPIBaseGateway.shutdown"><a class="viewcode-back" href="../../../../../../../api/jina.serve.runtimes.gateway.http.fastapi/#jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway.shutdown">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Free resources allocated when setting up HTTP server</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">should_exit</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="FastAPIBaseGateway.run_server"><a class="viewcode-back" href="../../../../../../../api/jina.serve.runtimes.gateway.http.fastapi/#jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway.run_server">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">run_server</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Run HTTP server forever&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Run HTTP server forever&quot;&quot;&quot;</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">serve</span><span class="p">()</span></div></div>
 
 
@@ -538,7 +538,7 @@
             <span class="n">response_model</span><span class="o">=</span><span class="n">JinaHealthModel</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">async</span> <span class="k">def</span> <span class="nf">_gateway_health</span><span class="p">():</span>
-            <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Get the health of this Gateway service.</span>
 <span class="sd">            .. # noqa: DAR201</span>
 
@@ -558,7 +558,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 30, 2022</div>
+                            Last updated on Jan 13, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

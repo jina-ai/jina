@@ -7,10 +7,10 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://docs.jina.ai/concepts/executor/serve/" />
 <meta property="og:site_name" content="Jina 3.13.2 Documentation" />
-<meta property="og:description" content="Executor s can be served - and remotely accessed - directly, without instantiating a Flow manually. This is especially useful when debugging an Executor in a remote setting. It can also be used to run external/shared Executors to be used in multiple Flows. There are different options for deployin..." />
+<meta property="og:description" content="Executor s can be served and accessed over gRPC, allowing you to use them to create a gRPC-based service for various tasks such as model inference, data processing, generative AI, and search services. There are different options for deploying and running a standalone Executor: Run the Executor di..." />
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
 <meta property="og:image:alt" content="Jina 3.13.2 Documentation" />
-<meta name="description" content="Executor s can be served - and remotely accessed - directly, without instantiating a Flow manually. This is especially useful when debugging an Executor in a remote setting. It can also be used to run external/shared Executors to be used in multiple Flows. There are different options for deployin..." />
+<meta name="description" content="Executor s can be served and accessed over gRPC, allowing you to use them to create a gRPC-based service for various tasks such as model inference, data processing, generative AI, and search services. There are different options for deploying and running a standalone Executor: Run the Executor di..." />
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
@@ -425,19 +425,23 @@
                 <article role="main">
                     <section id="serve">
 <span id="serve-executor-standalone"></span><h1>Serve<a class="headerlink" href="#serve" title="Permalink to this heading">#</a></h1>
-<p><a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>s can be served - and remotely accessed - directly, without instantiating a Flow manually.
-This is especially useful when debugging an Executor in a remote setting. It can also be used to run external/shared Executors to be used in multiple Flows.</p>
+<p><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code>s can be served and accessed over gRPC, allowing you to use them to create a gRPC-based service for various tasks such as model inference, data processing, generative AI, and search services.</p>
 <p>There are different options for deploying and running a standalone Executor:</p>
 <ul class="simple">
-<li><p>Run the Executor directly from Python with the <code class="docutils literal notranslate"><span class="pre">.serve()</span></code> class method</p></li>
-<li><p>Run the static <a class="reference internal" href="../../../api/jina.serve.executors/#jina.serve.executors.BaseExecutor.to_kubernetes_yaml" title="jina.serve.executors.BaseExecutor.to_kubernetes_yaml"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_kubernetes_yaml()</span></code></a> method to generate K8s deployment configuration files</p></li>
+<li><p>Run the Executor directly from Python with the <a class="reference internal" href="../../../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.Deployment" title="jina.orchestrate.deployments.Deployment"><code class="xref py py-class docutils literal notranslate"><span class="pre">Deployment</span></code></a> class</p></li>
+<li><p>Run the static <a class="reference internal" href="../../../api/jina.serve.executors/#jina.serve.executors.BaseExecutor.to_kubernetes_yaml" title="jina.serve.executors.BaseExecutor.to_kubernetes_yaml"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_kubernetes_yaml()</span></code></a> method to generate Kubernetes deployment configuration files</p></li>
 <li><p>Run the static <a class="reference internal" href="../../../api/jina.serve.executors/#jina.serve.executors.BaseExecutor.to_docker_compose_yaml" title="jina.serve.executors.BaseExecutor.to_docker_compose_yaml"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_docker_compose_yaml()</span></code></a> method to generate a Docker Compose service file</p></li>
 </ul>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>Executors can also be combined to form a pipeline of microservices. We will see in a later step how
+to achieve this with the <a class="reference internal" href="../../flow/#flow-cookbook"><span class="std std-ref">Flow</span></a></p>
+</div>
 <div class="hint admonition">
 <p class="admonition-title">Served vs. shared Executor</p>
 <p>In Jina there are two ways of running standalone Executors: <em>Served Executors</em> and <em>shared Executors</em>.</p>
 <ul class="simple">
-<li><p>A <strong>served Executor</strong> is launched by one of the following methods: <code class="docutils literal notranslate"><span class="pre">.serve()</span></code>, <code class="docutils literal notranslate"><span class="pre">to_kubernetes_yaml()</span></code>, or <code class="docutils literal notranslate"><span class="pre">to_docker_compose_yaml()</span></code>.
+<li><p>A <strong>served Executor</strong> is launched by one of the following methods: <a class="reference internal" href="../../../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.Deployment" title="jina.orchestrate.deployments.Deployment"><code class="xref py py-class docutils literal notranslate"><span class="pre">Deployment</span></code></a>, <code class="docutils literal notranslate"><span class="pre">to_kubernetes_yaml()</span></code>, or <code class="docutils literal notranslate"><span class="pre">to_docker_compose_yaml()</span></code>.
 It resides behind a <a class="reference internal" href="../../preliminaries/#architecture-overview"><span class="std std-ref">Gateway</span></a> and can thus be directly accessed by a <a class="reference internal" href="../../client/#client"><span class="std std-ref">Client</span></a>.
 It can also be used as part of a Flow.</p></li>
 <li><p>A <strong>shared Executor</strong> is launched using the <a class="reference internal" href="../../../cli/"><span class="doc std std-doc">Jina CLI</span></a> and does <em>not</em> sit behind a Gateway.
@@ -449,37 +453,87 @@ fewer networking hops when used inside of a Flow.</p></li>
 </div>
 <section id="serve-directly">
 <h2>Serve directly<a class="headerlink" href="#serve-directly" title="Permalink to this heading">#</a></h2>
-<p>An <a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a> can be served using the <a class="reference internal" href="../../../api/jina.serve.executors/#jina.serve.executors.BaseExecutor.serve" title="jina.serve.executors.BaseExecutor.serve"><code class="xref py py-meth docutils literal notranslate"><span class="pre">serve()</span></code></a> method:</p>
+<p>An <code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code> can be served using the <a class="reference internal" href="../../../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.Deployment" title="jina.orchestrate.deployments.Deployment"><code class="xref py py-class docutils literal notranslate"><span class="pre">Deployment</span></code></a> class.</p>
+<p>The <a class="reference internal" href="../../../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.Deployment" title="jina.orchestrate.deployments.Deployment"><code class="xref py py-class docutils literal notranslate"><span class="pre">Deployment</span></code></a> class aims to separate the deployment configuration from the serving logic.
+In other words:</p>
+<ul class="simple">
+<li><p>the Executor cares about defining the logic to serve, which endpoints to define and what data to accept.</p></li>
+<li><p>the Deployment layer cares about how to orchestrate this service, how many replicas or shards, etc.</p></li>
+</ul>
+<p>This separation also aims to enhance the reusability of Executors: the same implementation of an Executor can be
+served in multiple ways/configurations using Deployment.</p>
 <div class="tab-set docutils">
-<input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">Serve Executor</label><div class="tab-content docutils">
+<input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">Python class</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Document</span>
-<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
+<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">Deployment</span>
 
 
 <span class="k">class</span> <span class="nc">MyExec</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
     <span class="nd">@requests</span>
     <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="n">docs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;executed MyExec&#39;</span>  <span class="c1"># custom logic goes here</span>
+        <span class="n">docs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s1">&#39;executed MyExec&#39;</span>  <span class="c1"># custom logic goes here</span>
 
 
-<span class="n">MyExec</span><span class="o">.</span><span class="n">serve</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">)</span>
+<span class="k">with</span> <span class="n">Deployment</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">MyExec</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">,</span> <span class="n">replicas</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span> <span class="k">as</span> <span class="n">dep</span><span class="p">:</span>
+    <span class="n">docs</span> <span class="o">=</span> <span class="n">dep</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/foo&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">DocumentArray</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">docs</span><span class="o">.</span><span class="n">texts</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
-<input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--2">Access served Executor</label><div class="tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span><span class="p">,</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Document</span>
+<input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--2">YAML configuration</label><div class="tab-content docutils">
+<p><code class="docutils literal notranslate"><span class="pre">executor.yaml</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jtype</span><span class="p">:</span> <span class="n">MyExec</span>
+<span class="n">py_modules</span><span class="p">:</span>
+    <span class="o">-</span> <span class="n">executor</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Deployment</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="n">Client</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">)</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="n">DocumentArray</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">on</span><span class="o">=</span><span class="s1">&#39;/foo&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">texts</span><span class="p">)</span>
+<span class="k">with</span> <span class="n">Deployment</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="s1">&#39;executor.yaml&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">,</span> <span class="n">replicas</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span> <span class="k">as</span> <span class="n">dep</span><span class="p">:</span>
+    <span class="n">docs</span> <span class="o">=</span> <span class="n">dep</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/foo&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">DocumentArray</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">docs</span><span class="o">.</span><span class="n">texts</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="o">[</span><span class="s1">&#39;executed MyExec&#39;</span><span class="o">]</span>
+</div>
+<input class="tab-input" id="tab-set--0-input--3" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--3">Hub Executor</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Deployment</span>
+
+<span class="k">with</span> <span class="n">Deployment</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="s1">&#39;jinaai://my-username/MyExec/&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">,</span> <span class="n">replicas</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span> <span class="k">as</span> <span class="n">dep</span><span class="p">:</span>
+    <span class="n">docs</span> <span class="o">=</span> <span class="n">dep</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/foo&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">DocumentArray</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">docs</span><span class="o">.</span><span class="n">texts</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<input class="tab-input" id="tab-set--0-input--4" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--4">Docker image</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Deployment</span>
+
+<span class="k">with</span> <span class="n">Deployment</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="s1">&#39;docker://my-executor-image&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">,</span> <span class="n">replicas</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span> <span class="k">as</span> <span class="n">dep</span><span class="p">:</span>
+    <span class="n">docs</span> <span class="o">=</span> <span class="n">dep</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/foo&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">DocumentArray</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">docs</span><span class="o">.</span><span class="n">texts</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 </div>
-<p>Internally, the <a class="reference internal" href="../../../api/jina.serve.executors/#jina.serve.executors.BaseExecutor.serve" title="jina.serve.executors.BaseExecutor.serve"><code class="xref py py-meth docutils literal notranslate"><span class="pre">serve()</span></code></a> method creates and starts a <a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a>. Therefore, it can take all associated parameters:
-<code class="docutils literal notranslate"><span class="pre">uses_with</span></code>, <code class="docutils literal notranslate"><span class="pre">uses_metas</span></code>, <code class="docutils literal notranslate"><span class="pre">uses_requests</span></code> are passed to the internal <a class="reference internal" href="../../../api/jina/#jina.Flow.add" title="jina.Flow.add"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add()</span></code></a> call, <code class="docutils literal notranslate"><span class="pre">stop_event</span></code> stops
-the Executor, and <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> is passed to the internal <a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Flow()</span></code></a> initialisation call.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>─────────────────────── 🎉 Deployment is ready to serve! ───────────────────────
+╭────────────── 🔗 Endpoint ────────────────╮
+│  ⛓     Protocol                    GRPC  │
+│  🏠       Local           0.0.0.0:12345   │
+│  🔒     Private     192.168.3.147:12345   │
+│  🌍      Public    87.191.159.105:12345   │
+╰───────────────────────────────────────────╯
+[&#39;executed MyExec&#39;]
+</pre></div>
+</div>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>You can use <code class="docutils literal notranslate"><span class="pre">dep.block()</span></code> to serve forever:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">Deployment</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">MyExec</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">,</span> <span class="n">replicas</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span> <span class="k">as</span> <span class="n">dep</span><span class="p">:</span>
+    <span class="n">dep</span><span class="o">.</span><span class="n">block</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<p>The <a class="reference internal" href="../../../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.Deployment" title="jina.orchestrate.deployments.Deployment"><code class="xref py py-class docutils literal notranslate"><span class="pre">Deployment</span></code></a> class accepts configuration options similar to
+<a class="reference internal" href="../../flow/add-executors/#flow-configure-executors"><span class="std std-ref">Executor configuration with Flows</span></a>.</p>
 <div class="seealso admonition">
 <p class="admonition-title">See Also</p>
 <p>For more details on these arguments and the workings of a Flow, see the <a class="reference internal" href="../../flow/#flow-cookbook"><span class="std std-ref">Flow section</span></a>.</p>
@@ -498,7 +552,7 @@ the Executor, and <code class="docutils literal notranslate"><span class="pre">*
 <span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>kubectl apply -R -f /tmp/config_out_folder
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>kubectl<span class="w"> </span>apply<span class="w"> </span>-R<span class="w"> </span>-f<span class="w"> </span>/tmp/config_out_folder
 </pre></div>
 </div>
 <p>The above example deploys the <code class="docutils literal notranslate"><span class="pre">DummyHubExecutor</span></code> from Executor Hub into your Kubernetes cluster.</p>
@@ -529,90 +583,13 @@ Having a Gateway may be useful if you want to access your Executor with the <a c
 <span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker-compose -f /tmp/docker-compose.yml up
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker-compose<span class="w"> </span>-f<span class="w"> </span>/tmp/docker-compose.yml<span class="w"> </span>up
 </pre></div>
 </div>
 <p>The above example runs the <code class="docutils literal notranslate"><span class="pre">DummyHubExecutor</span></code> from Executor Hub locally on your computer using Docker Compose.</p>
 <div class="hint admonition">
 <p class="admonition-title">Hint</p>
 <p>The Executor you use needs to be already containerized and stored in an accessible registry. We recommend Executor Hub for this.</p>
-</div>
-</section>
-<section id="reload-executor">
-<span id="id1"></span><h2>Reload Executor<a class="headerlink" href="#reload-executor" title="Permalink to this heading">#</a></h2>
-<p>While developing your Executor, it can be useful to have the Executor be refreshed from the source code while you are working on it, without needing to restart the complete server.</p>
-<p>For this you can use the Executor’s <code class="docutils literal notranslate"><span class="pre">reload</span></code> argument so that it watches changes in the source code and ensures changes are applied live to the served Executor.</p>
-<p>The Executor will keep track in changes inside the Executor source file, every file passed in <code class="docutils literal notranslate"><span class="pre">py_modules</span></code> argument from <a class="reference internal" href="../../../api/jina/#jina.Flow.add" title="jina.Flow.add"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add()</span></code></a> and all Python files in the folder (and its subfolders) where the Executor class is defined.</p>
-<div class="caution admonition">
-<p class="admonition-title">Caution</p>
-<p>This feature aims to let developers iterate faster while developing or improving the Executor, but is not intended to be used in production.</p>
-</div>
-<div class="note admonition">
-<p class="admonition-title">Note</p>
-<p>This feature requires watchfiles&gt;=0.18 package to be installed.</p>
-</div>
-<p>To see how this works, let’s define an Executor in a file <code class="docutils literal notranslate"><span class="pre">my_executor.py</span></code>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
-
-
-<span class="k">class</span> <span class="nc">MyExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
-    <span class="nd">@requests</span>
-    <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
-            <span class="n">doc</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s1">&#39;I am coming from the first version of MyExecutor&#39;</span>
-</pre></div>
-</div>
-<p>Build a Flow and expose it:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
-
-<span class="kn">from</span> <span class="nn">my_executor</span> <span class="kn">import</span> <span class="n">MyExecutor</span>
-
-<span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;JINA_LOG_LEVEL&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;DEBUG&#39;</span>
-
-
-<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">MyExecutor</span><span class="p">,</span> <span class="n">reload</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-<span class="k">with</span> <span class="n">f</span><span class="p">:</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">block</span><span class="p">()</span>
-</pre></div>
-</div>
-<p>You can see that the Executor is successfully serving:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span><span class="p">,</span> <span class="n">DocumentArray</span>
-
-<span class="n">c</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">)</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">DocumentArray</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">1</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
-</pre></div>
-</div>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>I am coming from the first version of MyExecutor
-</pre></div>
-</div>
-<p>You can edit the Executor file and save the changes:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
-
-
-<span class="k">class</span> <span class="nc">MyExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
-    <span class="nd">@requests</span>
-    <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
-            <span class="n">doc</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s1">&#39;I am coming from a new version of MyExecutor&#39;</span>
-</pre></div>
-</div>
-<p>You should see in the logs of the serving Executor</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>INFO   executor0/rep-0@11606 detected changes in: [&#39;XXX/XXX/XXX/my_executor.py&#39;]. Refreshing the Executor                                                             
-</pre></div>
-</div>
-<p>And after this, the Executor will start serving with the renewed code.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span><span class="p">,</span> <span class="n">DocumentArray</span>
-
-<span class="n">c</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">)</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">DocumentArray</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">1</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
-</pre></div>
-</div>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>&#39;I am coming from a new version of MyExecutor&#39;
-</pre></div>
 </div>
 </section>
 </section>
@@ -648,7 +625,7 @@ Having a Gateway may be useful if you want to access your Executor with the <a c
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 30, 2022</div>
+                            Last updated on Jan 13, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -687,7 +664,6 @@ Having a Gateway may be useful if you want to access your Executor with the <a c
 </ul>
 </li>
 <li><a class="reference internal" href="#serve-via-docker-compose">Serve via Docker Compose</a></li>
-<li><a class="reference internal" href="#reload-executor">Reload Executor</a></li>
 </ul>
 </li>
 </ul>

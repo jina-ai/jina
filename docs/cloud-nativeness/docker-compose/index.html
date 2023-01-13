@@ -426,8 +426,8 @@
                     <section id="docker-compose-support">
 <span id="docker-compose"></span><h1><span class="fab fa-docker"></span> Docker Compose Support<a class="headerlink" href="#docker-compose-support" title="Permalink to this heading">#</a></h1>
 <p>One of the simplest ways to prototype or serve in
-production is to run your <a class="reference internal" href="../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> with <code class="docutils literal notranslate"><span class="pre">docker-compose</span></code>.</p>
-<p>A <a class="reference internal" href="../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> is composed of <a class="reference internal" href="../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>s which run Python code
+production is to run your <code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code> with <code class="docutils literal notranslate"><span class="pre">docker-compose</span></code>.</p>
+<p>A <code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code> is composed of <code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code>s which run Python code
 that operates on <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code>. These <code class="docutils literal notranslate"><span class="pre">Executors</span></code> live in different runtimes depending on how you want to deploy
 your Flow.</p>
 <p>By default, if you are serving your Flow locally they live within processes. Nevertheless,
@@ -457,10 +457,10 @@ always be “unhealthy.”</p>
 the Gateway are built with the same Jina version to guarantee compatibility.</p>
 </div>
 <section id="example-index-and-search-images-using-clipencoder-and-annliteindexer">
-<h2>Example: Index and search images using CLIPEncoder and ANNLiteIndexer<a class="headerlink" href="#example-index-and-search-images-using-clipencoder-and-annliteindexer" title="Permalink to this heading">#</a></h2>
+<h2>Example: Index and search images using CLIPEncoder and AnnLiteIndexer<a class="headerlink" href="#example-index-and-search-images-using-clipencoder-and-annliteindexer" title="Permalink to this heading">#</a></h2>
 <p>Install <a class="reference external" href="https://docs.docker.com/compose/install/"><code class="docutils literal notranslate"><span class="pre">Docker</span> <span class="pre">Compose</span></code></a> locally to follow this how-to.</p>
 <p>This example shows how to build and deploy a Flow with Docker Compose, using <a class="reference external" href="https://cloud.jina.ai/executor/0hnlmu3q"><code class="docutils literal notranslate"><span class="pre">CLIPImageEncoder</span></code></a>
-as an image encoder and <a class="reference external" href="https://cloud.jina.ai/executor/7yypg8qk"><code class="docutils literal notranslate"><span class="pre">ANNLiteIndexer</span></code></a> as an indexer to perform fast nearest
+as an image encoder and <a class="reference external" href="https://cloud.jina.ai/executor/7yypg8qk"><code class="docutils literal notranslate"><span class="pre">AnnLiteIndexer</span></code></a> as an indexer to perform fast nearest
 neighbor retrieval on image embeddings.</p>
 <section id="deploy-the-flow">
 <h3>Deploy the Flow<a class="headerlink" href="#deploy-the-flow" title="Permalink to this heading">#</a></h3>
@@ -468,23 +468,23 @@ neighbor retrieval on image embeddings.</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">YAML</label><div class="tab-content docutils">
 <p>In a <code class="docutils literal notranslate"><span class="pre">flow.yml</span></code> file :</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
-<span class="nt">with</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8080</span><span class="w"></span>
-<span class="w">  </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http</span><span class="w"></span>
-<span class="nt">executors</span><span class="p">:</span><span class="w"></span>
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">encoder</span><span class="w"></span>
-<span class="w">  </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinaai+docker://jina-ai/CLIPEncoder</span><span class="w"></span>
-<span class="w">  </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span><span class="w"></span>
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">indexer</span><span class="w"></span>
-<span class="w">  </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinaai+docker://jina-ai/AnnLiteIndexer</span><span class="w"></span>
-<span class="w">  </span><span class="nt">uses_with</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">dim</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">512</span><span class="w"></span>
-<span class="w">  </span><span class="nt">shards</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span>
+<span class="nt">with</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8080</span>
+<span class="w">  </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http</span>
+<span class="nt">executors</span><span class="p">:</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">encoder</span>
+<span class="w">  </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinaai+docker://jina-ai/CLIPEncoder</span>
+<span class="w">  </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">indexer</span>
+<span class="w">  </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinaai+docker://jina-ai/AnnLiteIndexer</span>
+<span class="w">  </span><span class="nt">uses_with</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">dim</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">512</span>
+<span class="w">  </span><span class="nt">shards</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
 </pre></div>
 </div>
 <p>Then in a shell run:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>jina <span class="nb">export</span> docker-compose flow.yml docker-compose.yml 
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>jina<span class="w"> </span><span class="nb">export</span><span class="w"> </span>docker-compose<span class="w"> </span>flow.yml<span class="w"> </span>docker-compose.yml<span class="w"> </span>
 </pre></div>
 </div>
 </div>
@@ -512,23 +512,23 @@ neighbor retrieval on image embeddings.</p>
 <p>You can use a custom jina Docker image for the Gateway service by setting the envrironment variable <code class="docutils literal notranslate"><span class="pre">JINA_GATEWAY_IMAGE</span></code> to the desired image before generating the configuration.</p>
 </div>
 <p>let’s take a look at the generated compose file:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;3.3&#39;</span><span class="w"></span>
-<span class="nn">...</span><span class="w"></span>
-<span class="nt">services</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">encoder-rep-0</span><span class="p">:</span><span class="w">  </span><span class="c1"># # # # # # # # # # #          </span><span class="w"></span>
-<span class="w">                  </span><span class="c1">#     Encoder       #</span><span class="w"></span>
-<span class="w">  </span><span class="nt">encoder-rep-1</span><span class="p">:</span><span class="w">  </span><span class="c1"># # # # # # # # # # #</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;3.3&#39;</span>
+<span class="nn">...</span>
+<span class="nt">services</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">encoder-rep-0</span><span class="p">:</span><span class="w">  </span><span class="c1"># # # # # # # # # # #          </span>
+<span class="w">                  </span><span class="c1">#     Encoder       #</span>
+<span class="w">  </span><span class="nt">encoder-rep-1</span><span class="p">:</span><span class="w">  </span><span class="c1"># # # # # # # # # # #</span>
 
-<span class="w">  </span><span class="nt">indexer-head</span><span class="p">:</span><span class="w">   </span><span class="c1"># # # # # # # # # # #          </span><span class="w"></span>
-<span class="w">                  </span><span class="c1">#                   #</span><span class="w"></span>
-<span class="w">  </span><span class="nt">indexer-0</span><span class="p">:</span><span class="w">      </span><span class="c1">#     Indexer       #</span><span class="w"></span>
-<span class="w">                  </span><span class="c1">#                   #</span><span class="w"></span>
-<span class="w">  </span><span class="nt">indexer-1</span><span class="p">:</span><span class="w">      </span><span class="c1"># # # # # # # # # # #</span><span class="w"></span>
+<span class="w">  </span><span class="nt">indexer-head</span><span class="p">:</span><span class="w">   </span><span class="c1"># # # # # # # # # # #          </span>
+<span class="w">                  </span><span class="c1">#                   #</span>
+<span class="w">  </span><span class="nt">indexer-0</span><span class="p">:</span><span class="w">      </span><span class="c1">#     Indexer       #</span>
+<span class="w">                  </span><span class="c1">#                   #</span>
+<span class="w">  </span><span class="nt">indexer-1</span><span class="p">:</span><span class="w">      </span><span class="c1"># # # # # # # # # # #</span>
 
 <span class="w">  </span><span class="nt">gateway</span><span class="p">:</span><span class="w"> </span>
-<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">...</span><span class="w"></span>
-<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">ports</span><span class="p p-Indicator">:</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8080:8080</span><span class="w"></span>
+<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">...</span>
+<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">ports</span><span class="p p-Indicator">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8080:8080</span>
 </pre></div>
 </div>
 <div class="caution admonition tip">
@@ -543,7 +543,7 @@ adapt it to your own needs.</p>
 <li><p>3 associated with the indexer, one for the Head and two for the Shards.</p></li>
 </ul>
 <p>Now, you can deploy this Flow :</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker-compose -f docker-compose.yml up
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker-compose<span class="w"> </span>-f<span class="w"> </span>docker-compose.yml<span class="w"> </span>up
 </pre></div>
 </div>
 </section>
@@ -568,7 +568,7 @@ adapt it to your own needs.</p>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Indexed Documents: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">indexed_docs</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>Indexed Documents: <span class="m">99</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>Indexed<span class="w"> </span>Documents:<span class="w"> </span><span class="m">99</span>
 </pre></div>
 </div>
 <p>We indexed 99 Documents!</p>
@@ -579,7 +579,7 @@ adapt it to your own needs.</p>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Matched Documents: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">matches</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>Matched Documents: <span class="m">10</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>Matched<span class="w"> </span>Documents:<span class="w"> </span><span class="m">10</span>
 </pre></div>
 </div>
 <p>This gives us the list of the ten closest images to the query.</p>
@@ -618,7 +618,7 @@ adapt it to your own needs.</p>
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 30, 2022</div>
+                            Last updated on Jan 13, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -651,7 +651,7 @@ adapt it to your own needs.</p>
                     <div class="toc-tree">
                         <ul>
 <li><a class="reference internal" href="#"><span class="fab fa-docker"></span> Docker Compose Support</a><ul>
-<li><a class="reference internal" href="#example-index-and-search-images-using-clipencoder-and-annliteindexer">Example: Index and search images using CLIPEncoder and ANNLiteIndexer</a><ul>
+<li><a class="reference internal" href="#example-index-and-search-images-using-clipencoder-and-annliteindexer">Example: Index and search images using CLIPEncoder and AnnLiteIndexer</a><ul>
 <li><a class="reference internal" href="#deploy-the-flow">Deploy the Flow</a></li>
 <li><a class="reference internal" href="#query-the-flow">Query the Flow</a></li>
 </ul>

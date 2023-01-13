@@ -428,13 +428,13 @@
 <p>Module for async requests generator.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="jina.clients.request.asyncio.request_generator">
-<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.clients.request.asyncio.</span></span><span class="sig-name descname"><span class="pre">request_generator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exec_endpoint</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">request_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">DataInputType.AUTO</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_executor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/request/asyncio/#request_generator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.request.asyncio.request_generator" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.clients.request.asyncio.</span></span><span class="sig-name descname"><span class="pre">request_generator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exec_endpoint</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">request_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">DataInputType.AUTO</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_executor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/request/asyncio/#request_generator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.request.asyncio.request_generator" title="Permalink to this definition">#</a></dt>
 <dd><p>An async <a href="#id1"><span class="problematic" id="id2">:function:`request_generator`</span></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>exec_endpoint</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the endpoint string, by convention starts with <cite>/</cite></p></li>
-<li><p><strong>data</strong> (<em>GeneratorSourceType</em>) – the data to use in the request</p></li>
+<li><p><strong>data</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[GeneratorSourceType]) – the data to use in the request</p></li>
 <li><p><strong>request_size</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – the number of Documents per request</p></li>
 <li><p><strong>data_type</strong> (<a class="reference internal" href="../jina.enums/#jina.enums.DataInputType" title="jina.enums.DataInputType"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataInputType</span></code></a>) – if <code class="docutils literal notranslate"><span class="pre">data</span></code> is an iterator over self-contained document, i.e. <code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentSourceType</span></code>;
 or an iterator over possible Document content (set to text, blob and buffer).</p></li>
@@ -447,7 +447,7 @@ or an iterator over possible Document content (set to text, blob and buffer).</p
 <dd class="field-even"><p>request</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncIterator</span></code>[<a class="reference internal" href="../jina.types.request/#jina.types.request.Request" title="jina.types.request.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></a>]</p>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncIterator</span></code>[Request]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -467,7 +467,7 @@ or an iterator over possible Document content (set to text, blob and buffer).</p
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 30, 2022</div>
+                            Last updated on Jan 13, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

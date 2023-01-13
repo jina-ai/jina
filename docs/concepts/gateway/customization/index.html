@@ -442,10 +442,10 @@ run it, orchestrate it, and send it health-checks.</p>
 <p>There are two Gateway base classes to allow implementing a custom Gateway:</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="../../../api/jina.serve.runtimes.gateway.http.fastapi/#jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway" title="jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway"><code class="xref py py-class docutils literal notranslate"><span class="pre">FastAPIBaseGateway</span></code></a>: Use this abstract class to implement a custom Gateway using FastAPI.</p></li>
-<li><p><a class="reference internal" href="../../../api/jina/#jina.Gateway" title="jina.Gateway"><code class="xref py py-class docutils literal notranslate"><span class="pre">Gateway</span></code></a>: Use this abstract class to implement a custom Gateway of any type.</p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Gateway</span></code>: Use this abstract class to implement a custom Gateway of any type.</p></li>
 </ul>
 <p>Whether your custom Gateway is based on a FastAPI app using <a class="reference internal" href="../../../api/jina.serve.runtimes.gateway.http.fastapi/#jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway" title="jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway"><code class="xref py py-class docutils literal notranslate"><span class="pre">FastAPIBaseGateway</span></code></a>
-or based on a general server using <a class="reference internal" href="../../../api/jina/#jina.Gateway" title="jina.Gateway"><code class="xref py py-class docutils literal notranslate"><span class="pre">Gateway</span></code></a>, you will need to implement your server behavior in almost
+or based on a general server using <code class="xref py py-class docutils literal notranslate"><span class="pre">Gateway</span></code>, you will need to implement your server behavior in almost
 the same way.
 In the next section we will discuss the implementation steps, and then we will discuss how to use both base Gateway classes.</p>
 <section id="server-implementation">
@@ -525,15 +525,15 @@ simply implement the <a class="reference internal" href="../../../api/jina.serve
 </pre></div>
 </div>
 <p>As an example, you can refer to <a class="reference internal" href="../../../api/jina.serve.runtimes.gateway.http/#jina.serve.runtimes.gateway.http.HTTPGateway" title="jina.serve.runtimes.gateway.http.HTTPGateway"><code class="xref py py-class docutils literal notranslate"><span class="pre">HTTPGateway</span></code></a>.</p>
-<p><a class="reference internal" href="../../../api/jina.serve.runtimes.gateway.http.fastapi/#jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway" title="jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway"><code class="xref py py-class docutils literal notranslate"><span class="pre">FastAPIBaseGateway</span></code></a> is a subclass of <a class="reference internal" href="../../../api/jina/#jina.Gateway" title="jina.Gateway"><code class="xref py py-class docutils literal notranslate"><span class="pre">Gateway</span></code></a>.</p>
+<p><a class="reference internal" href="../../../api/jina.serve.runtimes.gateway.http.fastapi/#jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway" title="jina.serve.runtimes.gateway.http.fastapi.FastAPIBaseGateway"><code class="xref py py-class docutils literal notranslate"><span class="pre">FastAPIBaseGateway</span></code></a> is a subclass of <code class="xref py py-class docutils literal notranslate"><span class="pre">Gateway</span></code>.</p>
 </section>
 <section id="subclass-from-gateway">
-<h3>Subclass from <a class="reference internal" href="../../../api/jina/#jina.Gateway" title="jina.Gateway"><code class="xref py py-class docutils literal notranslate"><span class="pre">Gateway</span></code></a><a class="headerlink" href="#subclass-from-gateway" title="Permalink to this heading">#</a></h3>
-<p><a class="reference internal" href="../../../api/jina/#jina.Gateway" title="jina.Gateway"><code class="xref py py-class docutils literal notranslate"><span class="pre">Gateway</span></code></a> allows implementing more general cases of Gateways. You can use this class as long as your gateway
+<h3>Subclass from <code class="xref py py-class docutils literal notranslate"><span class="pre">Gateway</span></code><a class="headerlink" href="#subclass-from-gateway" title="Permalink to this heading">#</a></h3>
+<p><code class="xref py py-class docutils literal notranslate"><span class="pre">Gateway</span></code> allows implementing more general cases of Gateways. You can use this class as long as your gateway
 server is runnable in an <code class="docutils literal notranslate"><span class="pre">asyncio</span></code> loop.
-To implement a custom gateway class using <a class="reference internal" href="../../../api/jina/#jina.Gateway" title="jina.Gateway"><code class="xref py py-class docutils literal notranslate"><span class="pre">Gateway</span></code></a> do the following:</p>
+To implement a custom gateway class using <code class="xref py py-class docutils literal notranslate"><span class="pre">Gateway</span></code> do the following:</p>
 <ul class="simple">
-<li><p>Create a class that inherits from <a class="reference internal" href="../../../api/jina/#jina.Gateway" title="jina.Gateway"><code class="xref py py-class docutils literal notranslate"><span class="pre">Gateway</span></code></a></p></li>
+<li><p>Create a class that inherits from <code class="xref py py-class docutils literal notranslate"><span class="pre">Gateway</span></code></p></li>
 <li><p>Implement a constructor <code class="docutils literal notranslate"><span class="pre">__init__</span></code>:
 This step is optional. You don’t need a constructor if your Gateway does not need user-defined attributes.
 If your Gateway has <code class="docutils literal notranslate"><span class="pre">__init__</span></code>, it needs to carry <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> in the signature and call <code class="docutils literal notranslate"><span class="pre">super().__init__(**kwargs)</span></code> in the body:</p></li>
@@ -706,12 +706,12 @@ and protocol. Health checks will be sent only to the first port.</p>
 <p>Like Executor <code class="docutils literal notranslate"><span class="pre">config</span></code> files, a custom Gateway implementation can be associated with a YAML configuration file.
 Such a configuration can override user-defined parameters and define other runtime arguments (port, protocol, py_modules,…).</p>
 <p>For instance, you can define such a configuration in <code class="docutils literal notranslate"><span class="pre">config.yml</span></code>:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="kt">!MyGateway</span><span class="w"></span>
-<span class="nt">py_modules</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_gateway.py</span><span class="w"></span>
-<span class="nt">with</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">arg1</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hello</span><span class="w"></span>
-<span class="w">  </span><span class="nt">arg2</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">world</span><span class="w"></span>
-<span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">12345</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="kt">!MyGateway</span>
+<span class="nt">py_modules</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_gateway.py</span>
+<span class="nt">with</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">arg1</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hello</span>
+<span class="w">  </span><span class="nt">arg2</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">world</span>
+<span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">12345</span>
 </pre></div>
 </div>
 <p>For more information, please refer to the <a class="reference internal" href="../yaml-spec/#gateway-yaml-spec"><span class="std std-ref">Gateway YAML Specifications</span></a></p>
@@ -735,19 +735,19 @@ custom Gateways:</p></li>
 </pre></div>
 </div>
 <p>Alternatively, you can just install jina using <code class="docutils literal notranslate"><span class="pre">pip</span></code>:</p>
-<div class="highlight-dockerfile notranslate"><div class="highlight"><pre><span></span><span class="k">RUN</span><span class="w"> </span>pip install jina
+<div class="highlight-dockerfile notranslate"><div class="highlight"><pre><span></span><span class="k">RUN</span><span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>jina
 </pre></div>
 </div>
 <ol class="arabic simple" start="2">
 <li><p>Install <code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code> if you included this file:</p></li>
 </ol>
-<div class="highlight-dockerfile notranslate"><div class="highlight"><pre><span></span><span class="k">RUN</span><span class="w"> </span>pip install -r requirements.txt
+<div class="highlight-dockerfile notranslate"><div class="highlight"><pre><span></span><span class="k">RUN</span><span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements.txt
 </pre></div>
 </div>
 <ol class="arabic simple" start="3">
 <li><p>Copy source code under the workdir folder:</p></li>
 </ol>
-<div class="highlight-dockerfile notranslate"><div class="highlight"><pre><span></span><span class="k">COPY</span><span class="w"> </span>. /workdir/
+<div class="highlight-dockerfile notranslate"><div class="highlight"><pre><span></span><span class="k">COPY</span><span class="w"> </span>.<span class="w"> </span>/workdir/
 <span class="k">WORKDIR</span><span class="w"> </span><span class="s">/workdir</span>
 </pre></div>
 </div>
@@ -766,8 +766,8 @@ custom Gateways:</p></li>
 </pre></div>
 </div>
 <p>You can now build the docker image:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> my_gateway
-docker build -t gateway-image
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>my_gateway
+docker<span class="w"> </span>build<span class="w"> </span>-t<span class="w"> </span>gateway-image
 </pre></div>
 </div>
 </section>
@@ -818,32 +818,32 @@ docker build -t gateway-image
 <h3>Flow YAML configuration<a class="headerlink" href="#flow-yaml-configuration" title="Permalink to this heading">#</a></h3>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--1-input--1" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--1">Python Class</label><div class="tab-content docutils">
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="kt">!Flow</span><span class="w"></span>
-<span class="nt">gateway</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">py_modules</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_gateway/my_gateway.py</span><span class="w"></span>
-<span class="w">  </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MyGateway</span><span class="w"></span>
-<span class="w">  </span><span class="nt">with</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">arg</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">value</span><span class="w"></span>
-<span class="w">  </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http</span><span class="w"></span>
-<span class="w">  </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">12345</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="kt">!Flow</span>
+<span class="nt">gateway</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">py_modules</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_gateway/my_gateway.py</span>
+<span class="w">  </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MyGateway</span>
+<span class="w">  </span><span class="nt">with</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">arg</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">value</span>
+<span class="w">  </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http</span>
+<span class="w">  </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">12345</span>
 </pre></div>
 </div>
 </div>
 <input class="tab-input" id="tab-set--1-input--2" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--2">YAML configuration</label><div class="tab-content docutils">
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="kt">!Flow</span><span class="w"></span>
-<span class="nt">gateway</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_gateway/config.yml</span><span class="w"></span>
-<span class="w">  </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http</span><span class="w"></span>
-<span class="w">  </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">12345</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="kt">!Flow</span>
+<span class="nt">gateway</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_gateway/config.yml</span>
+<span class="w">  </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http</span>
+<span class="w">  </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">12345</span>
 </pre></div>
 </div>
 </div>
 <input class="tab-input" id="tab-set--1-input--3" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--3">Docker Image</label><div class="tab-content docutils">
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="kt">!Flow</span><span class="w"></span>
-<span class="nt">gateway</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">docker://gateway-image</span><span class="w"></span>
-<span class="w">  </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http</span><span class="w"></span>
-<span class="w">  </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">12345</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="kt">!Flow</span>
+<span class="nt">gateway</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">docker://gateway-image</span>
+<span class="w">  </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http</span>
+<span class="w">  </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">12345</span>
 </pre></div>
 </div>
 </div>
@@ -888,7 +888,7 @@ health checks will be sent, it is important to specify them when including the g
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 30, 2022</div>
+                            Last updated on Jan 13, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

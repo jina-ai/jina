@@ -425,8 +425,8 @@
                 <article role="main">
                     <section id="instrumentation">
 <span id="instrumenting-flow"></span><h1>Instrumentation<a class="headerlink" href="#instrumentation" title="Permalink to this heading">#</a></h1>
-<p>A <a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> exposes configuration parameters for leveraging <a class="reference external" href="https://opentelemetry.io">OpenTelemetry</a> Tracing and Metrics observability features. These tools let you instrument and collect various signals which help to analyze your application’s real-time behavior.</p>
-<p>A <a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> is composed of several Pods, namely the <a class="reference internal" href="../../../api/jina.serve.runtimes.gateway/#jina.serve.runtimes.gateway.GatewayRuntime" title="jina.serve.runtimes.gateway.GatewayRuntime"><code class="xref py py-class docutils literal notranslate"><span class="pre">GatewayRuntime</span></code></a>, <a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>s, and potentially a <a class="reference internal" href="../../../api/jina.serve.runtimes.head/#jina.serve.runtimes.head.HeadRuntime" title="jina.serve.runtimes.head.HeadRuntime"><code class="xref py py-class docutils literal notranslate"><span class="pre">HeadRuntime</span></code></a> (see the <a class="reference internal" href="../../preliminaries/#architecture-overview"><span class="std std-ref">architecture overview</span></a>). Each Pod is its own microservice. These services expose their own metrics using the Python <a class="reference external" href="https://opentelemetry-python.readthedocs.io/en/stable/api/trace.html">OpenTelemetry API and SDK</a>.</p>
+<p>A <code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code> exposes configuration parameters for leveraging <a class="reference external" href="https://opentelemetry.io">OpenTelemetry</a> Tracing and Metrics observability features. These tools let you instrument and collect various signals which help to analyze your application’s real-time behavior.</p>
+<p>A <code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code> is composed of several Pods, namely the <a class="reference internal" href="../../../api/jina.serve.runtimes.gateway/#jina.serve.runtimes.gateway.GatewayRuntime" title="jina.serve.runtimes.gateway.GatewayRuntime"><code class="xref py py-class docutils literal notranslate"><span class="pre">GatewayRuntime</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code>s, and potentially a <a class="reference internal" href="../../../api/jina.serve.runtimes.head/#jina.serve.runtimes.head.HeadRuntime" title="jina.serve.runtimes.head.HeadRuntime"><code class="xref py py-class docutils literal notranslate"><span class="pre">HeadRuntime</span></code></a> (see the <a class="reference internal" href="../../preliminaries/#architecture-overview"><span class="std std-ref">architecture overview</span></a>). Each Pod is its own microservice. These services expose their own metrics using the Python <a class="reference external" href="https://opentelemetry-python.readthedocs.io/en/stable/api/trace.html">OpenTelemetry API and SDK</a>.</p>
 <p>Tracing and Metrics can be enabled and configured independently to allow more flexibility in the data collection and visualization setup.</p>
 <div class="seealso admonition hint">
 <p class="admonition-title">Hint</p>
@@ -455,16 +455,16 @@
 </div>
 <input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--2">YAML</label><div class="tab-content docutils">
 <p>In <code class="docutils literal notranslate"><span class="pre">flow.yaml</span></code>:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
-<span class="nt">with</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">tracing</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
-<span class="w">  </span><span class="nt">tracing_exporter_host</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;localhost&#39;</span><span class="w"></span>
-<span class="w">  </span><span class="nt">tracing_exporter_port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4317</span><span class="w"></span>
-<span class="nt">executors</span><span class="p">:</span><span class="w"></span>
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinaai://jina-ai/SimpleIndexer</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span>
+<span class="nt">with</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">tracing</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">  </span><span class="nt">tracing_exporter_host</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;localhost&#39;</span>
+<span class="w">  </span><span class="nt">tracing_exporter_port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4317</span>
+<span class="nt">executors</span><span class="p">:</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinaai://jina-ai/SimpleIndexer</span>
 </pre></div>
 </div>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina flow --uses flow.yaml
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina<span class="w"> </span>flow<span class="w"> </span>--uses<span class="w"> </span>flow.yaml
 </pre></div>
 </div>
 </div>
@@ -565,16 +565,16 @@
 </div>
 <input class="tab-input" id="tab-set--1-input--2" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--2">YAML</label><div class="tab-content docutils">
 <p>In <code class="docutils literal notranslate"><span class="pre">flow.yaml</span></code>:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
-<span class="nt">with</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">metrics</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
-<span class="w">  </span><span class="nt">metrics_exporter_host</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;localhost&#39;</span><span class="w"></span>
-<span class="w">  </span><span class="nt">metrics_exporter_port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4317</span><span class="w"></span>
-<span class="nt">executors</span><span class="p">:</span><span class="w"></span>
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinaai://jina-ai/SimpleIndexer</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span>
+<span class="nt">with</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">metrics</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">  </span><span class="nt">metrics_exporter_host</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;localhost&#39;</span>
+<span class="w">  </span><span class="nt">metrics_exporter_port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4317</span>
+<span class="nt">executors</span><span class="p">:</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinaai://jina-ai/SimpleIndexer</span>
 </pre></div>
 </div>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina flow --uses flow.yaml
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina<span class="w"> </span>flow<span class="w"> </span>--uses<span class="w"> </span>flow.yaml
 </pre></div>
 </div>
 </div>
@@ -794,7 +794,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 30, 2022</div>
+                            Last updated on Jan 13, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

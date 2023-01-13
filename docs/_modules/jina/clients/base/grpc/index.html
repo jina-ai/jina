@@ -399,11 +399,11 @@
                     <h1>Source code for jina.clients.base.grpc</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">asyncio</span>
 <span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">threading</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
 
 <span class="kn">import</span> <span class="nn">grpc</span>
 <span class="kn">from</span> <span class="nn">grpc</span> <span class="kn">import</span> <span class="n">RpcError</span>
-
 <span class="kn">from</span> <span class="nn">jina.clients.base</span> <span class="kn">import</span> <span class="n">BaseClient</span>
 <span class="kn">from</span> <span class="nn">jina.clients.helper</span> <span class="kn">import</span> <span class="n">callback_exec</span>
 <span class="kn">from</span> <span class="nn">jina.excepts</span> <span class="kn">import</span> <span class="n">BadClientInput</span><span class="p">,</span> <span class="n">BadServerFlow</span><span class="p">,</span> <span class="n">InternalNetworkError</span>
@@ -419,13 +419,15 @@
 
 
 <div class="viewcode-block" id="GRPCBaseClient"><a class="viewcode-back" href="../../../../../api/jina.clients.base.grpc/#jina.clients.base.grpc.GRPCBaseClient">[docs]</a><span class="k">class</span> <span class="nc">GRPCBaseClient</span><span class="p">(</span><span class="n">BaseClient</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;A simple Python client for connecting to the gRPC gateway.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A simple Python client for connecting to the gRPC gateway.</span>
 
 <span class="sd">    It manages the asyncio event loop internally, so all interfaces are synchronous from the outside.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">_lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">RLock</span><span class="p">()</span>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_is_flow_ready</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Sends a dry run to the Flow to validate if the Flow is ready to receive requests</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sends a dry run to the Flow to validate if the Flow is ready to receive requests</span>
 
 <span class="sd">        :param kwargs: potential kwargs received passed from the public interface</span>
 <span class="sd">        :return: boolean indicating the health/readiness of the Flow</span>
@@ -556,7 +558,7 @@
             <span class="n">max_backoff</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span>
             <span class="n">backoff_multiplier</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.5</span><span class="p">,</span>
             <span class="n">results_in_order</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-            <span class="n">stream</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">stream</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
@@ -602,81 +604,82 @@
                 <span class="n">metadata</span> <span class="o">=</span> <span class="n">metadata</span> <span class="ow">or</span> <span class="p">()</span>
                 <span class="n">metadata</span> <span class="o">=</span> <span class="n">metadata</span> <span class="o">+</span> <span class="p">((</span><span class="s1">&#39;__results_in_order__&#39;</span><span class="p">,</span> <span class="s1">&#39;true&#39;</span><span class="p">),)</span>
 
-            <span class="k">async</span> <span class="k">with</span> <span class="n">GrpcConnectionPool</span><span class="o">.</span><span class="n">get_grpc_channel</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
-                    <span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">,</span>
-                    <span class="n">asyncio</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                    <span class="n">tls</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">tls</span><span class="p">,</span>
-                    <span class="n">aio_tracing_client_interceptors</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">aio_tracing_client_interceptors</span><span class="p">(),</span>
-            <span class="p">)</span> <span class="k">as</span> <span class="n">channel</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;connected to </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="p">:</span>
+                <span class="k">async</span> <span class="k">with</span> <span class="n">GrpcConnectionPool</span><span class="o">.</span><span class="n">get_grpc_channel</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+                        <span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">,</span>
+                        <span class="n">asyncio</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                        <span class="n">tls</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">tls</span><span class="p">,</span>
+                        <span class="n">aio_tracing_client_interceptors</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">aio_tracing_client_interceptors</span><span class="p">(),</span>
+                <span class="p">)</span> <span class="k">as</span> <span class="n">channel</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;connected to </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 
-                <span class="k">with</span> <span class="n">ProgressBar</span><span class="p">(</span>
-                        <span class="n">total_length</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_inputs_length</span><span class="p">,</span> <span class="n">disable</span><span class="o">=</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_progress</span>
-                <span class="p">)</span> <span class="k">as</span> <span class="n">p_bar</span><span class="p">:</span>
-                    <span class="k">try</span><span class="p">:</span>
-                        <span class="k">if</span> <span class="n">stream</span><span class="p">:</span>
-                            <span class="k">async</span> <span class="k">for</span> <span class="n">resp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stream_rpc</span><span class="p">(</span>
-                                    <span class="n">channel</span><span class="o">=</span><span class="n">channel</span><span class="p">,</span>
-                                    <span class="n">req_iter</span><span class="o">=</span><span class="n">req_iter</span><span class="p">,</span>
-                                    <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span>
-                                    <span class="n">on_error</span><span class="o">=</span><span class="n">on_error</span><span class="p">,</span>
-                                    <span class="n">on_done</span><span class="o">=</span><span class="n">on_done</span><span class="p">,</span>
-                                    <span class="n">on_always</span><span class="o">=</span><span class="n">on_always</span><span class="p">,</span>
-                                    <span class="n">continue_on_error</span><span class="o">=</span><span class="n">continue_on_error</span><span class="p">,</span>
-                                    <span class="n">p_bar</span><span class="o">=</span><span class="n">p_bar</span><span class="p">,</span>
-                                    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+                    <span class="k">with</span> <span class="n">ProgressBar</span><span class="p">(</span>
+                            <span class="n">total_length</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_inputs_length</span><span class="p">,</span> <span class="n">disable</span><span class="o">=</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_progress</span>
+                    <span class="p">)</span> <span class="k">as</span> <span class="n">p_bar</span><span class="p">:</span>
+                        <span class="k">try</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="n">stream</span><span class="p">:</span>
+                                <span class="k">async</span> <span class="k">for</span> <span class="n">resp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stream_rpc</span><span class="p">(</span>
+                                        <span class="n">channel</span><span class="o">=</span><span class="n">channel</span><span class="p">,</span>
+                                        <span class="n">req_iter</span><span class="o">=</span><span class="n">req_iter</span><span class="p">,</span>
+                                        <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span>
+                                        <span class="n">on_error</span><span class="o">=</span><span class="n">on_error</span><span class="p">,</span>
+                                        <span class="n">on_done</span><span class="o">=</span><span class="n">on_done</span><span class="p">,</span>
+                                        <span class="n">on_always</span><span class="o">=</span><span class="n">on_always</span><span class="p">,</span>
+                                        <span class="n">continue_on_error</span><span class="o">=</span><span class="n">continue_on_error</span><span class="p">,</span>
+                                        <span class="n">p_bar</span><span class="o">=</span><span class="n">p_bar</span><span class="p">,</span>
+                                        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+                                <span class="p">):</span>
+                                    <span class="k">yield</span> <span class="n">resp</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="k">async</span> <span class="k">for</span> <span class="n">resp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_unary_rpc</span><span class="p">(</span>
+                                        <span class="n">channel</span><span class="o">=</span><span class="n">channel</span><span class="p">,</span>
+                                        <span class="n">req_iter</span><span class="o">=</span><span class="n">req_iter</span><span class="p">,</span>
+                                        <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span>
+                                        <span class="n">on_error</span><span class="o">=</span><span class="n">on_error</span><span class="p">,</span>
+                                        <span class="n">on_done</span><span class="o">=</span><span class="n">on_done</span><span class="p">,</span>
+                                        <span class="n">on_always</span><span class="o">=</span><span class="n">on_always</span><span class="p">,</span>
+                                        <span class="n">continue_on_error</span><span class="o">=</span><span class="n">continue_on_error</span><span class="p">,</span>
+                                        <span class="n">p_bar</span><span class="o">=</span><span class="n">p_bar</span><span class="p">,</span>
+                                        <span class="n">results_in_order</span><span class="o">=</span><span class="n">results_in_order</span><span class="p">,</span>
+                                        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+                                <span class="p">):</span>
+                                    <span class="k">yield</span> <span class="n">resp</span>
+
+                        <span class="k">except</span> <span class="p">(</span><span class="n">grpc</span><span class="o">.</span><span class="n">aio</span><span class="o">.</span><span class="n">_call</span><span class="o">.</span><span class="n">AioRpcError</span><span class="p">,</span> <span class="n">InternalNetworkError</span><span class="p">)</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+                            <span class="n">my_code</span> <span class="o">=</span> <span class="n">err</span><span class="o">.</span><span class="n">code</span><span class="p">()</span>
+                            <span class="n">my_details</span> <span class="o">=</span> <span class="n">err</span><span class="o">.</span><span class="n">details</span><span class="p">()</span>
+                            <span class="n">trailing_metadata</span> <span class="o">=</span> <span class="n">extract_trailing_metadata</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+                            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;gRPC error: </span><span class="si">{</span><span class="n">my_code</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">my_details</span><span class="si">}</span><span class="s1">&#39;</span>
+                            <span class="k">if</span> <span class="n">trailing_metadata</span><span class="p">:</span>
+                                <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;gRPC error: </span><span class="si">{</span><span class="n">my_code</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">my_details</span><span class="si">}</span><span class="se">\n</span><span class="si">{</span><span class="n">trailing_metadata</span><span class="si">}</span><span class="s1">&#39;</span>
+
+                            <span class="k">if</span> <span class="n">my_code</span> <span class="o">==</span> <span class="n">grpc</span><span class="o">.</span><span class="n">StatusCode</span><span class="o">.</span><span class="n">UNAVAILABLE</span><span class="p">:</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="se">\n</span><span class="s1">The ongoing request is terminated as the server is not available or closed already.&#39;</span>
+                                <span class="p">)</span>
+                                <span class="k">raise</span> <span class="ne">ConnectionError</span><span class="p">(</span><span class="n">my_details</span><span class="p">)</span>
+                            <span class="k">elif</span> <span class="n">my_code</span> <span class="o">==</span> <span class="n">grpc</span><span class="o">.</span><span class="n">StatusCode</span><span class="o">.</span><span class="n">DEADLINE_EXCEEDED</span><span class="p">:</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="se">\n</span><span class="s1">The ongoing request is terminated due to a server-side timeout.&#39;</span>
+                                <span class="p">)</span>
+                                <span class="k">raise</span> <span class="ne">ConnectionError</span><span class="p">(</span><span class="n">my_details</span><span class="p">)</span>
+                            <span class="k">elif</span> <span class="n">my_code</span> <span class="o">==</span> <span class="n">grpc</span><span class="o">.</span><span class="n">StatusCode</span><span class="o">.</span><span class="n">INTERNAL</span><span class="p">:</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="se">\n</span><span class="s1">internal error on the server side&#39;</span>
+                                <span class="p">)</span>
+                                <span class="k">raise</span> <span class="n">err</span>
+                            <span class="k">elif</span> <span class="p">(</span>
+                                    <span class="n">my_code</span> <span class="o">==</span> <span class="n">grpc</span><span class="o">.</span><span class="n">StatusCode</span><span class="o">.</span><span class="n">UNKNOWN</span>
+                                    <span class="ow">and</span> <span class="s1">&#39;asyncio.exceptions.TimeoutError&#39;</span> <span class="ow">in</span> <span class="n">my_details</span>
                             <span class="p">):</span>
-                                <span class="k">yield</span> <span class="n">resp</span>
-                        <span class="k">else</span><span class="p">:</span>
-                            <span class="k">async</span> <span class="k">for</span> <span class="n">resp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_unary_rpc</span><span class="p">(</span>
-                                    <span class="n">channel</span><span class="o">=</span><span class="n">channel</span><span class="p">,</span>
-                                    <span class="n">req_iter</span><span class="o">=</span><span class="n">req_iter</span><span class="p">,</span>
-                                    <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span>
-                                    <span class="n">on_error</span><span class="o">=</span><span class="n">on_error</span><span class="p">,</span>
-                                    <span class="n">on_done</span><span class="o">=</span><span class="n">on_done</span><span class="p">,</span>
-                                    <span class="n">on_always</span><span class="o">=</span><span class="n">on_always</span><span class="p">,</span>
-                                    <span class="n">continue_on_error</span><span class="o">=</span><span class="n">continue_on_error</span><span class="p">,</span>
-                                    <span class="n">p_bar</span><span class="o">=</span><span class="n">p_bar</span><span class="p">,</span>
-                                    <span class="n">results_in_order</span><span class="o">=</span><span class="n">results_in_order</span><span class="p">,</span>
-                                    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-                            <span class="p">):</span>
-                                <span class="k">yield</span> <span class="n">resp</span>
-
-                    <span class="k">except</span> <span class="p">(</span><span class="n">grpc</span><span class="o">.</span><span class="n">aio</span><span class="o">.</span><span class="n">_call</span><span class="o">.</span><span class="n">AioRpcError</span><span class="p">,</span> <span class="n">InternalNetworkError</span><span class="p">)</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
-                        <span class="n">my_code</span> <span class="o">=</span> <span class="n">err</span><span class="o">.</span><span class="n">code</span><span class="p">()</span>
-                        <span class="n">my_details</span> <span class="o">=</span> <span class="n">err</span><span class="o">.</span><span class="n">details</span><span class="p">()</span>
-                        <span class="n">trailing_metadata</span> <span class="o">=</span> <span class="n">extract_trailing_metadata</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
-                        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;gRPC error: </span><span class="si">{</span><span class="n">my_code</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">my_details</span><span class="si">}</span><span class="s1">&#39;</span>
-                        <span class="k">if</span> <span class="n">trailing_metadata</span><span class="p">:</span>
-                            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;gRPC error: </span><span class="si">{</span><span class="n">my_code</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">my_details</span><span class="si">}</span><span class="se">\n</span><span class="si">{</span><span class="n">trailing_metadata</span><span class="si">}</span><span class="s1">&#39;</span>
-
-                        <span class="k">if</span> <span class="n">my_code</span> <span class="o">==</span> <span class="n">grpc</span><span class="o">.</span><span class="n">StatusCode</span><span class="o">.</span><span class="n">UNAVAILABLE</span><span class="p">:</span>
-                            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="se">\n</span><span class="s1">The ongoing request is terminated as the server is not available or closed already.&#39;</span>
-                            <span class="p">)</span>
-                            <span class="k">raise</span> <span class="ne">ConnectionError</span><span class="p">(</span><span class="n">my_details</span><span class="p">)</span>
-                        <span class="k">elif</span> <span class="n">my_code</span> <span class="o">==</span> <span class="n">grpc</span><span class="o">.</span><span class="n">StatusCode</span><span class="o">.</span><span class="n">DEADLINE_EXCEEDED</span><span class="p">:</span>
-                            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="se">\n</span><span class="s1">The ongoing request is terminated due to a server-side timeout.&#39;</span>
-                            <span class="p">)</span>
-                            <span class="k">raise</span> <span class="ne">ConnectionError</span><span class="p">(</span><span class="n">my_details</span><span class="p">)</span>
-                        <span class="k">elif</span> <span class="n">my_code</span> <span class="o">==</span> <span class="n">grpc</span><span class="o">.</span><span class="n">StatusCode</span><span class="o">.</span><span class="n">INTERNAL</span><span class="p">:</span>
-                            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="se">\n</span><span class="s1">internal error on the server side&#39;</span>
-                            <span class="p">)</span>
-                            <span class="k">raise</span> <span class="n">err</span>
-                        <span class="k">elif</span> <span class="p">(</span>
-                                <span class="n">my_code</span> <span class="o">==</span> <span class="n">grpc</span><span class="o">.</span><span class="n">StatusCode</span><span class="o">.</span><span class="n">UNKNOWN</span>
-                                <span class="ow">and</span> <span class="s1">&#39;asyncio.exceptions.TimeoutError&#39;</span> <span class="ow">in</span> <span class="n">my_details</span>
-                        <span class="p">):</span>
-                            <span class="k">raise</span> <span class="n">BadClientInput</span><span class="p">(</span>
-                                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span>
-                                <span class="s1">&#39;often the case is that you define/send a bad input iterator to jina, &#39;</span>
-                                <span class="s1">&#39;please double check your input iterator&#39;</span>
-                            <span class="p">)</span> <span class="kn">from</span> <span class="nn">err</span>
-                        <span class="k">else</span><span class="p">:</span>
-                            <span class="k">raise</span> <span class="n">BadServerFlow</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">err</span>
+                                <span class="k">raise</span> <span class="n">BadClientInput</span><span class="p">(</span>
+                                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span>
+                                    <span class="s1">&#39;often the case is that you define/send a bad input iterator to jina, &#39;</span>
+                                    <span class="s1">&#39;please double check your input iterator&#39;</span>
+                                <span class="p">)</span> <span class="kn">from</span> <span class="nn">err</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="k">raise</span> <span class="n">BadServerFlow</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">err</span>
 
         <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;user cancel the process&#39;</span><span class="p">)</span>
@@ -700,7 +703,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 30, 2022</div>
+                            Last updated on Jan 13, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

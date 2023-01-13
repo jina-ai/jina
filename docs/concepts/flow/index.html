@@ -425,7 +425,7 @@
                 <article role="main">
                     <section id="flow">
 <span id="flow-cookbook"></span><h1><span class="fas fa-network-wired"></span> Flow<a class="headerlink" href="#flow" title="Permalink to this heading">#</a></h1>
-<p>A <a class="reference internal" href="../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> orchestrates <a class="reference internal" href="../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>s into a processing pipeline to accomplish a task.
+<p>A <code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code> orchestrates <code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code>s into a processing pipeline to accomplish a task.
 Documents “flow” through the pipeline and are processed by Executors.</p>
 <p>You can think of Flow as an interface to configure and launch your <a class="reference internal" href="../preliminaries/#architecture-overview"><span class="std std-ref">microservice architecture</span></a>,
 while the heavy lifting is done by the <a class="reference internal" href="../executor/#executor-cookbook"><span class="std std-ref">services</span></a> themselves.
@@ -439,31 +439,31 @@ In particular, each Flow also launches a <a class="reference internal" href="../
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><a class="reference internal" href="../../api/jina/#jina.Flow.add" title="jina.Flow.add"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add()</span></code></a></p></td>
+<tr class="row-even"><td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">add()</span></code></p></td>
 <td><p>Adds an Executor to the Flow</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../../api/jina/#jina.Flow.start" title="jina.Flow.start"><code class="xref py py-meth docutils literal notranslate"><span class="pre">start()</span></code></a></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">start()</span></code></p></td>
 <td><p>Starts the Flow. This will start all its Executors and check if they are ready to be used.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../../api/jina/#jina.Flow.close" title="jina.Flow.close"><code class="xref py py-meth docutils literal notranslate"><span class="pre">close()</span></code></a></p></td>
+<tr class="row-even"><td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">close()</span></code></p></td>
 <td><p>Stops and closes the Flow. This will stop and shutdown all its Executors.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">with</span></code> context manager</p></td>
 <td><p>Uses the Flow as a context manager. It will automatically start and stop your Flow.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../../api/jina/#jina.Flow.plot" title="jina.Flow.plot"><code class="xref py py-meth docutils literal notranslate"><span class="pre">plot()</span></code></a></p></td>
+<tr class="row-even"><td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">plot()</span></code></p></td>
 <td><p>Visualizes the Flow. Helpful for building complex pipelines.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="../../api/jina.clients.mixin/#jina.clients.mixin.PostMixin.post" title="jina.clients.mixin.PostMixin.post"><code class="xref py py-meth docutils literal notranslate"><span class="pre">post()</span></code></a></p></td>
 <td><p>Sends requests to the Flow API.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../../api/jina/#jina.Flow.block" title="jina.Flow.block"><code class="xref py py-meth docutils literal notranslate"><span class="pre">block()</span></code></a></p></td>
+<tr class="row-even"><td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">block()</span></code></p></td>
 <td><p>Blocks execution until the program is terminated. This is useful to keep the Flow alive so it can be used from other places (clients, etc).</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../../api/jina/#jina.Flow.to_docker_compose_yaml" title="jina.Flow.to_docker_compose_yaml"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_docker_compose_yaml()</span></code></a></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_docker_compose_yaml()</span></code></p></td>
 <td><p>Generates a Docker-Compose file listing all Executors as services.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../../api/jina/#jina.Flow.to_kubernetes_yaml" title="jina.Flow.to_kubernetes_yaml"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_kubernetes_yaml()</span></code></a></p></td>
+<tr class="row-even"><td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_kubernetes_yaml()</span></code></p></td>
 <td><p>Generates Kubernetes configuration files in <code class="docutils literal notranslate"><span class="pre">&lt;output_directory&gt;</span></code>. Based on your local Jina version, Executor Hub may rebuild the Docker image during the YAML generation process. If you do not wish to rebuild the image, set the environment variable <code class="docutils literal notranslate"><span class="pre">JINA_HUB_NO_IMAGE_REBUILD</span></code>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="../../api/jina.clients.mixin/#jina.clients.mixin.HealthCheckMixin.is_flow_ready" title="jina.clients.mixin.HealthCheckMixin.is_flow_ready"><code class="xref py py-meth docutils literal notranslate"><span class="pre">is_flow_ready()</span></code></a></p></td>
@@ -529,11 +529,11 @@ But you need to chain them together to bring real value and build and serve an a
 </div>
 <input class="tab-input" id="tab-set--0-input--3" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--3">Load from YAML</label><div class="tab-content docutils">
 <p><code class="docutils literal notranslate"><span class="pre">my.yml</span></code>:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
-<span class="nt">executors</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">myexec1</span><span class="w"></span>
-<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">FooExecutor</span><span class="w"></span>
-<span class="w">    </span><span class="nt">py_modules</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">exec.py</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span>
+<span class="nt">executors</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">myexec1</span>
+<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">FooExecutor</span>
+<span class="w">    </span><span class="nt">py_modules</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">exec.py</span>
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">exec.py</span></code>:</p>
@@ -592,7 +592,7 @@ But you need to chain them together to bring real value and build and serve an a
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 30, 2022</div>
+                            Last updated on Jan 13, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

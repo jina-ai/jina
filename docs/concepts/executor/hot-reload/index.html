@@ -427,7 +427,7 @@
 <span id="reload-executor"></span><h1>Hot Reload<a class="headerlink" href="#hot-reload" title="Permalink to this heading">#</a></h1>
 <p>While developing your Executor, it can be useful to have the Executor be refreshed from the source code while you are working on it, without needing to restart the Flow server.</p>
 <p>For this you can use the Executor’s <code class="docutils literal notranslate"><span class="pre">reload</span></code> argument to watch changes in the source code and the Executor YAML configuration and ensure changes are applied to the served Executor.</p>
-<p>The Executor will keep track of changes inside the Executor source and YAML files, every file passed in <code class="docutils literal notranslate"><span class="pre">py_modules</span></code> argument from <a class="reference internal" href="../../../api/jina/#jina.Flow.add" title="jina.Flow.add"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add()</span></code></a> and all the Python files in the Executor’s folder and sub-folders).</p>
+<p>The Executor will keep track of changes inside the Executor source and YAML files, every file passed in <code class="docutils literal notranslate"><span class="pre">py_modules</span></code> argument from <code class="xref py py-meth docutils literal notranslate"><span class="pre">add()</span></code> and all the Python files in the Executor’s folder and sub-folders).</p>
 <div class="caution admonition">
 <p class="admonition-title">Caution</p>
 <p>This feature is thought to let the developer iterate faster while developing or improving the Executor, but is not intended to be used in production environment.</p>
@@ -501,7 +501,7 @@
 </div>
 <p>Reloading is also applied when the Executor’s YAML configuration file is changed. In this case, the Executor deployment restarts.</p>
 <p>To see how this works, let’s define an Executor configuration in <code class="docutils literal notranslate"><span class="pre">executor.yml</span></code>:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MyExecutorBeforeReload</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MyExecutorBeforeReload</span>
 </pre></div>
 </div>
 <p>Build a Flow with the Executor in it and expose it:</p>
@@ -543,7 +543,7 @@
 </pre></div>
 </div>
 <p>You can edit the Executor YAML file and save the changes:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MyExecutorAfterReload</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MyExecutorAfterReload</span>
 </pre></div>
 </div>
 <p>In the Flow’s logs you should see:</p>
@@ -558,7 +558,7 @@
 <span class="nb">print</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">DocumentArray</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">1</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MyExecutorAfterReload</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MyExecutorAfterReload</span>
 </pre></div>
 </div>
 </section>
@@ -594,7 +594,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 30, 2022</div>
+                            Last updated on Jan 13, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
