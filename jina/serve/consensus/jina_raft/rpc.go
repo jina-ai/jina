@@ -4,6 +4,8 @@ import (
     "context"
     "log"
     "time"
+    "sync/atomic"
+    "errors"
 
     "github.com/Jille/raft-grpc-leader-rpc/rafterrors"
     "github.com/golang/protobuf/proto"
@@ -12,7 +14,6 @@ import (
     "github.com/hashicorp/raft"
     pb "jraft/jina-go-proto"
 )
-
 
 type RpcInterface struct {
     Executor *executorFSM
@@ -23,11 +24,16 @@ type RpcInterface struct {
 }
 
 
+func (rpc *RpcInterface) getRaftState() raft.RaftState {
+    stateAddr := (uint32)(rpc.Raft.State())
+    return raft.RaftState(atomic.LoadUint32(&stateAddr))
+}
+
 /**
  * jina gRPC func for DataRequests.
  * This is used to send requests to Executors when a list of requests is not needed
  */
-func (rpc RpcInterface) ProcessSingleData(
+func (rpc *RpcInterface) ProcessSingleData(
     ctx context.Context,
     dataRequestProto *pb.DataRequestProto) (*pb.DataRequestProto, error) {
     log.Printf("ProcessSingleData")
@@ -45,6 +51,11 @@ func (rpc RpcInterface) ProcessSingleData(
     if found {
         log.Printf("Calling a Write Endpoint")
         log.Printf("rpc method process single data to endpoint %s", *endpoint)
+        if rpc.getRaftState() == raft.Leader && rpc.Executor.isSnapshotInProgress() {
+            err := errors.New("Leader cannot process write request while Snapshotting")
+            log.Fatal("Error: %v", err)
+            return nil, err
+        }
         bytes, err := proto.Marshal(dataRequestProto)
         if err != nil {
             log.Fatal("marshaling error: ", err)
@@ -71,12 +82,12 @@ func (rpc RpcInterface) ProcessSingleData(
     }
 }
 
-func (rpc RpcInterface) EndpointDiscovery(ctx context.Context, empty *empty.Empty) (*pb.EndpointsProto, error) {
+func (rpc *RpcInterface) EndpointDiscovery(ctx context.Context, empty *empty.Empty) (*pb.EndpointsProto, error) {
     log.Printf("EndpointDiscovery")
     return rpc.Executor.EndpointDiscovery(ctx, empty)
 }
 
-func (rpc RpcInterface) XStatus(ctx context.Context, empty *empty.Empty) (*pb.JinaInfoProto, error) {
+func (rpc *RpcInterface) XStatus(ctx context.Context, empty *empty.Empty) (*pb.JinaInfoProto, error) {
     log.Printf("XStatus")
    return rpc.Executor.XStatus(ctx, empty)
 }

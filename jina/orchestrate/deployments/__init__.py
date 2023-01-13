@@ -47,6 +47,43 @@ if TYPE_CHECKING:
     from jina.serve.executors import BaseExecutor
 
 
+def add_voter_to_leader(pods):
+    import jraft
+    leader_address = f'{pods[0].args.host}:{pods[0].args.port}'
+    for pod in pods[1:]:
+        voter_address = f'{pod.args.host}:{pod.args.port}'
+        success = False
+        for _ in range(10):
+            try:
+                jraft.add_voter(leader_address, str(pod.args.replica_id), voter_address)
+                success = True
+                break
+            except ValueError:
+                time.sleep(0.5)
+        if not success:
+            raise Exception(
+                f'Failed to add {str(pod.args.replica_id)} as voter with address {voter_address} to leader at {leader_address}')
+
+
+async def async_add_voter_to_leader(pods):
+    import jraft
+    leader_address = f'{pods[0].args.host}:{pods[0].args.port}'
+    for pod in pods[1:]:
+        voter_address = f'{pod.args.host}:{pod.args.port}'
+        success = False
+        for _ in range(10):
+            try:
+                jraft.add_voter(leader_address, str(pod.args.replica_id), voter_address)
+                success = True
+                break
+            except ValueError:
+                await asyncio.sleep(0.5)
+
+        if not success:
+            raise Exception(
+                f'Failed to add {str(pod.args.replica_id)} as voter with address {voter_address} to leader at {leader_address}')
+
+
 class Deployment(PostMixin, BaseOrchestrator):
     """A Deployment is an immutable set of pods, which run in replicas. They share the same input and output socket.
     Internally, the pods can run with the process/thread backend. They can be also run in their own containers
@@ -86,23 +123,14 @@ class Deployment(PostMixin, BaseOrchestrator):
             for pod in self._pods:
                 pod.wait_start_success()
             if self._pods[0].args.stateful:
-                import jraft
-                leader_address = f'{self._pods[0].args.host}:{self._pods[0].args.port}'
-                for pod in self._pods[1:]:
-                    voter_address = f'{pod.args.host}:{pod.args.port}'
-                    jraft.add_voter(leader_address, str(pod.args.replica_id), voter_address)
+                add_voter_to_leader(self._pods)
 
         async def async_wait_start_success(self):
             await asyncio.gather(
                 *[pod.async_wait_start_success() for pod in self._pods]
             )
             if self._pods[0].args.stateful:
-                await asyncio.sleep(5) # TODO: Remove. We need to make add_voter fail properly and repeat until successful
-                import jraft
-                leader_address = f'{self._pods[0].args.host}:{self._pods[0].args.port}'
-                for pod in self._pods[1:]:
-                    voter_address = f'{pod.args.host}:{pod.args.port}'
-                    jraft.add_voter(leader_address, str(pod.args.replica_id), voter_address)
+                await async_add_voter_to_leader(self._pods)
 
         def __enter__(self):
             for _args in self.args:

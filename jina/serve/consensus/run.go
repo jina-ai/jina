@@ -4,6 +4,7 @@ package main
 // #include <stdbool.h>
 // int PyArg_ParseTuple_run(PyObject * args, char **a, char **b, char **c, bool *d, char **e);
 // int PyArg_ParseTuple_add_voter(PyObject * args, char **a, char **b, char **c);
+// void raise_exception(char *msg);
 import "C"
 
 
@@ -14,7 +15,6 @@ import (
     "log"
     "net"
     "os"
-    "time"
     "path/filepath"
 
     "github.com/Jille/raft-grpc-leader-rpc/leaderhealth"
@@ -29,12 +29,10 @@ import (
     "google.golang.org/grpc/reflection"
 )
 
-
 func NewRaft(ctx context.Context, myID, myAddress string, raftDir string, raftBootstrap bool, fsm raft.FSM) (*raft.Raft, *transport.Manager, error) {
+
     config := raft.DefaultConfig()
     config.LocalID = raft.ServerID(myID)
-    config.SnapshotThreshold = 3
-    config.SnapshotInterval = 10 * time.Second
 
     baseDir := filepath.Join(raftDir, myID)
 
@@ -56,6 +54,7 @@ func NewRaft(ctx context.Context, myID, myAddress string, raftDir string, raftBo
     tm := transport.New(raft.ServerAddress(myAddress), []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())})
 
     r, err := raft.NewRaft(config, fsm, logs_db, stable_db, file_snapshot, tm.Transport())
+
     if err != nil {
         return nil, nil, fmt.Errorf("raft.NewRaft: %v", err)
     }
@@ -79,8 +78,6 @@ func NewRaft(ctx context.Context, myID, myAddress string, raftDir string, raftBo
     return r, tm, nil
 }
 
-
-
 func Run(myAddr string, raftId string, raftDir string, raftBootstrap bool, executorTarget string) {
     log.Printf("Calling Run %s, %s, %s, %p, %s", myAddr, raftId, raftDir, raftBootstrap, executorTarget)
     if raftId == "" {
@@ -98,34 +95,32 @@ func Run(myAddr string, raftId string, raftDir string, raftBootstrap bool, execu
     }
     executorFSM := jinaraft.NewExecutorFSM(executorTarget)
 
-    raft, tm, err := NewRaft(ctx, raftId, myAddr, raftDir, raftBootstrap, executorFSM)
+    r, tm, err := NewRaft(ctx, raftId, myAddr, raftDir, raftBootstrap, executorFSM)
     if err != nil {
         log.Fatalf("failed to start raft: %v", err)
     }
     grpcServer := grpc.NewServer()
     pb.RegisterJinaSingleDataRequestRPCServer(grpcServer, &jinaraft.RpcInterface{
         Executor: executorFSM,
-        Raft:     raft,
+        Raft:     r,
     })
     pb.RegisterJinaDiscoverEndpointsRPCServer(grpcServer, &jinaraft.RpcInterface{
         Executor: executorFSM,
-        Raft:     raft,
+        Raft:     r,
     })
     pb.RegisterJinaInfoRPCServer(grpcServer, &jinaraft.RpcInterface{
         Executor: executorFSM,
-        Raft:     raft,
+        Raft:     r,
     })
     tm.Register(grpcServer)
-    leaderhealth.Setup(raft, grpcServer, []string{"Health"})
+    leaderhealth.Setup(r, grpcServer, []string{"Health"})
 
-    raftadmin.Register(grpcServer, raft)
+    raftadmin.Register(grpcServer, r)
     reflection.Register(grpcServer)
     if err := grpcServer.Serve(sock); err != nil {
         log.Fatalf("failed to serve: %v", err)
     }
 }
-
-
 
 func main() {
     myAddr         := flag.String("address", "localhost:50051", "TCP host+port for this node")
@@ -134,7 +129,6 @@ func main() {
     raftBootstrap  := flag.Bool("raft_bootstrap", false, "Whether to bootstrap the Raft cluster")
     executorTarget := flag.String("executor_target", "localhost:54321", "underlying executor host+port")
     flag.Parse()
-    log.Printf("Calling main")
     Run(*myAddr, *raftId, *raftDir, *raftBootstrap, *executorTarget)
 }
 
@@ -149,7 +143,8 @@ func run(self *C.PyObject, args *C.PyObject) *C.PyObject {
     if C.PyArg_ParseTuple_run(args, &myAddr, &raftId, &raftDir, &raftBootstrap, &executorTarget) != 0 {
         Run(C.GoString(myAddr), C.GoString(raftId), C.GoString(raftDir), raftBootstrap != false, C.GoString(executorTarget))
     }
-    return C.PyLong_FromLong(0)
+    C.Py_IncRef(C.Py_None);
+    return C.Py_None;
 }
 
 //export add_voter
@@ -157,13 +152,14 @@ func add_voter(self *C.PyObject, args *C.PyObject) *C.PyObject {
     var target *C.char
     var raftId *C.char
     var voterAddress *C.char
-    log.Printf("ADD VOTER")
     if C.PyArg_ParseTuple_add_voter(args, &target, &raftId, &voterAddress) != 0 {
         err := AddVoter(C.GoString(target), C.GoString(raftId), C.GoString(voterAddress))
         if err != nil {
-            log.Fatalf("Error received calling AddVoter %v", err)
+            log.Printf("Error received calling AddVoter %v, but return None", err)
+            C.raise_exception(C.CString("Error from AddVoter"))
+            return nil
         }
     }
-    log.Printf("ADD VOTER AFTER")
-    return C.PyLong_FromLong(0)
+    C.Py_IncRef(C.Py_None);
+    return C.Py_None;
 }

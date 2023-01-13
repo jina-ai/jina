@@ -3,6 +3,7 @@ package main
 import (
     "context"
     "log"
+    "errors"
 
     pb "github.com/Jille/raftadmin/proto"
     "google.golang.org/grpc"
@@ -50,11 +51,17 @@ func AddVoter(target string, id string, voter_address string) error {
         c := pb.NewRaftAdminClient(conn)
         log.Printf("Invoking Await(%s)", prototext.Format(f))
         resp, err := c.Await(ctx, f)
+        log.Printf("Response: %s", prototext.Format(resp))
+
+        if resp.Error != "" {
+            // handle error
+            return errors.New("Error from Add Voter, target is not the leader")
+        }
         if err != nil {
             return err
         }
-        log.Printf("Response: %s", prototext.Format(resp))
         if _, err := c.Forget(ctx, f); err != nil {
+            log.Printf("Returning error %v", err)
             return err
         }
     }
