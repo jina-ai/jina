@@ -1,9 +1,11 @@
 import asyncio
 import json
 import os
+import threading
+import time
 from typing import TYPE_CHECKING, Dict, List, Optional, Sequence, Union
 
-from docarray import DocumentArray
+from docarray import Document, DocumentArray
 
 from jina.logging.logger import JinaLogger
 from jina.serve.networking import GrpcConnectionPool
@@ -66,6 +68,7 @@ class GatewayStreamer:
         :param aio_tracing_client_interceptors: Optional list of aio grpc tracing server interceptors.
         :param tracing_client_interceptor: Optional gprc tracing server interceptor.
         """
+        self.logger = logger
         topology_graph = TopologyGraph(
             graph_representation=graph_representation,
             graph_conditions=graph_conditions,
@@ -79,6 +82,7 @@ class GatewayStreamer:
         self.runtime_name = runtime_name
         self.aio_tracing_client_interceptors = aio_tracing_client_interceptors
         self.tracing_client_interceptor = tracing_client_interceptor
+        self._executor_addresses = executor_addresses
 
         self._connection_pool = self._create_connection_pool(
             executor_addresses,
@@ -223,6 +227,31 @@ class GatewayStreamer:
     def _set_env_streamer_args(**kwargs):
         os.environ['JINA_STREAMER_ARGS'] = json.dumps(kwargs)
 
+    async def warmup(self, stop_event: threading.Event):
+        '''Executes warmup task on each deployment. This forces the gateway to establish connection and open a
+        gRPC channel to each executor so that the first request doesn't need to experience the penalty of
+        eastablishing a brand new gRPC channel.
+        :param stop_event: signal to indicate if an early termination of the task is required for graceful teardown.
+        '''
+        self.logger.debug(f'Running GatewayRuntime warmup')
+        deployments = {key for key in self._executor_addresses.keys()}
+
+        try:
+            deployment_warmup_tasks = []
+            for deployment in deployments:
+                deployment_warmup_tasks.append(
+                    asyncio.create_task(
+                        self._connection_pool.warmup(
+                            deployment=deployment, stop_event=stop_event
+                        )
+                    )
+                )
+
+            await asyncio.gather(*deployment_warmup_tasks, return_exceptions=True)
+        except Exception as ex:
+            self.logger.error(f'error with GatewayRuntime warmup up task: {ex}')
+            return
+
 
 class _ExecutorStreamer:
     def __init__(self, connection_pool: GrpcConnectionPool, executor_name: str) -> None:
@@ -261,4 +290,3 @@ class _ExecutorStreamer:
             docs.extend(resp.docs)
         
         return docs
-        
