@@ -1031,17 +1031,25 @@ class GrpcConnectionPool:
 
         async def task_wrapper():
             tried_addresses = set()
+            num_replicas = len(connections.get_all_connections())
             if retries is None or retries < 0:
                 total_num_tries = (
-                    max(DEFAULT_MINIMUM_RETRIES, len(connections.get_all_connections()))
+                    max(DEFAULT_MINIMUM_RETRIES, num_replicas)
                     + 1
                 )
             else:
                 total_num_tries = 1 + retries  # try once, then do all the retries
             for i in range(total_num_tries):
-                current_connection = await connections.get_next_connection(
-                    num_retries=total_num_tries
-                )
+                current_connection = None
+                # TODO: Check if there is a better solution
+                while current_connection is None or current_connection.address in tried_addresses:
+                    current_connection = await connections.get_next_connection(
+                        num_retries=total_num_tries
+                    )
+                    # if you request to retry more than the amount of replicas, we just skip, we could balance the
+                    # retries in the future
+                    if len(tried_addresses) >= num_replicas:
+                        break
                 tried_addresses.add(current_connection.address)
                 try:
                     return await current_connection.send_requests(
