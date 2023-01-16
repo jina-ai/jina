@@ -569,6 +569,7 @@ class GrpcConnectionPool:
                 os.unsetenv('https_proxy')
             self.aio_tracing_client_interceptors = aio_tracing_client_interceptors
             self.tracing_client_interceptor = tracing_client_interceptor
+            self._close_lock = asyncio.Lock()
 
         def add_replica(self, deployment: str, shard_id: int, address: str):
             self._add_connection(deployment, shard_id, address, 'shards')
@@ -612,13 +613,14 @@ class GrpcConnectionPool:
 
         async def close(self):
             # Close all connections to all replicas
-            for deployment in self._deployments:
-                for entity_type in self._deployments[deployment]:
-                    for shard_in in self._deployments[deployment][entity_type]:
-                        await self._deployments[deployment][entity_type][
-                            shard_in
-                        ].close()
-            self._deployments.clear()
+            async with self._close_lock:
+                for deployment in self._deployments:
+                    for entity_type in self._deployments[deployment]:
+                        for shard_in in self._deployments[deployment][entity_type]:
+                            await self._deployments[deployment][entity_type][
+                                shard_in
+                            ].close()
+                self._deployments.clear()
 
         def _get_connection_list(
             self,
