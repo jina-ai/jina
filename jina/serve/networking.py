@@ -1,4 +1,5 @@
 import asyncio
+import contextlib
 import ipaddress
 import os
 import time
@@ -569,7 +570,10 @@ class GrpcConnectionPool:
                 os.unsetenv('https_proxy')
             self.aio_tracing_client_interceptors = aio_tracing_client_interceptors
             self.tracing_client_interceptor = tracing_client_interceptor
-            self._close_lock = asyncio.Lock()
+            try:
+                self._close_lock = asyncio.Lock()
+            except RuntimeError:  # if asyncio loop is missing
+                self._close_lock = contextlib.AsyncExitStack()
 
         def add_replica(self, deployment: str, shard_id: int, address: str):
             self._add_connection(deployment, shard_id, address, 'shards')
