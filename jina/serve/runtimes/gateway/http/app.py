@@ -48,7 +48,6 @@ def get_fastapi_app(
     with ImportExtensions(required=True):
         from fastapi import FastAPI, Response, status
         from fastapi.middleware.cors import CORSMiddleware
-
         from jina.serve.runtimes.gateway.http.models import (
             JinaEndpointRequestModel,
             JinaRequestModel,
@@ -93,7 +92,7 @@ def get_fastapi_app(
             }
         )
 
-        from docarray import DocumentArray
+        from docarray.documents.legacy import DocumentArray
 
         from jina.proto import jina_pb2
         from jina.serve.executors import __dry_run_endpoint__
@@ -299,12 +298,12 @@ def get_fastapi_app(
             from dataclasses import asdict
 
             import strawberry
-            from docarray import DocumentArray
             from docarray.document.strawberry_type import (
                 JSONScalar,
                 StrawberryDocument,
                 StrawberryDocumentInput,
             )
+            from docarray.documents.legacy import DocumentArray
             from strawberry.fastapi import GraphQLRouter
 
             async def get_docs_from_endpoint(

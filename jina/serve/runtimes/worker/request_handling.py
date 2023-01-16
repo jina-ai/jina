@@ -3,7 +3,7 @@ import functools
 import json
 from typing import TYPE_CHECKING, Dict, List, Optional, Tuple
 
-from docarray import DocumentArray
+from docarray.documents.legacy import DocumentArray
 
 from jina.constants import __default_endpoint__
 from jina.excepts import BadConfigSource
@@ -537,9 +537,7 @@ class WorkerRequestHandler:
         :returns: DocumentArray extracted from the field from all messages
         """
         if len(requests) > 1:
-            result = DocumentArray(
-                d for r in requests for d in getattr(r, 'docs')
-            )
+            result = DocumentArray(d for r in requests for d in getattr(r, 'docs'))
         else:
             result = getattr(requests[0], 'docs')
 

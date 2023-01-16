@@ -7,7 +7,7 @@ from jina.helper import deprecate_by, get_or_reuse_loop, run_async
 from jina.importer import ImportExtensions
 
 if TYPE_CHECKING:  # pragma: no cover
-    from docarray import DocumentArray
+    from docarray.documents.legacy import DocumentArray
 
     from jina.clients.base import CallbackFnType, InputType
     from jina.types.request.data import Response
@@ -176,7 +176,7 @@ class ProfileMixin:
         :param show_table: whether to show the table or not.
         :return: the latency report in a dict.
         """
-        from docarray import Document
+        from docarray.documents.legacy import Document
 
         st = time.perf_counter()
         r = self.client.post(on='/', inputs=Document(), return_responses=True)
@@ -193,10 +193,12 @@ class AsyncProfileMixin:
         :param show_table: whether to show the table or not.
         :return: the latency report in a dict.
         """
-        from docarray import Document
+        from docarray.documents.legacy import Document
 
         st = time.perf_counter()
-        async for r in self.client.post(on='/', inputs=Document(), return_responses=True):
+        async for r in self.client.post(
+            on='/', inputs=Document(), return_responses=True
+        ):
             ed = time.perf_counter()
             return _render_response_table(r, st, ed, show_table=show_table)
 
@@ -257,7 +259,7 @@ class PostMixin:
 
         parameters = _include_results_field_in_param(parameters)
 
-        from docarray import DocumentArray
+        from docarray.documents.legacy import DocumentArray
 
         return_results = (on_always is None) and (on_done is None)
 

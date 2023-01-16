@@ -1,13 +1,18 @@
 """Module for helper functions for clients."""
-from typing import Tuple, Optional
+from typing import Optional, Tuple
 
-from docarray import Document, DocumentArray
+from docarray.documents.legacy import Document, DocumentArray
+
 from jina.enums import DataInputType
 from jina.types.request.data import DataRequest
 
 
 def _new_data_request_from_batch(
-    batch, data_type: DataInputType, endpoint: str, target: Optional[str], parameters: Optional[dict]
+    batch,
+    data_type: DataInputType,
+    endpoint: str,
+    target: Optional[str],
+    parameters: Optional[dict],
 ) -> DataRequest:
     req = _new_data_request(endpoint, target, parameters)
 
@@ -17,7 +22,9 @@ def _new_data_request_from_batch(
     return req
 
 
-def _new_data_request(endpoint: str, target: Optional[str], parameters: Optional[dict]) -> DataRequest:
+def _new_data_request(
+    endpoint: str, target: Optional[str], parameters: Optional[dict]
+) -> DataRequest:
     req = DataRequest()
 
     # set up header
@@ -46,7 +53,7 @@ def _new_doc_from_data(
             return Document.from_dict(data), DataInputType.DICT
         try:
             d = Document(data)
-            return d, DataInputType.DOCUMENT # NOT HIT
+            return d, DataInputType.DOCUMENT  # NOT HIT
         except ValueError:
             # AUTO has a fallback, now reconsider it as content
             if data_type == DataInputType.AUTO:

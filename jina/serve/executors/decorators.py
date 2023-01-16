@@ -10,7 +10,7 @@ from jina.helper import iscoroutinefunction
 from jina.importer import ImportExtensions
 
 if TYPE_CHECKING:  # pragma: no cover
-    from docarray import DocumentArray
+    from docarray.documents.legacy import DocumentArray
 
 
 @functools.lru_cache()
@@ -119,7 +119,7 @@ def requests(
     .. code-block:: python
 
         from jina import Executor, requests, Flow
-        from docarray import Document
+        from docarray.documents.legacy import Document
 
 
         # define Executor with custom `@requests` endpoints

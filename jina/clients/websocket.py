@@ -19,7 +19,7 @@ class WebSocketClient(WebSocketBaseClient, PostMixin, ProfileMixin, HealthCheckM
     .. code-block:: python
 
         from jina import Client
-        from docarray import Document
+        from docarray.documents.legacy import Document
 
         # select host address to connect to
         c = Client(
@@ -54,7 +54,7 @@ class AsyncWebSocketClient(
     .. code-block:: python
 
         from jina import Client
-        from docarray import Document
+        from docarray.documents.legacy import Document
 
         # async inputs for the client
         async def async_inputs():

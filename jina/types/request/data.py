@@ -1,7 +1,7 @@
 import copy
 from typing import Dict, Optional, TypeVar, Union
 
-from docarray import DocumentArray
+from docarray.documents.legacy import DocumentArray
 from google.protobuf import json_format
 
 from jina.excepts import BadRequestType
@@ -235,7 +235,9 @@ class DataRequest(Request):
         from google.protobuf.json_format import MessageToDict
 
         d = MessageToDict(
-            self.proto_wo_data, preserving_proto_field_name=True, use_integers_for_enums=True
+            self.proto_wo_data,
+            preserving_proto_field_name=True,
+            use_integers_for_enums=True,
         )
         d['data'] = da.to_dict()
         return d

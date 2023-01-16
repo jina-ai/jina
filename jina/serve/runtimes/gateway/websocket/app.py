@@ -219,7 +219,7 @@ def get_fastapi_app(
             request_dict = k.to_dict()
             return request_dict
 
-    from docarray import DocumentArray
+    from docarray.documents.legacy import DocumentArray
 
     from jina.proto import jina_pb2
     from jina.serve.executors import __dry_run_endpoint__
