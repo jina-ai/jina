@@ -364,9 +364,7 @@ class WorkerRequestHandler:
                     f'but getting {return_data!r}'
                 )
 
-        WorkerRequestHandler.replace_docs(
-            requests[0], docs, self.args.output_array_type
-        )
+        WorkerRequestHandler.replace_docs(requests[0], docs)
         return docs
 
     async def handle(
@@ -440,15 +438,15 @@ class WorkerRequestHandler:
 
     @staticmethod
     def replace_docs(
-        request: List['DataRequest'], docs: 'DocumentArray', ndarrray_type: str = None
+        request: List['DataRequest'],
+        docs: 'DocumentArray',
     ) -> None:
         """Replaces the docs in a message with new Documents.
 
         :param request: The request object
         :param docs: the new docs to be used
-        :param ndarrray_type: type tensor and embedding will be converted to
         """
-        request.data.set_docs_convert_arrays(docs, ndarray_type=ndarrray_type)
+        request.data.set_docs_convert_arrays(docs)
 
     @staticmethod
     def replace_parameters(request: List['DataRequest'], parameters: Dict) -> None:

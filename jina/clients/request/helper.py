@@ -40,32 +40,22 @@ def _new_data_request(
 def _new_doc_from_data(
     data, data_type: DataInputType
 ) -> Tuple['Document', 'DataInputType']:
-    def _build_doc_from_content():
-        return Document(content=data), DataInputType.CONTENT
 
     if data_type == DataInputType.DICT:
-        return Document.from_dict(data), DataInputType.DICT
+        return Document(**data), DataInputType.DICT
     if data_type == DataInputType.AUTO or data_type == DataInputType.DOCUMENT:
         if isinstance(data, Document):
             # if incoming is already primitive type Document, then all good, best practice!
             return data, DataInputType.DOCUMENT
         elif isinstance(data, dict):
-            return Document.from_dict(data), DataInputType.DICT
-        try:
+            return Document(**data), DataInputType.DICT
+        else:
             d = Document(data)
             return d, DataInputType.DOCUMENT  # NOT HIT
-        except ValueError:
-            # AUTO has a fallback, now reconsider it as content
-            if data_type == DataInputType.AUTO:
-                return _build_doc_from_content()
-            else:
-                raise
-    elif data_type == DataInputType.CONTENT:
-        return _build_doc_from_content()
 
 
 def _add_docs(req: DataRequest, batch, data_type: DataInputType) -> None:
-    da = DocumentArray()
+    da = DocumentArray([])
     for content in batch:
         d, data_type = _new_doc_from_data(content, data_type)
         da.append(d)

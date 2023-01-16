@@ -115,7 +115,7 @@ def get_fastapi_app(
 
             """
 
-            da = DocumentArray()
+            da = DocumentArray([])
 
             try:
                 _ = await _get_singleton_result(
