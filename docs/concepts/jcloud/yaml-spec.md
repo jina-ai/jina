@@ -149,13 +149,21 @@ executors:
 
 ### Storage
 
-JCloud supports two kinds of storage types: [efs](https://aws.amazon.com/efs/) (default) and [ebs](https://aws.amazon.com/ebs/). The former is a network file storage, whereas the latter is a block device.
+JCloud supports three kinds of storage: ephemeral (default), [efs](https://aws.amazon.com/efs/) (network file storage) and [ebs](https://aws.amazon.com/ebs/) (block device).
+
+`ephemeral` storage will assign space to an Executor when it is created. Data in `ephemeral` storage is deleted permanently if Executors are restarted or rescheduled.
 
 ````{hint}
 
-By default, we attach an `efs` to all Executors in a Flow. This lets the `efs` resize dynamically, so you don't need to shrink/grow volumes manually.
+By default, we assign `ephemeral` storage to all Executors in a Flow. This lets the storage resize dynamically, so you don't need to shrink/grow volumes manually.
 
-If your Executor needs high IO, you can use `ebs` instead. Please note that:
+If your Executor needs to share data with other Executors and retain data persistency, consider using `efs`. Note that:
+
+- IO performance is slower compared to `ebs` or `ephemeral`
+- The disk can be shared with other Executors or Flows.
+- Default storage size is `5G`, maximum storage size parameter is `10G`.
+
+If your Executor needs high IO, you can use `ebs` instead. Note that:
 
 - The disk cannot be shared with other Executors or Flows.
 - You must pass a storage size parameter (default: `1G`, max `10G`).

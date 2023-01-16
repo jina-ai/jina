@@ -55,14 +55,17 @@ def register_ac():
 
     def add_ac(k, v):
         v_fp = os.path.join(home, v)
-        if os.path.exists(v_fp):
-            with open(v_fp) as fp, open(resource_path % k) as fr:
-                sh_content = fp.read()
+        if os.path.exists(v_fp) or os.environ.get('SHELL', '').endswith(k):
+            try:
+                with open(v_fp) as fp:
+                    sh_content = fp.read()
+            except FileNotFoundError:
+                sh_content = ''
+            with open(resource_path % k) as fr:
                 if re.findall(regex, sh_content, flags=re.S):
                     _sh_content = re.sub(regex, fr.read(), sh_content, flags=re.S)
                 else:
                     _sh_content = sh_content + '\n\n' + fr.read()
-
             if _sh_content:
                 with open(v_fp, 'w') as fp:
                     fp.write(_sh_content)
@@ -192,6 +195,7 @@ setup(
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',
+        'Programming Language :: Python :: 3.11',
         'Programming Language :: Unix Shell',
         'Environment :: Console',
         'License :: OSI Approved :: Apache Software License',

@@ -68,6 +68,7 @@ spec:
               - ping
               - executor
               - 127.0.0.1:{port}
+                - --timeout 9500
           initialDelaySeconds: 30
           periodSeconds: 5
           timeoutSeconds: 10

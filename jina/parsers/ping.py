@@ -33,7 +33,7 @@ def set_ping_parser(parser=None):
         default=3000,
         help='''
 Timeout in millisecond of one check
--1 for waiting forever
+Use -1 for waiting forever
 ''',
     )
     parser.add_argument(
