@@ -16,6 +16,7 @@ from jina.orchestrate.pods.helper import ConditionalEvent, _get_event
 from jina.parsers.helper import _update_gateway_args
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.gateway import GatewayRuntime
+from jina.serve.helper import get_workspace_from_name_and_shards
 
 if TYPE_CHECKING:
     import threading
@@ -113,6 +114,7 @@ def run_raft(
 
 
     :param args: namespace args from the Pod
+    :param leader: parameter indicating if this RAFT node should be the leader, and this bootstrap (TODO: investigate if the need is real)
     :param is_ready: concurrency event to communicate Executor runtime is ready to receive messages
     :param is_shutdown: concurrency event to communicate runtime is terminated
 
@@ -120,11 +122,10 @@ def run_raft(
     import jraft
     address = f'{args.host}:{args.port}'
     raft_id = str(args.replica_id)
-    raft_dir = args.workspace
-    raft_bootstrap = False
+    shard_id = args.shard_id if args.shards > 1 else -1
+    raft_dir = get_workspace_from_name_and_shards(workspace=args.workspace, name='raft', shard_id=shard_id)
+    raft_bootstrap = leader
     executor_target = f'{args.host}:{args.port + 1}'
-    if leader:
-        raft_bootstrap = True
     is_ready.wait()
     jraft.run(address, raft_id, raft_dir, raft_bootstrap, executor_target)
 
