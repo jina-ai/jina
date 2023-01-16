@@ -55,7 +55,6 @@ PyInit_jraft(void)
 
 void raise_exception(char *msg) {
     PyErr_SetString(PyExc_ValueError, msg);
-    return NULL;
 }
 
 */

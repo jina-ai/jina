@@ -15,6 +15,8 @@ import (
     "log"
     "net"
     "os"
+    "os/signal"
+    "syscall"
     "path/filepath"
 
     "github.com/Jille/raft-grpc-leader-rpc/leaderhealth"
@@ -117,6 +119,19 @@ func Run(myAddr string, raftId string, raftDir string, raftBootstrap bool, execu
 
     raftadmin.Register(grpcServer, r)
     reflection.Register(grpcServer)
+    sigchnl := make(chan os.Signal, 1)
+    signal.Notify(sigchnl, syscall.SIGINT, syscall.SIGTERM)
+    go func(){
+        sig := <-sigchnl
+        log.Printf("Signal %v received", sig)
+        grpcServer.Stop()
+        shutdownResult := r.Shutdown()
+        err := shutdownResult.Error()
+        if err != nil {
+            log.Fatalf("Error returned while shutting RAFT down: %v", err)
+        }
+        os.Exit(0)
+    }()
     if err := grpcServer.Serve(sock); err != nil {
         log.Fatalf("failed to serve: %v", err)
     }

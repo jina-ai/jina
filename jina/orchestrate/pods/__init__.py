@@ -409,7 +409,7 @@ class Pod(BasePod):
         self.logger.debug(f'terminating the runtime process')
         self.worker.terminate()
         if self.args.stateful and self.args.pod_role == PodRoleType.WORKER:
-            self.raft_worker.kill()
+            self.raft_worker.terminate()
         self.logger.debug(f'runtime process properly terminated')
 
     def _get_runtime_cls(self) -> AsyncNewLoopRuntime:
