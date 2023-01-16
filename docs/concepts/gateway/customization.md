@@ -195,7 +195,7 @@ streamer = GatewayStreamer.get_streamer()
 After transforming requests that arrive to the gateway server into Documents, you can send them to Executors in the Flow 
 using {meth}`~jina.serve.streamer.GatewayStreamer.stream_docs()`. 
 
-This method expects a DocumentArray object and an endpoint exposed by the Flow Executors (similar to Jina Client). 
+This method expects a DocumentArray object and an endpoint exposed by the Flow Executors (similar to {ref}`Jina Client <client>`). 
 It returns an `AsyncGenerator` of DocumentArrays:
 ```{code-block} python
 ---
@@ -225,15 +225,15 @@ class MyGateway(FastAPIBaseGateway):
 ```
 
 (executor-streamer)=
-## Calling an Individual Executor
+## Calling an individual Executor
 An `executor` object is injected by Jina to your gateway class which allows you to call individual Executors from the Gateway.
 
 After transforming requests that arrive to the gateway server into Documents, you can call the Executor in your Python code using `self.executor['executor_name'].post(args)`.
-This method expects a DocumentArray object and an endpoint exposed by the Executor (similar to Jina Client). 
+This method expects a DocumentArray object and an endpoint exposed by the Executor (similar to {ref}`Jina Client <client>`). 
 It returns a 'coroutine' which returns a DocumentArray.
 Check the method documentation for more information: {meth}`~ jina.serve.streamer._ExecutorStreamer.post()`
 
-In this example, we have a Flow with two executors ('executor1' and 'executor2'). We can call them individually using `self.executor['executor_name'].post`:
+In this example, we have a Flow with two Executors ('executor1' and 'executor2'). We can call them individually using `self.executor['executor_name'].post`:
 ```{code-block} python
 ---
 emphasize-lines: 15,16,40
