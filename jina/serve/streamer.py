@@ -251,3 +251,42 @@ class GatewayStreamer:
         except Exception as ex:
             self.logger.error(f'error with GatewayRuntime warmup up task: {ex}')
             return
+
+
+class _ExecutorStreamer:
+    def __init__(self, connection_pool: GrpcConnectionPool, executor_name: str) -> None:
+        self._connection_pool: GrpcConnectionPool = connection_pool
+        self.executor_name = executor_name
+
+    async def post(
+        self,
+        inputs: DocumentArray,
+        request_size: int = 100,
+        on: Optional[str] = None,
+        parameters: Optional[Dict] = None,
+        **kwargs,
+    ):
+        reqs = []
+        for docs_batch in inputs.batch(batch_size=request_size, shuffle=False):
+            req = DataRequest()
+            req.header.exec_endpoint = on
+            req.header.target_executor = self.executor_name
+            req.parameters = parameters
+            req.data.docs = docs_batch
+            reqs.append(req)
+
+        tasks = [
+        self._connection_pool.send_requests_once(
+            requests=[req],
+            deployment=self.executor_name,
+            head=True,
+            endpoint=on
+        ) for req in reqs]
+
+        results = await asyncio.gather(*tasks)
+        
+        docs = DocumentArray.empty()
+        for resp,_ in results:
+            docs.extend(resp.docs)
+        
+        return docs
