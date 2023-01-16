@@ -7,7 +7,7 @@
 
 ## Install
 
-Make sure that you have Python 3.7+ installed on Linux/MacOS/{ref}`Windows <jina-on-windows>`.
+Make sure that you have Python 3.7+ installed on Linux/macOS/{ref}`Windows <jina-on-windows>`.
 
 ````{tab} via PyPI
 ```shell

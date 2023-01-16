@@ -1,10 +1,8 @@
-> The best way to know more about contributing and how to get started is to **[join us on Slack](https://slack.jina.ai)** and ask questions in our public channels.
+> The best way to know more about contributing and how to get started is to **[join us on Slack](https://jina.ai/slack)** and ask questions in our public channels.
 
 # Contributing to Jina
 
 Thanks for your interest in contributing to Jina. We're grateful for your initiative! ❤️
-
-I'm Alex C-G, Open Source Evangelist for Jina. I'm all about getting our new contributors up-to-speed, and that's what we'll do below.
 
 In this guide, we're going to go through the steps for each kind of contribution, and good and bad examples of what to do. We look forward to your contributions!
 
@@ -259,9 +257,9 @@ Bonus: **Know when to break the rules**. Documentation writing is as much art as
 
 [MyST](https://myst-parser.readthedocs.io/en/latest/) Elements Usage
 
-1. Use the `{tab}` element to show multiple ways of doing one thing. [Example](https://docs.jina.ai/concepts/flow/create-flow/#instantiate-a-flow) 
-2. Use the `{admonition}` boxes with care. We recommend restricting yourself to [Hint](https://docs.jina.ai/concepts/flow/create-flow/#create-a-flow), [Caution](https://docs.jina.ai/concepts/flow/flow-api/#add-graphql-endpoint) and [See Also](https://docs.jina.ai/concepts/flow/flow-api/#add-graphql-endpoint).
-3. Use `{dropdown}` to hide optional content, such as long code snippets or console output. [Example](https://docs.jina.ai/concepts/flow/access-flow-api/#use-http-client-to-send-request)
+1. Use the `{tab}` element to show multiple ways of doing one thing. [Example](https://docs.jina.ai/concepts/flow/basics/#start-and-stop) 
+2. Use the `{admonition}` boxes with care. We recommend restricting yourself to [Hint](https://docs.jina.ai/concepts/flow/basics/#create), [Caution](https://docs.jina.ai/concepts/gateway/customize-http-endpoints/#enable-graphql-endpoint) and [See Also](https://docs.jina.ai/concepts/gateway/customize-http-endpoints/#enable-graphql-endpoint).
+3. Use `{dropdown}` to hide optional content, such as long code snippets or console output. [Example](https://docs.jina.ai/concepts/client/third-party-clients/#use-curl)
 
 ### Building documentation on your local machine
 
