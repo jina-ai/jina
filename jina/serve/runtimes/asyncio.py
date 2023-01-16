@@ -1,6 +1,7 @@
 import argparse
 import asyncio
 import signal
+import threading
 import time
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Optional, Union
@@ -17,7 +18,6 @@ from jina.types.request.data import DataRequest
 
 if TYPE_CHECKING:  # pragma: no cover
     import multiprocessing
-    import threading
 
 HANDLED_SIGNALS = (
     signal.SIGINT,  # Unix signal 2. Sent by Ctrl+C.
@@ -76,6 +76,8 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, InstrumentationMixin, AB
         self._start_time = time.time()
         self._loop.run_until_complete(self.async_setup())
         self._send_telemetry_event()
+        self.warmup_task = None
+        self.warmup_stop_event = threading.Event()
 
     def _send_telemetry_event(self):
         send_telemetry_event(event='start', obj=self, entity_id=self._entity_id)
@@ -160,6 +162,21 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, InstrumentationMixin, AB
     async def async_run_forever(self):
         """The async method to run until it is stopped."""
         ...
+
+    async def cancel_warmup_task(self):
+        '''Cancel warmup task if exists and is not completed. Cancellation is required if the Flow is being terminated before the
+        task is successful or hasn't reached the max timeout.
+        '''
+        if self.warmup_task:
+            try:
+                if not self.warmup_task.done():
+                    self.logger.debug(f'Cancelling warmup task.')
+                    self.warmup_stop_event.set()
+                    await self.warmup_task
+                    self.warmup_task.exception()
+            except Exception as ex:
+                self.logger.debug(f'exception during warmup task cancellation: {ex}')
+                pass
 
     # Static methods used by the Pod to communicate with the `Runtime` in the separate process
 

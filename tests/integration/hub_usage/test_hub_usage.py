@@ -76,6 +76,7 @@ def test_use_from_local_hub_deployment_level(
         image_required=True,
         rebuild_image=True,
         *,
+        prefer_platform=None,
         secret=None,
         force=False,
     ):
@@ -111,6 +112,7 @@ def test_use_from_local_hub_flow_level(mocker, monkeypatch, local_hub_executor, 
         image_required=True,
         rebuild_image=True,
         *,
+        prefer_platform=None,
         secret=None,
         force=False,
     ):

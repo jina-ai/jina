@@ -24,7 +24,7 @@ class PodFactory:
 
         :param args: deployment arguments parsed from the CLI.
 
-        :return: the created BaseDeployment
+        :return: the created Deployment
         """
         # copy to update but forward original
             

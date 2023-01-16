@@ -26,7 +26,7 @@
 
 
 numpy:                      core
-protobuf>=3.20.0:           core
+protobuf>=3.19.0:           core
 grpcio>=1.46.0,<1.48.1:     core
 grpcio-reflection>=1.46.0,<1.48.1:  core
 grpcio-health-checking>=1.46.0,<1.48.1:  core
