@@ -2722,7 +2722,9 @@ class Flow(
             v._to_kubernetes_yaml(
                 deployment_base,
                 k8s_namespace=k8s_namespace,
-                k8s_deployments_addresses=self._get_k8s_deployments_metadata(),
+                k8s_deployments_addresses=self._get_k8s_deployments_addresses(
+                    k8s_namespace
+                ),
             )
 
         self.logger.info(

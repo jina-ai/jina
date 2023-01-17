@@ -1409,7 +1409,7 @@ class Deployment(PostMixin, BaseOrchestrator):
 
         from jina.orchestrate.deployments.config.k8s import K8sDeploymentConfig
 
-        if self.args.external:
+        if self.external:
             self.logger.warning(
                 'The Deployment is external, cannot create YAML deployment files'
             )
