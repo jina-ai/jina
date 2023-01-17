@@ -87,6 +87,7 @@ class WebSocketBaseClient(BaseClient):
         max_backoff: float = 0.1,
         backoff_multiplier: float = 1.5,
         results_in_order: bool = False,
+        prefetch: Optional[int] = None,
         **kwargs,
     ):
         """
@@ -99,6 +100,7 @@ class WebSocketBaseClient(BaseClient):
         :param max_backoff: The maximum accepted backoff after the exponential incremental delay
         :param backoff_multiplier: The n-th attempt will occur at random(0, min(initialBackoff*backoffMultiplier**(n-1), maxBackoff))
         :param results_in_order: return the results in the same order as the inputs
+        :param prefetch: How many Requests are processed from the Client at the same time.
         :param kwargs: kwargs coming from the public interface. Includes arguments to be passed to the `WebsocketClientlet`
         :yields: generator over results
         """
@@ -185,6 +187,7 @@ class WebSocketBaseClient(BaseClient):
                 result_handler=_result_handler,
                 end_of_iter_handler=_handle_end_of_iter,
                 logger=self.logger,
+                prefetch=prefetch or 0,
                 **vars(self.args),
             )
 
