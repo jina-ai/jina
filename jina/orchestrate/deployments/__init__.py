@@ -1399,25 +1399,15 @@ class Deployment(PostMixin, BaseOrchestrator):
 
         return all_panels
 
-    def to_kubernetes_yaml(
+    def _to_kubernetes_yaml(
         self,
         output_base_path: str,
         k8s_namespace: Optional[str] = None,
+        k8s_deployments_addresses=None,
     ):
-        """
-        Converts a Jina Deployment into a set of yaml deployments to deploy in Kubernetes.
-
-        If you don't want to rebuild image on Jina Hub,
-        you can set `JINA_HUB_NO_IMAGE_REBUILD` environment variable.
-
-        :param output_base_path: The base path where to dump all the yaml files
-        :param k8s_namespace: The name of the k8s namespace to set for the configurations. If None, the name of the Flow will be used.
-        """
         import yaml
 
         from jina.orchestrate.deployments.config.k8s import K8sDeploymentConfig
-
-        k8s_namespace = k8s_namespace or self.args.name or 'default'
 
         if self.args.external:
             self.logger.warning(
@@ -1425,19 +1415,21 @@ class Deployment(PostMixin, BaseOrchestrator):
             )
             return
 
-        if self.args.name == 'gateway' and self.args.default_port:
-            from jina.serve.networking import GrpcConnectionPool
+        if self.args.name == 'gateway':
+            if self.args.default_port:
+                from jina.serve.networking import GrpcConnectionPool
 
-            self.args.port = GrpcConnectionPool.K8S_PORT
-            self.first_pod_args.port = GrpcConnectionPool.K8S_PORT
+                self.args.port = GrpcConnectionPool.K8S_PORT
+                self.first_pod_args.port = GrpcConnectionPool.K8S_PORT
 
-            self.args.port_monitoring = GrpcConnectionPool.K8S_PORT_MONITORING
-            self.first_pod_args.port_monitoring = GrpcConnectionPool.K8S_PORT_MONITORING
+                self.args.port_monitoring = GrpcConnectionPool.K8S_PORT_MONITORING
+                self.first_pod_args.port_monitoring = (
+                    GrpcConnectionPool.K8S_PORT_MONITORING
+                )
 
-            self.args.default_port = False
+                self.args.default_port = False
 
-            # TODO: for gateway the following is needed:
-            # cargs.deployments_addresses = self.k8s_deployments_addresses
+            self.args.deployments_addresses = k8s_deployments_addresses
 
         k8s_deployment = K8sDeploymentConfig(
             args=self.args,
@@ -1455,6 +1447,21 @@ class Deployment(PostMixin, BaseOrchestrator):
                     if i < len(k8s_objects) - 1:
                         fp.write('---\n')
 
+    def to_kubernetes_yaml(
+        self,
+        output_base_path: str,
+        k8s_namespace: Optional[str] = None,
+    ):
+        """
+        Converts a Jina Deployment into a set of yaml deployments to deploy in Kubernetes.
+
+        If you don't want to rebuild image on Jina Hub,
+        you can set `JINA_HUB_NO_IMAGE_REBUILD` environment variable.
+
+        :param output_base_path: The base path where to dump all the yaml files
+        :param k8s_namespace: The name of the k8s namespace to set for the configurations. If None, the name of the Flow will be used.
+        """
+        self._to_kubernetes_yaml(output_base_path, k8s_namespace=k8s_namespace)
         self.logger.info(
             f'K8s yaml files have been created under [b]{output_base_path}[/]. You can use it by running [b]kubectl apply -R -f {output_base_path}[/]'
         )
