@@ -5,7 +5,6 @@ import functools
 import inspect
 import multiprocessing
 import threading
-import os
 import warnings
 from types import SimpleNamespace
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, Union, overload
@@ -32,8 +31,6 @@ from jina.serve.instrumentation import MetricsTimer
 from jina.serve.helper import get_workspace_from_name_and_shards
 
 if TYPE_CHECKING:  # pragma: no cover
-    import threading
-
     from opentelemetry.context.context import Context
 
 __dry_run_endpoint__ = '_jina_dry_run_'
