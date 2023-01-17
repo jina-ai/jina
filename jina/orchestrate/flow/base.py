@@ -881,6 +881,7 @@ class Flow(
         polling: Optional[str] = 'ANY', 
         port: Optional[int] = None, 
         port_monitoring: Optional[int] = None, 
+        prefer_platform: Optional[str] = None, 
         py_modules: Optional[List[str]] = None, 
         quiet: Optional[bool] = False, 
         quiet_error: Optional[bool] = False, 
@@ -970,6 +971,7 @@ class Flow(
               {'/custom': 'ALL', '/search': 'ANY', '*': 'ANY'}
         :param port: The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (`--external` or `external=True`) this can be a list of ports. Then, every resulting address will be considered as one replica of the Executor.
         :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]
+        :param prefer_platform: The preferred target Docker platform. (e.g. "linux/amd64", "linux/arm64")
         :param py_modules: The customized python modules need to be imported before loading the executor
           
           Note that the recommended way is to only import a single module - a simple python file, if your
@@ -1119,6 +1121,7 @@ class Flow(
               {'/custom': 'ALL', '/search': 'ANY', '*': 'ANY'}
         :param port: The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (`--external` or `external=True`) this can be a list of ports. Then, every resulting address will be considered as one replica of the Executor.
         :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]
+        :param prefer_platform: The preferred target Docker platform. (e.g. "linux/amd64", "linux/arm64")
         :param py_modules: The customized python modules need to be imported before loading the executor
           
           Note that the recommended way is to only import a single module - a simple python file, if your

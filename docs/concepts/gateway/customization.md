@@ -195,7 +195,7 @@ streamer = GatewayStreamer.get_streamer()
 After transforming requests that arrive to the gateway server into Documents, you can send them to Executors in the Flow 
 using {meth}`~jina.serve.streamer.GatewayStreamer.stream_docs()`. 
 
-This method expects a DocumentArray object and an endpoint exposed by the Flow Executors (similar to Jina Client). 
+This method expects a DocumentArray object and an endpoint exposed by the Flow Executors (similar to {ref}`Jina Client <client>`). 
 It returns an `AsyncGenerator` of DocumentArrays:
 ```{code-block} python
 ---
@@ -222,6 +222,113 @@ class MyGateway(FastAPIBaseGateway):
             return {'result': result}
 
         return app
+```
+
+(executor-streamer)=
+## Calling an individual Executor
+An `executor` object is injected by Jina to your gateway class which allows you to call individual Executors from the Gateway.
+
+After transforming requests that arrive to the gateway server into Documents, you can call the Executor in your Python code using `self.executor['executor_name'].post(args)`.
+This method expects a DocumentArray object and an endpoint exposed by the Executor (similar to {ref}`Jina Client <client>`). 
+It returns a 'coroutine' which returns a DocumentArray.
+Check the method documentation for more information: {meth}`~ jina.serve.streamer._ExecutorStreamer.post()`
+
+In this example, we have a Flow with two Executors ('executor1' and 'executor2'). We can call them individually using `self.executor['executor_name'].post`:
+```{code-block} python
+---
+emphasize-lines: 15,16,40
+---
+from jina.serve.runtimes.gateway.http.fastapi import FastAPIBaseGateway
+from jina import Document, DocumentArray, Flow, Executor, requests
+from fastapi import FastAPI
+import time
+import asyncio
+
+class MyGateway(FastAPIBaseGateway):
+    @property
+    def app(self):
+        app = FastAPI()
+
+        @app.get("/endpoint")
+        async def get(text: str):
+            toc = time.time()
+            doc1 = await self.executor['executor1'].post(on='/', inputs=DocumentArray([Document(text=text)]), parameters={'k': 'v'})
+            doc2 = await self.executor['executor2'].post(on='/', inputs=DocumentArray([Document(text=text)]), parameters={'k': 'v'})
+            return {'result': doc1.texts + doc2.texts, 'time_taken': time.time() - toc}
+
+        return app
+
+class FirstExec(Executor):
+    @requests
+    def func(self, docs, **kwargs):
+        time.sleep(2)
+        for doc in docs:
+            doc.text += ' saw the first executor'
+
+class SecondExec(Executor):
+    @requests
+    def func(self, docs, **kwargs):
+        time.sleep(2)
+        for doc in docs:
+            doc.text += ' saw the second executor'
+
+with Flow().config_gateway(uses=MyGateway, protocol='http').add(uses=FirstExec, name='executor1').add(uses=SecondExec, name='executor2') as flow:
+    import requests as reqlib
+    r = reqlib.get(f"http://localhost:{flow.port}/endpoint?text=hello")
+    print(r.json())
+    assert r.json()['result'] == ['hello saw the first executor', 'hello saw the second executor']
+    assert r.json()['time_taken'] > 4
+
+```
+
+You can also call 2 executors in parallel using asyncio. This will overlap their execution times -- speeding up the response time of the endpoint.
+Here is one way to do it:
+```{code-block} python
+---
+emphasize-lines: 15,16,17,41
+---
+from jina.serve.runtimes.gateway.http.fastapi import FastAPIBaseGateway
+from jina import Document, DocumentArray, Flow, Executor, requests
+from fastapi import FastAPI
+import time
+import asyncio
+
+class MyGateway(FastAPIBaseGateway):
+    @property
+    def app(self):
+        app = FastAPI()
+
+        @app.get("/endpoint")
+        async def get(text: str):
+            toc = time.time()
+            call1 = self.executor['executor1'].post(on='/', inputs=DocumentArray([Document(text=text)]), parameters={'k': 'v'})
+            call2 = self.executor['executor2'].post(on='/', inputs=DocumentArray([Document(text=text)]), parameters={'k': 'v'})
+            doc1, doc2 = await asyncio.gather(call1, call2)
+            return {'result': doc1.texts + doc2.texts, 'time_taken': time.time() - toc}
+
+        return app
+
+class FirstExec(Executor):
+    @requests
+    def func(self, docs, **kwargs):
+        time.sleep(2)
+        for doc in docs:
+            doc.text += ' saw the first executor'
+
+class SecondExec(Executor):
+    @requests
+    def func(self, docs, **kwargs):
+        time.sleep(2)
+        for doc in docs:
+            doc.text += ' saw the second executor'
+
+with Flow().config_gateway(uses=MyGateway, protocol='http').add(uses=FirstExec, name='executor1').add(uses=SecondExec, name='executor2') as flow:
+    import requests as reqlib
+    r = reqlib.get(f"http://localhost:{flow.port}/endpoint?text=hello")
+    print(r.json())
+    assert r.json()['result'] == ['hello saw the first executor', 'hello saw the second executor']
+    assert r.json()['time_taken'] < 2.5
+
 ```
 
 ## Gateway arguments

@@ -332,6 +332,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         :param context: grpc context
         :returns: the response request
         """
+        self.logger.debug('recv _status request')
         info_proto = jina_pb2.JinaInfoProto()
         version, env_info = get_full_version()
         for k, v in version.items():

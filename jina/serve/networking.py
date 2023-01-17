@@ -1,6 +1,7 @@
 import asyncio
 import ipaddress
 import os
+import time
 from collections import defaultdict
 from dataclasses import dataclass
 from typing import Dict, List, Optional, Sequence, Set, Tuple, Union
@@ -28,6 +29,8 @@ TLS_PROTOCOL_SCHEMES = ['grpcs', 'https', 'wss']
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
+    import threading
+
     from grpc.aio._interceptor import ClientInterceptor
     from opentelemetry.instrumentation.grpc._client import (
         OpenTelemetryClientInterceptor,
@@ -127,6 +130,9 @@ class ReplicaList:
         self.aio_tracing_client_interceptors = aio_tracing_client_interceptors
         self.tracing_client_interceptors = tracing_client_interceptor
         self._deployment_name = deployment_name
+        # a set containing all the ConnectionStubs that will be created using add_connection
+        # this set is not updated in reset_connection and remove_connection
+        self._warmup_stubs = set()
 
     async def reset_connection(
         self, address: str, deployment_name: str
@@ -178,6 +184,10 @@ class ReplicaList:
             stubs, channel = self._create_connection(address, deployment_name)
             self._address_to_channel[address] = channel
             self._connections.append(stubs)
+            # create a new set of stubs and channels for warmup to avoid
+            # loosing channel during remove_connection or reset_connection
+            stubs, _ = self._create_connection(address, deployment_name)
+            self._warmup_stubs.add(stubs)
 
     async def remove_connection(self, address: str) -> Union[grpc.aio.Channel, None]:
         """
@@ -311,6 +321,16 @@ class ReplicaList:
         self._address_to_connection_idx.clear()
         self._connections.clear()
         self._rr_counter = 0
+        for stub in self._warmup_stubs:
+            await stub.channel.close(0.5)
+        self._warmup_stubs.clear()
+
+    @property
+    def warmup_stubs(self):
+        """Return set of warmup stubs
+        :returns: Set of stubs. The set doesn't remove any items once added.
+        """
+        return self._warmup_stubs
 
 
 class GrpcConnectionPool:
@@ -374,6 +394,7 @@ class GrpcConnectionPool:
             self.single_data_stub = stubs['jina.JinaSingleDataRequestRPC']
             self.stream_stub = stubs['jina.JinaRPC']
             self.endpoints_discovery_stub = stubs['jina.JinaDiscoverEndpointsRPC']
+            self.info_rpc_stub = stubs['jina.JinaInfoRPC']
             self._initialized = True
 
         async def send_discover_endpoint(
@@ -507,6 +528,21 @@ class GrpcConnectionPool:
             else:
                 raise ValueError(f'Unsupported request type {type(requests[0])}')
 
+        async def send_info_rpc(self, timeout: Optional[float] = None):
+            """
+            Use the JinaInfoRPC stub to send request to the _status endpoint exposed by the Runtime
+            :param timeout: defines timeout for sending request
+            :returns: JinaInfoProto
+            """
+            if not self._initialized:
+                await self._init_stubs()
+
+            call_result = self.info_rpc_stub._status(
+                jina_pb2.google_dot_protobuf_dot_empty__pb2.Empty(),
+                timeout=timeout,
+            )
+            return await call_result
+
     class _ConnectionPoolMap:
         def __init__(
             self,
@@ -614,9 +650,6 @@ class GrpcConnectionPool:
                     return self._get_connection_list(
                         deployment, type_, 0, increase_access_count
                     )
-                self._logger.debug(
-                    f'did not find a connection for deployment {deployment}, type {type_} and entity_id {entity_id}. There are {len(self._deployments[deployment][type_]) if deployment in self._deployments else 0} available connections for this deployment and type. '
-                )
                 return None
 
         def _add_deployment(self, deployment: str):
@@ -1122,6 +1155,68 @@ class GrpcConnectionPool:
                     return default_endpoints_proto, None
 
         return asyncio.create_task(task_wrapper())
+
+    async def warmup(
+        self,
+        deployment: str,
+        stop_event: 'threading.Event',
+    ):
+        '''Executes JinaInfoRPC against the provided deployment. A single task is created for each replica connection.
+        :param deployment: deployment name and the replicas that needs to be warmed up.
+        :param stop_event: signal to indicate if an early termination of the task is required for graceful teardown.
+        '''
+        self._logger.debug(f'starting warmup task for deployment {deployment}')
+
+        async def task_wrapper(target_warmup_responses, stub):
+            try:
+                call_result = stub.send_info_rpc(timeout=0.5)
+                await call_result
+                target_warmup_responses[stub.address] = True
+            except Exception:
+                target_warmup_responses[stub.address] = False
+
+        try:
+            start_time = time.time()
+            timeout = start_time + 60 * 5  # 5 minutes from now
+            warmed_up_targets = set()
+            replicas = self._get_all_replicas(deployment)
+
+            while not stop_event.is_set():
+                replica_warmup_responses = {}
+                tasks = []
+
+                for replica in replicas:
+                    for stub in replica.warmup_stubs:
+                        if stub.address not in warmed_up_targets:
+                            tasks.append(
+                                asyncio.create_task(
+                                    task_wrapper(replica_warmup_responses, stub)
+                                )
+                            )
+
+                await asyncio.gather(*tasks, return_exceptions=True)
+                for target, response in replica_warmup_responses.items():
+                    if response:
+                        warmed_up_targets.add(target)
+
+                now = time.time()
+                if now > timeout or all(list(replica_warmup_responses.values())):
+                    self._logger.debug(f'completed warmup task in {now - start_time}s.')
+                    return
+
+                await asyncio.sleep(0.2)
+        except Exception as ex:
+            self._logger.error(f'error with warmup up task: {ex}')
+            return
+
+    def _get_all_replicas(self, deployment):
+        replica_set = set()
+        replica_set.update(self._connections.get_replicas_all_shards(deployment))
+        replica_set.add(
+            self._connections.get_replicas(deployment=deployment, head=True)
+        )
+
+        return set(filter(None, replica_set))
 
     @staticmethod
     def __aio_channel_with_tracing_interceptor(
