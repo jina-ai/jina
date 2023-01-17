@@ -32,3 +32,10 @@ def mixin_raft_parser(arg_group):
              "starting the RAFT node.",
         default=None,
     )
+
+    arg_group.add_argument(
+        '--raft-bootstrap',
+        action='store_true',
+        default=False,
+        help='If set, bootstrap the RAFT nodes',
+    )

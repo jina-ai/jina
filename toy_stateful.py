@@ -23,9 +23,11 @@ class MyStateExecutor(Executor):
             self.logger.debug(f' Searching doc {doc.text}')
 
 
-f = Flow().add(uses=MyStateExecutor, replicas=3, shards=2, stateful=True, workspace='./toy_workspace', raft_configuration={'snapshot_interval': 300000, 'LogLevel': 'INFO'})
+f = Flow().add(uses=MyStateExecutor, replicas=3, shards=2, workspace='./toy_workspace', stateful=True,
+               raft_bootstrap=True, raft_configuration={'snapshot_interval': 300000, 'LogLevel': 'INFO'})
 
 with f:
+    # f.block()
+    f.index(inputs=DocumentArray([Document(text='INDEX') for _ in range(10)]), request_size=1)
+    f.search(inputs=DocumentArray([Document(text='SEARCH') for _ in range(10)]), request_size=1)
     f.block()
-    # f.index(inputs=DocumentArray([Document(text='INDEX') for _ in range(10)]), request_size=1)
-    # f.search(inputs=DocumentArray([Document(text='SEARCH') for _ in range(10)]), request_size=1)

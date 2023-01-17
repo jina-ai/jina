@@ -1,5 +1,6 @@
 import os
 import sys
+import subprocess
 from os import path
 
 from setuptools import find_packages, setup, Extension
@@ -161,6 +162,17 @@ if sys.version_info.major == 3 and sys.version_info.minor >= 11:
     final_deps.add('grpcio-reflection>=1.49.0')
 
 
+extra_golang_kw = {
+}
+
+if subprocess.run(['go', 'version']).returncode == 0:
+    golang_installed = False
+    extra_golang_kw = {
+        'build_golang': {'root': 'jraft', 'strip': False},
+        'ext_modules': [Extension('jraft', ['jina/serve/consensus/run.go'], py_limited_api=True, define_macros=[('Py_LIMITED_API', None)])],
+        'setup_requires': ['setuptools-golang']
+    }
+
 setup(
     name=pkg_name,
     packages=find_packages(),
@@ -219,7 +231,5 @@ setup(
     },
     keywords='jina cloud-native cross-modal multimodal neural-search query search index elastic neural-network encoding '
     'embedding serving docker container image video audio deep-learning mlops',
-    build_golang={'root': 'jraft', 'strip': False},
-    ext_modules=[Extension('jraft', ['jina/serve/consensus/run.go'], py_limited_api=True, define_macros=[('Py_LIMITED_API', None)])],
-    setup_requires=['setuptools-golang'],
+    **extra_golang_kw
 )
