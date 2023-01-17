@@ -112,72 +112,74 @@ class Deployment(PostMixin, BaseOrchestrator):
     # overload_inject_start_deployment
     @overload
     def __init__(
-        self,*,
-        compression: Optional[str] = None, 
-        connection_list: Optional[str] = None, 
-        disable_auto_volume: Optional[bool] = False, 
-        docker_kwargs: Optional[dict] = None, 
-        entrypoint: Optional[str] = None, 
-        env: Optional[dict] = None, 
-        env_from_secret: Optional[dict] = None, 
-        exit_on_exceptions: Optional[List[str]] = [], 
-        external: Optional[bool] = False, 
-        floating: Optional[bool] = False, 
-        force_update: Optional[bool] = False, 
-        gpus: Optional[str] = None, 
-        grpc_metadata: Optional[dict] = None, 
-        grpc_server_options: Optional[dict] = None, 
-        host: Optional[List[str]] = ['0.0.0.0'], 
-        install_requirements: Optional[bool] = False, 
-        log_config: Optional[str] = None, 
-        metrics: Optional[bool] = False, 
-        metrics_exporter_host: Optional[str] = None, 
-        metrics_exporter_port: Optional[int] = None, 
-        monitoring: Optional[bool] = False, 
-        name: Optional[str] = None, 
-        native: Optional[bool] = False, 
-        no_reduce: Optional[bool] = False, 
-        output_array_type: Optional[str] = None, 
-        polling: Optional[str] = 'ANY', 
-        port: Optional[int] = None, 
-        port_monitoring: Optional[int] = None, 
-        prefer_platform: Optional[str] = None, 
-        py_modules: Optional[List[str]] = None, 
-        quiet: Optional[bool] = False, 
-        quiet_error: Optional[bool] = False, 
-        reload: Optional[bool] = False, 
-        replicas: Optional[int] = 1, 
-        retries: Optional[int] = -1, 
-        runtime_cls: Optional[str] = 'WorkerRuntime', 
-        shards: Optional[int] = 1, 
-        timeout_ctrl: Optional[int] = 60, 
-        timeout_ready: Optional[int] = 600000, 
-        timeout_send: Optional[int] = None, 
-        tls: Optional[bool] = False, 
-        traces_exporter_host: Optional[str] = None, 
-        traces_exporter_port: Optional[int] = None, 
-        tracing: Optional[bool] = False, 
-        uses: Optional[Union[str, Type['BaseExecutor'], dict]] = 'BaseExecutor', 
-        uses_after: Optional[Union[str, Type['BaseExecutor'], dict]] = None, 
-        uses_after_address: Optional[str] = None, 
-        uses_before: Optional[Union[str, Type['BaseExecutor'], dict]] = None, 
-        uses_before_address: Optional[str] = None, 
-        uses_dynamic_batching: Optional[dict] = None, 
-        uses_metas: Optional[dict] = None, 
-        uses_requests: Optional[dict] = None, 
-        uses_with: Optional[dict] = None, 
-        volumes: Optional[List[str]] = None, 
-        when: Optional[dict] = None, 
-        workspace: Optional[str] = None, 
-        **kwargs):
+        self,
+        *,
+        compression: Optional[str] = None,
+        connection_list: Optional[str] = None,
+        disable_auto_volume: Optional[bool] = False,
+        docker_kwargs: Optional[dict] = None,
+        entrypoint: Optional[str] = None,
+        env: Optional[dict] = None,
+        env_from_secret: Optional[dict] = None,
+        exit_on_exceptions: Optional[List[str]] = [],
+        external: Optional[bool] = False,
+        floating: Optional[bool] = False,
+        force_update: Optional[bool] = False,
+        gpus: Optional[str] = None,
+        grpc_metadata: Optional[dict] = None,
+        grpc_server_options: Optional[dict] = None,
+        host: Optional[List[str]] = ['0.0.0.0'],
+        install_requirements: Optional[bool] = False,
+        log_config: Optional[str] = None,
+        metrics: Optional[bool] = False,
+        metrics_exporter_host: Optional[str] = None,
+        metrics_exporter_port: Optional[int] = None,
+        monitoring: Optional[bool] = False,
+        name: Optional[str] = None,
+        native: Optional[bool] = False,
+        no_reduce: Optional[bool] = False,
+        output_array_type: Optional[str] = None,
+        polling: Optional[str] = 'ANY',
+        port: Optional[int] = None,
+        port_monitoring: Optional[int] = None,
+        prefer_platform: Optional[str] = None,
+        py_modules: Optional[List[str]] = None,
+        quiet: Optional[bool] = False,
+        quiet_error: Optional[bool] = False,
+        reload: Optional[bool] = False,
+        replicas: Optional[int] = 1,
+        retries: Optional[int] = -1,
+        runtime_cls: Optional[str] = 'WorkerRuntime',
+        shards: Optional[int] = 1,
+        timeout_ctrl: Optional[int] = 60,
+        timeout_ready: Optional[int] = 600000,
+        timeout_send: Optional[int] = None,
+        tls: Optional[bool] = False,
+        traces_exporter_host: Optional[str] = None,
+        traces_exporter_port: Optional[int] = None,
+        tracing: Optional[bool] = False,
+        uses: Optional[Union[str, Type['BaseExecutor'], dict]] = 'BaseExecutor',
+        uses_after: Optional[Union[str, Type['BaseExecutor'], dict]] = None,
+        uses_after_address: Optional[str] = None,
+        uses_before: Optional[Union[str, Type['BaseExecutor'], dict]] = None,
+        uses_before_address: Optional[str] = None,
+        uses_dynamic_batching: Optional[dict] = None,
+        uses_metas: Optional[dict] = None,
+        uses_requests: Optional[dict] = None,
+        uses_with: Optional[dict] = None,
+        volumes: Optional[List[str]] = None,
+        when: Optional[dict] = None,
+        workspace: Optional[str] = None,
+        **kwargs,
+    ):
         """Create a Deployment to serve or deploy and Executor or Gateway
 
         :param compression: The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.
         :param connection_list: dictionary JSON with a list of connections to configure
         :param disable_auto_volume: Do not automatically mount a volume for dockerized Executors.
         :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker '
-          container. 
-          
+          container.
+
           More details can be found in the Docker SDK docs:  https://docker-py.readthedocs.io/en/stable/
         :param entrypoint: The entrypoint command overrides the ENTRYPOINT in Docker image. when not set then the Docker image ENTRYPOINT takes effective.
         :param env: The map of environment variables that are available inside runtime
@@ -187,8 +189,8 @@ class Deployment(PostMixin, BaseOrchestrator):
         :param floating: If set, the current Pod/Deployment can not be further chained, and the next `.add()` will chain after the last Pod/Deployment not this current one.
         :param force_update: If set, always pull the latest Hub Executor bundle even it exists on local
         :param gpus: This argument allows dockerized Jina Executors to discover local gpu devices.
-              
-              Note, 
+
+              Note,
               - To access all gpus, use `--gpus all`.
               - To access multiple gpus, e.g. make use of 2 gpus, use `--gpus 2`.
               - To access specified gpus based on device id, use `--gpus device=[YOUR-GPU-DEVICE-ID]`
@@ -204,19 +206,19 @@ class Deployment(PostMixin, BaseOrchestrator):
         :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.
         :param monitoring: If set, spawn an http server with a prometheus endpoint to expose metrics
         :param name: The name of this object.
-          
+
               This will be used in the following places:
               - how you refer to this object in Python/YAML/CLI
               - visualization
               - log message header
               - ...
-          
+
               When not given, then the default naming strategy will apply.
         :param native: If set, only native Executors is allowed, and the Executor is always run inside WorkerRuntime.
         :param no_reduce: Disable the built-in reduction mechanism. Set this if the reduction is to be handled by the Executor itself by operating on a `docs_matrix` or `docs_map`
         :param output_array_type: The type of array `tensor` and `embedding` will be serialized to.
-          
-          Supports the same types as `docarray.to_protobuf(.., ndarray_type=...)`, which can be found 
+
+          Supports the same types as `docarray.to_protobuf(.., ndarray_type=...)`, which can be found
           `here <https://docarray.jina.ai/fundamentals/document/serialization/#from-to-protobuf>`.
           Defaults to retaining whatever type is returned by the Executor.
         :param polling: The polling strategy of the Deployment and its endpoints (when `shards>1`).
@@ -231,7 +233,7 @@ class Deployment(PostMixin, BaseOrchestrator):
         :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]
         :param prefer_platform: The preferred target Docker platform. (e.g. "linux/amd64", "linux/arm64")
         :param py_modules: The customized python modules need to be imported before loading the executor
-          
+
           Note that the recommended way is to only import a single module - a simple python file, if your
           executor can be defined in a single file, or an ``__init__.py`` file if you have multiple files,
           which should be structured as a python package. For more details, please see the
@@ -257,7 +259,7 @@ class Deployment(PostMixin, BaseOrchestrator):
                   * a docker image (must start with `docker://`)
                   * the string literal of a YAML config (must start with `!` or `jtype: `)
                   * the string literal of a JSON config
-          
+
                   When use it under Python, one can use the following values additionally:
                   - a Python dict that represents the config
                   - a text file stream has `.read()` interface
@@ -269,11 +271,11 @@ class Deployment(PostMixin, BaseOrchestrator):
         :param uses_metas: Dictionary of keyword arguments that will override the `metas` configuration in `uses`
         :param uses_requests: Dictionary of keyword arguments that will override the `requests` configuration in `uses`
         :param uses_with: Dictionary of keyword arguments that will override the `with` configuration in `uses`
-        :param volumes: The path on the host to be mounted inside the container. 
-          
-          Note, 
-          - If separated by `:`, then the first part will be considered as the local host path and the second part is the path in the container system. 
-          - If no split provided, then the basename of that directory will be mounted into container's root path, e.g. `--volumes="/user/test/my-workspace"` will be mounted into `/my-workspace` inside the container. 
+        :param volumes: The path on the host to be mounted inside the container.
+
+          Note,
+          - If separated by `:`, then the first part will be considered as the local host path and the second part is the path in the container system.
+          - If no split provided, then the basename of that directory will be mounted into container's root path, e.g. `--volumes="/user/test/my-workspace"` will be mounted into `/my-workspace` inside the container.
           - All volumes are mounted with read-write mode.
         :param when: The condition that the documents need to fulfill before reaching the Executor.The condition can be defined in the form of a `DocArray query condition <https://docarray.jina.ai/fundamentals/documentarray/find/#query-by-conditions>`
         :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.
@@ -282,6 +284,7 @@ class Deployment(PostMixin, BaseOrchestrator):
         .. # noqa: DAR101
         .. # noqa: DAR003
         """
+
     # overload_inject_end_deployment
 
     def __init__(
@@ -1395,3 +1398,65 @@ class Deployment(PostMixin, BaseOrchestrator):
         )
 
         return all_panels
+
+    def to_kubernetes_yaml(
+        self,
+        output_base_path: str,
+        k8s_namespace: Optional[str] = None,
+    ):
+        """
+        Converts a Jina Deployment into a set of yaml deployments to deploy in Kubernetes.
+
+        If you don't want to rebuild image on Jina Hub,
+        you can set `JINA_HUB_NO_IMAGE_REBUILD` environment variable.
+
+        :param output_base_path: The base path where to dump all the yaml files
+        :param k8s_namespace: The name of the k8s namespace to set for the configurations. If None, the name of the Flow will be used.
+        """
+        import yaml
+
+        from jina.orchestrate.deployments.config.k8s import K8sDeploymentConfig
+
+        k8s_namespace = k8s_namespace or self.args.name or 'default'
+
+        if self.args.external:
+            self.logger.warning(
+                'The Deployment is external, cannot create YAML deployment files'
+            )
+            return
+
+        if self.args.name == 'gateway' and self.args.default_port:
+            from jina.serve.networking import GrpcConnectionPool
+
+            self.args.port = GrpcConnectionPool.K8S_PORT
+            self.first_pod_args.port = GrpcConnectionPool.K8S_PORT
+
+            self.args.port_monitoring = GrpcConnectionPool.K8S_PORT_MONITORING
+            self.first_pod_args.port_monitoring = GrpcConnectionPool.K8S_PORT_MONITORING
+
+            self.args.default_port = False
+
+            # TODO: for gateway the following is needed:
+            # cargs.deployments_addresses = self.k8s_deployments_addresses
+
+        k8s_deployment = K8sDeploymentConfig(
+            args=self.args,
+            k8s_namespace=k8s_namespace,
+        )
+
+        configs = k8s_deployment.to_kubernetes_yaml()
+
+        for name, k8s_objects in configs:
+            filename = os.path.join(output_base_path, f'{name}.yml')
+            os.makedirs(output_base_path, exist_ok=True)
+            with open(filename, 'w+') as fp:
+                for i, k8s_object in enumerate(k8s_objects):
+                    yaml.dump(k8s_object, fp)
+                    if i < len(k8s_objects) - 1:
+                        fp.write('---\n')
+
+        self.logger.info(
+            f'K8s yaml files have been created under [b]{output_base_path}[/]. You can use it by running [b]kubectl apply -R -f {output_base_path}[/]'
+        )
+
+    to_k8s_yaml = to_kubernetes_yaml
