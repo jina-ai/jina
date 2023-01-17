@@ -80,11 +80,12 @@ func (s *snapshot) Persist(sink raft.SnapshotSink) error {
     if status != nil && *status != pb.SnapshotStatusProto_SUCCEEDED {
         msg := fmt.Sprintf("persist job %s failed with status %s", s.id.Value, status)
         log.Fatalf(msg)
+        sink.Cancel()
         return fmt.Errorf(msg)
     }
     _, err := sink.Write([]byte(s.snapshotDirectory))
     if err != nil {
-        _ = sink.Cancel()
+        sink.Cancel()
         return fmt.Errorf("sink.Write(): %v", err)
     }
 

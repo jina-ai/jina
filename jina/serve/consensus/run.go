@@ -2,7 +2,7 @@ package main
 
 // #include <Python.h>
 // #include <stdbool.h>
-// int PyArg_ParseTuple_run(PyObject * args, PyObject * kwargs, char **myAddr, char **raftId, char **raftDir, bool *raftBootstrap, char **executorTarget, int *HeartbeatTimeout, int *ElectionTimeout, int *CommitTimeout, int *MaxAppendEntries, bool *BatchApplyCh, bool *ShutdownOnRemove, uint* TrailingLogs, int *snapshotInterval, uint *SnapshotThreshold, int *LeaderLeaseTimeout, char **LogLevel, bool *NoSnapshotRestoreOnStart);
+// int PyArg_ParseTuple_run(PyObject * args, PyObject * kwargs, char **myAddr, char **raftId, char **raftDir, bool *raftBootstrap, char **executorTarget, int *HeartbeatTimeout, int *ElectionTimeout, int *CommitTimeout, int *MaxAppendEntries, bool *BatchApplyCh, bool *ShutdownOnRemove, uint64_t *TrailingLogs, int *snapshotInterval, uint64_t *SnapshotThreshold, int *LeaderLeaseTimeout, char **LogLevel, bool *NoSnapshotRestoreOnStart);
 // int PyArg_ParseTuple_add_voter(PyObject * args, char **a, char **b, char **c);
 // void raise_exception(char *msg);
 import "C"
@@ -254,9 +254,9 @@ func run(self *C.PyObject, args *C.PyObject, kwargs *C.PyObject) *C.PyObject {
     var MaxAppendEntries C.int
     var BatchApplyCh C.bool
     var ShutdownOnRemove C.bool
-    var TrailingLogs C.uint
+    var TrailingLogs C.uint64_t
     var SnapshotInterval C.int
-    var SnapshotThreshold C.uint
+    var SnapshotThreshold C.uint64_t
     var LeaderLeaseTimeout C.int
     var LogLevel *C.char
     var NoSnapshotRestoreOnStart C.bool
@@ -268,12 +268,37 @@ func run(self *C.PyObject, args *C.PyObject, kwargs *C.PyObject) *C.PyObject {
     MaxAppendEntries         = C.int(raftDefaultConfig.MaxAppendEntries)
     BatchApplyCh             = C.bool(raftDefaultConfig.BatchApplyCh)
     ShutdownOnRemove         = C.bool(raftDefaultConfig.ShutdownOnRemove)
-    TrailingLogs             = C.uint(raftDefaultConfig.TrailingLogs)
+    TrailingLogs             = C.uint64_t(raftDefaultConfig.TrailingLogs)
     SnapshotInterval         = C.int(raftDefaultConfig.SnapshotInterval / time.Second)
-    SnapshotThreshold        = C.uint(raftDefaultConfig.SnapshotThreshold)
+    SnapshotThreshold        = C.uint64_t(raftDefaultConfig.SnapshotThreshold)
     LeaderLeaseTimeout       = C.int(raftDefaultConfig.LeaderLeaseTimeout / time.Millisecond)
     LogLevel                 = C.CString(raftDefaultConfig.LogLevel)
     NoSnapshotRestoreOnStart = C.bool(raftDefaultConfig.NoSnapshotRestoreOnStart)
+
+//     log.Printf("CommitTimeout DEFAULT CONFIG %v", raftDefaultConfig.CommitTimeout)
+//     log.Printf("CommitTimeout / milli %v", CommitTimeout)
+//
+//     log.Printf("MaxAppendEntries DEFAULT CONFIG %v", raftDefaultConfig.MaxAppendEntries)
+//     log.Printf("MaxAppendEntries %v", MaxAppendEntries)
+//
+//     log.Printf("BatchApplyCh DEFAULT CONFIG %v", raftDefaultConfig.BatchApplyCh)
+//     log.Printf("BatchApplyCh %v", BatchApplyCh)
+//
+//     log.Printf("ShutdownOnRemove DEFAULT CONFIG %v", raftDefaultConfig.ShutdownOnRemove)
+//     log.Printf("ShutdownOnRemove %v", ShutdownOnRemove)
+//
+//     log.Printf("TrailingLogs DEFAULT CONFIG %v", raftDefaultConfig.TrailingLogs)
+//     log.Printf("TrailingLogs %v", TrailingLogs)
+//
+//     log.Printf("SnapshotInterval DEFAULT CONFIG %v", raftDefaultConfig.SnapshotInterval)
+//     log.Printf("SnapshotInterval %v", SnapshotInterval)
+//
+//     log.Printf("SnapshotThreshold DEFAULT CONFIG %v", raftDefaultConfig.SnapshotThreshold)
+//     log.Printf("SnapshotThreshold %v", SnapshotThreshold)
+//
+//     log.Printf("LeaderLeaseTimeout DEFAULT CONFIG %v", raftDefaultConfig.LeaderLeaseTimeout)
+//     log.Printf("LeaderLeaseTimeout / milli %v", LeaderLeaseTimeout)
+
 
     if C.PyArg_ParseTuple_run(args,
                              kwargs,
@@ -294,6 +319,14 @@ func run(self *C.PyObject, args *C.PyObject, kwargs *C.PyObject) *C.PyObject {
                              &LeaderLeaseTimeout,
                              &LogLevel,
                              &NoSnapshotRestoreOnStart) != 0 {
+//         log.Printf("CommitTimeout AFTER %v", CommitTimeout)
+//         log.Printf("MaxAppendEntries AFTER %v", MaxAppendEntries)
+//         log.Printf("BatchApplyCh AFTER %v", BatchApplyCh)
+//         log.Printf("ShutdownOnRemove AFTER %v", ShutdownOnRemove)
+//         log.Printf("TrailingLogs AFTER %v", TrailingLogs)
+//         log.Printf("SnapshotInterval AFTER %v", SnapshotInterval)
+//         log.Printf("SnapshotThreshold AFTER %v", SnapshotThreshold)
+//         log.Printf("LeaderLeaseTimeout AFTER %v", LeaderLeaseTimeout)
         Run(C.GoString(myAddr),
             C.GoString(raftId),
             C.GoString(raftDir),
