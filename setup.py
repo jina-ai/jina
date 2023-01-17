@@ -162,10 +162,16 @@ if sys.version_info.major == 3 and sys.version_info.minor >= 11:
     final_deps.add('grpcio-reflection>=1.49.0')
 
 
-extra_golang_kw = {
-}
+extra_golang_kw = {}
 
-if subprocess.run(['go', 'version']).returncode == 0:
+ret_code = -1
+
+try:
+    ret_code = subprocess.run(['go', 'version']).returncode
+except Exception:
+    pass
+
+if ret_code == 0:
     golang_installed = False
     extra_golang_kw = {
         'build_golang': {'root': 'jraft', 'strip': False},
