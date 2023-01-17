@@ -124,7 +124,6 @@ class Flow(
         metrics_exporter_host: Optional[str] = None, 
         metrics_exporter_port: Optional[int] = None, 
         port: Optional[int] = None, 
-        prefetch: Optional[int] = 1000, 
         protocol: Optional[Union[str, List[str]]] = 'GRPC', 
         proxy: Optional[bool] = False, 
         tls: Optional[bool] = False, 
@@ -140,9 +139,6 @@ class Flow(
         :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.
         :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.
         :param port: The port of the Gateway, which the client should connect to.
-        :param prefetch: Number of requests fetched from the client before feeding into the first Executor. 
-              
-              Used to control the speed of data input into a Flow. 0 disables prefetch (1000 requests is the default)
         :param protocol: Communication protocol between server and client.
         :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
         :param tls: If set, connect to gateway using tls encryption
@@ -382,9 +378,6 @@ class Flow(
         :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.
         :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.
         :param port: The port of the Gateway, which the client should connect to.
-        :param prefetch: Number of requests fetched from the client before feeding into the first Executor. 
-              
-              Used to control the speed of data input into a Flow. 0 disables prefetch (1000 requests is the default)
         :param protocol: Communication protocol between server and client.
         :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
         :param tls: If set, connect to gateway using tls encryption
@@ -875,7 +868,6 @@ class Flow(
         polling: Optional[str] = 'ANY', 
         port: Optional[int] = None, 
         port_monitoring: Optional[int] = None, 
-        prefer_platform: Optional[str] = None, 
         py_modules: Optional[List[str]] = None, 
         quiet: Optional[bool] = False, 
         quiet_error: Optional[bool] = False, 
@@ -963,7 +955,6 @@ class Flow(
               {'/custom': 'ALL', '/search': 'ANY', '*': 'ANY'}
         :param port: The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (`--external` or `external=True`) this can be a list of ports. Then, every resulting address will be considered as one replica of the Executor.
         :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]
-        :param prefer_platform: The preferred target Docker platform. (e.g. "linux/amd64", "linux/arm64")
         :param py_modules: The customized python modules need to be imported before loading the executor
           
           Note that the recommended way is to only import a single module - a simple python file, if your
@@ -1111,7 +1102,6 @@ class Flow(
               {'/custom': 'ALL', '/search': 'ANY', '*': 'ANY'}
         :param port: The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (`--external` or `external=True`) this can be a list of ports. Then, every resulting address will be considered as one replica of the Executor.
         :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]
-        :param prefer_platform: The preferred target Docker platform. (e.g. "linux/amd64", "linux/arm64")
         :param py_modules: The customized python modules need to be imported before loading the executor
           
           Note that the recommended way is to only import a single module - a simple python file, if your
