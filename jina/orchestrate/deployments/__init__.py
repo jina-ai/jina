@@ -186,6 +186,7 @@ class Deployment(PostMixin, BaseOrchestrator):
         py_modules: Optional[List[str]] = None, 
         quiet: Optional[bool] = False, 
         quiet_error: Optional[bool] = False, 
+        raft_configuration: Optional[dict] = None, 
         reload: Optional[bool] = False, 
         replicas: Optional[int] = 1, 
         retries: Optional[int] = -1, 
@@ -281,6 +282,7 @@ class Deployment(PostMixin, BaseOrchestrator):
           `Executor cookbook <https://docs.jina.ai/concepts/executor/executor-files/>`__
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
+        :param raft_configuration: Dictionary of kwargs arguments that will be passed to the RAFT node as configuration options when starting the RAFT node.
         :param reload: If set, the Executor will restart while serving if YAML configuration source or Executor modules are changed. If YAML configuration is changed, the whole deployment is reloaded and new processes will be restarted. If only Python modules of the Executor have changed, they will be reloaded to the interpreter without restarting process.
         :param replicas: The number of replicas in the deployment
         :param retries: Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
