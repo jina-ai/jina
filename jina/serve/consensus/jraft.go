@@ -8,22 +8,24 @@ package main
 
 // Workaround missing variadic function support
 // https://github.com/golang/go/issues/975
-int PyArg_ParseTuple_run(PyObject * args, char **a, char **b, char **c, bool *d, char **e) {
-    return PyArg_ParseTuple(args, "sssps", a, b, c, d, e);
+// int PyArg_ParseTuple_run(PyObject * args, PyObject * kwargs, char **myAddr, char **raftId, char **raftDir, bool *raftBootstrap, char **executorTarget, int *snapshotTimeout) {
+int PyArg_ParseTuple_run(PyObject * args, PyObject * kwargs, char **myAddr, char **raftId, char **raftDir, bool *raftBootstrap, char **executorTarget, int *HeartbeatTimeout, int *ElectionTimeout, int *CommitTimeout, int *MaxAppendEntries, bool *BatchApplyCh, bool *ShutdownOnRemove, uint* TrailingLogs, int *snapshotInterval, uint *SnapshotThreshold, int *LeaderLeaseTimeout, char **LogLevel, bool *NoSnapshotRestoreOnStart) {
+    static char *kwlist[] = {"myAddr", "raftId", "raftDir", "raftBootstrap", "executorTarget", "HeartbeatTimeout", "ElectionTimeout", "CommitTimeout", "MaxAppendEntries", "BatchApplyCh", "ShutdownOnRemove", "TrailingLogs", "SnapshotInterval", "SnapshotThreshold", "LeaderLeaseTimeout", "LogLevel", "NoSnapshotRestoreOnStart", NULL};
+    return PyArg_ParseTupleAndKeywords(args, kwargs, "sssps|llllppllllsp", kwlist, myAddr, raftId, raftDir, raftBootstrap, executorTarget, HeartbeatTimeout, ElectionTimeout, CommitTimeout, MaxAppendEntries, BatchApplyCh, ShutdownOnRemove, TrailingLogs, snapshotInterval, SnapshotThreshold, LeaderLeaseTimeout, LogLevel, NoSnapshotRestoreOnStart);
 }
 
 int PyArg_ParseTuple_add_voter(PyObject * args, char **a, char **b, char **c) {
     return PyArg_ParseTuple(args, "sss", a, b, c);
 }
 
-PyObject * run(PyObject* , PyObject*);
+PyObject * run(PyObject* , PyObject*, PyObject*);
 
 PyObject * add_voter(PyObject* , PyObject*);
 
 static PyObject *AddVoterError = NULL;
 
 static PyMethodDef methods[] = {
-    {"run", (PyCFunction)run, METH_VARARGS, "Run the raft Node server"},
+    {"run", (PyCFunction)run, METH_VARARGS | METH_KEYWORDS, "Run the raft Node server"},
     {"add_voter", (PyCFunction)add_voter, METH_VARARGS, "Client to add voter"},
     {NULL, NULL, 0, NULL}
 };

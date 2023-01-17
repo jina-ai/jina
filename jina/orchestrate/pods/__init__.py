@@ -117,17 +117,28 @@ def run_raft(
     :param leader: parameter indicating if this RAFT node should be the leader, and this bootstrap (TODO: investigate if the need is real)
     :param is_ready: concurrency event to communicate Executor runtime is ready to receive messages
     :param is_shutdown: concurrency event to communicate runtime is terminated
-
     """
+
     import jraft
+
+    def pascal_case_dict(d):
+        new_d = {}
+        for key, value in d.items():
+            new_key = key
+            if '_' in key:
+                new_key = ''.join(word.capitalize() for word in key.split('_'))
+            new_d[new_key] = value
+        return new_d
+
     address = f'{args.host}:{args.port}'
     raft_id = str(args.replica_id)
     shard_id = args.shard_id if args.shards > 1 else -1
     raft_dir = get_workspace_from_name_and_shards(workspace=args.workspace, name='raft', shard_id=shard_id)
     raft_bootstrap = leader
     executor_target = f'{args.host}:{args.port + 1}'
+    raft_configuration = pascal_case_dict(args.raft_configuration or {})
     is_ready.wait()
-    jraft.run(address, raft_id, raft_dir, raft_bootstrap, executor_target)
+    jraft.run(address, raft_id, raft_dir, raft_bootstrap, executor_target, **raft_configuration)
 
 
 class BasePod(ABC):

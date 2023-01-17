@@ -2,7 +2,7 @@ package main
 
 // #include <Python.h>
 // #include <stdbool.h>
-// int PyArg_ParseTuple_run(PyObject * args, char **a, char **b, char **c, bool *d, char **e);
+// int PyArg_ParseTuple_run(PyObject * args, PyObject * kwargs, char **myAddr, char **raftId, char **raftDir, bool *raftBootstrap, char **executorTarget, int *HeartbeatTimeout, int *ElectionTimeout, int *CommitTimeout, int *MaxAppendEntries, bool *BatchApplyCh, bool *ShutdownOnRemove, uint* TrailingLogs, int *snapshotInterval, uint *SnapshotThreshold, int *LeaderLeaseTimeout, char **LogLevel, bool *NoSnapshotRestoreOnStart);
 // int PyArg_ParseTuple_add_voter(PyObject * args, char **a, char **b, char **c);
 // void raise_exception(char *msg);
 import "C"
@@ -18,6 +18,7 @@ import (
     "os/signal"
     "syscall"
     "path/filepath"
+    "time"
 
     "github.com/Jille/raft-grpc-leader-rpc/leaderhealth"
     transport "github.com/Jille/raft-grpc-transport"
@@ -31,10 +32,39 @@ import (
     "google.golang.org/grpc/reflection"
 )
 
-func NewRaft(ctx context.Context, myID, myAddress string, raftDir string, raftBootstrap bool, fsm raft.FSM) (*raft.Raft, *transport.Manager, error) {
+func NewRaft(ctx context.Context,
+            myID string,
+            myAddress string,
+            raftDir string,
+            raftBootstrap bool,
+            HeartbeatTimeout int,
+            ElectionTimeout int,
+            CommitTimeout int,
+            MaxAppendEntries int,
+            BatchApplyCh bool,
+            ShutdownOnRemove bool,
+            TrailingLogs uint64,
+            SnapshotInterval int,
+            SnapshotThreshold uint64,
+            LeaderLeaseTimeout int,
+            LogLevel string,
+            NoSnapshotRestoreOnStart bool,
+            fsm raft.FSM) (*raft.Raft, *transport.Manager, error) {
 
     config := raft.DefaultConfig()
     config.LocalID = raft.ServerID(myID)
+    config.HeartbeatTimeout         = time.Duration(HeartbeatTimeout) * time.Millisecond
+    config.ElectionTimeout          = time.Duration(ElectionTimeout) * time.Millisecond
+    config.CommitTimeout            = time.Duration(CommitTimeout) * time.Millisecond
+    config.MaxAppendEntries         = MaxAppendEntries
+    config.BatchApplyCh             = BatchApplyCh
+    config.ShutdownOnRemove         = ShutdownOnRemove
+    config.TrailingLogs             = TrailingLogs
+    config.SnapshotInterval         = time.Duration(SnapshotInterval) * time.Second
+    config.SnapshotThreshold        = SnapshotThreshold
+    config.LeaderLeaseTimeout       = time.Duration(LeaderLeaseTimeout) * time.Millisecond
+    config.LogLevel                 = LogLevel
+    config.NoSnapshotRestoreOnStart = NoSnapshotRestoreOnStart
 
     baseDir := filepath.Join(raftDir, myID)
 
@@ -80,7 +110,24 @@ func NewRaft(ctx context.Context, myID, myAddress string, raftDir string, raftBo
     return r, tm, nil
 }
 
-func Run(myAddr string, raftId string, raftDir string, raftBootstrap bool, executorTarget string) {
+func Run(myAddr string,
+         raftId string,
+         raftDir string,
+         raftBootstrap bool,
+         executorTarget string,
+         HeartbeatTimeout int,
+         ElectionTimeout int,
+         CommitTimeout int,
+         MaxAppendEntries int,
+         BatchApplyCh bool,
+         ShutdownOnRemove bool,
+         TrailingLogs uint64,
+         SnapshotInterval int,
+         SnapshotThreshold uint64,
+         LeaderLeaseTimeout int,
+         LogLevel string,
+         NoSnapshotRestoreOnStart bool) {
+
     log.Printf("Calling Run %s, %s, %s, %p, %s", myAddr, raftId, raftDir, raftBootstrap, executorTarget)
     if raftId == "" {
         log.Fatalf("flag --raft_id is required")
@@ -97,7 +144,24 @@ func Run(myAddr string, raftId string, raftDir string, raftBootstrap bool, execu
     }
     executorFSM := jinaraft.NewExecutorFSM(executorTarget)
 
-    r, tm, err := NewRaft(ctx, raftId, myAddr, raftDir, raftBootstrap, executorFSM)
+    r, tm, err := NewRaft(ctx,
+                        raftId,
+                        myAddr,
+                        raftDir,
+                        raftBootstrap,
+                        HeartbeatTimeout,
+                        ElectionTimeout,
+                        CommitTimeout,
+                        MaxAppendEntries,
+                        BatchApplyCh,
+                        ShutdownOnRemove,
+                        TrailingLogs,
+                        SnapshotInterval,
+                        SnapshotThreshold,
+                        LeaderLeaseTimeout,
+                        LogLevel,
+                        NoSnapshotRestoreOnStart,
+                        executorFSM)
     if err != nil {
         log.Fatalf("failed to start raft: %v", err)
     }
@@ -138,25 +202,115 @@ func Run(myAddr string, raftId string, raftDir string, raftBootstrap bool, execu
 }
 
 func main() {
-    myAddr         := flag.String("address", "localhost:50051", "TCP host+port for this node")
-    raftId         := flag.String("raft_id", "", "Node id used by Raft")
-    raftDir        := flag.String("raft_data_dir", "data/", "Raft data dir")
-    raftBootstrap  := flag.Bool("raft_bootstrap", false, "Whether to bootstrap the Raft cluster")
-    executorTarget := flag.String("executor_target", "localhost:54321", "underlying executor host+port")
+    raftDefaultConfig := raft.DefaultConfig()
+    myAddr            := flag.String("address", "localhost:50051", "TCP host+port for this node")
+    raftId            := flag.String("raft_id", "", "Node id used by Raft")
+    raftDir           := flag.String("raft_data_dir", "data/", "Raft data dir")
+    raftBootstrap     := flag.Bool("raft_bootstrap", false, "Whether to bootstrap the Raft cluster")
+    executorTarget    := flag.String("executor_target", "localhost:54321", "underlying executor host+port")
+    HeartbeatTimeout  := flag.Int("heartbeat_timeout", int(raftDefaultConfig.HeartbeatTimeout / time.Millisecond), "HeartbeatTimeout for the RAFT node")
+    ElectionTimeout   := flag.Int("election_timeout", int(raftDefaultConfig.ElectionTimeout / time.Millisecond), "ElectionTimeout for the RAFT node")
+    CommitTimeout     := flag.Int("commit_timeout", int(raftDefaultConfig.CommitTimeout / time.Millisecond), "CommitTimeout for the RAFT node")
+    MaxAppendEntries  := flag.Int("max_append_entries", raftDefaultConfig.MaxAppendEntries, "MaxAppendEntries for the RAFT node")
+    BatchApplyCh      := flag.Bool("batch_applych", raftDefaultConfig.BatchApplyCh, "BatchApplyCh for the RAFT node")
+    ShutdownOnRemove  := flag.Bool("shutdown_on_remove", raftDefaultConfig.ShutdownOnRemove, "ShutdownOnRemove for the RAFT node")
+    TrailingLogs      := flag.Uint64("trailing_logs", raftDefaultConfig.TrailingLogs, "TrailingLogs for the RAFT node")
+    SnapshotInterval  := flag.Int("snapshot_interval", int(raftDefaultConfig.SnapshotInterval / time.Second), "SnapshotInterval for the RAFT node")
+    SnapshotThreshold := flag.Uint64("snapshot_threshold", raftDefaultConfig.SnapshotThreshold, "SnapshotThreshold for the RAFT node")
+    LeaderLeaseTimeout := flag.Int("leader_lease_timeout", int(raftDefaultConfig.LeaderLeaseTimeout / time.Millisecond), "LeaderLeaseTimeout for the RAFT node")
+    LogLevel  := flag.String("log_level", raftDefaultConfig.LogLevel, "LogLevel for the RAFT node")
+    NoSnapshotRestoreOnStart := flag.Bool("no_snapshot_restore_on_start", raftDefaultConfig.NoSnapshotRestoreOnStart, "NoSnapshotRestoreOnStart for the RAFT node")
     flag.Parse()
-    Run(*myAddr, *raftId, *raftDir, *raftBootstrap, *executorTarget)
+    Run(*myAddr,
+        *raftId,
+        *raftDir,
+        *raftBootstrap,
+        *executorTarget,
+        *HeartbeatTimeout,
+        *ElectionTimeout,
+        *CommitTimeout,
+        *MaxAppendEntries,
+        *BatchApplyCh,
+        *ShutdownOnRemove,
+        *TrailingLogs,
+        *SnapshotInterval,
+        *SnapshotThreshold,
+        *LeaderLeaseTimeout,
+        *LogLevel,
+        *NoSnapshotRestoreOnStart)
 }
 
 
 //export run
-func run(self *C.PyObject, args *C.PyObject) *C.PyObject {
+func run(self *C.PyObject, args *C.PyObject, kwargs *C.PyObject) *C.PyObject {
     var myAddr *C.char
     var raftId *C.char
     var raftDir *C.char
     var raftBootstrap C.bool
     var executorTarget *C.char
-    if C.PyArg_ParseTuple_run(args, &myAddr, &raftId, &raftDir, &raftBootstrap, &executorTarget) != 0 {
-        Run(C.GoString(myAddr), C.GoString(raftId), C.GoString(raftDir), raftBootstrap != false, C.GoString(executorTarget))
+    var HeartbeatTimeout C.int
+    var ElectionTimeout C.int
+    var CommitTimeout C.int
+    var MaxAppendEntries C.int
+    var BatchApplyCh C.bool
+    var ShutdownOnRemove C.bool
+    var TrailingLogs C.uint
+    var SnapshotInterval C.int
+    var SnapshotThreshold C.uint
+    var LeaderLeaseTimeout C.int
+    var LogLevel *C.char
+    var NoSnapshotRestoreOnStart C.bool
+
+    raftDefaultConfig := raft.DefaultConfig()
+    HeartbeatTimeout         = C.int(int64(raftDefaultConfig.HeartbeatTimeout / time.Millisecond))
+    ElectionTimeout          = C.int(int64(raftDefaultConfig.ElectionTimeout / time.Millisecond))
+    CommitTimeout            = C.int(int64(raftDefaultConfig.CommitTimeout / time.Millisecond))
+    MaxAppendEntries         = C.int(raftDefaultConfig.MaxAppendEntries)
+    BatchApplyCh             = C.bool(raftDefaultConfig.BatchApplyCh)
+    ShutdownOnRemove         = C.bool(raftDefaultConfig.ShutdownOnRemove)
+    TrailingLogs             = C.uint(raftDefaultConfig.TrailingLogs)
+    SnapshotInterval         = C.int(raftDefaultConfig.SnapshotInterval / time.Second)
+    SnapshotThreshold        = C.uint(raftDefaultConfig.SnapshotThreshold)
+    LeaderLeaseTimeout       = C.int(raftDefaultConfig.LeaderLeaseTimeout / time.Millisecond)
+    LogLevel                 = C.CString(raftDefaultConfig.LogLevel)
+    NoSnapshotRestoreOnStart = C.bool(raftDefaultConfig.NoSnapshotRestoreOnStart)
+
+    if C.PyArg_ParseTuple_run(args,
+                             kwargs,
+                             &myAddr,
+                             &raftId,
+                             &raftDir,
+                             &raftBootstrap,
+                             &executorTarget,
+                             &HeartbeatTimeout,
+                             &ElectionTimeout,
+                             &CommitTimeout,
+                             &MaxAppendEntries,
+                             &BatchApplyCh,
+                             &ShutdownOnRemove,
+                             &TrailingLogs,
+                             &SnapshotInterval,
+                             &SnapshotThreshold,
+                             &LeaderLeaseTimeout,
+                             &LogLevel,
+                             &NoSnapshotRestoreOnStart) != 0 {
+        Run(C.GoString(myAddr),
+            C.GoString(raftId),
+            C.GoString(raftDir),
+            raftBootstrap != false,
+            C.GoString(executorTarget),
+            int(HeartbeatTimeout),
+            int(ElectionTimeout),
+            int(CommitTimeout),
+            int(MaxAppendEntries),
+            BatchApplyCh != false,
+            ShutdownOnRemove != false,
+            uint64(TrailingLogs),
+            int(SnapshotInterval),
+            uint64(SnapshotThreshold),
+            int(LeaderLeaseTimeout),
+            C.GoString(LogLevel),
+            NoSnapshotRestoreOnStart != false)
     }
     C.Py_IncRef(C.Py_None);
     return C.Py_None;
