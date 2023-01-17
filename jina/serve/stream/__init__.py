@@ -81,7 +81,7 @@ class RequestStreamer:
         :param args: positional arguments
         :yield: responses from Executors
         """
-        prefetch = self._prefetch
+        prefetch = prefetch or self._prefetch
         if context is not None:
             for metadatum in context.invocation_metadata():
                 if metadatum.key == '__results_in_order__':
