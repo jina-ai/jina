@@ -117,23 +117,21 @@ class Flow(
     # overload_inject_start_client_flow
     @overload
     def __init__(
-        self,
-        *,
-        asyncio: Optional[bool] = False,
-        host: Optional[str] = '0.0.0.0',
-        metrics: Optional[bool] = False,
-        metrics_exporter_host: Optional[str] = None,
-        metrics_exporter_port: Optional[int] = None,
-        port: Optional[int] = None,
-        prefetch: Optional[int] = 1000,
-        protocol: Optional[Union[str, List[str]]] = 'GRPC',
-        proxy: Optional[bool] = False,
-        tls: Optional[bool] = False,
-        traces_exporter_host: Optional[str] = None,
-        traces_exporter_port: Optional[int] = None,
-        tracing: Optional[bool] = False,
-        **kwargs,
-    ):
+        self,*,
+        asyncio: Optional[bool] = False, 
+        host: Optional[str] = '0.0.0.0', 
+        metrics: Optional[bool] = False, 
+        metrics_exporter_host: Optional[str] = None, 
+        metrics_exporter_port: Optional[int] = None, 
+        port: Optional[int] = None, 
+        prefetch: Optional[int] = 1000, 
+        protocol: Optional[Union[str, List[str]]] = 'GRPC', 
+        proxy: Optional[bool] = False, 
+        tls: Optional[bool] = False, 
+        traces_exporter_host: Optional[str] = None, 
+        traces_exporter_port: Optional[int] = None, 
+        tracing: Optional[bool] = False, 
+        **kwargs):
         """Create a Flow. Flow is how Jina streamlines and scales Executors. This overloaded method provides arguments from `jina client` CLI.
 
         :param asyncio: If set, then the input and output of this Client work in an asynchronous manner.
@@ -142,8 +140,8 @@ class Flow(
         :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.
         :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.
         :param port: The port of the Gateway, which the client should connect to.
-        :param prefetch: Number of requests fetched from the client before feeding into the first Executor.
-
+        :param prefetch: Number of requests fetched from the client before feeding into the first Executor. 
+              
               Used to control the speed of data input into a Flow. 0 disables prefetch (1000 requests is the default)
         :param protocol: Communication protocol between server and client.
         :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
@@ -156,65 +154,62 @@ class Flow(
         .. # noqa: DAR101
         .. # noqa: DAR003
         """
-
     # overload_inject_end_client_flow
 
     # overload_inject_start_gateway_flow
     @overload
     def __init__(
-        self,
-        *,
-        compression: Optional[str] = None,
-        cors: Optional[bool] = False,
-        deployments_addresses: Optional[str] = '{}',
-        deployments_metadata: Optional[str] = '{}',
-        deployments_no_reduce: Optional[str] = '[]',
-        description: Optional[str] = None,
-        docker_kwargs: Optional[dict] = None,
-        entrypoint: Optional[str] = None,
-        env: Optional[dict] = None,
-        env_from_secret: Optional[dict] = None,
-        expose_endpoints: Optional[str] = None,
-        expose_graphql_endpoint: Optional[bool] = False,
-        floating: Optional[bool] = False,
-        graph_conditions: Optional[str] = '{}',
-        graph_description: Optional[str] = '{}',
-        grpc_server_options: Optional[dict] = None,
-        host: Optional[str] = '0.0.0.0',
-        log_config: Optional[str] = None,
-        metrics: Optional[bool] = False,
-        metrics_exporter_host: Optional[str] = None,
-        metrics_exporter_port: Optional[int] = None,
-        monitoring: Optional[bool] = False,
-        name: Optional[str] = 'gateway',
-        no_crud_endpoints: Optional[bool] = False,
-        no_debug_endpoints: Optional[bool] = False,
-        port: Optional[int] = None,
-        port_monitoring: Optional[int] = None,
-        prefetch: Optional[int] = 1000,
-        protocol: Optional[Union[str, List[str]]] = ['GRPC'],
-        proxy: Optional[bool] = False,
-        py_modules: Optional[List[str]] = None,
-        quiet: Optional[bool] = False,
-        quiet_error: Optional[bool] = False,
-        reload: Optional[bool] = False,
-        retries: Optional[int] = -1,
-        runtime_cls: Optional[str] = 'GatewayRuntime',
-        ssl_certfile: Optional[str] = None,
-        ssl_keyfile: Optional[str] = None,
-        timeout_ctrl: Optional[int] = 60,
-        timeout_ready: Optional[int] = 600000,
-        timeout_send: Optional[int] = None,
-        title: Optional[str] = None,
-        traces_exporter_host: Optional[str] = None,
-        traces_exporter_port: Optional[int] = None,
-        tracing: Optional[bool] = False,
-        uses: Optional[Union[str, Type['BaseExecutor'], dict]] = None,
-        uses_with: Optional[dict] = None,
-        uvicorn_kwargs: Optional[dict] = None,
-        workspace: Optional[str] = None,
-        **kwargs,
-    ):
+        self,*,
+        compression: Optional[str] = None, 
+        cors: Optional[bool] = False, 
+        deployments_addresses: Optional[str] = '{}', 
+        deployments_metadata: Optional[str] = '{}', 
+        deployments_no_reduce: Optional[str] = '[]', 
+        description: Optional[str] = None, 
+        docker_kwargs: Optional[dict] = None, 
+        entrypoint: Optional[str] = None, 
+        env: Optional[dict] = None, 
+        env_from_secret: Optional[dict] = None, 
+        expose_endpoints: Optional[str] = None, 
+        expose_graphql_endpoint: Optional[bool] = False, 
+        floating: Optional[bool] = False, 
+        graph_conditions: Optional[str] = '{}', 
+        graph_description: Optional[str] = '{}', 
+        grpc_server_options: Optional[dict] = None, 
+        host: Optional[str] = '0.0.0.0', 
+        log_config: Optional[str] = None, 
+        metrics: Optional[bool] = False, 
+        metrics_exporter_host: Optional[str] = None, 
+        metrics_exporter_port: Optional[int] = None, 
+        monitoring: Optional[bool] = False, 
+        name: Optional[str] = 'gateway', 
+        no_crud_endpoints: Optional[bool] = False, 
+        no_debug_endpoints: Optional[bool] = False, 
+        port: Optional[int] = None, 
+        port_monitoring: Optional[int] = None, 
+        prefetch: Optional[int] = 1000, 
+        protocol: Optional[Union[str, List[str]]] = ['GRPC'], 
+        proxy: Optional[bool] = False, 
+        py_modules: Optional[List[str]] = None, 
+        quiet: Optional[bool] = False, 
+        quiet_error: Optional[bool] = False, 
+        reload: Optional[bool] = False, 
+        retries: Optional[int] = -1, 
+        runtime_cls: Optional[str] = 'GatewayRuntime', 
+        ssl_certfile: Optional[str] = None, 
+        ssl_keyfile: Optional[str] = None, 
+        timeout_ctrl: Optional[int] = 60, 
+        timeout_ready: Optional[int] = 600000, 
+        timeout_send: Optional[int] = None, 
+        title: Optional[str] = None, 
+        traces_exporter_host: Optional[str] = None, 
+        traces_exporter_port: Optional[int] = None, 
+        tracing: Optional[bool] = False, 
+        uses: Optional[Union[str, Type['BaseExecutor'], dict]] = None, 
+        uses_with: Optional[dict] = None, 
+        uvicorn_kwargs: Optional[dict] = None, 
+        workspace: Optional[str] = None, 
+        **kwargs):
         """Create a Flow. Flow is how Jina streamlines and scales Executors. This overloaded method provides arguments from `jina gateway` CLI.
 
         :param compression: The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.
@@ -224,8 +219,8 @@ class Flow(
         :param deployments_no_reduce: list JSON disabling the built-in merging mechanism for each Deployment listed
         :param description: The description of this HTTP server. It will be used in automatics docs such as Swagger UI.
         :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker '
-          container.
-
+          container. 
+          
           More details can be found in the Docker SDK docs:  https://docker-py.readthedocs.io/en/stable/
         :param entrypoint: The entrypoint command overrides the ENTRYPOINT in Docker image. when not set then the Docker image ENTRYPOINT takes effective.
         :param env: The map of environment variables that are available inside runtime
@@ -243,27 +238,27 @@ class Flow(
         :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.
         :param monitoring: If set, spawn an http server with a prometheus endpoint to expose metrics
         :param name: The name of this object.
-
+          
               This will be used in the following places:
               - how you refer to this object in Python/YAML/CLI
               - visualization
               - log message header
               - ...
-
+          
               When not given, then the default naming strategy will apply.
         :param no_crud_endpoints: If set, `/index`, `/search`, `/update`, `/delete` endpoints are removed from HTTP interface.
-
+          
                   Any executor that has `@requests(on=...)` bound with those values will receive data requests.
         :param no_debug_endpoints: If set, `/status` `/post` endpoints are removed from HTTP interface.
         :param port: The port for input data to bind the gateway server to, by default, random ports between range [49152, 65535] will be assigned. The port argument can be either 1 single value in case only 1 protocol is used or multiple values when many protocols are used.
         :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]
-        :param prefetch: Number of requests fetched from the client before feeding into the first Executor.
-
+        :param prefetch: Number of requests fetched from the client before feeding into the first Executor. 
+              
               Used to control the speed of data input into a Flow. 0 disables prefetch (1000 requests is the default)
         :param protocol: Communication protocol of the server exposed by the Gateway. This can be a single value or a list of protocols, depending on your chosen Gateway. Choose the convenient protocols from: ['GRPC', 'HTTP', 'WEBSOCKET'].
         :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
         :param py_modules: The customized python modules need to be imported before loading the gateway
-
+          
           Note that the recommended way is to only import a single module - a simple python file, if your
           gateway can be defined in a single file, or an ``__init__.py`` file if you have multiple files,
           which should be structured as a python package.
@@ -287,13 +282,13 @@ class Flow(
                   * a docker image (must start with `docker://`)
                   * the string literal of a YAML config (must start with `!` or `jtype: `)
                   * the string literal of a JSON config
-
+          
                   When use it under Python, one can use the following values additionally:
                   - a Python dict that represents the config
                   - a text file stream has `.read()` interface
         :param uses_with: Dictionary of keyword arguments that will override the `with` configuration in `uses`
         :param uvicorn_kwargs: Dictionary of kwargs arguments that will be passed to Uvicorn server when starting the server
-
+          
           More details can be found in Uvicorn docs: https://www.uvicorn.org/settings/
         :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.
 
@@ -301,39 +296,36 @@ class Flow(
         .. # noqa: DAR101
         .. # noqa: DAR003
         """
-
     # overload_inject_end_gateway_flow
     # overload_inject_start_flow
     @overload
     def __init__(
-        self,
-        *,
-        env: Optional[dict] = None,
-        inspect: Optional[str] = 'COLLECT',
-        log_config: Optional[str] = None,
-        name: Optional[str] = None,
-        quiet: Optional[bool] = False,
-        quiet_error: Optional[bool] = False,
-        reload: Optional[bool] = False,
-        uses: Optional[str] = None,
-        workspace: Optional[str] = None,
-        **kwargs,
-    ):
+        self,*,
+        env: Optional[dict] = None, 
+        inspect: Optional[str] = 'COLLECT', 
+        log_config: Optional[str] = None, 
+        name: Optional[str] = None, 
+        quiet: Optional[bool] = False, 
+        quiet_error: Optional[bool] = False, 
+        reload: Optional[bool] = False, 
+        uses: Optional[str] = None, 
+        workspace: Optional[str] = None, 
+        **kwargs):
         """Create a Flow. Flow is how Jina streamlines and scales Executors. This overloaded method provides arguments from `jina flow` CLI.
 
         :param env: The map of environment variables that are available inside runtime
         :param inspect: The strategy on those inspect deployments in the flow.
-
+          
               If `REMOVE` is given then all inspect deployments are removed when building the flow.
         :param log_config: The YAML config of the logger used in this object.
         :param name: The name of this object.
-
+          
               This will be used in the following places:
               - how you refer to this object in Python/YAML/CLI
               - visualization
               - log message header
               - ...
-
+          
               When not given, then the default naming strategy will apply.
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
@@ -345,7 +337,6 @@ class Flow(
         .. # noqa: DAR101
         .. # noqa: DAR003
         """
-
     # overload_inject_end_flow
     def __init__(
         self,
@@ -353,7 +344,7 @@ class Flow(
         **kwargs,
     ):
         # implementation_stub_inject_start_flow
-
+    
         """Create a Flow. Flow is how Jina streamlines and scales Executors.
 
         EXAMPLE USAGE
@@ -391,8 +382,8 @@ class Flow(
         :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.
         :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.
         :param port: The port of the Gateway, which the client should connect to.
-        :param prefetch: Number of requests fetched from the client before feeding into the first Executor.
-
+        :param prefetch: Number of requests fetched from the client before feeding into the first Executor. 
+              
               Used to control the speed of data input into a Flow. 0 disables prefetch (1000 requests is the default)
         :param protocol: Communication protocol between server and client.
         :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
@@ -407,8 +398,8 @@ class Flow(
         :param deployments_no_reduce: list JSON disabling the built-in merging mechanism for each Deployment listed
         :param description: The description of this HTTP server. It will be used in automatics docs such as Swagger UI.
         :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker '
-          container.
-
+          container. 
+          
           More details can be found in the Docker SDK docs:  https://docker-py.readthedocs.io/en/stable/
         :param entrypoint: The entrypoint command overrides the ENTRYPOINT in Docker image. when not set then the Docker image ENTRYPOINT takes effective.
         :param env: The map of environment variables that are available inside runtime
@@ -426,27 +417,27 @@ class Flow(
         :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.
         :param monitoring: If set, spawn an http server with a prometheus endpoint to expose metrics
         :param name: The name of this object.
-
+          
               This will be used in the following places:
               - how you refer to this object in Python/YAML/CLI
               - visualization
               - log message header
               - ...
-
+          
               When not given, then the default naming strategy will apply.
         :param no_crud_endpoints: If set, `/index`, `/search`, `/update`, `/delete` endpoints are removed from HTTP interface.
-
+          
                   Any executor that has `@requests(on=...)` bound with those values will receive data requests.
         :param no_debug_endpoints: If set, `/status` `/post` endpoints are removed from HTTP interface.
         :param port: The port for input data to bind the gateway server to, by default, random ports between range [49152, 65535] will be assigned. The port argument can be either 1 single value in case only 1 protocol is used or multiple values when many protocols are used.
         :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]
-        :param prefetch: Number of requests fetched from the client before feeding into the first Executor.
-
+        :param prefetch: Number of requests fetched from the client before feeding into the first Executor. 
+              
               Used to control the speed of data input into a Flow. 0 disables prefetch (1000 requests is the default)
         :param protocol: Communication protocol of the server exposed by the Gateway. This can be a single value or a list of protocols, depending on your chosen Gateway. Choose the convenient protocols from: ['GRPC', 'HTTP', 'WEBSOCKET'].
         :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
         :param py_modules: The customized python modules need to be imported before loading the gateway
-
+          
           Note that the recommended way is to only import a single module - a simple python file, if your
           gateway can be defined in a single file, or an ``__init__.py`` file if you have multiple files,
           which should be structured as a python package.
@@ -470,28 +461,28 @@ class Flow(
                   * a docker image (must start with `docker://`)
                   * the string literal of a YAML config (must start with `!` or `jtype: `)
                   * the string literal of a JSON config
-
+          
                   When use it under Python, one can use the following values additionally:
                   - a Python dict that represents the config
                   - a text file stream has `.read()` interface
         :param uses_with: Dictionary of keyword arguments that will override the `with` configuration in `uses`
         :param uvicorn_kwargs: Dictionary of kwargs arguments that will be passed to Uvicorn server when starting the server
-
+          
           More details can be found in Uvicorn docs: https://www.uvicorn.org/settings/
         :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.
         :param env: The map of environment variables that are available inside runtime
         :param inspect: The strategy on those inspect deployments in the flow.
-
+          
               If `REMOVE` is given then all inspect deployments are removed when building the flow.
         :param log_config: The YAML config of the logger used in this object.
         :param name: The name of this object.
-
+          
               This will be used in the following places:
               - how you refer to this object in Python/YAML/CLI
               - visualization
               - log message header
               - ...
-
+          
               When not given, then the default naming strategy will apply.
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
@@ -504,7 +495,7 @@ class Flow(
         .. # noqa: DAR101
         .. # noqa: DAR003
         """
-        # implementation_stub_inject_end_flow
+    # implementation_stub_inject_end_flow
         super().__init__()
         self._version = '1'  #: YAML version number, this will be later overridden if YAML config says the other way
         self._deployment_nodes = OrderedDict()  # type: Dict[str, Deployment]
@@ -855,74 +846,71 @@ class Flow(
     # overload_inject_start_deployment
     @overload
     def add(
-        self,
-        *,
-        compression: Optional[str] = None,
-        connection_list: Optional[str] = None,
-        disable_auto_volume: Optional[bool] = False,
-        docker_kwargs: Optional[dict] = None,
-        entrypoint: Optional[str] = None,
-        env: Optional[dict] = None,
-        env_from_secret: Optional[dict] = None,
-        exit_on_exceptions: Optional[List[str]] = [],
-        external: Optional[bool] = False,
-        floating: Optional[bool] = False,
-        force_update: Optional[bool] = False,
-        gpus: Optional[str] = None,
-        grpc_metadata: Optional[dict] = None,
-        grpc_server_options: Optional[dict] = None,
-        host: Optional[List[str]] = ['0.0.0.0'],
-        install_requirements: Optional[bool] = False,
-        log_config: Optional[str] = None,
-        metrics: Optional[bool] = False,
-        metrics_exporter_host: Optional[str] = None,
-        metrics_exporter_port: Optional[int] = None,
-        monitoring: Optional[bool] = False,
-        name: Optional[str] = None,
-        native: Optional[bool] = False,
-        no_reduce: Optional[bool] = False,
-        output_array_type: Optional[str] = None,
-        polling: Optional[str] = 'ANY',
-        port: Optional[int] = None,
-        port_monitoring: Optional[int] = None,
-        prefer_platform: Optional[str] = None,
-        py_modules: Optional[List[str]] = None,
-        quiet: Optional[bool] = False,
-        quiet_error: Optional[bool] = False,
-        reload: Optional[bool] = False,
-        replicas: Optional[int] = 1,
-        retries: Optional[int] = -1,
-        runtime_cls: Optional[str] = 'WorkerRuntime',
-        shards: Optional[int] = 1,
-        timeout_ctrl: Optional[int] = 60,
-        timeout_ready: Optional[int] = 600000,
-        timeout_send: Optional[int] = None,
-        tls: Optional[bool] = False,
-        traces_exporter_host: Optional[str] = None,
-        traces_exporter_port: Optional[int] = None,
-        tracing: Optional[bool] = False,
-        uses: Optional[Union[str, Type['BaseExecutor'], dict]] = 'BaseExecutor',
-        uses_after: Optional[Union[str, Type['BaseExecutor'], dict]] = None,
-        uses_after_address: Optional[str] = None,
-        uses_before: Optional[Union[str, Type['BaseExecutor'], dict]] = None,
-        uses_before_address: Optional[str] = None,
-        uses_dynamic_batching: Optional[dict] = None,
-        uses_metas: Optional[dict] = None,
-        uses_requests: Optional[dict] = None,
-        uses_with: Optional[dict] = None,
-        volumes: Optional[List[str]] = None,
-        when: Optional[dict] = None,
-        workspace: Optional[str] = None,
-        **kwargs,
-    ) -> Union['Flow', 'AsyncFlow']:
+        self,*,
+        compression: Optional[str] = None, 
+        connection_list: Optional[str] = None, 
+        disable_auto_volume: Optional[bool] = False, 
+        docker_kwargs: Optional[dict] = None, 
+        entrypoint: Optional[str] = None, 
+        env: Optional[dict] = None, 
+        env_from_secret: Optional[dict] = None, 
+        exit_on_exceptions: Optional[List[str]] = [], 
+        external: Optional[bool] = False, 
+        floating: Optional[bool] = False, 
+        force_update: Optional[bool] = False, 
+        gpus: Optional[str] = None, 
+        grpc_metadata: Optional[dict] = None, 
+        grpc_server_options: Optional[dict] = None, 
+        host: Optional[List[str]] = ['0.0.0.0'], 
+        install_requirements: Optional[bool] = False, 
+        log_config: Optional[str] = None, 
+        metrics: Optional[bool] = False, 
+        metrics_exporter_host: Optional[str] = None, 
+        metrics_exporter_port: Optional[int] = None, 
+        monitoring: Optional[bool] = False, 
+        name: Optional[str] = None, 
+        native: Optional[bool] = False, 
+        no_reduce: Optional[bool] = False, 
+        output_array_type: Optional[str] = None, 
+        polling: Optional[str] = 'ANY', 
+        port: Optional[int] = None, 
+        port_monitoring: Optional[int] = None, 
+        py_modules: Optional[List[str]] = None, 
+        quiet: Optional[bool] = False, 
+        quiet_error: Optional[bool] = False, 
+        reload: Optional[bool] = False, 
+        replicas: Optional[int] = 1, 
+        retries: Optional[int] = -1, 
+        runtime_cls: Optional[str] = 'WorkerRuntime', 
+        shards: Optional[int] = 1, 
+        timeout_ctrl: Optional[int] = 60, 
+        timeout_ready: Optional[int] = 600000, 
+        timeout_send: Optional[int] = None, 
+        tls: Optional[bool] = False, 
+        traces_exporter_host: Optional[str] = None, 
+        traces_exporter_port: Optional[int] = None, 
+        tracing: Optional[bool] = False, 
+        uses: Optional[Union[str, Type['BaseExecutor'], dict]] = 'BaseExecutor', 
+        uses_after: Optional[Union[str, Type['BaseExecutor'], dict]] = None, 
+        uses_after_address: Optional[str] = None, 
+        uses_before: Optional[Union[str, Type['BaseExecutor'], dict]] = None, 
+        uses_before_address: Optional[str] = None, 
+        uses_dynamic_batching: Optional[dict] = None, 
+        uses_metas: Optional[dict] = None, 
+        uses_requests: Optional[dict] = None, 
+        uses_with: Optional[dict] = None, 
+        volumes: Optional[List[str]] = None, 
+        when: Optional[dict] = None, 
+        workspace: Optional[str] = None, 
+        **kwargs) -> Union['Flow', 'AsyncFlow']:
         """Add an Executor to the current Flow object.
 
         :param compression: The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.
         :param connection_list: dictionary JSON with a list of connections to configure
         :param disable_auto_volume: Do not automatically mount a volume for dockerized Executors.
         :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker '
-          container.
-
+          container. 
+          
           More details can be found in the Docker SDK docs:  https://docker-py.readthedocs.io/en/stable/
         :param entrypoint: The entrypoint command overrides the ENTRYPOINT in Docker image. when not set then the Docker image ENTRYPOINT takes effective.
         :param env: The map of environment variables that are available inside runtime
@@ -932,8 +920,8 @@ class Flow(
         :param floating: If set, the current Pod/Deployment can not be further chained, and the next `.add()` will chain after the last Pod/Deployment not this current one.
         :param force_update: If set, always pull the latest Hub Executor bundle even it exists on local
         :param gpus: This argument allows dockerized Jina Executors to discover local gpu devices.
-
-              Note,
+              
+              Note, 
               - To access all gpus, use `--gpus all`.
               - To access multiple gpus, e.g. make use of 2 gpus, use `--gpus 2`.
               - To access specified gpus based on device id, use `--gpus device=[YOUR-GPU-DEVICE-ID]`
@@ -949,19 +937,19 @@ class Flow(
         :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.
         :param monitoring: If set, spawn an http server with a prometheus endpoint to expose metrics
         :param name: The name of this object.
-
+          
               This will be used in the following places:
               - how you refer to this object in Python/YAML/CLI
               - visualization
               - log message header
               - ...
-
+          
               When not given, then the default naming strategy will apply.
         :param native: If set, only native Executors is allowed, and the Executor is always run inside WorkerRuntime.
         :param no_reduce: Disable the built-in reduction mechanism. Set this if the reduction is to be handled by the Executor itself by operating on a `docs_matrix` or `docs_map`
         :param output_array_type: The type of array `tensor` and `embedding` will be serialized to.
-
-          Supports the same types as `docarray.to_protobuf(.., ndarray_type=...)`, which can be found
+          
+          Supports the same types as `docarray.to_protobuf(.., ndarray_type=...)`, which can be found 
           `here <https://docarray.jina.ai/fundamentals/document/serialization/#from-to-protobuf>`.
           Defaults to retaining whatever type is returned by the Executor.
         :param polling: The polling strategy of the Deployment and its endpoints (when `shards>1`).
@@ -974,9 +962,8 @@ class Flow(
               {'/custom': 'ALL', '/search': 'ANY', '*': 'ANY'}
         :param port: The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (`--external` or `external=True`) this can be a list of ports. Then, every resulting address will be considered as one replica of the Executor.
         :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]
-        :param prefer_platform: The preferred target Docker platform. (e.g. "linux/amd64", "linux/arm64")
         :param py_modules: The customized python modules need to be imported before loading the executor
-
+          
           Note that the recommended way is to only import a single module - a simple python file, if your
           executor can be defined in a single file, or an ``__init__.py`` file if you have multiple files,
           which should be structured as a python package. For more details, please see the
@@ -1002,7 +989,7 @@ class Flow(
                   * a docker image (must start with `docker://`)
                   * the string literal of a YAML config (must start with `!` or `jtype: `)
                   * the string literal of a JSON config
-
+          
                   When use it under Python, one can use the following values additionally:
                   - a Python dict that represents the config
                   - a text file stream has `.read()` interface
@@ -1014,11 +1001,11 @@ class Flow(
         :param uses_metas: Dictionary of keyword arguments that will override the `metas` configuration in `uses`
         :param uses_requests: Dictionary of keyword arguments that will override the `requests` configuration in `uses`
         :param uses_with: Dictionary of keyword arguments that will override the `with` configuration in `uses`
-        :param volumes: The path on the host to be mounted inside the container.
-
-          Note,
-          - If separated by `:`, then the first part will be considered as the local host path and the second part is the path in the container system.
-          - If no split provided, then the basename of that directory will be mounted into container's root path, e.g. `--volumes="/user/test/my-workspace"` will be mounted into `/my-workspace` inside the container.
+        :param volumes: The path on the host to be mounted inside the container. 
+          
+          Note, 
+          - If separated by `:`, then the first part will be considered as the local host path and the second part is the path in the container system. 
+          - If no split provided, then the basename of that directory will be mounted into container's root path, e.g. `--volumes="/user/test/my-workspace"` will be mounted into `/my-workspace` inside the container. 
           - All volumes are mounted with read-write mode.
         :param when: The condition that the documents need to fulfill before reaching the Executor.The condition can be defined in the form of a `DocArray query condition <https://docarray.jina.ai/fundamentals/documentarray/find/#query-by-conditions>`
         :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.
@@ -1028,7 +1015,6 @@ class Flow(
         .. # noqa: DAR101
         .. # noqa: DAR003
         """
-
     # overload_inject_end_deployment
     @overload
     def add(
@@ -1062,7 +1048,7 @@ class Flow(
         **kwargs,
     ) -> Union['Flow', 'AsyncFlow']:
         # implementation_stub_inject_start_add
-
+    
         """Add a Deployment to the current Flow object and return the new modified Flow object.
         The attribute of the Deployment can be later changed with :py:meth:`set` or deleted with :py:meth:`remove`
 
@@ -1070,8 +1056,8 @@ class Flow(
         :param connection_list: dictionary JSON with a list of connections to configure
         :param disable_auto_volume: Do not automatically mount a volume for dockerized Executors.
         :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker '
-          container.
-
+          container. 
+          
           More details can be found in the Docker SDK docs:  https://docker-py.readthedocs.io/en/stable/
         :param entrypoint: The entrypoint command overrides the ENTRYPOINT in Docker image. when not set then the Docker image ENTRYPOINT takes effective.
         :param env: The map of environment variables that are available inside runtime
@@ -1081,8 +1067,8 @@ class Flow(
         :param floating: If set, the current Pod/Deployment can not be further chained, and the next `.add()` will chain after the last Pod/Deployment not this current one.
         :param force_update: If set, always pull the latest Hub Executor bundle even it exists on local
         :param gpus: This argument allows dockerized Jina Executors to discover local gpu devices.
-
-              Note,
+              
+              Note, 
               - To access all gpus, use `--gpus all`.
               - To access multiple gpus, e.g. make use of 2 gpus, use `--gpus 2`.
               - To access specified gpus based on device id, use `--gpus device=[YOUR-GPU-DEVICE-ID]`
@@ -1098,19 +1084,19 @@ class Flow(
         :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.
         :param monitoring: If set, spawn an http server with a prometheus endpoint to expose metrics
         :param name: The name of this object.
-
+          
               This will be used in the following places:
               - how you refer to this object in Python/YAML/CLI
               - visualization
               - log message header
               - ...
-
+          
               When not given, then the default naming strategy will apply.
         :param native: If set, only native Executors is allowed, and the Executor is always run inside WorkerRuntime.
         :param no_reduce: Disable the built-in reduction mechanism. Set this if the reduction is to be handled by the Executor itself by operating on a `docs_matrix` or `docs_map`
         :param output_array_type: The type of array `tensor` and `embedding` will be serialized to.
-
-          Supports the same types as `docarray.to_protobuf(.., ndarray_type=...)`, which can be found
+          
+          Supports the same types as `docarray.to_protobuf(.., ndarray_type=...)`, which can be found 
           `here <https://docarray.jina.ai/fundamentals/document/serialization/#from-to-protobuf>`.
           Defaults to retaining whatever type is returned by the Executor.
         :param polling: The polling strategy of the Deployment and its endpoints (when `shards>1`).
@@ -1123,9 +1109,8 @@ class Flow(
               {'/custom': 'ALL', '/search': 'ANY', '*': 'ANY'}
         :param port: The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (`--external` or `external=True`) this can be a list of ports. Then, every resulting address will be considered as one replica of the Executor.
         :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]
-        :param prefer_platform: The preferred target Docker platform. (e.g. "linux/amd64", "linux/arm64")
         :param py_modules: The customized python modules need to be imported before loading the executor
-
+          
           Note that the recommended way is to only import a single module - a simple python file, if your
           executor can be defined in a single file, or an ``__init__.py`` file if you have multiple files,
           which should be structured as a python package. For more details, please see the
@@ -1151,7 +1136,7 @@ class Flow(
                   * a docker image (must start with `docker://`)
                   * the string literal of a YAML config (must start with `!` or `jtype: `)
                   * the string literal of a JSON config
-
+          
                   When use it under Python, one can use the following values additionally:
                   - a Python dict that represents the config
                   - a text file stream has `.read()` interface
@@ -1163,11 +1148,11 @@ class Flow(
         :param uses_metas: Dictionary of keyword arguments that will override the `metas` configuration in `uses`
         :param uses_requests: Dictionary of keyword arguments that will override the `requests` configuration in `uses`
         :param uses_with: Dictionary of keyword arguments that will override the `with` configuration in `uses`
-        :param volumes: The path on the host to be mounted inside the container.
-
-          Note,
-          - If separated by `:`, then the first part will be considered as the local host path and the second part is the path in the container system.
-          - If no split provided, then the basename of that directory will be mounted into container's root path, e.g. `--volumes="/user/test/my-workspace"` will be mounted into `/my-workspace` inside the container.
+        :param volumes: The path on the host to be mounted inside the container. 
+          
+          Note, 
+          - If separated by `:`, then the first part will be considered as the local host path and the second part is the path in the container system. 
+          - If no split provided, then the basename of that directory will be mounted into container's root path, e.g. `--volumes="/user/test/my-workspace"` will be mounted into `/my-workspace` inside the container. 
           - All volumes are mounted with read-write mode.
         :param when: The condition that the documents need to fulfill before reaching the Executor.The condition can be defined in the form of a `DocArray query condition <https://docarray.jina.ai/fundamentals/documentarray/find/#query-by-conditions>`
         :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.
@@ -1183,7 +1168,7 @@ class Flow(
         .. # noqa: DAR101
         .. # noqa: DAR003
         """
-        # implementation_stub_inject_end_add
+    # implementation_stub_inject_end_add
 
         needs = kwargs.pop('needs', None)
         copy_flow = kwargs.pop('copy_flow', True)
@@ -1262,59 +1247,57 @@ class Flow(
     # overload_inject_start_config_gateway
     @overload
     def config_gateway(
-        self,
-        *,
-        compression: Optional[str] = None,
-        cors: Optional[bool] = False,
-        deployments_addresses: Optional[str] = '{}',
-        deployments_metadata: Optional[str] = '{}',
-        deployments_no_reduce: Optional[str] = '[]',
-        description: Optional[str] = None,
-        docker_kwargs: Optional[dict] = None,
-        entrypoint: Optional[str] = None,
-        env: Optional[dict] = None,
-        env_from_secret: Optional[dict] = None,
-        expose_endpoints: Optional[str] = None,
-        expose_graphql_endpoint: Optional[bool] = False,
-        floating: Optional[bool] = False,
-        graph_conditions: Optional[str] = '{}',
-        graph_description: Optional[str] = '{}',
-        grpc_server_options: Optional[dict] = None,
-        host: Optional[str] = '0.0.0.0',
-        log_config: Optional[str] = None,
-        metrics: Optional[bool] = False,
-        metrics_exporter_host: Optional[str] = None,
-        metrics_exporter_port: Optional[int] = None,
-        monitoring: Optional[bool] = False,
-        name: Optional[str] = 'gateway',
-        no_crud_endpoints: Optional[bool] = False,
-        no_debug_endpoints: Optional[bool] = False,
-        port: Optional[int] = None,
-        port_monitoring: Optional[int] = None,
-        prefetch: Optional[int] = 1000,
-        protocol: Optional[Union[str, List[str]]] = ['GRPC'],
-        proxy: Optional[bool] = False,
-        py_modules: Optional[List[str]] = None,
-        quiet: Optional[bool] = False,
-        quiet_error: Optional[bool] = False,
-        reload: Optional[bool] = False,
-        retries: Optional[int] = -1,
-        runtime_cls: Optional[str] = 'GatewayRuntime',
-        ssl_certfile: Optional[str] = None,
-        ssl_keyfile: Optional[str] = None,
-        timeout_ctrl: Optional[int] = 60,
-        timeout_ready: Optional[int] = 600000,
-        timeout_send: Optional[int] = None,
-        title: Optional[str] = None,
-        traces_exporter_host: Optional[str] = None,
-        traces_exporter_port: Optional[int] = None,
-        tracing: Optional[bool] = False,
-        uses: Optional[Union[str, Type['BaseExecutor'], dict]] = None,
-        uses_with: Optional[dict] = None,
-        uvicorn_kwargs: Optional[dict] = None,
-        workspace: Optional[str] = None,
-        **kwargs,
-    ):
+        self,*,
+        compression: Optional[str] = None, 
+        cors: Optional[bool] = False, 
+        deployments_addresses: Optional[str] = '{}', 
+        deployments_metadata: Optional[str] = '{}', 
+        deployments_no_reduce: Optional[str] = '[]', 
+        description: Optional[str] = None, 
+        docker_kwargs: Optional[dict] = None, 
+        entrypoint: Optional[str] = None, 
+        env: Optional[dict] = None, 
+        env_from_secret: Optional[dict] = None, 
+        expose_endpoints: Optional[str] = None, 
+        expose_graphql_endpoint: Optional[bool] = False, 
+        floating: Optional[bool] = False, 
+        graph_conditions: Optional[str] = '{}', 
+        graph_description: Optional[str] = '{}', 
+        grpc_server_options: Optional[dict] = None, 
+        host: Optional[str] = '0.0.0.0', 
+        log_config: Optional[str] = None, 
+        metrics: Optional[bool] = False, 
+        metrics_exporter_host: Optional[str] = None, 
+        metrics_exporter_port: Optional[int] = None, 
+        monitoring: Optional[bool] = False, 
+        name: Optional[str] = 'gateway', 
+        no_crud_endpoints: Optional[bool] = False, 
+        no_debug_endpoints: Optional[bool] = False, 
+        port: Optional[int] = None, 
+        port_monitoring: Optional[int] = None, 
+        prefetch: Optional[int] = 1000, 
+        protocol: Optional[Union[str, List[str]]] = ['GRPC'], 
+        proxy: Optional[bool] = False, 
+        py_modules: Optional[List[str]] = None, 
+        quiet: Optional[bool] = False, 
+        quiet_error: Optional[bool] = False, 
+        reload: Optional[bool] = False, 
+        retries: Optional[int] = -1, 
+        runtime_cls: Optional[str] = 'GatewayRuntime', 
+        ssl_certfile: Optional[str] = None, 
+        ssl_keyfile: Optional[str] = None, 
+        timeout_ctrl: Optional[int] = 60, 
+        timeout_ready: Optional[int] = 600000, 
+        timeout_send: Optional[int] = None, 
+        title: Optional[str] = None, 
+        traces_exporter_host: Optional[str] = None, 
+        traces_exporter_port: Optional[int] = None, 
+        tracing: Optional[bool] = False, 
+        uses: Optional[Union[str, Type['BaseExecutor'], dict]] = None, 
+        uses_with: Optional[dict] = None, 
+        uvicorn_kwargs: Optional[dict] = None, 
+        workspace: Optional[str] = None, 
+        **kwargs):
         """Configure the Gateway inside a Flow. The Gateway exposes your Flow logic as a service to the internet according to the protocol and configuration you choose.
 
         :param compression: The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.
@@ -1324,8 +1307,8 @@ class Flow(
         :param deployments_no_reduce: list JSON disabling the built-in merging mechanism for each Deployment listed
         :param description: The description of this HTTP server. It will be used in automatics docs such as Swagger UI.
         :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker '
-          container.
-
+          container. 
+          
           More details can be found in the Docker SDK docs:  https://docker-py.readthedocs.io/en/stable/
         :param entrypoint: The entrypoint command overrides the ENTRYPOINT in Docker image. when not set then the Docker image ENTRYPOINT takes effective.
         :param env: The map of environment variables that are available inside runtime
@@ -1343,27 +1326,27 @@ class Flow(
         :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.
         :param monitoring: If set, spawn an http server with a prometheus endpoint to expose metrics
         :param name: The name of this object.
-
+          
               This will be used in the following places:
               - how you refer to this object in Python/YAML/CLI
               - visualization
               - log message header
               - ...
-
+          
               When not given, then the default naming strategy will apply.
         :param no_crud_endpoints: If set, `/index`, `/search`, `/update`, `/delete` endpoints are removed from HTTP interface.
-
+          
                   Any executor that has `@requests(on=...)` bound with those values will receive data requests.
         :param no_debug_endpoints: If set, `/status` `/post` endpoints are removed from HTTP interface.
         :param port: The port for input data to bind the gateway server to, by default, random ports between range [49152, 65535] will be assigned. The port argument can be either 1 single value in case only 1 protocol is used or multiple values when many protocols are used.
         :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]
-        :param prefetch: Number of requests fetched from the client before feeding into the first Executor.
-
+        :param prefetch: Number of requests fetched from the client before feeding into the first Executor. 
+              
               Used to control the speed of data input into a Flow. 0 disables prefetch (1000 requests is the default)
         :param protocol: Communication protocol of the server exposed by the Gateway. This can be a single value or a list of protocols, depending on your chosen Gateway. Choose the convenient protocols from: ['GRPC', 'HTTP', 'WEBSOCKET'].
         :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
         :param py_modules: The customized python modules need to be imported before loading the gateway
-
+          
           Note that the recommended way is to only import a single module - a simple python file, if your
           gateway can be defined in a single file, or an ``__init__.py`` file if you have multiple files,
           which should be structured as a python package.
@@ -1387,13 +1370,13 @@ class Flow(
                   * a docker image (must start with `docker://`)
                   * the string literal of a YAML config (must start with `!` or `jtype: `)
                   * the string literal of a JSON config
-
+          
                   When use it under Python, one can use the following values additionally:
                   - a Python dict that represents the config
                   - a text file stream has `.read()` interface
         :param uses_with: Dictionary of keyword arguments that will override the `with` configuration in `uses`
         :param uvicorn_kwargs: Dictionary of kwargs arguments that will be passed to Uvicorn server when starting the server
-
+          
           More details can be found in Uvicorn docs: https://www.uvicorn.org/settings/
         :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.
 
@@ -1401,7 +1384,6 @@ class Flow(
         .. # noqa: DAR101
         .. # noqa: DAR003
         """
-
     # overload_inject_end_config_gateway
 
     @allowed_levels([FlowBuildLevel.EMPTY])
@@ -1411,7 +1393,7 @@ class Flow(
         **kwargs,
     ) -> Union['Flow', 'AsyncFlow']:
         # implementation_stub_inject_start_config_gateway
-
+    
         """Configure the Gateway inside a Flow. The Gateway exposes your Flow logic as a service to the internet according to the protocol and configuration you choose.
 
         :param compression: The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.
@@ -1421,8 +1403,8 @@ class Flow(
         :param deployments_no_reduce: list JSON disabling the built-in merging mechanism for each Deployment listed
         :param description: The description of this HTTP server. It will be used in automatics docs such as Swagger UI.
         :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker '
-          container.
-
+          container. 
+          
           More details can be found in the Docker SDK docs:  https://docker-py.readthedocs.io/en/stable/
         :param entrypoint: The entrypoint command overrides the ENTRYPOINT in Docker image. when not set then the Docker image ENTRYPOINT takes effective.
         :param env: The map of environment variables that are available inside runtime
@@ -1440,27 +1422,27 @@ class Flow(
         :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.
         :param monitoring: If set, spawn an http server with a prometheus endpoint to expose metrics
         :param name: The name of this object.
-
+          
               This will be used in the following places:
               - how you refer to this object in Python/YAML/CLI
               - visualization
               - log message header
               - ...
-
+          
               When not given, then the default naming strategy will apply.
         :param no_crud_endpoints: If set, `/index`, `/search`, `/update`, `/delete` endpoints are removed from HTTP interface.
-
+          
                   Any executor that has `@requests(on=...)` bound with those values will receive data requests.
         :param no_debug_endpoints: If set, `/status` `/post` endpoints are removed from HTTP interface.
         :param port: The port for input data to bind the gateway server to, by default, random ports between range [49152, 65535] will be assigned. The port argument can be either 1 single value in case only 1 protocol is used or multiple values when many protocols are used.
         :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]
-        :param prefetch: Number of requests fetched from the client before feeding into the first Executor.
-
+        :param prefetch: Number of requests fetched from the client before feeding into the first Executor. 
+              
               Used to control the speed of data input into a Flow. 0 disables prefetch (1000 requests is the default)
         :param protocol: Communication protocol of the server exposed by the Gateway. This can be a single value or a list of protocols, depending on your chosen Gateway. Choose the convenient protocols from: ['GRPC', 'HTTP', 'WEBSOCKET'].
         :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
         :param py_modules: The customized python modules need to be imported before loading the gateway
-
+          
           Note that the recommended way is to only import a single module - a simple python file, if your
           gateway can be defined in a single file, or an ``__init__.py`` file if you have multiple files,
           which should be structured as a python package.
@@ -1484,13 +1466,13 @@ class Flow(
                   * a docker image (must start with `docker://`)
                   * the string literal of a YAML config (must start with `!` or `jtype: `)
                   * the string literal of a JSON config
-
+          
                   When use it under Python, one can use the following values additionally:
                   - a Python dict that represents the config
                   - a text file stream has `.read()` interface
         :param uses_with: Dictionary of keyword arguments that will override the `with` configuration in `uses`
         :param uvicorn_kwargs: Dictionary of kwargs arguments that will be passed to Uvicorn server when starting the server
-
+          
           More details can be found in Uvicorn docs: https://www.uvicorn.org/settings/
         :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.
         :return: the new Flow object
@@ -1500,7 +1482,7 @@ class Flow(
         .. # noqa: DAR101
         .. # noqa: DAR003
         """
-        # implementation_stub_inject_end_config_gateway
+    # implementation_stub_inject_end_config_gateway
 
         copy_flow = kwargs.pop('copy_flow', True)
 
