@@ -37,6 +37,11 @@ class BaseClient(InstrumentationMixin, ABC):
         else:
             self.args = parse_client(kwargs)
 
+        # remove unused prefetch argument from self.args since the argument is preserved for backward compatibility
+        # the acutual value will be provided by the responsible method argument
+        if hasattr(self.args, 'prefetch'):
+            delattr(self.args, 'prefetch')
+
         self.logger = JinaLogger(self.__class__.__name__, **vars(self.args))
 
         if not self.args.proxy and os.name != 'nt':
