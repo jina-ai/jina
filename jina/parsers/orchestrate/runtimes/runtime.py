@@ -21,6 +21,7 @@ def mixin_base_runtime_parser(arg_group):
 
 def mixin_raft_parser(arg_group):
     """Mixing in arguments required by the RAFT Node. All these args are used to configure the RAFT nodes
+    :param arg_group: the parser instance to which we add arguments
     """
 
     arg_group.add_argument(

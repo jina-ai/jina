@@ -16,7 +16,7 @@ type snapshot struct {
     id                *pb.SnapshotId
     mu                sync.RWMutex
     status            *pb.SnapshotStatusProto_Status
-    snapshotDirectory *string
+    snapshotDirectory string
 }
 
 func (s *snapshot) Release() {
@@ -82,7 +82,7 @@ func (s *snapshot) Persist(sink raft.SnapshotSink) error {
         log.Fatalf(msg)
         return fmt.Errorf(msg)
     }
-    _, err := sink.Write([]byte(*s.snapshotDirectory))
+    _, err := sink.Write([]byte(s.snapshotDirectory))
     if err != nil {
         _ = sink.Cancel()
         return fmt.Errorf("sink.Write(): %v", err)

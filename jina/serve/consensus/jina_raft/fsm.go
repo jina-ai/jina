@@ -113,7 +113,7 @@ func (fsm *executorFSM) Snapshot() (raft.FSMSnapshot, error) {
         executor:          fsm.executor,
         id:                response.Id,
         status:            &response.Status,
-        snapshotDirectory: &response.SnapshotDirectory,
+        snapshotDirectory: response.SnapshotDirectory,
     }
     fsm.snapshot = snapshot
 
