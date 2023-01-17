@@ -143,11 +143,15 @@ def set_client_cli_parser(parser=None):
         mixin_client_features_parser,
         mixin_client_protocol_parser,
     )
-    from jina.parsers.orchestrate.runtimes.remote import mixin_client_gateway_parser
+    from jina.parsers.orchestrate.runtimes.remote import (
+        mixin_client_gateway_parser,
+        mixin_prefetch_parser,
+    )
 
     mixin_client_gateway_parser(parser)
     mixin_client_features_parser(parser)
     mixin_client_protocol_parser(parser)
+    mixin_prefetch_parser(parser)
 
     return parser
 
