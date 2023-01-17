@@ -39,8 +39,6 @@ class K8sDeploymentConfig:
             common_args: Union['Namespace', Dict],
             deployment_args: Union['Namespace', Dict],
             k8s_namespace: str,
-            k8s_deployments_addresses: Optional[Dict[str, List[str]]] = None,
-            k8s_deployments_metadata: Optional[Dict[str, Dict[str, str]]] = None,
         ):
             self.name = name
             self.dns_name = to_compatible_name(name)
@@ -52,14 +50,11 @@ class K8sDeploymentConfig:
             self.deployment_args = deployment_args
             self.num_replicas = getattr(self.deployment_args, 'replicas', 1)
             self.k8s_namespace = k8s_namespace
-            self.k8s_deployments_addresses = k8s_deployments_addresses
-            self.k8s_deployments_metadata = k8s_deployments_metadata
 
         def get_gateway_yamls(
             self,
         ) -> List[Dict]:
             cargs = copy.copy(self.deployment_args)
-            cargs.deployments_addresses = self.k8s_deployments_addresses
             from jina.helper import ArgNamespace
             from jina.parsers import set_gateway_parser
 
@@ -221,8 +216,6 @@ class K8sDeploymentConfig:
         self,
         args: Union['Namespace', Dict],
         k8s_namespace: Optional[str] = None,
-        k8s_deployments_addresses: Optional[Dict[str, List[str]]] = None,
-        k8s_deployments_metadata: Optional[Dict[str, Dict[str, str]]] = None,
     ):
         # External Deployments should be ignored in a K8s based Flow
         assert not (hasattr(args, 'external') and args.external)
@@ -232,8 +225,6 @@ class K8sDeploymentConfig:
                 'You need to use a containerized Executor. You may check `jina hub --help` to see how Jina Hub can help you building containerized Executors.'
             )
         self.k8s_namespace = k8s_namespace
-        self.k8s_deployments_addresses = k8s_deployments_addresses
-        self.k8s_deployments_metadata = k8s_deployments_metadata
         self.head_deployment = None
         self.args = copy.copy(args)
         if k8s_namespace is not None:
@@ -253,7 +244,6 @@ class K8sDeploymentConfig:
                 deployment_args=self.deployment_args['head_deployment'],
                 pod_type=PodRoleType.HEAD,
                 k8s_namespace=self.k8s_namespace,
-                k8s_deployments_addresses=self.k8s_deployments_addresses,
             )
         self.worker_deployments = []
         deployment_args = self.deployment_args['deployments']
@@ -271,12 +261,6 @@ class K8sDeploymentConfig:
                     else PodRoleType.GATEWAY,
                     jina_deployment_name=self.name,
                     k8s_namespace=self.k8s_namespace,
-                    k8s_deployments_addresses=self.k8s_deployments_addresses
-                    if name == 'gateway'
-                    else None,
-                    k8s_deployments_metadata=self.k8s_deployments_metadata
-                    if name == 'gateway'
-                    else None,
                 )
             )
 
