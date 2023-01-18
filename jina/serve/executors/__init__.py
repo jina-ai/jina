@@ -897,9 +897,13 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
         return contextlib.nullcontext()
 
-    def run_snapshot(self, snapshot_directory: str):
+    def run_snapshot(self, snapshot_file: str):
+        from pathlib import Path
+        p = Path(snapshot_file)
+        p.parent.mkdir(parents=True, exist_ok=True)
+        p.touch()
         with self._write_lock:
-            self.snapshot(snapshot_directory)
+            self.snapshot(snapshot_file)
 
     def snapshot(self, snapshot_directory: str):
         pass

@@ -259,13 +259,6 @@ def mixin_pod_runtime_args_parser(arg_group, pod_type='worker'):
         help='If tracing is enabled, this port will be used to configure the metrics exporter agent.',
     )
 
-    arg_group.add_argument(
-        '--snapshot-parent-directory',
-        type=str,
-        default=None,
-        help='A parent directory for storing all snapshots.',
-    )
-
 
 def mixin_hub_pull_options_parser(parser):
     """Add the arguments for hub pull options to the parser

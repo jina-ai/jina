@@ -40,10 +40,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         self._health_servicer = health.aio.HealthServicer()
         self._snapshot = None
         self._snapshot_thread = None
-        if not args.snapshot_parent_directory:
-            self._snapshot_parent_directory = tempfile.mkdtemp()
-        else:
-            self._snapshot_parent_directory = args.snapshot_parent_directory
+        self._snapshot_parent_directory = tempfile.mkdtemp()
 
         super().__init__(args, **kwargs)
 
@@ -117,7 +114,6 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
             tracer_provider=self.tracer_provider,
             meter_provider=self.meter_provider,
             deployment_name=self.name.split('/')[0],
-            snapshot_parent_directory=self._snapshot_parent_directory,
         )
         await self._async_setup_grpc_server()
 
@@ -367,7 +363,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         return jina_pb2.SnapshotStatusProto(
             id=jina_pb2.SnapshotId(value=_id),
             status=jina_pb2.SnapshotStatusProto.Status.RUNNING,
-            snapshot_directory=os.path.join(snapshot_directory, _id),
+            snapshot_file=os.path.join(os.path.join(snapshot_directory, _id), 'state.bin'),
         )
 
     async def snapshot(self, request, context) -> jina_pb2.SnapshotStatusProto:
@@ -393,7 +389,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
             )
             self._snapshot_thread = threading.Thread(
                 target=self._request_handler._executor.run_snapshot,
-                args=(self._snapshot.snapshot_directory,),
+                args=(self._snapshot.snapshot_file,),
             )
             self._snapshot_thread.start()
             return self._snapshot

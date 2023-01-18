@@ -228,8 +228,8 @@ message SnapshotStatusProto {
     // status code
     Status status = 2;
     
-    // snapshot directory
-    string snapshot_directory = 3;
+    // snapshot file
+    string snapshot_file = 3;
 }
 
 /**

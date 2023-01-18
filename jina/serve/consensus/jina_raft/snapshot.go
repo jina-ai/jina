@@ -6,6 +6,8 @@ import (
     "log"
     "sync"
     "time"
+    "os"
+    "io"
 
     "github.com/hashicorp/raft"
     pb "jraft/jina-go-proto"
@@ -16,7 +18,7 @@ type snapshot struct {
     id                *pb.SnapshotId
     mu                sync.RWMutex
     status            *pb.SnapshotStatusProto_Status
-    snapshotDirectory string
+    snapshotFile      string
 }
 
 func (s *snapshot) Release() {
@@ -76,18 +78,36 @@ func (s *snapshot) Persist(sink raft.SnapshotSink) error {
 
     <-done
     ticker.Stop()
-    status := s.get()
+    var status *pb.SnapshotStatusProto_Status
+    var err error
+    defer func() {
+        if err != nil || (status != nil && *status != pb.SnapshotStatusProto_SUCCEEDED) {
+            sink.Cancel()
+        } else {
+            err = sink.Close()
+        }
+    }()
+    status = s.get()
     if status != nil && *status != pb.SnapshotStatusProto_SUCCEEDED {
         msg := fmt.Sprintf("persist job %s failed with status %s", s.id.Value, status)
         log.Fatalf(msg)
-        sink.Cancel()
         return fmt.Errorf(msg)
     }
-    _, err := sink.Write([]byte(s.snapshotDirectory))
+    source, err := os.Open(s.snapshotFile)
     if err != nil {
-        sink.Cancel()
-        return fmt.Errorf("sink.Write(): %v", err)
+       log.Fatalf("Error opening a file where Executor created snapshot")
+       return err
     }
+    defer source.Close()
 
-    return sink.Close()
+    _, err = io.Copy(sink, source)
+    if err != nil {
+       log.Fatalf("Error copying temporary Executor snapshot")
+       return err
+    }
+    err = os.Remove(s.snapshotFile)
+    if err != nil {
+       log.Fatalf("Error removing Executor shanpshot File")
+    }
+    return err
 }

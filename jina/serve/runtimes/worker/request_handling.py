@@ -33,7 +33,6 @@ class WorkerRequestHandler:
         tracer_provider: Optional['trace.TracerProvider'] = None,
         meter_provider: Optional['metrics.MeterProvider'] = None,
         deployment_name: str = '',
-        snapshot_parent_directory: Optional[str] = None,
         **kwargs,
     ):
         """Initialize private parameters and execute private loading functions.
@@ -44,7 +43,6 @@ class WorkerRequestHandler:
         :param tracer_provider: Optional tracer_provider that will be provided to the executor for tracing
         :param meter_provider: Optional meter_provider that will be provided to the executor for metrics
         :param deployment_name: name of the deployment to use as Executor name to set in requests
-        :param snapshot_parent_directory: Parent directory where Executor snapshots may be stored
         :param kwargs: extra keyword arguments
         """
         super().__init__()
@@ -55,7 +53,6 @@ class WorkerRequestHandler:
             metrics_registry=metrics_registry,
             tracer_provider=tracer_provider,
             meter_provider=meter_provider,
-            snapshot_parent_directory=snapshot_parent_directory,
         )
         meter = (
             meter_provider.get_meter(self.__class__.__name__)
@@ -193,14 +190,12 @@ class WorkerRequestHandler:
         metrics_registry: Optional['CollectorRegistry'] = None,
         tracer_provider: Optional['trace.TracerProvider'] = None,
         meter_provider: Optional['metrics.MeterProvider'] = None,
-        snapshot_parent_directory: Optional[str] = None,
     ):
         """
         Load the executor to this runtime, specified by ``uses`` CLI argument.
         :param metrics_registry: Optional prometheus metrics registry that will be passed to the executor so that it can expose metrics
         :param tracer_provider: Optional tracer_provider that will be provided to the executor for tracing
         :param meter_provider: Optional meter_provider that will be provided to the executor for metrics
-        :param snapshot_parent_directory: Parent directory where Executor snapshots may be stored
         """
         try:
             self._executor: BaseExecutor = BaseExecutor.load_config(
@@ -217,8 +212,7 @@ class WorkerRequestHandler:
                     'name': self.args.name,
                     'metrics_registry': metrics_registry,
                     'tracer_provider': tracer_provider,
-                    'meter_provider': meter_provider,
-                    'snapshot_parent_directory': snapshot_parent_directory,
+                    'meter_provider': meter_provider
                 },
                 py_modules=self.args.py_modules,
                 extra_search_paths=self.args.extra_search_paths,
