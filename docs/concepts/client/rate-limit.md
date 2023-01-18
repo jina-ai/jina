@@ -3,7 +3,7 @@
 
 There are two ways of applying a rate limit using the {class}`~jina.Client`. 
 1. Set using the `Client` class constructor and defaults to 1,000 requests. 
-1. Set the argument when using {meth}`~jina.clients.mixin.PostMixin.post` method. If not provided, the deafult value of
+1. Set the argument when using {meth}`~jina.clients.mixin.PostMixin.post` method. If not provided, the default value of
 1,000 requests will be used. The method argument will override the argument provided in the `Client` class constructor.
 
 
@@ -12,7 +12,7 @@ method. Using the default value might overload the {class}`~jina.Flow` especiall
 are unknown. Furthermore the Client can send various types of requests which can have varying resource usage in the `Flow`.
 
 For example, a high number of `index` requests can contain a large data payload requiring high input/output operation.
-This increases CPU consumption and eventually lead to a build up of the requests on the Flow. If the queue of in flight requests 
+This increases CPU consumption and eventually lead to a build up of the requests on the Flow. If the queue of in-flight requests 
 is already large, a very light weight `search` request to return the total number of 
 Documents in the index might be blocked until the queue of `index` requests can be completely processed. To prevent such a scenario,
 apply the `prefetch` value on the {meth}`~jina.clients.mixin.PostMixin.post` method to limit the rate of
