@@ -199,22 +199,33 @@ class AppendNameExecutor(Executor):
 
 
 @pytest.mark.slow
-def test_pod_activates_replicas():
-    args_list = ['--replicas', '3', '--shards', '2', '--no-reduce']
+def test_pod_activates_shards_replicas():
+    shards = 2
+    replicas = 3
+    args_list = ['--replicas', str(replicas), '--shards', str(shards), '--no-reduce']
     args = set_deployment_parser().parse_args(args_list)
     args.uses = 'AppendNameExecutor'
     with Deployment(args, include_gateway=False) as pod:
         assert pod.num_pods == 7
         response_texts = set()
-        # replicas are used in a round robin fashion, so sending 3 requests should hit each one time
+        # replicas and shards are used in a round robin fashion, so sending 6 requests should hit each one time
         for _ in range(6):
             response = GrpcConnectionPool.send_request_sync(
                 _create_test_data_message(),
                 f'{pod.head_args.host}:{pod.head_args.port}',
             )
             response_texts.update(response.response.docs.texts)
-        assert 4 == len(response_texts)
-        assert all(text in response_texts for text in ['0', '1', '2', 'client'])
+        print(response_texts)
+        assert 7 == len(response_texts)
+        assert all(
+            text in response_texts
+            for text in ['client']
+            + [
+                f'executor/shard-{s}/rep-{r}'
+                for s in range(shards)
+                for r in range(replicas)
+            ]
+        )
 
     Deployment(args, include_gateway=False).start().close()
 
