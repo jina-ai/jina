@@ -747,3 +747,176 @@ var JinaExecutorSnapshotProgress_ServiceDesc = grpc.ServiceDesc{
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "jina.proto",
 }
+
+// JinaExecutorRestoreClient is the client API for JinaExecutorRestore service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+type JinaExecutorRestoreClient interface {
+	Restore(ctx context.Context, in *RestoreSnapshotCommand, opts ...grpc.CallOption) (*RestoreSnapshotStatusProto, error)
+}
+
+type jinaExecutorRestoreClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewJinaExecutorRestoreClient(cc grpc.ClientConnInterface) JinaExecutorRestoreClient {
+	return &jinaExecutorRestoreClient{cc}
+}
+
+func (c *jinaExecutorRestoreClient) Restore(ctx context.Context, in *RestoreSnapshotCommand, opts ...grpc.CallOption) (*RestoreSnapshotStatusProto, error) {
+	out := new(RestoreSnapshotStatusProto)
+	err := c.cc.Invoke(ctx, "/jina.JinaExecutorRestore/restore", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// JinaExecutorRestoreServer is the server API for JinaExecutorRestore service.
+// All implementations must embed UnimplementedJinaExecutorRestoreServer
+// for forward compatibility
+type JinaExecutorRestoreServer interface {
+	Restore(context.Context, *RestoreSnapshotCommand) (*RestoreSnapshotStatusProto, error)
+	mustEmbedUnimplementedJinaExecutorRestoreServer()
+}
+
+// UnimplementedJinaExecutorRestoreServer must be embedded to have forward compatible implementations.
+type UnimplementedJinaExecutorRestoreServer struct {
+}
+
+func (UnimplementedJinaExecutorRestoreServer) Restore(context.Context, *RestoreSnapshotCommand) (*RestoreSnapshotStatusProto, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Restore not implemented")
+}
+func (UnimplementedJinaExecutorRestoreServer) mustEmbedUnimplementedJinaExecutorRestoreServer() {}
+
+// UnsafeJinaExecutorRestoreServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to JinaExecutorRestoreServer will
+// result in compilation errors.
+type UnsafeJinaExecutorRestoreServer interface {
+	mustEmbedUnimplementedJinaExecutorRestoreServer()
+}
+
+func RegisterJinaExecutorRestoreServer(s grpc.ServiceRegistrar, srv JinaExecutorRestoreServer) {
+	s.RegisterService(&JinaExecutorRestore_ServiceDesc, srv)
+}
+
+func _JinaExecutorRestore_Restore_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RestoreSnapshotCommand)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(JinaExecutorRestoreServer).Restore(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/jina.JinaExecutorRestore/restore",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(JinaExecutorRestoreServer).Restore(ctx, req.(*RestoreSnapshotCommand))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// JinaExecutorRestore_ServiceDesc is the grpc.ServiceDesc for JinaExecutorRestore service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var JinaExecutorRestore_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "jina.JinaExecutorRestore",
+	HandlerType: (*JinaExecutorRestoreServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "restore",
+			Handler:    _JinaExecutorRestore_Restore_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "jina.proto",
+}
+
+// JinaExecutorRestoreProgressClient is the client API for JinaExecutorRestoreProgress service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+type JinaExecutorRestoreProgressClient interface {
+	RestoreStatus(ctx context.Context, in *RestoreId, opts ...grpc.CallOption) (*RestoreSnapshotStatusProto, error)
+}
+
+type jinaExecutorRestoreProgressClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewJinaExecutorRestoreProgressClient(cc grpc.ClientConnInterface) JinaExecutorRestoreProgressClient {
+	return &jinaExecutorRestoreProgressClient{cc}
+}
+
+func (c *jinaExecutorRestoreProgressClient) RestoreStatus(ctx context.Context, in *RestoreId, opts ...grpc.CallOption) (*RestoreSnapshotStatusProto, error) {
+	out := new(RestoreSnapshotStatusProto)
+	err := c.cc.Invoke(ctx, "/jina.JinaExecutorRestoreProgress/restore_status", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// JinaExecutorRestoreProgressServer is the server API for JinaExecutorRestoreProgress service.
+// All implementations must embed UnimplementedJinaExecutorRestoreProgressServer
+// for forward compatibility
+type JinaExecutorRestoreProgressServer interface {
+	RestoreStatus(context.Context, *RestoreId) (*RestoreSnapshotStatusProto, error)
+	mustEmbedUnimplementedJinaExecutorRestoreProgressServer()
+}
+
+// UnimplementedJinaExecutorRestoreProgressServer must be embedded to have forward compatible implementations.
+type UnimplementedJinaExecutorRestoreProgressServer struct {
+}
+
+func (UnimplementedJinaExecutorRestoreProgressServer) RestoreStatus(context.Context, *RestoreId) (*RestoreSnapshotStatusProto, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RestoreStatus not implemented")
+}
+func (UnimplementedJinaExecutorRestoreProgressServer) mustEmbedUnimplementedJinaExecutorRestoreProgressServer() {
+}
+
+// UnsafeJinaExecutorRestoreProgressServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to JinaExecutorRestoreProgressServer will
+// result in compilation errors.
+type UnsafeJinaExecutorRestoreProgressServer interface {
+	mustEmbedUnimplementedJinaExecutorRestoreProgressServer()
+}
+
+func RegisterJinaExecutorRestoreProgressServer(s grpc.ServiceRegistrar, srv JinaExecutorRestoreProgressServer) {
+	s.RegisterService(&JinaExecutorRestoreProgress_ServiceDesc, srv)
+}
+
+func _JinaExecutorRestoreProgress_RestoreStatus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RestoreId)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(JinaExecutorRestoreProgressServer).RestoreStatus(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/jina.JinaExecutorRestoreProgress/restore_status",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(JinaExecutorRestoreProgressServer).RestoreStatus(ctx, req.(*RestoreId))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// JinaExecutorRestoreProgress_ServiceDesc is the grpc.ServiceDesc for JinaExecutorRestoreProgress service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var JinaExecutorRestoreProgress_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "jina.JinaExecutorRestoreProgress",
+	HandlerType: (*JinaExecutorRestoreProgressServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "restore_status",
+			Handler:    _JinaExecutorRestoreProgress_RestoreStatus_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "jina.proto",
+}

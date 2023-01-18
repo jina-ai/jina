@@ -546,3 +546,137 @@ class JinaExecutorSnapshotProgress(object):
             jina__pb2.SnapshotStatusProto.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+
+class JinaExecutorRestoreStub(object):
+    """*
+    jina gRPC service to trigger a restore at the Executor Runtime.
+    """
+
+    def __init__(self, channel):
+        """Constructor.
+
+        Args:
+            channel: A grpc.Channel.
+        """
+        self.restore = channel.unary_unary(
+                '/jina.JinaExecutorRestore/restore',
+                request_serializer=jina__pb2.RestoreSnapshotCommand.SerializeToString,
+                response_deserializer=jina__pb2.RestoreSnapshotStatusProto.FromString,
+                )
+
+
+class JinaExecutorRestoreServicer(object):
+    """*
+    jina gRPC service to trigger a restore at the Executor Runtime.
+    """
+
+    def restore(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+
+def add_JinaExecutorRestoreServicer_to_server(servicer, server):
+    rpc_method_handlers = {
+            'restore': grpc.unary_unary_rpc_method_handler(
+                    servicer.restore,
+                    request_deserializer=jina__pb2.RestoreSnapshotCommand.FromString,
+                    response_serializer=jina__pb2.RestoreSnapshotStatusProto.SerializeToString,
+            ),
+    }
+    generic_handler = grpc.method_handlers_generic_handler(
+            'jina.JinaExecutorRestore', rpc_method_handlers)
+    server.add_generic_rpc_handlers((generic_handler,))
+
+
+ # This class is part of an EXPERIMENTAL API.
+class JinaExecutorRestore(object):
+    """*
+    jina gRPC service to trigger a restore at the Executor Runtime.
+    """
+
+    @staticmethod
+    def restore(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/jina.JinaExecutorRestore/restore',
+            jina__pb2.RestoreSnapshotCommand.SerializeToString,
+            jina__pb2.RestoreSnapshotStatusProto.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+
+class JinaExecutorRestoreProgressStub(object):
+    """*
+    jina gRPC service to trigger a snapshot at the Executor Runtime.
+    """
+
+    def __init__(self, channel):
+        """Constructor.
+
+        Args:
+            channel: A grpc.Channel.
+        """
+        self.restore_status = channel.unary_unary(
+                '/jina.JinaExecutorRestoreProgress/restore_status',
+                request_serializer=jina__pb2.RestoreId.SerializeToString,
+                response_deserializer=jina__pb2.RestoreSnapshotStatusProto.FromString,
+                )
+
+
+class JinaExecutorRestoreProgressServicer(object):
+    """*
+    jina gRPC service to trigger a snapshot at the Executor Runtime.
+    """
+
+    def restore_status(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+
+def add_JinaExecutorRestoreProgressServicer_to_server(servicer, server):
+    rpc_method_handlers = {
+            'restore_status': grpc.unary_unary_rpc_method_handler(
+                    servicer.restore_status,
+                    request_deserializer=jina__pb2.RestoreId.FromString,
+                    response_serializer=jina__pb2.RestoreSnapshotStatusProto.SerializeToString,
+            ),
+    }
+    generic_handler = grpc.method_handlers_generic_handler(
+            'jina.JinaExecutorRestoreProgress', rpc_method_handlers)
+    server.add_generic_rpc_handlers((generic_handler,))
+
+
+ # This class is part of an EXPERIMENTAL API.
+class JinaExecutorRestoreProgress(object):
+    """*
+    jina gRPC service to trigger a snapshot at the Executor Runtime.
+    """
+
+    @staticmethod
+    def restore_status(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/jina.JinaExecutorRestoreProgress/restore_status',
+            jina__pb2.RestoreId.SerializeToString,
+            jina__pb2.RestoreSnapshotStatusProto.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
