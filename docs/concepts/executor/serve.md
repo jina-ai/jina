@@ -135,17 +135,15 @@ For more details on these arguments and the workings of a Flow, see the {ref}`Fl
 
 (kubernetes-executor)=
 ## Serve via Kubernetes
-You can generate Kubernetes configuration files for your containerized Executor by using the static `Executor.to_kubernetes_yaml()` method. This works like {ref}`deploying a Flow in Kubernetes <kubernetes>`, because your Executor is wrapped automatically in a Flow and uses the very same deployment techniques.
+You can generate Kubernetes configuration files for your containerized Executor by using the {meth}`~jina.Deployment.to_kubernetes_yaml()` method. This works like {ref}`deploying a Flow in Kubernetes <kubernetes>`.
 
 ```python
-from jina import Executor
+from jina import Deployment
 
-Executor.to_kubernetes_yaml(
-    output_base_path='/tmp/config_out_folder',
-    port_expose=8080,
-    uses='jinaai+docker://jina-ai/DummyHubExecutor',
-    executor_type=Executor.StandaloneExecutorType.EXTERNAL,
+dep = Deployment(
+    uses='jinaai+docker://jina-ai/DummyHubExecutor', port_expose=8080, replicas=3
 )
+dep.to_kubernetes_yaml('/tmp/config_out_folder', k8s_namespace='my-namespace')
 ```
 ```shell
 kubectl apply -R -f /tmp/config_out_folder
@@ -156,6 +154,33 @@ The above example deploys the `DummyHubExecutor` from Executor Hub into your Kub
 :class: hint
 The Executor you use needs to be already containerized and stored in a registry accessible from your Kubernetes cluster. We recommend Executor Hub for this.
 ````
+
+Once the Executor is deployed, you can expose a service:
+```bash
+kubectl expose deployment executor --name=executor-exposed --type LoadBalancer --port 80 --target-port 8080 -n my-namespace
+sleep 60 # wait until the external ip is configured
+```
+
+Let's export the external IP address created and use it to send requests to the Executor. 
+```bash
+export EXTERNAL_IP=`kubectl get service executor-exposed -n my-namespace -o=jsonpath='{.status.loadBalancer.ingress[0].ip}'`
+```
+To send requests using {meth}`~jina.Client`, make sure to set `stream=False`:
+```python
+import os
+from jina import Client, Document
+
+host = os.environ['EXTERNAL_IP']
+port = 80
+
+client = Client(host=host, port=port)
+
+print(client.post(on='/', inputs=Document(), stream=False).texts)
+```
+
+```text
+['hello']
+```
 
 (external-shared-executor)=
 ### External and shared Executors
