@@ -895,7 +895,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
         return contextlib.nullcontext()
 
-    def run_snapshot(self, snapshot_file: str):
+    def _run_snapshot(self, snapshot_file: str):
         from pathlib import Path
         p = Path(snapshot_file)
         p.parent.mkdir(parents=True, exist_ok=True)
@@ -903,5 +903,16 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         with self._write_lock:
             self.snapshot(snapshot_file)
 
-    def snapshot(self, snapshot_directory: str):
+    def snapshot(self, snapshot_file: str):
+        """
+        Interface to take a snapshot from the Executor. Implement it to enable periodic snapshots
+        :param snapshot_file: The file path where to store the binary representation of the Executor snapshot
+        """
+        raise Exception('Raising an Exception. Snapshot is not enabled by default')
+
+    def restore(self, snapshot_file: str):
+        """
+        Interface to restore the state of the Executor from a snapshot that has been taken by the snapshot method.
+        :param snapshot_file: The file path from where to reconstruct the Executor
+        """
         pass

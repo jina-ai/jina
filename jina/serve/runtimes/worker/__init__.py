@@ -388,7 +388,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
                 self._snapshot_parent_directory,
             )
             self._snapshot_thread = threading.Thread(
-                target=self._request_handler._executor.run_snapshot,
+                target=self._request_handler._executor._run_snapshot,
                 args=(self._snapshot.snapshot_file,),
             )
             self._snapshot_thread.start()
