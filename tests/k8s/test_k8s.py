@@ -202,15 +202,16 @@ def k8s_flow_env_from_secret(docker_images, jina_k3_env):
     )
     return flow
 
+
 @pytest.fixture
 def k8s_dummy_secret():
     from kubernetes import client
-    
+
     secret = client.V1Secret(
         api_version='v1',
         kind='Secret',
         metadata=client.V1ObjectMeta(name='mysecret'),
-        string_data={'username': 'jina', 'password': '123456'}
+        string_data={'username': 'jina', 'password': '123456'},
     )
     return secret
 
@@ -635,7 +636,9 @@ async def test_flow_with_env_from_secret(
         k8s_flow_env_from_secret.to_kubernetes_yaml(dump_path, k8s_namespace=namespace)
 
         # create namespace
-        core_client.create_namespace(client.V1Namespace(metadata=client.V1ObjectMeta(name=namespace)))
+        core_client.create_namespace(
+            client.V1Namespace(metadata=client.V1ObjectMeta(name=namespace))
+        )
 
         # create secret
         core_client.create_namespaced_secret(namespace=namespace, body=k8s_dummy_secret)
@@ -1685,6 +1688,61 @@ async def test_flow_slow_load_executor(logger, docker_images, tmpdir, k8s_cluste
             k8s_cluster._cluster.kubectl_path, executor_pod_name, port, port, namespace
         ):
             assert AsyncNewLoopRuntime.is_ready(f'localhost:{port}')
+
+    except Exception as exc:
+        logger.error(f' Exception raised {exc}')
+        raise exc
+
+
+@pytest.mark.asyncio
+@pytest.mark.timeout(3600)
+@pytest.mark.parametrize(
+    'docker_images',
+    [['test-executor']],
+    indirect=True,
+)
+async def test_deployment_serve_k8s(logger, docker_images, tmpdir, k8s_cluster):
+    from kubernetes import client
+
+    namespace = 'test-deployment-serve-k8s'
+    api_client = client.ApiClient()
+    core_client = client.CoreV1Api(api_client=api_client)
+    app_client = client.AppsV1Api(api_client=api_client)
+    try:
+        dep = Deployment(
+            name='test-executor',
+            port=9090,
+            uses=f'docker://{docker_images[0]}',
+            replicas=3,
+        )
+
+        dump_path = os.path.join(str(tmpdir), 'test-deployment-serve-k8s')
+        dep.to_kubernetes_yaml(dump_path, k8s_namespace=namespace)
+
+        await create_all_flow_deployments_and_wait_ready(
+            dump_path,
+            namespace=namespace,
+            api_client=api_client,
+            app_client=app_client,
+            core_client=core_client,
+            deployment_replicas_expected={
+                'test-executor': 3,
+            },
+            logger=logger,
+        )
+        # start port forwarding
+        from jina.clients import Client
+
+        with shell_portforward(
+            k8s_cluster._cluster.kubectl_path, 'executor', 9090, 9090, namespace
+        ):
+            client = Client(port=9090)
+            client.show_progress = True
+            docs = client.post(
+                '/workspace',
+                inputs=DocumentArray.empty(3),
+                return_responses=True,
+            )
 
     except Exception as exc:
         logger.error(f' Exception raised {exc}')
