@@ -3,6 +3,7 @@ import os
 import socket
 
 import pytest
+import yaml
 
 from jina import Document, DocumentArray, Executor, requests
 from jina.clients.request import request_generator
@@ -546,3 +547,35 @@ def test_pod_remote_pod_replicas_host(num_shards, num_replicas):
             assert len(replica_args) == num_replicas
             for replica_arg in replica_args:
                 assert replica_arg.host == __default_host__
+
+
+@pytest.mark.parametrize(
+    'uses',
+    ['jinahub+docker://DummyHubExecutor', 'jinaai+docker://jina-ai/DummyHubExecutor'],
+)
+@pytest.mark.parametrize('shards', [1, 2, 3])
+@pytest.mark.parametrize('replicas', [1, 2, 3])
+def test_to_k8s_yaml(tmpdir, uses, replicas, shards):
+    dep = Deployment(port_expose=2020, uses=uses, replicas=replicas, shards=shards)
+    dep.to_kubernetes_yaml(output_base_path=tmpdir)
+
+    if shards == 1:
+        shards_iter = ['']
+    else:
+        shards_iter = [f'-{shard}' for shard in range(shards)]
+    for shard in shards_iter:
+        with open(os.path.join(tmpdir, f'executor{shard}.yml')) as f:
+            exec_yaml = list(yaml.safe_load_all(f))[-1]
+            assert exec_yaml['spec']['replicas'] == replicas
+            assert exec_yaml['spec']['template']['spec']['containers'][0][
+                'image'
+            ].startswith('jinahub/')
+
+    if shards != 1:
+        with open(os.path.join(tmpdir, f'executor-head.yml')) as f:
+            head_yaml = list(yaml.safe_load_all(f))[-1]
+            assert head_yaml['metadata']['name'] == 'executor-head'
+            assert head_yaml['spec']['replicas'] == 1
+            assert head_yaml['spec']['template']['spec']['containers'][0][
+                'image'
+            ].startswith('jinaai/')
