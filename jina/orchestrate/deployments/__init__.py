@@ -1428,6 +1428,8 @@ class Deployment(PostMixin, BaseOrchestrator):
                 self.args.default_port = False
 
             self.args.deployments_addresses = k8s_deployments_addresses
+        elif self._include_gateway:
+            self.args.port = self._gateway_kwargs['port']
 
         k8s_deployment = K8sDeploymentConfig(
             args=self.args,
