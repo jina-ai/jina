@@ -140,13 +140,15 @@ class GRPCBaseClient(BaseClient):
             )
             return resp
 
+        streamer_args = vars(self.args)
+        if prefetch:
+            streamer_args['prefetch'] = prefetch
         streamer = RequestStreamer(
             request_handler=_request_handler,
             result_handler=_result_handler,
             iterate_sync_in_thread=False,
             logger=self.logger,
-            prefetch=prefetch or 0,
-            **vars(self.args),
+            **streamer_args,
         )
         async for response in streamer.stream(
             request_iterator=req_iter, results_in_order=results_in_order

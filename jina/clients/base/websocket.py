@@ -182,13 +182,15 @@ class WebSocketBaseClient(BaseClient):
                 asyncio.create_task(iolet.send_message(request))
                 return future, None
 
+            streamer_args = vars(self.args)
+            if prefetch:
+                streamer_args['prefetch'] = prefetch
             streamer = RequestStreamer(
                 request_handler=_request_handler,
                 result_handler=_result_handler,
                 end_of_iter_handler=_handle_end_of_iter,
                 logger=self.logger,
-                prefetch=prefetch or 0,
-                **vars(self.args),
+                **streamer_args,
             )
 
             receive_task = asyncio.create_task(_receive())

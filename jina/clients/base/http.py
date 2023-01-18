@@ -148,12 +148,14 @@ class HTTPBaseClient(BaseClient):
             def _result_handler(result):
                 return result
 
+            streamer_args = vars(self.args)
+            if prefetch:
+                streamer_args['prefetch'] = prefetch
             streamer = RequestStreamer(
                 request_handler=_request_handler,
                 result_handler=_result_handler,
                 logger=self.logger,
-                prefetch=prefetch or 0,
-                **vars(self.args),
+                **streamer_args,
             )
             async for response in streamer.stream(
                 request_iterator=request_iterator, results_in_order=results_in_order
