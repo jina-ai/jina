@@ -1709,9 +1709,9 @@ async def test_deployment_serve_k8s(logger, docker_images, tmpdir, k8s_cluster):
     core_client = client.CoreV1Api(api_client=api_client)
     app_client = client.AppsV1Api(api_client=api_client)
     try:
+        # TODO: should allow specifying custom port
         dep = Deployment(
             name='test-executor',
-            port=9090,
             uses=f'docker://{docker_images[0]}',
             replicas=3,
         )
@@ -1734,15 +1734,18 @@ async def test_deployment_serve_k8s(logger, docker_images, tmpdir, k8s_cluster):
         from jina.clients import Client
 
         with shell_portforward(
-            k8s_cluster._cluster.kubectl_path, 'executor', 9090, 9090, namespace
+            k8s_cluster._cluster.kubectl_path,
+            'svc/test-executor',
+            8080,
+            8080,
+            namespace,
         ):
-            client = Client(port=9090)
+            client = Client(port=8080)
             client.show_progress = True
-            docs = client.post(
-                '/workspace',
-                inputs=DocumentArray.empty(3),
-                return_responses=True,
-            )
+            docs = client.post('/debug', inputs=DocumentArray.empty(3), stream=False)
+            for doc in docs:
+                assert doc.tags['shards'] == 1
+                assert doc.tags['parallel'] == 3
 
     except Exception as exc:
         logger.error(f' Exception raised {exc}')
