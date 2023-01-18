@@ -40,17 +40,12 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         self._health_servicer = health.aio.HealthServicer()
         self._snapshot = None
         self._snapshot_thread = None
+        if not args.snapshot_parent_directory:
+            self._snapshot_parent_directory = tempfile.mkdtemp()
+        else:
+            self._snapshot_parent_directory = args.snapshot_parent_directory
 
         super().__init__(args, **kwargs)
-        if not self.args.snapshot_parent_directory:
-            self._snapshot_parent_directory = tempfile.mkdtemp()
-            self.logger.warning(
-                f'A temporary directory for storing snapshots has been created at {self._snapshot_parent_directory}. This directory will not be automatically deleted.'
-            )
-        else:
-            self._snapshot_parent_directory = (
-                self.args.snapshot_parent_directory
-            )
 
     async def async_setup(self):
         """
@@ -122,7 +117,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
             tracer_provider=self.tracer_provider,
             meter_provider=self.meter_provider,
             deployment_name=self.name.split('/')[0],
-            snapshot_parent_directory=self.args.snapshot_parent_directory,
+            snapshot_parent_directory=self._snapshot_parent_directory,
         )
         await self._async_setup_grpc_server()
 
@@ -394,11 +389,11 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
             )
         else:
             self._snapshot = self._create_snapshot_status(
-                self.args.snapshot_parent_directory,
+                self._snapshot_parent_directory,
             )
             self._snapshot_thread = threading.Thread(
                 target=self._request_handler._executor.run_snapshot,
-                args=(self._snapshot.snapshot_directory, ),
+                args=(self._snapshot.snapshot_directory,),
             )
             self._snapshot_thread.start()
             return self._snapshot
