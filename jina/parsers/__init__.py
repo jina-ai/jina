@@ -18,10 +18,7 @@ def set_pod_parser(parser=None):
     from hubble.executor.parsers.pull import mixin_hub_pull_options_parser
 
     from jina.parsers.orchestrate.base import mixin_scalable_deployment_parser
-    from jina.parsers.orchestrate.pod import (
-        mixin_hub_pull_options_parser,
-        mixin_pod_parser,
-    )
+    from jina.parsers.orchestrate.pod import mixin_pod_parser
     from jina.parsers.orchestrate.runtimes.container import (
         mixin_container_runtime_parser,
     )
