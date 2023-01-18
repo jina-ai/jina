@@ -196,7 +196,6 @@ class Flow(
         reload: Optional[bool] = False, 
         retries: Optional[int] = -1, 
         runtime_cls: Optional[str] = 'GatewayRuntime', 
-        snapshot_parent_directory: Optional[str] = None, 
         ssl_certfile: Optional[str] = None, 
         ssl_keyfile: Optional[str] = None, 
         stateful: Optional[bool] = False, 
@@ -269,7 +268,6 @@ class Flow(
         :param reload: If set, the Gateway will restart while serving if YAML configuration source is changed.
         :param retries: Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
         :param runtime_cls: The runtime class to run inside the Pod
-        :param snapshot_parent_directory: A parent directory for storing all snapshots.
         :param ssl_certfile: the path to the certificate file
         :param ssl_keyfile: the path to the key file
         :param stateful: If set, start consensus module to make sure write operations are properly replicated between all the replicas
@@ -450,7 +448,6 @@ class Flow(
         :param reload: If set, the Gateway will restart while serving if YAML configuration source is changed.
         :param retries: Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
         :param runtime_cls: The runtime class to run inside the Pod
-        :param snapshot_parent_directory: A parent directory for storing all snapshots.
         :param ssl_certfile: the path to the certificate file
         :param ssl_keyfile: the path to the key file
         :param stateful: If set, start consensus module to make sure write operations are properly replicated between all the replicas
@@ -892,7 +889,6 @@ class Flow(
         retries: Optional[int] = -1, 
         runtime_cls: Optional[str] = 'WorkerRuntime', 
         shards: Optional[int] = 1, 
-        snapshot_parent_directory: Optional[str] = None, 
         stateful: Optional[bool] = False, 
         timeout_ctrl: Optional[int] = 60, 
         timeout_ready: Optional[int] = 600000, 
@@ -989,7 +985,6 @@ class Flow(
         :param retries: Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
         :param runtime_cls: The runtime class to run inside the Pod
         :param shards: The number of shards in the deployment running at the same time. For more details check https://docs.jina.ai/concepts/flow/create-flow/#complex-flow-topologies
-        :param snapshot_parent_directory: A parent directory for storing all snapshots.
         :param stateful: If set, start consensus module to make sure write operations are properly replicated between all the replicas
         :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever
         :param timeout_ready: The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting forever
@@ -1141,7 +1136,6 @@ class Flow(
         :param retries: Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
         :param runtime_cls: The runtime class to run inside the Pod
         :param shards: The number of shards in the deployment running at the same time. For more details check https://docs.jina.ai/concepts/flow/create-flow/#complex-flow-topologies
-        :param snapshot_parent_directory: A parent directory for storing all snapshots.
         :param stateful: If set, start consensus module to make sure write operations are properly replicated between all the replicas
         :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever
         :param timeout_ready: The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting forever
@@ -1305,7 +1299,6 @@ class Flow(
         reload: Optional[bool] = False, 
         retries: Optional[int] = -1, 
         runtime_cls: Optional[str] = 'GatewayRuntime', 
-        snapshot_parent_directory: Optional[str] = None, 
         ssl_certfile: Optional[str] = None, 
         ssl_keyfile: Optional[str] = None, 
         stateful: Optional[bool] = False, 
@@ -1378,7 +1371,6 @@ class Flow(
         :param reload: If set, the Gateway will restart while serving if YAML configuration source is changed.
         :param retries: Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
         :param runtime_cls: The runtime class to run inside the Pod
-        :param snapshot_parent_directory: A parent directory for storing all snapshots.
         :param ssl_certfile: the path to the certificate file
         :param ssl_keyfile: the path to the key file
         :param stateful: If set, start consensus module to make sure write operations are properly replicated between all the replicas
@@ -1476,7 +1468,6 @@ class Flow(
         :param reload: If set, the Gateway will restart while serving if YAML configuration source is changed.
         :param retries: Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
         :param runtime_cls: The runtime class to run inside the Pod
-        :param snapshot_parent_directory: A parent directory for storing all snapshots.
         :param ssl_certfile: the path to the certificate file
         :param ssl_keyfile: the path to the key file
         :param stateful: If set, start consensus module to make sure write operations are properly replicated between all the replicas
