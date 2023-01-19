@@ -33,12 +33,14 @@ class MyStateExecutor(Executor):
 
     def snapshot(self, snapshot_file: str):
         self.logger.warning(f' Snapshotting to {snapshot_file} with {len(self._docs)} documents')
+        self.logger.warning(f'Snapshotting with order {[d.text for d in self._docs]}')
         with open(snapshot_file, 'wb') as f:
             self._docs.save_binary(f)
 
     def restore(self, snapshot_file: str):
         self._docs = DocumentArray.load_binary(snapshot_file)
         self.logger.warning(f' Restoring from {snapshot_file} with {len(self._docs)} documents')
+        self.logger.warning(f'Restoring with order {[d.text for d in self._docs]}')
 
 
 class MyStateExecutorNoSpanshot(Executor):
@@ -89,7 +91,8 @@ if __name__ == '__main__':
                                               raft_bootstrap=True,
                                               raft_configuration={'snapshot_interval': 10, 'snapshot_threshold': 5,
                                                                   'LogLevel': 'INFO'})
-        f.block()
+        with f:
+            f.block()
     elif option == 'index_no_snapshot':
         f = Flow(port=PORT_FLOW_NO_SNAPSHOT).add(uses=MyStateExecutorNoSpanshot,
                                                  replicas=3,
@@ -111,7 +114,8 @@ if __name__ == '__main__':
                                               raft_bootstrap=False,
                                               raft_configuration={'snapshot_interval': 10, 'snapshot_threshold': 5,
                                                                   'LogLevel': 'INFO'})
-        f.block()
+        with f:
+            f.block()
     elif option == 'restore_no_snapshot':
         f = Flow(port=PORT_FLOW_NO_SNAPSHOT).add(uses=MyStateExecutorNoSpanshot,
                                                  replicas=3,
@@ -122,7 +126,8 @@ if __name__ == '__main__':
                                                  raft_bootstrap=False,
                                                  raft_configuration={'snapshot_interval': 10, 'snapshot_threshold': 5,
                                                                      'LogLevel': 'INFO'})
-        f.block()
+        with f:
+            f.block()
     elif option == 'start_new_replica_snapshot':
         args = set_pod_parser().parse_args([])
         args.host = args.host[0]
@@ -187,9 +192,7 @@ if __name__ == '__main__':
             client.search(inputs=search_da[0:10], request_size=1)
         else:
             client.search(inputs=search_da[0:10], request_size=1)
-            time.sleep(30)
-            client.search(inputs=search_da[20:30], request_size=1)
-            time.sleep(30)
+            client.search(inputs=search_da[0:10], request_size=1)
             client.search(inputs=search_da[0:10], request_size=1)
 
 # JINA_LOG_LEVEL=DEBUG jina executor --uses MyStateExecutor --port 55555 --replica-id '4' --workspace toy_workspace
