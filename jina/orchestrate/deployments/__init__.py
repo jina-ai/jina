@@ -1431,7 +1431,7 @@ class Deployment(PostMixin, BaseOrchestrator):
                 self.args.default_port = False
 
             self.args.deployments_addresses = k8s_deployments_addresses
-        elif self._include_gateway:
+        elif self._include_gateway and self.port:
             self.args.port = self._gateway_kwargs['port']
 
         k8s_deployment = K8sDeploymentConfig(
@@ -1465,7 +1465,9 @@ class Deployment(PostMixin, BaseOrchestrator):
         """
         k8s_namespace = k8s_namespace or 'default'
         self._to_kubernetes_yaml(
-            output_base_path, k8s_namespace=k8s_namespace, k8s_port=self.port
+            output_base_path,
+            k8s_namespace=k8s_namespace,
+            k8s_port=self.port or GrpcConnectionPool.K8S_PORT,
         )
         self.logger.info(
             f'K8s yaml files have been created under [b]{output_base_path}[/]. You can use it by running [b]kubectl apply -R -f {output_base_path}[/]'
