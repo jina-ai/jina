@@ -264,7 +264,7 @@ class PostMixin:
         return_results = (on_always is None) and (on_done is None)
 
         async def _get_results(*args, **kwargs):
-            result = [] if return_responses else DocumentArray()
+            result = [] if return_responses else DocumentArray([])
             async for resp in c._get_results(*args, **kwargs):
                 if return_results:
                     if return_responses:

@@ -51,21 +51,16 @@ class DataRequest(Request):
 
             :param value: a DocumentArray
             """
-            self.set_docs_convert_arrays(value, None)
+            self.set_docs_convert_arrays(value)
 
-        def set_docs_convert_arrays(
-            self, value: DocumentArray, ndarray_type: Optional[str] = None
-        ):
+        def set_docs_convert_arrays(self, value: DocumentArray):
             """ " Convert embedding and tensor to given type, then set DocumentArray
 
             :param value: a DocumentArray
-            :param ndarray_type: type embedding and tensor will be converted to
             """
             if value is not None:
                 self._loaded_doc_array = None
-                self._content.docs.CopyFrom(
-                    value.to_protobuf(ndarray_type=ndarray_type)
-                )
+                self._content.docs.CopyFrom(value.to_protobuf())
 
         @property
         def docs_bytes(self) -> bytes:
