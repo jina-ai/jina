@@ -160,11 +160,6 @@ if sys.version_info.major == 3 and sys.version_info.minor >= 11:
     final_deps.add('grpcio-health-checking>=1.49.0')
     final_deps.add('grpcio-reflection>=1.49.0')
 
-final_deps['docarray'] = [
-    'git+https://github.com/docarray/docarray@feat-jina-compatibility#egg=docarray'
-]
-
-
 install_requires = list(final_deps)
 install_requires.append(
     'docarray @ git+https://github.com/docarray/docarray@feat-jina-compatibility[common]'
