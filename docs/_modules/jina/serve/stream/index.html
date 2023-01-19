@@ -274,6 +274,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/client/send-parameters/">Send Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/client/send-graphql-mutation/">Send GraphQL Mutation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/client/callbacks/">Callbacks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/client/rate-limit/">Rate Limit</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/client/instrumentation/">Instrumentation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/client/third-party-clients/">Third-party clients</a></li>
 </ul>
@@ -405,8 +406,8 @@
     <span class="n">Callable</span><span class="p">,</span>
     <span class="n">Iterator</span><span class="p">,</span>
     <span class="n">Optional</span><span class="p">,</span>
+    <span class="n">Tuple</span><span class="p">,</span>
     <span class="n">Union</span><span class="p">,</span>
-    <span class="n">Tuple</span>
 <span class="p">)</span>
 
 <span class="kn">from</span> <span class="nn">aiostream.aiter_utils</span> <span class="kn">import</span> <span class="n">anext</span>
@@ -434,7 +435,9 @@
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">request_handler</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="s1">&#39;Request&#39;</span><span class="p">],</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Awaitable</span><span class="p">[</span><span class="s1">&#39;Request&#39;</span><span class="p">],</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Awaitable</span><span class="p">[</span><span class="s1">&#39;Request&#39;</span><span class="p">]]]],</span>
+        <span class="n">request_handler</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span>
+            <span class="p">[</span><span class="s1">&#39;Request&#39;</span><span class="p">],</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Awaitable</span><span class="p">[</span><span class="s1">&#39;Request&#39;</span><span class="p">],</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Awaitable</span><span class="p">[</span><span class="s1">&#39;Request&#39;</span><span class="p">]]]</span>
+        <span class="p">],</span>
         <span class="n">result_handler</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="s1">&#39;Request&#39;</span><span class="p">],</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;Request&#39;</span><span class="p">]],</span>
         <span class="n">prefetch</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
         <span class="n">iterate_sync_in_thread</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
@@ -461,7 +464,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">total_num_floating_tasks_alive</span> <span class="o">=</span> <span class="mi">0</span>
 
 <div class="viewcode-block" id="RequestStreamer.stream"><a class="viewcode-back" href="../../../../api/jina.serve.stream/#jina.serve.stream.RequestStreamer.stream">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">stream</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">request_iterator</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">results_in_order</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">request_iterator</span><span class="p">,</span>
+        <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">results_in_order</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">prefetch</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="s1">&#39;Request&#39;</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        stream requests from client iterator and stream responses back.</span>
@@ -469,16 +477,25 @@
 <span class="sd">        :param request_iterator: iterator of requests</span>
 <span class="sd">        :param context: context of the grpc call</span>
 <span class="sd">        :param results_in_order: return the results in the same order as the request_iterator</span>
+<span class="sd">        :param prefetch: How many Requests are processed from the Client at the same time. If not provided then the prefetch value from the metadata will be utilized.</span>
 <span class="sd">        :param args: positional arguments</span>
 <span class="sd">        :yield: responses from Executors</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">prefetch</span> <span class="o">=</span> <span class="n">prefetch</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prefetch</span>
         <span class="k">if</span> <span class="n">context</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">metadatum</span> <span class="ow">in</span> <span class="n">context</span><span class="o">.</span><span class="n">invocation_metadata</span><span class="p">():</span>
                 <span class="k">if</span> <span class="n">metadatum</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;__results_in_order__&#39;</span><span class="p">:</span>
                     <span class="n">results_in_order</span> <span class="o">=</span> <span class="n">metadatum</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="s1">&#39;true&#39;</span>
+                <span class="k">if</span> <span class="n">metadatum</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;__prefetch__&#39;</span><span class="p">:</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">prefetch</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">metadatum</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+                    <span class="k">except</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Couldn</span><span class="se">\&#39;</span><span class="s1">t parse prefetch to int value!&#39;</span><span class="p">)</span>
 
         <span class="n">async_iter</span><span class="p">:</span> <span class="n">AsyncIterator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stream_requests</span><span class="p">(</span>
-            <span class="n">request_iterator</span><span class="o">=</span><span class="n">request_iterator</span><span class="p">,</span> <span class="n">results_in_order</span><span class="o">=</span><span class="n">results_in_order</span>
+            <span class="n">request_iterator</span><span class="o">=</span><span class="n">request_iterator</span><span class="p">,</span>
+            <span class="n">results_in_order</span><span class="o">=</span><span class="n">results_in_order</span><span class="p">,</span>
+            <span class="n">prefetch</span><span class="o">=</span><span class="n">prefetch</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="k">try</span><span class="p">:</span>
@@ -511,10 +528,12 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">request_iterator</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Iterator</span><span class="p">,</span> <span class="n">AsyncIterator</span><span class="p">],</span>
         <span class="n">results_in_order</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">prefetch</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Implements request and response handling without prefetching</span>
 <span class="sd">        :param request_iterator: requests iterator from Client</span>
 <span class="sd">        :param results_in_order: return the results in the same order as the request_iterator</span>
+<span class="sd">        :param prefetch: How many Requests are processed from the Client at the same time. If not provided then the prefetch value from the class will be utilized.</span>
 <span class="sd">        :yield: responses</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">result_queue</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Queue</span><span class="p">()</span>
@@ -565,8 +584,8 @@
             <span class="k">async</span> <span class="k">for</span> <span class="n">request</span> <span class="ow">in</span> <span class="n">AsyncRequestsIterator</span><span class="p">(</span>
                 <span class="n">iterator</span><span class="o">=</span><span class="n">request_iterator</span><span class="p">,</span>
                 <span class="n">request_counter</span><span class="o">=</span><span class="n">requests_to_handle</span><span class="p">,</span>
-                <span class="n">prefetch</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_prefetch</span><span class="p">,</span>
-                <span class="n">iterate_sync_in_thread</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_iterate_sync_in_thread</span>
+                <span class="n">prefetch</span><span class="o">=</span><span class="n">prefetch</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prefetch</span><span class="p">,</span>
+                <span class="n">iterate_sync_in_thread</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_iterate_sync_in_thread</span><span class="p">,</span>
             <span class="p">):</span>
                 <span class="n">num_reqs</span> <span class="o">+=</span> <span class="mi">1</span>
                 <span class="n">requests_to_handle</span><span class="o">.</span><span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>

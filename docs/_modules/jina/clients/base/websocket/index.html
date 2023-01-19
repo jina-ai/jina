@@ -274,6 +274,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/client/send-parameters/">Send Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/client/send-graphql-mutation/">Send GraphQL Mutation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/client/callbacks/">Callbacks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/client/rate-limit/">Rate Limit</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/client/instrumentation/">Instrumentation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../concepts/client/third-party-clients/">Third-party clients</a></li>
 </ul>
@@ -486,6 +487,7 @@
         <span class="n">max_backoff</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span>
         <span class="n">backoff_multiplier</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.5</span><span class="p">,</span>
         <span class="n">results_in_order</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">prefetch</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -498,6 +500,7 @@
 <span class="sd">        :param max_backoff: The maximum accepted backoff after the exponential incremental delay</span>
 <span class="sd">        :param backoff_multiplier: The n-th attempt will occur at random(0, min(initialBackoff*backoffMultiplier**(n-1), maxBackoff))</span>
 <span class="sd">        :param results_in_order: return the results in the same order as the inputs</span>
+<span class="sd">        :param prefetch: How many Requests are processed from the Client at the same time.</span>
 <span class="sd">        :param kwargs: kwargs coming from the public interface. Includes arguments to be passed to the `WebsocketClientlet`</span>
 <span class="sd">        :yields: generator over results</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -579,12 +582,15 @@
                 <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="n">iolet</span><span class="o">.</span><span class="n">send_message</span><span class="p">(</span><span class="n">request</span><span class="p">))</span>
                 <span class="k">return</span> <span class="n">future</span><span class="p">,</span> <span class="kc">None</span>
 
+            <span class="n">streamer_args</span> <span class="o">=</span> <span class="nb">vars</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">prefetch</span><span class="p">:</span>
+                <span class="n">streamer_args</span><span class="p">[</span><span class="s1">&#39;prefetch&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">prefetch</span>
             <span class="n">streamer</span> <span class="o">=</span> <span class="n">RequestStreamer</span><span class="p">(</span>
                 <span class="n">request_handler</span><span class="o">=</span><span class="n">_request_handler</span><span class="p">,</span>
                 <span class="n">result_handler</span><span class="o">=</span><span class="n">_result_handler</span><span class="p">,</span>
                 <span class="n">end_of_iter_handler</span><span class="o">=</span><span class="n">_handle_end_of_iter</span><span class="p">,</span>
                 <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span>
-                <span class="o">**</span><span class="nb">vars</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">),</span>
+                <span class="o">**</span><span class="n">streamer_args</span><span class="p">,</span>
             <span class="p">)</span>
 
             <span class="n">receive_task</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="n">_receive</span><span class="p">())</span>

@@ -274,6 +274,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/client/send-parameters/">Send Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/client/send-graphql-mutation/">Send GraphQL Mutation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/client/callbacks/">Callbacks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../concepts/client/rate-limit/">Rate Limit</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/client/instrumentation/">Instrumentation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../concepts/client/third-party-clients/">Third-party clients</a></li>
 </ul>
@@ -595,7 +596,9 @@
         <span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">Document</span>
 
         <span class="n">st</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
-        <span class="k">async</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">Document</span><span class="p">(),</span> <span class="n">return_responses</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="k">async</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+            <span class="n">on</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">Document</span><span class="p">(),</span> <span class="n">return_responses</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">):</span>
             <span class="n">ed</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
             <span class="k">return</span> <span class="n">_render_response_table</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">st</span><span class="p">,</span> <span class="n">ed</span><span class="p">,</span> <span class="n">show_table</span><span class="o">=</span><span class="n">show_table</span><span class="p">)</span></div></div>
 
@@ -622,6 +625,7 @@
         <span class="n">backoff_multiplier</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.5</span><span class="p">,</span>
         <span class="n">results_in_order</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">stream</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">prefetch</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="s1">&#39;DocumentArray&#39;</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="s1">&#39;Response&#39;</span><span class="p">]]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Post a general data request to the Flow.</span>
@@ -643,6 +647,7 @@
 <span class="sd">        :param backoff_multiplier: The n-th attempt will occur at random(0, min(initialBackoff*backoffMultiplier**(n-1), maxBackoff))</span>
 <span class="sd">        :param results_in_order: return the results in the same order as the inputs</span>
 <span class="sd">        :param stream: Applicable only to grpc client. If True, the requests are sent to the target using the gRPC streaming interface otherwise the gRPC unary interface will be used. The value is True by default.</span>
+<span class="sd">        :param prefetch: How many Requests are processed from the Client at the same time. If not provided then Gateway prefetch value will be used.</span>
 <span class="sd">        :param kwargs: additional parameters</span>
 <span class="sd">        :return: None or DocumentArray containing all response Documents</span>
 
@@ -687,6 +692,7 @@
             <span class="n">backoff_multiplier</span><span class="o">=</span><span class="n">backoff_multiplier</span><span class="p">,</span>
             <span class="n">results_in_order</span><span class="o">=</span><span class="n">results_in_order</span><span class="p">,</span>
             <span class="n">stream</span><span class="o">=</span><span class="n">stream</span><span class="p">,</span>
+            <span class="n">prefetch</span><span class="o">=</span><span class="n">prefetch</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">)</span></div>
 
@@ -719,6 +725,7 @@
         <span class="n">backoff_multiplier</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.5</span><span class="p">,</span>
         <span class="n">results_in_order</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">stream</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">prefetch</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="s1">&#39;DocumentArray&#39;</span><span class="p">,</span> <span class="s1">&#39;Response&#39;</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Async Post a general data request to the Flow.</span>
@@ -740,6 +747,7 @@
 <span class="sd">        :param backoff_multiplier: The n-th attempt will occur at random(0, min(initialBackoff*backoffMultiplier**(n-1), maxBackoff))</span>
 <span class="sd">        :param results_in_order: return the results in the same order as the inputs</span>
 <span class="sd">        :param stream: Applicable only to grpc client. If True, the requests are sent to the target using the gRPC streaming interface otherwise the gRPC unary interface will be used. The value is True by default.</span>
+<span class="sd">        :param prefetch: How many Requests are processed from the Client at the same time. If not provided then Gateway prefetch value will be used.</span>
 <span class="sd">        :param kwargs: additional parameters, can be used to pass metadata or authentication information in the server call</span>
 <span class="sd">        :yield: Response object</span>
 
@@ -767,6 +775,7 @@
             <span class="n">backoff_multiplier</span><span class="o">=</span><span class="n">backoff_multiplier</span><span class="p">,</span>
             <span class="n">results_in_order</span><span class="o">=</span><span class="n">results_in_order</span><span class="p">,</span>
             <span class="n">stream</span><span class="o">=</span><span class="n">stream</span><span class="p">,</span>
+            <span class="n">prefetch</span><span class="o">=</span><span class="n">prefetch</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">):</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">return_responses</span><span class="p">:</span>

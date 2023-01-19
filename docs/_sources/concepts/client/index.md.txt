@@ -212,6 +212,7 @@ send-receive-data
 send-parameters
 send-graphql-mutation
 callbacks
+rate-limit
 instrumentation
 third-party-clients
 ```
