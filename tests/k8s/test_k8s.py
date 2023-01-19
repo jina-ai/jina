@@ -1708,12 +1708,16 @@ async def test_deployment_serve_k8s(logger, docker_images, tmpdir, k8s_cluster):
     api_client = client.ApiClient()
     core_client = client.CoreV1Api(api_client=api_client)
     app_client = client.AppsV1Api(api_client=api_client)
+
+    # test with custom port
+    port = 12345
     try:
         # TODO: should allow specifying custom port
         dep = Deployment(
             name='test-executor',
             uses=f'docker://{docker_images[0]}',
             replicas=3,
+            port=port,
         )
 
         dump_path = os.path.join(str(tmpdir), 'test-deployment-serve-k8s')
@@ -1736,11 +1740,11 @@ async def test_deployment_serve_k8s(logger, docker_images, tmpdir, k8s_cluster):
         with shell_portforward(
             k8s_cluster._cluster.kubectl_path,
             'svc/test-executor',
-            8080,
-            8080,
+            port,
+            port,
             namespace,
         ):
-            client = Client(port=8080)
+            client = Client(port=port)
             client.show_progress = True
             docs = client.post('/debug', inputs=DocumentArray.empty(3), stream=False)
             for doc in docs:
