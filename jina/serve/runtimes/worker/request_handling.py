@@ -3,6 +3,7 @@ import functools
 import json
 from typing import TYPE_CHECKING, Dict, List, Optional, Tuple
 
+from docarray.array.abstract_array import AnyDocumentArray
 from docarray.documents.legacy import DocumentArray
 
 from jina.constants import __default_endpoint__
@@ -346,7 +347,7 @@ class WorkerRequestHandler:
     def _set_result(self, requests, return_data, docs):
         # assigning result back to request
         if return_data is not None:
-            if isinstance(return_data, DocumentArray):
+            if isinstance(return_data, AnyDocumentArray):
                 docs = return_data
             elif isinstance(return_data, dict):
                 params = requests[0].parameters

@@ -44,11 +44,11 @@ def test_different_document_schema():
             return docs
 
     with Flow().add(uses=MyExec) as f:
-        doc = f.post(
+        docs = f.post(
             on='/foo',
             inputs=DocumentArray[Image](
                 [Image(url='https://via.placeholder.com/150.png')]
             ),
         )
-        doc = doc.stack()
-        assert doc.tensor.ndim == 4
+        docs = docs.stack()
+        assert docs.tensor.ndim == 4

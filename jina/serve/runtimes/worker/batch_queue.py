@@ -2,6 +2,7 @@ import asyncio
 from asyncio import Event, Task
 from typing import Any, Callable, Dict, List, Optional
 
+from docarray.array.abstract_array import AnyDocumentArray
 from docarray.documents.legacy import DocumentArray
 
 from jina.types.request.data import DataRequest
@@ -115,7 +116,7 @@ class BatchQueue:
                 )
 
                 # Output validation
-                if isinstance(return_docs, DocumentArray):
+                if isinstance(return_docs, AnyDocumentArray):
                     if not len(return_docs) == input_len_before_call:
                         raise ValueError(
                             f'Dynamic Batching requires input size to equal output size. Expected output size {input_len_before_call}, but got {len(return_docs)}'
