@@ -1,6 +1,7 @@
 """Module for helper functions for clients."""
 from typing import Optional, Tuple
 
+from docarray import BaseDocument
 from docarray.documents.legacy import Document, DocumentArray
 
 from jina.enums import DataInputType
@@ -39,12 +40,12 @@ def _new_data_request(
 
 def _new_doc_from_data(
     data, data_type: DataInputType
-) -> Tuple['Document', 'DataInputType']:
+) -> Tuple['BaseDocument', 'DataInputType']:
 
     if data_type == DataInputType.DICT:
         return Document(**data), DataInputType.DICT
     if data_type == DataInputType.AUTO or data_type == DataInputType.DOCUMENT:
-        if isinstance(data, Document):
+        if isinstance(data, BaseDocument):
             # if incoming is already primitive type Document, then all good, best practice!
             return data, DataInputType.DOCUMENT
         elif isinstance(data, dict):
