@@ -1104,7 +1104,14 @@ class Deployment(PostMixin, BaseOrchestrator):
 
         for shard_id in range(shards):
             replica_args = []
-            for replica_id in range(replicas):
+            pod_ports = self.args.pod_ports
+            if len(pod_ports) > 0 and len(pod_ports) != replicas:
+                pod_ports = [random_port() for _ in range(replicas)]
+                self.logger.warning(f'por-ports argument does not match number of replicas, it will be ignored')
+            elif len(pod_ports) == 0:
+                pod_ports = [random_port() for _ in range(replicas)]
+
+            for replica_id, pod_port in zip(range(replicas), pod_ports):
                 _args = copy.deepcopy(self.args)
                 _args.shard_id = shard_id
                 _args.replica_id = replica_id
@@ -1147,7 +1154,7 @@ class Deployment(PostMixin, BaseOrchestrator):
                         )
                         # if there are no shards/replicas, we dont need to distribute ports randomly
                         # we should rather use the pre assigned one
-                        _args.port = random_port()
+                        _args.port = pod_port
                     elif shards > 1:
                         port_monitoring_index = (
                                 replica_id + replicas * shard_id + 1
@@ -1160,9 +1167,9 @@ class Deployment(PostMixin, BaseOrchestrator):
                                 port_monitoring_index
                             ]  # we skip the head port here
                         )
-                        _args.port = random_port()
+                        _args.port = pod_port
                     else:
-                        _args.port = random_port()
+                        _args.port = pod_port
                         _args.port_monitoring = random_port()
 
                 else:

@@ -110,13 +110,6 @@ def mixin_pod_parser(parser, pod_type: str = 'worker'):
     )
 
     gp.add_argument(
-        '--stateful',
-        action='store_true',
-        default=False,
-        help='If set, start consensus module to make sure write operations are properly replicated between all the replicas',
-    )
-
-    gp.add_argument(
         '--replica-id',
         type=int,
         default=0,
@@ -149,6 +142,7 @@ def mixin_pod_parser(parser, pod_type: str = 'worker'):
             help='If set, the Gateway will restart while serving if YAML configuration source is changed.',
         )
     mixin_pod_runtime_args_parser(gp, pod_type=pod_type)
+    mixin_stateful_parser(gp)
 
 
 def mixin_pod_runtime_args_parser(arg_group, pod_type='worker'):
@@ -257,4 +251,29 @@ def mixin_pod_runtime_args_parser(arg_group, pod_type='worker'):
         type=int,
         default=None,
         help='If tracing is enabled, this port will be used to configure the metrics exporter agent.',
+    )
+
+
+def mixin_stateful_parser(parser):
+    """Mixing in arguments required to work with Stateful Executors into the given parser.
+    :param parser: the parser instance to which we add arguments
+    """
+
+    gp = add_arg_group(parser, title='Stateful Executor')
+
+    gp.add_argument(
+        '--stateful',
+        action='store_true',
+        default=False,
+        help='If set, start consensus module to make sure write operations are properly replicated between all the replicas',
+    )
+
+    # TODO: How to pass this with shards
+    gp.add_argument(
+        '--pod-ports',
+        type=str,
+        nargs='+',
+        default=[],
+        action=CastToIntAction,
+        help='When using StatefulExecutors, if they want to restart it is important to keep the RAFT cluster configuration ',
     )
