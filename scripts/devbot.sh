@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 # this script is run by jina-dev-bot
 
 # inject @overload info && black it
