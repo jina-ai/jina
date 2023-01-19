@@ -196,7 +196,9 @@ class AsyncProfileMixin:
         from docarray import Document
 
         st = time.perf_counter()
-        async for r in self.client.post(on='/', inputs=Document(), return_responses=True):
+        async for r in self.client.post(
+            on='/', inputs=Document(), return_responses=True
+        ):
             ed = time.perf_counter()
             return _render_response_table(r, st, ed, show_table=show_table)
 
@@ -223,6 +225,7 @@ class PostMixin:
         backoff_multiplier: float = 1.5,
         results_in_order: bool = False,
         stream: bool = True,
+        prefetch: Optional[int] = None,
         **kwargs,
     ) -> Optional[Union['DocumentArray', List['Response']]]:
         """Post a general data request to the Flow.
@@ -244,6 +247,7 @@ class PostMixin:
         :param backoff_multiplier: The n-th attempt will occur at random(0, min(initialBackoff*backoffMultiplier**(n-1), maxBackoff))
         :param results_in_order: return the results in the same order as the inputs
         :param stream: Applicable only to grpc client. If True, the requests are sent to the target using the gRPC streaming interface otherwise the gRPC unary interface will be used. The value is True by default.
+        :param prefetch: How many Requests are processed from the Client at the same time. If not provided then Gateway prefetch value will be used.
         :param kwargs: additional parameters
         :return: None or DocumentArray containing all response Documents
 
@@ -288,6 +292,7 @@ class PostMixin:
             backoff_multiplier=backoff_multiplier,
             results_in_order=results_in_order,
             stream=stream,
+            prefetch=prefetch,
             **kwargs,
         )
 
@@ -320,6 +325,7 @@ class AsyncPostMixin:
         backoff_multiplier: float = 1.5,
         results_in_order: bool = False,
         stream: bool = True,
+        prefetch: Optional[int] = None,
         **kwargs,
     ) -> AsyncGenerator[None, Union['DocumentArray', 'Response']]:
         """Async Post a general data request to the Flow.
@@ -341,6 +347,7 @@ class AsyncPostMixin:
         :param backoff_multiplier: The n-th attempt will occur at random(0, min(initialBackoff*backoffMultiplier**(n-1), maxBackoff))
         :param results_in_order: return the results in the same order as the inputs
         :param stream: Applicable only to grpc client. If True, the requests are sent to the target using the gRPC streaming interface otherwise the gRPC unary interface will be used. The value is True by default.
+        :param prefetch: How many Requests are processed from the Client at the same time. If not provided then Gateway prefetch value will be used.
         :param kwargs: additional parameters, can be used to pass metadata or authentication information in the server call
         :yield: Response object
 
@@ -368,6 +375,7 @@ class AsyncPostMixin:
             backoff_multiplier=backoff_multiplier,
             results_in_order=results_in_order,
             stream=stream,
+            prefetch=prefetch,
             **kwargs,
         ):
             if not return_responses:
