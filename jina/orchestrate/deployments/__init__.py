@@ -186,6 +186,7 @@ class Deployment(PostMixin, BaseOrchestrator):
         native: Optional[bool] = False,
         no_reduce: Optional[bool] = False,
         output_array_type: Optional[str] = None,
+        pod_ports: Optional[int] = [],
         polling: Optional[str] = 'ANY',
         port: Optional[int] = None,
         port_monitoring: Optional[int] = None,
@@ -271,6 +272,7 @@ class Deployment(PostMixin, BaseOrchestrator):
           Supports the same types as `docarray.to_protobuf(.., ndarray_type=...)`, which can be found
           `here <https://docarray.jina.ai/fundamentals/document/serialization/#from-to-protobuf>`.
           Defaults to retaining whatever type is returned by the Executor.
+        :param pod_ports: When using StatefulExecutors, if they want to restart it is important to keep the RAFT cluster configuration
         :param polling: The polling strategy of the Deployment and its endpoints (when `shards>1`).
               Can be defined for all endpoints of a Deployment or by endpoint.
               Define per Deployment:
@@ -1116,7 +1118,9 @@ class Deployment(PostMixin, BaseOrchestrator):
             pod_ports = self.args.pod_ports
             if len(pod_ports) > 0 and len(pod_ports) != replicas:
                 pod_ports = [random_port() for _ in range(replicas)]
-                self.logger.warning(f'por-ports argument does not match number of replicas, it will be ignored')
+                self.logger.warning(
+                    f'por-ports argument does not match number of replicas, it will be ignored'
+                )
             elif len(pod_ports) == 0:
                 pod_ports = [random_port() for _ in range(replicas)]
 

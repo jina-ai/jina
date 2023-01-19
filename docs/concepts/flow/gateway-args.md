@@ -38,7 +38,6 @@
 | `env` | The map of environment variables that are available inside runtime | `object` | `None` |
 | `env_from_secret` | The map of environment variables that are read from kubernetes cluster secrets | `object` | `None` |
 | `floating` | If set, the current Pod/Deployment can not be further chained, and the next `.add()` will chain after the last Pod/Deployment not this current one. | `boolean` | `False` |
-| `stateful` | If set, start consensus module to make sure write operations are properly replicated between all the replicas | `boolean` | `False` |
 | `reload` | If set, the Gateway will restart while serving if YAML configuration source is changed. | `boolean` | `False` |
 | `port` | The port for input data to bind the gateway server to, by default, random ports between range [49152, 65535] will be assigned. The port argument can be either 1 single value in case only 1 protocol is used or multiple values when many protocols are used. | `number` | `random in [49152, 65535]` |
 | `monitoring` | If set, spawn an http server with a prometheus endpoint to expose metrics | `boolean` | `False` |
@@ -50,3 +49,5 @@
 | `metrics` | If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided. | `boolean` | `False` |
 | `metrics_exporter_host` | If tracing is enabled, this hostname will be used to configure the metrics exporter agent. | `string` | `None` |
 | `metrics_exporter_port` | If tracing is enabled, this port will be used to configure the metrics exporter agent. | `number` | `None` |
+| `stateful` | If set, start consensus module to make sure write operations are properly replicated between all the replicas | `boolean` | `False` |
+| `pod_ports` | When using StatefulExecutors, if they want to restart it is important to keep the RAFT cluster configuration | `number` | `[]` |
