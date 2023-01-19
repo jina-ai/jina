@@ -69,7 +69,7 @@ class ExecutorType(type(JAMLCompatible), type):
             arg_spec = inspect.getfullargspec(cls.__init__)
 
             if not arg_spec.varkw and not __args_executor_init__.issubset(
-                    arg_spec.args
+                arg_spec.args
             ):
                 raise TypeError(
                     f'{cls.__init__} does not follow the full signature of `Executor.__init__`, '
@@ -129,13 +129,13 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
     """
 
     def __init__(
-            self,
-            metas: Optional[Dict] = None,
-            requests: Optional[Dict] = None,
-            runtime_args: Optional[Dict] = None,
-            workspace: Optional[str] = None,
-            dynamic_batching: Optional[Dict] = None,
-            **kwargs,
+        self,
+        metas: Optional[Dict] = None,
+        requests: Optional[Dict] = None,
+        runtime_args: Optional[Dict] = None,
+        workspace: Optional[str] = None,
+        dynamic_batching: Optional[Dict] = None,
+        **kwargs,
     ):
         """`metas` and `requests` are always auto-filled with values from YAML config.
 
@@ -171,19 +171,21 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         except RuntimeError:
             self._lock = contextlib.AsyncExitStack()
 
-        self._write_lock = threading.Lock()  # watch because this makes it no serializable
+        self._write_lock = (
+            threading.Lock()
+        )  # watch because this makes it no serializable
 
     def _dry_run_func(self, *args, **kwargs):
         pass
 
     def _init_monitoring(self):
         if (
-                hasattr(self.runtime_args, 'metrics_registry')
-                and self.runtime_args.metrics_registry
+            hasattr(self.runtime_args, 'metrics_registry')
+            and self.runtime_args.metrics_registry
         ):
             with ImportExtensions(
-                    required=True,
-                    help_text='You need to install the `prometheus_client` to use the montitoring functionality of jina',
+                required=True,
+                help_text='You need to install the `prometheus_client` to use the montitoring functionality of jina',
             ):
                 from prometheus_client import Summary
 
@@ -335,7 +337,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                 if not hasattr(target, k):
                     if isinstance(v, str):
                         if not (
-                                env_var_regex.findall(v) or internal_var_regex.findall(v)
+                            env_var_regex.findall(v) or internal_var_regex.findall(v)
                         ):
                             setattr(target, k, v)
                         else:
@@ -387,12 +389,12 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             return await self.__acall_endpoint__(__default_endpoint__, **kwargs)
 
     async def __acall_endpoint__(
-            self, req_endpoint, tracing_context: Optional['Context'], **kwargs
+        self, req_endpoint, tracing_context: Optional['Context'], **kwargs
     ):
         func = self.requests[req_endpoint]
 
         async def exec_func(
-                summary, histogram, histogram_metric_labels, tracing_context
+            summary, histogram, histogram_metric_labels, tracing_context
         ):
             with MetricsTimer(summary, histogram, histogram_metric_labels):
                 if iscoroutinefunction(func):
@@ -425,7 +427,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
         if self.tracer:
             with self.tracer.start_as_current_span(
-                    req_endpoint, context=tracing_context
+                req_endpoint, context=tracing_context
             ):
                 from opentelemetry.propagate import extract
                 from opentelemetry.trace.propagation.tracecontext import (
@@ -456,10 +458,10 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         :return: returns the workspace of the current shard of this Executor.
         """
         workspace = (
-                getattr(self.runtime_args, 'workspace', None)
-                or getattr(self.metas, 'workspace')
-                or self._init_workspace
-                or __cache_path__
+            getattr(self.runtime_args, 'workspace', None)
+            or getattr(self.metas, 'workspace')
+            or self._init_workspace
+            or __cache_path__
         )
         if workspace:
             shard_id = getattr(
@@ -467,7 +469,9 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                 'shard_id',
                 None,
             )
-            return _get_workspace_from_name_and_shards(workspace=workspace, shard_id=shard_id, name=self.metas.name)
+            return _get_workspace_from_name_and_shards(
+                workspace=workspace, shard_id=shard_id, name=self.metas.name
+            )
 
     def __enter__(self):
         return self
@@ -477,14 +481,14 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
     @classmethod
     def from_hub(
-            cls: Type[T],
-            uri: str,
-            context: Optional[Dict[str, Any]] = None,
-            uses_with: Optional[Dict] = None,
-            uses_metas: Optional[Dict] = None,
-            uses_requests: Optional[Dict] = None,
-            uses_dynamic_batching: Optional[Dict] = None,
-            **kwargs,
+        cls: Type[T],
+        uri: str,
+        context: Optional[Dict[str, Any]] = None,
+        uses_with: Optional[Dict] = None,
+        uses_metas: Optional[Dict] = None,
+        uses_requests: Optional[Dict] = None,
+        uses_dynamic_batching: Optional[Dict] = None,
+        **kwargs,
     ) -> T:
         """Construct an Executor from Hub.
 
@@ -541,66 +545,67 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
     def serve(
         self,
         *,
-        compression: Optional[str] = None, 
-        connection_list: Optional[str] = None, 
-        disable_auto_volume: Optional[bool] = False, 
-        docker_kwargs: Optional[dict] = None, 
-        entrypoint: Optional[str] = None, 
-        env: Optional[dict] = None, 
-        env_from_secret: Optional[dict] = None, 
-        exit_on_exceptions: Optional[List[str]] = [], 
-        external: Optional[bool] = False, 
-        floating: Optional[bool] = False, 
-        force_update: Optional[bool] = False, 
-        gpus: Optional[str] = None, 
-        grpc_metadata: Optional[dict] = None, 
-        grpc_server_options: Optional[dict] = None, 
-        host: Optional[List[str]] = ['0.0.0.0'], 
-        install_requirements: Optional[bool] = False, 
-        log_config: Optional[str] = None, 
-        metrics: Optional[bool] = False, 
-        metrics_exporter_host: Optional[str] = None, 
-        metrics_exporter_port: Optional[int] = None, 
-        monitoring: Optional[bool] = False, 
-        name: Optional[str] = None, 
-        native: Optional[bool] = False, 
-        no_reduce: Optional[bool] = False, 
-        output_array_type: Optional[str] = None, 
-        polling: Optional[str] = 'ANY', 
-        port: Optional[int] = None, 
-        port_monitoring: Optional[int] = None, 
-        prefer_platform: Optional[str] = None, 
-        py_modules: Optional[List[str]] = None, 
-        quiet: Optional[bool] = False, 
-        quiet_error: Optional[bool] = False, 
-        raft_bootstrap: Optional[bool] = False, 
-        raft_configuration: Optional[dict] = None, 
-        reload: Optional[bool] = False, 
-        replicas: Optional[int] = 1, 
-        retries: Optional[int] = -1, 
-        runtime_cls: Optional[str] = 'WorkerRuntime', 
-        shards: Optional[int] = 1, 
-        stateful: Optional[bool] = False, 
-        timeout_ctrl: Optional[int] = 60, 
-        timeout_ready: Optional[int] = 600000, 
-        timeout_send: Optional[int] = None, 
-        tls: Optional[bool] = False, 
-        traces_exporter_host: Optional[str] = None, 
-        traces_exporter_port: Optional[int] = None, 
-        tracing: Optional[bool] = False, 
-        uses: Optional[Union[str, Type['BaseExecutor'], dict]] = 'BaseExecutor', 
-        uses_after: Optional[Union[str, Type['BaseExecutor'], dict]] = None, 
-        uses_after_address: Optional[str] = None, 
-        uses_before: Optional[Union[str, Type['BaseExecutor'], dict]] = None, 
-        uses_before_address: Optional[str] = None, 
-        uses_dynamic_batching: Optional[dict] = None, 
-        uses_metas: Optional[dict] = None, 
-        uses_requests: Optional[dict] = None, 
-        uses_with: Optional[dict] = None, 
-        volumes: Optional[List[str]] = None, 
-        when: Optional[dict] = None, 
-        workspace: Optional[str] = None, 
-        **kwargs):
+        compression: Optional[str] = None,
+        connection_list: Optional[str] = None,
+        disable_auto_volume: Optional[bool] = False,
+        docker_kwargs: Optional[dict] = None,
+        entrypoint: Optional[str] = None,
+        env: Optional[dict] = None,
+        env_from_secret: Optional[dict] = None,
+        exit_on_exceptions: Optional[List[str]] = [],
+        external: Optional[bool] = False,
+        floating: Optional[bool] = False,
+        force_update: Optional[bool] = False,
+        gpus: Optional[str] = None,
+        grpc_metadata: Optional[dict] = None,
+        grpc_server_options: Optional[dict] = None,
+        host: Optional[List[str]] = ['0.0.0.0'],
+        install_requirements: Optional[bool] = False,
+        log_config: Optional[str] = None,
+        metrics: Optional[bool] = False,
+        metrics_exporter_host: Optional[str] = None,
+        metrics_exporter_port: Optional[int] = None,
+        monitoring: Optional[bool] = False,
+        name: Optional[str] = None,
+        native: Optional[bool] = False,
+        no_reduce: Optional[bool] = False,
+        output_array_type: Optional[str] = None,
+        polling: Optional[str] = 'ANY',
+        port: Optional[int] = None,
+        port_monitoring: Optional[int] = None,
+        prefer_platform: Optional[str] = None,
+        py_modules: Optional[List[str]] = None,
+        quiet: Optional[bool] = False,
+        quiet_error: Optional[bool] = False,
+        raft_bootstrap: Optional[bool] = False,
+        raft_configuration: Optional[dict] = None,
+        reload: Optional[bool] = False,
+        replicas: Optional[int] = 1,
+        retries: Optional[int] = -1,
+        runtime_cls: Optional[str] = 'WorkerRuntime',
+        shards: Optional[int] = 1,
+        stateful: Optional[bool] = False,
+        timeout_ctrl: Optional[int] = 60,
+        timeout_ready: Optional[int] = 600000,
+        timeout_send: Optional[int] = None,
+        tls: Optional[bool] = False,
+        traces_exporter_host: Optional[str] = None,
+        traces_exporter_port: Optional[int] = None,
+        tracing: Optional[bool] = False,
+        uses: Optional[Union[str, Type['BaseExecutor'], dict]] = 'BaseExecutor',
+        uses_after: Optional[Union[str, Type['BaseExecutor'], dict]] = None,
+        uses_after_address: Optional[str] = None,
+        uses_before: Optional[Union[str, Type['BaseExecutor'], dict]] = None,
+        uses_before_address: Optional[str] = None,
+        uses_dynamic_batching: Optional[dict] = None,
+        uses_metas: Optional[dict] = None,
+        uses_requests: Optional[dict] = None,
+        uses_with: Optional[dict] = None,
+        volumes: Optional[List[str]] = None,
+        when: Optional[dict] = None,
+        workspace: Optional[str] = None,
+        **kwargs,
+    ):
         """Serve this Executor in a temporary Flow. Useful in testing an Executor in remote settings.
 
         :param compression: The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.
@@ -721,14 +726,14 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
     @classmethod
     def serve(
-            cls,
-            uses_with: Optional[Dict] = None,
-            uses_metas: Optional[Dict] = None,
-            uses_requests: Optional[Dict] = None,
-            stop_event: Optional[Union['threading.Event', 'multiprocessing.Event']] = None,
-            uses_dynamic_batching: Optional[Dict] = None,
-            reload: bool = False,
-            **kwargs,
+        cls,
+        uses_with: Optional[Dict] = None,
+        uses_metas: Optional[Dict] = None,
+        uses_requests: Optional[Dict] = None,
+        stop_event: Optional[Union['threading.Event', 'multiprocessing.Event']] = None,
+        uses_dynamic_batching: Optional[Dict] = None,
+        reload: bool = False,
+        **kwargs,
     ):
         """Serve this Executor in a temporary Flow. Useful in testing an Executor in remote settings.
 
@@ -767,17 +772,17 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
     @staticmethod
     def to_kubernetes_yaml(
-            uses: str,
-            output_base_path: str,
-            k8s_namespace: Optional[str] = None,
-            executor_type: Optional[
-                StandaloneExecutorType
-            ] = StandaloneExecutorType.EXTERNAL,
-            uses_with: Optional[Dict] = None,
-            uses_metas: Optional[Dict] = None,
-            uses_requests: Optional[Dict] = None,
-            uses_dynamic_batching: Optional[Dict] = None,
-            **kwargs,
+        uses: str,
+        output_base_path: str,
+        k8s_namespace: Optional[str] = None,
+        executor_type: Optional[
+            StandaloneExecutorType
+        ] = StandaloneExecutorType.EXTERNAL,
+        uses_with: Optional[Dict] = None,
+        uses_metas: Optional[Dict] = None,
+        uses_requests: Optional[Dict] = None,
+        uses_dynamic_batching: Optional[Dict] = None,
+        **kwargs,
     ):
         """
         Converts the Executor into a set of yaml deployments to deploy in Kubernetes.
@@ -807,24 +812,24 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             output_base_path=output_base_path,
             k8s_namespace=k8s_namespace,
             include_gateway=executor_type
-                            == BaseExecutor.StandaloneExecutorType.EXTERNAL,
+            == BaseExecutor.StandaloneExecutorType.EXTERNAL,
         )
 
     to_k8s_yaml = to_kubernetes_yaml
 
     @staticmethod
     def to_docker_compose_yaml(
-            uses: str,
-            output_path: Optional[str] = None,
-            network_name: Optional[str] = None,
-            executor_type: Optional[
-                StandaloneExecutorType
-            ] = StandaloneExecutorType.EXTERNAL,
-            uses_with: Optional[Dict] = None,
-            uses_metas: Optional[Dict] = None,
-            uses_requests: Optional[Dict] = None,
-            uses_dynamic_batching: Optional[Dict] = None,
-            **kwargs,
+        uses: str,
+        output_path: Optional[str] = None,
+        network_name: Optional[str] = None,
+        executor_type: Optional[
+            StandaloneExecutorType
+        ] = StandaloneExecutorType.EXTERNAL,
+        uses_with: Optional[Dict] = None,
+        uses_metas: Optional[Dict] = None,
+        uses_requests: Optional[Dict] = None,
+        uses_dynamic_batching: Optional[Dict] = None,
+        **kwargs,
     ):
         """
         Converts the Executor into a yaml file to run with `docker-compose up`
@@ -851,11 +856,11 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             output_path=output_path,
             network_name=network_name,
             include_gateway=executor_type
-                            == BaseExecutor.StandaloneExecutorType.EXTERNAL,
+            == BaseExecutor.StandaloneExecutorType.EXTERNAL,
         )
 
     def monitor(
-            self, name: Optional[str] = None, documentation: Optional[str] = None
+        self, name: Optional[str] = None, documentation: Optional[str] = None
     ) -> Optional[MetricsTimer]:
         """
         Get a given prometheus metric, if it does not exist yet, it will create it and store it in a buffer.
@@ -915,6 +920,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
     def _run_snapshot(self, snapshot_file: str, did_raise_exception):
         try:
             from pathlib import Path
+
             p = Path(snapshot_file)
             p.parent.mkdir(parents=True, exist_ok=True)
             p.touch()
