@@ -120,14 +120,14 @@ class Deployment(PostMixin, BaseOrchestrator):
         def wait_start_success(self):
             for pod in self._pods:
                 pod.wait_start_success()
-            if self._pods[0].args.stateful:
+            if self._pods[0].args.stateful and self._pods[0].args.raft_bootstrap:
                 self._add_voter_to_leader()
 
         async def async_wait_start_success(self):
             await asyncio.gather(
                 *[pod.async_wait_start_success() for pod in self._pods]
             )
-            if self._pods[0].args.stateful:
+            if self._pods[0].args.stateful and self._pods[0].args.raft_bootstrap:
                 await self._async_add_voter_to_leader()
 
         def __enter__(self):

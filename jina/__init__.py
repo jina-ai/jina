@@ -65,7 +65,7 @@ __version__ = '3.13.2'
 
 # do not change this line manually
 # this is managed by proto/build-proto.sh and updated on every execution
-__proto_version__ = '0.1.25'
+__proto_version__ = '0.1.27'
 
 try:
     __docarray_version__ = _docarray.__version__

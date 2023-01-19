@@ -39,7 +39,7 @@ func (s *snapshot) get() *pb.SnapshotStatusProto_Status {
 }
 
 func (s *snapshot) Persist(sink raft.SnapshotSink) error {
-    s.Printf("Starting persist operation...")
+    log.Printf("Starting persist operation...")
     var err error
     ticker := time.NewTicker(1 * time.Second)
     done := make(chan bool)

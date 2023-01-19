@@ -203,24 +203,25 @@ func Run(myAddr string,
 
 func main() {
     raftDefaultConfig := raft.DefaultConfig()
-    myAddr            := flag.String("address", "localhost:50051", "TCP host+port for this node")
-    raftId            := flag.String("raft_id", "", "Node id used by Raft")
-    raftDir           := flag.String("raft_data_dir", "data/", "Raft data dir")
-    raftBootstrap     := flag.Bool("raft_bootstrap", false, "Whether to bootstrap the Raft cluster")
-    executorTarget    := flag.String("executor_target", "localhost:54321", "underlying executor host+port")
-    HeartbeatTimeout  := flag.Int("heartbeat_timeout", int(raftDefaultConfig.HeartbeatTimeout / time.Millisecond), "HeartbeatTimeout for the RAFT node")
-    ElectionTimeout   := flag.Int("election_timeout", int(raftDefaultConfig.ElectionTimeout / time.Millisecond), "ElectionTimeout for the RAFT node")
-    CommitTimeout     := flag.Int("commit_timeout", int(raftDefaultConfig.CommitTimeout / time.Millisecond), "CommitTimeout for the RAFT node")
-    MaxAppendEntries  := flag.Int("max_append_entries", raftDefaultConfig.MaxAppendEntries, "MaxAppendEntries for the RAFT node")
-    BatchApplyCh      := flag.Bool("batch_applych", raftDefaultConfig.BatchApplyCh, "BatchApplyCh for the RAFT node")
-    ShutdownOnRemove  := flag.Bool("shutdown_on_remove", raftDefaultConfig.ShutdownOnRemove, "ShutdownOnRemove for the RAFT node")
-    TrailingLogs      := flag.Uint64("trailing_logs", raftDefaultConfig.TrailingLogs, "TrailingLogs for the RAFT node")
-    SnapshotInterval  := flag.Int("snapshot_interval", int(raftDefaultConfig.SnapshotInterval / time.Second), "SnapshotInterval for the RAFT node")
-    SnapshotThreshold := flag.Uint64("snapshot_threshold", raftDefaultConfig.SnapshotThreshold, "SnapshotThreshold for the RAFT node")
-    LeaderLeaseTimeout := flag.Int("leader_lease_timeout", int(raftDefaultConfig.LeaderLeaseTimeout / time.Millisecond), "LeaderLeaseTimeout for the RAFT node")
-    LogLevel  := flag.String("log_level", raftDefaultConfig.LogLevel, "LogLevel for the RAFT node")
+
+    myAddr                   := flag.String("address", "localhost:50051", "TCP host+port for this node")
+    raftId                   := flag.String("raft_id", "", "Node id used by Raft")
+    raftDir                  := flag.String("raft_data_dir", "data/", "Raft data dir")
+    raftBootstrap            := flag.Bool("raft_bootstrap", false, "Whether to bootstrap the Raft cluster")
+    executorTarget           := flag.String("executor_target", "localhost:54321", "underlying executor host+port")
+    HeartbeatTimeout         := flag.Int("heartbeat_timeout", int(raftDefaultConfig.HeartbeatTimeout / time.Millisecond), "HeartbeatTimeout for the RAFT node")
+    ElectionTimeout          := flag.Int("election_timeout", int(raftDefaultConfig.ElectionTimeout / time.Millisecond), "ElectionTimeout for the RAFT node")
+    CommitTimeout            := flag.Int("commit_timeout", int(raftDefaultConfig.CommitTimeout / time.Millisecond), "CommitTimeout for the RAFT node")
+    MaxAppendEntries         := flag.Int("max_append_entries", raftDefaultConfig.MaxAppendEntries, "MaxAppendEntries for the RAFT node")
+    BatchApplyCh             := flag.Bool("batch_applych", raftDefaultConfig.BatchApplyCh, "BatchApplyCh for the RAFT node")
+    ShutdownOnRemove         := flag.Bool("shutdown_on_remove", raftDefaultConfig.ShutdownOnRemove, "ShutdownOnRemove for the RAFT node")
+    TrailingLogs             := flag.Uint64("trailing_logs", raftDefaultConfig.TrailingLogs, "TrailingLogs for the RAFT node")
+    SnapshotInterval         := flag.Int("snapshot_interval", int(raftDefaultConfig.SnapshotInterval / time.Second), "SnapshotInterval for the RAFT node")
+    SnapshotThreshold        := flag.Uint64("snapshot_threshold", raftDefaultConfig.SnapshotThreshold, "SnapshotThreshold for the RAFT node")
+    LeaderLeaseTimeout       := flag.Int("leader_lease_timeout", int(raftDefaultConfig.LeaderLeaseTimeout / time.Millisecond), "LeaderLeaseTimeout for the RAFT node")
+    LogLevel                 := flag.String("log_level", raftDefaultConfig.LogLevel, "LogLevel for the RAFT node")
     NoSnapshotRestoreOnStart := flag.Bool("no_snapshot_restore_on_start", raftDefaultConfig.NoSnapshotRestoreOnStart, "NoSnapshotRestoreOnStart for the RAFT node")
-    flag.Parse()
+
     Run(*myAddr,
         *raftId,
         *raftDir,
@@ -275,31 +276,6 @@ func run(self *C.PyObject, args *C.PyObject, kwargs *C.PyObject) *C.PyObject {
     LogLevel                 = C.CString(raftDefaultConfig.LogLevel)
     NoSnapshotRestoreOnStart = C.bool(raftDefaultConfig.NoSnapshotRestoreOnStart)
 
-//     log.Printf("CommitTimeout DEFAULT CONFIG %v", raftDefaultConfig.CommitTimeout)
-//     log.Printf("CommitTimeout / milli %v", CommitTimeout)
-//
-//     log.Printf("MaxAppendEntries DEFAULT CONFIG %v", raftDefaultConfig.MaxAppendEntries)
-//     log.Printf("MaxAppendEntries %v", MaxAppendEntries)
-//
-//     log.Printf("BatchApplyCh DEFAULT CONFIG %v", raftDefaultConfig.BatchApplyCh)
-//     log.Printf("BatchApplyCh %v", BatchApplyCh)
-//
-//     log.Printf("ShutdownOnRemove DEFAULT CONFIG %v", raftDefaultConfig.ShutdownOnRemove)
-//     log.Printf("ShutdownOnRemove %v", ShutdownOnRemove)
-//
-//     log.Printf("TrailingLogs DEFAULT CONFIG %v", raftDefaultConfig.TrailingLogs)
-//     log.Printf("TrailingLogs %v", TrailingLogs)
-//
-//     log.Printf("SnapshotInterval DEFAULT CONFIG %v", raftDefaultConfig.SnapshotInterval)
-//     log.Printf("SnapshotInterval %v", SnapshotInterval)
-//
-//     log.Printf("SnapshotThreshold DEFAULT CONFIG %v", raftDefaultConfig.SnapshotThreshold)
-//     log.Printf("SnapshotThreshold %v", SnapshotThreshold)
-//
-//     log.Printf("LeaderLeaseTimeout DEFAULT CONFIG %v", raftDefaultConfig.LeaderLeaseTimeout)
-//     log.Printf("LeaderLeaseTimeout / milli %v", LeaderLeaseTimeout)
-
-
     if C.PyArg_ParseTuple_run(args,
                              kwargs,
                              &myAddr,
@@ -319,14 +295,6 @@ func run(self *C.PyObject, args *C.PyObject, kwargs *C.PyObject) *C.PyObject {
                              &LeaderLeaseTimeout,
                              &LogLevel,
                              &NoSnapshotRestoreOnStart) != 0 {
-//         log.Printf("CommitTimeout AFTER %v", CommitTimeout)
-//         log.Printf("MaxAppendEntries AFTER %v", MaxAppendEntries)
-//         log.Printf("BatchApplyCh AFTER %v", BatchApplyCh)
-//         log.Printf("ShutdownOnRemove AFTER %v", ShutdownOnRemove)
-//         log.Printf("TrailingLogs AFTER %v", TrailingLogs)
-//         log.Printf("SnapshotInterval AFTER %v", SnapshotInterval)
-//         log.Printf("SnapshotThreshold AFTER %v", SnapshotThreshold)
-//         log.Printf("LeaderLeaseTimeout AFTER %v", LeaderLeaseTimeout)
         Run(C.GoString(myAddr),
             C.GoString(raftId),
             C.GoString(raftDir),

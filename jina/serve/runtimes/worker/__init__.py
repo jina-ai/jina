@@ -148,6 +148,14 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
             self, self._grpc_server
         )
 
+        jina_pb2_grpc.add_JinaExecutorRestoreServicer_to_server(
+            self, self._grpc_server
+        )
+
+        jina_pb2_grpc.add_JinaExecutorRestoreProgressServicer_to_server(
+            self, self._grpc_server
+        )
+
         service_names = (
             jina_pb2.DESCRIPTOR.services_by_name['JinaSingleDataRequestRPC'].full_name,
             jina_pb2.DESCRIPTOR.services_by_name['JinaDataRequestRPC'].full_name,
@@ -419,7 +427,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
 
         :return: the status of the snapshot
         """
-        self.logger.debug(f'Checking status of snapshot : {request.value}')
+        self.logger.debug(f'Checking status of snapshot with ID of request {request.value} and current snapshot {self._snapshot.id.value if self._snapshot else "DOES NOT EXIST"}')
         if not self._snapshot or (self._snapshot.id.value != request.value):
             return jina_pb2.SnapshotStatusProto(
                 id=jina_pb2.SnapshotId(value=request.value),
@@ -482,18 +490,18 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
 
         :return: the status of the snapshot
         """
-        self.logger.debug(f'Checking status of restore')
+        self.logger.debug(f'Checking status of restore with ID of request {request.value} and current restore {self._restore.id.value if self._restore else "DOES NOT EXIST"}')
         if not self._restore or (self._restore.id.value != request.value):
             return jina_pb2.RestoreSnapshotStatusProto(
                 id=jina_pb2.RestoreId(value=request.value),
                 status=jina_pb2.RestoreSnapshotStatusProto.Status.NOT_FOUND,
             )
-        elif self._snapshot_thread and self._snapshot_thread.is_alive():
+        elif self._restore_thread and self._restore_thread.is_alive():
             return jina_pb2.RestoreSnapshotStatusProto(
                 id=jina_pb2.RestoreId(value=request.value),
                 status=jina_pb2.RestoreSnapshotStatusProto.Status.RUNNING,
             )
-        elif self._snapshot_thread and not self._snapshot_thread.is_alive():
+        elif self._restore_thread and not self._restore_thread.is_alive():
             status = jina_pb2.RestoreSnapshotStatusProto.Status.SUCCEEDED
             if self._did_restore_raise_exception.is_set():
                 status = jina_pb2.RestoreSnapshotStatusProto.Status.FAILED

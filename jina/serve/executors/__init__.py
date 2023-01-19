@@ -924,7 +924,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
     def _run_restore(self, snapshot_file: str, did_raise_exception):
         try:
-            with self._lock, self._write_lock:
+            with self._write_lock:
                 self.restore(snapshot_file)
         except:
             did_raise_exception.set()
