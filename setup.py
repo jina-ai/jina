@@ -164,6 +164,12 @@ final_deps['docarray'] = [
     'git+https://github.com/docarray/docarray@feat-jina-compatibility#egg=docarray'
 ]
 
+
+install_requires = list(final_deps)
+install_requires.append(
+    'docarray @ git+https://github.com/docarray/docarray@feat-jina-compatibility[common]'
+)
+
 setup(
     name=pkg_name,
     packages=find_packages(),
