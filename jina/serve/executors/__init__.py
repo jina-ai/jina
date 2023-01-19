@@ -371,7 +371,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
     async def __acall_endpoint__(
         self, req_endpoint, tracing_context: Optional['Context'], **kwargs
     ):
-        func = self.requests[req_endpoint]
+        func, input_doc, output_doc = self.requests[req_endpoint]
 
         async def exec_func(
             summary, histogram, histogram_metric_labels, tracing_context

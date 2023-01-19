@@ -71,11 +71,17 @@ def test_receive_da_type():
         text: str
 
     class MyExec(Executor):
-        @requests(on='/foo')
-        def foo(self, docs: DocumentArray[MyDoc], **kwargs):
+        @requests(
+            on='/foo',
+            input_doc=MyDoc,
+            output_doc=MyDoc,
+        )
+        def foo(self, docs: DocumentArray[MyDoc], **kwargs) -> DocumentArray[MyDoc]:
             assert docs.__class__.document_type == MyDoc
             docs[0].text = 'hello world'
+            return docs
 
     with Flow().add(uses=MyExec) as f:
-        doc = f.post(on='/foo', inputs=MyDoc(text='hello'))
-        assert doc[0].text == 'hello world'
+        docs = f.post(on='/foo', inputs=MyDoc(text='hello'))
+        assert docs[0].text == 'hello world'
+        assert docs.__class__.document_type == MyDoc

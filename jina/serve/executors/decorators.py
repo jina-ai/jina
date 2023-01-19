@@ -3,7 +3,20 @@ import functools
 import inspect
 import os
 from pathlib import Path
-from typing import TYPE_CHECKING, Callable, Dict, List, Optional, Sequence, Union
+from typing import (
+    TYPE_CHECKING,
+    Callable,
+    Dict,
+    List,
+    NamedTuple,
+    Optional,
+    Sequence,
+    Type,
+    Union,
+)
+
+from docarray import BaseDocument
+from docarray.base_document import AnyDocument
 
 from jina.constants import __cache_path__
 from jina.helper import iscoroutinefunction
@@ -92,6 +105,12 @@ def _init_requests_by_class(cls):
         _inherit_from_parent_class_inner(cls)
 
 
+class _request_return(NamedTuple):
+    fn: Callable
+    input_doc: Type[BaseDocument]
+    output_doc: Type[BaseDocument]
+
+
 def requests(
     func: Optional[
         Callable[
@@ -107,6 +126,8 @@ def requests(
     ] = None,
     *,
     on: Optional[Union[str, Sequence[str]]] = None,
+    input_doc: Type[BaseDocument] = AnyDocument,
+    output_doc: Type[BaseDocument] = AnyDocument,
 ):
     """
     `@requests` defines the endpoints of an Executor. It has a keyword `on=` to define the endpoint.
@@ -152,6 +173,8 @@ def requests(
 
     :param func: the method to decorate
     :param on: the endpoint string, by convention starts with `/`
+    :param input_doc: the type of the input document
+    :param output_doc: the type of the output document
     :return: decorated function
     """
     from jina.constants import __args_executor_func__, __default_endpoint__
@@ -204,7 +227,7 @@ def requests(
             else:
                 owner.requests_by_class[owner.__name__][
                     on or __default_endpoint__
-                ] = self.fn
+                ] = _request_return(self.fn, input_doc, output_doc)
 
             setattr(owner, name, self.fn)
 
