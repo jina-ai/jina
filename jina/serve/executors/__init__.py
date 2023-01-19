@@ -6,6 +6,7 @@ import inspect
 import multiprocessing
 import threading
 import warnings
+import os
 from types import SimpleNamespace
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, Union, overload
 
@@ -28,7 +29,7 @@ from jina.serve.executors.decorators import (
 from jina.serve.executors.metas import get_executor_taboo
 from jina.serve.helper import store_init_kwargs, wrap_func
 from jina.serve.instrumentation import MetricsTimer
-from jina.serve.helper import get_workspace_from_name_and_shards
+from jina.serve.helper import _get_workspace_from_name_and_shards
 
 if TYPE_CHECKING:  # pragma: no cover
     from opentelemetry.context.context import Context
@@ -466,7 +467,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                 'shard_id',
                 None,
             )
-            return get_workspace_from_name_and_shards(workspace=workspace, shard_id=shard_id, name=self.metas.name)
+            return _get_workspace_from_name_and_shards(workspace=workspace, shard_id=shard_id, name=self.metas.name)
 
     def __enter__(self):
         return self
@@ -928,3 +929,5 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         except:
             did_raise_exception.set()
             raise
+        finally:
+            os.remove(snapshot_file)

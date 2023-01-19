@@ -3,10 +3,13 @@ package server
 import (
     "context"
     "fmt"
+    "os"
     "io"
+    "io/ioutil"
     "log"
     "sync"
     "time"
+    "errors"
 
     "google.golang.org/protobuf/proto"
     "google.golang.org/protobuf/types/known/emptypb"
@@ -78,13 +81,13 @@ func (fsm *executorFSM) Apply(l *raft.Log) interface{} {
     dataRequestProto := &pb.DataRequestProto{}
     err = proto.Unmarshal(l.Data, dataRequestProto)
     if err != nil {
-        log.Fatal("unmarshaling error: ", err)
+        log.Print("unmarshaling error: ", err)
         return err
     }
 
     response, err := client.ProcessSingleData(context.Background(), dataRequestProto)
     if err != nil {
-        log.Fatalf("error calling executor: %v", err)
+        log.Printf("error calling executor: %v", err)
         return err
     }
 
@@ -105,7 +108,7 @@ func (fsm *executorFSM) Snapshot() (raft.FSMSnapshot, error) {
     client := pb.NewJinaExecutorSnapshotClient(conn)
     response, err := client.Snapshot(context.Background(), &emptypb.Empty{})
     if err != nil {
-        log.Fatalf("Error triggering a snapshot: %v", err)
+        log.Printf("Error triggering a snapshot: %v", err)
         return nil, err
     }
 
@@ -124,7 +127,29 @@ func (fsm *executorFSM) Restore(r io.ReadCloser) error {
     // I think restore here is not well set
     log.Printf("executorFSM method Restore")
     bytes, err := io.ReadAll(r)
+    // write bytes to temporary file, and pass it in the request
     if err != nil {
+        log.Printf("Error reading bytes from the snapshot file %v", err)
+        return err
+    }
+    tempDir := os.TempDir()
+    file, err := ioutil.TempFile(tempDir, "temp")
+    if err != nil {
+        log.Print(err)
+    }
+    defer os.Remove(file.Name()) // remove the file when done
+
+    log.Printf("Temporary file name %s", file.Name())
+
+    // Write some data to the file
+    if _, err := file.Write(bytes); err != nil {
+        log.Printf("Error writing snapshot bytes to temporary file %v", err)
+        return err
+    }
+
+    // Close the file
+    if err := file.Close(); err != nil {
+        log.Printf("Error closing file", err)
         return err
     }
     log.Printf("calling underlying executor")
@@ -133,16 +158,56 @@ func (fsm *executorFSM) Restore(r io.ReadCloser) error {
         return err
     }
     defer conn.Close()
-    client := pb.NewJinaSingleDataRequestRPCClient(conn)
-    dataRequestProto := &pb.DataRequestProto{}
-    err = proto.Unmarshal(bytes, dataRequestProto)
+    client := pb.NewJinaExecutorRestoreClient(conn)
+    restoreCommandProto := &pb.RestoreSnapshotCommand{}
+    restoreCommandProto.SnapshotFile = file.Name()
+    restoreResponse, err := client.Restore(context.Background(), restoreCommandProto)
     if err != nil {
-        log.Fatal("unmarshaling error: ", err)
+        log.Printf("Restore command issues to Executor failed %v", err)
         return err
     }
+    log.Printf("Start Checking status of Restore")
+    ticker := time.NewTicker(1 * time.Second)
+    done := make(chan bool)
+    defer close(done)
+    timeout := time.NewTimer(500 * time.Second)
 
-    _, err = client.ProcessSingleData(context.Background(), dataRequestProto)
+    go func(funcTicker *time.Ticker) {
+        for {
+            select {
+            case t := <-funcTicker.C:
+                log.Printf("Checking restore status at ", t)
+                conn, err = fsm.executor.newConnection()
+                if err == nil {
+                    defer conn.Close()
+                    client := pb.NewJinaExecutorRestoreProgressClient(conn)
+                    response, err := client.RestoreStatus(context.Background(), restoreResponse.Id)
+                    if err != nil {
+                        log.Printf("error fetching restore status for id: %s", restoreResponse.Id)
+                    } else {
 
+                        log.Printf("Restore status at time %v is %s", t, response.Status)
+                        if response.Status == pb.RestoreSnapshotStatusProto_FAILED ||
+                            response.Status == pb.RestoreSnapshotStatusProto_SUCCEEDED {
+                            if response.Status == pb.RestoreSnapshotStatusProto_FAILED {
+                                 err = errors.New("Restoring Executor failed")
+                            }
+                            timeout.Stop()
+                            done <- true
+                            return
+                        }
+                    }
+                }
+            case <-timeout.C:
+                log.Printf("Timed out waiting for restore status.")
+                timeout.Stop()
+                done <- true
+                return
+            }
+        }
+    }(ticker)
+    <-done
+    ticker.Stop()
     return err
 }
 
@@ -156,7 +221,7 @@ func (fsm *executorFSM) Read(ctx context.Context, dataRequestProto *pb.DataReque
     client := pb.NewJinaSingleDataRequestRPCClient(conn)
     response, err := client.ProcessSingleData(ctx, dataRequestProto)
     if err != nil {
-        log.Fatalf("Error calling read endpoint: %v", err)
+        log.Printf("Error calling read endpoint: %v", err)
         return nil, err
     }
 
@@ -173,7 +238,7 @@ func (fsm *executorFSM) EndpointDiscovery(ctx context.Context, empty *empty.Empt
     client := pb.NewJinaDiscoverEndpointsRPCClient(conn)
     response, err := client.EndpointDiscovery(ctx, empty)
     if err != nil {
-        log.Fatalf("Error calling EndpointDiscovery endpoint: %v", err)
+        log.Printf("Error calling EndpointDiscovery endpoint: %v", err)
         return nil, err
     }
 
@@ -191,7 +256,7 @@ func (fsm *executorFSM) XStatus(ctx context.Context, empty *empty.Empty) (*pb.Ji
     client := pb.NewJinaInfoRPCClient(conn)
     response, err := client.XStatus(ctx, empty)
     if err != nil {
-        log.Fatalf("Error calling Status endpoint: %v", err)
+        log.Printf("Error calling Status endpoint: %v", err)
         return nil, err
     }
 

@@ -16,7 +16,7 @@ from jina.orchestrate.pods.helper import ConditionalEvent, _get_event
 from jina.parsers.helper import _update_gateway_args
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.gateway import GatewayRuntime
-from jina.serve.helper import get_workspace_from_name_and_shards
+from jina.serve.helper import _get_workspace_from_name_and_shards
 
 if TYPE_CHECKING:
     import threading
@@ -129,7 +129,7 @@ def run_raft(
     address = f'{args.host}:{args.port}'
     raft_id = str(args.replica_id)
     shard_id = args.shard_id if args.shards > 1 else -1
-    raft_dir = get_workspace_from_name_and_shards(workspace=args.workspace, name='raft', shard_id=shard_id)
+    raft_dir = _get_workspace_from_name_and_shards(workspace=args.workspace, name='raft', shard_id=shard_id)
     raft_bootstrap = args.raft_bootstrap
     executor_target = f'{args.host}:{args.port + 1}'
     raft_configuration = pascal_case_dict(args.raft_configuration or {})

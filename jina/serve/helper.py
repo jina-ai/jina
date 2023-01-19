@@ -103,7 +103,7 @@ def format_grpc_error(error: grpc.aio.AioRpcError) -> str:
     return default_string
 
 
-def get_workspace_from_name_and_shards(workspace, name, shard_id):
+def _get_workspace_from_name_and_shards(workspace, name, shard_id):
     if workspace:
         complete_workspace = os.path.join(workspace, name)
         if shard_id is not None and shard_id != -1:

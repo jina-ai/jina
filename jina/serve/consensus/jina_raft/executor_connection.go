@@ -21,7 +21,7 @@ type executor struct {
 func (executor *executor) newConnection() (*grpc.ClientConn, error) {
     conn, err := grpc.Dial(executor.target, executor.connection_options...)
     if err != nil {
-        log.Fatalf("dialing failed: %v", err)
+        log.Printf("dialing failed: %v", err)
         return nil, err
     }
     return conn, err

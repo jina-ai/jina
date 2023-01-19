@@ -53,12 +53,12 @@ func (rpc *RpcInterface) ProcessSingleData(
         log.Printf("rpc method process single data to endpoint %s", *endpoint)
         if rpc.getRaftState() == raft.Leader && rpc.Executor.isSnapshotInProgress() {
             err := errors.New("Leader cannot process write request while Snapshotting")
-            log.Fatal("Error: %v", err)
+            log.Print("Error: %v", err)
             return nil, err
         }
         bytes, err := proto.Marshal(dataRequestProto)
         if err != nil {
-            log.Fatal("marshaling error: ", err)
+            log.Print("marshaling error: ", err)
             return nil, err
         }
         // replicate logs to the followers and then to itself
