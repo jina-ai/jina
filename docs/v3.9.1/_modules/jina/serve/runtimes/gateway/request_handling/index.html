@@ -412,7 +412,7 @@
 
 
 <div class="viewcode-block" id="MonitoringRequestMixin"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.gateway.request_handling/#jina.serve.runtimes.gateway.request_handling.MonitoringRequestMixin">[docs]</a><span class="k">class</span> <span class="nc">MonitoringRequestMixin</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Mixin for the request handling monitoring</span>
 
 <span class="sd">    :param metrics_registry: optional metrics registry for prometheus used if we need to expose metrics from the executor or from the data request handler</span>
@@ -509,7 +509,7 @@
 
 
 <div class="viewcode-block" id="RequestHandler"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.gateway.request_handling/#jina.serve.runtimes.gateway.request_handling.RequestHandler">[docs]</a><span class="k">class</span> <span class="nc">RequestHandler</span><span class="p">(</span><span class="n">MonitoringRequestMixin</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class that handles the requests arriving to the gateway and the result extracted from the requests future.</span>
 
 <span class="sd">    :param metrics_registry: optional metrics registry for prometheus used if we need to expose metrics from the executor or from the data request handler</span>
@@ -528,7 +528,7 @@
 <div class="viewcode-block" id="RequestHandler.handle_request"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.gateway.request_handling/#jina.serve.runtimes.gateway.request_handling.RequestHandler.handle_request">[docs]</a>    <span class="k">def</span> <span class="nf">handle_request</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">graph</span><span class="p">:</span> <span class="s1">&#39;TopologyGraph&#39;</span><span class="p">,</span> <span class="n">connection_pool</span><span class="p">:</span> <span class="s1">&#39;GrpcConnectionPool&#39;</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="s1">&#39;Request&#39;</span><span class="p">],</span> <span class="s1">&#39;Tuple[Future, Optional[Future]]&#39;</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Function that handles the requests arriving to the gateway. This will be passed to the streamer.</span>
 
 <span class="sd">        :param graph: The TopologyGraph of the Flow.</span>
@@ -670,14 +670,14 @@
         <span class="k">return</span> <span class="n">_handle_request</span></div>
 
 <div class="viewcode-block" id="RequestHandler.handle_result"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.gateway.request_handling/#jina.serve.runtimes.gateway.request_handling.RequestHandler.handle_result">[docs]</a>    <span class="k">def</span> <span class="nf">handle_result</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="s1">&#39;Request&#39;</span><span class="p">],</span> <span class="s1">&#39;Request&#39;</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Function that handles the result when extracted from the request future</span>
 
 <span class="sd">        :return: Return a Function that returns a request to be returned to the client</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">def</span> <span class="nf">_handle_result</span><span class="p">(</span><span class="n">result</span><span class="p">:</span> <span class="s1">&#39;Request&#39;</span><span class="p">):</span>
-            <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Function that handles the result when extracted from the request future</span>
 
 <span class="sd">            :param result: The result returned to the gateway. It extracts the request to be returned to the client</span>
@@ -706,7 +706,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 21, 2022</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

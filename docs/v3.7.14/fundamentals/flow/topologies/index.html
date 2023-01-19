@@ -506,20 +506,20 @@ The Flow will then assign each available GPU to replicas in a round-robin fashio
     <span class="n">f</span><span class="o">.</span><span class="n">block</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nv">CUDA_VISIBLE_DEVICES</span><span class="o">=</span>RR python flow.py
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nv">CUDA_VISIBLE_DEVICES</span><span class="o">=</span>RR<span class="w"> </span>python<span class="w"> </span>flow.py
 </pre></div>
 </div>
 </div>
 <input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--2">YAML</label><div class="tab-content docutils">
 <p>In a <code class="docutils literal notranslate"><span class="pre">flow.yaml</span></code> file</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
-<span class="nt">executors</span><span class="p">:</span><span class="w"></span>
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinahub://CLIPEncoder</span><span class="w"></span>
-<span class="w">  </span><span class="nt">install_requirements</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span>
+<span class="nt">executors</span><span class="p">:</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinahub://CLIPEncoder</span>
+<span class="w">  </span><span class="nt">install_requirements</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True</span>
 <span class="w">  </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span><span class="w">  </span>
 </pre></div>
 </div>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nv">CUDA_VISIBLE_DEVICES</span><span class="o">=</span>RR jina flow --uses flow.yaml
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nv">CUDA_VISIBLE_DEVICES</span><span class="o">=</span>RR<span class="w"> </span>jina<span class="w"> </span>flow<span class="w"> </span>--uses<span class="w"> </span>flow.yaml
 </pre></div>
 </div>
 </div>
@@ -648,18 +648,18 @@ This then defines <em>when</em> a document will be processed by the Executor:</p
 <span class="p">)</span>  <span class="c1"># only the Document fullfilling the condition is processed and therefore returned.</span>
 </pre></div>
 </div>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="o">[{</span><span class="s1">&#39;key&#39;</span>: <span class="m">5</span>.0<span class="o">}]</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="o">[{</span><span class="s1">&#39;key&#39;</span>:<span class="w"> </span><span class="m">5</span>.0<span class="o">}]</span>
 </pre></div>
 </div>
 </div>
 <input class="tab-input" id="tab-set--1-input--2" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--2">YAML</label><div class="tab-content docutils">
 <p><code class="docutils literal notranslate"><span class="pre">flow.yml</span></code>:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
-<span class="nt">executors</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executor</span><span class="w"></span>
-<span class="w">    </span><span class="nt">when</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">tags__key</span><span class="p">:</span><span class="w"></span>
-<span class="w">            </span><span class="nt">$eq</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span>
+<span class="nt">executors</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executor</span>
+<span class="w">    </span><span class="nt">when</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">tags__key</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">$eq</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
 </pre></div>
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Document</span>
@@ -678,7 +678,7 @@ This then defines <em>when</em> a document will be processed by the Executor:</p
 <span class="p">)</span>  <span class="c1"># only the Document fullfilling the condition is processed and therefore returned.</span>
 </pre></div>
 </div>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="o">[{</span><span class="s1">&#39;key&#39;</span>: <span class="m">5</span>.0<span class="o">}]</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="o">[{</span><span class="s1">&#39;key&#39;</span>:<span class="w"> </span><span class="m">5</span>.0<span class="o">}]</span>
 </pre></div>
 </div>
 </div>
@@ -715,7 +715,7 @@ still be used in the other branch, and also after the branches are re-joined tog
 <span class="nb">print</span><span class="p">(</span><span class="n">ret</span><span class="p">[:,</span> <span class="s1">&#39;tags&#39;</span><span class="p">])</span>  <span class="c1"># Each Document satisfies one parallel branch/filter</span>
 </pre></div>
 </div>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="o">[{</span><span class="s1">&#39;key&#39;</span>: <span class="m">5</span>.0<span class="o">}</span>, <span class="o">{</span><span class="s1">&#39;key&#39;</span>: <span class="m">4</span>.0<span class="o">}]</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="o">[{</span><span class="s1">&#39;key&#39;</span>:<span class="w"> </span><span class="m">5</span>.0<span class="o">}</span>,<span class="w"> </span><span class="o">{</span><span class="s1">&#39;key&#39;</span>:<span class="w"> </span><span class="m">4</span>.0<span class="o">}]</span>
 </pre></div>
 </div>
 </div>
@@ -793,7 +793,7 @@ This means that you can not only use this feature to build complex logic, but al
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 21, 2022</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

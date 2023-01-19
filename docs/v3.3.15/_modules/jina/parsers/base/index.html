@@ -582,7 +582,7 @@
 
 
 <div class="viewcode-block" id="set_base_parser"><a class="viewcode-back" href="../../../../api/jina.parsers.base/#jina.parsers.base.set_base_parser">[docs]</a><span class="k">def</span> <span class="nf">set_base_parser</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;Set the base parser</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Set the base parser</span>
 
 <span class="sd">    :return: the parser</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -597,15 +597,15 @@
         <span class="s1">&#39;Hiring!&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;🙌&#39;</span><span class="p">,</span> <span class="s1">&#39;https://career.jina.ai&#39;</span><span class="p">),</span>
     <span class="p">}</span>
     <span class="n">url_str</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-        <span class="sa">f</span><span class="s1">&#39;- </span><span class="si">{</span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s1">&lt;10</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">k</span><span class="si">:</span><span class="s1">10.10</span><span class="si">}</span><span class="se">\t</span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;cyan&quot;</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;underline&quot;</span><span class="p">])</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="sa">f</span><span class="s1">&#39;- </span><span class="si">{</span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s1">&lt;10</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">k</span><span class="si">:</span><span class="s1">10.10</span><span class="si">}</span><span class="se">\t</span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="w"> </span><span class="s2">&quot;cyan&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">attrs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;underline&quot;</span><span class="p">])</span><span class="si">}</span><span class="s1">&#39;</span>
         <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">urls</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
     <span class="p">)</span>
 
     <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span>
         <span class="n">epilog</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;&#39;&#39;</span>
-<span class="s1">Jina (v</span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="n">__version__</span><span class="p">,</span> <span class="s2">&quot;green&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1">) is the cloud-native neural search framework powered by deep learning.</span>
+<span class="s1">Jina (v</span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="n">__version__</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;green&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1">) is the cloud-native neural search framework powered by deep learning.</span>
 
-<span class="si">{</span><span class="n">url_str</span><span class="si">}</span><span class="s1"></span>
+<span class="si">{</span><span class="n">url_str</span><span class="si">}</span>
 
 <span class="s1">&#39;&#39;&#39;</span><span class="p">,</span>
         <span class="n">formatter_class</span><span class="o">=</span><span class="n">_chf</span><span class="p">,</span>
@@ -637,7 +637,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Dec 21, 2022.
+                    Last updated on Jan 19, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

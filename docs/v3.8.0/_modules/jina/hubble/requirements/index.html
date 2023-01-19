@@ -437,7 +437,7 @@
 
 
 <span class="k">def</span> <span class="nf">_parse_fragment</span><span class="p">(</span><span class="n">fragment_string</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Takes a fragment string nd returns a dict of the components</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Takes a fragment string nd returns a dict of the components</span>
 
 <span class="sd">    :param fragment_string: a fragment string</span>
 <span class="sd">    :return: a dict of components</span>
@@ -454,7 +454,7 @@
 
 
 <div class="viewcode-block" id="parse_requirement"><a class="viewcode-back" href="../../../../api/jina.hubble.requirements/#jina.hubble.requirements.parse_requirement">[docs]</a><span class="k">def</span> <span class="nf">parse_requirement</span><span class="p">(</span><span class="n">line</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Requirement&#39;</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Parses a Requirement from a line of a requirement file.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parses a Requirement from a line of a requirement file.</span>
 
 <span class="sd">    :param line: a line of a requirement file</span>
 <span class="sd">    :returns: a Requirement instance for the given line</span>
@@ -470,7 +470,7 @@
             <span class="n">fragment</span> <span class="o">=</span> <span class="n">_parse_fragment</span><span class="p">(</span><span class="n">groups</span><span class="p">[</span><span class="s1">&#39;fragment&#39;</span><span class="p">])</span>
             <span class="n">egg</span> <span class="o">=</span> <span class="n">fragment</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;egg&#39;</span><span class="p">)</span>
 
-        <span class="n">line</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">egg</span> <span class="ow">or</span> <span class="n">name</span><span class="si">}</span><span class="s1"> @ </span><span class="si">{</span><span class="n">line</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="n">line</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">egg</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="n">name</span><span class="si">}</span><span class="s1"> @ </span><span class="si">{</span><span class="n">line</span><span class="si">}</span><span class="s1">&#39;</span>
     <span class="k">elif</span> <span class="n">uri_match</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">groups</span> <span class="o">=</span> <span class="n">uri_match</span><span class="o">.</span><span class="n">groupdict</span><span class="p">()</span>
         <span class="n">name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">groups</span><span class="p">[</span><span class="s1">&#39;path&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
@@ -479,13 +479,13 @@
             <span class="n">fragment</span> <span class="o">=</span> <span class="n">_parse_fragment</span><span class="p">(</span><span class="n">groups</span><span class="p">[</span><span class="s1">&#39;fragment&#39;</span><span class="p">])</span>
             <span class="n">egg</span> <span class="o">=</span> <span class="n">fragment</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;egg&#39;</span><span class="p">)</span>
 
-        <span class="n">line</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">egg</span> <span class="ow">or</span> <span class="n">name</span><span class="si">}</span><span class="s1"> @ </span><span class="si">{</span><span class="n">line</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="n">line</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">egg</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="n">name</span><span class="si">}</span><span class="s1"> @ </span><span class="si">{</span><span class="n">line</span><span class="si">}</span><span class="s1">&#39;</span>
 
     <span class="k">return</span> <span class="n">Requirement</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">line</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="get_env_variables"><a class="viewcode-back" href="../../../../api/jina.hubble.requirements/#jina.hubble.requirements.get_env_variables">[docs]</a><span class="k">def</span> <span class="nf">get_env_variables</span><span class="p">(</span><span class="n">line</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot; </span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; </span>
 <span class="sd">    search the environment variable only match uppercase letter and number and the `_` (underscore).</span>
 <span class="sd">    :param line: a line of a requirement file</span>
 <span class="sd">    :return: a List of components</span>
@@ -498,7 +498,7 @@
 
 
 <div class="viewcode-block" id="check_env_variable"><a class="viewcode-back" href="../../../../api/jina.hubble.requirements/#jina.hubble.requirements.check_env_variable">[docs]</a><span class="k">def</span> <span class="nf">check_env_variable</span><span class="p">(</span><span class="n">env_variable</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot; </span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; </span>
 <span class="sd">    check the environment variables is limited</span>
 <span class="sd">    to uppercase letter and number and the `_` (underscore).</span>
 <span class="sd">    :param env_variable: env_variable in the requirements.txt file</span>
@@ -508,7 +508,7 @@
 
 
 <div class="viewcode-block" id="expand_env_variables"><a class="viewcode-back" href="../../../../api/jina.hubble.requirements/#jina.hubble.requirements.expand_env_variables">[docs]</a><span class="k">def</span> <span class="nf">expand_env_variables</span><span class="p">(</span><span class="n">line</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot; </span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; </span>
 <span class="sd">    Replace all environment variables that can be retrieved via `os.getenv`.</span>
 <span class="sd">    The only allowed format for environment variables defined in the</span>
 <span class="sd">    requirement file is `${MY_VARIABLE_1}` to ensure two things:</span>
@@ -541,7 +541,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 21, 2022</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

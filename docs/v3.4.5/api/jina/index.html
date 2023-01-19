@@ -1408,9 +1408,9 @@ One can also use ‘gateway’ to indicate the connection with the gateway.</p><
 <dd><p>Add an inspection on the last changed Deployment in the Flow</p>
 <p>Internally, it adds two Deployments to the Flow. But don’t worry, the overhead is minimized and you
 can remove them by simply using <cite>Flow(inspect=FlowInspectType.REMOVE)</cite> before using the Flow.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>Flow -- PUB-SUB -- BaseDeployment<span class="o">(</span>_pass<span class="o">)</span> -- Flow
-        <span class="p">|</span>
-        -- PUB-SUB -- InspectDeployment <span class="o">(</span>Hanging<span class="o">)</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>Flow<span class="w"> </span>--<span class="w"> </span>PUB-SUB<span class="w"> </span>--<span class="w"> </span>BaseDeployment<span class="o">(</span>_pass<span class="o">)</span><span class="w"> </span>--<span class="w"> </span>Flow
+<span class="w">        </span><span class="p">|</span>
+<span class="w">        </span>--<span class="w"> </span>PUB-SUB<span class="w"> </span>--<span class="w"> </span>InspectDeployment<span class="w"> </span><span class="o">(</span>Hanging<span class="o">)</span>
 </pre></div>
 </div>
 <p>In this way, <code class="xref py py-class docutils literal notranslate"><span class="pre">InspectDeployment</span></code> looks like a simple <code class="docutils literal notranslate"><span class="pre">_pass</span></code> from outside and
@@ -1896,7 +1896,7 @@ That means, it is the fallback handler for endpoints that are not found.</p>
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Dec 21, 2022.
+                    Last updated on Jan 19, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

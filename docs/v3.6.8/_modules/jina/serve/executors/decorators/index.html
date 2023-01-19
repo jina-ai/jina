@@ -409,7 +409,7 @@
 
 
 <div class="viewcode-block" id="wrap_func"><a class="viewcode-back" href="../../../../../api/jina.serve.executors.decorators/#jina.wrap_func">[docs]</a><span class="k">def</span> <span class="nf">wrap_func</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">func_lst</span><span class="p">,</span> <span class="n">wrapper</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Wrapping a class method only once, inherited but not overridden method will not be wrapped again</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Wrapping a class method only once, inherited but not overridden method will not be wrapped again</span>
 
 <span class="sd">    :param cls: class</span>
 <span class="sd">    :param func_lst: function list to wrap</span>
@@ -423,7 +423,7 @@
 
 
 <div class="viewcode-block" id="store_init_kwargs"><a class="viewcode-back" href="../../../../../api/jina.serve.executors.decorators/#jina.store_init_kwargs">[docs]</a><span class="k">def</span> <span class="nf">store_init_kwargs</span><span class="p">(</span><span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Mark the args and kwargs of :func:`__init__` later to be stored via :func:`save_config` in YAML</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Mark the args and kwargs of :func:`__init__` later to be stored via :func:`save_config` in YAML</span>
 <span class="sd">    :param func: the function to decorate</span>
 <span class="sd">    :return: the wrapped function</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -460,13 +460,13 @@
 
 
 <div class="viewcode-block" id="avoid_concurrent_lock_cls"><a class="viewcode-back" href="../../../../../api/jina.serve.executors.decorators/#jina.avoid_concurrent_lock_cls">[docs]</a><span class="k">def</span> <span class="nf">avoid_concurrent_lock_cls</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Wraps a function to lock a filelock for concurrent access with the name of the class to which it applies, to avoid deadlocks</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Wraps a function to lock a filelock for concurrent access with the name of the class to which it applies, to avoid deadlocks</span>
 <span class="sd">    :param cls: the class to which is applied, only when the class corresponds to the instance type, this filelock will apply</span>
 <span class="sd">    :return: the wrapped function</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">avoid_concurrent_lock_wrapper</span><span class="p">(</span><span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Wrap the function around a File Lock to make sure that the function is run by a single replica in the same machine</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Wrap the function around a File Lock to make sure that the function is run by a single replica in the same machine</span>
 <span class="sd">        :param func: the function to decorate</span>
 <span class="sd">        :return: the wrapped function</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -518,7 +518,7 @@
     <span class="o">*</span><span class="p">,</span>
     <span class="n">on</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    `@requests` defines the endpoints of an Executor. It has a keyword `on=` to define the endpoint.</span>
 
 <span class="sd">    A class method decorated with plain `@requests` (without `on=`) is the default handler for all endpoints.</span>
@@ -621,7 +621,7 @@
     <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">documentation</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Decorator and context manager that allows monitoring of an Executor.</span>
 
 <span class="sd">    You can access these metrics by enabling</span>
@@ -715,7 +715,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 21, 2022</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

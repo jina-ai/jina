@@ -405,7 +405,7 @@
 
 
 <div class="viewcode-block" id="GatewayBFF"><a class="viewcode-back" href="../../../../api/jina.serve.bff/#jina.serve.bff.GatewayBFF">[docs]</a><span class="k">class</span> <span class="nc">GatewayBFF</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Wrapper object to be used in a BFF or in the Gateway. Naming to be defined</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -423,7 +423,7 @@
             <span class="n">logger</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;JinaLogger&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">metrics_registry</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;CollectorRegistry&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param graph_representation: A dictionary describing the topology of the Deployments. 2 special nodes are expected, the name `start-gateway` and `end-gateway` to</span>
 <span class="sd">            determine the nodes that receive the very first request and the ones whose response needs to be sent back to the client. All the nodes with no outgoing nodes</span>
 <span class="sd">            will be considered to be floating, and they will be &quot;flagged&quot; so that the user can ignore their tasks and not await them.</span>
@@ -480,7 +480,7 @@
         <span class="k">return</span> <span class="n">connection_pool</span>
 
 <div class="viewcode-block" id="GatewayBFF.stream"><a class="viewcode-back" href="../../../../api/jina.serve.bff/#jina.serve.bff.GatewayBFF.stream">[docs]</a>    <span class="k">def</span> <span class="nf">stream</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        stream requests from client iterator and stream responses back.</span>
 
 <span class="sd">        :param args: positional arguments to be passed to inner RequestStreamer</span>
@@ -492,7 +492,7 @@
 <div class="viewcode-block" id="GatewayBFF.stream_docs"><a class="viewcode-back" href="../../../../api/jina.serve.bff/#jina.serve.bff.GatewayBFF.stream_docs">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">stream_docs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">request_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">return_results</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
                           <span class="n">exec_endpoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                           <span class="n">target_executor</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">parameters</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        stream documents and stream responses back.</span>
 
 <span class="sd">        :param docs: The Documents to be sent to all the Executors</span>
@@ -523,7 +523,7 @@
                 <span class="k">yield</span> <span class="n">resp</span><span class="o">.</span><span class="n">docs</span></div>
 
 <div class="viewcode-block" id="GatewayBFF.close"><a class="viewcode-back" href="../../../../api/jina.serve.bff/#jina.serve.bff.GatewayBFF.close">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Gratefully closes the object making sure all the floating requests are taken care and the connections are closed gracefully</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_streamer</span><span class="o">.</span><span class="n">wait_floating_requests_end</span><span class="p">()</span>
@@ -544,7 +544,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 21, 2022</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

@@ -410,7 +410,7 @@
 
 
 <div class="viewcode-block" id="BaseClient"><a class="viewcode-back" href="../../../../api/jina.clients.base/#jina.clients.base.BaseClient">[docs]</a><span class="k">class</span> <span class="nc">BaseClient</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;A base client for connecting to the Flow Gateway.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A base client for connecting to the Flow Gateway.</span>
 
 <span class="sd">    :param args: the Namespace from argparse</span>
 <span class="sd">    :param kwargs: additional parameters that can be accepted by client parser</span>
@@ -440,7 +440,7 @@
 
 <div class="viewcode-block" id="BaseClient.check_input"><a class="viewcode-back" href="../../../../api/jina.clients.base/#jina.clients.base.BaseClient.check_input">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">check_input</span><span class="p">(</span><span class="n">inputs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;InputType&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Validate the inputs and print the first request if success.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate the inputs and print the first request if success.</span>
 
 <span class="sd">        :param inputs: the inputs</span>
 <span class="sd">        :param kwargs: keyword arguments</span>
@@ -477,7 +477,7 @@
     <span class="k">def</span> <span class="nf">_get_requests</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Iterator</span><span class="p">[</span><span class="s1">&#39;Request&#39;</span><span class="p">],</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="s1">&#39;Request&#39;</span><span class="p">]]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get request in generator.</span>
 
 <span class="sd">        :param kwargs: Keyword arguments.</span>
@@ -511,7 +511,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">inputs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;InputType&#39;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        An iterator of bytes, each element represents a Document&#39;s raw content.</span>
 
 <span class="sd">        ``inputs`` defined in the protobuf</span>
@@ -522,7 +522,7 @@
 
     <span class="nd">@inputs</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">inputs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bytes_gen</span><span class="p">:</span> <span class="s1">&#39;InputType&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set the input data.</span>
 
 <span class="sd">        :param bytes_gen: input type</span>
@@ -545,7 +545,7 @@
 
     <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
     <span class="k">def</span> <span class="nf">_dry_run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Sends a dry run to the Flow to validate if the Flow is ready to receive requests</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sends a dry run to the Flow to validate if the Flow is ready to receive requests</span>
 
 <span class="sd">        :param kwargs: potential kwargs received passed from the public interface</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -553,7 +553,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">client</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">T</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return the client object itself</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the client object itself</span>
 
 <span class="sd">        :return: the Client object</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -572,7 +572,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 21, 2022</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

@@ -410,10 +410,10 @@
 
 
 <div class="viewcode-block" id="WebSocketBaseClient"><a class="viewcode-back" href="../../../../../api/jina.clients.base.websocket/#jina.clients.base.websocket.WebSocketBaseClient">[docs]</a><span class="k">class</span> <span class="nc">WebSocketBaseClient</span><span class="p">(</span><span class="n">BaseClient</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;A Websocket Client.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A Websocket Client.&quot;&quot;&quot;</span>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_dry_run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Sends a dry run to the Flow to validate if the Flow is ready to receive requests</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sends a dry run to the Flow to validate if the Flow is ready to receive requests</span>
 
 <span class="sd">        :param kwargs: kwargs coming from the public interface. Includes arguments to be passed to the `WebsocketClientlet`</span>
 <span class="sd">        :return: boolean indicating the readiness of the Flow</span>
@@ -469,7 +469,7 @@
         <span class="n">on_always</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;CallbackFnType&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param inputs: the callable</span>
 <span class="sd">        :param on_done: the callback for on_done</span>
 <span class="sd">        :param on_error: the callback for on_error</span>
@@ -512,7 +512,7 @@
                             <span class="sa">f</span><span class="s1">&#39;discarding unexpected response with request id </span><span class="si">{</span><span class="n">response</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">request_id</span><span class="si">}</span><span class="s1">&#39;</span>
                         <span class="p">)</span>
 
-                <span class="sd">&quot;&quot;&quot;Await messages from WebsocketGateway and process them in the request buffer&quot;&quot;&quot;</span>
+<span class="w">                </span><span class="sd">&quot;&quot;&quot;Await messages from WebsocketGateway and process them in the request buffer&quot;&quot;&quot;</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="k">async</span> <span class="k">for</span> <span class="n">response</span> <span class="ow">in</span> <span class="n">iolet</span><span class="o">.</span><span class="n">recv_message</span><span class="p">():</span>
                         <span class="n">_response_handler</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
@@ -526,13 +526,13 @@
                         <span class="n">request_buffer</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
 
             <span class="k">def</span> <span class="nf">_handle_end_of_iter</span><span class="p">():</span>
-                <span class="sd">&quot;&quot;&quot;Send End of iteration signal to the Gateway&quot;&quot;&quot;</span>
+<span class="w">                </span><span class="sd">&quot;&quot;&quot;Send End of iteration signal to the Gateway&quot;&quot;&quot;</span>
                 <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="n">iolet</span><span class="o">.</span><span class="n">send_eoi</span><span class="p">())</span>
 
             <span class="k">def</span> <span class="nf">_request_handler</span><span class="p">(</span>
                 <span class="n">request</span><span class="p">:</span> <span class="s1">&#39;Request&#39;</span><span class="p">,</span>
             <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Tuple[asyncio.Future, Optional[asyncio.Future]]&#39;</span><span class="p">:</span>
-                <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">                </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                For each request in the iterator, we send the `Message` using `iolet.send_message()`.</span>
 <span class="sd">                For websocket requests from client, for each request in the iterator, we send the request in `bytes`</span>
 <span class="sd">                using using `iolet.send_message()`.</span>
@@ -590,7 +590,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 21, 2022</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

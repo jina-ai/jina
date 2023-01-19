@@ -640,7 +640,7 @@
 
 
 <div class="viewcode-block" id="PartialStore"><a class="viewcode-back" href="../../../../api/daemon.stores.partial/#daemon.stores.partial.PartialStore">[docs]</a><span class="k">class</span> <span class="nc">PartialStore</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;A store spawned inside partial-daemon container&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A store spawned inside partial-daemon container&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span> <span class="o">=</span> <span class="n">JinaLogger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="o">**</span><span class="nb">vars</span><span class="p">(</span><span class="n">jinad_args</span><span class="p">))</span>
@@ -649,21 +649,21 @@
 
 <div class="viewcode-block" id="PartialStore.add"><a class="viewcode-back" href="../../../../api/daemon.stores.partial/#daemon.stores.partial.PartialStore.add">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PartialStoreItem</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Add a new element to the store. This method needs to be overridden by the subclass</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a new element to the store. This method needs to be overridden by the subclass</span>
 
 
 <span class="sd">        .. #noqa: DAR101&quot;&quot;&quot;</span>
         <span class="o">...</span></div>
 
 <div class="viewcode-block" id="PartialStore.delete"><a class="viewcode-back" href="../../../../api/daemon.stores.partial/#daemon.stores.partial.PartialStore.delete">[docs]</a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Terminates the object in the store &amp; stops the server&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Terminates the object in the store &amp; stops the server&quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">object</span><span class="p">,</span> <span class="s1">&#39;close&#39;</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">item</span><span class="o">.</span><span class="n">arguments</span><span class="p">)</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">item</span><span class="o">.</span><span class="n">arguments</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;identity&#39;</span><span class="p">):</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">item</span><span class="o">.</span><span class="n">arguments</span><span class="p">[</span><span class="s2">&quot;identity&quot;</span><span class="p">],</span> <span class="s2">&quot;cyan&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1"> is removed!&#39;</span>
+                        <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">item</span><span class="o">.</span><span class="n">arguments</span><span class="p">[</span><span class="s2">&quot;identity&quot;</span><span class="p">],</span><span class="w"> </span><span class="s2">&quot;cyan&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1"> is removed!&#39;</span>
                     <span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="s1">&#39;object is removed!&#39;</span><span class="p">)</span>
@@ -677,14 +677,14 @@
 
 
 <div class="viewcode-block" id="PartialPodStore"><a class="viewcode-back" href="../../../../api/daemon.stores.partial/#daemon.stores.partial.PartialPodStore">[docs]</a><span class="k">class</span> <span class="nc">PartialPodStore</span><span class="p">(</span><span class="n">PartialStore</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;A Pod store spawned inside partial-daemon container&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A Pod store spawned inside partial-daemon container&quot;&quot;&quot;</span>
 
     <span class="n">poddeployment_constructor</span> <span class="o">=</span> <span class="n">PodFactory</span><span class="o">.</span><span class="n">build_pod</span>
 
 <div class="viewcode-block" id="PartialPodStore.add"><a class="viewcode-back" href="../../../../api/daemon.stores.partial/#daemon.stores.partial.PartialPodStore.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="n">Namespace</span><span class="p">,</span> <span class="n">envs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="p">{},</span> <span class="o">**</span><span class="n">kwargs</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PartialStoreItem</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Starts a Pod in `partial-daemon`</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Starts a Pod in `partial-daemon`</span>
 
 <span class="sd">        :param args: namespace args for the pod/deployment</span>
 <span class="sd">        :param envs: environment variables to be passed into partial pod/deployment</span>
@@ -708,19 +708,19 @@
             <span class="k">raise</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">item</span> <span class="o">=</span> <span class="n">PartialStoreItem</span><span class="p">(</span><span class="n">arguments</span><span class="o">=</span><span class="nb">vars</span><span class="p">(</span><span class="n">args</span><span class="p">))</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;cyan&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1"> is created!&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;cyan&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1"> is created!&#39;</span><span class="p">)</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">item</span></div></div>
 
 
 <div class="viewcode-block" id="PartialDeploymentStore"><a class="viewcode-back" href="../../../../api/daemon.stores.partial/#daemon.stores.partial.PartialDeploymentStore">[docs]</a><span class="k">class</span> <span class="nc">PartialDeploymentStore</span><span class="p">(</span><span class="n">PartialPodStore</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;A Deployment store spawned inside partial-daemon container&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A Deployment store spawned inside partial-daemon container&quot;&quot;&quot;</span>
 
     <span class="n">poddeployment_constructor</span> <span class="o">=</span> <span class="n">Deployment</span>
 
 <div class="viewcode-block" id="PartialDeploymentStore.rolling_update"><a class="viewcode-back" href="../../../../api/daemon.stores.partial/#daemon.stores.partial.PartialDeploymentStore.rolling_update">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">rolling_update</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">uses_with</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PartialStoreItem</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Perform rolling_update on current Deployment</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Perform rolling_update on current Deployment</span>
 
 <span class="sd">        :param uses_with: a Dictionary of arguments to restart the executor with</span>
 <span class="sd">        :return: Item describing the Flow object</span>
@@ -736,7 +736,7 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">item</span></div>
 
 <div class="viewcode-block" id="PartialDeploymentStore.scale"><a class="viewcode-back" href="../../../../api/daemon.stores.partial/#daemon.stores.partial.PartialDeploymentStore.scale">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">scale</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">replicas</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PartialStoreItem</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Scale the current Deployment</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Scale the current Deployment</span>
 <span class="sd">        :param replicas: number of replicas for the Deployment</span>
 <span class="sd">        :return: Item describing the Flow object</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -752,7 +752,7 @@
 
 
 <div class="viewcode-block" id="PartialFlowStore"><a class="viewcode-back" href="../../../../api/daemon.stores.partial/#daemon.stores.partial.PartialFlowStore">[docs]</a><span class="k">class</span> <span class="nc">PartialFlowStore</span><span class="p">(</span><span class="n">PartialStore</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;A Flow store spawned inside partial-daemon container&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A Flow store spawned inside partial-daemon container&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="PartialFlowStore.add"><a class="viewcode-back" href="../../../../api/daemon.stores.partial/#daemon.stores.partial.PartialFlowStore.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -761,7 +761,7 @@
         <span class="n">envs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="p">{},</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PartialStoreItem</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Starts a Flow in `partial-daemon`.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Starts a Flow in `partial-daemon`.</span>
 
 <span class="sd">        :param args: namespace args for the flow</span>
 <span class="sd">        :param port_mapping: ports to be set</span>
@@ -828,7 +828,7 @@
 <div class="viewcode-block" id="PartialFlowStore.rolling_update"><a class="viewcode-back" href="../../../../api/daemon.stores.partial/#daemon.stores.partial.PartialFlowStore.rolling_update">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">rolling_update</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">deployment_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">uses_with</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PartialFlowItem</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Perform rolling_update on the Deployment in current Flow</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Perform rolling_update on the Deployment in current Flow</span>
 
 <span class="sd">        :param deployment_name: Deployment in the Flow to be rolling updated</span>
 <span class="sd">        :param uses_with: a Dictionary of arguments to restart the executor with</span>
@@ -851,7 +851,7 @@
         <span class="n">deployment_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">uses_with</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Reload all replicas of a deployment sequentially</span>
 
 <span class="sd">        :param deployment_name: deployment to update</span>
@@ -862,7 +862,7 @@
         <span class="p">)</span>
 
 <div class="viewcode-block" id="PartialFlowStore.scale"><a class="viewcode-back" href="../../../../api/daemon.stores.partial/#daemon.stores.partial.PartialFlowStore.scale">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">scale</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">deployment_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">replicas</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PartialFlowItem</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Scale the Deployment in current Flow</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Scale the Deployment in current Flow</span>
 <span class="sd">        :param deployment_name: Deployment to be scaled</span>
 <span class="sd">        :param replicas: number of replicas for the Deployment</span>
 <span class="sd">        :return: Item describing the Flow object</span>
@@ -881,7 +881,7 @@
         <span class="n">deployment_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">replicas</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Scale the amount of replicas of a given Executor.</span>
 <span class="sd">        :param deployment_name: deployment to update</span>
 <span class="sd">        :param replicas: The number of replicas to scale to</span>
@@ -899,7 +899,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Dec 21, 2022.
+                    Last updated on Jan 19, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

@@ -645,7 +645,7 @@
 
 
 <div class="viewcode-block" id="AsyncBaseClient"><a class="viewcode-back" href="../../../../api/daemon.clients.base/#daemon.clients.base.AsyncBaseClient">[docs]</a><span class="k">class</span> <span class="nc">AsyncBaseClient</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    JinaD baseclient (Async)</span>
 
 <span class="sd">    :param uri: the uri of ``jinad`` instance</span>
@@ -671,7 +671,7 @@
 
     <span class="nd">@if_alive</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">alive</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Check if JinaD is alive</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if JinaD is alive</span>
 
 <span class="sd">        :return: True if JinaD is alive at remote else false</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -682,7 +682,7 @@
 
     <span class="nd">@if_alive</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">status</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Get status of remote JinaD</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get status of remote JinaD</span>
 
 <span class="sd">        :return: dict status of remote JinaD</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -698,7 +698,7 @@
 
     <span class="nd">@if_alive</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">DaemonID</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]]:</span>
-        <span class="sd">&quot;&quot;&quot;Get status of the remote object</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get status of the remote object</span>
 
 <span class="sd">        :param id: identity of the Pod/Deployment</span>
 <span class="sd">        :return: response if the remote Flow/Pod/Deployment/Workspace exists</span>
@@ -706,7 +706,7 @@
 
         <span class="k">async</span> <span class="k">with</span> <span class="n">aiohttp</span><span class="o">.</span><span class="n">request</span><span class="p">(</span>
             <span class="n">method</span><span class="o">=</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span>
-            <span class="n">url</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">store_api</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">daemonize</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_kind</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+            <span class="n">url</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">store_api</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">daemonize</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">_kind</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
             <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout</span><span class="p">,</span>
         <span class="p">)</span> <span class="k">as</span> <span class="n">response</span><span class="p">:</span>
             <span class="n">response_json</span> <span class="o">=</span> <span class="k">await</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
@@ -725,7 +725,7 @@
 
     <span class="nd">@if_alive</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">list</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;List all objects in the store</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;List all objects in the store</span>
 
 <span class="sd">        :return: json response of the remote Flow/Pod/Deployment/Workspace status</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -735,7 +735,7 @@
             <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="n">HTTPStatus</span><span class="o">.</span><span class="n">OK</span><span class="p">:</span>
                 <span class="n">response_json</span> <span class="o">=</span> <span class="k">await</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s1">&#39;found </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">response_json</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;items&quot;</span><span class="p">,</span> <span class="p">[]))</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_kind</span><span class="o">.</span><span class="n">title</span><span class="p">()</span><span class="si">}</span><span class="s1">(s) in store&#39;</span>
+                    <span class="sa">f</span><span class="s1">&#39;found </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">response_json</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;items&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">[]))</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_kind</span><span class="o">.</span><span class="n">title</span><span class="p">()</span><span class="si">}</span><span class="s1">(s) in store&#39;</span>
                 <span class="p">)</span>
                 <span class="k">return</span> <span class="p">(</span>
                     <span class="n">response_json</span><span class="p">[</span><span class="s1">&#39;items&#39;</span><span class="p">]</span>
@@ -749,7 +749,7 @@
 
     <span class="nd">@if_alive</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Send delete request to api</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Send delete request to api</span>
 
 <span class="sd">        :return : json response of the remote Flow/Pod/Deployment/Workspace status</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -764,7 +764,7 @@
                 <span class="p">)</span>
 
 <div class="viewcode-block" id="AsyncBaseClient.create"><a class="viewcode-back" href="../../../../api/daemon.clients.base/#daemon.clients.base.AsyncBaseClient.create">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Create a Workspace/Flow/Pod/Deployment on remote.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a Workspace/Flow/Pod/Deployment on remote.</span>
 <span class="sd">        Must be implemented by the inherited class.</span>
 
 <span class="sd">        # noqa: DAR101</span>
@@ -773,7 +773,7 @@
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="AsyncBaseClient.update"><a class="viewcode-back" href="../../../../api/daemon.clients.base/#daemon.clients.base.AsyncBaseClient.update">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Update a Workspace/Flow/Pod/Deployment on remote.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update a Workspace/Flow/Pod/Deployment on remote.</span>
 <span class="sd">        Must be implemented by the inherited class.</span>
 
 <span class="sd">        # noqa: DAR101</span>
@@ -782,7 +782,7 @@
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="AsyncBaseClient.delete"><a class="viewcode-back" href="../../../../api/daemon.clients.base/#daemon.clients.base.AsyncBaseClient.delete">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="n">DaemonID</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Delete a Workspace/Flow/Pod/Deployment on remote.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Delete a Workspace/Flow/Pod/Deployment on remote.</span>
 <span class="sd">        Must be implemented by the inherited class.</span>
 
 <span class="sd">        # noqa: DAR101</span>
@@ -792,7 +792,7 @@
 
 
 <div class="viewcode-block" id="BaseClient"><a class="viewcode-back" href="../../../../api/daemon.clients.base/#daemon.clients.base.BaseClient">[docs]</a><span class="k">class</span> <span class="nc">BaseClient</span><span class="p">(</span><span class="n">AsyncToSyncMixin</span><span class="p">,</span> <span class="n">AsyncBaseClient</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;JinaD baseclient&quot;&quot;&quot;</span></div>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;JinaD baseclient&quot;&quot;&quot;</span></div>
 </pre></div>
             </article>
             <footer>
@@ -804,7 +804,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Dec 21, 2022.
+                    Last updated on Jan 19, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

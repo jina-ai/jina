@@ -634,14 +634,14 @@
 
 
 <div class="viewcode-block" id="WorkspaceStore"><a class="viewcode-back" href="../../../../api/daemon.stores.workspaces/#daemon.stores.workspaces.WorkspaceStore">[docs]</a><span class="k">class</span> <span class="nc">WorkspaceStore</span><span class="p">(</span><span class="n">BaseStore</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;A store of workspaces built by Daemon as docker objects&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A store of workspaces built by Daemon as docker objects&quot;&quot;&quot;</span>
 
     <span class="n">_kind</span> <span class="o">=</span> <span class="s1">&#39;workspace&#39;</span>
     <span class="n">_status_model</span> <span class="o">=</span> <span class="n">WorkspaceStoreStatus</span>
 
     <span class="nd">@BaseStore</span><span class="o">.</span><span class="n">dump</span>
     <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="n">DaemonID</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">RemoteWorkspaceState</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Add a workspace to the store</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a workspace to the store</span>
 
 <span class="sd">        :param id: workspace id</span>
 <span class="sd">        :param value: state of the workspace</span>
@@ -661,7 +661,7 @@
         <span class="p">],</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DaemonID</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Update the workspace</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update the workspace</span>
 
 <span class="sd">        :param id: workspace id</span>
 <span class="sd">        :param value: workspace value to be added</span>
@@ -685,7 +685,7 @@
         <span class="k">return</span> <span class="nb">id</span>
 
 <div class="viewcode-block" id="WorkspaceStore.rm_files"><a class="viewcode-back" href="../../../../api/daemon.stores.workspaces/#daemon.stores.workspaces.WorkspaceStore.rm_files">[docs]</a>    <span class="k">def</span> <span class="nf">rm_files</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="n">DaemonID</span><span class="p">,</span> <span class="n">logs</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Remove files from workspace</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove files from workspace</span>
 
 <span class="sd">        :param id: workspace id</span>
 <span class="sd">        :param logs: True if log files should be removed, defaults to False</span>
@@ -706,7 +706,7 @@
                         <span class="n">path</span><span class="o">.</span><span class="n">unlink</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="WorkspaceStore.rm_network"><a class="viewcode-back" href="../../../../api/daemon.stores.workspaces/#daemon.stores.workspaces.WorkspaceStore.rm_network">[docs]</a>    <span class="k">def</span> <span class="nf">rm_network</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="n">DaemonID</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Remove docker network</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove docker network</span>
 
 <span class="sd">        :param id: workspace id</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -717,14 +717,14 @@
             <span class="k">if</span> <span class="nb">id</span> <span class="ow">in</span> <span class="n">Dockerizer</span><span class="o">.</span><span class="n">networks</span><span class="p">:</span>
                 <span class="n">status</span> <span class="o">=</span> <span class="n">Dockerizer</span><span class="o">.</span><span class="n">rm_network</span><span class="p">(</span><span class="n">network</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;no network to delete for id </span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="s2">&quot;cyan&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;no network to delete for id </span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;cyan&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">network</span> <span class="ow">and</span> <span class="n">status</span><span class="p">:</span>
                 <span class="bp">self</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">network</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">except</span> <span class="ne">AttributeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;there</span><span class="se">\&#39;</span><span class="s1">s no network to remove </span><span class="si">{</span><span class="n">e</span><span class="si">!r}</span><span class="s1">&#39;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="WorkspaceStore.rm_container"><a class="viewcode-back" href="../../../../api/daemon.stores.workspaces/#daemon.stores.workspaces.WorkspaceStore.rm_container">[docs]</a>    <span class="k">def</span> <span class="nf">rm_container</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="n">DaemonID</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Remove docker container</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove docker container</span>
 
 <span class="sd">        :param id: workspace id</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -734,11 +734,11 @@
                 <span class="n">Dockerizer</span><span class="o">.</span><span class="n">rm_container</span><span class="p">(</span><span class="n">container_id</span><span class="p">)</span>
                 <span class="k">assert</span> <span class="nb">id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">Dockerizer</span><span class="o">.</span><span class="n">containers</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s1">&#39;container </span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="n">container_id</span><span class="p">,</span> <span class="s2">&quot;cyan&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1"> is successfully removed&#39;</span>
+                    <span class="sa">f</span><span class="s1">&#39;container </span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="n">container_id</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;cyan&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1"> is successfully removed&#39;</span>
                 <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s1">&#39;no container to delete for id </span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="s2">&quot;cyan&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span>
+                    <span class="sa">f</span><span class="s1">&#39;no container to delete for id </span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;cyan&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span>
                 <span class="p">)</span>
             <span class="k">if</span> <span class="n">container_id</span><span class="p">:</span>
                 <span class="bp">self</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">container_id</span> <span class="o">=</span> <span class="kc">None</span>
@@ -761,7 +761,7 @@
         <span class="n">everything</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Delete a workspace from the store</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Delete a workspace from the store</span>
 
 <span class="sd">        :param id: workspace id</span>
 <span class="sd">        :param container: True if workspace container needs to be removed, defaults to True</span>
@@ -779,7 +779,7 @@
             <span class="n">files</span> <span class="o">=</span> <span class="kc">True</span>
 
         <span class="k">if</span> <span class="nb">id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">id</span><span class="p">),</span> <span class="s2">&quot;cyan&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1"> not found in store.&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">id</span><span class="p">),</span><span class="w"> </span><span class="s2">&quot;cyan&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1"> not found in store.&#39;</span><span class="p">)</span>
 
         <span class="c1"># Pods/Deployments/Flows need to be deleted before networks, files etc can be deleted</span>
         <span class="k">if</span> <span class="n">everything</span> <span class="ow">and</span> <span class="bp">self</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span><span class="o">.</span><span class="n">metadata</span><span class="p">:</span>
@@ -800,11 +800,11 @@
         <span class="k">if</span> <span class="n">everything</span><span class="p">:</span>
             <span class="k">del</span> <span class="bp">self</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">id</span><span class="p">),</span> <span class="s2">&quot;cyan&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1"> is released from the store.&#39;</span>
+                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">id</span><span class="p">),</span><span class="w"> </span><span class="s2">&quot;cyan&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1"> is released from the store.&#39;</span>
             <span class="p">)</span>
 
 <div class="viewcode-block" id="WorkspaceStore.clear"><a class="viewcode-back" href="../../../../api/daemon.stores.workspaces/#daemon.stores.workspaces.WorkspaceStore.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Delete all the objects in the store</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Delete all the objects in the store</span>
 
 <span class="sd">        :param kwargs: keyward args</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -823,7 +823,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Dec 21, 2022.
+                    Last updated on Jan 19, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

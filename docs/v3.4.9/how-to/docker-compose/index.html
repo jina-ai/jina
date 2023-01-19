@@ -659,19 +659,19 @@ neighbor retrieval on image embeddings.</p>
 </div>
 </div>
 <input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--2">YAML</label><div class="tab-content docutils">
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
-<span class="nt">with</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8080</span><span class="w"></span>
-<span class="w">  </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http</span><span class="w"></span>
-<span class="nt">executors</span><span class="p">:</span><span class="w"></span>
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">encoder</span><span class="w"></span>
-<span class="w">  </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinahub+docker://CLIPEncoder</span><span class="w"></span>
-<span class="w">  </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span><span class="w"></span>
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">indexer</span><span class="w"></span>
-<span class="w">  </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinahub+docker://AnnLiteIndexer</span><span class="w"></span>
-<span class="w">  </span><span class="nt">uses_with</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">dim</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">512</span><span class="w"></span>
-<span class="w">  </span><span class="nt">shards</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span>
+<span class="nt">with</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8080</span>
+<span class="w">  </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http</span>
+<span class="nt">executors</span><span class="p">:</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">encoder</span>
+<span class="w">  </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinahub+docker://CLIPEncoder</span>
+<span class="w">  </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">indexer</span>
+<span class="w">  </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinahub+docker://AnnLiteIndexer</span>
+<span class="w">  </span><span class="nt">uses_with</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">dim</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">512</span>
+<span class="w">  </span><span class="nt">shards</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
 </pre></div>
 </div>
 </div>
@@ -685,23 +685,23 @@ neighbor retrieval on image embeddings.</p>
 <p>You can use a custom jina Docker image for the Gateway service. Just set the envrironment variable <code class="docutils literal notranslate"><span class="pre">JINA_GATEWAY_IMAGE</span></code> to the desired image before generating the configuration.</p>
 </div>
 <p>let’s take a look at the generated compose file:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;3.3&#39;</span><span class="w"></span>
-<span class="nn">...</span><span class="w"></span>
-<span class="nt">services</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">encoder-rep-0</span><span class="p">:</span><span class="w">  </span><span class="c1"># # # # # # # # # # #          </span><span class="w"></span>
-<span class="w">                  </span><span class="c1">#     Encoder       #</span><span class="w"></span>
-<span class="w">  </span><span class="nt">encoder-rep-1</span><span class="p">:</span><span class="w">  </span><span class="c1"># # # # # # # # # # #</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;3.3&#39;</span>
+<span class="nn">...</span>
+<span class="nt">services</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">encoder-rep-0</span><span class="p">:</span><span class="w">  </span><span class="c1"># # # # # # # # # # #          </span>
+<span class="w">                  </span><span class="c1">#     Encoder       #</span>
+<span class="w">  </span><span class="nt">encoder-rep-1</span><span class="p">:</span><span class="w">  </span><span class="c1"># # # # # # # # # # #</span>
 
-<span class="w">  </span><span class="nt">indexer-head</span><span class="p">:</span><span class="w">   </span><span class="c1"># # # # # # # # # # #          </span><span class="w"></span>
-<span class="w">                  </span><span class="c1">#                   #</span><span class="w"></span>
-<span class="w">  </span><span class="nt">indexer-0</span><span class="p">:</span><span class="w">      </span><span class="c1">#     Indexer       #</span><span class="w"></span>
-<span class="w">                  </span><span class="c1">#                   #</span><span class="w"></span>
-<span class="w">  </span><span class="nt">indexer-1</span><span class="p">:</span><span class="w">      </span><span class="c1"># # # # # # # # # # #</span><span class="w"></span>
+<span class="w">  </span><span class="nt">indexer-head</span><span class="p">:</span><span class="w">   </span><span class="c1"># # # # # # # # # # #          </span>
+<span class="w">                  </span><span class="c1">#                   #</span>
+<span class="w">  </span><span class="nt">indexer-0</span><span class="p">:</span><span class="w">      </span><span class="c1">#     Indexer       #</span>
+<span class="w">                  </span><span class="c1">#                   #</span>
+<span class="w">  </span><span class="nt">indexer-1</span><span class="p">:</span><span class="w">      </span><span class="c1"># # # # # # # # # # #</span>
 
 <span class="w">  </span><span class="nt">gateway</span><span class="p">:</span><span class="w"> </span>
-<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">...</span><span class="w"></span>
-<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">ports</span><span class="p p-Indicator">:</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8080:8080</span><span class="w"></span>
+<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">...</span>
+<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">ports</span><span class="p p-Indicator">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8080:8080</span>
 </pre></div>
 </div>
 <div class="caution admonition tip">
@@ -716,7 +716,7 @@ adapt it to your own needs.</p>
 <li><p>3 associated with the indexer, one for the Head and two for the Shards.</p></li>
 </ul>
 <p>Now, you can deploy this Flow :</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker-compose -f docker-compose.yml up
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker-compose<span class="w"> </span>-f<span class="w"> </span>docker-compose.yml<span class="w"> </span>up
 </pre></div>
 </div>
 </section>
@@ -741,7 +741,7 @@ adapt it to your own needs.</p>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Indexed Documents: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">indexed_docs</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>Indexed Documents: <span class="m">99</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>Indexed<span class="w"> </span>Documents:<span class="w"> </span><span class="m">99</span>
 </pre></div>
 </div>
 <p>We indexer 99 Documents !</p>
@@ -752,7 +752,7 @@ adapt it to your own needs.</p>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Matched Documents: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">matches</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>Matched Documents: <span class="m">10</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>Matched<span class="w"> </span>Documents:<span class="w"> </span><span class="m">10</span>
 </pre></div>
 </div>
 <p>Now have the list of the 10 closest image to the query !</p>
@@ -792,7 +792,7 @@ adapt it to your own needs.</p>
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Dec 21, 2022.
+                    Last updated on Jan 19, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

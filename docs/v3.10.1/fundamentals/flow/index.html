@@ -511,11 +511,11 @@ But you need to chain them together in order to bring real value and to build an
 </div>
 <input class="tab-input" id="tab-set--0-input--3" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--3">Load from YAML</label><div class="tab-content docutils">
 <p><code class="docutils literal notranslate"><span class="pre">my.yml</span></code>:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
-<span class="nt">executors</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">myexec1</span><span class="w"></span>
-<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">FooExecutor</span><span class="w"></span>
-<span class="w">    </span><span class="nt">py_modules</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">exec.py</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span>
+<span class="nt">executors</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">myexec1</span>
+<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">FooExecutor</span>
+<span class="w">    </span><span class="nt">py_modules</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">exec.py</span>
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">exec.py</span></code>:</p>
@@ -574,7 +574,7 @@ But you need to chain them together in order to bring real value and to build an
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 21, 2022</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

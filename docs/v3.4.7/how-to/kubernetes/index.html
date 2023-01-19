@@ -740,15 +740,15 @@ and it does not mean that we don’t support these features. On the contrary we 
 <p>You may need to edit these files to add your custom configuration</p>
 <p>As you can see, the Flow contains configuration for the gateway and the rest of executors</p>
 <p>Let’s create a Kubernetes namespace for our Flow:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>kubectl create namespace custom-namespace
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>kubectl<span class="w"> </span>create<span class="w"> </span>namespace<span class="w"> </span>custom-namespace
 </pre></div>
 </div>
 <p>Now, you can deploy this Flow to you cluster in the following way:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>kubectl apply -R -f ./k8s_flow
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>kubectl<span class="w"> </span>apply<span class="w"> </span>-R<span class="w"> </span>-f<span class="w"> </span>./k8s_flow
 </pre></div>
 </div>
 <p>We can check that the pods were created:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>kubectl get pods -n custom-namespace
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>kubectl<span class="w"> </span>get<span class="w"> </span>pods<span class="w"> </span>-n<span class="w"> </span>custom-namespace
 </pre></div>
 </div>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>NAME                              READY   STATUS    RESTARTS   AGE
@@ -793,12 +793,12 @@ you might want to expose your service to make it reachable by the users, so that
 <p>Exposing your Flow only works if the environment of your <code class="docutils literal notranslate"><span class="pre">Kubernetes</span> <span class="pre">cluster</span></code> supports <code class="docutils literal notranslate"><span class="pre">External</span> <span class="pre">Loadbalancers</span></code>.</p>
 </div>
 <p>Once the Flow is deployed, you can expose a service.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>kubectl expose deployment gateway --name<span class="o">=</span>gateway-exposed --type LoadBalancer --port <span class="m">80</span> --target-port <span class="m">8080</span> -n custom-namespace
-sleep <span class="m">60</span> <span class="c1"># wait until the external ip is configured</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>kubectl<span class="w"> </span>expose<span class="w"> </span>deployment<span class="w"> </span>gateway<span class="w"> </span>--name<span class="o">=</span>gateway-exposed<span class="w"> </span>--type<span class="w"> </span>LoadBalancer<span class="w"> </span>--port<span class="w"> </span><span class="m">80</span><span class="w"> </span>--target-port<span class="w"> </span><span class="m">8080</span><span class="w"> </span>-n<span class="w"> </span>custom-namespace
+sleep<span class="w"> </span><span class="m">60</span><span class="w"> </span><span class="c1"># wait until the external ip is configured</span>
 </pre></div>
 </div>
 <p>Export the external ip which is needed for the client in the next section when sending documents to the Flow.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">EXTERNAL_IP</span><span class="o">=</span><span class="sb">`</span>kubectl get service gateway-exposed -n custom-namespace -o<span class="o">=</span><span class="nv">jsonpath</span><span class="o">=</span><span class="s1">&#39;{.status.loadBalancer.ingress[0].ip}&#39;</span><span class="sb">`</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">EXTERNAL_IP</span><span class="o">=</span><span class="sb">`</span>kubectl<span class="w"> </span>get<span class="w"> </span>service<span class="w"> </span>gateway-exposed<span class="w"> </span>-n<span class="w"> </span>custom-namespace<span class="w"> </span>-o<span class="o">=</span><span class="nv">jsonpath</span><span class="o">=</span><span class="s1">&#39;{.status.loadBalancer.ingress[0].ip}&#39;</span><span class="sb">`</span>
 </pre></div>
 </div>
 <section id="client">
@@ -860,7 +860,7 @@ Finally, it prints the uri of the closest matches.</p>
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Dec 21, 2022.
+                    Last updated on Jan 19, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

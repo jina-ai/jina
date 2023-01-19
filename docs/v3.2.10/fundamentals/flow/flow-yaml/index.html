@@ -609,7 +609,7 @@ because it is</p>
 save the Flow configuration. In the following example, <code class="docutils literal notranslate"><span class="pre">jtype:</span> <span class="pre">Flow</span></code> in the YAML file tells the parser to construct a
 <code class="docutils literal notranslate"><span class="pre">Flow</span></code> using this YAML file.</p>
 <p><code class="docutils literal notranslate"><span class="pre">flow.yml</span></code>:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span>
 </pre></div>
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
@@ -629,18 +629,18 @@ Flow.
 for setting <code class="docutils literal notranslate"><span class="pre">uses</span></code> is the same as that for configuring Executors in a YAML file. As for the other sources, one can
 assign strings directly, for example <code class="docutils literal notranslate"><span class="pre">jinahub+sandbox://Hello</span></code>.</p>
 <p><code class="docutils literal notranslate"><span class="pre">flow.yml</span></code>:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
-<span class="nt">executors</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">local_executor_with_source_codes</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span>
+<span class="nt">executors</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">local_executor_with_source_codes</span>
 <span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span>
-<span class="w">      </span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">LocalExecutor</span><span class="w"></span>
-<span class="w">      </span><span class="nt">metas</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">py_modules</span><span class="p">:</span><span class="w"></span>
-<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executors.py</span><span class="w"></span>
-<span class="w">      </span><span class="nt">with</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">foo</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;Foo&#39;</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sandbox_executor</span><span class="w"></span>
-<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;jinahub+sandbox://Hello&#39;</span><span class="w"></span>
+<span class="w">      </span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">LocalExecutor</span>
+<span class="w">      </span><span class="nt">metas</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">py_modules</span><span class="p">:</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executors.py</span>
+<span class="w">      </span><span class="nt">with</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">foo</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;Foo&#39;</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sandbox_executor</span>
+<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;jinahub+sandbox://Hello&#39;</span>
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">executors.py</span></code>:</p>
@@ -662,11 +662,11 @@ assign strings directly, for example <code class="docutils literal notranslate">
 <h2>Configure Flow APIs<a class="headerlink" href="#configure-flow-apis" title="Permalink to this heading">#</a></h2>
 <p>Use <code class="docutils literal notranslate"><span class="pre">with</span></code> field to configure the Flow APIs. It accepts all the arguments in Flow constructor. In the example below, we
 set the Flow to serve <code class="docutils literal notranslate"><span class="pre">http</span></code> at the port <code class="docutils literal notranslate"><span class="pre">45678</span></code> with CORS being enabled.</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
-<span class="nt">with</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">45678</span><span class="w"></span>
-<span class="w">  </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;http&#39;</span><span class="w"></span>
-<span class="w">  </span><span class="nt">cors</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span>
+<span class="nt">with</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">45678</span>
+<span class="w">  </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;http&#39;</span>
+<span class="w">  </span><span class="nt">cors</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True</span>
 </pre></div>
 </div>
 </section>
@@ -677,29 +677,29 @@ help. This is very helpful when you use the executors with local source codes an
 In the following example, the two executors are defined in the same module.</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">Use Flow metas</label><div class="tab-content docutils">
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
-<span class="nt">metas</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">py_modules</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executors.py</span><span class="w"></span>
-<span class="nt">executors</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">FooExecutor</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">BarExecutor</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span>
+<span class="nt">metas</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">py_modules</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executors.py</span>
+<span class="nt">executors</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">FooExecutor</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">BarExecutor</span>
 </pre></div>
 </div>
 </div>
 <input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--2">Use Executor metas</label><div class="tab-content docutils">
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
-<span class="nt">executors</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">FooExecutor</span><span class="w"></span>
-<span class="w">      </span><span class="nt">metas</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">py_modules</span><span class="p">:</span><span class="w"></span>
-<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executors.py</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">BarExecutor</span><span class="w"></span>
-<span class="w">      </span><span class="nt">metas</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">py_modules</span><span class="p">:</span><span class="w"></span>
-<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executors.py</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span>
+<span class="nt">executors</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">FooExecutor</span>
+<span class="w">      </span><span class="nt">metas</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">py_modules</span><span class="p">:</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executors.py</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">BarExecutor</span>
+<span class="w">      </span><span class="nt">metas</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">py_modules</span><span class="p">:</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executors.py</span>
 </pre></div>
 </div>
 </div>
@@ -739,7 +739,7 @@ In the following example, the two executors are defined in the same module.</p>
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Dec 21, 2022.
+                    Last updated on Jan 19, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

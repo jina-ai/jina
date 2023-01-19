@@ -604,7 +604,7 @@
 <h2>Environment variables<a class="headerlink" href="#environment-variables" title="Permalink to this heading">#</a></h2>
 <section id="a-single-yaml">
 <h3>A single YAML<a class="headerlink" href="#a-single-yaml" title="Permalink to this heading">#</a></h3>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc deploy flow.yml --env-file flow.env
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>deploy<span class="w"> </span>flow.yml<span class="w"> </span>--env-file<span class="w"> </span>flow.env
 </pre></div>
 </div>
 </section>
@@ -613,7 +613,7 @@
 <ul>
 <li><p>You can include your environment variables in the <code class="docutils literal notranslate"><span class="pre">.env</span></code> file in the local project and JCloud will take care of managing them.</p></li>
 <li><p>You can optionally pass a <code class="docutils literal notranslate"><span class="pre">custom.env</span></code>.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc deploy ./hello --env-file ./hello/custom.env
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>deploy<span class="w"> </span>./hello<span class="w"> </span>--env-file<span class="w"> </span>./hello/custom.env
 </pre></div>
 </div>
 </li>
@@ -623,24 +623,24 @@
 <section id="fine-grained-resources-request">
 <h2>Fine-grained <code class="docutils literal notranslate"><span class="pre">resources</span></code> request<a class="headerlink" href="#fine-grained-resources-request" title="Permalink to this heading">#</a></h2>
 <p>By default, <code class="docutils literal notranslate"><span class="pre">jcloud</span></code> allocates <code class="docutils literal notranslate"><span class="pre">100M</span></code> of RAM to each Executor. There might be cases where your Executor requires more memory. For example, DALLE-mini (generating image from text prompt) would need more than 100M to load the model. You can request higher memory for your Executor using <code class="docutils literal notranslate"><span class="pre">resources</span></code> arg while deploying the Flow (max 16G allowed per Executor).</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
-<span class="nt">executors</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dalle_mini</span><span class="w"></span>
-<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinahub+docker://DalleMini</span><span class="w"></span>
-<span class="w">    </span><span class="nt">jcloud</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">resources</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8G</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span>
+<span class="nt">executors</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dalle_mini</span>
+<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinahub+docker://DalleMini</span>
+<span class="w">    </span><span class="nt">jcloud</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">resources</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8G</span>
 </pre></div>
 </div>
 <section id="spot-vs-on-demand-capacity">
 <h3><code class="docutils literal notranslate"><span class="pre">spot</span></code> vs <code class="docutils literal notranslate"><span class="pre">on-demand</span></code> capacity<a class="headerlink" href="#spot-vs-on-demand-capacity" title="Permalink to this heading">#</a></h3>
 <p>For cost optimization, <code class="docutils literal notranslate"><span class="pre">jcloud</span></code> tries to deploy all Executors on <code class="docutils literal notranslate"><span class="pre">spot</span></code> capacity. These are ideal for stateless Executors, which can withstand interruptions &amp; restarts. It is recommended to use <code class="docutils literal notranslate"><span class="pre">on-demand</span></code> capacity for stateful Executors (e.g.- indexers) though.</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
-<span class="nt">executors</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">custom</span><span class="w"></span>
-<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinahub+docker://CustomExecutor</span><span class="w"></span>
-<span class="w">    </span><span class="nt">jcloud</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">capacity</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">on-demand</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span>
+<span class="nt">executors</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">custom</span>
+<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinahub+docker://CustomExecutor</span>
+<span class="w">    </span><span class="nt">jcloud</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">capacity</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">on-demand</span>
 </pre></div>
 </div>
 </section>
@@ -648,26 +648,26 @@
 <section id="deploy-external-executors">
 <h2>Deploy external executors<a class="headerlink" href="#deploy-external-executors" title="Permalink to this heading">#</a></h2>
 <p>You can also expose the Executors only by setting <code class="docutils literal notranslate"><span class="pre">expose_gateway</span></code> to <code class="docutils literal notranslate"><span class="pre">false</span></code>. Read more about <a class="reference external" href="https://docs.jina.ai/how-to/external-executor/">External Executors.</a></p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
-<span class="nt">jcloud</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">expose_gateway</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span><span class="w"></span>
-<span class="nt">executors</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">custom</span><span class="w"></span>
-<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinahub+docker://CustomExecutor</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span>
+<span class="nt">jcloud</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">expose_gateway</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="nt">executors</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">custom</span>
+<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinahub+docker://CustomExecutor</span>
 </pre></div>
 </div>
 <figure class="align-default">
 <a class="reference internal image-reference" href="../../../_images/external-executor.png"><img alt="../../../_images/external-executor.png" src="../../../_images/external-executor.png" style="width: 70%;" /></a>
 </figure>
 <p>Similarly, you can also deploy &amp; expose multiple External Executors.</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
-<span class="nt">jcloud</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">expose_gateway</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span><span class="w"></span>
-<span class="nt">executors</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">custom1</span><span class="w"></span>
-<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinahub+docker://CustomExecutor1</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">custom2</span><span class="w"></span>
-<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinahub+docker://CustomExecutor2</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span>
+<span class="nt">jcloud</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">expose_gateway</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="nt">executors</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">custom1</span>
+<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinahub+docker://CustomExecutor1</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">custom2</span>
+<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinahub+docker://CustomExecutor2</span>
 </pre></div>
 </div>
 <figure class="align-default">
@@ -711,7 +711,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 21, 2022</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

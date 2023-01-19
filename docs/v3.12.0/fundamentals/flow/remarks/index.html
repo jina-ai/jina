@@ -519,8 +519,8 @@
 <div class="admonition hint">
 <p class="admonition-title">Hint</p>
 <p>Here are a few errors which indicates that you are using some code that is not pickable.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pickle.PicklingError: Can<span class="s1">&#39;t pickle: it&#39;</span>s not the same object
-AssertionError: can only join a started process
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pickle.PicklingError:<span class="w"> </span>Can<span class="s1">&#39;t pickle: it&#39;</span>s<span class="w"> </span>not<span class="w"> </span>the<span class="w"> </span>same<span class="w"> </span>object
+AssertionError:<span class="w"> </span>can<span class="w"> </span>only<span class="w"> </span>join<span class="w"> </span>a<span class="w"> </span>started<span class="w"> </span>process
 </pre></div>
 </div>
 </div>
@@ -533,8 +533,8 @@ AssertionError: can only join a started process
 <p>Apple has changed the rules for using Objective-C between <code class="docutils literal notranslate"><span class="pre">fork()</span></code> and <code class="docutils literal notranslate"><span class="pre">exec()</span></code> since macOS 10.13.
 This may break some codes that use <code class="docutils literal notranslate"><span class="pre">fork()</span></code> in MacOS.
 For example, the Flow may not be able to start properly with error messages similar to:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>objc<span class="o">[</span><span class="m">20337</span><span class="o">]</span>: +<span class="o">[</span>__NSCFConstantString initialize<span class="o">]</span> may have been <span class="k">in</span> progress <span class="k">in</span> another thread when fork<span class="o">()</span> was called.
-objc<span class="o">[</span><span class="m">20337</span><span class="o">]</span>: +<span class="o">[</span>__NSCFConstantString initialize<span class="o">]</span> may have been <span class="k">in</span> progress <span class="k">in</span> another thread when fork<span class="o">()</span> was called. We cannot safely call it or ignore it <span class="k">in</span> the fork<span class="o">()</span> child process. Crashing instead. Set a breakpoint on objc_initializeAfterForkError to debug.<span class="sb">```</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>objc<span class="o">[</span><span class="m">20337</span><span class="o">]</span>:<span class="w"> </span>+<span class="o">[</span>__NSCFConstantString<span class="w"> </span>initialize<span class="o">]</span><span class="w"> </span>may<span class="w"> </span>have<span class="w"> </span>been<span class="w"> </span><span class="k">in</span><span class="w"> </span>progress<span class="w"> </span><span class="k">in</span><span class="w"> </span>another<span class="w"> </span>thread<span class="w"> </span>when<span class="w"> </span>fork<span class="o">()</span><span class="w"> </span>was<span class="w"> </span>called.
+objc<span class="o">[</span><span class="m">20337</span><span class="o">]</span>:<span class="w"> </span>+<span class="o">[</span>__NSCFConstantString<span class="w"> </span>initialize<span class="o">]</span><span class="w"> </span>may<span class="w"> </span>have<span class="w"> </span>been<span class="w"> </span><span class="k">in</span><span class="w"> </span>progress<span class="w"> </span><span class="k">in</span><span class="w"> </span>another<span class="w"> </span>thread<span class="w"> </span>when<span class="w"> </span>fork<span class="o">()</span><span class="w"> </span>was<span class="w"> </span>called.<span class="w"> </span>We<span class="w"> </span>cannot<span class="w"> </span>safely<span class="w"> </span>call<span class="w"> </span>it<span class="w"> </span>or<span class="w"> </span>ignore<span class="w"> </span>it<span class="w"> </span><span class="k">in</span><span class="w"> </span>the<span class="w"> </span>fork<span class="o">()</span><span class="w"> </span>child<span class="w"> </span>process.<span class="w"> </span>Crashing<span class="w"> </span>instead.<span class="w"> </span>Set<span class="w"> </span>a<span class="w"> </span>breakpoint<span class="w"> </span>on<span class="w"> </span>objc_initializeAfterForkError<span class="w"> </span>to<span class="w"> </span>debug.<span class="sb">```</span>
 </pre></div>
 </div>
 <p>You can define the environment variable <code class="docutils literal notranslate"><span class="pre">OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES</span></code> to get around this issue.
@@ -619,7 +619,7 @@ Read <a class="reference external" href="http://sealiesoftware.com/blog/archive/
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 21, 2022</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

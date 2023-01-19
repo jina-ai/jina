@@ -428,8 +428,8 @@
 <div class="admonition hint">
 <p class="admonition-title">Hint</p>
 <p>You can also only install Jina Cloud CLI without install <code class="docutils literal notranslate"><span class="pre">jina</span></code> package.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install jcloud
-jc -h
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>jcloud
+jc<span class="w"> </span>-h
 </pre></div>
 </div>
 <p>If you installed it individually, all of its commands come under the <code class="docutils literal notranslate"><span class="pre">jc</span></code> or <code class="docutils literal notranslate"><span class="pre">jcloud</span></code> executable.</p>
@@ -438,7 +438,7 @@ jc -h
 <p>For the rest of this section, we will be using <code class="docutils literal notranslate"><span class="pre">jc</span></code> or <code class="docutils literal notranslate"><span class="pre">jcloud</span></code>. But again they are interchangable to <code class="docutils literal notranslate"><span class="pre">jina</span> <span class="pre">cloud</span></code>.</p>
 <section id="login">
 <h3>Login<a class="headerlink" href="#login" title="Permalink to this heading">#</a></h3>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc login
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>login
 </pre></div>
 </div>
 <p>You can use a Google/GitHub account to register and login. For all the next steps, logging in is mandatory.</p>
@@ -455,21 +455,21 @@ jc -h
 <div><p>All Executors’ <code class="docutils literal notranslate"><span class="pre">uses</span></code> must follow the format <code class="docutils literal notranslate"><span class="pre">jinahub+docker://MyExecutor</span></code> (from <a class="reference external" href="https://hub.jina.ai">Jina Hub</a>) to avoid any local file dependencies.</p>
 </div></blockquote>
 <p>e.g.-</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># flow.yml</span><span class="w"></span>
-<span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
-<span class="nt">executors</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sentencizer</span><span class="w"></span>
-<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinahub+docker://Sentencizer</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># flow.yml</span>
+<span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span>
+<span class="nt">executors</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sentencizer</span>
+<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinahub+docker://Sentencizer</span>
 </pre></div>
 </div>
 <p>To deploy,</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc deploy flow.yml
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>deploy<span class="w"> </span>flow.yml
 </pre></div>
 </div>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
 <p>Testing locally before deploying is recommended. You can use</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina flow --uses flow.yml
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina<span class="w"> </span>flow<span class="w"> </span>--uses<span class="w"> </span>flow.yml
 </pre></div>
 </div>
 </div>
@@ -495,7 +495,7 @@ jc -h
 <li><p><code class="docutils literal notranslate"><span class="pre">.env</span></code> All environment variables used during deployment.</p></li>
 </ul>
 <p>To deploy,</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc deploy hello
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>deploy<span class="w"> </span>hello
 </pre></div>
 </div>
 <p>The Flow is successfully deployed when you see:</p>
@@ -515,11 +515,11 @@ jc -h
 <section id="view-logs">
 <h3>View logs<a class="headerlink" href="#view-logs" title="Permalink to this heading">#</a></h3>
 <p>To watch the logs in realtime:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc logs 173503c192
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>logs<span class="w"> </span>173503c192
 </pre></div>
 </div>
 <p>You can also stream logs for a particular Executor by passing its name:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc logs 173503c192 --executor sentencizer
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>logs<span class="w"> </span>173503c192<span class="w"> </span>--executor<span class="w"> </span>sentencizer
 </pre></div>
 </div>
 </section>
@@ -527,27 +527,27 @@ jc -h
 <h3>Remove Flows<a class="headerlink" href="#remove-flows" title="Permalink to this heading">#</a></h3>
 <p>You can either remove a single Flow, multiple selected Flows or even all Flows by passing different kind of identifiers.</p>
 <p>To remove a single Flow:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc remove 173503c192
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>remove<span class="w"> </span>173503c192
 </pre></div>
 </div>
 <p>To remove multiple selected Flows:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc remove 173503c192 887f6313e5 ddb8a2c4ef
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>remove<span class="w"> </span>173503c192<span class="w"> </span>887f6313e5<span class="w"> </span>ddb8a2c4ef
 </pre></div>
 </div>
 <p>To remove all Flows:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc remove all
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>remove<span class="w"> </span>all
 </pre></div>
 </div>
 <p>By default, removing multiple selected / all Flows would be in interactive mode where confirmation will be sent prior to
 the deletion, to make it non-interactive to better suit your use case, set below environment variable before running the command:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">JCLOUD_NO_INTERACTIVE</span><span class="o">=</span><span class="m">1</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">JCLOUD_NO_INTERACTIVE</span><span class="o">=</span><span class="m">1</span>
 </pre></div>
 </div>
 </section>
 <section id="get-status">
 <h3>Get status<a class="headerlink" href="#get-status" title="Permalink to this heading">#</a></h3>
 <p>To get the status of a Flow:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc status 15937a10bd
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>status<span class="w"> </span>15937a10bd
 </pre></div>
 </div>
 <figure class="align-default">
@@ -565,7 +565,7 @@ the deletion, to make it non-interactive to better suit your use case, set below
 <section id="list-flows">
 <h3>List Flows<a class="headerlink" href="#list-flows" title="Permalink to this heading">#</a></h3>
 <p>To list all the Flows you have:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc list
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>list
 </pre></div>
 </div>
 <p>You can see the ALIVE Flows deployed by you.</p>
@@ -573,14 +573,14 @@ the deletion, to make it non-interactive to better suit your use case, set below
 <a class="reference internal image-reference" href="../../_images/list.png"><img alt="../../_images/list.png" src="../../_images/list.png" style="width: 70%;" /></a>
 </figure>
 <p>You can also filter your Flows by passing a status:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc list --status FAILED
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>list<span class="w"> </span>--status<span class="w"> </span>FAILED
 </pre></div>
 </div>
 <figure class="align-default">
 <a class="reference internal image-reference" href="../../_images/list_failed.png"><img alt="../../_images/list_failed.png" src="../../_images/list_failed.png" style="width: 70%;" /></a>
 </figure>
 <p>Or see all the flows:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc list --status ALL
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>list<span class="w"> </span>--status<span class="w"> </span>ALL
 </pre></div>
 </div>
 <figure class="align-default">
@@ -591,7 +591,7 @@ the deletion, to make it non-interactive to better suit your use case, set below
 <h3>Pass environment variables<a class="headerlink" href="#pass-environment-variables" title="Permalink to this heading">#</a></h3>
 <section id="a-single-yaml">
 <h4>A single YAML<a class="headerlink" href="#a-single-yaml" title="Permalink to this heading">#</a></h4>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc deploy flow.yml --env-file flow.env
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>deploy<span class="w"> </span>flow.yml<span class="w"> </span>--env-file<span class="w"> </span>flow.env
 </pre></div>
 </div>
 </section>
@@ -600,7 +600,7 @@ the deletion, to make it non-interactive to better suit your use case, set below
 <ul>
 <li><p>You can include your environment variables in the <code class="docutils literal notranslate"><span class="pre">.env</span></code> file in the local project and JCloud will take care of managing them.</p></li>
 <li><p>You can optionally pass a <code class="docutils literal notranslate"><span class="pre">custom.env</span></code>.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc deploy ./hello --env-file ./hello/custom.env
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>deploy<span class="w"> </span>./hello<span class="w"> </span>--env-file<span class="w"> </span>./hello/custom.env
 </pre></div>
 </div>
 </li>
@@ -611,11 +611,11 @@ the deletion, to make it non-interactive to better suit your use case, set below
 <section id="troubleshooting">
 <h2>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permalink to this heading">#</a></h2>
 <p>If your deployment failed, please enable verbose logging and redeploy it. You can add <code class="docutils literal notranslate"><span class="pre">--loglevel</span> <span class="pre">DEBUG</span></code> <em>before</em> each CLI subcommand, e.g.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc --loglevel DEBUG deploy flow.yml
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc<span class="w"> </span>--loglevel<span class="w"> </span>DEBUG<span class="w"> </span>deploy<span class="w"> </span>flow.yml
 </pre></div>
 </div>
 <p>Alternatively, you can configure it by using environment variable <code class="docutils literal notranslate"><span class="pre">JCLOUD_LOGLEVEL</span></code>, e.g.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">JCLOUD_LOGLEVEL</span><span class="o">=</span>DEBUG jc deploy flow.yml
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">JCLOUD_LOGLEVEL</span><span class="o">=</span>DEBUG<span class="w"> </span>jc<span class="w"> </span>deploy<span class="w"> </span>flow.yml
 </pre></div>
 </div>
 <p>If you don’t see any obvious errors, please raise an issue in <a class="reference external" href="https://github.com/jina-ai/jcloud/issues/new/choose">JCloud</a></p>
@@ -677,7 +677,7 @@ the deletion, to make it non-interactive to better suit your use case, set below
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 21, 2022</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

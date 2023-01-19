@@ -398,7 +398,7 @@
 
 
 <div class="viewcode-block" id="ExecutorLegacyParser"><a class="viewcode-back" href="../../../../../../api/jina.jaml.parsers.executor.legacy/#jina.jaml.parsers.executor.legacy.ExecutorLegacyParser">[docs]</a><span class="k">class</span> <span class="nc">ExecutorLegacyParser</span><span class="p">(</span><span class="n">BaseLegacyParser</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Legacy parser for executor.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Legacy parser for executor.&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="ExecutorLegacyParser.parse"><a class="viewcode-back" href="../../../../../../api/jina.jaml.parsers.executor.legacy/#jina.jaml.parsers.executor.legacy.ExecutorLegacyParser.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -406,7 +406,7 @@
         <span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span>
         <span class="n">runtime_args</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;BaseExecutor&#39;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param cls: target class type to parse into, must be a :class:`JAMLCompatible` type</span>
 <span class="sd">        :param data: flow yaml file loaded as python dict</span>
 <span class="sd">        :param runtime_args: Optional runtime_args to be directly passed without being parsed into a yaml config</span>
@@ -467,7 +467,7 @@
 
 <div class="viewcode-block" id="ExecutorLegacyParser.is_tail_or_head"><a class="viewcode-back" href="../../../../../../api/jina.jaml.parsers.executor.legacy/#jina.jaml.parsers.executor.legacy.ExecutorLegacyParser.is_tail_or_head">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">is_tail_or_head</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Based on name, compute if this is a tail/head Pod or a main Pod</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Based on name, compute if this is a tail/head Pod or a main Pod</span>
 
 <span class="sd">        :param data: the data for the parser</span>
 <span class="sd">        :return: True if it is tail/head, False otherwise</span>
@@ -479,7 +479,7 @@
             <span class="k">pass</span>  <span class="c1"># name can be None in tests since it&#39;s not passed</span></div>
 
 <div class="viewcode-block" id="ExecutorLegacyParser.dump"><a class="viewcode-back" href="../../../../../../api/jina.jaml.parsers.executor.legacy/#jina.jaml.parsers.executor.legacy.ExecutorLegacyParser.dump">[docs]</a>    <span class="k">def</span> <span class="nf">dump</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="s1">&#39;BaseExecutor&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param data: versioned executor object</span>
 <span class="sd">        :return: the dictionary given a versioned flow object</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -521,7 +521,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 21, 2022</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

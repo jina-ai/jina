@@ -414,11 +414,11 @@
 <p class="admonition-title">Tip</p>
 <p>The recommended way of containerizing an Executor is to leverage <a class="reference internal" href="../hub/#jina-hub"><span class="std std-ref">Jina Hub</span></a> to make sure your Executor can run as a container. It handles auto-provisioning, building, version controlling etc.</p>
 <p>Simply:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina hub new
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina<span class="w"> </span>hub<span class="w"> </span>new
 
 <span class="c1"># work on the executor</span>
 
-jina hub push .
+jina<span class="w"> </span>hub<span class="w"> </span>push<span class="w"> </span>.
 </pre></div>
 </div>
 <p>The image building will happen on the cloud, and available immedidately for other to use.</p>
@@ -449,7 +449,7 @@ This will make sure that everything needed for Jina to run the Executor is insta
 <li><p>Install Jina like any other Python package. You can do this by specifying Jina in the <code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code>,
 or by including the <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">jina</span></code> command as part of the image building process.</p></li>
 </ul>
-<div class="highlight-dockerfile notranslate"><div class="highlight"><pre><span></span><span class="k">RUN</span><span class="w"> </span>pip install jina
+<div class="highlight-dockerfile notranslate"><div class="highlight"><pre><span></span><span class="k">RUN</span><span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>jina
 </pre></div>
 </div>
 </section>
@@ -496,10 +496,10 @@ We do this here in the <code class="docutils literal notranslate"><span class="p
 </div>
 <p>This is necessary for the Executor to be put inside the Docker image,
 and we can define such a configuration in <code class="docutils literal notranslate"><span class="pre">config.yml</span></code>:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ContainerizedEncoder</span><span class="w"></span>
-<span class="nt">metas</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">py_modules</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_executor.py</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ContainerizedEncoder</span>
+<span class="nt">metas</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">py_modules</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_executor.py</span>
 </pre></div>
 </div>
 </section>
@@ -517,11 +517,11 @@ and we can define such a configuration in <code class="docutils literal notransl
 <div class="highlight-dockerfile notranslate"><div class="highlight"><pre><span></span><span class="k">FROM</span><span class="w"> </span><span class="s">jinaai/jina:3-py37-perf</span>
 
 <span class="c"># make sure the files are copied into the image</span>
-<span class="k">COPY</span><span class="w"> </span>. /executor_root/
+<span class="k">COPY</span><span class="w"> </span>.<span class="w"> </span>/executor_root/
 
 <span class="k">WORKDIR</span><span class="w"> </span><span class="s">/executor_root</span>
 
-<span class="k">RUN</span><span class="w"> </span>pip install -r requirements.txt
+<span class="k">RUN</span><span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements.txt
 
 <span class="k">ENTRYPOINT</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;jina&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;executor&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;--uses&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;config.yml&quot;</span><span class="p">]</span>
 </pre></div>
@@ -538,12 +538,12 @@ and we can define such a configuration in <code class="docutils literal notransl
 </pre></div>
 </div>
 <p>We just need to build the image:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker build -t my_containerized_executor .
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>build<span class="w"> </span>-t<span class="w"> </span>my_containerized_executor<span class="w"> </span>.
 </pre></div>
 </div>
 <p>Once the build is successful, this is what you should see under <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">images</span></code>:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>REPOSITORY                       TAG                IMAGE ID       CREATED          SIZE
-my_containerized_executor        latest             5cead0161cb5   <span class="m">13</span> seconds ago   <span class="m">2</span>.21GB
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>REPOSITORY<span class="w">                       </span>TAG<span class="w">                </span>IMAGE<span class="w"> </span>ID<span class="w">       </span>CREATED<span class="w">          </span>SIZE
+my_containerized_executor<span class="w">        </span>latest<span class="w">             </span>5cead0161cb5<span class="w">   </span><span class="m">13</span><span class="w"> </span>seconds<span class="w"> </span>ago<span class="w">   </span><span class="m">2</span>.21GB
 </pre></div>
 </div>
 </section>
@@ -563,8 +563,8 @@ parameter:</p>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Document embedding of shape </span><span class="si">{</span><span class="n">doc</span><span class="o">.</span><span class="n">embedding</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>Document returned with text: <span class="s2">&quot;This Document is embedded by ContainerizedEncoder&quot;</span>
-Document embedding of shape torch.Size<span class="o">([</span><span class="m">10</span><span class="o">])</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>Document<span class="w"> </span>returned<span class="w"> </span>with<span class="w"> </span>text:<span class="w"> </span><span class="s2">&quot;This Document is embedded by ContainerizedEncoder&quot;</span>
+Document<span class="w"> </span>embedding<span class="w"> </span>of<span class="w"> </span>shape<span class="w"> </span>torch.Size<span class="o">([</span><span class="m">10</span><span class="o">])</span>
 </pre></div>
 </div>
 </section>
@@ -606,7 +606,7 @@ Document embedding of shape torch.Size<span class="o">([</span><span class="m">1
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 21, 2022</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

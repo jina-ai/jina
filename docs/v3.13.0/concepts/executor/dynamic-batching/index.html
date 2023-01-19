@@ -523,13 +523,13 @@ Executor section. Suppose the Executor is implemented like this:
 </pre></div>
 </div>
 <p>Then, in your <code class="docutils literal notranslate"><span class="pre">config.yaml</span></code> file, you can enable dynamic batching on the <code class="docutils literal notranslate"><span class="pre">/bar</span></code> endpoint like so:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MyExecutor</span><span class="w"></span>
-<span class="nt">py_modules</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_executor.yaml</span><span class="w"></span>
-<span class="nt">dynamic_batching</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">/bar</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">preferred_batch_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span><span class="w"></span>
-<span class="w">    </span><span class="nt">timeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">200</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MyExecutor</span>
+<span class="nt">py_modules</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_executor.yaml</span>
+<span class="nt">dynamic_batching</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">/bar</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">preferred_batch_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
+<span class="w">    </span><span class="nt">timeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">200</span>
 </pre></div>
 </div>
 </div>
@@ -580,7 +580,7 @@ if it contains fewer than <code class="docutils literal notranslate"><span class
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 21, 2022</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

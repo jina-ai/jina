@@ -398,7 +398,7 @@
 
 
 <span class="k">class</span> <span class="nc">RichHandler</span><span class="p">(</span><span class="n">Handler</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;A logging handler that renders output with Rich. The time / level / message and file are displayed in columns.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A logging handler that renders output with Rich. The time / level / message and file are displayed in columns.</span>
 <span class="sd">    The level is color coded, and the message is syntax highlighted.</span>
 
 <span class="sd">    Note:</span>
@@ -491,7 +491,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">keywords</span> <span class="o">=</span> <span class="n">keywords</span>
 
 <div class="viewcode-block" id="RichHandler.get_level_text"><a class="viewcode-back" href="../../../api/jina.logging.logger/#jina.logging.logger.RichHandler.get_level_text">[docs]</a>    <span class="k">def</span> <span class="nf">get_level_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">record</span><span class="p">:</span> <span class="n">LogRecord</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Text</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Get the level name from the record.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the level name from the record.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            record (LogRecord): LogRecord instance.</span>
@@ -506,7 +506,7 @@
         <span class="k">return</span> <span class="n">level_text</span></div>
 
 <div class="viewcode-block" id="RichHandler.emit"><a class="viewcode-back" href="../../../api/jina.logging.logger/#jina.logging.logger.RichHandler.emit">[docs]</a>    <span class="k">def</span> <span class="nf">emit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">record</span><span class="p">:</span> <span class="n">LogRecord</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Invoked by logging.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Invoked by logging.&quot;&quot;&quot;</span>
         <span class="n">message</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">record</span><span class="p">)</span>
         <span class="n">traceback</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="p">(</span>
@@ -554,7 +554,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">handleError</span><span class="p">(</span><span class="n">record</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="RichHandler.render_message"><a class="viewcode-back" href="../../../api/jina.logging.logger/#jina.logging.logger.RichHandler.render_message">[docs]</a>    <span class="k">def</span> <span class="nf">render_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">record</span><span class="p">:</span> <span class="n">LogRecord</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ConsoleRenderable&quot;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Render message text in to Text.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Render message text in to Text.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            record (LogRecord): logging Record.</span>
@@ -585,7 +585,7 @@
         <span class="n">traceback</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Traceback</span><span class="p">],</span>
         <span class="n">message_renderable</span><span class="p">:</span> <span class="s2">&quot;ConsoleRenderable&quot;</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ConsoleRenderable&quot;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Render log for display.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Render log for display.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            record (LogRecord): logging Record.</span>
@@ -683,7 +683,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 21, 2022</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

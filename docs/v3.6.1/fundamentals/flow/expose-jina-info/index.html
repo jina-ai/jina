@@ -620,8 +620,8 @@ Even though you can theoretically run Executors and Gateways in different Jina v
 </pre></div>
 </div>
 <p>Then, you can use <a class="reference external" href="https://github.com/fullstorydev/grpcurl">grpcurl</a> to hit the gRPC service</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker pull fullstorydev/grpcurl:latest
-docker run --network<span class="o">=</span><span class="s1">&#39;host&#39;</span> fullstorydev/grpcurl -plaintext <span class="m">127</span>.0.0.1:12345 jina.JinaInfoRPC/_status
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>pull<span class="w"> </span>fullstorydev/grpcurl:latest
+docker<span class="w"> </span>run<span class="w"> </span>--network<span class="o">=</span><span class="s1">&#39;host&#39;</span><span class="w"> </span>fullstorydev/grpcurl<span class="w"> </span>-plaintext<span class="w"> </span><span class="m">127</span>.0.0.1:12345<span class="w"> </span>jina.JinaInfoRPC/_status
 </pre></div>
 </div>
 <p>The error-free output below signifies a correctly running Flow:</p>
@@ -678,7 +678,7 @@ docker run --network<span class="o">=</span><span class="s1">&#39;host&#39;</spa
 <section id="access-information-of-gateway-using-http-websocket-protocol">
 <h2>Access Information of Gateway using HTTP/Websocket protocol<a class="headerlink" href="#access-information-of-gateway-using-http-websocket-protocol" title="Permalink to this heading">#</a></h2>
 <p>When using HTTP or Websocket as the Gateway protocol, you can use curl to target the <code class="docutils literal notranslate"><span class="pre">/status</span></code> endpoint and get the Jina info.</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>curl http://localhost:12345/status
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>http://localhost:12345/status
 </pre></div>
 </div>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>{&quot;jina&quot;:{&quot;jina&quot;:&quot;######&quot;,&quot;docarray&quot;:&quot;######&quot;,&quot;jina-proto&quot;:&quot;######&quot;,&quot;jina-vcs-tag&quot;:&quot;(unset)&quot;,&quot;protobuf&quot;:&quot;######&quot;,&quot;proto-backend&quot;:&quot;######&quot;,&quot;grpcio&quot;:&quot;######&quot;,&quot;pyyaml&quot;:&quot;######&quot;,&quot;python&quot;:&quot;######&quot;,&quot;platform&quot;:&quot;######&quot;,&quot;platform-release&quot;:&quot;######&quot;,&quot;platform-version&quot;:&quot;######&quot;,&quot;architecture&quot;:&quot;######&quot;,&quot;processor&quot;:&quot;######&quot;,&quot;uid&quot;:&quot;######&quot;,&quot;session-id&quot;:&quot;######&quot;,&quot;uptime&quot;:&quot;######&quot;,&quot;ci-vendor&quot;:&quot;(unset)&quot;},&quot;envs&quot;:{&quot;JINA_AUTH_TOKEN&quot;:&quot;(unset)&quot;,&quot;JINA_DEFAULT_HOST&quot;:&quot;(unset)&quot;,&quot;JINA_DEFAULT_TIMEOUT_CTRL&quot;:&quot;(unset)&quot;,&quot;JINA_DEFAULT_WORKSPACE_BASE&quot;:&quot;######&quot;,&quot;JINA_DEPLOYMENT_NAME&quot;:&quot;(unset)&quot;,&quot;JINA_DISABLE_UVLOOP&quot;:&quot;(unset)&quot;,&quot;JINA_EARLY_STOP&quot;:&quot;(unset)&quot;,&quot;JINA_FULL_CLI&quot;:&quot;(unset)&quot;,&quot;JINA_GATEWAY_IMAGE&quot;:&quot;(unset)&quot;,&quot;JINA_GRPC_RECV_BYTES&quot;:&quot;(unset)&quot;,&quot;JINA_GRPC_SEND_BYTES&quot;:&quot;(unset)&quot;,&quot;JINA_HUBBLE_REGISTRY&quot;:&quot;(unset)&quot;,&quot;JINA_HUB_CACHE_DIR&quot;:&quot;(unset)&quot;,&quot;JINA_HUB_NO_IMAGE_REBUILD&quot;:&quot;(unset)&quot;,&quot;JINA_HUB_ROOT&quot;:&quot;(unset)&quot;,&quot;JINA_LOG_CONFIG&quot;:&quot;(unset)&quot;,&quot;JINA_LOG_LEVEL&quot;:&quot;(unset)&quot;,&quot;JINA_LOG_NO_COLOR&quot;:&quot;(unset)&quot;,&quot;JINA_MP_START_METHOD&quot;:&quot;(unset)&quot;,&quot;JINA_RANDOM_PORT_MAX&quot;:&quot;(unset)&quot;,&quot;JINA_RANDOM_PORT_MIN&quot;:&quot;(unset)&quot;,&quot;JINA_DISABLE_HEALTHCHECK_LOGS&quot;:&quot;(unset)&quot;,&quot;JINA_LOCKS_ROOT&quot;:&quot;(unset)&quot;}}%
@@ -722,7 +722,7 @@ docker run --network<span class="o">=</span><span class="s1">&#39;host&#39;</spa
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 21, 2022</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

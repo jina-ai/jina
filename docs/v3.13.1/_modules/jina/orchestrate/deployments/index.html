@@ -429,14 +429,14 @@
 
 
 <div class="viewcode-block" id="BaseDeployment"><a class="viewcode-back" href="../../../../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.BaseDeployment">[docs]</a><span class="k">class</span> <span class="nc">BaseDeployment</span><span class="p">(</span><span class="n">ExitStack</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;A BaseDeployment is an immutable set of pods.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A BaseDeployment is an immutable set of pods.</span>
 <span class="sd">    Internally, the pods can run with the process/thread backend.</span>
 <span class="sd">    They can be also run in their own containers on remote machines.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="BaseDeployment.start"><a class="viewcode-back" href="../../../../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.BaseDeployment.start">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;BaseDeployment&#39;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Start to run all :class:`Pod` in this BaseDeployment.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Start to run all :class:`Pod` in this BaseDeployment.</span>
 
 <span class="sd">        .. note::</span>
 <span class="sd">            If one of the :class:`Pod` fails to start, make sure that all of them</span>
@@ -446,7 +446,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">role</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;DeploymentRoleType&#39;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return the role of this :class:`BaseDeployment`.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the role of this :class:`BaseDeployment`.</span>
 
 <span class="sd">        .. # noqa: DAR201</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -454,7 +454,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;The name of this :class:`BaseDeployment`.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The name of this :class:`BaseDeployment`.</span>
 
 
 <span class="sd">        .. # noqa: DAR201</span>
@@ -463,21 +463,21 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">head_host</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Get the host of the HeadPod of this deployment</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the host of the HeadPod of this deployment</span>
 <span class="sd">        .. # noqa: DAR201</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_args</span><span class="o">.</span><span class="n">host</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_args</span> <span class="k">else</span> <span class="kc">None</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">head_port</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Get the port of the HeadPod of this deployment</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the port of the HeadPod of this deployment</span>
 <span class="sd">        .. # noqa: DAR201</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_args</span><span class="o">.</span><span class="n">port</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_args</span> <span class="k">else</span> <span class="kc">None</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">head_port_monitoring</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Get the port_monitoring of the HeadPod of this deployment</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the port_monitoring of the HeadPod of this deployment</span>
 <span class="sd">        .. # noqa: DAR201</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_args</span><span class="o">.</span><span class="n">port_monitoring</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_args</span> <span class="k">else</span> <span class="kc">None</span>
@@ -488,7 +488,7 @@
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_copy_to_head_args</span><span class="p">(</span><span class="n">args</span><span class="p">:</span> <span class="n">Namespace</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Namespace</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set the outgoing args of the head router</span>
 
 <span class="sd">        :param args: basic arguments</span>
@@ -514,7 +514,7 @@
     <span class="nd">@property</span>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">head_args</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Namespace</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Get the arguments for the `head` of this BaseDeployment.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the arguments for the `head` of this BaseDeployment.</span>
 
 <span class="sd">        .. # noqa: DAR201</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -522,13 +522,13 @@
 
 <div class="viewcode-block" id="BaseDeployment.join"><a class="viewcode-back" href="../../../../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.BaseDeployment.join">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">join</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Wait until all deployment and pods exit.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Wait until all deployment and pods exit.&quot;&quot;&quot;</span>
         <span class="o">...</span></div>
 
     <span class="nd">@property</span>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">_mermaid_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;String that will be used to represent the Deployment graphically when `Flow.plot()` is invoked</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;String that will be used to represent the Deployment graphically when `Flow.plot()` is invoked</span>
 
 
 <span class="sd">        .. # noqa: DAR201</span>
@@ -537,7 +537,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">deployments</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Get deployments of the deployment. The BaseDeployment just gives one deployment.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get deployments of the deployment. The BaseDeployment just gives one deployment.</span>
 
 <span class="sd">        :return: list of deployments</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -551,7 +551,7 @@
 
 
 <div class="viewcode-block" id="Deployment"><a class="viewcode-back" href="../../../../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.Deployment">[docs]</a><span class="k">class</span> <span class="nc">Deployment</span><span class="p">(</span><span class="n">BaseDeployment</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;A Deployment is an immutable set of pods, which run in replicas. They share the same input and output socket.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A Deployment is an immutable set of pods, which run in replicas. They share the same input and output socket.</span>
 <span class="sd">    Internally, the pods can run with the process/thread backend. They can be also run in their own containers</span>
 <span class="sd">    :param args: arguments parsed from the CLI</span>
 <span class="sd">    :param needs: deployments names of preceding deployments, the output of these deployments are going into the input of this deployment</span>
@@ -719,7 +719,7 @@
         <span class="p">)</span>  <span class="c1"># this is for the head</span>
 
 <div class="viewcode-block" id="Deployment.update_pod_args"><a class="viewcode-back" href="../../../../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.Deployment.update_pod_args">[docs]</a>    <span class="k">def</span> <span class="nf">update_pod_args</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Update args of all its pods based on Deployment args. Including head/tail&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update args of all its pods based on Deployment args. Including head/tail&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">runtime_cls</span> <span class="o">==</span> <span class="s1">&#39;GatewayRuntime&#39;</span><span class="p">:</span>
             <span class="n">_update_gateway_args</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="n">Dict</span><span class="p">):</span>
@@ -729,7 +729,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_args</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Deployment.update_sandbox_args"><a class="viewcode-back" href="../../../../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.Deployment.update_sandbox_args">[docs]</a>    <span class="k">def</span> <span class="nf">update_sandbox_args</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Update args of all its pods based on the host and port returned by Hubble&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update args of all its pods based on the host and port returned by Hubble&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_sandbox</span><span class="p">:</span>
             <span class="n">host</span><span class="p">,</span> <span class="n">port</span> <span class="o">=</span> <span class="n">HubIO</span><span class="o">.</span><span class="n">deploy_public_sandbox</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_sandbox_deployed</span> <span class="o">=</span> <span class="kc">True</span>
@@ -740,12 +740,12 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;head&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">port</span></div>
 
 <div class="viewcode-block" id="Deployment.update_worker_pod_args"><a class="viewcode-back" href="../../../../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.Deployment.update_worker_pod_args">[docs]</a>    <span class="k">def</span> <span class="nf">update_worker_pod_args</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Update args of all its worker pods based on Deployment args. Does not touch head and tail&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update args of all its worker pods based on Deployment args. Does not touch head and tail&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;pods&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_set_pod_args</span><span class="p">()</span></div>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">is_sandbox</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check if this deployment is a sandbox.</span>
 
 <span class="sd">        :return: True if this deployment is provided as a sandbox, False otherwise</span>
@@ -757,7 +757,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">_is_docker</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check if this deployment is to be run in docker.</span>
 
 <span class="sd">        :return: True if this deployment is to be run in docker</span>
@@ -769,7 +769,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">_is_executor_from_yaml</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check if this deployment is to be run from YAML configuration.</span>
 
 <span class="sd">        :return: True if this deployment is to be run from YAML configuration</span>
@@ -779,7 +779,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">tls_enabled</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Checks whether secure connection via tls is enabled for this Deployment.</span>
 
 <span class="sd">        :return: True if tls is enabled, False otherwise</span>
@@ -791,7 +791,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">external</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check if this deployment is external.</span>
 
 <span class="sd">        :return: True if this deployment is provided as an external deployment, False otherwise</span>
@@ -800,7 +800,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">grpc_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the gRPC metadata for this deployment.</span>
 <span class="sd">        :return: The gRPC metadata for this deployment. If the deployment is a gateway, return None.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -808,7 +808,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">protocol</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :return: the protocol of this deployment</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">protocol</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">&#39;protocol&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;grpc&#39;</span><span class="p">])</span>
@@ -822,7 +822,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">first_pod_args</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Namespace</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return the first worker pod&#39;s args</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the first worker pod&#39;s args</span>
 
 
 <span class="sd">        .. # noqa: DAR201</span>
@@ -832,7 +832,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">host</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Get the host name of this deployment</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the host name of this deployment</span>
 
 
 <span class="sd">        .. # noqa: DAR201</span>
@@ -841,14 +841,14 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">port</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :return: the port of this deployment</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">first_pod_args</span><span class="o">.</span><span class="n">port</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">ports</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Returns a list of ports exposed by this Deployment.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a list of ports exposed by this Deployment.</span>
 <span class="sd">        Exposed means these are the ports a Client/Gateway is supposed to communicate with.</span>
 <span class="sd">        For sharded deployments this will be the head_port.</span>
 <span class="sd">        For non-sharded deployments it will be all replica ports</span>
@@ -867,7 +867,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">hosts</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Returns a list of host addresses exposed by this Deployment.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a list of host addresses exposed by this Deployment.</span>
 <span class="sd">        Exposed means these are the host a Client/Gateway is supposed to communicate with.</span>
 <span class="sd">        For sharded deployments this will be the head host.</span>
 <span class="sd">        For non-sharded deployments it will be all replica hosts</span>
@@ -880,7 +880,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">dockerized_uses</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Checks if this Deployment uses a dockerized Executor</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Checks if this Deployment uses a dockerized Executor</span>
 
 <span class="sd">        .. # noqa: DAR201</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -895,7 +895,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">head_args</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Namespace</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Get the arguments for the `head` of this Deployment.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the arguments for the `head` of this Deployment.</span>
 
 
 <span class="sd">        .. # noqa: DAR201</span>
@@ -904,7 +904,7 @@
 
     <span class="nd">@head_args</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">head_args</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Set the arguments for the `head` of this Deployment.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the arguments for the `head` of this Deployment.</span>
 
 
 <span class="sd">        .. # noqa: DAR101</span>
@@ -913,7 +913,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">uses_before_args</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Namespace</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Get the arguments for the `uses_before` of this Deployment.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the arguments for the `uses_before` of this Deployment.</span>
 
 
 <span class="sd">        .. # noqa: DAR201</span>
@@ -922,7 +922,7 @@
 
     <span class="nd">@uses_before_args</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">uses_before_args</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Set the arguments for the `uses_before` of this Deployment.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the arguments for the `uses_before` of this Deployment.</span>
 
 
 <span class="sd">        .. # noqa: DAR101</span>
@@ -931,7 +931,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">uses_after_args</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Namespace</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Get the arguments for the `uses_after` of this Deployment.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the arguments for the `uses_after` of this Deployment.</span>
 
 
 <span class="sd">        .. # noqa: DAR201</span>
@@ -940,7 +940,7 @@
 
     <span class="nd">@uses_after_args</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">uses_after_args</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Set the arguments for the `uses_after` of this Deployment.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the arguments for the `uses_after` of this Deployment.</span>
 
 
 <span class="sd">        .. # noqa: DAR101</span>
@@ -949,7 +949,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">all_args</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Namespace</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Get all arguments of all Pods in this BaseDeployment.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get all arguments of all Pods in this BaseDeployment.</span>
 
 <span class="sd">        .. # noqa: DAR201</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -964,7 +964,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">num_pods</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Get the number of running :class:`Pod`</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the number of running :class:`Pod`</span>
 
 <span class="sd">        .. # noqa: DAR201</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -985,7 +985,7 @@
 
 <div class="viewcode-block" id="Deployment.get_worker_host"><a class="viewcode-back" href="../../../../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.Deployment.get_worker_host">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">get_worker_host</span><span class="p">(</span><span class="n">pod_args</span><span class="p">,</span> <span class="n">pod_is_container</span><span class="p">,</span> <span class="n">head_is_container</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check if the current pod and head are both containerized on the same host</span>
 <span class="sd">        If so __docker_host__ needs to be advertised as the worker&#39;s address to the head</span>
 
@@ -1005,7 +1005,7 @@
         <span class="k">return</span> <span class="n">worker_host</span></div>
 
 <div class="viewcode-block" id="Deployment.start"><a class="viewcode-back" href="../../../../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.Deployment.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Deployment&#39;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Start to run all :class:`Pod` in this BaseDeployment.</span>
 
 <span class="sd">        :return: started deployment</span>
@@ -1049,7 +1049,7 @@
         <span class="k">return</span> <span class="bp">self</span></div>
 
 <div class="viewcode-block" id="Deployment.wait_start_success"><a class="viewcode-back" href="../../../../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.Deployment.wait_start_success">[docs]</a>    <span class="k">def</span> <span class="nf">wait_start_success</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Block until all pods starts successfully.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Block until all pods starts successfully.</span>
 
 <span class="sd">        If not successful, it will raise an error hoping the outer function to catch it</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1071,7 +1071,7 @@
             <span class="k">raise</span></div>
 
 <div class="viewcode-block" id="Deployment.async_wait_start_success"><a class="viewcode-back" href="../../../../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.Deployment.async_wait_start_success">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_wait_start_success</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Block until all pods starts successfully.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Block until all pods starts successfully.</span>
 
 <span class="sd">        If not successful, it will raise an error hoping the outer function to catch it</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1095,7 +1095,7 @@
             <span class="k">raise</span></div>
 
 <div class="viewcode-block" id="Deployment.join"><a class="viewcode-back" href="../../../../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.Deployment.join">[docs]</a>    <span class="k">def</span> <span class="nf">join</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Wait until all pods exit&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Wait until all pods exit&quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">uses_before_pod</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">uses_before_pod</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
@@ -1116,7 +1116,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">is_ready</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Checks if Deployment is ready</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Checks if Deployment is ready</span>
 
 <span class="sd">        .. note::</span>
 <span class="sd">            A Deployment is ready when all the Pods it contains are ready</span>
@@ -1138,7 +1138,7 @@
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_parse_devices</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">num_devices</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Parses a list of devices from string, like `start:stop:step` or &#39;num1,num2,num3` or combination of both.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Parses a list of devices from string, like `start:stop:step` or &#39;num1,num2,num3` or combination of both.</span>
 
 <span class="sd">        :param value: a string like</span>
 <span class="sd">        :param num_devices: total number of devices</span>
@@ -1181,7 +1181,7 @@
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_roundrobin_cuda_device</span><span class="p">(</span><span class="n">device_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">replicas</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Parse cuda device string with RR prefix</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Parse cuda device string with RR prefix</span>
 
 <span class="sd">        :param device_str: `RRm:n`, where `RR` is the prefix, m:n is python slice format</span>
 <span class="sd">        :param replicas: the number of replicas</span>
@@ -1378,7 +1378,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">_mermaid_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;String that will be used to represent the Deployment graphically when `Flow.plot()` is invoked.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;String that will be used to represent the Deployment graphically when `Flow.plot()` is invoked.</span>
 <span class="sd">        It does not include used_before/uses_after</span>
 
 
@@ -1425,7 +1425,7 @@
                     <span class="p">]</span>  <span class="c1"># all the uses should be the same but let&#39;s keep it this</span>
                     <span class="c1"># way</span>
                     <span class="k">for</span> <span class="n">rep_i</span><span class="p">,</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">use</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">names</span><span class="p">,</span> <span class="n">uses</span><span class="p">)):</span>
-                        <span class="n">escaped_uses</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">replace_secret_of_hub_uri</span><span class="p">(</span><span class="n">use</span><span class="p">,</span> <span class="n">secret</span><span class="p">)</span><span class="si">}</span><span class="s1">&quot;&#39;</span>
+                        <span class="n">escaped_uses</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">replace_secret_of_hub_uri</span><span class="p">(</span><span class="n">use</span><span class="p">,</span><span class="w"> </span><span class="n">secret</span><span class="p">)</span><span class="si">}</span><span class="s1">&quot;&#39;</span>
                         <span class="n">shard_mermaid_graph</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">[</span><span class="si">{</span><span class="n">escaped_uses</span><span class="si">}</span><span class="s1">]:::pod;&#39;</span><span class="p">)</span>
                     <span class="n">shard_mermaid_graph</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;end;&#39;</span><span class="p">)</span>
                     <span class="n">shard_mermaid_graph</span> <span class="o">=</span> <span class="p">[</span>
@@ -1436,7 +1436,7 @@
                 <span class="k">if</span> <span class="n">uses_before_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="k">for</span> <span class="n">shard_name</span> <span class="ow">in</span> <span class="n">shard_names</span><span class="p">:</span>
                         <span class="n">escaped_uses_before_uses</span> <span class="o">=</span> <span class="p">(</span>
-                            <span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">replace_secret_of_hub_uri</span><span class="p">(</span><span class="n">uses_before_uses</span><span class="p">,</span> <span class="n">secret</span><span class="p">)</span><span class="si">}</span><span class="s1">&quot;&#39;</span>
+                            <span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">replace_secret_of_hub_uri</span><span class="p">(</span><span class="n">uses_before_uses</span><span class="p">,</span><span class="w"> </span><span class="n">secret</span><span class="p">)</span><span class="si">}</span><span class="s1">&quot;&#39;</span>
                         <span class="p">)</span>
                         <span class="n">mermaid_graph</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                             <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">-head[</span><span class="si">{</span><span class="n">escaped_uses_before_uses</span><span class="si">}</span><span class="s1">]:::HEADTAIL --&gt; </span><span class="si">{</span><span class="n">shard_name</span><span class="si">}</span><span class="s1">;&#39;</span>
@@ -1450,7 +1450,7 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># single shard case, no uses_before or uses_after_considered</span>
                 <span class="n">pod_args</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;pods&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">())[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-                <span class="n">uses</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">replace_secret_of_hub_uri</span><span class="p">(</span><span class="n">pod_args</span><span class="o">.</span><span class="n">uses</span><span class="p">,</span> <span class="n">secret</span><span class="p">)</span><span class="si">}</span><span class="s1">&quot;&#39;</span>
+                <span class="n">uses</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">replace_secret_of_hub_uri</span><span class="p">(</span><span class="n">pod_args</span><span class="o">.</span><span class="n">uses</span><span class="p">,</span><span class="w"> </span><span class="n">secret</span><span class="p">)</span><span class="si">}</span><span class="s1">&quot;&#39;</span>
 
                 <span class="c1"># just put the replicas in parallel</span>
                 <span class="k">if</span> <span class="n">pod_args</span><span class="o">.</span><span class="n">replicas</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
@@ -1477,7 +1477,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 21, 2022</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

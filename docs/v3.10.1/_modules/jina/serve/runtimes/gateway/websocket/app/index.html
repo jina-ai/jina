@@ -406,7 +406,7 @@
     <span class="n">streamer</span><span class="p">:</span> <span class="s1">&#39;GatewayStreamer&#39;</span><span class="p">,</span>
     <span class="n">logger</span><span class="p">:</span> <span class="s1">&#39;JinaLogger&#39;</span><span class="p">,</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the app from FastAPI as the Websocket interface.</span>
 
 <span class="sd">    :param streamer: gateway streamer object.</span>
@@ -495,7 +495,7 @@
         <span class="n">summary</span><span class="o">=</span><span class="s1">&#39;Get the health of Jina service&#39;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_health</span><span class="p">():</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the health of this Jina service.</span>
 <span class="sd">        .. # noqa: DAR201</span>
 
@@ -507,7 +507,7 @@
         <span class="n">summary</span><span class="o">=</span><span class="s1">&#39;Get the status of Jina service&#39;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_status</span><span class="p">():</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the status of this Jina service.</span>
 
 <span class="sd">        This is equivalent to running `jina -vf` from command line.</span>
@@ -579,7 +579,7 @@
             <span class="n">manager</span><span class="o">.</span><span class="n">disconnect</span><span class="p">(</span><span class="n">websocket</span><span class="p">)</span>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_get_singleton_result</span><span class="p">(</span><span class="n">request_iterator</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Streams results from AsyncPrefetchCall as a dict</span>
 
 <span class="sd">        :param request_iterator: request iterator, with length of 1</span>
@@ -602,7 +602,7 @@
         <span class="n">response_model</span><span class="o">=</span><span class="n">PROTO_TO_PYDANTIC_MODELS</span><span class="o">.</span><span class="n">StatusProto</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_dry_run_http</span><span class="p">():</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the health of the complete Flow service.</span>
 <span class="sd">        .. # noqa: DAR201</span>
 
@@ -680,7 +680,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 21, 2022</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

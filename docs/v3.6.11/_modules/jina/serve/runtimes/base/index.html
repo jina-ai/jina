@@ -379,7 +379,7 @@
 
 
 <div class="viewcode-block" id="BaseRuntime"><a class="viewcode-back" href="../../../../../api/jina.serve.runtimes.base/#jina.serve.runtimes.base.BaseRuntime">[docs]</a><span class="k">class</span> <span class="nc">BaseRuntime</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A Jina Runtime is a procedure that blocks the main process once running (i.e. :meth:`run_forever`),</span>
 <span class="sd">    therefore should be put into a separated thread/process, or inside the main process of a docker container.</span>
 <span class="sd">    Any program/library/package/module that blocks the main process, can be formulated into a :class:`BaseRuntime` class</span>
@@ -437,7 +437,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">JinaLogger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="nb">vars</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">))</span>
 
 <div class="viewcode-block" id="BaseRuntime.run_forever"><a class="viewcode-back" href="../../../../../api/jina.serve.runtimes.base/#jina.serve.runtimes.base.BaseRuntime.run_forever">[docs]</a>    <span class="k">def</span> <span class="nf">run_forever</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Running the blocking procedure inside ``S``. Note, once this method is called,</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Running the blocking procedure inside ``S``. Note, once this method is called,</span>
 <span class="sd">        ``S`` is blocked.</span>
 
 <span class="sd">        .. note::</span>
@@ -451,7 +451,7 @@
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="BaseRuntime.teardown"><a class="viewcode-back" href="../../../../../api/jina.serve.runtimes.base/#jina.serve.runtimes.base.BaseRuntime.teardown">[docs]</a>    <span class="k">def</span> <span class="nf">teardown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Method called immediately after :meth:`run_forever` is unblocked.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Method called immediately after :meth:`run_forever` is unblocked.</span>
 <span class="sd">        You can tidy up things here.  Optional in subclasses. The default implementation does nothing.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
@@ -508,7 +508,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 21, 2022</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

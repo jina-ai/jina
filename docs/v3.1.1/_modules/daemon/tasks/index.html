@@ -646,7 +646,7 @@
 
 
 <div class="viewcode-block" id="DaemonWorker"><a class="viewcode-back" href="../../../api/daemon.tasks/#daemon.tasks.DaemonWorker">[docs]</a><span class="k">class</span> <span class="nc">DaemonWorker</span><span class="p">(</span><span class="n">Thread</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Worker Thread for JinaD&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Worker Thread for JinaD&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="s1">&#39;DaemonID&#39;</span><span class="p">,</span> <span class="n">files</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">UploadFile</span><span class="p">],</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
@@ -661,7 +661,7 @@
 
     <span class="nd">@cached_property</span>
     <span class="k">def</span> <span class="nf">arguments</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">WorkspaceArguments</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;sets arguments in workspace store</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;sets arguments in workspace store</span>
 
 <span class="sd">        :return: pydantic model for workspace arguments</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -686,7 +686,7 @@
 
     <span class="nd">@cached_property</span>
     <span class="k">def</span> <span class="nf">metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">WorkspaceMetadata</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;sets metadata in workspace store</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;sets metadata in workspace store</span>
 
 <span class="sd">        :return: pydantic model for workspace metadata</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -706,7 +706,7 @@
 
     <span class="nd">@cached_property</span>
     <span class="k">def</span> <span class="nf">workdir</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;sets workdir for current worker thread</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;sets workdir for current worker thread</span>
 
 <span class="sd">        :return: local directory where files would get stored</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -714,7 +714,7 @@
 
     <span class="nd">@cached_property</span>
     <span class="k">def</span> <span class="nf">daemon_file</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DaemonFile</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;set daemonfile for current worker thread</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;set daemonfile for current worker thread</span>
 
 <span class="sd">        :return: DaemonFile object representing current workspace</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -722,14 +722,14 @@
 
     <span class="nd">@cached_property</span>
     <span class="k">def</span> <span class="nf">network_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;create a docker network</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;create a docker network</span>
 
 <span class="sd">        :return: network id</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">Dockerizer</span><span class="o">.</span><span class="n">network</span><span class="p">(</span><span class="n">workspace_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
 
 <div class="viewcode-block" id="DaemonWorker.generate_image"><a class="viewcode-back" href="../../../api/daemon.tasks/#daemon.tasks.DaemonWorker.generate_image">[docs]</a>    <span class="k">def</span> <span class="nf">generate_image</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;build and create a docker image</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;build and create a docker image</span>
 
 <span class="sd">        :return: image id</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -745,7 +745,7 @@
 
     <span class="nd">@cached_property</span>
     <span class="k">def</span> <span class="nf">container_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;creates a container if run command is passed in .jinad file</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;creates a container if run command is passed in .jinad file</span>
 
 <span class="sd">        :return: container id, if created</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -758,7 +758,7 @@
             <span class="k">return</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="DaemonWorker.run"><a class="viewcode-back" href="../../../api/daemon.tasks/#daemon.tasks.DaemonWorker.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Method representing the worker thread&#39;s activity</span>
 <span class="sd">        DaemonWorker is a daemon thread responsible for the following tasks:</span>
 <span class="sd">        During create:</span>
@@ -804,7 +804,7 @@
             <span class="n">store</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">]</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">RemoteWorkspaceState</span><span class="o">.</span><span class="n">ACTIVE</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">&#39;workspace </span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">),</span> <span class="s2">&quot;cyan&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1"> is updated&#39;</span>
+                <span class="sa">f</span><span class="s1">&#39;workspace </span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">),</span><span class="w"> </span><span class="s2">&quot;cyan&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1"> is updated&#39;</span>
             <span class="p">)</span>
         <span class="k">except</span> <span class="n">DockerNetworkException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="n">store</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">RemoteWorkspaceState</span><span class="o">.</span><span class="n">FAILED</span><span class="p">)</span>
@@ -820,7 +820,7 @@
 
 
 <div class="viewcode-block" id="ConsumerThread"><a class="viewcode-back" href="../../../api/daemon.tasks/#daemon.tasks.ConsumerThread">[docs]</a><span class="k">class</span> <span class="nc">ConsumerThread</span><span class="p">(</span><span class="n">Thread</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Consumer Thread for JinaD&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Consumer Thread for JinaD&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">daemon</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -828,7 +828,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_workers_count</span> <span class="o">=</span> <span class="mi">0</span>
 
 <div class="viewcode-block" id="ConsumerThread.run"><a class="viewcode-back" href="../../../api/daemon.tasks/#daemon.tasks.ConsumerThread.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Method representing the ConsumerThread&#39;s activity</span>
 <span class="sd">        ConsumerThread is a daemon thread that waits for messages from the `__task_queue__`</span>
 <span class="sd">        and starts a `DaemonWorker` for each message.</span>
@@ -837,7 +837,7 @@
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">workspace_id</span><span class="p">,</span> <span class="n">files</span> <span class="o">=</span> <span class="n">__task_queue__</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
                 <span class="n">daemon_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s1">&#39;starting DaemonWorker</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_workers_count</span><span class="si">}</span><span class="s1"> for workspace </span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="n">workspace_id</span><span class="p">,</span> <span class="s2">&quot;cyan&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span>
+                    <span class="sa">f</span><span class="s1">&#39;starting DaemonWorker</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_workers_count</span><span class="si">}</span><span class="s1"> for workspace </span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="n">workspace_id</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;cyan&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span>
                 <span class="p">)</span>
                 <span class="n">DaemonWorker</span><span class="p">(</span>
                     <span class="nb">id</span><span class="o">=</span><span class="n">workspace_id</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="n">files</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_workers_count</span><span class="p">)</span>
@@ -860,7 +860,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Dec 21, 2022.
+                    Last updated on Jan 19, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

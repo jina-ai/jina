@@ -662,8 +662,8 @@ DEBUG  Flow@19059 2 Deployments (i.e. 2 Pods) are running in this Flow
 <section id="using-grpc">
 <h4>Using gRPC<a class="headerlink" href="#using-grpc" title="Permalink to this heading">#</a></h4>
 <p>When using grpc, you can use <a class="reference external" href="https://github.com/fullstorydev/grpcurl">grpcurl</a> to hit the Gateway’s gRPC service that is responsible for reporting the Flow status.</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker pull fullstorydev/grpcurl:latest
-docker run --network<span class="o">=</span><span class="s1">&#39;host&#39;</span> fullstorydev/grpcurl -plaintext <span class="m">127</span>.0.0.1:12345 jina.JinaGatewayDryRunRPC/dry_run
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>pull<span class="w"> </span>fullstorydev/grpcurl:latest
+docker<span class="w"> </span>run<span class="w"> </span>--network<span class="o">=</span><span class="s1">&#39;host&#39;</span><span class="w"> </span>fullstorydev/grpcurl<span class="w"> </span>-plaintext<span class="w"> </span><span class="m">127</span>.0.0.1:12345<span class="w"> </span>jina.JinaGatewayDryRunRPC/dry_run
 </pre></div>
 </div>
 <p>The error-free output below signifies a correctly running Flow:</p>
@@ -673,11 +673,11 @@ docker run --network<span class="o">=</span><span class="s1">&#39;host&#39;</spa
 </pre></div>
 </div>
 <p>You can simulate an Executor going offline by killing its process.</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">kill</span> -9 <span class="nv">$EXECUTOR_PID</span> <span class="c1"># in this case we can see in the logs that it is 19059</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">kill</span><span class="w"> </span>-9<span class="w"> </span><span class="nv">$EXECUTOR_PID</span><span class="w"> </span><span class="c1"># in this case we can see in the logs that it is 19059</span>
 </pre></div>
 </div>
 <p>Then by doing the same check, you will see that it returns an error:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker run --network<span class="o">=</span><span class="s1">&#39;host&#39;</span> fullstorydev/grpcurl -plaintext <span class="m">127</span>.0.0.1:12345 jina.JinaGatewayDryRunRPC/dry_run
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>run<span class="w"> </span>--network<span class="o">=</span><span class="s1">&#39;host&#39;</span><span class="w"> </span>fullstorydev/grpcurl<span class="w"> </span>-plaintext<span class="w"> </span><span class="m">127</span>.0.0.1:12345<span class="w"> </span>jina.JinaGatewayDryRunRPC/dry_run
 </pre></div>
 </div>
 <details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
@@ -725,7 +725,7 @@ Error output<div class="sd-summary-down docutils">
 <section id="using-http-or-websocket">
 <h4>Using HTTP or Websocket<a class="headerlink" href="#using-http-or-websocket" title="Permalink to this heading">#</a></h4>
 <p>When using HTTP or Websocket as the Gateway protocol, you can use curl to target the <code class="docutils literal notranslate"><span class="pre">/dry_run</span></code> endpoint and get the status of the Flow.</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>curl http://localhost:12345/dry_run
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>http://localhost:12345/dry_run
 </pre></div>
 </div>
 <p>The error-free output below signifies a correctly running Flow:</p>
@@ -733,7 +733,7 @@ Error output<div class="sd-summary-down docutils">
 </pre></div>
 </div>
 <p>You can simulate an Executor going offline by killing its process.</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">kill</span> -9 <span class="nv">$EXECUTOR_PID</span> <span class="c1"># in this case we can see in the logs that it is 19059</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">kill</span><span class="w"> </span>-9<span class="w"> </span><span class="nv">$EXECUTOR_PID</span><span class="w"> </span><span class="c1"># in this case we can see in the logs that it is 19059</span>
 </pre></div>
 </div>
 <p>Then by doing the same check, you will see that the call returns an error:</p>
@@ -772,8 +772,8 @@ Nevertheless, it is possible to perform these checks as a user.</p>
 </pre></div>
 </div>
 <p>On another terminal, you can use <a class="reference external" href="https://github.com/fullstorydev/grpcurl">grpcurl</a> to send RPC requests to your services.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker pull fullstorydev/grpcurl:latest
-docker run --network<span class="o">=</span><span class="s1">&#39;host&#39;</span> fullstorydev/grpcurl -plaintext <span class="m">127</span>.0.0.1:12346 grpc.health.v1.Health/Check
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>pull<span class="w"> </span>fullstorydev/grpcurl:latest
+docker<span class="w"> </span>run<span class="w"> </span>--network<span class="o">=</span><span class="s1">&#39;host&#39;</span><span class="w"> </span>fullstorydev/grpcurl<span class="w"> </span>-plaintext<span class="w"> </span><span class="m">127</span>.0.0.1:12346<span class="w"> </span>grpc.health.v1.Health/Check
 </pre></div>
 </div>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>{
@@ -790,7 +790,7 @@ docker run --network<span class="o">=</span><span class="s1">&#39;host&#39;</spa
 <h4>Gateway health check with gRPC<a class="headerlink" href="#gateway-health-check-with-grpc" title="Permalink to this heading">#</a></h4>
 <p>When using gRPC as the protocol to communicate with the Gateway, the Gateway uses the exact same mechanism as Executors to expose its health status: It exposes the <a class="reference external" href="https://github.com/grpc/grpc/blob/master/doc/health-checking.md"> standard gRPC health check</a> to the outside world.</p>
 <p>With the same Flow as described before, you can use the same way to check the Gateway status:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker run --network<span class="o">=</span><span class="s1">&#39;host&#39;</span> fullstorydev/grpcurl -plaintext <span class="m">127</span>.0.0.1:12345 grpc.health.v1.Health/Check
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>run<span class="w"> </span>--network<span class="o">=</span><span class="s1">&#39;host&#39;</span><span class="w"> </span>fullstorydev/grpcurl<span class="w"> </span>-plaintext<span class="w"> </span><span class="m">127</span>.0.0.1:12345<span class="w"> </span>grpc.health.v1.Health/Check
 </pre></div>
 </div>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>{
@@ -816,7 +816,7 @@ docker run --network<span class="o">=</span><span class="s1">&#39;host&#39;</spa
 </pre></div>
 </div>
 <p>Then, you can query the “empty” endpoint:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl http://localhost:12345
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>http://localhost:12345
 </pre></div>
 </div>
 <p>And you will get a valid empty response indicating the Gateway’s ability to serve.</p>
@@ -863,7 +863,7 @@ docker run --network<span class="o">=</span><span class="s1">&#39;host&#39;</spa
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 21, 2022</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

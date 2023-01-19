@@ -400,7 +400,7 @@
 
 
 <div class="viewcode-block" id="WebSocketGateway"><a class="viewcode-back" href="../../../../../../../api/jina.serve.runtimes.gateway.websocket.gateway/#jina.serve.runtimes.gateway.websocket.WebSocketGateway">[docs]</a><span class="k">class</span> <span class="nc">WebSocketGateway</span><span class="p">(</span><span class="n">BaseGateway</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;WebSocket Gateway implementation&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;WebSocket Gateway implementation&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -410,7 +410,7 @@
         <span class="n">proxy</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Initialize the gateway</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the gateway</span>
 <span class="sd">        :param ssl_keyfile: the path to the key file</span>
 <span class="sd">        :param ssl_certfile: the path to the certificate file</span>
 <span class="sd">        :param uvicorn_kwargs: Dictionary of kwargs arguments that will be passed to Uvicorn server when starting the server</span>
@@ -428,7 +428,7 @@
             <span class="n">os</span><span class="o">.</span><span class="n">unsetenv</span><span class="p">(</span><span class="s1">&#39;https_proxy&#39;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="WebSocketGateway.setup_server"><a class="viewcode-back" href="../../../../../../../api/jina.serve.runtimes.gateway.websocket.gateway/#jina.serve.runtimes.gateway.websocket.WebSocketGateway.setup_server">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">setup_server</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Setup WebSocket Server</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">extend_rest_interface</span>
@@ -446,10 +446,10 @@
             <span class="kn">from</span> <span class="nn">uvicorn</span> <span class="kn">import</span> <span class="n">Config</span><span class="p">,</span> <span class="n">Server</span>
 
         <span class="k">class</span> <span class="nc">UviServer</span><span class="p">(</span><span class="n">Server</span><span class="p">):</span>
-            <span class="sd">&quot;&quot;&quot;The uvicorn server.&quot;&quot;&quot;</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;The uvicorn server.&quot;&quot;&quot;</span>
 
             <span class="k">async</span> <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sockets</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-                <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">                </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Setup uvicorn server.</span>
 
 <span class="sd">                :param sockets: sockets of server.</span>
@@ -463,7 +463,7 @@
                     <span class="k">return</span>
 
             <span class="k">async</span> <span class="k">def</span> <span class="nf">serve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-                <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">                </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Start the server.</span>
 
 <span class="sd">                :param kwargs: keyword arguments</span>
@@ -502,12 +502,12 @@
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="WebSocketGateway.shutdown"><a class="viewcode-back" href="../../../../../../../api/jina.serve.runtimes.gateway.websocket.gateway/#jina.serve.runtimes.gateway.websocket.WebSocketGateway.shutdown">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Free other resources allocated with the server, e.g, gateway object, ...&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Free other resources allocated with the server, e.g, gateway object, ...&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">should_exit</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="WebSocketGateway.run_server"><a class="viewcode-back" href="../../../../../../../api/jina.serve.runtimes.gateway.websocket.gateway/#jina.serve.runtimes.gateway.websocket.WebSocketGateway.run_server">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">run_server</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Run WebSocket server forever&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Run WebSocket server forever&quot;&quot;&quot;</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">serve</span><span class="p">()</span></div></div>
 </pre></div>
                 </article>
@@ -523,7 +523,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 21, 2022</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

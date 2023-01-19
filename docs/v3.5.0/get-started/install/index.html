@@ -586,17 +586,17 @@
 Standard install enables all major features of Jina and is the recommended installation for most users.</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">via PyPI</label><div class="tab-content docutils">
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip install -U jina
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>-U<span class="w"> </span>jina
 </pre></div>
 </div>
 </div>
 <input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--2">via Conda</label><div class="tab-content docutils">
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>conda install jina -c conda-forge
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>install<span class="w"> </span>jina<span class="w"> </span>-c<span class="w"> </span>conda-forge
 </pre></div>
 </div>
 </div>
 <input class="tab-input" id="tab-set--0-input--3" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--3">via Docker</label><div class="tab-content docutils">
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker run jinaai/jina:latest
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>run<span class="w"> </span>jinaai/jina:latest
 </pre></div>
 </div>
 </div>
@@ -610,17 +610,17 @@ Standard install enables all major features of Jina and is the recommended insta
 <p>Minimum install is often used when building and deploying an Executor.</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--1-input--1" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--1">via PyPI</label><div class="tab-content docutils">
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nv">JINA_PIP_INSTALL_CORE</span><span class="o">=</span><span class="m">1</span> pip install jina
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nv">JINA_PIP_INSTALL_CORE</span><span class="o">=</span><span class="m">1</span><span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>jina
 </pre></div>
 </div>
 </div>
 <input class="tab-input" id="tab-set--1-input--2" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--2">via Conda</label><div class="tab-content docutils">
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>conda install jina-core -c conda-forge
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>install<span class="w"> </span>jina-core<span class="w"> </span>-c<span class="w"> </span>conda-forge
 </pre></div>
 </div>
 </div>
 <input class="tab-input" id="tab-set--1-input--3" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--3">via Docker</label><div class="tab-content docutils">
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker run jinaai/jina:latest
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>run<span class="w"> </span>jinaai/jina:latest
 </pre></div>
 </div>
 </div>
@@ -631,17 +631,17 @@ Standard install enables all major features of Jina and is the recommended insta
 <p>Same as minimum install, but also install <code class="docutils literal notranslate"><span class="pre">uvloop</span></code> and <code class="docutils literal notranslate"><span class="pre">lz4</span></code>.</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--2-input--1" name="tab-set--2" type="radio"><label class="tab-label" for="tab-set--2-input--1">via PyPI</label><div class="tab-content docutils">
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nv">JINA_PIP_INSTALL_PERF</span><span class="o">=</span><span class="m">1</span> pip install jina
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nv">JINA_PIP_INSTALL_PERF</span><span class="o">=</span><span class="m">1</span><span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>jina
 </pre></div>
 </div>
 </div>
 <input class="tab-input" id="tab-set--2-input--2" name="tab-set--2" type="radio"><label class="tab-label" for="tab-set--2-input--2">via Conda</label><div class="tab-content docutils">
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>conda install jina-perf -c conda-forge
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>install<span class="w"> </span>jina-perf<span class="w"> </span>-c<span class="w"> </span>conda-forge
 </pre></div>
 </div>
 </div>
 <input class="tab-input" id="tab-set--2-input--3" name="tab-set--2" type="radio"><label class="tab-label" for="tab-set--2-input--3">via Docker</label><div class="tab-content docutils">
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker run jinaai/jina:latest-perf
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>run<span class="w"> </span>jinaai/jina:latest-perf
 </pre></div>
 </div>
 </div>
@@ -652,12 +652,12 @@ Standard install enables all major features of Jina and is the recommended insta
 <p>This installs additional dependencies, useful for developing Jina itself. This includes Pytest, CI components etc.</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--3-input--1" name="tab-set--3" type="radio"><label class="tab-label" for="tab-set--3-input--1">via PyPI</label><div class="tab-content docutils">
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip install <span class="s2">&quot;jina[devel]&quot;</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;jina[devel]&quot;</span>
 </pre></div>
 </div>
 </div>
 <input class="tab-input" id="tab-set--3-input--2" name="tab-set--3" type="radio"><label class="tab-label" for="tab-set--3-input--2">via Docker</label><div class="tab-content docutils">
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker run jinaai/jina:latest-devel
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>run<span class="w"> </span>jinaai/jina:latest-devel
 </pre></div>
 </div>
 </div>
@@ -668,12 +668,12 @@ Standard install enables all major features of Jina and is the recommended insta
 <p>Prerelease is the version always synced with the <code class="docutils literal notranslate"><span class="pre">master</span></code> branch of Jina’s GitHub repository.</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--4-input--1" name="tab-set--4" type="radio"><label class="tab-label" for="tab-set--4-input--1">via PyPI</label><div class="tab-content docutils">
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip install --pre jina
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>--pre<span class="w"> </span>jina
 </pre></div>
 </div>
 </div>
 <input class="tab-input" id="tab-set--4-input--2" name="tab-set--4" type="radio"><label class="tab-label" for="tab-set--4-input--2">via Docker</label><div class="tab-content docutils">
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker run jinaai/jina:master
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>run<span class="w"> </span>jinaai/jina:master
 </pre></div>
 </div>
 </div>
@@ -683,15 +683,15 @@ Standard install enables all major features of Jina and is the recommended insta
 <section id="autocomplete-commands-on-bash-zsh-and-fish">
 <h2>Autocomplete commands on Bash, Zsh and Fish<a class="headerlink" href="#autocomplete-commands-on-bash-zsh-and-fish" title="Permalink to this heading">#</a></h2>
 <p>After installing Jina via <code class="docutils literal notranslate"><span class="pre">pip</span></code>, you should be able to use your shell’s autocomplete feature while using Jina’s CLI. For example, typing <code class="docutils literal notranslate"><span class="pre">jina</span></code> then hitting your Tab key will provide the following suggestions:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina 
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina<span class="w"> </span>
 
---help          --version       --version-full  check           client          flow            gateway         hello             pod             ping            deployment            hub
+--help<span class="w">          </span>--version<span class="w">       </span>--version-full<span class="w">  </span>check<span class="w">           </span>client<span class="w">          </span>flow<span class="w">            </span>gateway<span class="w">         </span>hello<span class="w">             </span>pod<span class="w">             </span>ping<span class="w">            </span>deployment<span class="w">            </span>hub
 </pre></div>
 </div>
 <p>The autocomplete is context-aware. It also works when you type a second-level argument:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina hub 
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina<span class="w"> </span>hub<span class="w"> </span>
 
---help  new     pull    push
+--help<span class="w">  </span>new<span class="w">     </span>pull<span class="w">    </span>push
 </pre></div>
 </div>
 <p>Currently, the feature is enabled automatically on Bash, Zsh and Fish. It requires you to have a standard shell path as follows:</p>
@@ -755,7 +755,7 @@ Standard install enables all major features of Jina and is the recommended insta
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 21, 2022</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

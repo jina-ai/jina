@@ -449,85 +449,85 @@
 <section id="docker-compose">
 <h3>Docker Compose<a class="headerlink" href="#docker-compose" title="Permalink to this heading">#</a></h3>
 <p>A minimal <code class="docutils literal notranslate"><span class="pre">docker-compose.yml</span></code> file can look like:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;3&quot;</span><span class="w"></span>
-<span class="nt">services</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="c1"># Jaeger</span><span class="w"></span>
-<span class="w">  </span><span class="nt">jaeger</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jaegertracing/all-in-one:latest</span><span class="w"></span>
-<span class="w">    </span><span class="nt">ports</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;16686:16686&quot;</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;3&quot;</span>
+<span class="nt">services</span><span class="p">:</span>
+<span class="w">  </span><span class="c1"># Jaeger</span>
+<span class="w">  </span><span class="nt">jaeger</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jaegertracing/all-in-one:latest</span>
+<span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;16686:16686&quot;</span>
 
-<span class="w">  </span><span class="nt">otel-collector</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">otel/opentelemetry-collector:0.61.0</span><span class="w"></span>
-<span class="w">    </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="w"> </span><span class="s">&quot;--config=/etc/otel-collector-config.yml&quot;</span><span class="w"> </span><span class="p p-Indicator">]</span><span class="w"></span>
-<span class="w">    </span><span class="nt">volumes</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${PWD}/otel-collector-config.yml:/etc/otel-collector-config.yml</span><span class="w"></span>
-<span class="w">    </span><span class="nt">ports</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;8888&quot;</span><span class="w"> </span><span class="c1"># Prometheus metrics exposed by the collector</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;8889&quot;</span><span class="w"> </span><span class="c1"># Prometheus exporter metrics</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;4317:4317&quot;</span><span class="w"> </span><span class="c1"># OTLP gRPC receiver</span><span class="w"></span>
-<span class="w">    </span><span class="nt">depends_on</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jaeger</span><span class="w"></span>
+<span class="w">  </span><span class="nt">otel-collector</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">otel/opentelemetry-collector:0.61.0</span>
+<span class="w">    </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="w"> </span><span class="s">&quot;--config=/etc/otel-collector-config.yml&quot;</span><span class="w"> </span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${PWD}/otel-collector-config.yml:/etc/otel-collector-config.yml</span>
+<span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;8888&quot;</span><span class="w"> </span><span class="c1"># Prometheus metrics exposed by the collector</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;8889&quot;</span><span class="w"> </span><span class="c1"># Prometheus exporter metrics</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;4317:4317&quot;</span><span class="w"> </span><span class="c1"># OTLP gRPC receiver</span>
+<span class="w">    </span><span class="nt">depends_on</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jaeger</span>
 
-<span class="w">  </span><span class="nt">prometheus</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">container_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">prometheus</span><span class="w"></span>
-<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">prom/prometheus:latest</span><span class="w"></span>
-<span class="w">    </span><span class="nt">volumes</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${PWD}/prometheus-config.yml:/etc/prometheus/prometheus.yml</span><span class="w"></span>
-<span class="w">    </span><span class="nt">ports</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;9090:9090&quot;</span><span class="w"></span>
+<span class="w">  </span><span class="nt">prometheus</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">container_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">prometheus</span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">prom/prometheus:latest</span>
+<span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${PWD}/prometheus-config.yml:/etc/prometheus/prometheus.yml</span>
+<span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;9090:9090&quot;</span>
 
-<span class="w">  </span><span class="nt">grafana</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">container_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">grafana</span><span class="w"></span>
-<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">grafana/grafana-oss:latest</span><span class="w"></span>
-<span class="w">    </span><span class="nt">ports</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3000:3000</span><span class="w"></span>
+<span class="w">  </span><span class="nt">grafana</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">container_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">grafana</span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">grafana/grafana-oss:latest</span>
+<span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3000:3000</span>
 </pre></div>
 </div>
 <p>The corresponding OpenTelemetry Collector configuration below needs to be stored in file <code class="docutils literal notranslate"><span class="pre">otel-collector-config.yml</span></code>:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">receivers</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">otlp</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">protocols</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">grpc</span><span class="p">:</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">receivers</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">otlp</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">protocols</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">grpc</span><span class="p">:</span>
 
-<span class="nt">exporters</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">jaeger</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">endpoint</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jaeger:14250</span><span class="w"></span>
-<span class="w">    </span><span class="nt">tls</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">insecure</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="nt">exporters</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">jaeger</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">endpoint</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jaeger:14250</span>
+<span class="w">    </span><span class="nt">tls</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">insecure</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class="w">  </span>
-<span class="w">  </span><span class="nt">prometheus</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">endpoint</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;0.0.0.0:8889&quot;</span><span class="w"></span>
-<span class="w">    </span><span class="nt">resource_to_telemetry_conversion</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
-<span class="w">    </span><span class="c1"># can be used to add additional labels</span><span class="w"></span>
-<span class="w">    </span><span class="nt">const_labels</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">label1</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">value1</span><span class="w"></span>
+<span class="w">  </span><span class="nt">prometheus</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">endpoint</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;0.0.0.0:8889&quot;</span>
+<span class="w">    </span><span class="nt">resource_to_telemetry_conversion</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="c1"># can be used to add additional labels</span>
+<span class="w">    </span><span class="nt">const_labels</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">label1</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">value1</span>
 
-<span class="nt">processors</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">batch</span><span class="p">:</span><span class="w"></span>
+<span class="nt">processors</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">batch</span><span class="p">:</span>
 
-<span class="nt">service</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">extensions</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span><span class="w"></span>
-<span class="w">  </span><span class="nt">pipelines</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">traces</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">receivers</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">otlp</span><span class="p p-Indicator">]</span><span class="w"></span>
-<span class="w">      </span><span class="nt">exporters</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">jaeger</span><span class="p p-Indicator">]</span><span class="w"></span>
-<span class="w">      </span><span class="nt">processors</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">batch</span><span class="p p-Indicator">]</span><span class="w"></span>
-<span class="w">    </span><span class="nt">metrics</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">receivers</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">otlp</span><span class="p p-Indicator">]</span><span class="w"></span>
-<span class="w">      </span><span class="nt">processors</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">batch</span><span class="p p-Indicator">]</span><span class="w"></span>
-<span class="w">      </span><span class="nt">exporters</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">prometheus</span><span class="p p-Indicator">]</span><span class="w"></span>
+<span class="nt">service</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">extensions</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
+<span class="w">  </span><span class="nt">pipelines</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">traces</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">receivers</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">otlp</span><span class="p p-Indicator">]</span>
+<span class="w">      </span><span class="nt">exporters</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">jaeger</span><span class="p p-Indicator">]</span>
+<span class="w">      </span><span class="nt">processors</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">batch</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="nt">metrics</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">receivers</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">otlp</span><span class="p p-Indicator">]</span>
+<span class="w">      </span><span class="nt">processors</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">batch</span><span class="p p-Indicator">]</span>
+<span class="w">      </span><span class="nt">exporters</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">prometheus</span><span class="p p-Indicator">]</span>
 </pre></div>
 </div>
 <p>This setup creates a gRPC Collector Receiver on port 4317 that collects data pushed by the Flow Pods. Collector exporters for Jaeger and Prometheus backends are configured to export tracing and metrics data respectively. The final <strong>service</strong> section creates a collector pipeline combining the receiver (collect data) and exporter (to backend), process (batching) sub-components.</p>
 <p>The minimal Prometheus configuration needs to be stored in <code class="docutils literal notranslate"><span class="pre">prometheus-config.yml</span></code>.</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">scrape_configs</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">job_name</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;otel-collector&#39;</span><span class="w"></span>
-<span class="w">    </span><span class="nt">scrape_interval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">500ms</span><span class="w"></span>
-<span class="w">    </span><span class="nt">static_configs</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">targets</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;otel-collector:8889&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">targets</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;otel-collector:8888&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">scrape_configs</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">job_name</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;otel-collector&#39;</span>
+<span class="w">    </span><span class="nt">scrape_interval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">500ms</span>
+<span class="w">    </span><span class="nt">static_configs</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">targets</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;otel-collector:8889&#39;</span><span class="p p-Indicator">]</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">targets</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;otel-collector:8888&#39;</span><span class="p p-Indicator">]</span>
 </pre></div>
 </div>
 <p>The Prometheus configuration now only needs to scrape from the OpenTelemetry Collector to get all the data from OpenTelemetry Metrics instrumented applications.</p>
@@ -608,7 +608,7 @@ To update your existing Prometheus and Grafana configurations, refer to the <a c
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 21, 2022</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

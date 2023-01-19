@@ -619,18 +619,18 @@
 </ul>
 </div></blockquote>
 <dl>
-<dt>An example V1 YAML config can be found below:</dt><dd><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="kt">!Flow</span><span class="w"></span>
-<span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;1.0&#39;</span><span class="w"></span>
-<span class="nt">deployments</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executor0</span><span class="w">  </span><span class="c1"># notice the change here, name is now an attribute</span><span class="w"></span>
-<span class="w">    </span><span class="nt">method</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">add</span><span class="w">  </span><span class="c1"># by default method is always add, available: add, needs, inspect</span><span class="w"></span>
-<span class="w">    </span><span class="nt">needs</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">gateway</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executor1</span><span class="w">  </span><span class="c1"># notice the change here, name is now an attribute</span><span class="w"></span>
-<span class="w">    </span><span class="nt">method</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">add</span><span class="w">  </span><span class="c1"># by default method is always add, available: add, needs, inspect</span><span class="w"></span>
-<span class="w">    </span><span class="nt">needs</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">gateway</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">method</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">inspect</span><span class="w">  </span><span class="c1"># add an inspect node on executor1</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">method</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">needs</span><span class="w">  </span><span class="c1"># let&#39;s try something new in Flow YAML v1: needs</span><span class="w"></span>
-<span class="w">    </span><span class="nt">needs</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">executor1</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">executor0</span><span class="p p-Indicator">]</span><span class="w"></span>
+<dt>An example V1 YAML config can be found below:</dt><dd><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="kt">!Flow</span>
+<span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;1.0&#39;</span>
+<span class="nt">deployments</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executor0</span><span class="w">  </span><span class="c1"># notice the change here, name is now an attribute</span>
+<span class="w">    </span><span class="nt">method</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">add</span><span class="w">  </span><span class="c1"># by default method is always add, available: add, needs, inspect</span>
+<span class="w">    </span><span class="nt">needs</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">gateway</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executor1</span><span class="w">  </span><span class="c1"># notice the change here, name is now an attribute</span>
+<span class="w">    </span><span class="nt">method</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">add</span><span class="w">  </span><span class="c1"># by default method is always add, available: add, needs, inspect</span>
+<span class="w">    </span><span class="nt">needs</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">gateway</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">method</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">inspect</span><span class="w">  </span><span class="c1"># add an inspect node on executor1</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">method</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">needs</span><span class="w">  </span><span class="c1"># let&#39;s try something new in Flow YAML v1: needs</span>
+<span class="w">    </span><span class="nt">needs</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">executor1</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">executor0</span><span class="p p-Indicator">]</span>
 </pre></div>
 </div>
 </dd>
@@ -713,7 +713,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Dec 21, 2022.
+                    Last updated on Jan 19, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

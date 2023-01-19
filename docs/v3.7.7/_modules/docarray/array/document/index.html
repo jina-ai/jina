@@ -396,7 +396,7 @@
     <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span> <span class="n">_docs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;DocumentArraySourceType&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">copy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;DocumentArrayInMemory&#39;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Create an in-memory DocumentArray object.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create an in-memory DocumentArray object.&quot;&quot;&quot;</span>
         <span class="o">...</span>
 
     <span class="nd">@overload</span>
@@ -406,7 +406,7 @@
         <span class="n">storage</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;sqlite&#39;</span><span class="p">,</span>
         <span class="n">config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="s1">&#39;SqliteConfig&#39;</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;DocumentArraySqlite&#39;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Create a SQLite-powered DocumentArray object.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a SQLite-powered DocumentArray object.&quot;&quot;&quot;</span>
         <span class="o">...</span>
 
     <span class="nd">@overload</span>
@@ -416,7 +416,7 @@
         <span class="n">storage</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;weaviate&#39;</span><span class="p">,</span>
         <span class="n">config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="s1">&#39;WeaviateConfig&#39;</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;DocumentArrayWeaviate&#39;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Create a Weaviate-powered DocumentArray object.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a Weaviate-powered DocumentArray object.&quot;&quot;&quot;</span>
         <span class="o">...</span>
 
     <span class="nd">@overload</span>
@@ -426,7 +426,7 @@
         <span class="n">storage</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;annlite&#39;</span><span class="p">,</span>
         <span class="n">config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="s1">&#39;AnnliteConfig&#39;</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;DocumentArrayAnnlite&#39;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Create a AnnLite-powered DocumentArray object.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a AnnLite-powered DocumentArray object.&quot;&quot;&quot;</span>
         <span class="o">...</span>
 
     <span class="nd">@overload</span>
@@ -436,14 +436,14 @@
         <span class="n">storage</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;elasticsearch&#39;</span><span class="p">,</span>
         <span class="n">config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="s1">&#39;ElasticConfig&#39;</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;DocumentArrayElastic&#39;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Create a Elastic-powered DocumentArray object.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a Elastic-powered DocumentArray object.&quot;&quot;&quot;</span>
         <span class="o">...</span>
 
     <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span>
 
     <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Ensures that offset2ids are stored in the db after</span>
 <span class="sd">        operations in the DocumentArray are performed.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -495,7 +495,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 21, 2022</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

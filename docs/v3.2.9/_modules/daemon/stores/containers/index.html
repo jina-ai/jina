@@ -659,7 +659,7 @@
 
 
 <div class="viewcode-block" id="ContainerStore"><a class="viewcode-back" href="../../../../api/daemon.stores.containers/#daemon.stores.containers.ContainerStore">[docs]</a><span class="k">class</span> <span class="nc">ContainerStore</span><span class="p">(</span><span class="n">BaseStore</span><span class="p">,</span> <span class="n">ABC</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;A Store of Containers spawned by daemon&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A Store of Containers spawned by daemon&quot;&quot;&quot;</span>
 
     <span class="n">_kind</span> <span class="o">=</span> <span class="s1">&#39;container&#39;</span>
     <span class="n">_status_model</span> <span class="o">=</span> <span class="n">ContainerStoreStatus</span>
@@ -667,20 +667,20 @@
 
 <div class="viewcode-block" id="ContainerStore.add_in_partial"><a class="viewcode-back" href="../../../../api/daemon.stores.containers/#daemon.stores.containers.ContainerStore.add_in_partial">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">add_in_partial</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uri</span><span class="p">,</span> <span class="n">envs</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Implements jina object creation in `partial-daemon`</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Implements jina object creation in `partial-daemon`</span>
 
 <span class="sd">        .. #noqa: DAR101&quot;&quot;&quot;</span>
         <span class="o">...</span></div>
 
 <div class="viewcode-block" id="ContainerStore.delete_in_partial"><a class="viewcode-back" href="../../../../api/daemon.stores.containers/#daemon.stores.containers.ContainerStore.delete_in_partial">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">delete_in_partial</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uri</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Implements jina object termination in `partial-daemon`</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Implements jina object termination in `partial-daemon`</span>
 
 <span class="sd">        .. #noqa: DAR101&quot;&quot;&quot;</span>
         <span class="o">...</span></div>
 
 <div class="viewcode-block" id="ContainerStore.ready"><a class="viewcode-back" href="../../../../api/daemon.stores.containers/#daemon.stores.containers.ContainerStore.ready">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">ready</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uri</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Check if the container with partial-daemon is alive</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if the container with partial-daemon is alive</span>
 
 <span class="sd">        :param uri: uri of partial-daemon</span>
 <span class="sd">        :return: True if partial-daemon is ready&quot;&quot;&quot;</span>
@@ -706,7 +706,7 @@
         <span class="k">return</span> <span class="kc">False</span></div>
 
     <span class="k">def</span> <span class="nf">_uri</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">port</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Returns uri of partial-daemon.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns uri of partial-daemon.</span>
 
 <span class="sd">        NOTE: JinaD (running inside a container) needs to access other containers via dockerhost.</span>
 <span class="sd">        Mac/WSL: this would work as is, as dockerhost is accessible.</span>
@@ -728,7 +728,7 @@
             <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;http://</span><span class="si">{</span><span class="n">__docker_host__</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">port</span><span class="si">}</span><span class="s1">&#39;</span>
 
     <span class="k">def</span> <span class="nf">_entrypoint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">port</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">workspace_id</span><span class="p">:</span> <span class="n">DaemonID</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Returns entrypoint for partial-daemon container to be appended to default entrypoint</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns entrypoint for partial-daemon container to be appended to default entrypoint</span>
 
 <span class="sd">        NOTE: Important to set `workspace_id` here as this gets set in jina objects in the container</span>
 
@@ -751,7 +751,7 @@
         <span class="n">device_requests</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DaemonID</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Add a container to the store</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a container to the store</span>
 
 <span class="sd">        :param id: id of the container</span>
 <span class="sd">        :param workspace_id: workspace id where the container lives</span>
@@ -851,7 +851,7 @@
                 <span class="n">workspace_id</span><span class="o">=</span><span class="n">workspace_id</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="s2">&quot;green&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1"> is added to workspace </span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="n">workspace_id</span><span class="p">,</span> <span class="s2">&quot;green&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span>
+                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;green&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1"> is added to workspace </span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="n">workspace_id</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;green&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span>
             <span class="p">)</span>
             <span class="n">workspace_store</span><span class="p">[</span><span class="n">workspace_id</span><span class="p">]</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">managed_objects</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
             <span class="k">return</span> <span class="nb">id</span>
@@ -873,14 +873,14 @@
 
     <span class="nd">@BaseStore</span><span class="o">.</span><span class="n">dump</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="n">DaemonID</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Delete a container from the store</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Delete a container from the store</span>
 
 <span class="sd">        :param id: id of the container</span>
 <span class="sd">        :param kwargs: keyword args</span>
 <span class="sd">        :raises KeyError: if id doesn&#39;t exist in the store</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="s2">&quot;red&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1"> not found in store.&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;red&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1"> not found in store.&#39;</span><span class="p">)</span>
 
         <span class="n">uri</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">uri</span>
         <span class="k">try</span><span class="p">:</span>
@@ -895,10 +895,10 @@
 
             <span class="n">Dockerizer</span><span class="o">.</span><span class="n">rm_container</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
             <span class="n">workspace_store</span><span class="p">[</span><span class="n">workspace_id</span><span class="p">]</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">managed_objects</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="s2">&quot;green&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1"> is released from the store.&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;green&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1"> is released from the store.&#39;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="ContainerStore.clear"><a class="viewcode-back" href="../../../../api/daemon.stores.containers/#daemon.stores.containers.ContainerStore.clear">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Delete all the objects in the store</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Delete all the objects in the store</span>
 
 <span class="sd">        :param kwargs: keyward args</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -917,7 +917,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Dec 21, 2022.
+                    Last updated on Jan 19, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

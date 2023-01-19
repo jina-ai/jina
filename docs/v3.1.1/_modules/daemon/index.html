@@ -782,7 +782,7 @@
 
 
 <div class="viewcode-block" id="setup"><a class="viewcode-back" href="../../api/daemon/#daemon.setup">[docs]</a><span class="k">def</span> <span class="nf">setup</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;Setup steps for JinaD&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Setup steps for JinaD&quot;&quot;&quot;</span>
     <span class="n">_update_default_args</span><span class="p">()</span>
     <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">__root_workspace__</span><span class="p">)</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">_start_consumer</span><span class="p">()</span>
@@ -790,7 +790,7 @@
 
 
 <div class="viewcode-block" id="teardown"><a class="viewcode-back" href="../../api/daemon/#daemon.teardown">[docs]</a><span class="k">def</span> <span class="nf">teardown</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;Cleanup steps for JinaD&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Cleanup steps for JinaD&quot;&quot;&quot;</span>
     <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__stop_msg__</span>
 
     <span class="n">daemon_logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="n">__stop_msg__</span><span class="p">)</span>
@@ -798,7 +798,7 @@
 
 
 <div class="viewcode-block" id="main"><a class="viewcode-back" href="../../api/daemon/#daemon.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;Entrypoint for JinaD&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Entrypoint for JinaD&quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">setup</span><span class="p">()</span>
     <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
@@ -818,7 +818,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Dec 21, 2022.
+                    Last updated on Jan 19, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

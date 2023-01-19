@@ -447,17 +447,17 @@
 <p>Make sure that you have Python 3.7+ installed on Linux/MacOS/<a class="reference internal" href="get-started/install/windows/#jina-on-windows"><span class="std std-ref">Windows</span></a>.</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">via PyPI</label><div class="tab-content docutils">
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip install -U jina
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>-U<span class="w"> </span>jina
 </pre></div>
 </div>
 </div>
 <input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--2">via Conda</label><div class="tab-content docutils">
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>conda install jina -c conda-forge
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>install<span class="w"> </span>jina<span class="w"> </span>-c<span class="w"> </span>conda-forge
 </pre></div>
 </div>
 </div>
 <input class="tab-input" id="tab-set--0-input--3" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--3">via Docker</label><div class="tab-content docutils">
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker pull jinaai/jina:latest
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>pull<span class="w"> </span>jinaai/jina:latest
 </pre></div>
 </div>
 </div>
@@ -465,24 +465,24 @@
 <p>Now that you’re set up, let’s create a project:</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--1-input--1" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--1">In host</label><div class="tab-content docutils">
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>jina new hello-jina
-<span class="nb">cd</span> hello-jina
-jina flow --uses flow.yml
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>jina<span class="w"> </span>new<span class="w"> </span>hello-jina
+<span class="nb">cd</span><span class="w"> </span>hello-jina
+jina<span class="w"> </span>flow<span class="w"> </span>--uses<span class="w"> </span>flow.yml
 </pre></div>
 </div>
 </div>
 <input class="tab-input" id="tab-set--1-input--2" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--2">Inside Docker</label><div class="tab-content docutils">
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker run -it --entrypoint<span class="o">=</span>/bin/bash jinaai/jina:latest -p <span class="m">54321</span>:54321
-jina new hello-jina
-<span class="nb">cd</span> hello-jina
-jina flow --uses flow.yml
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>run<span class="w"> </span>-it<span class="w"> </span>--entrypoint<span class="o">=</span>/bin/bash<span class="w"> </span>jinaai/jina:latest<span class="w"> </span>-p<span class="w"> </span><span class="m">54321</span>:54321
+jina<span class="w"> </span>new<span class="w"> </span>hello-jina
+<span class="nb">cd</span><span class="w"> </span>hello-jina
+jina<span class="w"> </span>flow<span class="w"> </span>--uses<span class="w"> </span>flow.yml
 </pre></div>
 </div>
 </div>
 </div>
 <p>Run the client on your machine and observe the results from your terminal.</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python client.py
-<span class="o">[</span><span class="s1">&#39;hello, world!&#39;</span>, <span class="s1">&#39;goodbye, world!&#39;</span><span class="o">]</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>client.py
+<span class="o">[</span><span class="s1">&#39;hello, world!&#39;</span>,<span class="w"> </span><span class="s1">&#39;goodbye, world!&#39;</span><span class="o">]</span>
 </pre></div>
 </div>
 </section>
@@ -602,7 +602,7 @@ and <a class="reference external" href="https://youtube.com/c/jina-ai">live stre
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 21, 2022</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

@@ -588,7 +588,7 @@
 
 
 <div class="viewcode-block" id="add_arg_group"><a class="viewcode-back" href="../../../../api/jina.parsers.helper/#jina.parsers.helper.add_arg_group">[docs]</a><span class="k">def</span> <span class="nf">add_arg_group</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">title</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Add the arguments for a specific group to the parser</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Add the arguments for a specific group to the parser</span>
 
 <span class="sd">    :param parser: the parser configure</span>
 <span class="sd">    :param title: the group name</span>
@@ -598,13 +598,13 @@
 
 
 <div class="viewcode-block" id="KVAppendAction"><a class="viewcode-back" href="../../../../api/jina.parsers.helper/#jina.parsers.helper.KVAppendAction">[docs]</a><span class="k">class</span> <span class="nc">KVAppendAction</span><span class="p">(</span><span class="n">argparse</span><span class="o">.</span><span class="n">Action</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;argparse action to split an argument into KEY=VALUE form</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;argparse action to split an argument into KEY=VALUE form</span>
 <span class="sd">    on the first = and append to a dictionary.</span>
 <span class="sd">    This is used for setting up --env</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parser</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">option_string</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        call the KVAppendAction</span>
 
 
@@ -699,7 +699,7 @@
                         <span class="n">attrs</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;dark&#39;</span><span class="p">],</span>
                     <span class="p">)</span>
                 <span class="k">elif</span> <span class="n">action</span><span class="o">.</span><span class="n">choices</span><span class="p">:</span>
-                    <span class="n">choices_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="se">{{</span><span class="si">{</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">action</span><span class="o">.</span><span class="n">choices</span><span class="p">])</span><span class="si">}</span><span class="se">}}</span><span class="s1">&#39;</span>
+                    <span class="n">choices_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="se">{{</span><span class="si">{</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">c</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">action</span><span class="o">.</span><span class="n">choices</span><span class="p">])</span><span class="si">}</span><span class="se">}}</span><span class="s1">&#39;</span>
                     <span class="n">help_string</span> <span class="o">=</span> <span class="n">colored</span><span class="p">(</span>
                         <span class="s1">&#39;choose from: &#39;</span> <span class="o">+</span> <span class="n">choices_str</span> <span class="o">+</span> <span class="s1">&#39;; default: </span><span class="si">%(default)s</span><span class="s1">&#39;</span><span class="p">,</span>
                         <span class="n">attrs</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;dark&#39;</span><span class="p">],</span>
@@ -710,9 +710,9 @@
                     <span class="p">)</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;&#39;&#39;</span>
 <span class="s1">        </span>
-<span class="s1">        </span><span class="si">{</span><span class="n">help_string</span><span class="si">}</span><span class="s1"></span>
+<span class="s1">        </span><span class="si">{</span><span class="n">help_string</span><span class="si">}</span>
 <span class="s1">        </span>
-<span class="s1">        </span><span class="si">{</span><span class="n">action</span><span class="o">.</span><span class="n">help</span><span class="si">}</span><span class="s1"></span>
+<span class="s1">        </span><span class="si">{</span><span class="n">action</span><span class="o">.</span><span class="n">help</span><span class="si">}</span>
 <span class="s1">        </span>
 <span class="s1">        &#39;&#39;&#39;</span>
 
@@ -741,7 +741,7 @@
 
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">action</span><span class="o">.</span><span class="n">choices</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">4</span><span class="p">:</span>
                 <span class="n">choice_strs</span> <span class="o">=</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">action</span><span class="o">.</span><span class="n">choices</span><span class="p">][:</span><span class="mi">4</span><span class="p">])</span>
-                <span class="n">result</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="se">{{</span><span class="si">{</span><span class="n">choice_strs</span><span class="si">}</span><span class="s1"> ... </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">action</span><span class="o">.</span><span class="n">choices</span><span class="p">)</span> <span class="o">-</span> <span class="mi">4</span><span class="si">}</span><span class="s1"> more choices</span><span class="se">}}</span><span class="s1">&#39;</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="se">{{</span><span class="si">{</span><span class="n">choice_strs</span><span class="si">}</span><span class="s1"> ... </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">action</span><span class="o">.</span><span class="n">choices</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">4</span><span class="si">}</span><span class="s1"> more choices</span><span class="se">}}</span><span class="s1">&#39;</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">choice_strs</span> <span class="o">=</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">action</span><span class="o">.</span><span class="n">choices</span><span class="p">])</span>
                 <span class="n">result</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="se">{{</span><span class="si">{</span><span class="n">choice_strs</span><span class="si">}</span><span class="se">}}</span><span class="s1">&#39;</span>
@@ -764,7 +764,7 @@
         <span class="k">return</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_indents</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Return line indent level and &quot;sub_indent&quot; for bullet list text.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return line indent level and &quot;sub_indent&quot; for bullet list text.</span>
 
 <span class="sd">        :param line: the line to check</span>
 <span class="sd">        :return: indentation of line and indentation of sub-items</span>
@@ -781,7 +781,7 @@
         <span class="k">return</span> <span class="n">indent</span><span class="p">,</span> <span class="n">sub_indent</span>
 
     <span class="k">def</span> <span class="nf">_split_paragraphs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Split text into paragraphs of like-indented lines.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Split text into paragraphs of like-indented lines.</span>
 
 <span class="sd">        :param text: the text input</span>
 <span class="sd">        :return: list of paragraphs</span>
@@ -812,7 +812,7 @@
         <span class="k">return</span> <span class="n">paragraphs</span>
 
     <span class="k">def</span> <span class="nf">_para_reformat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">width</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Format text, by paragraph.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Format text, by paragraph.</span>
 
 <span class="sd">        :param text: the text to format</span>
 <span class="sd">        :param width: the width to apply</span>
@@ -854,7 +854,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 21, 2022</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

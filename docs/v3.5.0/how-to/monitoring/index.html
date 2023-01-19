@@ -603,7 +603,7 @@ Fortunately, the <a class="reference external" href="https://github.com/promethe
 <li><p>You can extend your monitoring with the rich built-in Kubernetes metrics</p></li>
 </ul>
 <p>Deploying Prometheus and Grafana on your k8s cluster is as easy as executing the following line:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>helm install prometheus prometheus-community/kube-prometheus-stack --set prometheus.prometheusSpec.serviceMonitorSelectorNilUsesHelmValues<span class="o">=</span><span class="nb">false</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>helm<span class="w"> </span>install<span class="w"> </span>prometheus<span class="w"> </span>prometheus-community/kube-prometheus-stack<span class="w"> </span>--set<span class="w"> </span>prometheus.prometheusSpec.serviceMonitorSelectorNilUsesHelmValues<span class="o">=</span><span class="nb">false</span>
 </pre></div>
 </div>
 <div class="admonition hint">
@@ -623,29 +623,29 @@ Fortunately, the <a class="reference external" href="https://github.com/promethe
 <p>You can see in-depth how to deploy a Flow on kubernetes <a class="reference internal" href="../kubernetes/#kubernetes"><span class="std std-ref">here</span></a></p>
 </div>
 <p>Then deploy the Flow:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>kubectl apply -R -f config
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>kubectl<span class="w"> </span>apply<span class="w"> </span>-R<span class="w"> </span>-f<span class="w"> </span>config
 </pre></div>
 </div>
 <p>Wait for a couple of minutes, and you should see that the Pods are ready:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>kubectl get pods
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>kubectl<span class="w"> </span>get<span class="w"> </span>pods
 </pre></div>
 </div>
 <figure class="align-center">
 <img alt="../../_images/kubectl_pods.png" src="../../_images/kubectl_pods.png" />
 </figure>
 <p>Then you can see that the new metrics endpoints are automatically discovered:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>kubectl port-forward svc/prometheus-operated <span class="m">9090</span>:9090
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>kubectl<span class="w"> </span>port-forward<span class="w"> </span>svc/prometheus-operated<span class="w"> </span><span class="m">9090</span>:9090
 </pre></div>
 </div>
 <figure class="align-center">
 <img alt="../../_images/prometheus_target.png" src="../../_images/prometheus_target.png" />
 </figure>
 <p>Before querying the gateway you need to port-forward</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>kubectl port-forward svc/gateway <span class="m">8080</span>:8080
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>kubectl<span class="w"> </span>port-forward<span class="w"> </span>svc/gateway<span class="w"> </span><span class="m">8080</span>:8080
 </pre></div>
 </div>
 <p>Now to access Grafana just do</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>kb port-forward svc/prometheus-grafana <span class="m">3000</span>:80
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>kb<span class="w"> </span>port-forward<span class="w"> </span>svc/prometheus-grafana<span class="w"> </span><span class="m">3000</span>:80
 </pre></div>
 </div>
 <p>and open <code class="docutils literal notranslate"><span class="pre">http://localhost:3000</span></code> in your browser</p>
@@ -674,7 +674,7 @@ Fortunately, the <a class="reference external" href="https://github.com/promethe
 <span class="p">)</span><span class="o">.</span><span class="n">to_docker_compose_yaml</span><span class="p">(</span><span class="s1">&#39;config.yaml&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker-compose -f config.yaml up
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker-compose<span class="w"> </span>-f<span class="w"> </span>config.yaml<span class="w"> </span>up
 </pre></div>
 </div>
 </div>
@@ -682,12 +682,12 @@ Fortunately, the <a class="reference external" href="https://github.com/promethe
 <p>To monitor a flow locally you will need to install Prometheus and Grafana locally. The easiest way to do it is by using
 Docker Compose</p>
 <p>First clone the repo which contains the config file:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git clone https://github.com/jina-ai/example-grafana-prometheus
-<span class="nb">cd</span> example-grafana-prometheus/prometheus-grafana-local
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/jina-ai/example-grafana-prometheus
+<span class="nb">cd</span><span class="w"> </span>example-grafana-prometheus/prometheus-grafana-local
 </pre></div>
 </div>
 <p>then</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker-compose up
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker-compose<span class="w"> </span>up
 </pre></div>
 </div>
 <p>You can access the Grafana dashboard at <code class="docutils literal notranslate"><span class="pre">http://localhost:3000</span></code>. the username is <code class="docutils literal notranslate"><span class="pre">admin</span></code> and the password <code class="docutils literal notranslate"><span class="pre">foobar</span></code>.</p>
@@ -764,7 +764,7 @@ ports by modifying this <a class="reference external" href="https://github.com/j
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 21, 2022</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

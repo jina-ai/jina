@@ -405,7 +405,7 @@
 
 
 <div class="viewcode-block" id="mixin_remote_runtime_parser"><a class="viewcode-back" href="../../../../../../api/jina.parsers.orchestrate.runtimes.remote/#jina.parsers.orchestrate.runtimes.remote.mixin_remote_runtime_parser">[docs]</a><span class="k">def</span> <span class="nf">mixin_remote_runtime_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Add the options for a remote Executor</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Add the options for a remote Executor</span>
 <span class="sd">    :param parser: the parser</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">gp</span> <span class="o">=</span> <span class="n">add_arg_group</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;RemoteRuntime&#39;</span><span class="p">)</span>
@@ -423,7 +423,7 @@
 
 
 <div class="viewcode-block" id="mixin_client_gateway_parser"><a class="viewcode-back" href="../../../../../../api/jina.parsers.orchestrate.runtimes.remote/#jina.parsers.orchestrate.runtimes.remote.mixin_client_gateway_parser">[docs]</a><span class="k">def</span> <span class="nf">mixin_client_gateway_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Add the options for the client connecting to the Gateway</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Add the options for the client connecting to the Gateway</span>
 <span class="sd">    :param parser: the parser</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">gp</span> <span class="o">=</span> <span class="n">add_arg_group</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;ClientGateway&#39;</span><span class="p">)</span>
@@ -453,7 +453,7 @@
 
 
 <div class="viewcode-block" id="mixin_gateway_streamer_parser"><a class="viewcode-back" href="../../../../../../api/jina.parsers.orchestrate.runtimes.remote/#jina.parsers.orchestrate.runtimes.remote.mixin_gateway_streamer_parser">[docs]</a><span class="k">def</span> <span class="nf">mixin_gateway_streamer_parser</span><span class="p">(</span><span class="n">arg_group</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Mixin for gateway stream arguments.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Mixin for gateway stream arguments.</span>
 <span class="sd">    :param arg_group: args group</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">arg_group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
@@ -508,7 +508,7 @@
 
 
 <div class="viewcode-block" id="mixin_gateway_parser"><a class="viewcode-back" href="../../../../../../api/jina.parsers.orchestrate.runtimes.remote/#jina.parsers.orchestrate.runtimes.remote.mixin_gateway_parser">[docs]</a><span class="k">def</span> <span class="nf">mixin_gateway_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Add the options for remote expose at the Gateway</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Add the options for remote expose at the Gateway</span>
 <span class="sd">    :param parser: the parser</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">gp</span> <span class="o">=</span> <span class="n">add_arg_group</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Gateway&#39;</span><span class="p">)</span>
@@ -563,7 +563,7 @@
 
 
 <div class="viewcode-block" id="mixin_gateway_protocol_parser"><a class="viewcode-back" href="../../../../../../api/jina.parsers.orchestrate.runtimes.remote/#jina.parsers.orchestrate.runtimes.remote.mixin_gateway_protocol_parser">[docs]</a><span class="k">def</span> <span class="nf">mixin_gateway_protocol_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Add the arguments for the protocol to the gateway parser</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Add the arguments for the protocol to the gateway parser</span>
 
 <span class="sd">    :param parser: the parser configure</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -577,7 +577,7 @@
         <span class="nb">type</span><span class="o">=</span><span class="n">GatewayProtocolType</span><span class="o">.</span><span class="n">from_string</span><span class="p">,</span>
         <span class="n">choices</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">GatewayProtocolType</span><span class="p">),</span>
         <span class="n">default</span><span class="o">=</span><span class="p">[</span><span class="n">GatewayProtocolType</span><span class="o">.</span><span class="n">GRPC</span><span class="p">],</span>
-        <span class="n">help</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;Communication protocol of the server exposed by the Gateway. This can be a single value or a list of protocols, depending on your chosen Gateway. Choose the convenient protocols from: </span><span class="si">{</span><span class="p">[</span><span class="n">protocol</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span> <span class="k">for</span> <span class="n">protocol</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">GatewayProtocolType</span><span class="p">)]</span><span class="si">}</span><span class="s1">.&#39;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;Communication protocol of the server exposed by the Gateway. This can be a single value or a list of protocols, depending on your chosen Gateway. Choose the convenient protocols from: </span><span class="si">{</span><span class="p">[</span><span class="n">protocol</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">protocol</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nb">list</span><span class="p">(</span><span class="n">GatewayProtocolType</span><span class="p">)]</span><span class="si">}</span><span class="s1">.&#39;</span><span class="p">,</span>
     <span class="p">)</span></div>
 
 
@@ -604,7 +604,7 @@
 
 
 <div class="viewcode-block" id="mixin_graphql_parser"><a class="viewcode-back" href="../../../../../../api/jina.parsers.orchestrate.runtimes.remote/#jina.parsers.orchestrate.runtimes.remote.mixin_graphql_parser">[docs]</a><span class="k">def</span> <span class="nf">mixin_graphql_parser</span><span class="p">(</span><span class="n">parser</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Add the options to rest server</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Add the options to rest server</span>
 
 <span class="sd">    :param parser: the parser</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -619,7 +619,7 @@
 
 
 <div class="viewcode-block" id="mixin_http_gateway_parser"><a class="viewcode-back" href="../../../../../../api/jina.parsers.orchestrate.runtimes.remote/#jina.parsers.orchestrate.runtimes.remote.mixin_http_gateway_parser">[docs]</a><span class="k">def</span> <span class="nf">mixin_http_gateway_parser</span><span class="p">(</span><span class="n">parser</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Add the options to rest server</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Add the options to rest server</span>
 
 <span class="sd">    :param parser: the parser</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -705,7 +705,7 @@
 
 
 <div class="viewcode-block" id="mixin_prefetch_parser"><a class="viewcode-back" href="../../../../../../api/jina.parsers.orchestrate.runtimes.remote/#jina.parsers.orchestrate.runtimes.remote.mixin_prefetch_parser">[docs]</a><span class="k">def</span> <span class="nf">mixin_prefetch_parser</span><span class="p">(</span><span class="n">parser</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Add the options for prefetching</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Add the options for prefetching</span>
 <span class="sd">    :param parser: the parser</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">gp</span> <span class="o">=</span> <span class="n">add_arg_group</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Prefetch&#39;</span><span class="p">)</span>
@@ -733,7 +733,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 21, 2022</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

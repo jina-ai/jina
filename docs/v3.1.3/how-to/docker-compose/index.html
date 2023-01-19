@@ -698,25 +698,25 @@ neighbor retrieval on image embeddings.</p>
 </pre></div>
 </div>
 <p>let’s take a look at the generated compose file:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;3.3&#39;</span><span class="w"></span>
-<span class="nn">...</span><span class="w"></span>
-<span class="nt">services</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">encoder-head</span><span class="p">:</span><span class="w">   </span><span class="c1"># # # # # # # # # # # </span><span class="w"></span>
-<span class="w">                  </span><span class="c1">#                   #   </span><span class="w"></span>
-<span class="w">  </span><span class="nt">encoder-rep-0</span><span class="p">:</span><span class="w">  </span><span class="c1">#   Encoder         #</span><span class="w"></span>
-<span class="w">                  </span><span class="c1">#                   #</span><span class="w"></span>
-<span class="w">  </span><span class="nt">encoder-rep-1</span><span class="p">:</span><span class="w">  </span><span class="c1"># # # # # # # # # # #</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;3.3&#39;</span>
+<span class="nn">...</span>
+<span class="nt">services</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">encoder-head</span><span class="p">:</span><span class="w">   </span><span class="c1"># # # # # # # # # # # </span>
+<span class="w">                  </span><span class="c1">#                   #   </span>
+<span class="w">  </span><span class="nt">encoder-rep-0</span><span class="p">:</span><span class="w">  </span><span class="c1">#   Encoder         #</span>
+<span class="w">                  </span><span class="c1">#                   #</span>
+<span class="w">  </span><span class="nt">encoder-rep-1</span><span class="p">:</span><span class="w">  </span><span class="c1"># # # # # # # # # # #</span>
 
-<span class="w">  </span><span class="nt">indexer-head</span><span class="p">:</span><span class="w">   </span><span class="c1"># # # # # # # # # # # </span><span class="w"></span>
-<span class="w">                  </span><span class="c1">#                   #   </span><span class="w"></span>
-<span class="w">  </span><span class="nt">indexer-0</span><span class="p">:</span><span class="w">      </span><span class="c1">#   Indexer         #</span><span class="w"></span>
-<span class="w">                  </span><span class="c1">#                   #</span><span class="w"></span>
-<span class="w">  </span><span class="nt">indexer-1</span><span class="p">:</span><span class="w">      </span><span class="c1"># # # # # # # # # # #</span><span class="w"></span>
+<span class="w">  </span><span class="nt">indexer-head</span><span class="p">:</span><span class="w">   </span><span class="c1"># # # # # # # # # # # </span>
+<span class="w">                  </span><span class="c1">#                   #   </span>
+<span class="w">  </span><span class="nt">indexer-0</span><span class="p">:</span><span class="w">      </span><span class="c1">#   Indexer         #</span>
+<span class="w">                  </span><span class="c1">#                   #</span>
+<span class="w">  </span><span class="nt">indexer-1</span><span class="p">:</span><span class="w">      </span><span class="c1"># # # # # # # # # # #</span>
 
 <span class="w">  </span><span class="nt">gateway</span><span class="p">:</span><span class="w"> </span>
-<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">...</span><span class="w"></span>
-<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">ports</span><span class="p p-Indicator">:</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8080:8080</span><span class="w"></span>
+<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">...</span>
+<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">ports</span><span class="p p-Indicator">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8080:8080</span>
 </pre></div>
 </div>
 <div class="caution admonition">
@@ -731,7 +731,7 @@ adapt it to your own needs.</p>
 <li><p>3 associated with the indexer, one for the Head and two for the Shards.</p></li>
 </ul>
 <p>Now, you can deploy this Flow to your cluster:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker-compose -f docker-compose.yml up
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker-compose<span class="w"> </span>-f<span class="w"> </span>docker-compose.yml<span class="w"> </span>up
 </pre></div>
 </div>
 </section>
@@ -806,7 +806,7 @@ adapt it to your own needs.</p>
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Dec 21, 2022.
+                    Last updated on Jan 19, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

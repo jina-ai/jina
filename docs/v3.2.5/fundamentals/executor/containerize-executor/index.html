@@ -673,7 +673,7 @@ This will make sure that everything needed for Jina to run the Executor is insta
 <li><p>Install Jina like any other Python package. You can do this by specifying Jina in the <code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code>,
 or by including the <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">jina</span></code> command as part of the image building process.</p></li>
 </ul>
-<div class="highlight-dockerfile notranslate"><div class="highlight"><pre><span></span><span class="k">RUN</span><span class="w"> </span>pip install <span class="nv">jina</span><span class="o">==</span><span class="m">3</span>.0
+<div class="highlight-dockerfile notranslate"><div class="highlight"><pre><span></span><span class="k">RUN</span><span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span><span class="nv">jina</span><span class="o">==</span><span class="m">3</span>.0
 </pre></div>
 </div>
 </section>
@@ -716,10 +716,10 @@ We do this here in the <code class="docutils literal notranslate"><span class="p
 </div>
 <p>This is necessary for the Executor to be put inside the Docker image,
 and we can define such a configuration in <code class="docutils literal notranslate"><span class="pre">config.yml</span></code>:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ContainerizedEncoder</span><span class="w"></span>
-<span class="nt">metas</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">py_modules</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_executor.py</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ContainerizedEncoder</span>
+<span class="nt">metas</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">py_modules</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_executor.py</span>
 </pre></div>
 </div>
 </section>
@@ -737,11 +737,11 @@ and we can define such a configuration in <code class="docutils literal notransl
 <div class="highlight-dockerfile notranslate"><div class="highlight"><pre><span></span><span class="k">FROM</span><span class="w"> </span><span class="s">jinaai/jina:3.0-py37-perf</span>
 
 <span class="c"># make sure the files are copied into the image</span>
-<span class="k">COPY</span><span class="w"> </span>. /executor_root/
+<span class="k">COPY</span><span class="w"> </span>.<span class="w"> </span>/executor_root/
 
 <span class="k">WORKDIR</span><span class="w"> </span><span class="s">/executor_root</span>
 
-<span class="k">RUN</span><span class="w"> </span>pip install -r requirements.txt
+<span class="k">RUN</span><span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements.txt
 
 <span class="k">ENTRYPOINT</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;jina&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;executor&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;--uses&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;config.yml&quot;</span><span class="p">]</span>
 </pre></div>
@@ -758,7 +758,7 @@ and we can define such a configuration in <code class="docutils literal notransl
 </pre></div>
 </div>
 <p>We just need to build the image:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker build -t my_containerized_executor .
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>build<span class="w"> </span>-t<span class="w"> </span>my_containerized_executor<span class="w"> </span>.
 </pre></div>
 </div>
 <p>Once the build is successful, this is what you should see under <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">images</span></code>:</p>
@@ -824,7 +824,7 @@ parameter:</p>
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Dec 21, 2022.
+                    Last updated on Jan 19, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

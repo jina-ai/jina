@@ -416,7 +416,7 @@
 <span class="k">def</span> <span class="nf">_get_summary_time_context_or_null</span><span class="p">(</span>
     <span class="n">summary_metric</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;Summary&#39;</span><span class="p">],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">nullcontext</span><span class="p">,</span> <span class="s1">&#39;Timer&#39;</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    helper function to either get a time context or a nullcontext if the summary metric is None</span>
 <span class="sd">    :param summary_metric: An optional metric</span>
 <span class="sd">    :return: either a Timer context or a nullcontext</span>
@@ -425,7 +425,7 @@
 
 
 <div class="viewcode-block" id="wrap_func"><a class="viewcode-back" href="../../../../api/jina.serve.helper/#jina.serve.helper.wrap_func">[docs]</a><span class="k">def</span> <span class="nf">wrap_func</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">func_lst</span><span class="p">,</span> <span class="n">wrapper</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Wrapping a class method only once, inherited but not overridden method will not be wrapped again</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Wrapping a class method only once, inherited but not overridden method will not be wrapped again</span>
 
 <span class="sd">    :param cls: class</span>
 <span class="sd">    :param func_lst: function list to wrap</span>
@@ -442,7 +442,7 @@
 <div class="viewcode-block" id="store_init_kwargs"><a class="viewcode-back" href="../../../../api/jina.serve.helper/#jina.serve.helper.store_init_kwargs">[docs]</a><span class="k">def</span> <span class="nf">store_init_kwargs</span><span class="p">(</span>
     <span class="n">func</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Callable</span><span class="p">,</span> <span class="n">taboo</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Set</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Callable</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Mark the args and kwargs of :func:`__init__` later to be stored via :func:`save_config` in YAML</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Mark the args and kwargs of :func:`__init__` later to be stored via :func:`save_config` in YAML</span>
 <span class="sd">    :param func: the function to decorate</span>
 <span class="sd">    :param taboo: class taboo set of parameters</span>
 <span class="sd">    :return: the wrapped function</span>
@@ -476,7 +476,7 @@
 
 
 <div class="viewcode-block" id="extract_trailing_metadata"><a class="viewcode-back" href="../../../../api/jina.serve.helper/#jina.serve.helper.extract_trailing_metadata">[docs]</a><span class="k">def</span> <span class="nf">extract_trailing_metadata</span><span class="p">(</span><span class="n">error</span><span class="p">:</span> <span class="n">grpc</span><span class="o">.</span><span class="n">aio</span><span class="o">.</span><span class="n">AioRpcError</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-    <span class="sd">&#39;&#39;&#39;Return formatted string of the trailing metadata if exists otherwise return None</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;Return formatted string of the trailing metadata if exists otherwise return None</span>
 <span class="sd">    :param error: AioRpcError</span>
 <span class="sd">    :return: string of Metadata or None</span>
 <span class="sd">    &#39;&#39;&#39;</span>
@@ -489,7 +489,7 @@
 
 
 <div class="viewcode-block" id="format_grpc_error"><a class="viewcode-back" href="../../../../api/jina.serve.helper/#jina.serve.helper.format_grpc_error">[docs]</a><span class="k">def</span> <span class="nf">format_grpc_error</span><span class="p">(</span><span class="n">error</span><span class="p">:</span> <span class="n">grpc</span><span class="o">.</span><span class="n">aio</span><span class="o">.</span><span class="n">AioRpcError</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="sd">&#39;&#39;&#39;Adds grpc context trainling metadata if available</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;Adds grpc context trainling metadata if available</span>
 <span class="sd">    :param error: AioRpcError</span>
 <span class="sd">    :return: formatted error</span>
 <span class="sd">    &#39;&#39;&#39;</span>
@@ -513,7 +513,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 21, 2022</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

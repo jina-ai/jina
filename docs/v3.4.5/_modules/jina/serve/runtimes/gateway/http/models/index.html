@@ -624,14 +624,14 @@
 
 
 <div class="viewcode-block" id="CustomConfig"><a class="viewcode-back" href="../../../../../../../api/jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.CustomConfig">[docs]</a><span class="k">class</span> <span class="nc">CustomConfig</span><span class="p">(</span><span class="n">BaseConfig</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Pydantic config for Camel case and enum handling&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Pydantic config for Camel case and enum handling&quot;&quot;&quot;</span>
 
     <span class="n">use_enum_values</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">allow_population_by_field_name</span> <span class="o">=</span> <span class="kc">True</span></div>
 
 
 <span class="k">def</span> <span class="nf">_get_oneof_validator</span><span class="p">(</span><span class="n">oneof_fields</span><span class="p">:</span> <span class="n">List</span><span class="p">,</span> <span class="n">oneof_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Pydantic root validator (pre) classmethod generator to confirm only one oneof field is passed</span>
 
 <span class="sd">    :param oneof_fields: list of field names for oneof</span>
@@ -653,7 +653,7 @@
 
 
 <span class="k">def</span> <span class="nf">_get_oneof_setter</span><span class="p">(</span><span class="n">oneof_fields</span><span class="p">:</span> <span class="n">List</span><span class="p">,</span> <span class="n">oneof_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Pydantic root validator (post) classmethod generator to set the oneof key</span>
 
 <span class="sd">    :param oneof_fields: list of field names for oneof</span>
@@ -679,7 +679,7 @@
 <div class="viewcode-block" id="protobuf_to_pydantic_model"><a class="viewcode-back" href="../../../../../../../api/jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.protobuf_to_pydantic_model">[docs]</a><span class="k">def</span> <span class="nf">protobuf_to_pydantic_model</span><span class="p">(</span>
     <span class="n">protobuf_model</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Descriptor</span><span class="p">,</span> <span class="n">GeneratedProtocolMessageType</span><span class="p">]</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseModel</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Converts Protobuf messages to Pydantic model for jsonschema creation/validattion</span>
 
 <span class="sd">    ..note:: Model gets assigned in the global Namespace :data:PROTO_TO_PYDANTIC_MODELS</span>
@@ -793,13 +793,13 @@
 
 
 <div class="viewcode-block" id="JinaHealthModel"><a class="viewcode-back" href="../../../../../../../api/jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaHealthModel">[docs]</a><span class="k">class</span> <span class="nc">JinaHealthModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Pydantic BaseModel for Jina health check, used as the response model in REST app.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Pydantic BaseModel for Jina health check, used as the response model in REST app.&quot;&quot;&quot;</span>
 
     <span class="o">...</span></div>
 
 
 <div class="viewcode-block" id="JinaStatusModel"><a class="viewcode-back" href="../../../../../../../api/jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaStatusModel">[docs]</a><span class="k">class</span> <span class="nc">JinaStatusModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Pydantic BaseModel for Jina status, used as the response model in REST app.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Pydantic BaseModel for Jina status, used as the response model in REST app.&quot;&quot;&quot;</span>
 
     <span class="n">jina</span><span class="p">:</span> <span class="n">Dict</span>
     <span class="n">envs</span><span class="p">:</span> <span class="n">Dict</span>
@@ -819,7 +819,7 @@
 
 
 <div class="viewcode-block" id="JinaRequestModel"><a class="viewcode-back" href="../../../../../../../api/jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaRequestModel">[docs]</a><span class="k">class</span> <span class="nc">JinaRequestModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Jina HTTP request model.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -852,7 +852,7 @@
 
 
 <div class="viewcode-block" id="JinaResponseModel"><a class="viewcode-back" href="../../../../../../../api/jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaResponseModel">[docs]</a><span class="k">class</span> <span class="nc">JinaResponseModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Jina HTTP Response model. Only `request_id` and `data` are preserved.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -867,7 +867,7 @@
 
 
 <div class="viewcode-block" id="JinaEndpointRequestModel"><a class="viewcode-back" href="../../../../../../../api/jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaEndpointRequestModel">[docs]</a><span class="k">class</span> <span class="nc">JinaEndpointRequestModel</span><span class="p">(</span><span class="n">JinaRequestModel</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Jina HTTP request model that allows customized endpoint.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -888,7 +888,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Dec 21, 2022.
+                    Last updated on Jan 19, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

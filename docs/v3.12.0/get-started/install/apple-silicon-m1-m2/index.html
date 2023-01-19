@@ -421,7 +421,7 @@
 <section id="check-terminal-and-device">
 <h2>Check terminal and device<a class="headerlink" href="#check-terminal-and-device" title="Permalink to this heading">#</a></h2>
 <p>To ensure you are using the right terminal, run:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>uname -m
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>uname<span class="w"> </span>-m
 </pre></div>
 </div>
 <p>It should return:</p>
@@ -432,7 +432,7 @@
 <section id="install-homebrew">
 <h2>Install Homebrew<a class="headerlink" href="#install-homebrew" title="Permalink to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">brew</span></code> is a package manager for macOS. If you have already installed it, you need to confirm it is actually installed for Apple Silicon not for Rosetta. To check that, run:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>which brew
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>which<span class="w"> </span>brew
 </pre></div>
 </div>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>/opt/homebrew/bin/brew
@@ -444,7 +444,7 @@
 <p>Reinstalling <code class="docutils literal notranslate"><span class="pre">brew</span></code> can be a destructive operation. Ensure you have backed up your data before proceeding.</p>
 </div>
 <p>To (re)install brew, run:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>/bin/bash -c <span class="s2">&quot;</span><span class="k">$(</span>curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh<span class="k">)</span><span class="s2">&quot;</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>/bin/bash<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;</span><span class="k">$(</span>curl<span class="w"> </span>-fsSL<span class="w"> </span>https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh<span class="k">)</span><span class="s2">&quot;</span>
 </pre></div>
 </div>
 <p>You can observe the output to check if it contains <code class="docutils literal notranslate"><span class="pre">/opt/homebrew</span></code> to ensure you are installing for Apple Silicon.</p>
@@ -462,7 +462,7 @@
 </pre></div>
 </div>
 <p>If not, then you are using Python under Rosetta, and you need to install Python for Apple Silicon with <code class="docutils literal notranslate"><span class="pre">brew</span></code>:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>brew install python3
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>brew<span class="w"> </span>install<span class="w"> </span>python3
 </pre></div>
 </div>
 <p>As of August 2022, this will install Python 3.10 natively for Apple Silicon.</p>
@@ -471,19 +471,19 @@
 <section id="install-dependencies-wheels">
 <h2>Install dependencies wheels<a class="headerlink" href="#install-dependencies-wheels" title="Permalink to this heading">#</a></h2>
 <p>There are some core dependencies that Jina needs to run, whose wheels are not available on PyPI but fortunately are available as wheels. To install them, run:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>brew install protobuf numpy
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>brew<span class="w"> </span>install<span class="w"> </span>protobuf<span class="w"> </span>numpy
 </pre></div>
 </div>
 </section>
 <section id="install-jina">
 <h2>Install Jina<a class="headerlink" href="#install-jina" title="Permalink to this heading">#</a></h2>
 <p>Now we can install Jina via <code class="docutils literal notranslate"><span class="pre">pip</span></code>. Ensure you use the correct <code class="docutils literal notranslate"><span class="pre">pip</span></code>:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>/opt/homebrew/opt/python@3.10/libexec/bin/pip install jina
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>/opt/homebrew/opt/python@3.10/libexec/bin/pip<span class="w"> </span>install<span class="w"> </span>jina
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">grpcio</span></code> requires building the wheels, it will take some time.</p>
 <p>After all the dependencies are installed, you can run Jina CLI and check the system information.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina -vf
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina<span class="w"> </span>-vf
 </pre></div>
 </div>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>- jina 3.7.14
@@ -528,7 +528,7 @@
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
 <p>To install MPS-enabled PyTorch, run:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>/opt/homebrew/opt/python@3.10/libexec/bin/pip install -U --pre torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/nightly/cpu
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>/opt/homebrew/opt/python@3.10/libexec/bin/pip<span class="w"> </span>install<span class="w"> </span>-U<span class="w"> </span>--pre<span class="w"> </span>torch<span class="w"> </span>torchvision<span class="w"> </span>torchaudio<span class="w"> </span>--extra-index-url<span class="w"> </span>https://download.pytorch.org/whl/nightly/cpu
 </pre></div>
 </div>
 </div>
@@ -566,7 +566,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 21, 2022</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

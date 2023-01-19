@@ -632,10 +632,10 @@
 
 
 <div class="viewcode-block" id="DataRequestHandler"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.request_handlers.data_request_handler/#jina.serve.runtimes.request_handlers.data_request_handler.DataRequestHandler">[docs]</a><span class="k">class</span> <span class="nc">DataRequestHandler</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Object to encapsulate the code related to handle the data requests passing to executor and its returned values&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Object to encapsulate the code related to handle the data requests passing to executor and its returned values&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="s1">&#39;argparse.Namespace&#39;</span><span class="p">,</span> <span class="n">logger</span><span class="p">:</span> <span class="s1">&#39;JinaLogger&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Initialize private parameters and execute private loading functions.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize private parameters and execute private loading functions.</span>
 
 <span class="sd">        :param args: args from CLI</span>
 <span class="sd">        :param logger: the logger provided by the user</span>
@@ -649,7 +649,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_load_executor</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">_load_executor</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Load the executor to this runtime, specified by ``uses`` CLI argument.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load the executor to this runtime, specified by ``uses`` CLI argument.&quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_executor</span><span class="p">:</span> <span class="n">BaseExecutor</span> <span class="o">=</span> <span class="n">BaseExecutor</span><span class="o">.</span><span class="n">load_config</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uses</span><span class="p">,</span>
@@ -688,7 +688,7 @@
         <span class="k">return</span> <span class="n">parsed_params</span>
 
 <div class="viewcode-block" id="DataRequestHandler.handle"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.request_handlers.data_request_handler/#jina.serve.runtimes.request_handlers.data_request_handler.DataRequestHandler.handle">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">handle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">requests</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s1">&#39;DataRequest&#39;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">DataRequest</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Initialize private parameters and execute private loading functions.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize private parameters and execute private loading functions.</span>
 
 <span class="sd">        :param requests: The messages to handle containing a DataRequest</span>
 <span class="sd">        :returns: the processed message</span>
@@ -747,7 +747,7 @@
     <span class="k">def</span> <span class="nf">replace_docs</span><span class="p">(</span>
         <span class="n">request</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s1">&#39;DataRequest&#39;</span><span class="p">],</span> <span class="n">docs</span><span class="p">:</span> <span class="s1">&#39;DocumentArray&#39;</span><span class="p">,</span> <span class="n">ndarrray_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Replaces the docs in a message with new Documents.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Replaces the docs in a message with new Documents.</span>
 
 <span class="sd">        :param request: The request object</span>
 <span class="sd">        :param docs: the new docs to be used</span>
@@ -757,7 +757,7 @@
 
 <div class="viewcode-block" id="DataRequestHandler.replace_parameters"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.request_handlers.data_request_handler/#jina.serve.runtimes.request_handlers.data_request_handler.DataRequestHandler.replace_parameters">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">replace_parameters</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s1">&#39;DataRequest&#39;</span><span class="p">],</span> <span class="n">parameters</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Replaces the parameters in a message with new Documents.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Replaces the parameters in a message with new Documents.</span>
 
 <span class="sd">        :param request: The request object</span>
 <span class="sd">        :param parameters: the new parameters to be used</span>
@@ -766,7 +766,7 @@
 
 <div class="viewcode-block" id="DataRequestHandler.merge_routes"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.request_handlers.data_request_handler/#jina.serve.runtimes.request_handlers.data_request_handler.DataRequestHandler.merge_routes">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">merge_routes</span><span class="p">(</span><span class="n">requests</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s1">&#39;DataRequest&#39;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Merges all routes found in requests into the first message</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Merges all routes found in requests into the first message</span>
 
 <span class="sd">        :param requests: The messages containing the requests with the routes to merge</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -780,7 +780,7 @@
                     <span class="n">existing_executor_routes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">route</span><span class="o">.</span><span class="n">executor</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DataRequestHandler.close"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.request_handlers.data_request_handler/#jina.serve.runtimes.request_handlers.data_request_handler.DataRequestHandler.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Close the data request handler, by closing the executor &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Close the data request handler, by closing the executor &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_closed</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_executor</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_is_closed</span> <span class="o">=</span> <span class="kc">True</span></div>
@@ -790,7 +790,7 @@
         <span class="n">requests</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s1">&#39;DataRequest&#39;</span><span class="p">],</span>
         <span class="n">field</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="s1">&#39;DocumentArray&#39;</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a docs matrix from a list of DataRequest objects.</span>
 <span class="sd">        :param requests: List of DataRequest objects</span>
 <span class="sd">        :param field: field to be retrieved</span>
@@ -811,7 +811,7 @@
     <span class="k">def</span> <span class="nf">get_parameters_dict_from_request</span><span class="p">(</span>
         <span class="n">requests</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s1">&#39;DataRequest&#39;</span><span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Dict&#39;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a parameters dict from a list of DataRequest objects.</span>
 <span class="sd">        :param requests: List of DataRequest objects</span>
 <span class="sd">        :return: parameters matrix: list of parameters (Dict) objects</span>
@@ -832,7 +832,7 @@
         <span class="n">requests</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s1">&#39;DataRequest&#39;</span><span class="p">],</span>
         <span class="n">field</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;DocumentArray&#39;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Gets a field from the message</span>
 
 <span class="sd">        :param requests: requests to get the field from</span>
@@ -855,7 +855,7 @@
 
 <div class="viewcode-block" id="DataRequestHandler.reduce"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.request_handlers.data_request_handler/#jina.serve.runtimes.request_handlers.data_request_handler.DataRequestHandler.reduce">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">reduce</span><span class="p">(</span><span class="n">docs_matrix</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s1">&#39;DocumentArray&#39;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;DocumentArray&#39;</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Reduces a list of DocumentArrays into one DocumentArray. Changes are applied to the first</span>
 <span class="sd">        DocumentArray in-place.</span>
 
@@ -883,7 +883,7 @@
 
 <div class="viewcode-block" id="DataRequestHandler.reduce_requests"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.request_handlers.data_request_handler/#jina.serve.runtimes.request_handlers.data_request_handler.DataRequestHandler.reduce_requests">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">reduce_requests</span><span class="p">(</span><span class="n">requests</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s1">&#39;DataRequest&#39;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s1">&#39;DataRequest&#39;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Reduces a list of requests containing DocumentArrays inton one request object. Changes are applied to the first</span>
 <span class="sd">        request object in-place.</span>
 
@@ -917,7 +917,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Dec 21, 2022.
+                    Last updated on Jan 19, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

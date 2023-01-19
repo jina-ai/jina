@@ -643,7 +643,7 @@
 
 
 <div class="viewcode-block" id="classproperty"><a class="viewcode-back" href="../../../api/daemon.helper/#daemon.helper.classproperty">[docs]</a><span class="k">class</span> <span class="nc">classproperty</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Helper class to read property inside a classmethod&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Helper class to read property inside a classmethod&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fget</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fget</span> <span class="o">=</span> <span class="n">fget</span>
@@ -653,7 +653,7 @@
 
 
 <div class="viewcode-block" id="id_cleaner"><a class="viewcode-back" href="../../../api/daemon.helper/#daemon.helper.id_cleaner">[docs]</a><span class="k">def</span> <span class="nf">id_cleaner</span><span class="p">(</span><span class="n">docker_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;sha256:&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Get 1st 10 characters in id created by docker</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get 1st 10 characters in id created by docker</span>
 
 <span class="sd">    :param docker_id: id of docker object</span>
 <span class="sd">    :param prefix: defaults to &#39;sha256:&#39;</span>
@@ -663,7 +663,7 @@
 
 
 <div class="viewcode-block" id="get_workspace_path"><a class="viewcode-back" href="../../../api/daemon.helper/#daemon.helper.get_workspace_path">[docs]</a><span class="k">def</span> <span class="nf">get_workspace_path</span><span class="p">(</span><span class="n">workspace_id</span><span class="p">:</span> <span class="s1">&#39;DaemonID&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;get the path to the ws</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;get the path to the ws</span>
 
 <span class="sd">    :param workspace_id: the id of the ws</span>
 <span class="sd">    :param args: paths to join</span>
@@ -675,7 +675,7 @@
 
 
 <div class="viewcode-block" id="is_error_message"><a class="viewcode-back" href="../../../api/daemon.helper/#daemon.helper.is_error_message">[docs]</a><span class="k">def</span> <span class="nf">is_error_message</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Check if the string matches an exception regex.</span>
 <span class="sd">    :param s: the string to check</span>
 <span class="sd">    :return: whether or not it matches</span>
@@ -684,7 +684,7 @@
 
 
 <div class="viewcode-block" id="get_log_file_path"><a class="viewcode-back" href="../../../api/daemon.helper/#daemon.helper.get_log_file_path">[docs]</a><span class="k">def</span> <span class="nf">get_log_file_path</span><span class="p">(</span><span class="n">log_id</span><span class="p">:</span> <span class="s1">&#39;DaemonID&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="s1">&#39;DaemonID&#39;</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Get logfile path from id</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get logfile path from id</span>
 
 <span class="sd">    :param log_id: DaemonID in the store</span>
 <span class="sd">    :return: logfile path, workspace_id for log_id</span>
@@ -702,7 +702,7 @@
 
 
 <div class="viewcode-block" id="if_alive"><a class="viewcode-back" href="../../../api/daemon.helper/#daemon.helper.if_alive">[docs]</a><span class="k">def</span> <span class="nf">if_alive</span><span class="p">(</span><span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">raise_type</span><span class="p">:</span> <span class="ne">Exception</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Decorator to be used in store for connection valiation</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Decorator to be used in store for connection valiation</span>
 
 <span class="sd">    :param func: function to be wrapped</span>
 <span class="sd">    :param raise_type: Exception class to be raied</span>
@@ -723,7 +723,7 @@
 
 
 <div class="viewcode-block" id="error_msg_from"><a class="viewcode-back" href="../../../api/daemon.helper/#daemon.helper.error_msg_from">[docs]</a><span class="k">def</span> <span class="nf">error_msg_from</span><span class="p">(</span><span class="n">response</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Get error message from response</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get error message from response</span>
 
 <span class="sd">    :param response: dict response</span>
 <span class="sd">    :return: prettified response string</span>
@@ -744,7 +744,7 @@
 
 <div class="viewcode-block" id="change_cwd"><a class="viewcode-back" href="../../../api/daemon.helper/#daemon.helper.change_cwd">[docs]</a><span class="nd">@contextmanager</span>
 <span class="k">def</span> <span class="nf">change_cwd</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Change the current working dir to ``path`` in a context and set it back to the original one when leaves the context.</span>
 <span class="sd">    Yields nothing</span>
 <span class="sd">    :param path: Target path.</span>
@@ -760,7 +760,7 @@
 
 <div class="viewcode-block" id="change_env"><a class="viewcode-back" href="../../../api/daemon.helper/#daemon.helper.change_env">[docs]</a><span class="nd">@contextmanager</span>
 <span class="k">def</span> <span class="nf">change_env</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Change the environment of ``key`` to ``val`` in a context and set it back to the original one when leaves the context.</span>
 <span class="sd">    :param key: Old environment variable.</span>
 <span class="sd">    :param val: New environment variable.</span>
@@ -786,7 +786,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Dec 21, 2022.
+                    Last updated on Jan 19, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

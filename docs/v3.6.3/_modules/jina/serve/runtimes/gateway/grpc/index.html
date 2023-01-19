@@ -599,14 +599,14 @@
 
 
 <div class="viewcode-block" id="GRPCGatewayRuntime"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.gateway.grpc/#jina.serve.runtimes.gateway.grpc.GRPCGatewayRuntime">[docs]</a><span class="k">class</span> <span class="nc">GRPCGatewayRuntime</span><span class="p">(</span><span class="n">GatewayRuntime</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Gateway Runtime for gRPC.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Gateway Runtime for gRPC.&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">args</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Initialize the runtime</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the runtime</span>
 <span class="sd">        :param args: args from CLI</span>
 <span class="sd">        :param kwargs: keyword args</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -614,7 +614,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 <div class="viewcode-block" id="GRPCGatewayRuntime.async_setup"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.gateway.grpc/#jina.serve.runtimes.gateway.grpc.GRPCGatewayRuntime.async_setup">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The async method to setup.</span>
 
 <span class="sd">        Create the gRPC server and expose the port for communication.</span>
@@ -698,7 +698,7 @@
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
 
 <div class="viewcode-block" id="GRPCGatewayRuntime.async_teardown"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.gateway.grpc/#jina.serve.runtimes.gateway.grpc.GRPCGatewayRuntime.async_teardown">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_teardown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Close the connection pool&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Close the connection pool&quot;&quot;&quot;</span>
         <span class="c1"># usually async_cancel should already have been called, but then its a noop</span>
         <span class="c1"># if the runtime is stopped without a sigterm (e.g. as a context manager, this can happen)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_health_servicer</span><span class="o">.</span><span class="n">enter_graceful_shutdown</span><span class="p">()</span>
@@ -706,16 +706,16 @@
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection_pool</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="GRPCGatewayRuntime.async_cancel"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.gateway.grpc/#jina.serve.runtimes.gateway.grpc.GRPCGatewayRuntime.async_cancel">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;The async method to stop server.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The async method to stop server.&quot;&quot;&quot;</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">stop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="GRPCGatewayRuntime.async_run_forever"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.gateway.grpc/#jina.serve.runtimes.gateway.grpc.GRPCGatewayRuntime.async_run_forever">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_run_forever</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;The async running of server.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The async running of server.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_connection_pool</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">wait_for_termination</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="GRPCGatewayRuntime.dry_run"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.gateway.grpc/#jina.serve.runtimes.gateway.grpc.GRPCGatewayRuntime.dry_run">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">dry_run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">empty</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">StatusProto</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Process the the call requested by having a dry run call to every Executor in the graph</span>
 
 <span class="sd">        :param empty: The service expects an empty protobuf message</span>
@@ -746,7 +746,7 @@
             <span class="k">return</span> <span class="n">status_message</span><span class="o">.</span><span class="n">proto</span></div>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">empty</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">JinaInfoProto</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Process the the call requested and return the JinaInfo of the Runtime</span>
 
 <span class="sd">        :param empty: The service expects an empty protobuf message</span>
@@ -774,7 +774,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 21, 2022</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

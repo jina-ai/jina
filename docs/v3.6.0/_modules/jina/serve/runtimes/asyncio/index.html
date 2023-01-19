@@ -578,7 +578,7 @@
 
 
 <div class="viewcode-block" id="AsyncNewLoopRuntime"><a class="viewcode-back" href="../../../../../api/jina.serve.runtimes.asyncio/#jina.serve.runtimes.asyncio.AsyncNewLoopRuntime">[docs]</a><span class="k">class</span> <span class="nc">AsyncNewLoopRuntime</span><span class="p">(</span><span class="n">BaseRuntime</span><span class="p">,</span> <span class="n">MonitoringMixin</span><span class="p">,</span> <span class="n">ABC</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The async runtime to start a new event loop.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -624,7 +624,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_loop</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">async_setup</span><span class="p">())</span>
 
 <div class="viewcode-block" id="AsyncNewLoopRuntime.run_forever"><a class="viewcode-back" href="../../../../../api/jina.serve.runtimes.asyncio/#jina.serve.runtimes.asyncio.AsyncNewLoopRuntime.run_forever">[docs]</a>    <span class="k">def</span> <span class="nf">run_forever</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Running method to block the main thread.</span>
 
 <span class="sd">        Run the event loop until a Future is done.</span>
@@ -632,14 +632,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_loop</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_loop_body</span><span class="p">())</span></div>
 
 <div class="viewcode-block" id="AsyncNewLoopRuntime.teardown"><a class="viewcode-back" href="../../../../../api/jina.serve.runtimes.asyncio/#jina.serve.runtimes.asyncio.AsyncNewLoopRuntime.teardown">[docs]</a>    <span class="k">def</span> <span class="nf">teardown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Call async_teardown() and stop and close the event loop.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Call async_teardown() and stop and close the event loop.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_loop</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">async_teardown</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_loop</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_loop</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">teardown</span><span class="p">()</span></div>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_wait_for_cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Do NOT override this method when inheriting from :class:`GatewayPod`&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Do NOT override this method when inheriting from :class:`GatewayPod`&quot;&quot;&quot;</span>
         <span class="c1"># threads are not using asyncio.Event, but threading.Event</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">is_cancel</span><span class="p">,</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Event</span><span class="p">):</span>
             <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_cancel</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
@@ -650,42 +650,42 @@
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">async_cancel</span><span class="p">()</span>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_loop_body</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Do NOT override this method when inheriting from :class:`GatewayPod`&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Do NOT override this method when inheriting from :class:`GatewayPod`&quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">async_run_forever</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wait_for_cancel</span><span class="p">())</span>
         <span class="k">except</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">CancelledError</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;received terminate ctrl message from main process&#39;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Signal the runtime to terminate</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">is_cancel</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
 
 <div class="viewcode-block" id="AsyncNewLoopRuntime.async_setup"><a class="viewcode-back" href="../../../../../api/jina.serve.runtimes.asyncio/#jina.serve.runtimes.asyncio.AsyncNewLoopRuntime.async_setup">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;The async method to setup.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The async method to setup.&quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="AsyncNewLoopRuntime.async_teardown"><a class="viewcode-back" href="../../../../../api/jina.serve.runtimes.asyncio/#jina.serve.runtimes.asyncio.AsyncNewLoopRuntime.async_teardown">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_teardown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;The async method to clean up resources during teardown. This method should free all resources allocated</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The async method to clean up resources during teardown. This method should free all resources allocated</span>
 <span class="sd">        during async_setup&quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="AsyncNewLoopRuntime.async_cancel"><a class="viewcode-back" href="../../../../../api/jina.serve.runtimes.asyncio/#jina.serve.runtimes.asyncio.AsyncNewLoopRuntime.async_cancel">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">async_cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;An async method to cancel async_run_forever.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;An async method to cancel async_run_forever.&quot;&quot;&quot;</span>
         <span class="o">...</span></div>
 
 <div class="viewcode-block" id="AsyncNewLoopRuntime.async_run_forever"><a class="viewcode-back" href="../../../../../api/jina.serve.runtimes.asyncio/#jina.serve.runtimes.asyncio.AsyncNewLoopRuntime.async_run_forever">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">async_run_forever</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;The async method to run until it is stopped.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The async method to run until it is stopped.&quot;&quot;&quot;</span>
         <span class="o">...</span></div>
 
     <span class="c1"># Static methods used by the Pod to communicate with the `Runtime` in the separate process</span>
 
 <div class="viewcode-block" id="AsyncNewLoopRuntime.activate"><a class="viewcode-back" href="../../../../../api/jina.serve.runtimes.asyncio/#jina.serve.runtimes.asyncio.AsyncNewLoopRuntime.activate">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">activate</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Activate the runtime, does not apply to these runtimes</span>
 
 <span class="sd">        :param kwargs: extra keyword arguments</span>
@@ -695,7 +695,7 @@
 
 <div class="viewcode-block" id="AsyncNewLoopRuntime.is_ready"><a class="viewcode-back" href="../../../../../api/jina.serve.runtimes.asyncio/#jina.serve.runtimes.asyncio.AsyncNewLoopRuntime.is_ready">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">is_ready</span><span class="p">(</span><span class="n">ctrl_address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check if status is ready.</span>
 
 <span class="sd">        :param ctrl_address: the address where the control request needs to be sent</span>
@@ -722,7 +722,7 @@
         <span class="n">ctrl_address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check if the runtime has successfully started</span>
 
 <span class="sd">        :param timeout: The time to wait before readiness or failure is determined</span>
@@ -762,7 +762,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 21, 2022</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

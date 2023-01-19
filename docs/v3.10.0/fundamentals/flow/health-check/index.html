@@ -466,7 +466,7 @@ False
     <span class="n">f</span><span class="o">.</span><span class="n">block</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina ping flow grpc://localhost:12345
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina<span class="w"> </span>ping<span class="w"> </span>flow<span class="w"> </span>grpc://localhost:12345
 </pre></div>
 </div>
 <div class="tab-set docutils">
@@ -553,20 +553,20 @@ DEBUG  Flow@19059 2 Deployments (i.e. 2 Pods) are running in this Flow
 <section id="using-grpc">
 <h4>Using gRPC<a class="headerlink" href="#using-grpc" title="Permalink to this heading">#</a></h4>
 <p>When using grpc, you can use <a class="reference external" href="https://github.com/fullstorydev/grpcurl">grpcurl</a> to hit the Gateway’s gRPC service that is responsible for reporting the Flow status.</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker pull fullstorydev/grpcurl:latest
-docker run --network<span class="o">=</span><span class="s1">&#39;host&#39;</span> fullstorydev/grpcurl -plaintext <span class="m">127</span>.0.0.1:12345 jina.JinaGatewayDryRunRPC/dry_run
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>pull<span class="w"> </span>fullstorydev/grpcurl:latest
+docker<span class="w"> </span>run<span class="w"> </span>--network<span class="o">=</span><span class="s1">&#39;host&#39;</span><span class="w"> </span>fullstorydev/grpcurl<span class="w"> </span>-plaintext<span class="w"> </span><span class="m">127</span>.0.0.1:12345<span class="w"> </span>jina.JinaGatewayDryRunRPC/dry_run
 </pre></div>
 </div>
 <p>The error-free output below signifies a correctly running Flow:</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{}</span><span class="w"></span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{}</span>
 </pre></div>
 </div>
 <p>You can simulate an Executor going offline by killing its process.</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">kill</span> -9 <span class="nv">$EXECUTOR_PID</span> <span class="c1"># in this case we can see in the logs that it is 19059</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">kill</span><span class="w"> </span>-9<span class="w"> </span><span class="nv">$EXECUTOR_PID</span><span class="w"> </span><span class="c1"># in this case we can see in the logs that it is 19059</span>
 </pre></div>
 </div>
 <p>Then by doing the same check, you will see that it returns an error:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker run --network<span class="o">=</span><span class="s1">&#39;host&#39;</span> fullstorydev/grpcurl -plaintext <span class="m">127</span>.0.0.1:12345 jina.JinaGatewayDryRunRPC/dry_run
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>run<span class="w"> </span>--network<span class="o">=</span><span class="s1">&#39;host&#39;</span><span class="w"> </span>fullstorydev/grpcurl<span class="w"> </span>-plaintext<span class="w"> </span><span class="m">127</span>.0.0.1:12345<span class="w"> </span>jina.JinaGatewayDryRunRPC/dry_run
 </pre></div>
 </div>
 <details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
@@ -576,37 +576,37 @@ Error output<div class="sd-summary-down docutils">
 <div class="sd-summary-up docutils">
 <svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
 </summary><div class="sd-summary-content sd-card-body docutils">
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="nt">&quot;code&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">  </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;failed to connect to all addresses |Gateway: Communication error with deployment at address(es) 0.0.0.0:12346. Head or worker(s) may be down.&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">  </span><span class="nt">&quot;exception&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;InternalNetworkError&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;args&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
-<span class="w">      </span><span class="s2">&quot;failed to connect to all addresses |Gateway: Communication error with deployment at address(es) 0.0.0.0:12346. Head or worker(s) may be down.&quot;</span><span class="w"></span>
-<span class="w">    </span><span class="p">],</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;stacks&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
-<span class="w">      </span><span class="s2">&quot;Traceback (most recent call last):\n&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">      </span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/networking.py\&quot;, line 750, in task_wrapper\n    timeout=timeout,\n&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">      </span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/networking.py\&quot;, line 197, in send_discover_endpoint\n    await self._init_stubs()\n&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">      </span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/networking.py\&quot;, line 174, in _init_stubs\n    self.channel\n&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">      </span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/networking.py\&quot;, line 1001, in get_available_services\n    async for res in response:\n&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">      </span><span class="s2">&quot;  File \&quot;/home/joan/.local/lib/python3.7/site-packages/grpc/aio/_call.py\&quot;, line 326, in _fetch_stream_responses\n    await self._raise_for_status()\n&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">      </span><span class="s2">&quot;  File \&quot;/home/joan/.local/lib/python3.7/site-packages/grpc/aio/_call.py\&quot;, line 237, in _raise_for_status\n    self._cython_call.status())\n&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">      </span><span class="s2">&quot;grpc.aio._call.AioRpcError: \u003cAioRpcError of RPC that terminated with:\n\tstatus = StatusCode.UNAVAILABLE\n\tdetails = \&quot;failed to connect to all addresses\&quot;\n\tdebug_error_string = \&quot;{\&quot;created\&quot;:\&quot;@1654012804.794351252\&quot;,\&quot;description\&quot;:\&quot;Failed to pick subchannel\&quot;,\&quot;file\&quot;:\&quot;src/core/ext/filters/client_channel/client_channel.cc\&quot;,\&quot;file_line\&quot;:3134,\&quot;referenced_errors\&quot;:[{\&quot;created\&quot;:\&quot;@1654012804.794350006\&quot;,\&quot;description\&quot;:\&quot;failed to connect to all addresses\&quot;,\&quot;file\&quot;:\&quot;src/core/lib/transport/error_utils.cc\&quot;,\&quot;file_line\&quot;:163,\&quot;grpc_status\&quot;:14}]}\&quot;\n\u003e\n&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">      </span><span class="s2">&quot;\nDuring handling of the above exception, another exception occurred:\n\n&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">      </span><span class="s2">&quot;Traceback (most recent call last):\n&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">      </span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/runtimes/gateway/grpc/__init__.py\&quot;, line 155, in dry_run\n    async for _ in self.streamer.stream(request_iterator=req_iterator):\n&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">      </span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/stream/__init__.py\&quot;, line 78, in stream\n    async for response in async_iter:\n&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">      </span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/stream/__init__.py\&quot;, line 154, in _stream_requests\n    response = self._result_handler(future.result())\n&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">      </span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/runtimes/gateway/request_handling.py\&quot;, line 146, in _process_results_at_end_gateway\n    await asyncio.gather(gather_endpoints(request_graph))\n&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">      </span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/runtimes/gateway/request_handling.py\&quot;, line 88, in gather_endpoints\n    raise err\n&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">      </span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/runtimes/gateway/request_handling.py\&quot;, line 80, in gather_endpoints\n    endpoints = await asyncio.gather(*tasks_to_get_endpoints)\n&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">      </span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/networking.py\&quot;, line 754, in task_wrapper\n    e=e, retry_i=i, dest_addr=connection.address\n&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">      </span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/networking.py\&quot;, line 697, in _handle_aiorpcerror\n    details=e.details(),\n&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">      </span><span class="s2">&quot;jina.excepts.InternalNetworkError: failed to connect to all addresses |Gateway: Communication error with deployment at address(es) 0.0.0.0:12346. Head or worker(s) may be down.\n&quot;</span><span class="w"></span>
-<span class="w">    </span><span class="p">]</span><span class="w"></span>
-<span class="w">  </span><span class="p">}</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;code&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;failed to connect to all addresses |Gateway: Communication error with deployment at address(es) 0.0.0.0:12346. Head or worker(s) may be down.&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;exception&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;InternalNetworkError&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;args&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="s2">&quot;failed to connect to all addresses |Gateway: Communication error with deployment at address(es) 0.0.0.0:12346. Head or worker(s) may be down.&quot;</span>
+<span class="w">    </span><span class="p">],</span>
+<span class="w">    </span><span class="nt">&quot;stacks&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="s2">&quot;Traceback (most recent call last):\n&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/networking.py\&quot;, line 750, in task_wrapper\n    timeout=timeout,\n&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/networking.py\&quot;, line 197, in send_discover_endpoint\n    await self._init_stubs()\n&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/networking.py\&quot;, line 174, in _init_stubs\n    self.channel\n&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/networking.py\&quot;, line 1001, in get_available_services\n    async for res in response:\n&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;  File \&quot;/home/joan/.local/lib/python3.7/site-packages/grpc/aio/_call.py\&quot;, line 326, in _fetch_stream_responses\n    await self._raise_for_status()\n&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;  File \&quot;/home/joan/.local/lib/python3.7/site-packages/grpc/aio/_call.py\&quot;, line 237, in _raise_for_status\n    self._cython_call.status())\n&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;grpc.aio._call.AioRpcError: \u003cAioRpcError of RPC that terminated with:\n\tstatus = StatusCode.UNAVAILABLE\n\tdetails = \&quot;failed to connect to all addresses\&quot;\n\tdebug_error_string = \&quot;{\&quot;created\&quot;:\&quot;@1654012804.794351252\&quot;,\&quot;description\&quot;:\&quot;Failed to pick subchannel\&quot;,\&quot;file\&quot;:\&quot;src/core/ext/filters/client_channel/client_channel.cc\&quot;,\&quot;file_line\&quot;:3134,\&quot;referenced_errors\&quot;:[{\&quot;created\&quot;:\&quot;@1654012804.794350006\&quot;,\&quot;description\&quot;:\&quot;failed to connect to all addresses\&quot;,\&quot;file\&quot;:\&quot;src/core/lib/transport/error_utils.cc\&quot;,\&quot;file_line\&quot;:163,\&quot;grpc_status\&quot;:14}]}\&quot;\n\u003e\n&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;\nDuring handling of the above exception, another exception occurred:\n\n&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;Traceback (most recent call last):\n&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/runtimes/gateway/grpc/__init__.py\&quot;, line 155, in dry_run\n    async for _ in self.streamer.stream(request_iterator=req_iterator):\n&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/stream/__init__.py\&quot;, line 78, in stream\n    async for response in async_iter:\n&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/stream/__init__.py\&quot;, line 154, in _stream_requests\n    response = self._result_handler(future.result())\n&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/runtimes/gateway/request_handling.py\&quot;, line 146, in _process_results_at_end_gateway\n    await asyncio.gather(gather_endpoints(request_graph))\n&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/runtimes/gateway/request_handling.py\&quot;, line 88, in gather_endpoints\n    raise err\n&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/runtimes/gateway/request_handling.py\&quot;, line 80, in gather_endpoints\n    endpoints = await asyncio.gather(*tasks_to_get_endpoints)\n&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/networking.py\&quot;, line 754, in task_wrapper\n    e=e, retry_i=i, dest_addr=connection.address\n&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/networking.py\&quot;, line 697, in _handle_aiorpcerror\n    details=e.details(),\n&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;jina.excepts.InternalNetworkError: failed to connect to all addresses |Gateway: Communication error with deployment at address(es) 0.0.0.0:12346. Head or worker(s) may be down.\n&quot;</span>
+<span class="w">    </span><span class="p">]</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 </div>
@@ -614,19 +614,19 @@ Error output<div class="sd-summary-down docutils">
 <section id="using-http-or-websocket">
 <h4>Using HTTP or Websocket<a class="headerlink" href="#using-http-or-websocket" title="Permalink to this heading">#</a></h4>
 <p>When using HTTP or Websocket as the Gateway protocol, you can use curl to target the <code class="docutils literal notranslate"><span class="pre">/dry_run</span></code> endpoint and get the status of the Flow.</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>curl http://localhost:12345/dry_run
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>http://localhost:12345/dry_run
 </pre></div>
 </div>
 <p>The error-free output below signifies a correctly running Flow:</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="nt">&quot;code&quot;</span><span class="p">:</span><span class="mi">0</span><span class="p">,</span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="s2">&quot;&quot;</span><span class="p">,</span><span class="nt">&quot;exception&quot;</span><span class="p">:</span><span class="kc">null</span><span class="p">}</span><span class="w"></span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="nt">&quot;code&quot;</span><span class="p">:</span><span class="mi">0</span><span class="p">,</span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="s2">&quot;&quot;</span><span class="p">,</span><span class="nt">&quot;exception&quot;</span><span class="p">:</span><span class="kc">null</span><span class="p">}</span>
 </pre></div>
 </div>
 <p>You can simulate an Executor going offline by killing its process.</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">kill</span> -9 <span class="nv">$EXECUTOR_PID</span> <span class="c1"># in this case we can see in the logs that it is 19059</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">kill</span><span class="w"> </span>-9<span class="w"> </span><span class="nv">$EXECUTOR_PID</span><span class="w"> </span><span class="c1"># in this case we can see in the logs that it is 19059</span>
 </pre></div>
 </div>
 <p>Then by doing the same check, you will see that the call returns an error:</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="nt">&quot;code&quot;</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="s2">&quot;failed to connect to all addresses |Gateway: Communication error with deployment executor0 at address(es) {&#39;0.0.0.0:12346&#39;}. Head or worker(s) may be down.&quot;</span><span class="p">,</span><span class="nt">&quot;exception&quot;</span><span class="p">:{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="s2">&quot;InternalNetworkError&quot;</span><span class="p">,</span><span class="nt">&quot;args&quot;</span><span class="p">:[</span><span class="s2">&quot;failed to connect to all addresses |Gateway: Communication error with deployment executor0 at address(es) {&#39;0.0.0.0:12346&#39;}. Head or worker(s) may be down.&quot;</span><span class="p">],</span><span class="nt">&quot;stacks&quot;</span><span class="p">:[</span><span class="s2">&quot;Traceback (most recent call last):\n&quot;</span><span class="p">,</span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/networking.py\&quot;, line 726, in task_wrapper\n    timeout=timeout,\n&quot;</span><span class="p">,</span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/networking.py\&quot;, line 241, in send_requests\n    await call_result,\n&quot;</span><span class="p">,</span><span class="s2">&quot;  File \&quot;/home/joan/.local/lib/python3.7/site-packages/grpc/aio/_call.py\&quot;, line 291, in __await__\n    self._cython_call._status)\n&quot;</span><span class="p">,</span><span class="s2">&quot;grpc.aio._call.AioRpcError: &lt;AioRpcError of RPC that terminated with:\n\tstatus = StatusCode.UNAVAILABLE\n\tdetails = \&quot;failed to connect to all addresses\&quot;\n\tdebug_error_string = \&quot;{\&quot;created\&quot;:\&quot;@1654074272.702044542\&quot;,\&quot;description\&quot;:\&quot;Failed to pick subchannel\&quot;,\&quot;file\&quot;:\&quot;src/core/ext/filters/client_channel/client_channel.cc\&quot;,\&quot;file_line\&quot;:3134,\&quot;referenced_errors\&quot;:[{\&quot;created\&quot;:\&quot;@1654074272.702043378\&quot;,\&quot;description\&quot;:\&quot;failed to connect to all addresses\&quot;,\&quot;file\&quot;:\&quot;src/core/lib/transport/error_utils.cc\&quot;,\&quot;file_line\&quot;:163,\&quot;grpc_status\&quot;:14}]}\&quot;\n&gt;\n&quot;</span><span class="p">,</span><span class="s2">&quot;\nDuring handling of the above exception, another exception occurred:\n\n&quot;</span><span class="p">,</span><span class="s2">&quot;Traceback (most recent call last):\n&quot;</span><span class="p">,</span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/runtimes/gateway/http/app.py\&quot;, line 142, in _flow_health\n    data_type=DataInputType.DOCUMENT,\n&quot;</span><span class="p">,</span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/runtimes/gateway/http/app.py\&quot;, line 399, in _get_singleton_result\n    async for k in streamer.stream(request_iterator=request_iterator):\n&quot;</span><span class="p">,</span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/stream/__init__.py\&quot;, line 78, in stream\n    async for response in async_iter:\n&quot;</span><span class="p">,</span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/stream/__init__.py\&quot;, line 154, in _stream_requests\n    response = self._result_handler(future.result())\n&quot;</span><span class="p">,</span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/runtimes/gateway/request_handling.py\&quot;, line 148, in _process_results_at_end_gateway\n    partial_responses = await asyncio.gather(*tasks)\n&quot;</span><span class="p">,</span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/runtimes/gateway/graph/topology_graph.py\&quot;, line 128, in _wait_previous_and_send\n    self._handle_internalnetworkerror(err)\n&quot;</span><span class="p">,</span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/runtimes/gateway/graph/topology_graph.py\&quot;, line 70, in _handle_internalnetworkerror\n    raise err\n&quot;</span><span class="p">,</span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/runtimes/gateway/graph/topology_graph.py\&quot;, line 125, in _wait_previous_and_send\n    timeout=self._timeout_send,\n&quot;</span><span class="p">,</span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/networking.py\&quot;, line 734, in task_wrapper\n    num_retries=num_retries,\n&quot;</span><span class="p">,</span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/networking.py\&quot;, line 697, in _handle_aiorpcerror\n    details=e.details(),\n&quot;</span><span class="p">,</span><span class="s2">&quot;jina.excepts.InternalNetworkError: failed to connect to all addresses |Gateway: Communication error with deployment executor0 at address(es) {&#39;0.0.0.0:12346&#39;}. Head or worker(s) may be down.\n&quot;</span><span class="p">],</span><span class="nt">&quot;executor&quot;</span><span class="p">:</span><span class="s2">&quot;&quot;</span><span class="p">}}</span><span class="w"></span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="nt">&quot;code&quot;</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="s2">&quot;failed to connect to all addresses |Gateway: Communication error with deployment executor0 at address(es) {&#39;0.0.0.0:12346&#39;}. Head or worker(s) may be down.&quot;</span><span class="p">,</span><span class="nt">&quot;exception&quot;</span><span class="p">:{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="s2">&quot;InternalNetworkError&quot;</span><span class="p">,</span><span class="nt">&quot;args&quot;</span><span class="p">:[</span><span class="s2">&quot;failed to connect to all addresses |Gateway: Communication error with deployment executor0 at address(es) {&#39;0.0.0.0:12346&#39;}. Head or worker(s) may be down.&quot;</span><span class="p">],</span><span class="nt">&quot;stacks&quot;</span><span class="p">:[</span><span class="s2">&quot;Traceback (most recent call last):\n&quot;</span><span class="p">,</span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/networking.py\&quot;, line 726, in task_wrapper\n    timeout=timeout,\n&quot;</span><span class="p">,</span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/networking.py\&quot;, line 241, in send_requests\n    await call_result,\n&quot;</span><span class="p">,</span><span class="s2">&quot;  File \&quot;/home/joan/.local/lib/python3.7/site-packages/grpc/aio/_call.py\&quot;, line 291, in __await__\n    self._cython_call._status)\n&quot;</span><span class="p">,</span><span class="s2">&quot;grpc.aio._call.AioRpcError: &lt;AioRpcError of RPC that terminated with:\n\tstatus = StatusCode.UNAVAILABLE\n\tdetails = \&quot;failed to connect to all addresses\&quot;\n\tdebug_error_string = \&quot;{\&quot;created\&quot;:\&quot;@1654074272.702044542\&quot;,\&quot;description\&quot;:\&quot;Failed to pick subchannel\&quot;,\&quot;file\&quot;:\&quot;src/core/ext/filters/client_channel/client_channel.cc\&quot;,\&quot;file_line\&quot;:3134,\&quot;referenced_errors\&quot;:[{\&quot;created\&quot;:\&quot;@1654074272.702043378\&quot;,\&quot;description\&quot;:\&quot;failed to connect to all addresses\&quot;,\&quot;file\&quot;:\&quot;src/core/lib/transport/error_utils.cc\&quot;,\&quot;file_line\&quot;:163,\&quot;grpc_status\&quot;:14}]}\&quot;\n&gt;\n&quot;</span><span class="p">,</span><span class="s2">&quot;\nDuring handling of the above exception, another exception occurred:\n\n&quot;</span><span class="p">,</span><span class="s2">&quot;Traceback (most recent call last):\n&quot;</span><span class="p">,</span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/runtimes/gateway/http/app.py\&quot;, line 142, in _flow_health\n    data_type=DataInputType.DOCUMENT,\n&quot;</span><span class="p">,</span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/runtimes/gateway/http/app.py\&quot;, line 399, in _get_singleton_result\n    async for k in streamer.stream(request_iterator=request_iterator):\n&quot;</span><span class="p">,</span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/stream/__init__.py\&quot;, line 78, in stream\n    async for response in async_iter:\n&quot;</span><span class="p">,</span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/stream/__init__.py\&quot;, line 154, in _stream_requests\n    response = self._result_handler(future.result())\n&quot;</span><span class="p">,</span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/runtimes/gateway/request_handling.py\&quot;, line 148, in _process_results_at_end_gateway\n    partial_responses = await asyncio.gather(*tasks)\n&quot;</span><span class="p">,</span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/runtimes/gateway/graph/topology_graph.py\&quot;, line 128, in _wait_previous_and_send\n    self._handle_internalnetworkerror(err)\n&quot;</span><span class="p">,</span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/runtimes/gateway/graph/topology_graph.py\&quot;, line 70, in _handle_internalnetworkerror\n    raise err\n&quot;</span><span class="p">,</span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/runtimes/gateway/graph/topology_graph.py\&quot;, line 125, in _wait_previous_and_send\n    timeout=self._timeout_send,\n&quot;</span><span class="p">,</span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/networking.py\&quot;, line 734, in task_wrapper\n    num_retries=num_retries,\n&quot;</span><span class="p">,</span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/networking.py\&quot;, line 697, in _handle_aiorpcerror\n    details=e.details(),\n&quot;</span><span class="p">,</span><span class="s2">&quot;jina.excepts.InternalNetworkError: failed to connect to all addresses |Gateway: Communication error with deployment executor0 at address(es) {&#39;0.0.0.0:12346&#39;}. Head or worker(s) may be down.\n&quot;</span><span class="p">],</span><span class="nt">&quot;executor&quot;</span><span class="p">:</span><span class="s2">&quot;&quot;</span><span class="p">}}</span>
 </pre></div>
 </div>
 </section>
@@ -658,13 +658,13 @@ Nevertheless, it is possible to perform these checks as a user.</p>
 </pre></div>
 </div>
 <p>On another terminal, you can use <a class="reference external" href="https://github.com/fullstorydev/grpcurl">grpcurl</a> to send RPC requests to your services.</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker pull fullstorydev/grpcurl:latest
-docker run --network<span class="o">=</span><span class="s1">&#39;host&#39;</span> fullstorydev/grpcurl -plaintext <span class="m">127</span>.0.0.1:12346 grpc.health.v1.Health/Check
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>pull<span class="w"> </span>fullstorydev/grpcurl:latest
+docker<span class="w"> </span>run<span class="w"> </span>--network<span class="o">=</span><span class="s1">&#39;host&#39;</span><span class="w"> </span>fullstorydev/grpcurl<span class="w"> </span>-plaintext<span class="w"> </span><span class="m">127</span>.0.0.1:12346<span class="w"> </span>grpc.health.v1.Health/Check
 </pre></div>
 </div>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SERVING&quot;</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SERVING&quot;</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 </section>
@@ -676,12 +676,12 @@ docker run --network<span class="o">=</span><span class="s1">&#39;host&#39;</spa
 <h3>Gateway health check with gRPC<a class="headerlink" href="#gateway-health-check-with-grpc" title="Permalink to this heading">#</a></h3>
 <p>When using gRPC as the protocol to communicate with the Gateway, the Gateway uses the exact same mechanism as Executors to expose its health status: It exposes the <a class="reference external" href="https://github.com/grpc/grpc/blob/master/doc/health-checking.md"> standard gRPC health check</a> to the outside world.</p>
 <p>With the same Flow as described before, you can use the same way to check the Gateway status:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker run --network<span class="o">=</span><span class="s1">&#39;host&#39;</span> fullstorydev/grpcurl -plaintext <span class="m">127</span>.0.0.1:12345 grpc.health.v1.Health/Check
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>run<span class="w"> </span>--network<span class="o">=</span><span class="s1">&#39;host&#39;</span><span class="w"> </span>fullstorydev/grpcurl<span class="w"> </span>-plaintext<span class="w"> </span><span class="m">127</span>.0.0.1:12345<span class="w"> </span>grpc.health.v1.Health/Check
 </pre></div>
 </div>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SERVING&quot;</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SERVING&quot;</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 </section>
@@ -702,11 +702,11 @@ docker run --network<span class="o">=</span><span class="s1">&#39;host&#39;</spa
 </pre></div>
 </div>
 <p>Then, you can query the “empty” endpoint:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl http://localhost:12345
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>http://localhost:12345
 </pre></div>
 </div>
 <p>And you will get a valid empty response indicating the Gateway’s ability to serve.</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{}</span><span class="w"></span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{}</span>
 </pre></div>
 </div>
 </section>
@@ -722,15 +722,15 @@ docker run --network<span class="o">=</span><span class="s1">&#39;host&#39;</spa
 </pre></div>
 </div>
 <p>We can check the readiness of the Flow:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina ping flow grpc://localhost:12345
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina<span class="w"> </span>ping<span class="w"> </span>flow<span class="w"> </span>grpc://localhost:12345
 </pre></div>
 </div>
 <p>Also we can check the readiness of an Executor:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina ping executor localhost:12346
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina<span class="w"> </span>ping<span class="w"> </span>executor<span class="w"> </span>localhost:12346
 </pre></div>
 </div>
 <p>or the readiness of the Gateway service:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina ping gateway  grpc://localhost:12345
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina<span class="w"> </span>ping<span class="w"> </span>gateway<span class="w">  </span>grpc://localhost:12345
 </pre></div>
 </div>
 <p>When these commands succeed, you will see something like:</p>
@@ -776,7 +776,7 @@ deployed in Kubernetes.
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 21, 2022</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

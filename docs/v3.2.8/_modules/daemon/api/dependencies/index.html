@@ -650,7 +650,7 @@
 
 
 <div class="viewcode-block" id="Environment"><a class="viewcode-back" href="../../../../api/daemon.api.dependencies/#daemon.api.dependencies.Environment">[docs]</a><span class="k">class</span> <span class="nc">Environment</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Parses environment variables to be set inside the containers&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parses environment variables to be set inside the containers&quot;&quot;&quot;</span>
 
     <span class="n">_split_char</span> <span class="o">=</span> <span class="s1">&#39;=&#39;</span>
     <span class="n">_strip_chars</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;</span><span class="se">\r</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">])</span>
@@ -660,7 +660,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">envs</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Environment.validate"><a class="viewcode-back" href="../../../../api/daemon.api.dependencies/#daemon.api.dependencies.Environment.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">envs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
-        <span class="sd">&quot;&quot;&quot;Validate and set env vars as a dict</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate and set env vars as a dict</span>
 
 <span class="sd">        :param envs: list of env vars passed as query params</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -676,7 +676,7 @@
 
 
 <div class="viewcode-block" id="FlowDepends"><a class="viewcode-back" href="../../../../api/daemon.api.dependencies/#daemon.api.dependencies.FlowDepends">[docs]</a><span class="k">class</span> <span class="nc">FlowDepends</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Validates &amp; Sets host/port dependencies during Flow creation/update&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Validates &amp; Sets host/port dependencies during Flow creation/update&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -696,7 +696,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">device_requests</span> <span class="o">=</span> <span class="n">get_gpu_device_requests</span><span class="p">(</span><span class="s1">&#39;all&#39;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="FlowDepends.localpath"><a class="viewcode-back" href="../../../../api/daemon.api.dependencies/#daemon.api.dependencies.FlowDepends.localpath">[docs]</a>    <span class="k">def</span> <span class="nf">localpath</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Validates local filepath in workspace from filename.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validates local filepath in workspace from filename.</span>
 <span class="sd">        Raise 404 if filepath doesn&#39;t exist in workspace.</span>
 
 <span class="sd">        :return: filepath for flow yaml</span>
@@ -713,7 +713,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">newname</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return newfile path in following format</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return newfile path in following format</span>
 <span class="sd">        `flow.yml` -&gt; `&lt;root-workspace&gt;/&lt;workspace-id&gt;/&lt;flow-id&gt;_flow.yml`</span>
 <span class="sd">        `flow1.yml` -&gt; `&lt;root-workspace&gt;/&lt;workspace-id&gt;/&lt;flow-id&gt;_flow1.yml`</span>
 <span class="sd">        `src/flow.yml` -&gt; `&lt;root-workspace&gt;/&lt;workspace-id&gt;/src/&lt;flow-id&gt;_flow.yml`</span>
@@ -729,14 +729,14 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">newfile</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return newfile path fetched from newname</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return newfile path fetched from newname</span>
 
 <span class="sd">        :return: return filepath to save flow config in</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">get_workspace_path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">workspace_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">newname</span><span class="p">)</span>
 
 <div class="viewcode-block" id="FlowDepends.load_and_dump"><a class="viewcode-back" href="../../../../api/daemon.api.dependencies/#daemon.api.dependencies.FlowDepends.load_and_dump">[docs]</a>    <span class="k">def</span> <span class="nf">load_and_dump</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        every Flow created inside JinaD lives inside a container. It is important to know the</span>
 <span class="sd">        list of ports to be published with localhost before actually starting the container.</span>
 
@@ -827,7 +827,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">ports</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PortMappings</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;getter for ports</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;getter for ports</span>
 
 <span class="sd">        :return: ports to be mapped</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -835,7 +835,7 @@
 
     <span class="nd">@ports</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">ports</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">port_mapping</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">PortMapping</span><span class="p">]):</span>
-        <span class="sd">&quot;&quot;&quot;setter for ports</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;setter for ports</span>
 
 <span class="sd">        :param port_mapping: port mapping</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -843,7 +843,7 @@
 
 
 <div class="viewcode-block" id="PodDepends"><a class="viewcode-back" href="../../../../api/daemon.api.dependencies/#daemon.api.dependencies.PodDepends">[docs]</a><span class="k">class</span> <span class="nc">PodDepends</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Validates &amp; Sets host/port dependencies during Pod creation/update&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Validates &amp; Sets host/port dependencies during Pod creation/update&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -860,7 +860,7 @@
 
     <span class="nd">@cached_property</span>
     <span class="k">def</span> <span class="nf">ports</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Determines ports to be mapped to dockerhost</span>
 
 <span class="sd">        :return: dict of port mappings</span>
@@ -879,7 +879,7 @@
             <span class="k">return</span> <span class="p">{</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">/tcp&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">port</span><span class="p">}</span>
 
 <div class="viewcode-block" id="PodDepends.update_args"><a class="viewcode-back" href="../../../../api/daemon.api.dependencies/#daemon.api.dependencies.PodDepends.update_args">[docs]</a>    <span class="k">def</span> <span class="nf">update_args</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;TODO: update docs&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;TODO: update docs&quot;&quot;&quot;</span>
         <span class="c1"># Each pod is inside a container</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">workspace_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">workspace_id</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">device_requests</span> <span class="o">=</span> <span class="p">(</span>
@@ -888,7 +888,7 @@
 
 
 <div class="viewcode-block" id="DeploymentDepends"><a class="viewcode-back" href="../../../../api/daemon.api.dependencies/#daemon.api.dependencies.DeploymentDepends">[docs]</a><span class="k">class</span> <span class="nc">DeploymentDepends</span><span class="p">(</span><span class="n">PodDepends</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Validates &amp; Sets host/port dependencies during Pod creation/update&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Validates &amp; Sets host/port dependencies during Pod creation/update&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -904,7 +904,7 @@
 
 
 <div class="viewcode-block" id="WorkspaceDepends"><a class="viewcode-back" href="../../../../api/daemon.api.dependencies/#daemon.api.dependencies.WorkspaceDepends">[docs]</a><span class="k">class</span> <span class="nc">WorkspaceDepends</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Interacts with task queue to inform about workspace creation/update&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Interacts with task queue to inform about workspace creation/update&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DaemonID</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">files</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">UploadFile</span><span class="p">]</span> <span class="o">=</span> <span class="n">File</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
@@ -936,7 +936,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Dec 21, 2022.
+                    Last updated on Jan 19, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

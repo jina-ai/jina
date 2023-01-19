@@ -422,7 +422,7 @@
 
 
 <div class="viewcode-block" id="MutateMixin"><a class="viewcode-back" href="../../../../api/jina.clients.mixin/#jina.clients.mixin.MutateMixin">[docs]</a><span class="k">class</span> <span class="nc">MutateMixin</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;The GraphQL Mutation Mixin for Client and Flow&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The GraphQL Mutation Mixin for Client and Flow&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="MutateMixin.mutate"><a class="viewcode-back" href="../../../../api/jina.clients.mixin/#jina.clients.mixin.MutateMixin.mutate">[docs]</a>    <span class="k">def</span> <span class="nf">mutate</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -431,7 +431,7 @@
         <span class="n">timeout</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">headers</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Perform a GraphQL mutation</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Perform a GraphQL mutation</span>
 
 <span class="sd">        :param mutation: the GraphQL mutation as a single string.</span>
 <span class="sd">        :param variables: variables to be substituted in the mutation. Not needed if no variables are present in the mutation string.</span>
@@ -457,7 +457,7 @@
 
 
 <div class="viewcode-block" id="AsyncMutateMixin"><a class="viewcode-back" href="../../../../api/jina.clients.mixin/#jina.clients.mixin.AsyncMutateMixin">[docs]</a><span class="k">class</span> <span class="nc">AsyncMutateMixin</span><span class="p">(</span><span class="n">MutateMixin</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;The async GraphQL Mutation Mixin for Client and Flow&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The async GraphQL Mutation Mixin for Client and Flow&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="AsyncMutateMixin.mutate"><a class="viewcode-back" href="../../../../api/jina.clients.mixin/#jina.clients.mixin.AsyncMutateMixin.mutate">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">mutate</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -466,7 +466,7 @@
         <span class="n">timeout</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">headers</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Perform a GraphQL mutation, asynchronously</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Perform a GraphQL mutation, asynchronously</span>
 
 <span class="sd">        :param mutation: the GraphQL mutation as a single string.</span>
 <span class="sd">        :param variables: variables to be substituted in the mutation. Not needed if no variables are present in the mutation string.</span>
@@ -480,10 +480,10 @@
 
 
 <div class="viewcode-block" id="HealthCheckMixin"><a class="viewcode-back" href="../../../../api/jina.clients.mixin/#jina.clients.mixin.HealthCheckMixin">[docs]</a><span class="k">class</span> <span class="nc">HealthCheckMixin</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;The Health check Mixin for Client and Flow to expose `dry_run` API&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The Health check Mixin for Client and Flow to expose `dry_run` API&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="HealthCheckMixin.dry_run"><a class="viewcode-back" href="../../../../api/jina.clients.mixin/#jina.clients.mixin.HealthCheckMixin.dry_run">[docs]</a>    <span class="k">def</span> <span class="nf">dry_run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Sends a dry run to the Flow to validate if the Flow is ready to receive requests</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sends a dry run to the Flow to validate if the Flow is ready to receive requests</span>
 
 <span class="sd">        :param kwargs: potential kwargs received passed from the public interface</span>
 <span class="sd">        :return: boolean indicating the health/readiness of the Flow</span>
@@ -492,10 +492,10 @@
 
 
 <div class="viewcode-block" id="AsyncHealthCheckMixin"><a class="viewcode-back" href="../../../../api/jina.clients.mixin/#jina.clients.mixin.AsyncHealthCheckMixin">[docs]</a><span class="k">class</span> <span class="nc">AsyncHealthCheckMixin</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;The Health check Mixin for Client and Flow to expose `dry_run` API&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The Health check Mixin for Client and Flow to expose `dry_run` API&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="AsyncHealthCheckMixin.dry_run"><a class="viewcode-back" href="../../../../api/jina.clients.mixin/#jina.clients.mixin.AsyncHealthCheckMixin.dry_run">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">dry_run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Sends a dry run to the Flow to validate if the Flow is ready to receive requests</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sends a dry run to the Flow to validate if the Flow is ready to receive requests</span>
 
 <span class="sd">        :param kwargs: potential kwargs received passed from the public interface</span>
 <span class="sd">        :return: boolean indicating the health/readiness of the Flow</span>
@@ -526,7 +526,7 @@
     <span class="k">def</span> <span class="nf">make_table</span><span class="p">(</span><span class="n">_title</span><span class="p">,</span> <span class="n">_time</span><span class="p">,</span> <span class="n">_percent</span><span class="p">):</span>
         <span class="n">table</span> <span class="o">=</span> <span class="n">Table</span><span class="p">(</span><span class="n">show_header</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">box</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
         <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
-            <span class="n">_title</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;[b]</span><span class="si">{</span><span class="n">_time</span><span class="si">:</span><span class="s1">.0f</span><span class="si">}</span><span class="s1">[/b]ms&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;[dim]</span><span class="si">{</span><span class="n">_percent</span> <span class="o">*</span> <span class="mi">100</span><span class="si">:</span><span class="s1">.0f</span><span class="si">}</span><span class="s1">%[/dim]&#39;</span>
+            <span class="n">_title</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;[b]</span><span class="si">{</span><span class="n">_time</span><span class="si">:</span><span class="s1">.0f</span><span class="si">}</span><span class="s1">[/b]ms&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;[dim]</span><span class="si">{</span><span class="n">_percent</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">100</span><span class="si">:</span><span class="s1">.0f</span><span class="si">}</span><span class="s1">%[/dim]&#39;</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">table</span>
 
@@ -555,10 +555,10 @@
 
 
 <div class="viewcode-block" id="ProfileMixin"><a class="viewcode-back" href="../../../../api/jina.clients.mixin/#jina.clients.mixin.ProfileMixin">[docs]</a><span class="k">class</span> <span class="nc">ProfileMixin</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;The Profile Mixin for Client and Flow to expose `profile` API&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The Profile Mixin for Client and Flow to expose `profile` API&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="ProfileMixin.profiling"><a class="viewcode-back" href="../../../../api/jina.clients.mixin/#jina.clients.mixin.ProfileMixin.profiling">[docs]</a>    <span class="k">def</span> <span class="nf">profiling</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">show_table</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Profiling a single query&#39;s roundtrip including network and computation latency. Results is summarized in a Dict.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Profiling a single query&#39;s roundtrip including network and computation latency. Results is summarized in a Dict.</span>
 
 <span class="sd">        :param show_table: whether to show the table or not.</span>
 <span class="sd">        :return: the latency report in a dict.</span>
@@ -572,10 +572,10 @@
 
 
 <div class="viewcode-block" id="AsyncProfileMixin"><a class="viewcode-back" href="../../../../api/jina.clients.mixin/#jina.clients.mixin.AsyncProfileMixin">[docs]</a><span class="k">class</span> <span class="nc">AsyncProfileMixin</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;The Profile Mixin for Client and Flow to expose `profile` API&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The Profile Mixin for Client and Flow to expose `profile` API&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="AsyncProfileMixin.profiling"><a class="viewcode-back" href="../../../../api/jina.clients.mixin/#jina.clients.mixin.AsyncProfileMixin.profiling">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">profiling</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">show_table</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Profiling a single query&#39;s roundtrip including network and computation latency. Results is summarized in a Dict.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Profiling a single query&#39;s roundtrip including network and computation latency. Results is summarized in a Dict.</span>
 
 <span class="sd">        :param show_table: whether to show the table or not.</span>
 <span class="sd">        :return: the latency report in a dict.</span>
@@ -589,7 +589,7 @@
 
 
 <div class="viewcode-block" id="PostMixin"><a class="viewcode-back" href="../../../../api/jina.clients.mixin/#jina.clients.mixin.PostMixin">[docs]</a><span class="k">class</span> <span class="nc">PostMixin</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;The Post Mixin class for Client and Flow&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The Post Mixin class for Client and Flow&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="PostMixin.post"><a class="viewcode-back" href="../../../../api/jina.clients.mixin/#jina.clients.mixin.PostMixin.post">[docs]</a>    <span class="k">def</span> <span class="nf">post</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -606,7 +606,7 @@
         <span class="n">return_responses</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="s1">&#39;DocumentArray&#39;</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="s1">&#39;Response&#39;</span><span class="p">]]]:</span>
-        <span class="sd">&quot;&quot;&quot;Post a general data request to the Flow.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Post a general data request to the Flow.</span>
 
 <span class="sd">        :param inputs: input data which can be an Iterable, a function which returns an Iterable, or a single Document.</span>
 <span class="sd">        :param on: the endpoint which is invoked. All the functions in the executors decorated by `@requests(on=...)` with the same endpoint are invoked.</span>
@@ -669,7 +669,7 @@
 
 
 <div class="viewcode-block" id="AsyncPostMixin"><a class="viewcode-back" href="../../../../api/jina.clients.mixin/#jina.clients.mixin.AsyncPostMixin">[docs]</a><span class="k">class</span> <span class="nc">AsyncPostMixin</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;The Async Post Mixin class for AsyncClient and AsyncFlow&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The Async Post Mixin class for AsyncClient and AsyncFlow&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="AsyncPostMixin.post"><a class="viewcode-back" href="../../../../api/jina.clients.mixin/#jina.clients.mixin.AsyncPostMixin.post">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">post</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -686,7 +686,7 @@
         <span class="n">return_responses</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="s1">&#39;DocumentArray&#39;</span><span class="p">,</span> <span class="s1">&#39;Response&#39;</span><span class="p">]]:</span>
-        <span class="sd">&quot;&quot;&quot;Async Post a general data request to the Flow.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Async Post a general data request to the Flow.</span>
 
 <span class="sd">        :param inputs: input data which can be an Iterable, a function which returns an Iterable, or a single Document.</span>
 <span class="sd">        :param on: the endpoint which is invoked. All the functions in the executors decorated by `@requests(on=...)` with the same endpoint are invoked.</span>
@@ -746,7 +746,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 21, 2022</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

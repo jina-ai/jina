@@ -405,7 +405,7 @@
 
 
 <div class="viewcode-block" id="HeadRuntime"><a class="viewcode-back" href="../../../../../api/jina.serve.runtimes.head/#jina.serve.runtimes.head.HeadRuntime">[docs]</a><span class="k">class</span> <span class="nc">HeadRuntime</span><span class="p">(</span><span class="n">AsyncNewLoopRuntime</span><span class="p">,</span> <span class="n">ABC</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Runtime is used in head pods. It responds to Gateway requests and sends to uses_before/uses_after and its workers</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -416,7 +416,7 @@
         <span class="n">args</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Initialize grpc server for the head runtime.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize grpc server for the head runtime.</span>
 <span class="sd">        :param args: args from CLI</span>
 <span class="sd">        :param kwargs: keyword args</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -523,7 +523,7 @@
         <span class="p">)</span>
 
 <div class="viewcode-block" id="HeadRuntime.async_setup"><a class="viewcode-back" href="../../../../../api/jina.serve.runtimes.head/#jina.serve.runtimes.head.HeadRuntime.async_setup">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Wait for the GRPC server to start&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Wait for the GRPC server to start&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_grpc_server</span> <span class="o">=</span> <span class="n">grpc</span><span class="o">.</span><span class="n">aio</span><span class="o">.</span><span class="n">server</span><span class="p">(</span>
             <span class="n">options</span><span class="o">=</span><span class="n">_get_grpc_server_options</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">grpc_server_options</span><span class="p">)</span>
         <span class="p">)</span>
@@ -558,23 +558,23 @@
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_grpc_server</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="HeadRuntime.async_run_forever"><a class="viewcode-back" href="../../../../../api/jina.serve.runtimes.head/#jina.serve.runtimes.head.HeadRuntime.async_run_forever">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_run_forever</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Block until the GRPC server is terminated&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Block until the GRPC server is terminated&quot;&quot;&quot;</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_grpc_server</span><span class="o">.</span><span class="n">wait_for_termination</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="HeadRuntime.async_cancel"><a class="viewcode-back" href="../../../../../api/jina.serve.runtimes.head/#jina.serve.runtimes.head.HeadRuntime.async_cancel">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Stop the GRPC server&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Stop the GRPC server&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;cancel HeadRuntime&#39;</span><span class="p">)</span>
 
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_grpc_server</span><span class="o">.</span><span class="n">stop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="HeadRuntime.async_teardown"><a class="viewcode-back" href="../../../../../api/jina.serve.runtimes.head/#jina.serve.runtimes.head.HeadRuntime.async_teardown">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_teardown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Close the connection pool&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Close the connection pool&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_health_servicer</span><span class="o">.</span><span class="n">enter_graceful_shutdown</span><span class="p">()</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">async_cancel</span><span class="p">()</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection_pool</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="HeadRuntime.process_single_data"><a class="viewcode-back" href="../../../../../api/jina.serve.runtimes.head/#jina.serve.runtimes.head.HeadRuntime.process_single_data">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">process_single_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">DataRequest</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataRequest</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Process the received requests and return the result as a new request</span>
 
 <span class="sd">        :param request: the data request to process</span>
@@ -600,7 +600,7 @@
         <span class="k">return</span> <span class="n">response</span>
 
 <div class="viewcode-block" id="HeadRuntime.process_data"><a class="viewcode-back" href="../../../../../api/jina.serve.runtimes.head/#jina.serve.runtimes.head.HeadRuntime.process_data">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">process_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">requests</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">DataRequest</span><span class="p">],</span> <span class="n">context</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataRequest</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Process the received data request and return the result as a new request</span>
 
 <span class="sd">        :param requests: the data requests to process</span>
@@ -632,7 +632,7 @@
             <span class="k">return</span> <span class="n">requests</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="HeadRuntime.endpoint_discovery"><a class="viewcode-back" href="../../../../../api/jina.serve.runtimes.head/#jina.serve.runtimes.head.HeadRuntime.endpoint_discovery">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">endpoint_discovery</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">empty</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">EndpointsProto</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Uses the connection pool to send a discover endpoint call to the workers</span>
 
 <span class="sd">        :param empty: The service expects an empty protobuf message</span>
@@ -747,7 +747,7 @@
         <span class="k">return</span> <span class="n">merged_metadata</span>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">empty</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">JinaInfoProto</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Process the the call requested and return the JinaInfo of the Runtime</span>
 
 <span class="sd">        :param empty: The service expects an empty protobuf message</span>
@@ -775,7 +775,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 21, 2022</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

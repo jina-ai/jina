@@ -413,10 +413,10 @@
 <section id="serverless">
 <h2>Serverless<a class="headerlink" href="#serverless" title="Permalink to this heading">#</a></h2>
 <p>Autoscaling can be enabled by using <code class="docutils literal notranslate"><span class="pre">jinahub+serverless</span></code> protocol for Exectuor’s <code class="docutils literal notranslate"><span class="pre">uses</span></code> in the Flow YAML, such as:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
-<span class="nt">executors</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executor1</span><span class="w"></span>
-<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinahub+serverless://Executor1</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span>
+<span class="nt">executors</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executor1</span>
+<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinahub+serverless://Executor1</span>
 </pre></div>
 </div>
 <p>JCloud Autoscaling leverages <a class="reference external" href="https://knative.dev/docs/">Knative</a> behind the scenes, and <code class="docutils literal notranslate"><span class="pre">jinahub+serverless</span></code> uses a set of Knative configuratons as defaults:</p>
@@ -459,16 +459,16 @@
 <section id="configurations">
 <h2>Configurations<a class="headerlink" href="#configurations" title="Permalink to this heading">#</a></h2>
 <p>If <code class="docutils literal notranslate"><span class="pre">jinahub+serverless</span></code> doesn’t meet your requirements, you can further customize Autoscaling configurations by using the <code class="docutils literal notranslate"><span class="pre">autoscale</span></code> argument on a per Executor basis in the Flow YAML, such as:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
-<span class="nt">executors</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executor1</span><span class="w"></span>
-<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinahub+docker://Executor1</span><span class="w"></span>
-<span class="w">    </span><span class="nt">jcloud</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">autoscale</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">min</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span><span class="w"></span>
-<span class="w">        </span><span class="nt">max</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span><span class="w"></span>
-<span class="w">        </span><span class="nt">metric</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">rps</span><span class="w"></span>
-<span class="w">        </span><span class="nt">target</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">50</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span>
+<span class="nt">executors</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executor1</span>
+<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinahub+docker://Executor1</span>
+<span class="w">    </span><span class="nt">jcloud</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">autoscale</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">min</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">        </span><span class="nt">max</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+<span class="w">        </span><span class="nt">metric</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">rps</span>
+<span class="w">        </span><span class="nt">target</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">50</span>
 </pre></div>
 </div>
 <p>Below are the defaults and requirements for the configurations:</p>
@@ -543,7 +543,7 @@ to handle the initial requests since it may need to scale the deployments behind
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 21, 2022</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

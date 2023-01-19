@@ -421,7 +421,7 @@
 </div>
 </div>
 <input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--2">YAML</label><div class="tab-content docutils">
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span>
 </pre></div>
 </div>
 </div>
@@ -472,7 +472,7 @@
 </div>
 </div>
 <input class="tab-input" id="tab-set--1-input--2" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--2">Jina CLI entrypoint</label><div class="tab-content docutils">
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina flow --uses flow.yml
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina<span class="w"> </span>flow<span class="w"> </span>--uses<span class="w"> </span>flow.yml
 </pre></div>
 </div>
 </div>
@@ -509,7 +509,7 @@
 <h3>Set multiprocessing <code class="docutils literal notranslate"><span class="pre">spawn</span></code><a class="headerlink" href="#set-multiprocessing-spawn" title="Permalink to this heading">#</a></h3>
 <p>Some cornet cases require to force <code class="docutils literal notranslate"><span class="pre">spawn</span></code> start method for multiprocessing, e.g. if you encounter “Cannot re-initialize CUDA in forked subprocess”.</p>
 <p>You may try <code class="docutils literal notranslate"><span class="pre">JINA_MP_START_METHOD=spawn</span></code> before starting the Python script to enable this.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">JINA_MP_START_METHOD</span><span class="o">=</span>spawn python app.py
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">JINA_MP_START_METHOD</span><span class="o">=</span>spawn<span class="w"> </span>python<span class="w"> </span>app.py
 </pre></div>
 </div>
 <div class="admonition hint">
@@ -541,7 +541,7 @@ This can be achieved by <code class="docutils literal notranslate"><span class="
 
 
 <span class="k">def</span> <span class="nf">start_flow</span><span class="p">(</span><span class="n">stop_event</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;start a blocking Flow.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;start a blocking Flow.&quot;&quot;&quot;</span>
     <span class="k">with</span> <span class="n">Flow</span><span class="p">()</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
         <span class="n">f</span><span class="o">.</span><span class="n">block</span><span class="p">(</span><span class="n">stop_event</span><span class="o">=</span><span class="n">stop_event</span><span class="p">)</span>
 
@@ -580,7 +580,7 @@ This can be achieved by <code class="docutils literal notranslate"><span class="
 <a class="reference internal image-reference" href="../../../_images/flow-2.svg"><img alt="../../../_images/flow-2.svg" src="../../../_images/flow-2.svg" width="70%" /></a>
 </figure>
 <p>One can also do it in the terminal via:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina <span class="nb">export</span> flowchart flow.yml flow.svg 
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina<span class="w"> </span><span class="nb">export</span><span class="w"> </span>flowchart<span class="w"> </span>flow.yml<span class="w"> </span>flow.svg<span class="w"> </span>
 </pre></div>
 </div>
 <p>One can also visualize a remote Flow by passing the URL to <code class="docutils literal notranslate"><span class="pre">jina</span> <span class="pre">export</span> <span class="pre">flowchart</span></code>.</p>
@@ -597,7 +597,7 @@ This can be achieved by <code class="docutils literal notranslate"><span class="
 </pre></div>
 </div>
 <p>One can also do it in the terminal via:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>jina <span class="nb">export</span> docker-compose flow.yml docker-compose.yml 
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>jina<span class="w"> </span><span class="nb">export</span><span class="w"> </span>docker-compose<span class="w"> </span>flow.yml<span class="w"> </span>docker-compose.yml<span class="w"> </span>
 </pre></div>
 </div>
 <p>This will generate a single <code class="docutils literal notranslate"><span class="pre">docker-compose.yml</span></code> file containing all the Executors of the Flow.</p>
@@ -612,7 +612,7 @@ This can be achieved by <code class="docutils literal notranslate"><span class="
 </pre></div>
 </div>
 <p>One can also do it in the terminal via:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>jina <span class="nb">export</span> kubernetes flow.yml ./my-k8s 
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>jina<span class="w"> </span><span class="nb">export</span><span class="w"> </span>kubernetes<span class="w"> </span>flow.yml<span class="w"> </span>./my-k8s<span class="w"> </span>
 </pre></div>
 </div>
 <p>This will generate the necessary Kubernetes configuration files for all the <a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>s of the Flow.
@@ -667,7 +667,7 @@ If you do not wish to rebuild the image, set the environment variable <code clas
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 21, 2022</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

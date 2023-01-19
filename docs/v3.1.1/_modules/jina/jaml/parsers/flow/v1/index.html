@@ -633,7 +633,7 @@
 
 
 <span class="k">def</span> <span class="nf">_get_taboo</span><span class="p">(</span><span class="n">parser</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    :param parser: deployment or gateway parser</span>
 <span class="sd">    :return: set of keys that should not be dumped</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -641,7 +641,7 @@
 
 
 <div class="viewcode-block" id="V1Parser"><a class="viewcode-back" href="../../../../../../api/jina.jaml.parsers.flow.v1/#jina.jaml.parsers.flow.v1.V1Parser">[docs]</a><span class="k">class</span> <span class="nc">V1Parser</span><span class="p">(</span><span class="n">VersionedYAMLParser</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;V1Parser introduces new syntax and features:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;V1Parser introduces new syntax and features:</span>
 
 <span class="sd">        - It has a top-level field ``version``</span>
 <span class="sd">        - ``deployments`` is now a List of Dict (rather than a Dict as prev.)</span>
@@ -674,7 +674,7 @@
     <span class="n">version</span> <span class="o">=</span> <span class="s1">&#39;1&#39;</span>  <span class="c1"># the version number this parser designed for</span>
 
 <div class="viewcode-block" id="V1Parser.parse"><a class="viewcode-back" href="../../../../../../api/jina.jaml.parsers.flow.v1/#jina.jaml.parsers.flow.v1.V1Parser.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Flow&#39;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param cls: the class registered for dumping/loading</span>
 <span class="sd">        :param data: flow yaml file loaded as python dict</span>
 <span class="sd">        :return: the Flow YAML parser given the syntax version number</span>
@@ -703,7 +703,7 @@
         <span class="k">return</span> <span class="n">obj</span></div>
 
 <div class="viewcode-block" id="V1Parser.dump"><a class="viewcode-back" href="../../../../../../api/jina.jaml.parsers.flow.v1/#jina.jaml.parsers.flow.v1.V1Parser.dump">[docs]</a>    <span class="k">def</span> <span class="nf">dump</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="s1">&#39;Flow&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param data: versioned flow object</span>
 <span class="sd">        :return: the dictionary given a versioned flow object</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -762,7 +762,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Dec 21, 2022.
+                    Last updated on Jan 19, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

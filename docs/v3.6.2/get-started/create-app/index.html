@@ -601,7 +601,7 @@
                     <section class="tex2jax_ignore mathjax_ignore" id="create-project">
 <h1>Create Project<a class="headerlink" href="#create-project" title="Permalink to this heading">#</a></h1>
 <p>Let’s write a small application with our new Jina development environment. To start, we’ll use Jina CLI to make a new project for us. In your terminal of choice run:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina new hello-jina
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina<span class="w"> </span>new<span class="w"> </span>hello-jina
 </pre></div>
 </div>
 <p>This will generate a new directory called <code class="docutils literal notranslate"><span class="pre">hello-jina</span></code> with the following files:</p>
@@ -618,17 +618,17 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">config.yml</span></code> is the config file for the Executor. It’s where you keep metadata for your Executor, as well as dependencies.</p></li>
 </ul>
 <p>There may be some other files like <code class="docutils literal notranslate"><span class="pre">README.md</span></code>, <code class="docutils literal notranslate"><span class="pre">manifest.yml</span></code>  <code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code> to provide extra metadata about that Executor. More information <a class="reference internal" href="../../fundamentals/executor/hub/create-hub-executor/#create-executor"><span class="std std-ref">can be found here</span></a>.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> hello-jina
-python app.py
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>hello-jina
+python<span class="w"> </span>app.py
 </pre></div>
 </div>
 <p>You should see this in your terminal:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>           Flow@99300<span class="o">[</span>I<span class="o">]</span>:🎉 Flow is ready to use!
-	🔗 Protocol: 		GRPC
-	🏠 Local access:	<span class="m">0</span>.0.0.0:52971
-	🔒 Private network:	<span class="m">192</span>.168.0.102:52971
-	🌐 Public address:	<span class="m">84</span>.172.88.250:52971
-<span class="o">[</span><span class="s1">&#39;hello, world!&#39;</span>, <span class="s1">&#39;goodbye, world!&#39;</span><span class="o">]</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="w">           </span>Flow@99300<span class="o">[</span>I<span class="o">]</span>:🎉<span class="w"> </span>Flow<span class="w"> </span>is<span class="w"> </span>ready<span class="w"> </span>to<span class="w"> </span>use!
+<span class="w">	</span>🔗<span class="w"> </span>Protocol:<span class="w"> 		</span>GRPC
+<span class="w">	</span>🏠<span class="w"> </span>Local<span class="w"> </span>access:<span class="w">	</span><span class="m">0</span>.0.0.0:52971
+<span class="w">	</span>🔒<span class="w"> </span>Private<span class="w"> </span>network:<span class="w">	</span><span class="m">192</span>.168.0.102:52971
+<span class="w">	</span>🌐<span class="w"> </span>Public<span class="w"> </span>address:<span class="w">	</span><span class="m">84</span>.172.88.250:52971
+<span class="o">[</span><span class="s1">&#39;hello, world!&#39;</span>,<span class="w"> </span><span class="s1">&#39;goodbye, world!&#39;</span><span class="o">]</span>
 </pre></div>
 </div>
 <section id="adding-dependencies">
@@ -663,36 +663,36 @@ python app.py
 </pre></div>
 </div>
 <p>Once we save that, we can run our application by typing:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python app.py
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>app.py
 </pre></div>
 </div>
 <p>Assuming everything went well, you should see your application print this to the screen:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>       Flow@301<span class="o">[</span>I<span class="o">]</span>:🎉 Flow is ready to use!
-	🔗 Protocol: 		GRPC
-	🏠 Local access:	<span class="m">0</span>.0.0.0:59667
-	🔒 Private network:	<span class="m">192</span>.168.0.102:59667
-	🌐 Public address:	<span class="m">84</span>.172.88.250:59667
-tensor<span class="o">([[[</span><span class="m">0</span>.9594, <span class="m">0</span>.9373<span class="o">]</span>,
-         <span class="o">[</span><span class="m">0</span>.4729, <span class="m">0</span>.2012<span class="o">]</span>,
-         <span class="o">[</span><span class="m">0</span>.7907, <span class="m">0</span>.3546<span class="o">]</span>,
-         <span class="o">[</span><span class="m">0</span>.6961, <span class="m">0</span>.7463<span class="o">]</span>,
-         <span class="o">[</span><span class="m">0</span>.3487, <span class="m">0</span>.7837<span class="o">]</span>,
-         <span class="o">[</span><span class="m">0</span>.7825, <span class="m">0</span>.0556<span class="o">]</span>,
-         <span class="o">[</span><span class="m">0</span>.3296, <span class="m">0</span>.2153<span class="o">]</span>,
-         <span class="o">[</span><span class="m">0</span>.2207, <span class="m">0</span>.0220<span class="o">]</span>,
-         <span class="o">[</span><span class="m">0</span>.9547, <span class="m">0</span>.9519<span class="o">]</span>,
-         <span class="o">[</span><span class="m">0</span>.6703, <span class="m">0</span>.4601<span class="o">]]</span>,
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="w">       </span>Flow@301<span class="o">[</span>I<span class="o">]</span>:🎉<span class="w"> </span>Flow<span class="w"> </span>is<span class="w"> </span>ready<span class="w"> </span>to<span class="w"> </span>use!
+<span class="w">	</span>🔗<span class="w"> </span>Protocol:<span class="w"> 		</span>GRPC
+<span class="w">	</span>🏠<span class="w"> </span>Local<span class="w"> </span>access:<span class="w">	</span><span class="m">0</span>.0.0.0:59667
+<span class="w">	</span>🔒<span class="w"> </span>Private<span class="w"> </span>network:<span class="w">	</span><span class="m">192</span>.168.0.102:59667
+<span class="w">	</span>🌐<span class="w"> </span>Public<span class="w"> </span>address:<span class="w">	</span><span class="m">84</span>.172.88.250:59667
+tensor<span class="o">([[[</span><span class="m">0</span>.9594,<span class="w"> </span><span class="m">0</span>.9373<span class="o">]</span>,
+<span class="w">         </span><span class="o">[</span><span class="m">0</span>.4729,<span class="w"> </span><span class="m">0</span>.2012<span class="o">]</span>,
+<span class="w">         </span><span class="o">[</span><span class="m">0</span>.7907,<span class="w"> </span><span class="m">0</span>.3546<span class="o">]</span>,
+<span class="w">         </span><span class="o">[</span><span class="m">0</span>.6961,<span class="w"> </span><span class="m">0</span>.7463<span class="o">]</span>,
+<span class="w">         </span><span class="o">[</span><span class="m">0</span>.3487,<span class="w"> </span><span class="m">0</span>.7837<span class="o">]</span>,
+<span class="w">         </span><span class="o">[</span><span class="m">0</span>.7825,<span class="w"> </span><span class="m">0</span>.0556<span class="o">]</span>,
+<span class="w">         </span><span class="o">[</span><span class="m">0</span>.3296,<span class="w"> </span><span class="m">0</span>.2153<span class="o">]</span>,
+<span class="w">         </span><span class="o">[</span><span class="m">0</span>.2207,<span class="w"> </span><span class="m">0</span>.0220<span class="o">]</span>,
+<span class="w">         </span><span class="o">[</span><span class="m">0</span>.9547,<span class="w"> </span><span class="m">0</span>.9519<span class="o">]</span>,
+<span class="w">         </span><span class="o">[</span><span class="m">0</span>.6703,<span class="w"> </span><span class="m">0</span>.4601<span class="o">]]</span>,
 
-        <span class="o">[[</span><span class="m">0</span>.9684, <span class="m">0</span>.6781<span class="o">]</span>,
-         <span class="o">[</span><span class="m">0</span>.7906, <span class="m">0</span>.8454<span class="o">]</span>,
-         <span class="o">[</span><span class="m">0</span>.2136, <span class="m">0</span>.9147<span class="o">]</span>,
-         <span class="o">[</span><span class="m">0</span>.3999, <span class="m">0</span>.7443<span class="o">]</span>,
-         <span class="o">[</span><span class="m">0</span>.2564, <span class="m">0</span>.0629<span class="o">]</span>,
-         <span class="o">[</span><span class="m">0</span>.4713, <span class="m">0</span>.1018<span class="o">]</span>,
-         <span class="o">[</span><span class="m">0</span>.3626, <span class="m">0</span>.0963<span class="o">]</span>,
-         <span class="o">[</span><span class="m">0</span>.7562, <span class="m">0</span>.2183<span class="o">]</span>,
-         <span class="o">[</span><span class="m">0</span>.9239, <span class="m">0</span>.3294<span class="o">]</span>,
-         <span class="o">[</span><span class="m">0</span>.2457, <span class="m">0</span>.9189<span class="o">]]]</span>, <span class="nv">dtype</span><span class="o">=</span>torch.float64
+<span class="w">        </span><span class="o">[[</span><span class="m">0</span>.9684,<span class="w"> </span><span class="m">0</span>.6781<span class="o">]</span>,
+<span class="w">         </span><span class="o">[</span><span class="m">0</span>.7906,<span class="w"> </span><span class="m">0</span>.8454<span class="o">]</span>,
+<span class="w">         </span><span class="o">[</span><span class="m">0</span>.2136,<span class="w"> </span><span class="m">0</span>.9147<span class="o">]</span>,
+<span class="w">         </span><span class="o">[</span><span class="m">0</span>.3999,<span class="w"> </span><span class="m">0</span>.7443<span class="o">]</span>,
+<span class="w">         </span><span class="o">[</span><span class="m">0</span>.2564,<span class="w"> </span><span class="m">0</span>.0629<span class="o">]</span>,
+<span class="w">         </span><span class="o">[</span><span class="m">0</span>.4713,<span class="w"> </span><span class="m">0</span>.1018<span class="o">]</span>,
+<span class="w">         </span><span class="o">[</span><span class="m">0</span>.3626,<span class="w"> </span><span class="m">0</span>.0963<span class="o">]</span>,
+<span class="w">         </span><span class="o">[</span><span class="m">0</span>.7562,<span class="w"> </span><span class="m">0</span>.2183<span class="o">]</span>,
+<span class="w">         </span><span class="o">[</span><span class="m">0</span>.9239,<span class="w"> </span><span class="m">0</span>.3294<span class="o">]</span>,
+<span class="w">         </span><span class="o">[</span><span class="m">0</span>.2457,<span class="w"> </span><span class="m">0</span>.9189<span class="o">]]]</span>,<span class="w"> </span><span class="nv">dtype</span><span class="o">=</span>torch.float64
 </pre></div>
 </div>
 </section>
@@ -733,7 +733,7 @@ tensor<span class="o">([[[</span><span class="m">0</span>.9594, <span class="m">
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 21, 2022</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

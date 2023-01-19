@@ -684,7 +684,7 @@ An expression can be any combination of literal values, references to a context,
 You can combine literals, context references, and functions using operators.</p>
 <p>You need to use specific syntax to tell Jina to evaluate an expression rather than treat it as a string,
 which is based on GitHub actions syntax, and looks like this:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">${{ &lt;expression&gt; }}</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">${{ &lt;expression&gt; }}</span>
 </pre></div>
 </div>
 <p>This expression can be evaluated directly (i.e. substituted by the real value) when being loaded,
@@ -693,16 +693,16 @@ by using <code class="xref py py-meth docutils literal notranslate"><span class=
 (coming form the environment itself), <cite>context variables</cite> (being passed as a dict),
 and <cite>internal references</cite> (included in the .yaml file itself).</p>
 <p>An environment variable <cite>var</cite> is accessed through the following syntax:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">${{ env.var }}</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">${{ env.var }}</span>
 </pre></div>
 </div>
 <p>Note the mandatory spaces before and after the variable denotation.</p>
 <p>Context variables can be accessed using the following syntax:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">${{ context_var }}</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">${{ context_var }}</span>
 </pre></div>
 </div>
 <p>Or, if you want to be explicit:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">${{ context.context_var }}</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">${{ context.context_var }}</span>
 </pre></div>
 </div>
 <p>These context variables are passed as a dict:</p>
@@ -712,7 +712,7 @@ and <cite>internal references</cite> (included in the .yaml file itself).</p>
 </pre></div>
 </div>
 <p>Internal references point to other variables in the yaml file itself, and can be accessed using the following syntax:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">${{root.path.to.var}}</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">${{root.path.to.var}}</span>
 </pre></div>
 </div>
 <p>Note omission of spaces in this syntax.</p>
@@ -954,10 +954,10 @@ implements <a class="reference internal" href="#jina.jaml.JAMLCompatible" title=
 </dd>
 </dl>
 <p>Substitutions are carried in the order and multiple passes to resolve variables with best effort.</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="kt">!BaseEncoder</span><span class="w"></span>
-<span class="nt">metas</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{VAR_A}}</span><span class="w">  </span><span class="c1"># env or context variables</span><span class="w"></span>
-<span class="w">    </span><span class="nt">workspace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my-${{this.name}}</span><span class="w">  </span><span class="c1"># internal reference</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="kt">!BaseEncoder</span>
+<span class="nt">metas</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{VAR_A}}</span><span class="w">  </span><span class="c1"># env or context variables</span>
+<span class="w">    </span><span class="nt">workspace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my-${{this.name}}</span><span class="w">  </span><span class="c1"># internal reference</span>
 </pre></div>
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># load Executor from yaml file</span>
@@ -1057,7 +1057,7 @@ parser errors
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 21, 2022</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

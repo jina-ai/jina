@@ -653,7 +653,7 @@
 
 
 <div class="viewcode-block" id="JinaDProcessTarget"><a class="viewcode-back" href="../../../../../api/jina.orchestrate.pods.jinad/#jina.orchestrate.pods.jinad.JinaDProcessTarget">[docs]</a><span class="k">class</span> <span class="nc">JinaDProcessTarget</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Target to be executed on JinaD Process&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Target to be executed on JinaD Process&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -664,7 +664,7 @@
         <span class="n">is_cancelled</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s1">&#39;multiprocessing.Event&#39;</span><span class="p">,</span> <span class="s1">&#39;threading.Event&#39;</span><span class="p">],</span>
         <span class="n">envs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Method responsible to manage a remote Pod</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Method responsible to manage a remote Pod</span>
 
 <span class="sd">        This method is the target for the Pod&#39;s `thread` or `process`</span>
 
@@ -691,7 +691,7 @@
         <span class="n">run_async</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_run</span><span class="p">)</span>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Manage a remote Pod&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Manage a remote Pod&quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_remote_pod</span><span class="p">()</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
@@ -712,7 +712,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;JinaDProcessTarget terminated&#39;</span><span class="p">)</span>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_create_remote_pod</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Create Workspace, Pod on remote JinaD server&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create Workspace, Pod on remote JinaD server&quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
             <span class="c1"># rich &amp; aiohttp are used in `AsyncJinaDClient`</span>
             <span class="kn">import</span> <span class="nn">aiohttp</span>
@@ -754,7 +754,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">pod_id</span> <span class="o">=</span> <span class="n">response</span>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_sleep_forever</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Sleep forever, no prince will come.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sleep forever, no prince will come.&quot;&quot;&quot;</span>
         <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">1e10</span><span class="p">)</span>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_wait_until_cancelled</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -762,7 +762,7 @@
             <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_terminate_remote_pod</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Removes the remote Pod&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Removes the remote Pod&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pod_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">pods</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pod_id</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span>
@@ -773,7 +773,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">filepaths</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Path</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Get file/directories to be uploaded to remote workspace</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get file/directories to be uploaded to remote workspace</span>
 
 <span class="sd">        :return: filepaths to be uploaded to remote</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -805,7 +805,7 @@
         <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">vars</span><span class="p">(</span><span class="n">cargs</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">v</span> <span class="o">!=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
                 <span class="n">changes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">k</span><span class="si">:</span><span class="s1">&gt;30s</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="n">k</span><span class="p">))</span><span class="si">:</span><span class="s1">30s</span><span class="si">}</span><span class="s1"> -&gt; </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="si">:</span><span class="s1">30s</span><span class="si">}</span><span class="s1">&#39;</span>
+                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">k</span><span class="si">:</span><span class="s1">&gt;30s</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">k</span><span class="p">))</span><span class="si">:</span><span class="s1">30s</span><span class="si">}</span><span class="s1"> -&gt; </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="si">:</span><span class="s1">30s</span><span class="si">}</span><span class="s1">&#39;</span>
                 <span class="p">)</span>
         <span class="k">if</span> <span class="n">changes</span><span class="p">:</span>
             <span class="n">changes</span> <span class="o">=</span> <span class="p">[</span>
@@ -817,7 +817,7 @@
 
 
 <div class="viewcode-block" id="JinaDPod"><a class="viewcode-back" href="../../../../../api/jina.orchestrate.pods.jinad/#jina.orchestrate.pods.jinad.JinaDPod">[docs]</a><span class="k">class</span> <span class="nc">JinaDPod</span><span class="p">(</span><span class="n">BasePod</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Manages a remote Pod by handling a separate Process / Thread&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Manages a remote Pod by handling a separate Process / Thread&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="s1">&#39;argparse.Namespace&#39;</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
@@ -835,7 +835,7 @@
         <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_wait_for_ready_or_shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Waits for the process to be ready or to know it has failed.</span>
 
 <span class="sd">        :param timeout: The time to wait before readiness or failure is determined</span>
@@ -858,7 +858,7 @@
         <span class="n">ctrl_address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check if the runtime has successfully started</span>
 
 <span class="sd">        :param timeout: The time to wait before readiness or failure is determined</span>
@@ -880,7 +880,7 @@
         <span class="k">return</span> <span class="kc">False</span></div>
 
 <div class="viewcode-block" id="JinaDPod.start"><a class="viewcode-back" href="../../../../../api/jina.orchestrate.pods.jinad/#jina.orchestrate.pods.jinad.JinaDPod.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Start the JinaD Process (to manage remote Pod).</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Start the JinaD Process (to manage remote Pod).</span>
 <span class="sd">        .. #noqa: DAR201</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">worker</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
@@ -889,7 +889,7 @@
         <span class="k">return</span> <span class="bp">self</span></div>
 
 <div class="viewcode-block" id="JinaDPod.join"><a class="viewcode-back" href="../../../../../api/jina.orchestrate.pods.jinad/#jina.orchestrate.pods.jinad.JinaDPod.join">[docs]</a>    <span class="k">def</span> <span class="nf">join</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Joins the Pod.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Joins the Pod.</span>
 <span class="sd">        This method calls :meth:`join` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.</span>
 
 <span class="sd">        :param args: extra positional arguments to pass to join</span>
@@ -900,7 +900,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39; Successfully joined the JinaD process&#39;</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_terminate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Terminate the Pod.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Terminate the Pod.</span>
 <span class="sd">        This method calls :meth:`terminate` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cancel_event</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>  <span class="c1"># Inform JinaD Process to stop streaming</span>
@@ -920,7 +920,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Dec 21, 2022.
+                    Last updated on Jan 19, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

@@ -601,10 +601,10 @@
 
 
 <div class="viewcode-block" id="EnumType"><a class="viewcode-back" href="../../../api/jina.enums/#jina.enums.EnumType">[docs]</a><span class="k">class</span> <span class="nc">EnumType</span><span class="p">(</span><span class="n">EnumMeta</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;The metaclass for BetterEnum.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The metaclass for BetterEnum.&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Register a new EnumType</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Register a new EnumType</span>
 
 <span class="sd">        :param args: args passed to super()</span>
 <span class="sd">        :param kwargs: kwargs passed to super()</span>
@@ -615,7 +615,7 @@
 
 <div class="viewcode-block" id="EnumType.register_class"><a class="viewcode-back" href="../../../api/jina.enums/#jina.enums.EnumType.register_class">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">register_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Register the class for dumping loading.</span>
 
 <span class="sd">        :param cls: Target class.</span>
@@ -632,13 +632,13 @@
 
 
 <div class="viewcode-block" id="BetterEnum"><a class="viewcode-back" href="../../../api/jina.enums/#jina.enums.BetterEnum">[docs]</a><span class="k">class</span> <span class="nc">BetterEnum</span><span class="p">(</span><span class="n">IntEnum</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">EnumType</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;The base class of Enum used in Jina.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The base class of Enum used in Jina.&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
 
     <span class="k">def</span> <span class="fm">__format__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">format_spec</span><span class="p">):</span>  <span class="c1"># noqa</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        override format method for python 3.7</span>
 <span class="sd">        :parameter format_spec: format_spec</span>
 <span class="sd">        :return: format using actual value type unless __str__ has been overridden.</span>
@@ -657,7 +657,7 @@
 
 <div class="viewcode-block" id="BetterEnum.from_string"><a class="viewcode-back" href="../../../api/jina.enums/#jina.enums.BetterEnum.from_string">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_string</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">s</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parse the enum from a string.</span>
 
 <span class="sd">        :param s: string representation of the enum value</span>
@@ -672,7 +672,7 @@
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">_to_yaml</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">representer</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Required by :mod:`pyyaml`.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Required by :mod:`pyyaml`.</span>
 
 <span class="sd">        .. note::</span>
 <span class="sd">            In principle, this should inherit from :class:`JAMLCompatible` directly,</span>
@@ -687,7 +687,7 @@
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">_from_yaml</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">constructor</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Required by :mod:`pyyaml`.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Required by :mod:`pyyaml`.</span>
 
 <span class="sd">        .. note::</span>
 <span class="sd">            In principle, this should inherit from :class:`JAMLCompatible` directly,</span>
@@ -700,7 +700,7 @@
 
 
 <div class="viewcode-block" id="PollingType"><a class="viewcode-back" href="../../../api/jina.enums/#jina.enums.PollingType">[docs]</a><span class="k">class</span> <span class="nc">PollingType</span><span class="p">(</span><span class="n">BetterEnum</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;The enum for representing the parallel type of pods in a deployment.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The enum for representing the parallel type of pods in a deployment.&quot;&quot;&quot;</span>
 
     <span class="n">ANY</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1">#: one of the shards will receive the message</span>
     <span class="n">ALL</span> <span class="o">=</span> <span class="mi">2</span>  <span class="c1">#: all shards will receive the message, blocked until all done with the message</span>
@@ -708,7 +708,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">is_push</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check if :class:`PollingType` is using `push` protocol.</span>
 
 <span class="sd">        :return: True if this :class:`PollingType` is using `push` protocol else False.</span>
@@ -717,7 +717,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">is_block</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check if :class:`PollingType` is using `block` protocol.</span>
 
 <span class="sd">        :return: True if this :class:`PollingType` is requiring `block` protocol else False.</span>
@@ -726,7 +726,7 @@
 
 
 <div class="viewcode-block" id="LogVerbosity"><a class="viewcode-back" href="../../../api/jina.enums/#jina.enums.LogVerbosity">[docs]</a><span class="k">class</span> <span class="nc">LogVerbosity</span><span class="p">(</span><span class="n">BetterEnum</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Verbosity level of the logger.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verbosity level of the logger.&quot;&quot;&quot;</span>
 
     <span class="n">DEBUG</span> <span class="o">=</span> <span class="mi">10</span>
     <span class="n">INFO</span> <span class="o">=</span> <span class="mi">20</span>
@@ -737,7 +737,7 @@
 
 
 <div class="viewcode-block" id="FlowBuildLevel"><a class="viewcode-back" href="../../../api/jina.enums/#jina.enums.FlowBuildLevel">[docs]</a><span class="k">class</span> <span class="nc">FlowBuildLevel</span><span class="p">(</span><span class="n">BetterEnum</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The enum for representing a flow&#39;s build level.</span>
 
 <span class="sd">    Some :class:`jina.orchestrate.flow.Flow` class functions require certain build level to run.</span>
@@ -749,7 +749,7 @@
 
 
 <div class="viewcode-block" id="GatewayProtocolType"><a class="viewcode-back" href="../../../api/jina.enums/#jina.enums.GatewayProtocolType">[docs]</a><span class="k">class</span> <span class="nc">GatewayProtocolType</span><span class="p">(</span><span class="n">BetterEnum</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Gateway communication protocol</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -759,7 +759,7 @@
 
 
 <div class="viewcode-block" id="PodRoleType"><a class="viewcode-back" href="../../../api/jina.enums/#jina.enums.PodRoleType">[docs]</a><span class="k">class</span> <span class="nc">PodRoleType</span><span class="p">(</span><span class="n">BetterEnum</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;The enum of a Pod role.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The enum of a Pod role.&quot;&quot;&quot;</span>
 
     <span class="n">HEAD</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">WORKER</span> <span class="o">=</span> <span class="mi">1</span>
@@ -767,7 +767,7 @@
 
 
 <div class="viewcode-block" id="DeploymentRoleType"><a class="viewcode-back" href="../../../api/jina.enums/#jina.enums.DeploymentRoleType">[docs]</a><span class="k">class</span> <span class="nc">DeploymentRoleType</span><span class="p">(</span><span class="n">BetterEnum</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;The enum of a Deploymen role for visualization.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The enum of a Deploymen role for visualization.&quot;&quot;&quot;</span>
 
     <span class="n">DEPLOYMENT</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">JOIN</span> <span class="o">=</span> <span class="mi">1</span>
@@ -778,7 +778,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">is_inspect</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        If the role is inspect deployment related.</span>
 
 <span class="sd">        :return: True if the Deployment role is inspect related else False.</span>
@@ -787,14 +787,14 @@
 
 
 <div class="viewcode-block" id="RequestType"><a class="viewcode-back" href="../../../api/jina.enums/#jina.enums.RequestType">[docs]</a><span class="k">class</span> <span class="nc">RequestType</span><span class="p">(</span><span class="n">BetterEnum</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;The enum of Client mode.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The enum of Client mode.&quot;&quot;&quot;</span>
 
     <span class="n">DATA</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">CONTROL</span> <span class="o">=</span> <span class="mi">1</span></div>
 
 
 <div class="viewcode-block" id="CompressAlgo"><a class="viewcode-back" href="../../../api/jina.enums/#jina.enums.CompressAlgo">[docs]</a><span class="k">class</span> <span class="nc">CompressAlgo</span><span class="p">(</span><span class="n">BetterEnum</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The enum of Compress algorithms.</span>
 
 <span class="sd">    .. note::</span>
@@ -814,7 +814,7 @@
 
 
 <div class="viewcode-block" id="OnErrorStrategy"><a class="viewcode-back" href="../../../api/jina.enums/#jina.enums.OnErrorStrategy">[docs]</a><span class="k">class</span> <span class="nc">OnErrorStrategy</span><span class="p">(</span><span class="n">BetterEnum</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The level of error handling.</span>
 
 <span class="sd">    .. warning::</span>
@@ -832,7 +832,7 @@
 
 
 <div class="viewcode-block" id="FlowInspectType"><a class="viewcode-back" href="../../../api/jina.enums/#jina.enums.FlowInspectType">[docs]</a><span class="k">class</span> <span class="nc">FlowInspectType</span><span class="p">(</span><span class="n">BetterEnum</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Inspect strategy in the flow.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Inspect strategy in the flow.&quot;&quot;&quot;</span>
 
     <span class="n">HANG</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># keep them hanging there</span>
     <span class="n">REMOVE</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># remove them in the build</span>
@@ -840,7 +840,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">is_keep</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check if the target is inspected.</span>
 
 <span class="sd">        :return: True if the target is inspected else False.</span>
@@ -849,7 +849,7 @@
 
 
 <div class="viewcode-block" id="DataInputType"><a class="viewcode-back" href="../../../api/jina.enums/#jina.enums.DataInputType">[docs]</a><span class="k">class</span> <span class="nc">DataInputType</span><span class="p">(</span><span class="n">BetterEnum</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Data input type in the request generator.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Data input type in the request generator.&quot;&quot;&quot;</span>
 
     <span class="n">AUTO</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># auto inference the input type from data (!WARN: could be slow as it relies on try-execept)</span>
     <span class="n">DOCUMENT</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># the input is a full document</span>
@@ -858,14 +858,14 @@
 
 
 <div class="viewcode-block" id="WebsocketSubProtocols"><a class="viewcode-back" href="../../../api/jina.enums/#jina.enums.WebsocketSubProtocols">[docs]</a><span class="k">class</span> <span class="nc">WebsocketSubProtocols</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Subprotocol supported with Websocket Gateway&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Subprotocol supported with Websocket Gateway&quot;&quot;&quot;</span>
 
     <span class="n">JSON</span> <span class="o">=</span> <span class="s1">&#39;json&#39;</span>
     <span class="n">BYTES</span> <span class="o">=</span> <span class="s1">&#39;bytes&#39;</span></div>
 
 
 <div class="viewcode-block" id="replace_enum_to_str"><a class="viewcode-back" href="../../../api/jina.enums/#jina.enums.replace_enum_to_str">[docs]</a><span class="k">def</span> <span class="nf">replace_enum_to_str</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Transform BetterEnum type into string.</span>
 
 <span class="sd">    :param obj: Target obj.</span>
@@ -888,7 +888,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Dec 21, 2022.
+                    Last updated on Jan 19, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

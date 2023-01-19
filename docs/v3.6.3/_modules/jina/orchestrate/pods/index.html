@@ -609,7 +609,7 @@
     <span class="n">is_ready</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s1">&#39;multiprocessing.Event&#39;</span><span class="p">,</span> <span class="s1">&#39;threading.Event&#39;</span><span class="p">],</span>
     <span class="n">jaml_classes</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Method representing the :class:`BaseRuntime` activity.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Method representing the :class:`BaseRuntime` activity.</span>
 
 <span class="sd">    This method is the target for the Pod&#39;s `thread` or `process`</span>
 
@@ -676,7 +676,7 @@
 
 
 <div class="viewcode-block" id="BasePod"><a class="viewcode-back" href="../../../../api/jina.orchestrate.pods/#jina.orchestrate.pods.BasePod">[docs]</a><span class="k">class</span> <span class="nc">BasePod</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    :class:`BasePod` is an interface from which all the classes managing the lifetime of a Runtime inside a local process,</span>
 <span class="sd">    container must inherit.</span>
 
@@ -718,7 +718,7 @@
         <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">&#39;</span>
 
 <div class="viewcode-block" id="BasePod.close"><a class="viewcode-back" href="../../../../api/jina.orchestrate.pods/#jina.orchestrate.pods.BasePod.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Close the Pod</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Close the Pod</span>
 
 <span class="sd">        This method makes sure that the `Process` is properly finished and its resources properly released</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -749,7 +749,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># here shutdown has been set already, therefore `run` will gracefully finish</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="s2">&quot;shutdown is is already set&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_shutdown</span><span class="o">.</span><span class="n">is_set</span><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;Runtime was never started&quot;</span><span class="si">}</span><span class="s1">. Runtime will end gracefully on its own&#39;</span>
+                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="s2">&quot;shutdown is is already set&quot;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">is_shutdown</span><span class="o">.</span><span class="n">is_set</span><span class="p">()</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s2">&quot;Runtime was never started&quot;</span><span class="si">}</span><span class="s1">. Runtime will end gracefully on its own&#39;</span>
             <span class="p">)</span>
             <span class="k">pass</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">is_shutdown</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
@@ -763,7 +763,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">_wait_for_ready_or_shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Waits for the process to be ready or to know it has failed.</span>
 
 <span class="sd">        :param timeout: The time to wait before readiness or failure is determined</span>
@@ -777,7 +777,7 @@
         <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_fail_start_timeout</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Closes the Pod and raises a TimeoutError with the corresponding warning messages</span>
 
 <span class="sd">        :param timeout: The time to wait before readiness or failure is determined</span>
@@ -790,11 +790,11 @@
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
         <span class="k">raise</span> <span class="ne">TimeoutError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">typename</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> can not be initialized after </span><span class="si">{</span><span class="n">_timeout</span> <span class="o">*</span> <span class="mf">1e3</span><span class="si">}</span><span class="s1">ms&#39;</span>
+            <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">typename</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> can not be initialized after </span><span class="si">{</span><span class="n">_timeout</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">1e3</span><span class="si">}</span><span class="s1">ms&#39;</span>
         <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_check_failed_to_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Raises a corresponding exception if failed to start</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_shutdown</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
@@ -805,7 +805,7 @@
                 <span class="k">raise</span> <span class="n">RuntimeRunForeverEarlyError</span>
 
 <div class="viewcode-block" id="BasePod.wait_start_success"><a class="viewcode-back" href="../../../../api/jina.orchestrate.pods/#jina.orchestrate.pods.BasePod.wait_start_success">[docs]</a>    <span class="k">def</span> <span class="nf">wait_start_success</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Block until all pods starts successfully.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Block until all pods starts successfully.</span>
 
 <span class="sd">        If not success, it will raise an error hoping the outer function to catch it</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -821,7 +821,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_fail_start_timeout</span><span class="p">(</span><span class="n">_timeout</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="BasePod.async_wait_start_success"><a class="viewcode-back" href="../../../../api/jina.orchestrate.pods/#jina.orchestrate.pods.BasePod.async_wait_start_success">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_wait_start_success</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Wait for the `Pod` to start successfully in a non-blocking manner</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">import</span> <span class="nn">asyncio</span>
@@ -847,13 +847,13 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">role</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;PodRoleType&#39;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Get the role of this pod in a deployment</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the role of this pod in a deployment</span>
 <span class="sd">        .. #noqa: DAR201&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">pod_role</span>
 
 <div class="viewcode-block" id="BasePod.start"><a class="viewcode-back" href="../../../../api/jina.orchestrate.pods/#jina.orchestrate.pods.BasePod.start">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Start the BasePod.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Start the BasePod.</span>
 <span class="sd">        This method calls :meth:`start` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.</span>
 <span class="sd">        .. #noqa: DAR201</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -865,7 +865,7 @@
 
 <div class="viewcode-block" id="BasePod.join"><a class="viewcode-back" href="../../../../api/jina.orchestrate.pods/#jina.orchestrate.pods.BasePod.join">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">join</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Joins the BasePod. Wait for the BasePod to properly terminate</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Joins the BasePod. Wait for the BasePod to properly terminate</span>
 
 <span class="sd">        :param args: extra positional arguments</span>
 <span class="sd">        :param kwargs: extra keyword arguments</span>
@@ -874,7 +874,7 @@
 
 
 <div class="viewcode-block" id="Pod"><a class="viewcode-back" href="../../../../api/jina.orchestrate.pods/#jina.orchestrate.pods.Pod">[docs]</a><span class="k">class</span> <span class="nc">Pod</span><span class="p">(</span><span class="n">BasePod</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    :class:`Pod` is a thread/process- container of :class:`BaseRuntime`. It leverages :class:`threading.Thread`</span>
 <span class="sd">    or :class:`multiprocessing.Process` to manage the lifecycle of a :class:`BaseRuntime` object in a robust way.</span>
 
@@ -901,7 +901,7 @@
         <span class="p">)</span>
 
 <div class="viewcode-block" id="Pod.start"><a class="viewcode-back" href="../../../../api/jina.orchestrate.pods/#jina.orchestrate.pods.Pod.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Start the Pod.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Start the Pod.</span>
 <span class="sd">        This method calls :meth:`start` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.</span>
 <span class="sd">        .. #noqa: DAR201</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -913,7 +913,7 @@
         <span class="k">return</span> <span class="bp">self</span></div>
 
 <div class="viewcode-block" id="Pod.join"><a class="viewcode-back" href="../../../../api/jina.orchestrate.pods/#jina.orchestrate.pods.Pod.join">[docs]</a>    <span class="k">def</span> <span class="nf">join</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Joins the Pod.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Joins the Pod.</span>
 <span class="sd">        This method calls :meth:`join` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.</span>
 
 <span class="sd">        :param args: extra positional arguments to pass to join</span>
@@ -924,7 +924,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;successfully joined the process&#39;</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_terminate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Terminate the Pod.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Terminate the Pod.</span>
 <span class="sd">        This method calls :meth:`terminate` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;terminating the runtime process&#39;</span><span class="p">)</span>
@@ -951,7 +951,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 21, 2022</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

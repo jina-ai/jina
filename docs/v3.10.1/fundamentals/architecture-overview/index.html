@@ -503,21 +503,21 @@
 </div>
 </div>
 <input class="tab-input" id="tab-set--1-input--2" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--2">flow.yml</label><div class="tab-content docutils">
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
-<span class="nt">with</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">12345</span><span class="w"></span>
-<span class="nt">executors</span><span class="p">:</span><span class="w"></span>
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">FooExec</span><span class="w"></span>
-<span class="w">  </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span><span class="w"></span>
-<span class="w">  </span><span class="nt">py_modules</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executor.py</span><span class="w"></span>
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">BarExec</span><span class="w"></span>
-<span class="w">  </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span><span class="w"></span>
-<span class="w">  </span><span class="nt">py_modules</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executor.py</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span>
+<span class="nt">with</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">12345</span>
+<span class="nt">executors</span><span class="p">:</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">FooExec</span>
+<span class="w">  </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span>
+<span class="w">  </span><span class="nt">py_modules</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executor.py</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">BarExec</span>
+<span class="w">  </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+<span class="w">  </span><span class="nt">py_modules</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executor.py</span>
 </pre></div>
 </div>
 </div>
 <input class="tab-input" id="tab-set--1-input--3" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--3">Entrypoint</label><div class="tab-content docutils">
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina flow --uses flow.yml
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina<span class="w"> </span>flow<span class="w"> </span>--uses<span class="w"> </span>flow.yml
 </pre></div>
 </div>
 </div>
@@ -582,7 +582,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 21, 2022</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

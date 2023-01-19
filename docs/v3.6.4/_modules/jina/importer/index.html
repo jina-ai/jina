@@ -392,7 +392,7 @@
 
 
 <div class="viewcode-block" id="ImportExtensions"><a class="viewcode-back" href="../../../api/jina.importer/#jina.importer.ImportExtensions">[docs]</a><span class="k">class</span> <span class="nc">ImportExtensions</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A context manager for wrapping extension import and fallback. It guides the user to pip install correct package by looking up extra-requirements.txt.</span>
 
 <span class="sd">    :param required: set to True if you want to raise the ModuleNotFound error</span>
@@ -441,15 +441,15 @@
                 <span class="n">req_msg</span> <span class="o">=</span> <span class="n">colored</span><span class="p">(</span><span class="s1">&#39;fallback to default behavior&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;yellow&#39;</span><span class="p">)</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_required</span><span class="p">:</span>
                     <span class="n">req_msg</span> <span class="o">=</span> <span class="n">colored</span><span class="p">(</span><span class="s1">&#39;and it is required&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">)</span>
-                <span class="n">err_msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;&#39;&#39;Python package &quot;</span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="n">missing_module</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="s1">&#39;bold&#39;</span><span class="p">)</span><span class="si">}</span><span class="s1">&quot; is not installed, </span><span class="si">{</span><span class="n">req_msg</span><span class="si">}</span><span class="s1">.</span>
+                <span class="n">err_msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;&#39;&#39;Python package &quot;</span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="n">missing_module</span><span class="p">,</span><span class="w"> </span><span class="n">attrs</span><span class="o">=</span><span class="s1">&#39;bold&#39;</span><span class="p">)</span><span class="si">}</span><span class="s1">&quot; is not installed, </span><span class="si">{</span><span class="n">req_msg</span><span class="si">}</span><span class="s1">.</span>
 <span class="s1">                    You are trying to use a feature not enabled by your current Jina installation.&#39;&#39;&#39;</span>
 
                 <span class="n">avail_tags</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
                     <span class="n">colored</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;[</span><span class="si">{</span><span class="n">tag</span><span class="si">}</span><span class="s1">]&#39;</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="s1">&#39;bold&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tags</span>
                 <span class="p">)</span>
                 <span class="n">err_msg</span> <span class="o">+=</span> <span class="p">(</span>
-                    <span class="sa">f</span><span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1">To enable this feature, use </span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="s2">&quot;pip install jina[TAG]&quot;</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="s2">&quot;bold&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1">, &#39;</span>
-                    <span class="sa">f</span><span class="s1">&#39;where </span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="s2">&quot;[TAG]&quot;</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="s2">&quot;bold&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1"> is one of </span><span class="si">{</span><span class="n">avail_tags</span><span class="si">}</span><span class="s1">.</span><span class="se">\n</span><span class="s1">&#39;</span>
+                    <span class="sa">f</span><span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1">To enable this feature, use </span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="s2">&quot;pip install jina[TAG]&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">attrs</span><span class="o">=</span><span class="s2">&quot;bold&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1">, &#39;</span>
+                    <span class="sa">f</span><span class="s1">&#39;where </span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="s2">&quot;[TAG]&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">attrs</span><span class="o">=</span><span class="s2">&quot;bold&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1"> is one of </span><span class="si">{</span><span class="n">avail_tags</span><span class="si">}</span><span class="s1">.</span><span class="se">\n</span><span class="s1">&#39;</span>
                 <span class="p">)</span>
 
             <span class="k">else</span><span class="p">:</span>
@@ -510,11 +510,11 @@
 
 
 <div class="viewcode-block" id="PathImporter"><a class="viewcode-back" href="../../../api/jina.importer/#jina.importer.PathImporter">[docs]</a><span class="k">class</span> <span class="nc">PathImporter</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;The class to import modules from paths.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The class to import modules from paths.&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="PathImporter.add_modules"><a class="viewcode-back" href="../../../api/jina.importer/#jina.importer.PathImporter.add_modules">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">add_modules</span><span class="p">(</span><span class="o">*</span><span class="n">paths</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Import modules from paths.</span>
 
 <span class="sd">        :param paths: Paths of the modules.</span>
@@ -544,7 +544,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 21, 2022</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

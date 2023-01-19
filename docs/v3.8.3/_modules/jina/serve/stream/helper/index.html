@@ -395,7 +395,7 @@
 
 
 <span class="k">class</span> <span class="nc">_RequestsCounter</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Class used to wrap a count integer so that it can be updated inside methods.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class used to wrap a count integer so that it can be updated inside methods.</span>
 
 <span class="sd">    .. code-block:: python</span>
 
@@ -416,7 +416,7 @@
 
 
 <div class="viewcode-block" id="AsyncRequestsIterator"><a class="viewcode-back" href="../../../../../api/jina.serve.stream.helper/#jina.serve.stream.helper.AsyncRequestsIterator">[docs]</a><span class="k">class</span> <span class="nc">AsyncRequestsIterator</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Iterator to allow async iteration of blocking/non-blocking iterator from the Client&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Iterator to allow async iteration of blocking/non-blocking iterator from the Client&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -424,7 +424,7 @@
         <span class="n">request_counter</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">_RequestsCounter</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">prefetch</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Async request iterator</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Async request iterator</span>
 
 <span class="sd">        :param iterator: request iterator</span>
 <span class="sd">        :param request_counter: counter of the numbers of request being handled at a given moment</span>
@@ -435,7 +435,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_prefetch</span> <span class="o">=</span> <span class="n">prefetch</span>
 
 <div class="viewcode-block" id="AsyncRequestsIterator.iterator__next__"><a class="viewcode-back" href="../../../../../api/jina.serve.stream.helper/#jina.serve.stream.helper.AsyncRequestsIterator.iterator__next__">[docs]</a>    <span class="k">def</span> <span class="nf">iterator__next__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Executed inside a `ThreadPoolExecutor` via `loop.run_in_executor` to avoid following exception.</span>
 <span class="sd">        &quot;StopIteration interacts badly with generators and cannot be raised into a Future&quot;</span>
 
@@ -452,7 +452,7 @@
     <span class="k">async</span> <span class="k">def</span> <span class="fm">__anext__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">iterator</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">):</span>
 
-            <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            An `Iterator` indicates &quot;blocking&quot; code, which might block all tasks in the event loop.</span>
 <span class="sd">            Hence we iterate in the default executor provided by asyncio.</span>
 <span class="sd">            &quot;&quot;&quot;</span>
@@ -460,7 +460,7 @@
                 <span class="kc">None</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">iterator__next__</span>
             <span class="p">)</span>
 
-            <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            `iterator.__next__` can be executed directly and that&#39;d raise `StopIteration` in the executor,</span>
 <span class="sd">            which raises the following exception while chaining states in futures.</span>
 <span class="sd">            &quot;StopIteration interacts badly with generators and cannot be raised into a Future&quot;</span>
@@ -490,7 +490,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 21, 2022</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

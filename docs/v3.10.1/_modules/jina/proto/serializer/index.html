@@ -387,7 +387,7 @@
 
 
 <div class="viewcode-block" id="DataRequestProto"><a class="viewcode-back" href="../../../../api/jina.proto.serializer/#jina.proto.serializer.DataRequestProto">[docs]</a><span class="k">class</span> <span class="nc">DataRequestProto</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;This class is a drop-in replacement for gRPC default serializer.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;This class is a drop-in replacement for gRPC default serializer.</span>
 
 <span class="sd">    It replace default serializer to make sure we always work with `Request`</span>
 
@@ -395,7 +395,7 @@
 
 <div class="viewcode-block" id="DataRequestProto.SerializeToString"><a class="viewcode-back" href="../../../../api/jina.proto.serializer/#jina.proto.serializer.DataRequestProto.SerializeToString">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">SerializeToString</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="s1">&#39;DataRequest&#39;</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        # noqa: DAR101</span>
 <span class="sd">        # noqa: DAR102</span>
 <span class="sd">        # noqa: DAR201</span>
@@ -411,7 +411,7 @@
 
 <div class="viewcode-block" id="DataRequestProto.FromString"><a class="viewcode-back" href="../../../../api/jina.proto.serializer/#jina.proto.serializer.DataRequestProto.FromString">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">FromString</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        # noqa: DAR101</span>
 <span class="sd">        # noqa: DAR102</span>
 <span class="sd">        # noqa: DAR201</span>
@@ -423,7 +423,7 @@
 
 
 <div class="viewcode-block" id="DataRequestListProto"><a class="viewcode-back" href="../../../../api/jina.proto.serializer/#jina.proto.serializer.DataRequestListProto">[docs]</a><span class="k">class</span> <span class="nc">DataRequestListProto</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;This class is a drop-in replacement for gRPC default serializer.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;This class is a drop-in replacement for gRPC default serializer.</span>
 <span class="sd">    It replaces default serializer to make sure the message sending interface is convenient.</span>
 <span class="sd">    It can handle sending single messages or a list of messages. It also returns a list of messages.</span>
 <span class="sd">    Effectively this is hiding MessageListProto from the consumer</span>
@@ -431,7 +431,7 @@
 
 <div class="viewcode-block" id="DataRequestListProto.SerializeToString"><a class="viewcode-back" href="../../../../api/jina.proto.serializer/#jina.proto.serializer.DataRequestListProto.SerializeToString">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">SerializeToString</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="s1">&#39;Union[List[DataRequest], DataRequest]&#39;</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        # noqa: DAR101</span>
 <span class="sd">        # noqa: DAR102</span>
 <span class="sd">        # noqa: DAR201</span>
@@ -446,7 +446,7 @@
 
 <div class="viewcode-block" id="DataRequestListProto.FromString"><a class="viewcode-back" href="../../../../api/jina.proto.serializer/#jina.proto.serializer.DataRequestListProto.FromString">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">FromString</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        # noqa: DAR101</span>
 <span class="sd">        # noqa: DAR102</span>
 <span class="sd">        # noqa: DAR201</span>
@@ -457,13 +457,13 @@
 
 
 <div class="viewcode-block" id="EndpointsProto"><a class="viewcode-back" href="../../../../api/jina.proto.serializer/#jina.proto.serializer.EndpointsProto">[docs]</a><span class="k">class</span> <span class="nc">EndpointsProto</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Since the serializer is replacing the `jina_pb2 to know how to exactly serialize messages, this is just a placeholder that</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Since the serializer is replacing the `jina_pb2 to know how to exactly serialize messages, this is just a placeholder that</span>
 <span class="sd">    delegates the serializing and deserializing to the internal protobuf structure with no extra optimization.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="EndpointsProto.SerializeToString"><a class="viewcode-back" href="../../../../api/jina.proto.serializer/#jina.proto.serializer.EndpointsProto.SerializeToString">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">SerializeToString</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        # noqa: DAR101</span>
 <span class="sd">        # noqa: DAR102</span>
 <span class="sd">        # noqa: DAR201</span>
@@ -472,7 +472,7 @@
 
 <div class="viewcode-block" id="EndpointsProto.FromString"><a class="viewcode-back" href="../../../../api/jina.proto.serializer/#jina.proto.serializer.EndpointsProto.FromString">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">FromString</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        # noqa: DAR101</span>
 <span class="sd">        # noqa: DAR102</span>
 <span class="sd">        # noqa: DAR201</span>
@@ -484,13 +484,13 @@
 
 
 <div class="viewcode-block" id="StatusProto"><a class="viewcode-back" href="../../../../api/jina.proto.serializer/#jina.proto.serializer.StatusProto">[docs]</a><span class="k">class</span> <span class="nc">StatusProto</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Since the serializer is replacing the `jina_pb2 to know how to exactly serialize messages, this is just a placeholder that</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Since the serializer is replacing the `jina_pb2 to know how to exactly serialize messages, this is just a placeholder that</span>
 <span class="sd">    delegates the serializing and deserializing to the internal protobuf structure with no extra optimization.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="StatusProto.SerializeToString"><a class="viewcode-back" href="../../../../api/jina.proto.serializer/#jina.proto.serializer.StatusProto.SerializeToString">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">SerializeToString</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        # noqa: DAR101</span>
 <span class="sd">        # noqa: DAR102</span>
 <span class="sd">        # noqa: DAR201</span>
@@ -499,7 +499,7 @@
 
 <div class="viewcode-block" id="StatusProto.FromString"><a class="viewcode-back" href="../../../../api/jina.proto.serializer/#jina.proto.serializer.StatusProto.FromString">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">FromString</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        # noqa: DAR101</span>
 <span class="sd">        # noqa: DAR102</span>
 <span class="sd">        # noqa: DAR201</span>
@@ -511,13 +511,13 @@
 
 
 <div class="viewcode-block" id="JinaInfoProto"><a class="viewcode-back" href="../../../../api/jina.proto.serializer/#jina.proto.serializer.JinaInfoProto">[docs]</a><span class="k">class</span> <span class="nc">JinaInfoProto</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Since the serializer is replacing the `jina_pb2` to know how to exactly serialize messages, this is just a placeholder that</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Since the serializer is replacing the `jina_pb2` to know how to exactly serialize messages, this is just a placeholder that</span>
 <span class="sd">    delegates the serializing and deserializing to the internal protobuf structure with no extra optimization.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="JinaInfoProto.SerializeToString"><a class="viewcode-back" href="../../../../api/jina.proto.serializer/#jina.proto.serializer.JinaInfoProto.SerializeToString">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">SerializeToString</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        # noqa: DAR101</span>
 <span class="sd">        # noqa: DAR102</span>
 <span class="sd">        # noqa: DAR201</span>
@@ -526,7 +526,7 @@
 
 <div class="viewcode-block" id="JinaInfoProto.FromString"><a class="viewcode-back" href="../../../../api/jina.proto.serializer/#jina.proto.serializer.JinaInfoProto.FromString">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">FromString</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        # noqa: DAR101</span>
 <span class="sd">        # noqa: DAR102</span>
 <span class="sd">        # noqa: DAR201</span>
@@ -549,7 +549,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 21, 2022</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

@@ -480,16 +480,16 @@
 </pre></div>
 </div>
 <p>Save it as <code class="docutils literal notranslate"><span class="pre">executor.py</span></code> and create <code class="docutils literal notranslate"><span class="pre">executor.yml</span></code> with the following content:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">VideoChatExecutor</span><span class="w"></span>
-<span class="nt">py_modules</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executor.py</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">VideoChatExecutor</span>
+<span class="nt">py_modules</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executor.py</span>
 </pre></div>
 </div>
 <p>Put both under <code class="docutils literal notranslate"><span class="pre">executor/</span></code> folder and now the Flow YAML looks like the following:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
-<span class="nt">executors</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executor/config.yml</span><span class="w"></span>
-<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">frameAggregator</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span>
+<span class="nt">executors</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executor/config.yml</span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">frameAggregator</span>
 </pre></div>
 </div>
 <p>The whole file structure is illustrated below.</p>
@@ -503,15 +503,15 @@
 <section id="run">
 <h2>Run<a class="headerlink" href="#run" title="Permalink to this heading">#</a></h2>
 <p>First run the server:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina flow --uses flow.yml
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina<span class="w"> </span>flow<span class="w"> </span>--uses<span class="w"> </span>flow.yml
 </pre></div>
 </div>
 <p>Note down the server address:</p>
 <p><img alt="" src="https://github.com/jina-ai/jina-video-chat/raw/main/.github/server.png" /></p>
 <p>Now run the client from different laptops:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python client.py grpcs://your-server-address-from-last-image johannes
-python client.py grpcs://your-server-address-from-last-image han
-python client.py grpcs://your-server-address-from-last-image kalim
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>client.py<span class="w"> </span>grpcs://your-server-address-from-last-image<span class="w"> </span>johannes
+python<span class="w"> </span>client.py<span class="w"> </span>grpcs://your-server-address-from-last-image<span class="w"> </span>han
+python<span class="w"> </span>client.py<span class="w"> </span>grpcs://your-server-address-from-last-image<span class="w"> </span>kalim
 </pre></div>
 </div>
 </section>
@@ -552,7 +552,7 @@ python client.py grpcs://your-server-address-from-last-image kalim
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 21, 2022</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

@@ -622,12 +622,12 @@
 
 
 <div class="viewcode-block" id="DaemonID"><a class="viewcode-back" href="../../../../api/daemon.models.id/#daemon.models.id.DaemonID">[docs]</a><span class="k">class</span> <span class="nc">DaemonID</span><span class="p">(</span><span class="nb">str</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Custom datatype defining an ID in Daemon&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Custom datatype defining an ID in Daemon&quot;&quot;&quot;</span>
 
     <span class="n">pattern</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;^(</span><span class="si">{</span><span class="s2">&quot;|&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">IDLiterals</span><span class="o">.</span><span class="n">values</span><span class="p">)</span><span class="si">}</span><span class="s1">)-[0-9a-f]</span><span class="se">{{</span><span class="s1">8</span><span class="se">}}</span><span class="s1">-[0-9a-f]</span><span class="se">{{</span><span class="s1">4</span><span class="se">}}</span><span class="s1">-[0-9a-f]</span><span class="se">{{</span><span class="s1">4</span><span class="se">}}</span><span class="s1">-[0-9a-f]</span><span class="se">{{</span><span class="s1">4</span><span class="se">}}</span><span class="s1">-[0-9a-f]</span><span class="se">{{</span><span class="s1">12</span><span class="se">}}</span><span class="s1">$&#39;</span>
 
     <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">IDLiterals</span><span class="p">],</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;DaemonID&#39;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Validate str and create `DaemonID` object</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate str and create `DaemonID` object</span>
 
 <span class="sd">        :param value: input value</span>
 <span class="sd">        :param args: args</span>
@@ -638,7 +638,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">jtype</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Get IDLiterals from DaemonID</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get IDLiterals from DaemonID</span>
 
 <span class="sd">        :return: get jtype</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -647,7 +647,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">jid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Get uuid from DaemonID</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get uuid from DaemonID</span>
 
 <span class="sd">        :return: get uuid</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -655,7 +655,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Get jina object type from DaemonID</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get jina object type from DaemonID</span>
 
 <span class="sd">        :return: get type</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -663,7 +663,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">tag</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Get tag (: separated type &amp; id) from DaemonID</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get tag (: separated type &amp; id) from DaemonID</span>
 
 <span class="sd">        :return: get tag</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -675,7 +675,7 @@
 
 <div class="viewcode-block" id="DaemonID.validate"><a class="viewcode-back" href="../../../../api/daemon.models.id/#daemon.models.id.DaemonID.validate">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Validate DaemonID</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate DaemonID</span>
 
 <span class="sd">        :param value: str to be validated</span>
 <span class="sd">        :return: str of type DaemonID</span>
@@ -701,7 +701,7 @@
 
 <div class="viewcode-block" id="DaemonID.pydantic_validate"><a class="viewcode-back" href="../../../../api/daemon.models.id/#daemon.models.id.DaemonID.pydantic_validate">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">pydantic_validate</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Validate method for pydantic</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate method for pydantic</span>
 
 <span class="sd">        :param value: str to be validated</span>
 <span class="sd">        :return: str of type DaemonID</span>
@@ -717,7 +717,7 @@
 
 
 <div class="viewcode-block" id="daemonize"><a class="viewcode-back" href="../../../../api/daemon.models.id/#daemon.models.id.daemonize">[docs]</a><span class="k">def</span> <span class="nf">daemonize</span><span class="p">(</span><span class="n">identity</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">kind</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;workspace&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DaemonID</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Convert to DaemonID</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert to DaemonID</span>
 
 <span class="sd">    :param identity: uuid or DaemonID</span>
 <span class="sd">    :param kind: defaults to &#39;workspace&#39;</span>
@@ -738,7 +738,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Dec 21, 2022.
+                    Last updated on Jan 19, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

@@ -398,10 +398,10 @@
 
 
 <div class="viewcode-block" id="WebSocketGatewayRuntime"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.gateway.websocket/#jina.serve.runtimes.gateway.websocket.WebSocketGatewayRuntime">[docs]</a><span class="k">class</span> <span class="nc">WebSocketGatewayRuntime</span><span class="p">(</span><span class="n">GatewayRuntime</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Runtime for Websocket interface.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Runtime for Websocket interface.&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="WebSocketGatewayRuntime.async_setup"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.gateway.websocket/#jina.serve.runtimes.gateway.websocket.WebSocketGatewayRuntime.async_setup">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The async method setup the runtime.</span>
 
 <span class="sd">        Setup the uvicorn server.</span>
@@ -425,7 +425,7 @@
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">gateway</span><span class="o">.</span><span class="n">setup_server</span><span class="p">()</span></div>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_wait_for_cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Do NOT override this method when inheriting from :class:`GatewayPod`&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Do NOT override this method when inheriting from :class:`GatewayPod`&quot;&quot;&quot;</span>
         <span class="c1"># handle terminate signals</span>
         <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_cancel</span><span class="o">.</span><span class="n">is_set</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">gateway</span><span class="o">.</span><span class="n">should_exit</span><span class="p">:</span>
             <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
@@ -433,15 +433,15 @@
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">async_cancel</span><span class="p">()</span>
 
 <div class="viewcode-block" id="WebSocketGatewayRuntime.async_teardown"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.gateway.websocket/#jina.serve.runtimes.gateway.websocket.WebSocketGatewayRuntime.async_teardown">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_teardown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Shutdown the server.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Shutdown the server.&quot;&quot;&quot;</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">gateway</span><span class="o">.</span><span class="n">teardown</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="WebSocketGatewayRuntime.async_cancel"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.gateway.websocket/#jina.serve.runtimes.gateway.websocket.WebSocketGatewayRuntime.async_cancel">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Stop the server.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Stop the server.&quot;&quot;&quot;</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">gateway</span><span class="o">.</span><span class="n">stop_server</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="WebSocketGatewayRuntime.async_run_forever"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.gateway.websocket/#jina.serve.runtimes.gateway.websocket.WebSocketGatewayRuntime.async_run_forever">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_run_forever</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Running method of ther server.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Running method of ther server.&quot;&quot;&quot;</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">gateway</span><span class="o">.</span><span class="n">run_server</span><span class="p">()</span></div></div>
 </pre></div>
                 </article>
@@ -457,7 +457,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 21, 2022</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

@@ -624,7 +624,7 @@ Building wheels for collected packages: numpy
 <section id="solution-update-your-pip">
 <h3>Solution: update your <code class="docutils literal notranslate"><span class="pre">pip</span></code><a class="headerlink" href="#solution-update-your-pip" title="Permalink to this heading">#</a></h3>
 <p>It could simply be that your local <code class="docutils literal notranslate"><span class="pre">pip</span></code> is too old. Updating it should solve the problem:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install -U pip
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>-U<span class="w"> </span>pip
 </pre></div>
 </div>
 </section>
@@ -641,7 +641,7 @@ Building wheels for collected packages: numpy
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
 <p>You can run the following command in the terminal to check if you are running under Rosetta2 or natively on M1.</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>sysctl -n -i sysctl.proc_translated
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>sysctl<span class="w"> </span>-n<span class="w"> </span>-i<span class="w"> </span>sysctl.proc_translated
 </pre></div>
 </div>
 <p>Depending on the results:</p>
@@ -663,7 +663,7 @@ Building wheels for collected packages: numpy
 </pre></div>
 </div>
 <p>This can be fixed by reinstalling the <code class="docutils literal notranslate"><span class="pre">docarray</span></code> package manually:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install -U --force-reinstall docarray
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>-U<span class="w"> </span>--force-reinstall<span class="w"> </span>docarray
 </pre></div>
 </div>
 <p>To avoid this issue in the first place, we recommend installing Jina in a new virtual environment instead of upgrading from an old installation.</p>
@@ -705,7 +705,7 @@ Building wheels for collected packages: numpy
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 21, 2022</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

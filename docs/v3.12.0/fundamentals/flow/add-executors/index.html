@@ -441,14 +441,14 @@
 <a class="reference internal image-reference" href="../../../_images/named-flow.svg"><img alt="../../../_images/named-flow.svg" src="../../../_images/named-flow.svg" /></a>
 </figure>
 <p>You can also define the above Flow in YAML:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
-<span class="nt">executors</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">myVeryFirstExecutor</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">secondIsBest</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span>
+<span class="nt">executors</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">myVeryFirstExecutor</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">secondIsBest</span>
 </pre></div>
 </div>
 <p>Save it as <code class="docutils literal notranslate"><span class="pre">flow.yml</span></code> and run it:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina flow --uses flow.yml
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina<span class="w"> </span>flow<span class="w"> </span>--uses<span class="w"> </span>flow.yml
 </pre></div>
 </div>
 <p>More Flow YAML specifications can be found in <a class="reference internal" href="../yaml-spec/#flow-yaml-spec"><span class="std std-ref">Flow YAML Specification</span></a>.</p>
@@ -611,7 +611,7 @@ logging specific information in external services, storing partial results, etc.
     <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
     <span class="n">response</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/endpoint&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">DocumentArray</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
     <span class="n">end_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39; Response time took </span><span class="si">{</span><span class="n">end_time</span> <span class="o">-</span> <span class="n">start_time</span><span class="si">}</span><span class="s1">s&#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39; Response time took </span><span class="si">{</span><span class="n">end_time</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">start_time</span><span class="si">}</span><span class="s1">s&#39;</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39; </span><span class="si">{</span><span class="n">response</span><span class="o">.</span><span class="n">texts</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -875,7 +875,7 @@ PyTorch, TensorFlow, or any other popular ML framework.</p>
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 21, 2022</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

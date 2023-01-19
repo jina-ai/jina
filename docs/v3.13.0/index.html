@@ -456,17 +456,17 @@
 <p>Make sure that you have Python 3.7+ installed on Linux/MacOS/<a class="reference internal" href="get-started/install/windows/#jina-on-windows"><span class="std std-ref">Windows</span></a>.</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">via PyPI</label><div class="tab-content docutils">
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip install -U jina
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>-U<span class="w"> </span>jina
 </pre></div>
 </div>
 </div>
 <input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--2">via Conda</label><div class="tab-content docutils">
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>conda install jina -c conda-forge
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>install<span class="w"> </span>jina<span class="w"> </span>-c<span class="w"> </span>conda-forge
 </pre></div>
 </div>
 </div>
 <input class="tab-input" id="tab-set--0-input--3" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--3">via Docker</label><div class="tab-content docutils">
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker pull jinaai/jina:latest
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>pull<span class="w"> </span>jinaai/jina:latest
 </pre></div>
 </div>
 </div>
@@ -474,13 +474,13 @@
 <p>Now that you’re set up, let’s create a project:</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--1-input--1" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--1">Natively on the host</label><div class="tab-content docutils">
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>jina new hello-jina <span class="o">&amp;&amp;</span> jina flow --uses hello-jina/flow.yml
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>jina<span class="w"> </span>new<span class="w"> </span>hello-jina<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>jina<span class="w"> </span>flow<span class="w"> </span>--uses<span class="w"> </span>hello-jina/flow.yml
 </pre></div>
 </div>
 </div>
 <input class="tab-input" id="tab-set--1-input--2" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--2">In a Docker container</label><div class="tab-content docutils">
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker run jinaai/jina:latest -v <span class="s2">&quot;</span><span class="k">$(</span><span class="nb">pwd</span><span class="k">)</span><span class="s2">/j:/j&quot;</span> new hello-jina
-docker run -v <span class="s2">&quot;</span><span class="k">$(</span><span class="nb">pwd</span><span class="k">)</span><span class="s2">/j:/j&quot;</span> -p <span class="m">54321</span>:54321 jinaai/jina:latest flow --uses /j/hello-jina/flow.yml
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>run<span class="w"> </span>jinaai/jina:latest<span class="w"> </span>-v<span class="w"> </span><span class="s2">&quot;</span><span class="k">$(</span><span class="nb">pwd</span><span class="k">)</span><span class="s2">/j:/j&quot;</span><span class="w"> </span>new<span class="w"> </span>hello-jina
+docker<span class="w"> </span>run<span class="w"> </span>-v<span class="w"> </span><span class="s2">&quot;</span><span class="k">$(</span><span class="nb">pwd</span><span class="k">)</span><span class="s2">/j:/j&quot;</span><span class="w"> </span>-p<span class="w"> </span><span class="m">54321</span>:54321<span class="w"> </span>jinaai/jina:latest<span class="w"> </span>flow<span class="w"> </span>--uses<span class="w"> </span>/j/hello-jina/flow.yml
 </pre></div>
 </div>
 </div>
@@ -515,18 +515,18 @@ docker run -v <span class="s2">&quot;</span><span class="k">$(</span><span class
 </div>
 </div>
 <input class="tab-input" id="tab-set--2-input--4" name="tab-set--2" type="radio"><label class="tab-label" for="tab-set--2-input--4">via HTTP using Javascript</label><div class="tab-content docutils">
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">fetch</span><span class="p">(</span><span class="s1">&#39;http://localhost:54322/post&#39;</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="nx">method</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;POST&#39;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nx">headers</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">        </span><span class="s1">&#39;Content-Type&#39;</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;application/json&#39;</span><span class="w"></span>
-<span class="w">    </span><span class="p">},</span><span class="w"></span>
-<span class="w">    </span><span class="nx">body</span><span class="o">:</span><span class="w"> </span><span class="p">{}</span><span class="w"></span>
-<span class="p">}).</span><span class="nx">then</span><span class="p">(</span><span class="nx">response</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">response</span><span class="p">.</span><span class="nx">json</span><span class="p">()).</span><span class="nx">then</span><span class="p">(</span><span class="nx">data</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">data</span><span class="p">));</span><span class="w"></span>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">fetch</span><span class="p">(</span><span class="s1">&#39;http://localhost:54322/post&#39;</span><span class="p">,</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">method</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;POST&#39;</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">headers</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="s1">&#39;Content-Type&#39;</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;application/json&#39;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nx">body</span><span class="o">:</span><span class="w"> </span><span class="p">{}</span>
+<span class="p">}).</span><span class="nx">then</span><span class="p">(</span><span class="nx">response</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">response</span><span class="p">.</span><span class="nx">json</span><span class="p">()).</span><span class="nx">then</span><span class="p">(</span><span class="nx">data</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">data</span><span class="p">));</span>
 </pre></div>
 </div>
 </div>
 <input class="tab-input" id="tab-set--2-input--5" name="tab-set--2" type="radio"><label class="tab-label" for="tab-set--2-input--5">via HTTP using curl</label><div class="tab-content docutils">
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl --request POST <span class="s1">&#39;http://localhost:54323/post&#39;</span> --header <span class="s1">&#39;Content-Type: application/json&#39;</span> -d <span class="s1">&#39;{}&#39;</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>--request<span class="w"> </span>POST<span class="w"> </span><span class="s1">&#39;http://localhost:54323/post&#39;</span><span class="w"> </span>--header<span class="w"> </span><span class="s1">&#39;Content-Type: application/json&#39;</span><span class="w"> </span>-d<span class="w"> </span><span class="s1">&#39;{}&#39;</span>
 </pre></div>
 </div>
 </div>
@@ -638,7 +638,7 @@ and <a class="reference external" href="https://youtube.com/c/jina-ai">live stre
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 21, 2022</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

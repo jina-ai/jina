@@ -440,7 +440,7 @@
 <h2>via CLI<a class="headerlink" href="#via-cli" title="Permalink to this heading">#</a></h2>
 <section id="id1">
 <h3>Login<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h3>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>jina auth login
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>jina<span class="w"> </span>auth<span class="w"> </span>login
 </pre></div>
 </div>
 <p>This will open browser automatically and login via 3rd party. Token will be saved locally.</p>
@@ -448,7 +448,7 @@
 <section id="logout">
 <h3>Logout<a class="headerlink" href="#logout" title="Permalink to this heading">#</a></h3>
 <p>If there is a valid token locally, this will disable that token and remove it from local config.</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>jina auth <span class="nb">logout</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>jina<span class="w"> </span>auth<span class="w"> </span><span class="nb">logout</span>
 </pre></div>
 </div>
 </section>
@@ -456,20 +456,20 @@
 <h3>Token Management<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h3>
 <section id="create-a-new-pat">
 <h4>Create a new PAT<a class="headerlink" href="#create-a-new-pat" title="Permalink to this heading">#</a></h4>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>jina auth token create &lt;name of PAT&gt; -e &lt;expiration days&gt;
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>jina<span class="w"> </span>auth<span class="w"> </span>token<span class="w"> </span>create<span class="w"> </span>&lt;name<span class="w"> </span>of<span class="w"> </span>PAT&gt;<span class="w"> </span>-e<span class="w"> </span>&lt;expiration<span class="w"> </span>days&gt;
 </pre></div>
 </div>
 <p>To use a token, set it as the environment variable <code class="docutils literal notranslate"><span class="pre">JINA_AUTH_TOKEN</span></code>.</p>
 </section>
 <section id="list-pats">
 <h4>List PATs<a class="headerlink" href="#list-pats" title="Permalink to this heading">#</a></h4>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>jina auth token list
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>jina<span class="w"> </span>auth<span class="w"> </span>token<span class="w"> </span>list
 </pre></div>
 </div>
 </section>
 <section id="delete-pat">
 <h4>Delete PAT<a class="headerlink" href="#delete-pat" title="Permalink to this heading">#</a></h4>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>jina auth token delete &lt;name of PAT&gt;
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>jina<span class="w"> </span>auth<span class="w"> </span>token<span class="w"> </span>delete<span class="w"> </span>&lt;name<span class="w"> </span>of<span class="w"> </span>PAT&gt;
 </pre></div>
 </div>
 </section>
@@ -638,7 +638,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 21, 2022</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

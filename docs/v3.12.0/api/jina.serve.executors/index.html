@@ -464,9 +464,9 @@
 </pre></div>
 </div>
 <p>is equal to</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MyAwesomeExecutor</span><span class="w"></span>
-<span class="nt">with</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">awesomeness</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MyAwesomeExecutor</span>
+<span class="nt">with</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">awesomeness</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
 </pre></div>
 </div>
 <p><cite>metas</cite> and <cite>requests</cite> are always auto-filled with values from YAML config.</p>
@@ -677,10 +677,10 @@ implements <code class="xref py py-class docutils literal notranslate"><span cla
 </dd>
 </dl>
 <p>Substitutions are carried in the order and multiple passes to resolve variables with best effort.</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="kt">!BaseEncoder</span><span class="w"></span>
-<span class="nt">metas</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{VAR_A}}</span><span class="w">  </span><span class="c1"># env or context variables</span><span class="w"></span>
-<span class="w">    </span><span class="nt">workspace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my-${{this.name}}</span><span class="w">  </span><span class="c1"># internal reference</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="kt">!BaseEncoder</span>
+<span class="nt">metas</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{VAR_A}}</span><span class="w">  </span><span class="c1"># env or context variables</span>
+<span class="w">    </span><span class="nt">workspace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my-${{this.name}}</span><span class="w">  </span><span class="c1"># internal reference</span>
 </pre></div>
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># load Executor from yaml file</span>
@@ -781,7 +781,7 @@ implements <code class="xref py py-class docutils literal notranslate"><span cla
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 21, 2022</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

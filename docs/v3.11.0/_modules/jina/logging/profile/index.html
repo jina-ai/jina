@@ -415,7 +415,7 @@
 
 
 <div class="viewcode-block" id="used_memory"><a class="viewcode-back" href="../../../../api/jina.logging.profile/#jina.logging.profile.used_memory">[docs]</a><span class="k">def</span> <span class="nf">used_memory</span><span class="p">(</span><span class="n">unit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the memory usage of the current process.</span>
 
 <span class="sd">    :param unit: Unit of the memory, default in Gigabytes.</span>
@@ -431,7 +431,7 @@
 
 
 <div class="viewcode-block" id="used_memory_readable"><a class="viewcode-back" href="../../../../api/jina.logging.profile/#jina.logging.profile.used_memory_readable">[docs]</a><span class="k">def</span> <span class="nf">used_memory_readable</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the memory usage of the current process in a human-readable format.</span>
 
 <span class="sd">    :return: Memory usage of the current process.</span>
@@ -440,7 +440,7 @@
 
 
 <div class="viewcode-block" id="profiling"><a class="viewcode-back" href="../../../../api/jina.logging.profile/#jina.logging.profile.profiling">[docs]</a><span class="k">def</span> <span class="nf">profiling</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create the Decorator to mark a function for profiling. The time and memory usage will be recorded and printed.</span>
 
 <span class="sd">    Example:</span>
@@ -465,7 +465,7 @@
         <span class="n">end_mem</span> <span class="o">=</span> <span class="n">used_memory</span><span class="p">(</span><span class="n">unit</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
         <span class="c1"># level_prefix = &#39;&#39;.join(&#39;-&#39; for v in inspect.stack() if v and v.index is not None and v.index &gt;= 0)</span>
         <span class="n">level_prefix</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
-        <span class="n">mem_status</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;memory Δ </span><span class="si">{</span><span class="n">get_readable_size</span><span class="p">(</span><span class="n">end_mem</span> <span class="o">-</span> <span class="n">start_mem</span><span class="p">)</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">get_readable_size</span><span class="p">(</span><span class="n">start_mem</span><span class="p">)</span><span class="si">}</span><span class="s1"> -&gt; </span><span class="si">{</span><span class="n">get_readable_size</span><span class="p">(</span><span class="n">end_mem</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="n">mem_status</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;memory Δ </span><span class="si">{</span><span class="n">get_readable_size</span><span class="p">(</span><span class="n">end_mem</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">start_mem</span><span class="p">)</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">get_readable_size</span><span class="p">(</span><span class="n">start_mem</span><span class="p">)</span><span class="si">}</span><span class="s1"> -&gt; </span><span class="si">{</span><span class="n">get_readable_size</span><span class="p">(</span><span class="n">end_mem</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span>
         <span class="n">default_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
             <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">level_prefix</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">func</span><span class="o">.</span><span class="vm">__qualname__</span><span class="si">}</span><span class="s1"> time: </span><span class="si">{</span><span class="n">elapsed</span><span class="si">}</span><span class="s1">s </span><span class="si">{</span><span class="n">mem_status</span><span class="si">}</span><span class="s1">&#39;</span>
         <span class="p">)</span>
@@ -475,7 +475,7 @@
 
 
 <div class="viewcode-block" id="ProgressBar"><a class="viewcode-back" href="../../../../api/jina.logging.profile/#jina.logging.profile.ProgressBar">[docs]</a><span class="k">class</span> <span class="nc">ProgressBar</span><span class="p">(</span><span class="n">Progress</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A progress bar made with rich.</span>
 
 <span class="sd">    Example:</span>
@@ -498,7 +498,7 @@
         <span class="n">console</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Console</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Init a custom progress bar based on rich. This is the default progress bar of jina if you want to  customize</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Init a custom progress bar based on rich. This is the default progress bar of jina if you want to  customize</span>
 <span class="sd">        it you should probably just use a rich `Progress` and add your custom column and task</span>
 
 <span class="sd">        :param description: description of your task ex : &#39;Working...&#39;</span>
@@ -549,7 +549,7 @@
         <span class="o">*</span><span class="n">args</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Update the progress bar</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update the progress bar</span>
 
 <span class="sd">        :param task_id: the task to update</span>
 <span class="sd">        :param advance: Add a value to main task.completed</span>
@@ -566,7 +566,7 @@
 
 
 <span class="k">class</span> <span class="nc">_OnDoneColumn</span><span class="p">(</span><span class="n">ProgressColumn</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Renders custom on done for jina progress bar.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Renders custom on done for jina progress bar.&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -575,7 +575,7 @@
         <span class="n">style</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">table_column</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Column</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a ProgressBar column with a final message</span>
 
 <span class="sd">        Example:</span>
@@ -616,12 +616,12 @@
 
 
 <div class="viewcode-block" id="TimeContext"><a class="viewcode-back" href="../../../../api/jina.logging.profile/#jina.logging.profile.TimeContext">[docs]</a><span class="k">class</span> <span class="nc">TimeContext</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Timing a code snippet with a context manager.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Timing a code snippet with a context manager.&quot;&quot;&quot;</span>
 
     <span class="n">time_attrs</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;years&#39;</span><span class="p">,</span> <span class="s1">&#39;months&#39;</span><span class="p">,</span> <span class="s1">&#39;days&#39;</span><span class="p">,</span> <span class="s1">&#39;hours&#39;</span><span class="p">,</span> <span class="s1">&#39;minutes&#39;</span><span class="p">,</span> <span class="s1">&#39;seconds&#39;</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">logger</span><span class="p">:</span> <span class="s1">&#39;JinaLogger&#39;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create the context manager to timing a code snippet.</span>
 
 <span class="sd">        :param task_name: The context/message.</span>
@@ -658,7 +658,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_exit_msg</span><span class="p">()</span>
 
 <div class="viewcode-block" id="TimeContext.now"><a class="viewcode-back" href="../../../../api/jina.logging.profile/#jina.logging.profile.TimeContext.now">[docs]</a>    <span class="k">def</span> <span class="nf">now</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the passed time from start to now.</span>
 
 <span class="sd">        :return: passed time</span>
@@ -691,7 +691,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 21, 2022</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

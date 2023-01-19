@@ -398,10 +398,10 @@
 
 
 <div class="viewcode-block" id="JinaConstructor"><a class="viewcode-back" href="../../../../api/jina.jaml.helper/#jina.jaml.helper.JinaConstructor">[docs]</a><span class="k">class</span> <span class="nc">JinaConstructor</span><span class="p">(</span><span class="n">FullConstructor</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Convert List into tuple when doing hashing.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert List into tuple when doing hashing.&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="JinaConstructor.get_hashable_key"><a class="viewcode-back" href="../../../../api/jina.jaml.helper/#jina.jaml.helper.JinaConstructor.get_hashable_key">[docs]</a>    <span class="k">def</span> <span class="nf">get_hashable_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the hash value of key.</span>
 
 <span class="sd">        :param key: key value to be hashed.</span>
@@ -420,7 +420,7 @@
         <span class="k">return</span> <span class="n">key</span></div>
 
 <div class="viewcode-block" id="JinaConstructor.construct_mapping"><a class="viewcode-back" href="../../../../api/jina.jaml.helper/#jina.jaml.helper.JinaConstructor.construct_mapping">[docs]</a>    <span class="k">def</span> <span class="nf">construct_mapping</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">deep</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Build the mapping from node.</span>
 
 <span class="sd">        :param node: the node to traverse</span>
@@ -459,13 +459,13 @@
 
 
 <div class="viewcode-block" id="JinaResolver"><a class="viewcode-back" href="../../../../api/jina.jaml.helper/#jina.jaml.helper.JinaResolver">[docs]</a><span class="k">class</span> <span class="nc">JinaResolver</span><span class="p">(</span><span class="n">Resolver</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Remove `on|On|ON` as bool resolver.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Remove `on|On|ON` as bool resolver.&quot;&quot;&quot;</span>
 
     <span class="k">pass</span></div>
 
 
 <div class="viewcode-block" id="JinaLoader"><a class="viewcode-back" href="../../../../api/jina.jaml.helper/#jina.jaml.helper.JinaLoader">[docs]</a><span class="k">class</span> <span class="nc">JinaLoader</span><span class="p">(</span><span class="n">Reader</span><span class="p">,</span> <span class="n">Scanner</span><span class="p">,</span> <span class="n">Parser</span><span class="p">,</span> <span class="n">Composer</span><span class="p">,</span> <span class="n">JinaConstructor</span><span class="p">,</span> <span class="n">JinaResolver</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The Jina loader which should be able to load YAML safely.</span>
 
 <span class="sd">    :param stream: the stream to load.</span>
@@ -482,7 +482,7 @@
 
 
 <div class="viewcode-block" id="get_jina_loader_with_runtime"><a class="viewcode-back" href="../../../../api/jina.jaml.helper/#jina.jaml.helper.get_jina_loader_with_runtime">[docs]</a><span class="k">def</span> <span class="nf">get_jina_loader_with_runtime</span><span class="p">(</span><span class="n">runtime_args</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Create a JinaLoader init function which already stored the runtime_args in the init function, usefully for</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a JinaLoader init function which already stored the runtime_args in the init function, usefully for</span>
 <span class="sd">    `yaml.load(stream,loader=JinaLoader)` which needs a class with a init function with only one parameter</span>
 
 <span class="sd">    :param runtime_args: Optional runtime_args to be directly passed without being parsed into a yaml config</span>
@@ -513,7 +513,7 @@
     <span class="o">*</span><span class="n">args</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">TextIO</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Check if the text or text stream is valid.</span>
 
 <span class="sd">    .. # noqa: DAR401</span>
@@ -569,7 +569,7 @@
 
 
 <div class="viewcode-block" id="complete_path"><a class="viewcode-back" href="../../../../api/jina.jaml.helper/#jina.jaml.helper.complete_path">[docs]</a><span class="k">def</span> <span class="nf">complete_path</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">extra_search_paths</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Complete the path of file via searching in abs and relative paths.</span>
 
 <span class="sd">    :param path: path of file.</span>
@@ -587,7 +587,7 @@
 
 
 <span class="k">def</span> <span class="nf">_search_file_in_paths</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">extra_search_paths</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Search in all dirs of the PATH environment variable and all dirs of files used in the call stack.</span>
 
 <span class="sd">    :param path: the path to search for</span>
@@ -616,7 +616,7 @@
 
 
 <div class="viewcode-block" id="load_py_modules"><a class="viewcode-back" href="../../../../api/jina.jaml.helper/#jina.jaml.helper.load_py_modules">[docs]</a><span class="k">def</span> <span class="nf">load_py_modules</span><span class="p">(</span><span class="n">d</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">extra_search_paths</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Find &#39;py_modules&#39; in the dict recursively and then load them.</span>
 
 <span class="sd">    :param d: the dictionary to traverse</span>
@@ -662,7 +662,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 21, 2022</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

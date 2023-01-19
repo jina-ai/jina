@@ -648,7 +648,7 @@
 
 
 <span class="k">class</span> <span class="nc">FlowType</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">ExitStack</span><span class="p">),</span> <span class="nb">type</span><span class="p">(</span><span class="n">JAMLCompatible</span><span class="p">)):</span>
-    <span class="sd">&quot;&quot;&quot;Type of Flow, metaclass of :class:`BaseFlow`&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Type of Flow, metaclass of :class:`BaseFlow`&quot;&quot;&quot;</span>
 
     <span class="k">pass</span>
 
@@ -670,7 +670,7 @@
 
 
 <div class="viewcode-block" id="Flow"><a class="viewcode-back" href="../../../../../api/jina.orchestrate.flow.base/#jina.Flow">[docs]</a><span class="k">class</span> <span class="nc">Flow</span><span class="p">(</span><span class="n">PostMixin</span><span class="p">,</span> <span class="n">JAMLCompatible</span><span class="p">,</span> <span class="n">ExitStack</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">FlowType</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Flow is how Jina streamlines and distributes Executors.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Flow is how Jina streamlines and distributes Executors.&quot;&quot;&quot;</span>
 
     <span class="c1"># overload_inject_start_client_flow</span>
     <span class="nd">@overload</span>
@@ -686,7 +686,7 @@
         <span class="n">tls</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Create a Flow. Flow is how Jina streamlines and scales Executors. This overloaded method provides arguments from `jina client` CLI.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a Flow. Flow is how Jina streamlines and scales Executors. This overloaded method provides arguments from `jina client` CLI.</span>
 
 <span class="sd">        :param asyncio: If set, then the input and output of this Client work in an asynchronous manner.</span>
 <span class="sd">        :param host: The host address of the runtime, by default it is 0.0.0.0.</span>
@@ -759,7 +759,7 @@
         <span class="n">workspace</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Create a Flow. Flow is how Jina streamlines and scales Executors. This overloaded method provides arguments from `jina gateway` CLI.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a Flow. Flow is how Jina streamlines and scales Executors. This overloaded method provides arguments from `jina gateway` CLI.</span>
 
 <span class="sd">        :param compression: The compression mechanism used when sending requests to Executors. Possibilites are: `NoCompression, Gzip, Deflate`. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.</span>
 <span class="sd">        :param connection_list: dictionary JSON with a list of connections to configure</span>
@@ -874,7 +874,7 @@
         <span class="n">workspace</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Create a Flow. Flow is how Jina streamlines and scales Executors. This overloaded method provides arguments from `jina flow` CLI.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a Flow. Flow is how Jina streamlines and scales Executors. This overloaded method provides arguments from `jina flow` CLI.</span>
 
 <span class="sd">        :param env: The map of environment variables that are available inside runtime</span>
 <span class="sd">        :param expose_graphql_endpoint: If set, /graphql endpoint is added to HTTP interface.</span>
@@ -998,7 +998,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">last_deployment</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Last deployment</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Last deployment</span>
 
 
 <span class="sd">        .. # noqa: DAR401</span>
@@ -1010,7 +1010,7 @@
 
     <span class="nd">@last_deployment</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">last_deployment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set a Deployment as the last Deployment in the Flow, useful when modifying the Flow.</span>
 
 
@@ -1109,7 +1109,7 @@
 
             <span class="n">external_port</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">head_port</span> <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">head_port</span> <span class="k">else</span> <span class="n">v</span><span class="o">.</span><span class="n">port</span>
             <span class="n">graph_dict</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
-                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">deployment_k8s_address</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">external_port</span> <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">external</span> <span class="k">else</span> <span class="n">GrpcConnectionPool</span><span class="o">.</span><span class="n">K8S_PORT</span><span class="si">}</span><span class="s1">&#39;</span>
+                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">deployment_k8s_address</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">external_port</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">v</span><span class="o">.</span><span class="n">external</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="n">GrpcConnectionPool</span><span class="o">.</span><span class="n">K8S_PORT</span><span class="si">}</span><span class="s1">&#39;</span>
             <span class="p">]</span>
 
         <span class="k">return</span> <span class="n">graph_dict</span> <span class="k">if</span> <span class="n">graph_dict</span> <span class="k">else</span> <span class="kc">None</span>
@@ -1179,7 +1179,7 @@
     <span class="k">def</span> <span class="nf">needs</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">needs</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;joiner&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Flow&#39;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add a blocker to the Flow, wait until all pods defined in **needs** completed.</span>
 
 
@@ -1203,7 +1203,7 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="Flow.needs_all"><a class="viewcode-back" href="../../../../../api/jina.orchestrate.flow.base/#jina.Flow.needs_all">[docs]</a>    <span class="k">def</span> <span class="nf">needs_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;joiner&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Flow&#39;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Collect all hanging Deployments so far and add a blocker to the Flow; wait until all handing pods completed.</span>
 
 <span class="sd">        :param name: the name of this joiner (default is ``joiner``)</span>
@@ -1268,7 +1268,7 @@
         <span class="n">workspace</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="s1">&#39;Flow&#39;</span><span class="p">,</span> <span class="s1">&#39;AsyncFlow&#39;</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Add an Executor to the current Flow object.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add an Executor to the current Flow object.</span>
 
 <span class="sd">        :param compression: The compression mechanism used when sending requests from the Head to the WorkerRuntimes. Possibilities are `NoCompression, Gzip, Deflate`. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.</span>
 <span class="sd">        :param connection_list: dictionary JSON with a list of connections to configure</span>
@@ -1387,7 +1387,7 @@
         <span class="n">deployment_role</span><span class="p">:</span> <span class="s1">&#39;DeploymentRoleType&#39;</span> <span class="o">=</span> <span class="n">DeploymentRoleType</span><span class="o">.</span><span class="n">DEPLOYMENT</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Flow&#39;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add a Deployment to the current Flow object and return the new modified Flow object.</span>
 <span class="sd">        The attribute of the Deployment can be later changed with :py:meth:`set` or deleted with :py:meth:`remove`</span>
 
@@ -1474,7 +1474,7 @@
 
 <div class="viewcode-block" id="Flow.inspect"><a class="viewcode-back" href="../../../../../api/jina.orchestrate.flow.base/#jina.Flow.inspect">[docs]</a>    <span class="nd">@allowed_levels</span><span class="p">([</span><span class="n">FlowBuildLevel</span><span class="o">.</span><span class="n">EMPTY</span><span class="p">])</span>
     <span class="k">def</span> <span class="nf">inspect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;inspect&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Flow&#39;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Add an inspection on the last changed Deployment in the Flow</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add an inspection on the last changed Deployment in the Flow</span>
 
 <span class="sd">        Internally, it adds two Deployments to the Flow. But don&#39;t worry, the overhead is minimized and you</span>
 <span class="sd">        can remove them by simply using `Flow(inspect=FlowInspectType.REMOVE)` before using the Flow.</span>
@@ -1534,7 +1534,7 @@
         <span class="o">*</span><span class="n">args</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Flow&#39;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Gather all inspect Deployments output into one Deployment. When the Flow has no inspect Deployment then the Flow itself</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Gather all inspect Deployments output into one Deployment. When the Flow has no inspect Deployment then the Flow itself</span>
 <span class="sd">        is returned.</span>
 
 <span class="sd">        .. note::</span>
@@ -1586,7 +1586,7 @@
 
 <div class="viewcode-block" id="Flow.build"><a class="viewcode-back" href="../../../../../api/jina.orchestrate.flow.base/#jina.Flow.build">[docs]</a>    <span class="nd">@allowed_levels</span><span class="p">([</span><span class="n">FlowBuildLevel</span><span class="o">.</span><span class="n">EMPTY</span><span class="p">])</span>
     <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">copy_flow</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Flow&#39;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Build the current Flow and make it ready to use</span>
 
 <span class="sd">        .. note::</span>
@@ -1687,7 +1687,7 @@
         <span class="k">return</span> <span class="n">op_flow</span></div>
 
     <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Builds the Flow</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Builds the Flow</span>
 <span class="sd">        :param args: args for build</span>
 <span class="sd">        :param kwargs: kwargs for build</span>
 <span class="sd">        :return: the built Flow</span>
@@ -1719,7 +1719,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
 <div class="viewcode-block" id="Flow.start"><a class="viewcode-back" href="../../../../../api/jina.orchestrate.flow.base/#jina.Flow.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Start to run all Deployments in this Flow.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Start to run all Deployments in this Flow.</span>
 
 <span class="sd">        Remember to close the Flow with :meth:`close`.</span>
 
@@ -1843,7 +1843,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">num_deployments</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Get the number of Deployments in this Flow</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the number of Deployments in this Flow</span>
 
 
 <span class="sd">        .. # noqa: DAR201&quot;&quot;&quot;</span>
@@ -1851,14 +1851,14 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">num_pods</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Get the number of pods (shards count) in this Flow</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the number of pods (shards count) in this Flow</span>
 
 
 <span class="sd">        .. # noqa: DAR201&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">num_pods</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deployment_nodes</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
 
     <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="s1">&#39;Flow&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compare the topology of a Flow with another Flow.</span>
 <span class="sd">        Identification is defined by whether two flows share the same set of edges.</span>
 
@@ -1882,7 +1882,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">client</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;BaseClient&#39;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return a :class:`BaseClient` object attach to this Flow.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a :class:`BaseClient` object attach to this Flow.</span>
 
 <span class="sd">        .. # noqa: DAR201&quot;&quot;&quot;</span>
 
@@ -1897,7 +1897,7 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">_mermaid_str</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">mermaid_graph</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="sd">&#39;&#39;&#39;</span>
+<span class="w">            </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">            %%{init:{</span>
 <span class="sd">  &quot;theme&quot;: &quot;base&quot;,</span>
 <span class="sd">  &quot;themeVariables&quot;: {</span>
@@ -1976,7 +1976,7 @@
         <span class="n">build</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">copy_flow</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Flow&#39;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Visualize the Flow up to the current point</span>
 <span class="sd">        If a file name is provided it will create a jpg image with that name,</span>
 <span class="sd">        otherwise it will display the URL for mermaid.</span>
@@ -2040,13 +2040,13 @@
         <span class="k">return</span> <span class="bp">self</span></div>
 
     <span class="k">def</span> <span class="nf">_ipython_display_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Displays the object in IPython as a side effect&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Displays the object in IPython as a side effect&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
             <span class="n">inline_display</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">build</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_build_level</span> <span class="o">!=</span> <span class="n">FlowBuildLevel</span><span class="o">.</span><span class="n">GRAPH</span><span class="p">)</span>
         <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_mermaid_to_url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mermaid_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">img_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Render the current Flow as URL points to a SVG. It needs internet connection</span>
 
 <span class="sd">        :param mermaid_str: the mermaid representation</span>
@@ -2059,7 +2059,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">port</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return the exposed port of the gateway</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the exposed port of the gateway</span>
 <span class="sd">        .. # noqa: DAR201</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">GATEWAY_NAME</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deployment_nodes</span><span class="p">:</span>
@@ -2069,7 +2069,7 @@
 
     <span class="nd">@port</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">port</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Set the new exposed port of the Flow (affects Gateway and Client)</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the new exposed port of the Flow (affects Gateway and Client)</span>
 
 <span class="sd">        :param value: the new port to expose</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -2087,7 +2087,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">host</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return the local address of the gateway</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the local address of the gateway</span>
 <span class="sd">        .. # noqa: DAR201</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">GATEWAY_NAME</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deployment_nodes</span><span class="p">:</span>
@@ -2097,7 +2097,7 @@
 
     <span class="nd">@host</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">host</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Set the new host of the Flow (affects Gateway and Client)</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the new host of the Flow (affects Gateway and Client)</span>
 
 <span class="sd">        :param value: the new port to expose</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -2115,7 +2115,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">monitoring</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return if the monitoring is enabled</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return if the monitoring is enabled</span>
 <span class="sd">        .. # noqa: DAR201</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">GATEWAY_NAME</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deployment_nodes</span><span class="p">:</span>
@@ -2125,7 +2125,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">port_monitoring</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return if the monitoring is enabled</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return if the monitoring is enabled</span>
 <span class="sd">        .. # noqa: DAR201</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">GATEWAY_NAME</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deployment_nodes</span><span class="p">:</span>
@@ -2137,7 +2137,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">address_private</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return the private IP address of the gateway for connecting from other machine in the same network</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the private IP address of the gateway for connecting from other machine in the same network</span>
 
 
 <span class="sd">        .. # noqa: DAR201&quot;&quot;&quot;</span>
@@ -2145,7 +2145,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">address_public</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return the public IP address of the gateway for connecting from other machine in the public network</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the public IP address of the gateway for connecting from other machine in the public network</span>
 
 
 <span class="sd">        .. # noqa: DAR201&quot;&quot;&quot;</span>
@@ -2213,7 +2213,7 @@
 <div class="viewcode-block" id="Flow.block"><a class="viewcode-back" href="../../../../../api/jina.orchestrate.flow.base/#jina.Flow.block">[docs]</a>    <span class="k">def</span> <span class="nf">block</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">stop_event</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">,</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Event</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Block the Flow until `stop_event` is set or user hits KeyboardInterrupt</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Block the Flow until `stop_event` is set or user hits KeyboardInterrupt</span>
 
 <span class="sd">        :param stop_event: a threading event or a multiprocessing event that onces set will resume the control Flow</span>
 <span class="sd">            to main thread.</span>
@@ -2231,7 +2231,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">protocol</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GatewayProtocolType</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return the protocol of this Flow</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the protocol of this Flow</span>
 
 <span class="sd">        :return: the protocol of this Flow</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -2242,7 +2242,7 @@
 
     <span class="nd">@protocol</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">protocol</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">GatewayProtocolType</span><span class="p">]):</span>
-        <span class="sd">&quot;&quot;&quot;Set the protocol of this Flow, can only be set before the Flow has been started</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the protocol of this Flow, can only be set before the Flow has been started</span>
 
 <span class="sd">        :param value: the protocol to set</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -2271,7 +2271,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">workspace</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return the workspace path of the flow.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the workspace path of the flow.</span>
 
 <span class="sd">        .. # noqa: DAR201&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">workspace</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -2281,7 +2281,7 @@
 
     <span class="nd">@workspace</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">workspace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;set workspace dir for flow &amp; all deployments</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;set workspace dir for flow &amp; all deployments</span>
 
 <span class="sd">        :param value: workspace to be set</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -2292,7 +2292,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">workspace_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Get all Deployments&#39; ``workspace_id`` values in a dict</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get all Deployments&#39; ``workspace_id`` values in a dict</span>
 
 
 <span class="sd">        .. # noqa: DAR201&quot;&quot;&quot;</span>
@@ -2302,7 +2302,7 @@
 
     <span class="nd">@workspace_id</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">workspace_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Set all Deployments&#39; ``workspace_id`` to ``value``</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set all Deployments&#39; ``workspace_id`` to ``value``</span>
 
 <span class="sd">        :param value: a hexadecimal UUID string</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -2329,7 +2329,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">env</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Get all envs to be set in the Flow</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get all envs to be set in the Flow</span>
 
 <span class="sd">        :return: envs as dict</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -2337,7 +2337,7 @@
 
     <span class="nd">@env</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">env</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]):</span>
-        <span class="sd">&quot;&quot;&quot;set env vars for flow &amp; all deployments.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;set env vars for flow &amp; all deployments.</span>
 <span class="sd">        This can be used by jinad to set envs for Flow and all child objects</span>
 
 <span class="sd">        :param value: value to be set</span>
@@ -2348,7 +2348,7 @@
 
     <span class="nd">@overload</span>
     <span class="k">def</span> <span class="nf">expose_endpoint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exec_endpoint</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Expose an Executor&#39;s endpoint (defined by `@requests(on=...)`) to HTTP endpoint for easier access.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Expose an Executor&#39;s endpoint (defined by `@requests(on=...)`) to HTTP endpoint for easier access.</span>
 
 <span class="sd">        After expose, you can send data request directly to `http://hostname:port/endpoint`.</span>
 
@@ -2378,7 +2378,7 @@
         <span class="n">include_in_schema</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Expose an Executor&#39;s endpoint (defined by `@requests(on=...)`) to HTTP endpoint for easier access.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Expose an Executor&#39;s endpoint (defined by `@requests(on=...)`) to HTTP endpoint for easier access.</span>
 
 <span class="sd">        After expose, you can send data request directly to `http://hostname:port/endpoint`.</span>
 
@@ -2391,7 +2391,7 @@
         <span class="o">...</span>
 
 <div class="viewcode-block" id="Flow.expose_endpoint"><a class="viewcode-back" href="../../../../../api/jina.orchestrate.flow.base/#jina.Flow.expose_endpoint">[docs]</a>    <span class="k">def</span> <span class="nf">expose_endpoint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exec_endpoint</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Expose an Executor&#39;s endpoint (defined by `@requests(on=...)`) to HTTP endpoint for easier access.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Expose an Executor&#39;s endpoint (defined by `@requests(on=...)`) to HTTP endpoint for easier access.</span>
 
 <span class="sd">        After expose, you can send data request directly to `http://hostname:port/endpoint`.</span>
 
@@ -2411,7 +2411,7 @@
         <span class="n">k8s_namespace</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">include_gateway</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Converts the Flow into a set of yaml deployments to deploy in Kubernetes.</span>
 
 <span class="sd">        If you don&#39;t want to rebuild image on Jina Hub,</span>
@@ -2470,7 +2470,7 @@
         <span class="n">network_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">include_gateway</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Converts the Flow into a yaml file to run with `docker-compose up`</span>
 <span class="sd">        :param output_path: The output path for the yaml file</span>
 <span class="sd">        :param network_name: The name of the network that will be used by the deployment name</span>
@@ -2524,7 +2524,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">client_args</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Get Client settings.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get Client settings.</span>
 
 <span class="sd">        # noqa: DAR201</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -2536,14 +2536,14 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">gateway_args</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Get Gateway settings.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get Gateway settings.</span>
 
 <span class="sd">        # noqa: DAR201</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">ArgNamespace</span><span class="o">.</span><span class="n">kwargs2namespace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_common_kwargs</span><span class="p">,</span> <span class="n">set_gateway_parser</span><span class="p">())</span>
 
 <div class="viewcode-block" id="Flow.update_network_interface"><a class="viewcode-back" href="../../../../../api/jina.orchestrate.flow.base/#jina.Flow.update_network_interface">[docs]</a>    <span class="k">def</span> <span class="nf">update_network_interface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Update the network interface of this Flow (affects Gateway &amp; Client)</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update the network interface of this Flow (affects Gateway &amp; Client)</span>
 
 <span class="sd">        :param kwargs: new network settings</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -2559,7 +2559,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Dec 21, 2022.
+                    Last updated on Jan 19, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

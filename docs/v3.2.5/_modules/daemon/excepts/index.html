@@ -627,23 +627,23 @@
 
 
 <div class="viewcode-block" id="DockerNotFoundException"><a class="viewcode-back" href="../../../api/daemon.excepts/#daemon.excepts.DockerNotFoundException">[docs]</a><span class="k">class</span> <span class="nc">DockerNotFoundException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Exception if docker client cannot communicate with dockerd&quot;&quot;&quot;</span></div>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Exception if docker client cannot communicate with dockerd&quot;&quot;&quot;</span></div>
 
 
 <div class="viewcode-block" id="DockerImageException"><a class="viewcode-back" href="../../../api/daemon.excepts/#daemon.excepts.DockerImageException">[docs]</a><span class="k">class</span> <span class="nc">DockerImageException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Exception while handling a docker image in the workspace&quot;&quot;&quot;</span></div>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Exception while handling a docker image in the workspace&quot;&quot;&quot;</span></div>
 
 
 <div class="viewcode-block" id="DockerNetworkException"><a class="viewcode-back" href="../../../api/daemon.excepts/#daemon.excepts.DockerNetworkException">[docs]</a><span class="k">class</span> <span class="nc">DockerNetworkException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Exception while handling docker networks in the workspace &quot;&quot;&quot;</span></div>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Exception while handling docker networks in the workspace &quot;&quot;&quot;</span></div>
 
 
 <div class="viewcode-block" id="DockerContainerException"><a class="viewcode-back" href="../../../api/daemon.excepts/#daemon.excepts.DockerContainerException">[docs]</a><span class="k">class</span> <span class="nc">DockerContainerException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Exception while handling a docker container in the workspace&quot;&quot;&quot;</span></div>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Exception while handling a docker container in the workspace&quot;&quot;&quot;</span></div>
 
 
 <div class="viewcode-block" id="Runtime400Exception"><a class="viewcode-back" href="../../../api/daemon.excepts/#daemon.excepts.Runtime400Exception">[docs]</a><span class="k">class</span> <span class="nc">Runtime400Exception</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Exception for all errors in Daemon</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Exception for all errors in Daemon</span>
 
 <span class="sd">    - Should only be used in `api/endpoints/*.py`.</span>
 <span class="sd">    - Should always be chained.</span>
@@ -652,7 +652,7 @@
 
 
 <div class="viewcode-block" id="PartialDaemon400Exception"><a class="viewcode-back" href="../../../api/daemon.excepts/#daemon.excepts.PartialDaemon400Exception">[docs]</a><span class="k">class</span> <span class="nc">PartialDaemon400Exception</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Exception for all errors in Partial Daemon</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Exception for all errors in Partial Daemon</span>
 
 <span class="sd">    This can be raised from 2 places:</span>
 <span class="sd">    1. Inside partial daemon:</span>
@@ -669,11 +669,11 @@
 
 
 <div class="viewcode-block" id="PartialDaemonConnectionException"><a class="viewcode-back" href="../../../api/daemon.excepts/#daemon.excepts.PartialDaemonConnectionException">[docs]</a><span class="k">class</span> <span class="nc">PartialDaemonConnectionException</span><span class="p">(</span><span class="n">PartialDaemon400Exception</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Exception if JinaD cannot connect to Partial Daemon&quot;&quot;&quot;</span></div>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Exception if JinaD cannot connect to Partial Daemon&quot;&quot;&quot;</span></div>
 
 
 <span class="k">def</span> <span class="nf">_get_exception</span><span class="p">(</span><span class="n">ex</span><span class="p">:</span> <span class="ne">Exception</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="ne">Exception</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Get exception cause/context from chained exceptions</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get exception cause/context from chained exceptions</span>
 
 <span class="sd">    :param ex: chained exception</span>
 <span class="sd">    :return: cause of chained exception if any</span>
@@ -687,7 +687,7 @@
 
 
 <div class="viewcode-block" id="json_response"><a class="viewcode-back" href="../../../api/daemon.excepts/#daemon.excepts.json_response">[docs]</a><span class="k">def</span> <span class="nf">json_response</span><span class="p">(</span><span class="n">status_code</span><span class="p">:</span> <span class="n">HTTPStatus</span><span class="p">,</span> <span class="n">detail</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">body</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JSONResponse</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;json response from status, detail &amp; body</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;json response from status, detail &amp; body</span>
 
 <span class="sd">    :param status_code: http status code</span>
 <span class="sd">    :param detail: exception name in detail</span>
@@ -708,7 +708,7 @@
 <div class="viewcode-block" id="partial_daemon_exception_handler"><a class="viewcode-back" href="../../../api/daemon.excepts/#daemon.excepts.partial_daemon_exception_handler">[docs]</a><span class="k">async</span> <span class="k">def</span> <span class="nf">partial_daemon_exception_handler</span><span class="p">(</span>
     <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">ex</span><span class="p">:</span> <span class="s1">&#39;PartialDaemon400Exception&#39;</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Exception handler for all PartialDaemon400Exceptions</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Exception handler for all PartialDaemon400Exceptions</span>
 
 <span class="sd">    Since `PartialDaemon400Exception` is always chained, we access the `__cause__` and send that as `body`.</span>
 
@@ -737,7 +737,7 @@
 
 
 <div class="viewcode-block" id="daemon_runtime_exception_handler"><a class="viewcode-back" href="../../../api/daemon.excepts/#daemon.excepts.daemon_runtime_exception_handler">[docs]</a><span class="k">async</span> <span class="k">def</span> <span class="nf">daemon_runtime_exception_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">ex</span><span class="p">:</span> <span class="s1">&#39;Runtime400Exception&#39;</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Exception handler for all Runtime400Exceptions</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Exception handler for all Runtime400Exceptions</span>
 
 <span class="sd">    `Runtime400Exception` is always chained.</span>
 
@@ -762,7 +762,7 @@
 
 
 <div class="viewcode-block" id="validation_exception_handler"><a class="viewcode-back" href="../../../api/daemon.excepts/#daemon.excepts.validation_exception_handler">[docs]</a><span class="k">async</span> <span class="k">def</span> <span class="nf">validation_exception_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">ex</span><span class="p">:</span> <span class="s1">&#39;RequestValidationError&#39;</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Exception handler for all RequestValidationError raised by pydantic</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Exception handler for all RequestValidationError raised by pydantic</span>
 
 <span class="sd">    :param request: starlette request</span>
 <span class="sd">    :param ex: actual Validation exception</span>
@@ -784,7 +784,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Dec 21, 2022.
+                    Last updated on Jan 19, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

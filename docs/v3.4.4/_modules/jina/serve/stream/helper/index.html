@@ -582,10 +582,10 @@
 
 
 <div class="viewcode-block" id="AsyncRequestsIterator"><a class="viewcode-back" href="../../../../../api/jina.serve.stream.helper/#jina.serve.stream.helper.AsyncRequestsIterator">[docs]</a><span class="k">class</span> <span class="nc">AsyncRequestsIterator</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Iterator to allow async iteration of blocking/non-blocking iterator from the Client&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Iterator to allow async iteration of blocking/non-blocking iterator from the Client&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iterator</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Iterator</span><span class="p">,</span> <span class="n">AsyncIterator</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Async request iterator</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Async request iterator</span>
 <span class="sd">        TODO (Deepankar): accept `num_req`</span>
 
 <span class="sd">        :param iterator: request iterator</span>
@@ -593,7 +593,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">iterator</span> <span class="o">=</span> <span class="n">iterator</span>
 
 <div class="viewcode-block" id="AsyncRequestsIterator.iterator__next__"><a class="viewcode-back" href="../../../../../api/jina.serve.stream.helper/#jina.serve.stream.helper.AsyncRequestsIterator.iterator__next__">[docs]</a>    <span class="k">def</span> <span class="nf">iterator__next__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Executed inside a `ThreadPoolExecutor` via `loop.run_in_executor` to avoid following exception.</span>
 <span class="sd">        &quot;StopIteration interacts badly with generators and cannot be raised into a Future&quot;</span>
 
@@ -609,7 +609,7 @@
 
     <span class="k">async</span> <span class="k">def</span> <span class="fm">__anext__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">iterator</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">):</span>
-            <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            An `Iterator` indicates &quot;blocking&quot; code, which might block all tasks in the event loop.</span>
 <span class="sd">            Hence we iterate in the default executor provided by asyncio.</span>
 <span class="sd">            &quot;&quot;&quot;</span>
@@ -617,7 +617,7 @@
                 <span class="kc">None</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">iterator__next__</span>
             <span class="p">)</span>
 
-            <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            `iterator.__next__` can be executed directly and that&#39;d raise `StopIteration` in the executor,</span>
 <span class="sd">            which raises the following exception while chaining states in futures.</span>
 <span class="sd">            &quot;StopIteration interacts badly with generators and cannot be raised into a Future&quot;</span>
@@ -641,7 +641,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Dec 21, 2022.
+                    Last updated on Jan 19, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

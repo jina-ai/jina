@@ -474,20 +474,20 @@ The Flow then assigns each available GPU to replicas in a round-robin fashion.</
     <span class="n">f</span><span class="o">.</span><span class="n">block</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nv">CUDA_VISIBLE_DEVICES</span><span class="o">=</span>RR python flow.py
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nv">CUDA_VISIBLE_DEVICES</span><span class="o">=</span>RR<span class="w"> </span>python<span class="w"> </span>flow.py
 </pre></div>
 </div>
 </div>
 <input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--2">YAML</label><div class="tab-content docutils">
 <p>In a <code class="docutils literal notranslate"><span class="pre">flow.yaml</span></code> file</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
-<span class="nt">executors</span><span class="p">:</span><span class="w"></span>
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinaai://jina-ai/CLIPEncoder</span><span class="w"></span>
-<span class="w">  </span><span class="nt">install_requirements</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span>
+<span class="nt">executors</span><span class="p">:</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinaai://jina-ai/CLIPEncoder</span>
+<span class="w">  </span><span class="nt">install_requirements</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True</span>
 <span class="w">  </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span><span class="w">  </span>
 </pre></div>
 </div>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nv">CUDA_VISIBLE_DEVICES</span><span class="o">=</span>RR jina flow --uses flow.yaml
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nv">CUDA_VISIBLE_DEVICES</span><span class="o">=</span>RR<span class="w"> </span>jina<span class="w"> </span>flow<span class="w"> </span>--uses<span class="w"> </span>flow.yaml
 </pre></div>
 </div>
 </div>
@@ -725,7 +725,7 @@ The Flow then assigns each available GPU to replicas in a round-robin fashion.</
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 21, 2022</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

@@ -410,7 +410,7 @@
                     <section class="tex2jax_ignore mathjax_ignore" id="create-first-project">
 <h1>Create First Project<a class="headerlink" href="#create-first-project" title="Permalink to this heading">#</a></h1>
 <p>Let’s build a toy application with Jina. To start, we use Jina CLI to make a new project for us:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina new hello-jina
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina<span class="w"> </span>new<span class="w"> </span>hello-jina
 </pre></div>
 </div>
 <p>This will create a new project folder called <code class="docutils literal notranslate"><span class="pre">hello-jina</span></code> with the following file structure:</p>
@@ -432,24 +432,24 @@
 <p>Now run it and observe the output of the server and client.</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">Run server</label><div class="tab-content docutils">
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>jina flow --uses flow.yml
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>jina<span class="w"> </span>flow<span class="w"> </span>--uses<span class="w"> </span>flow.yml
 </pre></div>
 </div>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>──── 🎉 Flow is ready to serve! ────
-╭────────────── 🔗 Endpoint ───────────────╮
-│  ⛓     Protocol                    GRPC  │
-│  🏠       Local           <span class="m">0</span>.0.0.0:54321  │
-│  🔒     Private    <span class="m">192</span>.168.200.56:54321  │
-│  🌍      Public    <span class="m">81</span>.223.121.124:54321  │
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>────<span class="w"> </span>🎉<span class="w"> </span>Flow<span class="w"> </span>is<span class="w"> </span>ready<span class="w"> </span>to<span class="w"> </span>serve!<span class="w"> </span>────
+╭──────────────<span class="w"> </span>🔗<span class="w"> </span>Endpoint<span class="w"> </span>───────────────╮
+│<span class="w">  </span>⛓<span class="w">     </span>Protocol<span class="w">                    </span>GRPC<span class="w">  </span>│
+│<span class="w">  </span>🏠<span class="w">       </span>Local<span class="w">           </span><span class="m">0</span>.0.0.0:54321<span class="w">  </span>│
+│<span class="w">  </span>🔒<span class="w">     </span>Private<span class="w">    </span><span class="m">192</span>.168.200.56:54321<span class="w">  </span>│
+│<span class="w">  </span>🌍<span class="w">      </span>Public<span class="w">    </span><span class="m">81</span>.223.121.124:54321<span class="w">  </span>│
 ╰──────────────────────────────────────────╯
 </pre></div>
 </div>
 </div>
 <input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--2">Run client</label><div class="tab-content docutils">
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python client.py
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>client.py
 </pre></div>
 </div>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="o">[</span><span class="s1">&#39;hello, world!&#39;</span>, <span class="s1">&#39;goodbye, world!&#39;</span><span class="o">]</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="o">[</span><span class="s1">&#39;hello, world!&#39;</span>,<span class="w"> </span><span class="s1">&#39;goodbye, world!&#39;</span><span class="o">]</span>
 </pre></div>
 </div>
 </div>
@@ -485,7 +485,7 @@
 </pre></div>
 </div>
 <p>Once we save that, we can run our new client:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python client.py
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>client.py
 </pre></div>
 </div>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>tensor([[[0.9594, 0.9373],
@@ -549,7 +549,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 21, 2022</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

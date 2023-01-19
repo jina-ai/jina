@@ -629,7 +629,7 @@
 
 
 <div class="viewcode-block" id="SysLogHandlerWrapper"><a class="viewcode-back" href="../../../../api/jina.logging.logger/#jina.logging.logger.SysLogHandlerWrapper">[docs]</a><span class="k">class</span> <span class="nc">SysLogHandlerWrapper</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">handlers</span><span class="o">.</span><span class="n">SysLogHandler</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Override the priority_map :class:`SysLogHandler`.</span>
 
 <span class="sd">    .. warning::</span>
@@ -648,7 +648,7 @@
 
 
 <div class="viewcode-block" id="JinaLogger"><a class="viewcode-back" href="../../../../api/jina.logging.logger/#jina.logging.logger.JinaLogger">[docs]</a><span class="k">class</span> <span class="nc">JinaLogger</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Build a logger for a context.</span>
 
 <span class="sd">    :param context: The context identifier of the class, module or method.</span>
@@ -705,7 +705,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">handlers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the handlers of the logger.</span>
 
 <span class="sd">        :return:: Handlers of logger.</span>
@@ -719,14 +719,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
 <div class="viewcode-block" id="JinaLogger.close"><a class="viewcode-back" href="../../../../api/jina.logging.logger/#jina.logging.logger.JinaLogger.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Close all the handlers.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Close all the handlers.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_closed</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">handler</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">handlers</span><span class="p">:</span>
                 <span class="n">handler</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_is_closed</span> <span class="o">=</span> <span class="kc">True</span></div>
 
 <div class="viewcode-block" id="JinaLogger.add_handlers"><a class="viewcode-back" href="../../../../api/jina.logging.logger/#jina.logging.logger.JinaLogger.add_handlers">[docs]</a>    <span class="k">def</span> <span class="nf">add_handlers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add handlers from config file.</span>
 
 <span class="sd">        :param config_path: Path of config file.</span>
@@ -794,7 +794,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Dec 21, 2022.
+                    Last updated on Jan 19, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

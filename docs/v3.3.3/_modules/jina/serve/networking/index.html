@@ -604,7 +604,7 @@
 
 
 <div class="viewcode-block" id="ReplicaList"><a class="viewcode-back" href="../../../../api/jina.serve.networking/#jina.serve.networking.ReplicaList">[docs]</a><span class="k">class</span> <span class="nc">ReplicaList</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Maintains a list of connections to replicas and uses round robin for selecting a replica</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -616,7 +616,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">summary</span> <span class="o">=</span> <span class="n">summary</span>
 
 <div class="viewcode-block" id="ReplicaList.add_connection"><a class="viewcode-back" href="../../../../api/jina.serve.networking/#jina.serve.networking.ReplicaList.add_connection">[docs]</a>    <span class="k">def</span> <span class="nf">add_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add connection with address to the connection list</span>
 <span class="sd">        :param address: Target address of this connection</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -637,7 +637,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">stubs</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ReplicaList.remove_connection"><a class="viewcode-back" href="../../../../api/jina.serve.networking/#jina.serve.networking.ReplicaList.remove_connection">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">remove_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Remove connection with address from the connection list</span>
 <span class="sd">        :param address: Remove connection for this address</span>
 <span class="sd">        :returns: The removed connection or None if there was not any for the given address</span>
@@ -664,7 +664,7 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
 <div class="viewcode-block" id="ReplicaList.get_next_connection"><a class="viewcode-back" href="../../../../api/jina.serve.networking/#jina.serve.networking.ReplicaList.get_next_connection">[docs]</a>    <span class="k">def</span> <span class="nf">get_next_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a connection from the list. Strategy is round robin</span>
 <span class="sd">        :returns: A connection from the pool</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -678,14 +678,14 @@
         <span class="k">return</span> <span class="n">connection</span></div>
 
 <div class="viewcode-block" id="ReplicaList.get_all_connections"><a class="viewcode-back" href="../../../../api/jina.serve.networking/#jina.serve.networking.ReplicaList.get_all_connections">[docs]</a>    <span class="k">def</span> <span class="nf">get_all_connections</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns all available connections</span>
 <span class="sd">        :returns: A complete list of all connections from the pool</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span></div>
 
 <div class="viewcode-block" id="ReplicaList.has_connection"><a class="viewcode-back" href="../../../../api/jina.serve.networking/#jina.serve.networking.ReplicaList.has_connection">[docs]</a>    <span class="k">def</span> <span class="nf">has_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Checks if a connection for ip exists in the list</span>
 <span class="sd">        :param address: The address to check</span>
 <span class="sd">        :returns: True if a connection for the ip exists in the list</span>
@@ -693,14 +693,14 @@
         <span class="k">return</span> <span class="n">address</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_address_to_connection_idx</span></div>
 
 <div class="viewcode-block" id="ReplicaList.has_connections"><a class="viewcode-back" href="../../../../api/jina.serve.networking/#jina.serve.networking.ReplicaList.has_connections">[docs]</a>    <span class="k">def</span> <span class="nf">has_connections</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Checks if this contains any connection</span>
 <span class="sd">        :returns: True if any connection is managed, False otherwise</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_address_to_connection_idx</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span></div>
 
 <div class="viewcode-block" id="ReplicaList.close"><a class="viewcode-back" href="../../../../api/jina.serve.networking/#jina.serve.networking.ReplicaList.close">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Close all connections and clean up internal state</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">address</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_address_to_channel</span><span class="p">:</span>
@@ -712,7 +712,7 @@
 
 
 <div class="viewcode-block" id="GrpcConnectionPool"><a class="viewcode-back" href="../../../../api/jina.serve.networking/#jina.serve.networking.GrpcConnectionPool">[docs]</a><span class="k">class</span> <span class="nc">GrpcConnectionPool</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Manages a list of grpc connections.</span>
 
 <span class="sd">    :param logger: the logger to use</span>
@@ -724,7 +724,7 @@
     <span class="n">K8S_PORT</span> <span class="o">=</span> <span class="mi">8080</span>
 
 <div class="viewcode-block" id="GrpcConnectionPool.ConnectionStubs"><a class="viewcode-back" href="../../../../api/jina.serve.networking/#jina.serve.networking.GrpcConnectionPool.ConnectionStubs">[docs]</a>    <span class="k">class</span> <span class="nc">ConnectionStubs</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Maintains a list of grpc stubs available for a particular connection</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -759,7 +759,7 @@
 <div class="viewcode-block" id="GrpcConnectionPool.ConnectionStubs.send_requests"><a class="viewcode-back" href="../../../../api/jina.serve.networking/#jina.serve.networking.GrpcConnectionPool.ConnectionStubs.send_requests">[docs]</a>        <span class="k">async</span> <span class="k">def</span> <span class="nf">send_requests</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span> <span class="n">requests</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Request</span><span class="p">],</span> <span class="n">metadata</span><span class="p">,</span> <span class="n">compression</span>
         <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">:</span>
-            <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Send requests and uses the appropriate grpc stub for this</span>
 <span class="sd">            Stub is chosen based on availability and type of requests</span>
 
@@ -901,7 +901,7 @@
                     <span class="c1"># In this case we don&#39;t care for the concrete entity, so retry with the first one</span>
                     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_connection_list</span><span class="p">(</span><span class="n">deployment</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s1">&#39;Did not find a connection for deployment </span><span class="si">{</span><span class="n">deployment</span><span class="si">}</span><span class="s1">, type </span><span class="si">{</span><span class="nb">type</span><span class="si">}</span><span class="s1"> and entity_id </span><span class="si">{</span><span class="n">entity_id</span><span class="si">}</span><span class="s1">. There are </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_deployments</span><span class="p">[</span><span class="n">deployment</span><span class="p">][</span><span class="nb">type</span><span class="p">])</span> <span class="k">if</span> <span class="n">deployment</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deployments</span> <span class="k">else</span> <span class="mi">0</span><span class="si">}</span><span class="s1"> available connections for this deployment and type. &#39;</span>
+                    <span class="sa">f</span><span class="s1">&#39;Did not find a connection for deployment </span><span class="si">{</span><span class="n">deployment</span><span class="si">}</span><span class="s1">, type </span><span class="si">{</span><span class="nb">type</span><span class="si">}</span><span class="s1"> and entity_id </span><span class="si">{</span><span class="n">entity_id</span><span class="si">}</span><span class="s1">. There are </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_deployments</span><span class="p">[</span><span class="n">deployment</span><span class="p">][</span><span class="nb">type</span><span class="p">])</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">deployment</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">_deployments</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="mi">0</span><span class="si">}</span><span class="s1"> available connections for this deployment and type. &#39;</span>
                 <span class="p">)</span>
                 <span class="k">return</span> <span class="kc">None</span>
 
@@ -1010,7 +1010,7 @@
         <span class="n">polling_type</span><span class="p">:</span> <span class="n">PollingType</span> <span class="o">=</span> <span class="n">PollingType</span><span class="o">.</span><span class="n">ANY</span><span class="p">,</span>
         <span class="n">endpoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">asyncio</span><span class="o">.</span><span class="n">Task</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Send a single message to target via one or all of the pooled connections, depending on polling_type. Convenience function wrapper around send_request.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Send a single message to target via one or all of the pooled connections, depending on polling_type. Convenience function wrapper around send_request.</span>
 <span class="sd">        :param request: a single request to send</span>
 <span class="sd">        :param deployment: name of the Jina deployment to send the message to</span>
 <span class="sd">        :param head: If True it is send to the head, otherwise to the worker pods</span>
@@ -1037,7 +1037,7 @@
         <span class="n">polling_type</span><span class="p">:</span> <span class="n">PollingType</span> <span class="o">=</span> <span class="n">PollingType</span><span class="o">.</span><span class="n">ANY</span><span class="p">,</span>
         <span class="n">endpoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">asyncio</span><span class="o">.</span><span class="n">Task</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Send a request to target via one or all of the pooled connections, depending on polling_type</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Send a request to target via one or all of the pooled connections, depending on polling_type</span>
 
 <span class="sd">        :param requests: request (DataRequest/ControlRequest) to send</span>
 <span class="sd">        :param deployment: name of the Jina deployment to send the request to</span>
@@ -1073,7 +1073,7 @@
         <span class="n">head</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">shard_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Task</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Send msg to target via only one of the pooled connections</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Send msg to target via only one of the pooled connections</span>
 <span class="sd">        :param request: request to send</span>
 <span class="sd">        :param deployment: name of the Jina deployment to send the message to</span>
 <span class="sd">        :param head: If True it is send to the head, otherwise to the worker pods</span>
@@ -1092,7 +1092,7 @@
         <span class="n">shard_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">endpoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Task</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Send a request to target via only one of the pooled connections</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Send a request to target via only one of the pooled connections</span>
 
 <span class="sd">        :param requests: request to send</span>
 <span class="sd">        :param deployment: name of the Jina deployment to send the request to</span>
@@ -1118,7 +1118,7 @@
         <span class="n">head</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">shard_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Adds a connection for a deployment to this connection pool</span>
 
 <span class="sd">        :param deployment: The deployment the connection belongs to, like &#39;encoder&#39;</span>
@@ -1140,7 +1140,7 @@
         <span class="n">head</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">shard_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Removes a connection to a deployment</span>
 
 <span class="sd">        :param deployment: The deployment the connection belongs to, like &#39;encoder&#39;</span>
@@ -1157,13 +1157,13 @@
             <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="o">.</span><span class="n">remove_replica</span><span class="p">(</span><span class="n">deployment</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">shard_id</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="GrpcConnectionPool.start"><a class="viewcode-back" href="../../../../api/jina.serve.networking/#jina.serve.networking.GrpcConnectionPool.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Starts the connection pool</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="GrpcConnectionPool.close"><a class="viewcode-back" href="../../../../api/jina.serve.networking/#jina.serve.networking.GrpcConnectionPool.close">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Closes the connection pool</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
@@ -1208,7 +1208,7 @@
         <span class="n">tls</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">root_certificates</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">grpc</span><span class="o">.</span><span class="n">Channel</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates a grpc channel to the given address</span>
 
 <span class="sd">        :param address: The address to connect to, format is &lt;host&gt;:&lt;port&gt;</span>
@@ -1246,7 +1246,7 @@
         <span class="n">target_head</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">shard_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ControlRequest</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Register a given worker to a head by sending an activate request</span>
 
 <span class="sd">        :param worker_host: the host address of the worker</span>
@@ -1273,7 +1273,7 @@
         <span class="n">target_head</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">shard_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ControlRequest</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Register a given worker to a head by sending an activate request</span>
 
 <span class="sd">        :param worker_host: the host address of the worker</span>
@@ -1297,7 +1297,7 @@
         <span class="n">target_head</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">shard_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ControlRequest</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Remove a given worker to a head by sending a deactivate request</span>
 
 <span class="sd">        :param worker_host: the host address of the worker</span>
@@ -1323,7 +1323,7 @@
         <span class="n">root_certificates</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">endpoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Request</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sends a request synchronically to the target via grpc</span>
 
 <span class="sd">        :param request: the request to send</span>
@@ -1368,7 +1368,7 @@
         <span class="n">root_certificates</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">endpoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Request</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sends a list of requests synchronically to the target via grpc</span>
 
 <span class="sd">        :param requests: the requests to send</span>
@@ -1402,7 +1402,7 @@
 
 <div class="viewcode-block" id="GrpcConnectionPool.get_default_grpc_options"><a class="viewcode-back" href="../../../../api/jina.serve.networking/#jina.serve.networking.GrpcConnectionPool.get_default_grpc_options">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">get_default_grpc_options</span><span class="p">():</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a list of default options used for creating grpc channels.</span>
 <span class="sd">        Documentation is here https://github.com/grpc/grpc/blob/master/include/grpc/impl/codegen/grpc_types.h</span>
 <span class="sd">        :returns: list of tuples defining grpc parameters</span>
@@ -1420,7 +1420,7 @@
         <span class="n">tls</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">root_certificates</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Request</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sends a request asynchronously to the target via grpc</span>
 
 <span class="sd">        :param request: the request to send</span>
@@ -1449,7 +1449,7 @@
     <span class="k">def</span> <span class="nf">create_async_channel_stub</span><span class="p">(</span>
         <span class="n">address</span><span class="p">,</span> <span class="n">tls</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">root_certificates</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">summary</span><span class="o">=</span><span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">ConnectionStubs</span><span class="p">,</span> <span class="n">grpc</span><span class="o">.</span><span class="n">aio</span><span class="o">.</span><span class="n">Channel</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates an async GRPC Channel. This channel has to be closed eventually!</span>
 
 <span class="sd">        :param address: the address to create the connection to, like 127.0.0.0.1:8080</span>
@@ -1473,7 +1473,7 @@
 
 <div class="viewcode-block" id="GrpcConnectionPool.get_available_services"><a class="viewcode-back" href="../../../../api/jina.serve.networking/#jina.serve.networking.GrpcConnectionPool.get_available_services">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">get_available_services</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Lists available services by name, exposed at target address</span>
 
 <span class="sd">        :param channel: the channel to use</span>
@@ -1497,7 +1497,7 @@
 
 
 <div class="viewcode-block" id="in_docker"><a class="viewcode-back" href="../../../../api/jina.serve.networking/#jina.serve.networking.in_docker">[docs]</a><span class="k">def</span> <span class="nf">in_docker</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Checks if the current process is running inside Docker</span>
 <span class="sd">    :return: True if the current process is running inside Docker</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1511,7 +1511,7 @@
 
 
 <div class="viewcode-block" id="host_is_local"><a class="viewcode-back" href="../../../../api/jina.serve.networking/#jina.serve.networking.host_is_local">[docs]</a><span class="k">def</span> <span class="nf">host_is_local</span><span class="p">(</span><span class="n">hostname</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Check if hostname is point to localhost</span>
 <span class="sd">    :param hostname: host to check</span>
 <span class="sd">    :return: True if hostname means localhost, False otherwise</span>
@@ -1537,7 +1537,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Dec 21, 2022.
+                    Last updated on Jan 19, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

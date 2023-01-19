@@ -467,19 +467,19 @@ In this example, we will use <code class="docutils literal notranslate"><span cl
 Here we pick <code class="docutils literal notranslate"><span class="pre">12345</span></code>.</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">Using Docker</label><div class="tab-content docutils">
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina executor --uses jinahub+docker://CLIPTextEncoder --port <span class="m">12345</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina<span class="w"> </span>executor<span class="w"> </span>--uses<span class="w"> </span>jinahub+docker://CLIPTextEncoder<span class="w"> </span>--port<span class="w"> </span><span class="m">12345</span>
 </pre></div>
 </div>
 </div>
 <input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--2">Without Docker</label><div class="tab-content docutils">
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina executor --uses jinahub://CLIPTextEncoder --port <span class="m">12345</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina<span class="w"> </span>executor<span class="w"> </span>--uses<span class="w"> </span>jinahub://CLIPTextEncoder<span class="w"> </span>--port<span class="w"> </span><span class="m">12345</span>
 </pre></div>
 </div>
 </div>
 </div>
 <p>This might take a few seconds, but in the end you should be greeted with the
 following message:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>WorkerRuntime@ <span class="m">1</span><span class="o">[</span>L<span class="o">]</span>: Executor CLIPTextEncoder started
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>WorkerRuntime@<span class="w"> </span><span class="m">1</span><span class="o">[</span>L<span class="o">]</span>:<span class="w"> </span>Executor<span class="w"> </span>CLIPTextEncoder<span class="w"> </span>started
 </pre></div>
 </div>
 <p>And just like that, our Executor is up and running.</p>
@@ -507,7 +507,7 @@ the following Flow in a Python file:</p>
     <span class="n">f</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="n">docs</span><span class="p">,</span> <span class="n">on_done</span><span class="o">=</span><span class="n">print_embedding</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;Embed me please!&quot;</span> has been embedded to shape <span class="o">(</span><span class="m">512</span>,<span class="o">)</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;Embed me please!&quot;</span><span class="w"> </span>has<span class="w"> </span>been<span class="w"> </span>embedded<span class="w"> </span>to<span class="w"> </span>shape<span class="w"> </span><span class="o">(</span><span class="m">512</span>,<span class="o">)</span>
 </pre></div>
 </div>
 <p>We obtain embeddings for our Documents, just like we would with a local Executor.</p>
@@ -529,14 +529,14 @@ the following Flow in a Python file:</p>
 <p>Since we can’t rely on the Hub this time around, we need to tell Jina how to find the Executor that we just defined.
 We do this using a YAML file.</p>
 <p>In a new file called <code class="docutils literal notranslate"><span class="pre">my-exec.yml</span></code> we type:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MyExecutor</span><span class="w"></span>
-<span class="nt">py_modules</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">exec.py</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MyExecutor</span>
+<span class="nt">py_modules</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">exec.py</span>
 </pre></div>
 </div>
 <p>This simply points Jina to our file and Executor class.</p>
 <p>Now we can run the CLI command again, this time using our custom Executor:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina executor --uses my-exec.yml --port <span class="m">12345</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina<span class="w"> </span>executor<span class="w"> </span>--uses<span class="w"> </span>my-exec.yml<span class="w"> </span>--port<span class="w"> </span><span class="m">12345</span>
 </pre></div>
 </div>
 <p>Now that your Executor is up and running, we can tap into it just like before, and even use it from two different Flows.</p>
@@ -553,8 +553,8 @@ We do this using a YAML file.</p>
     <span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>Received: <span class="s2">&quot;Greetings from Flow1&quot;</span>
-Received: <span class="s2">&quot;Greetings from Flow2&quot;</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>Received:<span class="w"> </span><span class="s2">&quot;Greetings from Flow1&quot;</span>
+Received:<span class="w"> </span><span class="s2">&quot;Greetings from Flow2&quot;</span>
 </pre></div>
 </div>
 </section>
@@ -595,7 +595,7 @@ Received: <span class="s2">&quot;Greetings from Flow2&quot;</span>
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 21, 2022</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

@@ -636,7 +636,7 @@
 
 
 <div class="viewcode-block" id="JinaDClient"><a class="viewcode-back" href="../../../api/daemon.clients/#daemon.clients.JinaDClient">[docs]</a><span class="k">class</span> <span class="nc">JinaDClient</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;JinaD Client</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;JinaD Client</span>
 
 <span class="sd">    :param host: hostname of remote JinaD server</span>
 <span class="sd">    :param port: port of remote JinaD server</span>
@@ -663,7 +663,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">pods</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Pod Client</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Pod Client</span>
 
 <span class="sd">        :return: Pod Client</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -671,7 +671,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">deployments</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">DeploymentClient</span><span class="p">,</span> <span class="n">AsyncDeploymentClient</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Deployment Client</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Deployment Client</span>
 
 <span class="sd">        :return: Deployment Client</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -679,7 +679,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">flows</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">FlowClient</span><span class="p">,</span> <span class="n">AsyncFlowClient</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Flow Client</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Flow Client</span>
 
 <span class="sd">        :return: Flow Client</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -687,7 +687,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">workspaces</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">WorkspaceClient</span><span class="p">,</span> <span class="n">AsyncWorkspaceClient</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Workspace Client</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Workspace Client</span>
 
 <span class="sd">        :return: Workspace Client</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -695,7 +695,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">alive</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Check if JinaD is alive</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if JinaD is alive</span>
 
 <span class="sd">        :return: True if alive</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -703,7 +703,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">status</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Get the status of remote JinaD</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the status of remote JinaD</span>
 
 <span class="sd">        :return: Dict object describing remote store</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -711,7 +711,7 @@
 
 
 <div class="viewcode-block" id="AsyncJinaDClient"><a class="viewcode-back" href="../../../api/daemon.clients/#daemon.clients.AsyncJinaDClient">[docs]</a><span class="k">class</span> <span class="nc">AsyncJinaDClient</span><span class="p">(</span><span class="n">JinaDClient</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Async JinaD Client&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Async JinaD Client&quot;&quot;&quot;</span>
 
     <span class="n">_base_cls</span> <span class="o">=</span> <span class="n">AsyncBaseClient</span>
     <span class="n">_pod_cls</span> <span class="o">=</span> <span class="n">AsyncPodClient</span>
@@ -729,7 +729,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Dec 21, 2022.
+                    Last updated on Jan 19, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

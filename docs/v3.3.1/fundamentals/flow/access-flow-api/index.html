@@ -623,7 +623,7 @@ Only Flows that use HTTP can be accessed via the methods described below.</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">via cURL</label><div class="tab-content docutils">
 <p>Here’s an example that uses <code class="docutils literal notranslate"><span class="pre">cURL</span></code>.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl --request POST <span class="s1">&#39;http://localhost:12345/post&#39;</span> --header <span class="s1">&#39;Content-Type: application/json&#39;</span> -d <span class="s1">&#39;{&quot;data&quot;: [{&quot;text&quot;: &quot;hello world&quot;}],&quot;execEndpoint&quot;: &quot;/search&quot;}&#39;</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>--request<span class="w"> </span>POST<span class="w"> </span><span class="s1">&#39;http://localhost:12345/post&#39;</span><span class="w"> </span>--header<span class="w"> </span><span class="s1">&#39;Content-Type: application/json&#39;</span><span class="w"> </span>-d<span class="w"> </span><span class="s1">&#39;{&quot;data&quot;: [{&quot;text&quot;: &quot;hello world&quot;}],&quot;execEndpoint&quot;: &quot;/search&quot;}&#39;</span>
 </pre></div>
 </div>
 <details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
@@ -688,13 +688,13 @@ Sample response<div class="sd-summary-down docutils">
 </details></div>
 <input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--2">via JavaScript</label><div class="tab-content docutils">
 <p>Sending a request from the front-end JavaScript code is a common use case too. Here’s how this would look like:</p>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">fetch</span><span class="p">(</span><span class="s1">&#39;http://localhost:12345/post&#39;</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="nx">method</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;POST&#39;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nx">headers</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">        </span><span class="s1">&#39;Content-Type&#39;</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;application/json&#39;</span><span class="w"></span>
-<span class="w">    </span><span class="p">},</span><span class="w"></span>
-<span class="w">    </span><span class="nx">body</span><span class="o">:</span><span class="w"> </span><span class="nb">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">({</span><span class="s2">&quot;data&quot;</span><span class="o">:</span><span class="w"> </span><span class="p">[{</span><span class="s2">&quot;text&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;hello world&quot;</span><span class="p">}],</span><span class="s2">&quot;execEndpoint&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;/search&quot;</span><span class="p">})</span><span class="w"></span>
-<span class="p">}).</span><span class="nx">then</span><span class="p">(</span><span class="nx">response</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">response</span><span class="p">.</span><span class="nx">json</span><span class="p">()).</span><span class="nx">then</span><span class="p">(</span><span class="nx">data</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">data</span><span class="p">));</span><span class="w"></span>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">fetch</span><span class="p">(</span><span class="s1">&#39;http://localhost:12345/post&#39;</span><span class="p">,</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">method</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;POST&#39;</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">headers</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="s1">&#39;Content-Type&#39;</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;application/json&#39;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nx">body</span><span class="o">:</span><span class="w"> </span><span class="nb">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">({</span><span class="s2">&quot;data&quot;</span><span class="o">:</span><span class="w"> </span><span class="p">[{</span><span class="s2">&quot;text&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;hello world&quot;</span><span class="p">}],</span><span class="s2">&quot;execEndpoint&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;/search&quot;</span><span class="p">})</span>
+<span class="p">}).</span><span class="nx">then</span><span class="p">(</span><span class="nx">response</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">response</span><span class="p">.</span><span class="nx">json</span><span class="p">()).</span><span class="nx">then</span><span class="p">(</span><span class="nx">data</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">data</span><span class="p">));</span>
 </pre></div>
 </div>
 <details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
@@ -704,32 +704,32 @@ Output<div class="sd-summary-down docutils">
 <div class="sd-summary-up docutils">
 <svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
 </summary><div class="sd-summary-content sd-card-body docutils">
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="s2">&quot;data&quot;</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
-<span class="w">    </span><span class="p">{</span><span class="w"></span>
-<span class="w">      </span><span class="s2">&quot;id&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;37e6f1bc7ec82fc4ba75691315ae54a6&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">      </span><span class="s2">&quot;text&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;hello world&quot;</span><span class="w"></span>
-<span class="w">      </span><span class="s2">&quot;matches&quot;</span><span class="o">:</span><span class="w"> </span><span class="p">...</span><span class="w"></span>
-<span class="w">    </span><span class="p">},</span><span class="w"></span>
-<span class="w">  </span><span class="s2">&quot;header&quot;</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="s2">&quot;requestId&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;c725217aa7714de88039866fb5aa93d2&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="s2">&quot;execEndpoint&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;/index&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="s2">&quot;targetExecutor&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="w"></span>
-<span class="w">  </span><span class="p">},</span><span class="w"></span>
-<span class="w">  </span><span class="s2">&quot;routes&quot;</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
-<span class="w">    </span><span class="p">{</span><span class="w"></span>
-<span class="w">      </span><span class="s2">&quot;executor&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;gateway&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">      </span><span class="s2">&quot;startTime&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;2022-04-01T13:11:57.992497+00:00&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">      </span><span class="s2">&quot;endTime&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;2022-04-01T13:11:57.997802+00:00&quot;</span><span class="w"></span>
-<span class="w">    </span><span class="p">},</span><span class="w"></span>
-<span class="w">    </span><span class="p">{</span><span class="w"></span>
-<span class="w">      </span><span class="s2">&quot;executor&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;executor0&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">      </span><span class="s2">&quot;startTime&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;2022-04-01T13:11:57.993686+00:00&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">      </span><span class="s2">&quot;endTime&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;2022-04-01T13:11:57.997274+00:00&quot;</span><span class="w"></span>
-<span class="w">    </span><span class="p">}</span><span class="w"></span>
-<span class="w">  </span><span class="p">],</span><span class="w"></span>
-<span class="w">  </span><span class="p">]</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="s2">&quot;data&quot;</span><span class="o">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="s2">&quot;id&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;37e6f1bc7ec82fc4ba75691315ae54a6&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;text&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;hello world&quot;</span>
+<span class="w">      </span><span class="s2">&quot;matches&quot;</span><span class="o">:</span><span class="w"> </span><span class="p">...</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">  </span><span class="s2">&quot;header&quot;</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="s2">&quot;requestId&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;c725217aa7714de88039866fb5aa93d2&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;execEndpoint&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;/index&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;targetExecutor&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="s2">&quot;routes&quot;</span><span class="o">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="s2">&quot;executor&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;gateway&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;startTime&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;2022-04-01T13:11:57.992497+00:00&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;endTime&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;2022-04-01T13:11:57.997802+00:00&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="s2">&quot;executor&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;executor0&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;startTime&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;2022-04-01T13:11:57.993686+00:00&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;endTime&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;2022-04-01T13:11:57.997274+00:00&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">],</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 </div>
@@ -786,22 +786,22 @@ Example<div class="sd-summary-down docutils">
 </summary><div class="sd-summary-content sd-card-body docutils">
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--1-input--1" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--1">cURL</label><div class="tab-content docutils">
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl --request POST <span class="se">\</span>
-<span class="hll"><span class="s1">&#39;http://localhost:12345/search&#39;</span> <span class="se">\</span>
-</span>--header <span class="s1">&#39;Content-Type: application/json&#39;</span> -d <span class="s1">&#39;{&quot;data&quot;: [{&quot;text&quot;: &quot;hello world&quot;}]}&#39;</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>--request<span class="w"> </span>POST<span class="w"> </span><span class="se">\</span>
+<span class="hll"><span class="s1">&#39;http://localhost:12345/search&#39;</span><span class="w"> </span><span class="se">\</span>
+</span>--header<span class="w"> </span><span class="s1">&#39;Content-Type: application/json&#39;</span><span class="w"> </span>-d<span class="w"> </span><span class="s1">&#39;{&quot;data&quot;: [{&quot;text&quot;: &quot;hello world&quot;}]}&#39;</span>
 </pre></div>
 </div>
 </div>
 <input class="tab-input" id="tab-set--1-input--2" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--2">javascript</label><div class="tab-content docutils">
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">fetch</span><span class="p">(</span><span class="w"></span>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">fetch</span><span class="p">(</span>
 <span class="hll"><span class="w">    </span><span class="s1">&#39;http://localhost:12345/search&#39;</span><span class="p">,</span><span class="w"> </span>
-</span><span class="w">    </span><span class="p">{</span><span class="w"></span>
-<span class="w">        </span><span class="nx">method</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;POST&#39;</span><span class="p">,</span><span class="w"></span>
-<span class="w">        </span><span class="nx">headers</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">            </span><span class="s1">&#39;Content-Type&#39;</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;application/json&#39;</span><span class="w"></span>
-<span class="w">    </span><span class="p">},</span><span class="w"></span>
-<span class="w">    </span><span class="nx">body</span><span class="o">:</span><span class="w"> </span><span class="nb">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">({</span><span class="s2">&quot;data&quot;</span><span class="o">:</span><span class="w"> </span><span class="p">[{</span><span class="s2">&quot;text&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;hello world&quot;</span><span class="p">}]})</span><span class="w"></span>
-<span class="p">}).</span><span class="nx">then</span><span class="p">(</span><span class="nx">response</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">response</span><span class="p">.</span><span class="nx">json</span><span class="p">()).</span><span class="nx">then</span><span class="p">(</span><span class="nx">data</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">data</span><span class="p">));</span><span class="w"></span>
+</span><span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">method</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;POST&#39;</span><span class="p">,</span>
+<span class="w">        </span><span class="nx">headers</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="s1">&#39;Content-Type&#39;</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;application/json&#39;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nx">body</span><span class="o">:</span><span class="w"> </span><span class="nb">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">({</span><span class="s2">&quot;data&quot;</span><span class="o">:</span><span class="w"> </span><span class="p">[{</span><span class="s2">&quot;text&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;hello world&quot;</span><span class="p">}]})</span>
+<span class="p">}).</span><span class="nx">then</span><span class="p">(</span><span class="nx">response</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">response</span><span class="p">.</span><span class="nx">json</span><span class="p">()).</span><span class="nx">then</span><span class="p">(</span><span class="nx">data</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">data</span><span class="p">));</span>
 </pre></div>
 </div>
 </div>
@@ -953,7 +953,7 @@ The Flow defaults to <code class="docutils literal notranslate"><span class="pre
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Dec 21, 2022.
+                    Last updated on Jan 19, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

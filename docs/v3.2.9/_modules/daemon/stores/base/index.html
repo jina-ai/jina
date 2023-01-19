@@ -647,7 +647,7 @@
 
 
 <div class="viewcode-block" id="BaseStore"><a class="viewcode-back" href="../../../../api/daemon.stores.base/#daemon.stores.base.BaseStore">[docs]</a><span class="k">class</span> <span class="nc">BaseStore</span><span class="p">(</span><span class="n">MutableMapping</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;The Base class for Daemon stores&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The Base class for Daemon stores&quot;&quot;&quot;</span>
 
     <span class="n">_kind</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
     <span class="n">_status_model</span> <span class="o">=</span> <span class="n">StoreStatus</span>
@@ -658,28 +658,28 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">_status_model</span><span class="p">()</span>
 
 <div class="viewcode-block" id="BaseStore.add"><a class="viewcode-back" href="../../../../api/daemon.stores.base/#daemon.stores.base.BaseStore.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DaemonID</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Add a new element to the store. This method needs to be overridden by the subclass</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a new element to the store. This method needs to be overridden by the subclass</span>
 
 
 <span class="sd">        .. #noqa: DAR101&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="BaseStore.update"><a class="viewcode-back" href="../../../../api/daemon.stores.base/#daemon.stores.base.BaseStore.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DaemonID</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Updates the element to the store. This method needs to be overridden by the subclass</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Updates the element to the store. This method needs to be overridden by the subclass</span>
 
 
 <span class="sd">        .. #noqa: DAR101&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="BaseStore.delete"><a class="viewcode-back" href="../../../../api/daemon.stores.base/#daemon.stores.base.BaseStore.delete">[docs]</a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DaemonID</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Deletes an element from the store. This method needs to be overridden by the subclass</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Deletes an element from the store. This method needs to be overridden by the subclass</span>
 
 
 <span class="sd">        .. #noqa: DAR101&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="BaseStore.clear"><a class="viewcode-back" href="../../../../api/daemon.stores.base/#daemon.stores.base.BaseStore.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Deletes an element from the store. This method needs to be overridden by the subclass</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Deletes an element from the store. This method needs to be overridden by the subclass</span>
 
 
 <span class="sd">        .. #noqa: DAR101&quot;&quot;&quot;</span>
@@ -695,7 +695,7 @@
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">dict</span><span class="p">())</span>
 
 <div class="viewcode-block" id="BaseStore.keys"><a class="viewcode-back" href="../../../../api/daemon.stores.base/#daemon.stores.base.BaseStore.keys">[docs]</a>    <span class="k">def</span> <span class="nf">keys</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="s1">&#39;DaemonID&#39;</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Get keys in the store</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get keys in the store</span>
 
 <span class="sd">        :return: Keys in the local store</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -703,7 +703,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">items</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="BaseStore.values"><a class="viewcode-back" href="../../../../api/daemon.stores.base/#daemon.stores.base.BaseStore.values">[docs]</a>    <span class="k">def</span> <span class="nf">values</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="s1">&#39;WorkspaceItem&#39;</span><span class="p">,</span> <span class="s1">&#39;ContainerItem&#39;</span><span class="p">]]:</span>
-        <span class="sd">&quot;&quot;&quot;Get values in the store</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get values in the store</span>
 
 <span class="sd">        :return: Values in the local store</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -713,7 +713,7 @@
 <div class="viewcode-block" id="BaseStore.items"><a class="viewcode-back" href="../../../../api/daemon.stores.base/#daemon.stores.base.BaseStore.items">[docs]</a>    <span class="k">def</span> <span class="nf">items</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="s1">&#39;DaemonID&#39;</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="s1">&#39;WorkspaceItem&#39;</span><span class="p">,</span> <span class="s1">&#39;ContainerItem&#39;</span><span class="p">]]]:</span>
-        <span class="sd">&quot;&quot;&quot;Get items in the store</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get items in the store</span>
 
 <span class="sd">        :return: Items in the local store</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -721,7 +721,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">items</span><span class="o">.</span><span class="n">items</span><span class="p">()</span></div>
 
     <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="n">DaemonID</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="s1">&#39;WorkspaceItem&#39;</span><span class="p">,</span> <span class="s1">&#39;ContainerItem&#39;</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Fetch a Container/Workspace object from the store</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Fetch a Container/Workspace object from the store</span>
 
 <span class="sd">        :param key: the key (DaemonID) of the object</span>
 <span class="sd">        :return: the value of the object</span>
@@ -729,7 +729,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">items</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="n">DaemonID</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">StoreItem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Add a Container/Workspace object to the store</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a Container/Workspace object to the store</span>
 
 <span class="sd">        :param key: the key (DaemonID) of the object</span>
 <span class="sd">        :param value: the value to be assigned</span>
@@ -739,7 +739,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">time_updated</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="fm">__delitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="n">DaemonID</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Release a Container/Workspace object from the store</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Release a Container/Workspace object from the store</span>
 
 <span class="sd">        :param key: the key (DaemonID) of the object</span>
 
@@ -760,7 +760,7 @@
 
 <div class="viewcode-block" id="BaseStore.dump"><a class="viewcode-back" href="../../../../api/daemon.stores.base/#daemon.stores.base.BaseStore.dump">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">dump</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">func</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Dump store as a pickle to local workspace</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Dump store as a pickle to local workspace</span>
 
 <span class="sd">        :param func: function to be wrapped</span>
 <span class="sd">        :return: decorator for dump</span>
@@ -779,7 +779,7 @@
 
 <div class="viewcode-block" id="BaseStore.load"><a class="viewcode-back" href="../../../../api/daemon.stores.base/#daemon.stores.base.BaseStore.load">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;BaseStore&#39;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Load store from a pickle in local workspace</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load store from a pickle in local workspace</span>
 
 <span class="sd">        :return: Store from local or empty store</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -792,7 +792,7 @@
             <span class="k">return</span> <span class="bp">cls</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="BaseStore.reset"><a class="viewcode-back" href="../../../../api/daemon.stores.base/#daemon.stores.base.BaseStore.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Calling :meth:`clear` and reset all stats &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calling :meth:`clear` and reset all stats &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_status_model</span><span class="p">()</span></div></div>
@@ -807,7 +807,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Dec 21, 2022.
+                    Last updated on Jan 19, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

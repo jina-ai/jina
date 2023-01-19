@@ -438,7 +438,7 @@
 
 
 <div class="viewcode-block" id="JAML"><a class="viewcode-back" href="../../../api/jina.jaml/#jina.jaml.JAML">[docs]</a><span class="k">class</span> <span class="nc">JAML</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;A Jina YAML parser supports loading and dumping and substituting variables.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A Jina YAML parser supports loading and dumping and substituting variables.</span>
 
 <span class="sd">    To use it:</span>
 
@@ -533,7 +533,7 @@
         <span class="n">context</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">runtime_args</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Parse the first YAML document in a stream and produce the corresponding Python object.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Parse the first YAML document in a stream and produce the corresponding Python object.</span>
 
 <span class="sd">        .. note::</span>
 <span class="sd">            :class:`BaseFlow`, :class:`BaseExecutor`, :class:`BaseDriver`</span>
@@ -556,7 +556,7 @@
 
 <div class="viewcode-block" id="JAML.escape"><a class="viewcode-back" href="../../../api/jina.jaml/#jina.jaml.JAML.escape">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">escape</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">include_unknown_tags</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Escape the YAML content by replacing all customized tags ``!`` to ``jtype: ``.</span>
 
 <span class="sd">        :param value: the original YAML content</span>
@@ -576,7 +576,7 @@
         <span class="n">include_unknown_tags</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">jtype_whitelist</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Unescape the YAML content by replacing all ``jtype: `` to tags.</span>
 
 <span class="sd">        :param value: the escaped YAML content</span>
@@ -596,7 +596,7 @@
 
 <div class="viewcode-block" id="JAML.registered_tags"><a class="viewcode-back" href="../../../api/jina.jaml/#jina.jaml.JAML.registered_tags">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">registered_tags</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a list of :class:`JAMLCompatible` classes that have been registered.</span>
 
 <span class="sd">        :return: tags</span>
@@ -609,7 +609,7 @@
 
 <div class="viewcode-block" id="JAML.registered_classes"><a class="viewcode-back" href="../../../api/jina.jaml/#jina.jaml.JAML.registered_classes">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">registered_classes</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a dict of tags and :class:`JAMLCompatible` classes that have been registered.</span>
 
 <span class="sd">        :return: tags and classes</span>
@@ -622,7 +622,7 @@
 
 <div class="viewcode-block" id="JAML.cls_from_tag"><a class="viewcode-back" href="../../../api/jina.jaml/#jina.jaml.JAML.cls_from_tag">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">cls_from_tag</span><span class="p">(</span><span class="n">tag</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;JAMLCompatible&#39;</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Fetch class from yaml tag</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Fetch class from yaml tag</span>
 
 <span class="sd">        :param tag: yaml tag</span>
 <span class="sd">        :return: class object from tag</span>
@@ -634,7 +634,7 @@
 
 <div class="viewcode-block" id="JAML.load_no_tags"><a class="viewcode-back" href="../../../api/jina.jaml/#jina.jaml.JAML.load_no_tags">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">load_no_tags</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Load yaml object but ignore all customized tags, e.g. !Executor, !Driver, !Flow.</span>
 
 <span class="sd">        :param stream: the output stream</span>
@@ -651,7 +651,7 @@
         <span class="n">resolve_cycle_ref</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">resolve_passes</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Expand variables from YAML file.</span>
 
 <span class="sd">        :param d: yaml file loaded as python dict</span>
@@ -829,7 +829,7 @@
 
 <div class="viewcode-block" id="JAML.dump"><a class="viewcode-back" href="../../../api/jina.jaml/#jina.jaml.JAML.dump">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">dump</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">stream</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Serialize a Python object into a YAML stream.</span>
 
 <span class="sd">        If stream is None, return the produced string instead.</span>
@@ -845,7 +845,7 @@
 
 <div class="viewcode-block" id="JAML.register"><a class="viewcode-back" href="../../../api/jina.jaml/#jina.jaml.JAML.register">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">register</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Register a class for dumping loading.</span>
 
 <span class="sd">            - if it has attribute yaml_tag use that to register, else use class name</span>
@@ -862,7 +862,7 @@
         <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
 
             <span class="k">def</span> <span class="nf">t_y</span><span class="p">(</span><span class="n">representer</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
-                <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">                </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Wrapper function for the representer.</span>
 
 <span class="sd">                :param representer: yaml representer</span>
@@ -879,7 +879,7 @@
         <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
 
             <span class="k">def</span> <span class="nf">f_y</span><span class="p">(</span><span class="n">constructor</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
-                <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">                </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Wrapper function for the constructor.</span>
 
 <span class="sd">                :param constructor: yaml constructor</span>
@@ -893,7 +893,7 @@
 
 
 <span class="k">class</span> <span class="nc">JAMLCompatibleType</span><span class="p">(</span><span class="nb">type</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Metaclass for :class:`JAMLCompatible`.</span>
 
 <span class="sd">    It enables any class inherit from :class:`JAMLCompatible` to auto-register itself at :class:`JAML`</span>
@@ -906,7 +906,7 @@
 
 
 <div class="viewcode-block" id="JAMLCompatible"><a class="viewcode-back" href="../../../api/jina.jaml/#jina.jaml.JAMLCompatible">[docs]</a><span class="k">class</span> <span class="nc">JAMLCompatible</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">JAMLCompatibleType</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;:class:`JAMLCompatible` is a mixin class designed to be used with multiple inheritance.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;:class:`JAMLCompatible` is a mixin class designed to be used with multiple inheritance.</span>
 
 <span class="sd">    It will add :meth:`to_yaml` and :meth:`from_yaml` to the target class,</span>
 <span class="sd">    making that class JAML-friendly.</span>
@@ -919,7 +919,7 @@
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">_to_yaml</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">representer</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        A low-level interface required by :mod:`pyyaml` write interface.</span>
 
 <span class="sd">        .. warning::</span>
@@ -944,7 +944,7 @@
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">_from_yaml</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">constructor</span><span class="p">:</span> <span class="n">FullConstructor</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;A low-level interface required by :mod:`pyyaml` load interface.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;A low-level interface required by :mod:`pyyaml` load interface.</span>
 
 <span class="sd">        .. warning::</span>
 <span class="sd">            This function should not be used directly, please use :meth:`load_config`.</span>
@@ -961,7 +961,7 @@
         <span class="p">)</span>
 
 <div class="viewcode-block" id="JAMLCompatible.save_config"><a class="viewcode-back" href="../../../api/jina.jaml/#jina.jaml.JAMLCompatible.save_config">[docs]</a>    <span class="k">def</span> <span class="nf">save_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Save the object&#39;s config into a YAML file.</span>
 
 <span class="sd">        :param filename: file path of the yaml file, if not given then :attr:`config_abspath` is used</span>
@@ -994,7 +994,7 @@
         <span class="n">runtime_args</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;JAMLCompatible&#39;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;A high-level interface for loading configuration with features</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;A high-level interface for loading configuration with features</span>
 <span class="sd">        of loading extra py_modules, substitute env &amp; context variables. Any class that</span>
 <span class="sd">        implements :class:`JAMLCompatible` mixin can enjoy this feature, e.g. :class:`BaseFlow`,</span>
 <span class="sd">        :class:`BaseExecutor`, :class:`BaseDriver` and all their subclasses.</span>
@@ -1150,7 +1150,7 @@
 
 <div class="viewcode-block" id="JAMLCompatible.is_valid_jaml"><a class="viewcode-back" href="../../../api/jina.jaml/#jina.jaml.JAMLCompatible.is_valid_jaml">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">is_valid_jaml</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Verifies the yaml syntax of a given object by first serializing it and attempting to deserialize and catch</span>
 <span class="sd">        parser errors</span>
 <span class="sd">        :param obj: yaml object</span>
@@ -1184,7 +1184,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 21, 2022</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

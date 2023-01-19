@@ -640,7 +640,7 @@
 
 
 <div class="viewcode-block" id="HTTPBaseClient"><a class="viewcode-back" href="../../../../../api/jina.clients.base.http/#jina.clients.base.http.HTTPBaseClient">[docs]</a><span class="k">class</span> <span class="nc">HTTPBaseClient</span><span class="p">(</span><span class="n">BaseClient</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;A MixIn for HTTP Client.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A MixIn for HTTP Client.&quot;&quot;&quot;</span>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_get_results</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -650,7 +650,7 @@
         <span class="n">on_always</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;CallbackFnType&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param inputs: the callable</span>
 <span class="sd">        :param on_done: the callback for on_done</span>
 <span class="sd">        :param on_error: the callback for on_error</span>
@@ -680,7 +680,7 @@
                 <span class="p">)</span>
 
                 <span class="k">def</span> <span class="nf">_request_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="s1">&#39;Request&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;asyncio.Future&#39;</span><span class="p">:</span>
-                    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">                    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                    For HTTP Client, for each request in the iterator, we `send_message` using</span>
 <span class="sd">                    http POST request and add it to the list of tasks which is awaited and yielded.</span>
 <span class="sd">                    :param request: current request in the iterator</span>
@@ -757,7 +757,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Dec 21, 2022.
+                    Last updated on Jan 19, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

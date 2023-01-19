@@ -614,24 +614,24 @@
 <h2>Example<a class="headerlink" href="#example" title="Permalink to this heading">#</a></h2>
 <p>The following constitutes an example Flow configuration:</p>
 <p><code class="docutils literal notranslate"><span class="pre">flow.yml</span></code>/<code class="docutils literal notranslate"><span class="pre">flow.yaml</span></code>:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
-<span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;1&#39;</span><span class="w"></span>
-<span class="nt">with</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http</span><span class="w"></span>
-<span class="nt">executors</span><span class="p">:</span><span class="w"></span>
-<span class="c1"># inline Executor YAML</span><span class="w"></span>
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">firstexec</span><span class="w"></span>
-<span class="w">  </span><span class="nt">uses</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MyExec</span><span class="w"></span>
-<span class="w">    </span><span class="nt">py_modules</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executor.py</span><span class="w"></span>
-<span class="c1"># reference to Executor YAML</span><span class="w"></span>
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">secondexec</span><span class="w"></span>
-<span class="w">  </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">indexer.yml</span><span class="w"></span>
-<span class="w">  </span><span class="nt">workspace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/home/my/workspace</span><span class="w"></span>
-<span class="c1"># reference to Executor Python class</span><span class="w"></span>
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">thirdexec</span><span class="w"></span>
-<span class="w">  </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">CustomExec</span><span class="w">  </span><span class="c1"># located in executor.py</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span>
+<span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;1&#39;</span>
+<span class="nt">with</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http</span>
+<span class="nt">executors</span><span class="p">:</span>
+<span class="c1"># inline Executor YAML</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">firstexec</span>
+<span class="w">  </span><span class="nt">uses</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MyExec</span>
+<span class="w">    </span><span class="nt">py_modules</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executor.py</span>
+<span class="c1"># reference to Executor YAML</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">secondexec</span>
+<span class="w">  </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">indexer.yml</span>
+<span class="w">  </span><span class="nt">workspace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/home/my/workspace</span>
+<span class="c1"># reference to Executor Python class</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">thirdexec</span>
+<span class="w">  </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">CustomExec</span><span class="w">  </span><span class="c1"># located in executor.py</span>
 </pre></div>
 </div>
 </section>
@@ -714,7 +714,7 @@ Note that the only difference between environment variable syntax and relative p
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Dec 21, 2022.
+                    Last updated on Jan 19, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

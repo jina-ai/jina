@@ -500,13 +500,13 @@
 <section id="from-a-local-executor">
 <h3>From a local Executor<a class="headerlink" href="#from-a-local-executor" title="Permalink to this heading">#</a></h3>
 <p>With <code class="docutils literal notranslate"><span class="pre">exec.py</span></code> containing the definition of <code class="docutils literal notranslate"><span class="pre">MyExec</span></code>, now creating a new file called <code class="docutils literal notranslate"><span class="pre">my-exec.yml</span></code>:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MyExec</span><span class="w"></span>
-<span class="nt">py_modules</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">exec.py</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MyExec</span>
+<span class="nt">py_modules</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">exec.py</span>
 </pre></div>
 </div>
 <p>This simply points Jina to our file and Executor class. Now we can run the command:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina executor --uses my-exec.yml --port <span class="m">12345</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina<span class="w"> </span>executor<span class="w"> </span>--uses<span class="w"> </span>my-exec.yml<span class="w"> </span>--port<span class="w"> </span><span class="m">12345</span>
 </pre></div>
 </div>
 </section>
@@ -515,19 +515,19 @@
 <p>In this example, we use <code class="docutils literal notranslate"><span class="pre">CLIPTextEncoder</span></code> to create embeddings for our Documents.</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">With Docker</label><div class="tab-content docutils">
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina executor --uses jinaai+docker://jina-ai/CLIPTextEncoder
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina<span class="w"> </span>executor<span class="w"> </span>--uses<span class="w"> </span>jinaai+docker://jina-ai/CLIPTextEncoder
 </pre></div>
 </div>
 </div>
 <input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--2">Without Docker</label><div class="tab-content docutils">
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina executor --uses jinaai://jina-ai/CLIPTextEncoder
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina<span class="w"> </span>executor<span class="w"> </span>--uses<span class="w"> </span>jinaai://jina-ai/CLIPTextEncoder
 </pre></div>
 </div>
 </div>
 </div>
 <p>This might take a few seconds, but in the end you should be greeted with the
 following message:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>WorkerRuntime@ <span class="m">1</span><span class="o">[</span>L<span class="o">]</span>: Executor CLIPTextEncoder started
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>WorkerRuntime@<span class="w"> </span><span class="m">1</span><span class="o">[</span>L<span class="o">]</span>:<span class="w"> </span>Executor<span class="w"> </span>CLIPTextEncoder<span class="w"> </span>started
 </pre></div>
 </div>
 <p>Just like that, our Executor is up and running.</p>
@@ -566,7 +566,7 @@ following message:</p>
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 21, 2022</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

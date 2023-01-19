@@ -697,7 +697,7 @@ the deep learning framework that you use, that might be required (for local exec
 <p>For the Docker part of the tutorial you will also need to have <a class="reference external" href="https://docs.docker.com/get-docker/">Docker</a> and
 <a class="reference external" href="https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html">nvidia-docker</a> installed.</p>
 <p>To run Python scripts you will need a virtual environment (for example <a class="reference external" href="https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/#creating-a-virtual-environment">venv</a> or <a class="reference external" href="https://conda.io/projects/conda/en/latest/user-guide/getting-started.html#managing-environments">conda</a>), and to install Jina inside it using</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install jina
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>jina
 </pre></div>
 </div>
 </section>
@@ -711,7 +711,7 @@ executor inside a Docker container, or to publish it to the Hub later, should yo
 </div>
 <p>We will create a simple sentence encoder, and we’ll start by creating the Executor
 “skeleton” using Jina’s command line utility:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina hub new
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina<span class="w"> </span>hub<span class="w"> </span>new
 </pre></div>
 </div>
 <p>When prompted for inputs, name your encoder <code class="docutils literal notranslate"><span class="pre">SentenceEncoder</span></code>, and accept the default
@@ -722,53 +722,53 @@ empty, except when you are asked if you want to create a <code class="docutils l
 this one (we will need it in the next section). In the end, you should be greeted with suggested next steps.</p>
 <details>
   <summary> Next steps </summary>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>╭────────────────────────────────────── 🎉 Next steps ───────────────────────────────────────╮
-│                                                                                            │
-│  Congrats! You have successfully created an Executor! Here are the next steps:             │
-│  ╭──────────────────────── <span class="m">1</span>. Check out the generated Executor ─────────────────────────╮  │
-│  │   <span class="m">1</span> <span class="nb">cd</span> /home/ubuntu/SentenceEncoder                                                  │  │
-│  │   <span class="m">2</span> ls                                                                               │  │
-│  ╰──────────────────────────────────────────────────────────────────────────────────────╯  │
-│  ╭─────────────────────────── <span class="m">2</span>. Understand folder structure ───────────────────────────╮  │
-│  │                                                                                      │  │
-│  │   Filena…   Description                                                              │  │
-│  │  ──────────────────────────────────────────────────────────────────────────────────  │  │
-│  │   config…   The YAML config file of the Executor. You can define __init__ argumen…   │  │
-│  │             ╭────────────────── config.yml ──────────────────╮                       │  │
-│  │             │   <span class="m">1</span>                                            │                       │  │
-│  │             │   <span class="m">2</span> jtype: SentenceEncoder                     │                       │  │
-│  │             │   <span class="m">3</span> with:                                      │                       │  │
-│  │             │   <span class="m">4</span>     foo: <span class="m">1</span>                                 │                       │  │
-│  │             │   <span class="m">5</span>     bar: hello                             │                       │  │
-│  │             │   <span class="m">6</span> metas:                                     │                       │  │
-│  │             │   <span class="m">7</span>     py_modules:                            │                       │  │
-│  │             │   <span class="m">8</span>         - executor.py                      │                       │  │
-│  │             │   <span class="m">9</span>                                            │                       │  │
-│  │             ╰────────────────────────────────────────────────╯                       │  │
-│  │   Docker…   The Dockerfile describes how this executor will be built.                │  │
-│  │   execut…   The main logic file of the Executor.                                     │  │
-│  │   manife…   Metadata <span class="k">for</span> the Executor, <span class="k">for</span> better appeal on Jina Hub.                │  │
-│  │                                                                                      │  │
-│  │               Field   Description                                                    │  │
-│  │              ────────────────────────────────────────────────────────────────────    │  │
-│  │               name    Human-readable title of the Executor                           │  │
-│  │               desc…   Human-readable description of the Executor                     │  │
-│  │               url     URL to find more information on the Executor <span class="o">(</span>e.g. GitHub…     │  │
-│  │               keyw…   Keywords that <span class="nb">help</span> user find the Executor                      │  │
-│  │                                                                                      │  │
-│  │   README…   A usage guide of the Executor.                                           │  │
-│  │   requir…   The Python dependencies of the Executor.                                 │  │
-│  │                                                                                      │  │
-│  ╰──────────────────────────────────────────────────────────────────────────────────────╯  │
-│  ╭────────────────────────────── <span class="m">3</span>. Share it to Jina Hub ───────────────────────────────╮  │
-│  │   <span class="m">1</span> jina hub push /home/ubuntu/SentenceEncoder                                       │  │
-│  ╰──────────────────────────────────────────────────────────────────────────────────────╯  │
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>╭──────────────────────────────────────<span class="w"> </span>🎉<span class="w"> </span>Next<span class="w"> </span>steps<span class="w"> </span>───────────────────────────────────────╮
+│<span class="w">                                                                                            </span>│
+│<span class="w">  </span>Congrats!<span class="w"> </span>You<span class="w"> </span>have<span class="w"> </span>successfully<span class="w"> </span>created<span class="w"> </span>an<span class="w"> </span>Executor!<span class="w"> </span>Here<span class="w"> </span>are<span class="w"> </span>the<span class="w"> </span>next<span class="w"> </span>steps:<span class="w">             </span>│
+│<span class="w">  </span>╭────────────────────────<span class="w"> </span><span class="m">1</span>.<span class="w"> </span>Check<span class="w"> </span>out<span class="w"> </span>the<span class="w"> </span>generated<span class="w"> </span>Executor<span class="w"> </span>─────────────────────────╮<span class="w">  </span>│
+│<span class="w">  </span>│<span class="w">   </span><span class="m">1</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span>/home/ubuntu/SentenceEncoder<span class="w">                                                  </span>│<span class="w">  </span>│
+│<span class="w">  </span>│<span class="w">   </span><span class="m">2</span><span class="w"> </span>ls<span class="w">                                                                               </span>│<span class="w">  </span>│
+│<span class="w">  </span>╰──────────────────────────────────────────────────────────────────────────────────────╯<span class="w">  </span>│
+│<span class="w">  </span>╭───────────────────────────<span class="w"> </span><span class="m">2</span>.<span class="w"> </span>Understand<span class="w"> </span>folder<span class="w"> </span>structure<span class="w"> </span>───────────────────────────╮<span class="w">  </span>│
+│<span class="w">  </span>│<span class="w">                                                                                      </span>│<span class="w">  </span>│
+│<span class="w">  </span>│<span class="w">   </span>Filena…<span class="w">   </span>Description<span class="w">                                                              </span>│<span class="w">  </span>│
+│<span class="w">  </span>│<span class="w">  </span>──────────────────────────────────────────────────────────────────────────────────<span class="w">  </span>│<span class="w">  </span>│
+│<span class="w">  </span>│<span class="w">   </span>config…<span class="w">   </span>The<span class="w"> </span>YAML<span class="w"> </span>config<span class="w"> </span>file<span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span>Executor.<span class="w"> </span>You<span class="w"> </span>can<span class="w"> </span>define<span class="w"> </span>__init__<span class="w"> </span>argumen…<span class="w">   </span>│<span class="w">  </span>│
+│<span class="w">  </span>│<span class="w">             </span>╭──────────────────<span class="w"> </span>config.yml<span class="w"> </span>──────────────────╮<span class="w">                       </span>│<span class="w">  </span>│
+│<span class="w">  </span>│<span class="w">             </span>│<span class="w">   </span><span class="m">1</span><span class="w">                                            </span>│<span class="w">                       </span>│<span class="w">  </span>│
+│<span class="w">  </span>│<span class="w">             </span>│<span class="w">   </span><span class="m">2</span><span class="w"> </span>jtype:<span class="w"> </span>SentenceEncoder<span class="w">                     </span>│<span class="w">                       </span>│<span class="w">  </span>│
+│<span class="w">  </span>│<span class="w">             </span>│<span class="w">   </span><span class="m">3</span><span class="w"> </span>with:<span class="w">                                      </span>│<span class="w">                       </span>│<span class="w">  </span>│
+│<span class="w">  </span>│<span class="w">             </span>│<span class="w">   </span><span class="m">4</span><span class="w">     </span>foo:<span class="w"> </span><span class="m">1</span><span class="w">                                 </span>│<span class="w">                       </span>│<span class="w">  </span>│
+│<span class="w">  </span>│<span class="w">             </span>│<span class="w">   </span><span class="m">5</span><span class="w">     </span>bar:<span class="w"> </span>hello<span class="w">                             </span>│<span class="w">                       </span>│<span class="w">  </span>│
+│<span class="w">  </span>│<span class="w">             </span>│<span class="w">   </span><span class="m">6</span><span class="w"> </span>metas:<span class="w">                                     </span>│<span class="w">                       </span>│<span class="w">  </span>│
+│<span class="w">  </span>│<span class="w">             </span>│<span class="w">   </span><span class="m">7</span><span class="w">     </span>py_modules:<span class="w">                            </span>│<span class="w">                       </span>│<span class="w">  </span>│
+│<span class="w">  </span>│<span class="w">             </span>│<span class="w">   </span><span class="m">8</span><span class="w">         </span>-<span class="w"> </span>executor.py<span class="w">                      </span>│<span class="w">                       </span>│<span class="w">  </span>│
+│<span class="w">  </span>│<span class="w">             </span>│<span class="w">   </span><span class="m">9</span><span class="w">                                            </span>│<span class="w">                       </span>│<span class="w">  </span>│
+│<span class="w">  </span>│<span class="w">             </span>╰────────────────────────────────────────────────╯<span class="w">                       </span>│<span class="w">  </span>│
+│<span class="w">  </span>│<span class="w">   </span>Docker…<span class="w">   </span>The<span class="w"> </span>Dockerfile<span class="w"> </span>describes<span class="w"> </span>how<span class="w"> </span>this<span class="w"> </span>executor<span class="w"> </span>will<span class="w"> </span>be<span class="w"> </span>built.<span class="w">                </span>│<span class="w">  </span>│
+│<span class="w">  </span>│<span class="w">   </span>execut…<span class="w">   </span>The<span class="w"> </span>main<span class="w"> </span>logic<span class="w"> </span>file<span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span>Executor.<span class="w">                                     </span>│<span class="w">  </span>│
+│<span class="w">  </span>│<span class="w">   </span>manife…<span class="w">   </span>Metadata<span class="w"> </span><span class="k">for</span><span class="w"> </span>the<span class="w"> </span>Executor,<span class="w"> </span><span class="k">for</span><span class="w"> </span>better<span class="w"> </span>appeal<span class="w"> </span>on<span class="w"> </span>Jina<span class="w"> </span>Hub.<span class="w">                </span>│<span class="w">  </span>│
+│<span class="w">  </span>│<span class="w">                                                                                      </span>│<span class="w">  </span>│
+│<span class="w">  </span>│<span class="w">               </span>Field<span class="w">   </span>Description<span class="w">                                                    </span>│<span class="w">  </span>│
+│<span class="w">  </span>│<span class="w">              </span>────────────────────────────────────────────────────────────────────<span class="w">    </span>│<span class="w">  </span>│
+│<span class="w">  </span>│<span class="w">               </span>name<span class="w">    </span>Human-readable<span class="w"> </span>title<span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span>Executor<span class="w">                           </span>│<span class="w">  </span>│
+│<span class="w">  </span>│<span class="w">               </span>desc…<span class="w">   </span>Human-readable<span class="w"> </span>description<span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span>Executor<span class="w">                     </span>│<span class="w">  </span>│
+│<span class="w">  </span>│<span class="w">               </span>url<span class="w">     </span>URL<span class="w"> </span>to<span class="w"> </span>find<span class="w"> </span>more<span class="w"> </span>information<span class="w"> </span>on<span class="w"> </span>the<span class="w"> </span>Executor<span class="w"> </span><span class="o">(</span>e.g.<span class="w"> </span>GitHub…<span class="w">     </span>│<span class="w">  </span>│
+│<span class="w">  </span>│<span class="w">               </span>keyw…<span class="w">   </span>Keywords<span class="w"> </span>that<span class="w"> </span><span class="nb">help</span><span class="w"> </span>user<span class="w"> </span>find<span class="w"> </span>the<span class="w"> </span>Executor<span class="w">                      </span>│<span class="w">  </span>│
+│<span class="w">  </span>│<span class="w">                                                                                      </span>│<span class="w">  </span>│
+│<span class="w">  </span>│<span class="w">   </span>README…<span class="w">   </span>A<span class="w"> </span>usage<span class="w"> </span>guide<span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span>Executor.<span class="w">                                           </span>│<span class="w">  </span>│
+│<span class="w">  </span>│<span class="w">   </span>requir…<span class="w">   </span>The<span class="w"> </span>Python<span class="w"> </span>dependencies<span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span>Executor.<span class="w">                                 </span>│<span class="w">  </span>│
+│<span class="w">  </span>│<span class="w">                                                                                      </span>│<span class="w">  </span>│
+│<span class="w">  </span>╰──────────────────────────────────────────────────────────────────────────────────────╯<span class="w">  </span>│
+│<span class="w">  </span>╭──────────────────────────────<span class="w"> </span><span class="m">3</span>.<span class="w"> </span>Share<span class="w"> </span>it<span class="w"> </span>to<span class="w"> </span>Jina<span class="w"> </span>Hub<span class="w"> </span>───────────────────────────────╮<span class="w">  </span>│
+│<span class="w">  </span>│<span class="w">   </span><span class="m">1</span><span class="w"> </span>jina<span class="w"> </span>hub<span class="w"> </span>push<span class="w"> </span>/home/ubuntu/SentenceEncoder<span class="w">                                       </span>│<span class="w">  </span>│
+│<span class="w">  </span>╰──────────────────────────────────────────────────────────────────────────────────────╯<span class="w">  </span>│
 ╰────────────────────────────────────────────────────────────────────────────────────────────╯
 </pre></div>
 </div>
 </details>
 <p>Once this is done, let’s move to the newly created Executor directory:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> SentenceEncoder
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>SentenceEncoder
 </pre></div>
 </div>
 <p>Let’s continue by specifying our requirements in <code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code> file</p>
@@ -776,7 +776,7 @@ this one (we will need it in the next section). In the end, you should be greete
 </pre></div>
 </div>
 <p>and installing them using</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install -r requirements.txt
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements.txt
 </pre></div>
 </div>
 <div class="info admonition">
@@ -810,7 +810,7 @@ torch==1.9.0+cpu
 
 
 <span class="k">class</span> <span class="nc">SentenceEncoder</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;A simple sentence encoder that can be run on a CPU or a GPU</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A simple sentence encoder that can be run on a CPU or a GPU</span>
 
 <span class="sd">    :param device: The pytorch device that the model is on, e.g. &#39;cpu&#39;, &#39;cuda&#39;, &#39;cuda:1&#39;</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -822,7 +822,7 @@ torch==1.9.0+cpu
 </span>
     <span class="nd">@requests</span>
     <span class="k">def</span> <span class="nf">encode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Add text-based embeddings to all documents&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add text-based embeddings to all documents&quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">inference_mode</span><span class="p">():</span>
             <span class="n">embeddings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">docs</span><span class="o">.</span><span class="n">texts</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span>
         <span class="n">docs</span><span class="o">.</span><span class="n">embeddings</span> <span class="o">=</span> <span class="n">embeddings</span>
@@ -858,12 +858,12 @@ encoder by encoding 10 thousand text documents.</p>
 <h2>Running on GPU and CPU locally<a class="headerlink" href="#running-on-gpu-and-cpu-locally" title="Permalink to this heading">#</a></h2>
 <p>Let’s try it out by running the same code on CPU and GPU, so we can observe the speedup we can achieve.</p>
 <p>To toggle between the two, simply set your device type to <code class="docutils literal notranslate"><span class="pre">'cuda'</span></code>, and your GPU will take over the work:</p>
-<div class="highlight-diff notranslate"><div class="highlight"><pre><span></span><span class="gi">+ f = Flow().add(uses=SentenceEncoder, uses_with={&#39;device&#39;: &#39;cuda&#39;})</span><span class="w"></span>
-<span class="gd">- f = Flow().add(uses=SentenceEncoder, uses_with={&#39;device&#39;: &#39;cpu&#39;})</span><span class="w"></span>
+<div class="highlight-diff notranslate"><div class="highlight"><pre><span></span><span class="gi">+ f = Flow().add(uses=SentenceEncoder, uses_with={&#39;device&#39;: &#39;cuda&#39;})</span>
+<span class="gd">- f = Flow().add(uses=SentenceEncoder, uses_with={&#39;device&#39;: &#39;cpu&#39;})</span>
 </pre></div>
 </div>
 <p>Then, run the script:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python main.py
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>main.py
 </pre></div>
 </div>
 <p>And compare the results</p>
@@ -919,11 +919,11 @@ If you haven’t installed that already, you can find an installation guide <a c
 <p>If you need to have CUDA installed in the image, you usually have two options: either you take the <code class="docutils literal notranslate"><span class="pre">nvidia/cuda</span></code> for the base image, or you take the official GPU-enabled image of the framework you are using, for example, <code class="docutils literal notranslate"><span class="pre">tensorflow/tensorflow:2.6.0-gpu</span></code>.</p>
 </div>
 <p>The other file we care about in this case is <code class="docutils literal notranslate"><span class="pre">config.yml</span></code>, and here the default version works as well. So let’s build the Docker image</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker build -t sentence-encoder .
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>build<span class="w"> </span>-t<span class="w"> </span>sentence-encoder<span class="w"> </span>.
 </pre></div>
 </div>
 <p>You can run the container to quickly check that everything is working well</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker run sentence-encoder
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>run<span class="w"> </span>sentence-encoder
 </pre></div>
 </div>
 <p>Now, let’s use the Docker version of our encoder with the GPU. If you’ve dealt with GPUs in containers before, you probably remember that to use a GPU inside the container you need to pass <code class="docutils literal notranslate"><span class="pre">--gpus</span> <span class="pre">all</span></code> option to the <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">run</span></code> command. And Jina enables you to do just that.</p>
@@ -966,12 +966,12 @@ If you haven’t installed that already, you can find an installation guide <a c
 <p>We now saw how to use GPU with our Executor locally, and when using it in a Docker container. What about when we use Executors from Jina Hub, is there any difference?</p>
 <p>Nope! Not only that, many of the Executors on Jina Hub already come with a GPU-enabled version pre-built, usually under the <code class="docutils literal notranslate"><span class="pre">gpu</span></code> tag (see <a class="reference internal" href="../../fundamentals/executor/hub/push-executor/#hub-tags"><span class="std std-ref">Jina Hub tags</span></a>). Let’s modify our example to use the pre-built <code class="docutils literal notranslate"><span class="pre">TransformerTorchEncoder</span></code> from Jina Hub</p>
 <div class="highlight-diff notranslate"><div class="highlight"><pre><span></span><span class="w">f = Flow().add(</span>
-<span class="gd">-   uses=&#39;docker://sentence-encoder&#39;,</span><span class="w"></span>
-<span class="gi">+   uses=&#39;jinahub+docker://TransformerTorchEncoder/latest-gpu&#39;,</span><span class="w"></span>
-<span class="w"> </span>   uses_with={&#39;device&#39;: &#39;cuda&#39;},<span class="w"></span>
-<span class="w"> </span>   gpus=&#39;all&#39;,<span class="w"></span>
-<span class="w"> </span>   # This has to be an absolute path, replace /home/ubuntu with your home directory<span class="w"></span>
-<span class="w"> </span>   volumes=&quot;/home/ubuntu/.cache:/root/.cache&quot;<span class="w"></span>
+<span class="gd">-   uses=&#39;docker://sentence-encoder&#39;,</span>
+<span class="gi">+   uses=&#39;jinahub+docker://TransformerTorchEncoder/latest-gpu&#39;,</span>
+<span class="w"> </span>   uses_with={&#39;device&#39;: &#39;cuda&#39;},
+<span class="w"> </span>   gpus=&#39;all&#39;,
+<span class="w"> </span>   # This has to be an absolute path, replace /home/ubuntu with your home directory
+<span class="w"> </span>   volumes=&quot;/home/ubuntu/.cache:/root/.cache&quot;
 <span class="w">)</span>
 </pre></div>
 </div>
@@ -1026,7 +1026,7 @@ If you haven’t installed that already, you can find an installation guide <a c
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Dec 21, 2022.
+                    Last updated on Jan 19, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

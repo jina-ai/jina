@@ -589,7 +589,7 @@
 
 
 <div class="viewcode-block" id="MyIndexer"><a class="viewcode-back" href="../../../../../api/jina.helloworld.fashion.my_executors/#jina.helloworld.fashion.my_executors.MyIndexer">[docs]</a><span class="k">class</span> <span class="nc">MyIndexer</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Executor with basic exact search using cosine distance</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -602,7 +602,7 @@
 
 <div class="viewcode-block" id="MyIndexer.index"><a class="viewcode-back" href="../../../../../api/jina.helloworld.fashion.my_executors/#jina.helloworld.fashion.my_executors.MyIndexer.index">[docs]</a>    <span class="nd">@requests</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/index&#39;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="s1">&#39;DocumentArray&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Extend self._docs</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Extend self._docs</span>
 
 <span class="sd">        :param docs: DocumentArray containing Documents</span>
 <span class="sd">        :param kwargs: other keyword arguments</span>
@@ -611,7 +611,7 @@
 
 <div class="viewcode-block" id="MyIndexer.search"><a class="viewcode-back" href="../../../../../api/jina.helloworld.fashion.my_executors/#jina.helloworld.fashion.my_executors.MyIndexer.search">[docs]</a>    <span class="nd">@requests</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;/search&#39;</span><span class="p">,</span> <span class="s1">&#39;/eval&#39;</span><span class="p">])</span>
     <span class="k">def</span> <span class="nf">search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="s1">&#39;DocumentArray&#39;</span><span class="p">,</span> <span class="n">parameters</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Append best matches to each document in docs</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Append best matches to each document in docs</span>
 
 <span class="sd">        :param docs: documents that are searched</span>
 <span class="sd">        :param parameters: dictionary of pairs (parameter,value)</span>
@@ -625,14 +625,14 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="MyIndexer.close"><a class="viewcode-back" href="../../../../../api/jina.helloworld.fashion.my_executors/#jina.helloworld.fashion.my_executors.MyIndexer.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Stores the DocumentArray to disk</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_docs</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">workspace</span> <span class="o">+</span> <span class="s1">&#39;/indexer&#39;</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="MyEncoder"><a class="viewcode-back" href="../../../../../api/jina.helloworld.fashion.my_executors/#jina.helloworld.fashion.my_executors.MyEncoder">[docs]</a><span class="k">class</span> <span class="nc">MyEncoder</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Encode data using SVD decomposition</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -646,7 +646,7 @@
 
 <div class="viewcode-block" id="MyEncoder.encode"><a class="viewcode-back" href="../../../../../api/jina.helloworld.fashion.my_executors/#jina.helloworld.fashion.my_executors.MyEncoder.encode">[docs]</a>    <span class="nd">@requests</span>
     <span class="k">def</span> <span class="nf">encode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="s1">&#39;DocumentArray&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Encode the data using an SVD decomposition</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Encode the data using an SVD decomposition</span>
 
 <span class="sd">        :param docs: input documents to update with an embedding</span>
 <span class="sd">        :param kwargs: other keyword arguments</span>
@@ -663,13 +663,13 @@
 
 
 <div class="viewcode-block" id="MyConverter"><a class="viewcode-back" href="../../../../../api/jina.helloworld.fashion.my_executors/#jina.helloworld.fashion.my_executors.MyConverter">[docs]</a><span class="k">class</span> <span class="nc">MyConverter</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert DocumentArrays removing tensor and reshaping tensor as image</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="MyConverter.convert"><a class="viewcode-back" href="../../../../../api/jina.helloworld.fashion.my_executors/#jina.helloworld.fashion.my_executors.MyConverter.convert">[docs]</a>    <span class="nd">@requests</span>
     <span class="k">def</span> <span class="nf">convert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="s1">&#39;DocumentArray&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Remove tensor and reshape documents as squared images</span>
 <span class="sd">        :param docs: documents to modify</span>
 <span class="sd">        :param kwargs: other keyword arguments</span>
@@ -688,7 +688,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Dec 21, 2022.
+                    Last updated on Jan 19, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

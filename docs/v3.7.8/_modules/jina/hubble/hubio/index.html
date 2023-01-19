@@ -425,7 +425,7 @@
 
 
 <div class="viewcode-block" id="HubIO"><a class="viewcode-back" href="../../../../api/jina.hubble.hubio/#jina.hubble.hubio.HubIO">[docs]</a><span class="k">class</span> <span class="nc">HubIO</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;:class:`HubIO` provides the way to interact with Jina Hub registry.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;:class:`HubIO` provides the way to interact with Jina Hub registry.</span>
 <span class="sd">    You can use it with CLI to package a directory into a Jina Hub and publish it to the world.</span>
 <span class="sd">    Examples:</span>
 <span class="sd">        - :command:`jina hub push my_executor/` to push the executor package to Jina Hub</span>
@@ -457,7 +457,7 @@
             <span class="k">assert</span> <span class="n">filelock</span>
 
 <div class="viewcode-block" id="HubIO.new"><a class="viewcode-back" href="../../../../api/jina.hubble.hubio/#jina.hubble.hubio.HubIO.new">[docs]</a>    <span class="k">def</span> <span class="nf">new</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Create a new executor folder interactively.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a new executor folder interactively.&quot;&quot;&quot;</span>
 
         <span class="kn">from</span> <span class="nn">rich</span> <span class="kn">import</span> <span class="n">box</span><span class="p">,</span> <span class="nb">print</span>
         <span class="kn">from</span> <span class="nn">rich.panel</span> <span class="kn">import</span> <span class="n">Panel</span>
@@ -470,7 +470,7 @@
 
         <span class="nb">print</span><span class="p">(</span>
             <span class="n">Panel</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
-                <span class="sd">&#39;&#39;&#39;</span>
+<span class="w">                </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">[bold green]Executor[/bold green] is how Jina processes [bold]Document[/bold].</span>
 
 <span class="sd">This guide helps you to create your own Executor in 30 seconds.&#39;&#39;&#39;</span><span class="p">,</span>
@@ -484,7 +484,7 @@
             <span class="k">else</span> <span class="n">Prompt</span><span class="o">.</span><span class="n">ask</span><span class="p">(</span>
                 <span class="s1">&#39;:grey_question: What is the [bold]name[/bold] of your executor?</span><span class="se">\n</span><span class="s1">&#39;</span>
                 <span class="s1">&#39;[dim]CamelCase is required[/dim]&#39;</span><span class="p">,</span>
-                <span class="n">default</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;MyExecutor</span><span class="si">{</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+                <span class="n">default</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;MyExecutor</span><span class="si">{</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">100</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="p">)</span>
 
@@ -542,7 +542,7 @@
 
             <span class="nb">print</span><span class="p">(</span>
                 <span class="n">Panel</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
-                    <span class="sd">&#39;&#39;&#39;</span>
+<span class="w">                    </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">[bold]Dockerfile[/bold] describes how this executor will be built. It is useful when</span>
 <span class="sd">your executor has non-trivial dependencies or must be run under certain environment.</span>
 
@@ -608,7 +608,7 @@
             <span class="n">Panel</span><span class="p">(</span>
                 <span class="n">Syntax</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s1">&#39;&#39;&#39;</span>
-<span class="s1">jtype: </span><span class="si">{</span><span class="n">exec_name</span><span class="si">}</span><span class="s1"></span>
+<span class="s1">jtype: </span><span class="si">{</span><span class="n">exec_name</span><span class="si">}</span>
 <span class="s1">with:</span>
 <span class="s1">    foo: 1</span>
 <span class="s1">    bar: hello</span>
@@ -710,7 +710,7 @@
         <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="n">p</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="HubIO.push"><a class="viewcode-back" href="../../../../api/jina.hubble.hubio/#jina.hubble.hubio.HubIO.push">[docs]</a>    <span class="k">def</span> <span class="nf">push</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Push the executor package to Jina Hub.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Push the executor package to Jina Hub.&quot;&quot;&quot;</span>
 
         <span class="n">work_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
 
@@ -868,7 +868,7 @@
                             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">overridden_msg</span><span class="p">)</span>
 
                         <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
-                            <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">overridden_msg</span> <span class="ow">or</span> <span class="n">msg</span> <span class="ow">or</span> <span class="s2">&quot;Unknown Error&quot;</span><span class="si">}</span><span class="s1"> session_id: </span><span class="si">{</span><span class="n">session_id</span><span class="si">}</span><span class="s1">&#39;</span>
+                            <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">overridden_msg</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="n">msg</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="s2">&quot;Unknown Error&quot;</span><span class="si">}</span><span class="s1"> session_id: </span><span class="si">{</span><span class="n">session_id</span><span class="si">}</span><span class="s1">&#39;</span>
                         <span class="p">)</span>
                     <span class="k">if</span> <span class="n">t</span> <span class="o">==</span> <span class="s1">&#39;progress&#39;</span> <span class="ow">and</span> <span class="n">subject</span> <span class="o">==</span> <span class="s1">&#39;buildWorkspace&#39;</span><span class="p">:</span>
                         <span class="n">legacy_message</span> <span class="o">=</span> <span class="n">stream_msg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;legacyMessage&#39;</span><span class="p">,</span> <span class="p">{})</span>
@@ -1036,7 +1036,7 @@
         <span class="n">rebuild_image</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">force</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">HubExecutor</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Fetch the executor meta info from Jina Hub.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Fetch the executor meta info from Jina Hub.</span>
 <span class="sd">        :param name: the UUID/Name of the executor</span>
 <span class="sd">        :param tag: the tag of the executor if available, otherwise, use `None` as the value</span>
 <span class="sd">        :param secret: the access secret of the executor</span>
@@ -1083,7 +1083,7 @@
         <span class="k">if</span> <span class="n">image_required</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">image_name</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s1">&#39;No image found for executor &quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">&quot;, &#39;</span>
-                <span class="sa">f</span><span class="s1">&#39;tag: </span><span class="si">{</span><span class="n">tag</span><span class="si">}</span><span class="s1">, commit: </span><span class="si">{</span><span class="n">resp</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;commit&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1">, &#39;</span>
+                <span class="sa">f</span><span class="s1">&#39;tag: </span><span class="si">{</span><span class="n">tag</span><span class="si">}</span><span class="s1">, commit: </span><span class="si">{</span><span class="n">resp</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;commit&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1">, &#39;</span>
                 <span class="sa">f</span><span class="s1">&#39;session_id: </span><span class="si">{</span><span class="n">req_header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;jinameta-session-id&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span>
             <span class="p">)</span>
         <span class="n">buildEnv</span> <span class="o">=</span> <span class="n">resp</span><span class="p">[</span><span class="s1">&#39;commit&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;commitParams&#39;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;buildEnv&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
@@ -1101,7 +1101,7 @@
 
 <div class="viewcode-block" id="HubIO.deploy_public_sandbox"><a class="viewcode-back" href="../../../../api/jina.hubble.hubio/#jina.hubble.hubio.HubIO.deploy_public_sandbox">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">deploy_public_sandbox</span><span class="p">(</span><span class="n">args</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">,</span> <span class="n">Dict</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Deploy a public sandbox to Jina Hub.</span>
 <span class="sd">        :param args: arguments parsed from the CLI</span>
 
@@ -1225,7 +1225,7 @@
                 <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 
 <div class="viewcode-block" id="HubIO.pull"><a class="viewcode-back" href="../../../../api/jina.hubble.hubio/#jina.hubble.hubio.HubIO.pull">[docs]</a>    <span class="k">def</span> <span class="nf">pull</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Pull the executor package from Jina Hub.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Pull the executor package from Jina Hub.</span>
 
 <span class="sd">        :return: the `uses` string</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1294,7 +1294,7 @@
                             <span class="p">)</span>
                             <span class="c1"># check commit id to upgrade</span>
                             <span class="n">commit_file_path</span> <span class="o">=</span> <span class="p">(</span>
-                                <span class="n">pkg_dist_path</span> <span class="o">/</span> <span class="sa">f</span><span class="s1">&#39;PKG-COMMIT-</span><span class="si">{</span><span class="n">executor</span><span class="o">.</span><span class="n">commit_id</span> <span class="ow">or</span> <span class="mi">0</span><span class="si">}</span><span class="s1">&#39;</span>
+                                <span class="n">pkg_dist_path</span> <span class="o">/</span> <span class="sa">f</span><span class="s1">&#39;PKG-COMMIT-</span><span class="si">{</span><span class="n">executor</span><span class="o">.</span><span class="n">commit_id</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="mi">0</span><span class="si">}</span><span class="s1">&#39;</span>
                             <span class="p">)</span>
                             <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">commit_file_path</span><span class="o">.</span><span class="n">exists</span><span class="p">())</span> <span class="ow">and</span> <span class="nb">any</span><span class="p">(</span>
                                 <span class="n">pkg_dist_path</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s1">&#39;PKG-COMMIT-*&#39;</span><span class="p">)</span>
@@ -1342,7 +1342,7 @@
                             <span class="n">pkg_path</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">get_dist_path_of_executor</span><span class="p">(</span><span class="n">executor</span><span class="p">)</span>
 
                         <span class="n">usage_kind</span> <span class="o">=</span> <span class="s1">&#39;source&#39;</span>
-                        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">pkg_path</span> <span class="o">/</span> <span class="s2">&quot;config.yml&quot;</span><span class="si">}</span><span class="s1">&#39;</span>
+                        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">pkg_path</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="s2">&quot;config.yml&quot;</span><span class="si">}</span><span class="s1">&#39;</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uri</span><span class="si">}</span><span class="s1"> is not a valid scheme&#39;</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
@@ -1371,7 +1371,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 21, 2022</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

@@ -593,16 +593,18 @@
     <span class="kn">from</span> <span class="nn">docarray.array.elastic</span> <span class="kn">import</span> <span class="n">DocumentArrayElastic</span>
     <span class="kn">from</span> <span class="nn">docarray.array.redis</span> <span class="kn">import</span> <span class="n">DocumentArrayRedis</span>
     <span class="kn">from</span> <span class="nn">docarray.array.milvus</span> <span class="kn">import</span> <span class="n">DocumentArrayMilvus</span>
+    <span class="kn">from</span> <span class="nn">docarray.array.opensearch</span> <span class="kn">import</span> <span class="n">DocumentArrayOpenSearch</span>
     <span class="kn">from</span> <span class="nn">docarray.array.storage.sqlite</span> <span class="kn">import</span> <span class="n">SqliteConfig</span>
     <span class="kn">from</span> <span class="nn">docarray.array.storage.annlite</span> <span class="kn">import</span> <span class="n">AnnliteConfig</span>
     <span class="kn">from</span> <span class="nn">docarray.array.storage.weaviate</span> <span class="kn">import</span> <span class="n">WeaviateConfig</span>
     <span class="kn">from</span> <span class="nn">docarray.array.storage.elastic</span> <span class="kn">import</span> <span class="n">ElasticConfig</span>
     <span class="kn">from</span> <span class="nn">docarray.array.storage.redis</span> <span class="kn">import</span> <span class="n">RedisConfig</span>
     <span class="kn">from</span> <span class="nn">docarray.array.storage.milvus</span> <span class="kn">import</span> <span class="n">MilvusConfig</span>
+    <span class="kn">from</span> <span class="nn">docarray.array.storage.opensearch</span> <span class="kn">import</span> <span class="n">OpenSearchConfig</span>
 
 
 <div class="viewcode-block" id="DocumentArray"><a class="viewcode-back" href="../../../../api/jina/#jina.DocumentArray">[docs]</a><span class="k">class</span> <span class="nc">DocumentArray</span><span class="p">(</span><span class="n">AllMixins</span><span class="p">,</span> <span class="n">BaseDocumentArray</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    DocumentArray is a list-like container of :class:`~docarray.Document` objects.</span>
 
 <span class="sd">    A DocumentArray can be used to store, embed, and retrieve :class:`~docarray.Document` objects.</span>
@@ -665,7 +667,7 @@
         <span class="n">copy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">subindex_configs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="s1">&#39;None&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;DocumentArrayInMemory&#39;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Create an in-memory DocumentArray object.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create an in-memory DocumentArray object.&quot;&quot;&quot;</span>
         <span class="o">...</span>
 
     <span class="nd">@overload</span>
@@ -676,7 +678,7 @@
         <span class="n">config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="s1">&#39;SqliteConfig&#39;</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">subindex_configs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;DocumentArraySqlite&#39;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Create a SQLite-powered DocumentArray object.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a SQLite-powered DocumentArray object.&quot;&quot;&quot;</span>
         <span class="o">...</span>
 
     <span class="nd">@overload</span>
@@ -687,7 +689,7 @@
         <span class="n">config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="s1">&#39;WeaviateConfig&#39;</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">subindex_configs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;DocumentArrayWeaviate&#39;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Create a Weaviate-powered DocumentArray object.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a Weaviate-powered DocumentArray object.&quot;&quot;&quot;</span>
         <span class="o">...</span>
 
     <span class="nd">@overload</span>
@@ -698,7 +700,7 @@
         <span class="n">config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="s1">&#39;AnnliteConfig&#39;</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">subindex_configs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;DocumentArrayAnnlite&#39;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Create a AnnLite-powered DocumentArray object.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a AnnLite-powered DocumentArray object.&quot;&quot;&quot;</span>
         <span class="o">...</span>
 
     <span class="nd">@overload</span>
@@ -709,7 +711,7 @@
         <span class="n">config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="s1">&#39;ElasticConfig&#39;</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">subindex_configs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;DocumentArrayElastic&#39;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Create a Elastic-powered DocumentArray object.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a Elastic-powered DocumentArray object.&quot;&quot;&quot;</span>
         <span class="o">...</span>
 
     <span class="nd">@overload</span>
@@ -719,7 +721,7 @@
         <span class="n">storage</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;redis&#39;</span><span class="p">,</span>
         <span class="n">config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="s1">&#39;RedisConfig&#39;</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;DocumentArrayRedis&#39;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Create a Redis-powered DocumentArray object.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a Redis-powered DocumentArray object.&quot;&quot;&quot;</span>
         <span class="o">...</span>
 
     <span class="nd">@overload</span>
@@ -729,7 +731,16 @@
         <span class="n">storage</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;milvus&#39;</span><span class="p">,</span>
         <span class="n">config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="s1">&#39;MilvusConfig&#39;</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;DocumentArrayMilvus&#39;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Create a Milvus-powered DocumentArray object.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a Milvus-powered DocumentArray object.&quot;&quot;&quot;</span>
+
+    <span class="nd">@overload</span>
+    <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span>
+        <span class="n">_docs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;DocumentArraySourceType&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">storage</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;opensearch&#39;</span><span class="p">,</span>
+        <span class="n">config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="s1">&#39;OpenSearchConfig&#39;</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;DocumentArrayOpenSearch&#39;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create an OpenSearch-powered DocumentArray object.&quot;&quot;&quot;</span>
         <span class="o">...</span>
 
     <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -780,6 +791,10 @@
                 <span class="kn">from</span> <span class="nn">.milvus</span> <span class="kn">import</span> <span class="n">DocumentArrayMilvus</span>
 
                 <span class="n">instance</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="n">DocumentArrayMilvus</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">storage</span> <span class="o">==</span> <span class="s1">&#39;opensearch&#39;</span><span class="p">:</span>
+                <span class="kn">from</span> <span class="nn">docarray.array.opensearch</span> <span class="kn">import</span> <span class="n">DocumentArrayOpenSearch</span>
+
+                <span class="n">instance</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="n">DocumentArrayOpenSearch</span><span class="p">)</span>
 
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;storage=`</span><span class="si">{</span><span class="n">storage</span><span class="si">}</span><span class="s1">` is not supported.&#39;</span><span class="p">)</span>
@@ -797,7 +812,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Dec 21, 2022.
+                    Last updated on Jan 19, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

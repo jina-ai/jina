@@ -406,7 +406,7 @@
 
 
 <div class="viewcode-block" id="BatchQueue"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.worker.batch_queue/#jina.serve.runtimes.worker.batch_queue.BatchQueue">[docs]</a><span class="k">class</span> <span class="nc">BatchQueue</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;A batch queue that holds the data request and the callable to batch requests to.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A batch queue that holds the data request and the callable to batch requests to.&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -436,7 +436,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">_reset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Set all events and reset the batch queue.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set all events and reset the batch queue.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_requests</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">DataRequest</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_request_lens</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_big_doc</span><span class="p">:</span> <span class="n">DocumentArray</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="o">.</span><span class="n">empty</span><span class="p">()</span>
@@ -461,7 +461,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_timer_started</span> <span class="o">=</span> <span class="kc">True</span>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_sleep_then_set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">Event</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Sleep and then set the event</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sleep and then set the event</span>
 
 <span class="sd">        :param event: event to set</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -469,7 +469,7 @@
         <span class="n">event</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
 
 <div class="viewcode-block" id="BatchQueue.push"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.worker.batch_queue/#jina.serve.runtimes.worker.batch_queue.BatchQueue.push">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">push</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">DataRequest</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Task</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Append request to the queue. Once the request has been processed, the returned task will complete.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Append request to the queue. Once the request has been processed, the returned task will complete.</span>
 
 <span class="sd">        :param request: The request to append to the queue.</span>
 
@@ -494,7 +494,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_flush_task</span></div>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_await_then_flush</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Process all requests in the queue once flush_trigger event is set.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Process all requests in the queue once flush_trigger event is set.&quot;&quot;&quot;</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_flush_trigger</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
 
         <span class="c1"># writes to shared data between tasks need to be mutually exclusive</span>
@@ -550,7 +550,7 @@
             <span class="n">consumed_count</span> <span class="o">+=</span> <span class="n">request_len</span>
 
 <div class="viewcode-block" id="BatchQueue.close"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.worker.batch_queue/#jina.serve.runtimes.worker.batch_queue.BatchQueue.close">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Closes the batch queue by flushing pending requests.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Closes the batch queue by flushing pending requests.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_closed</span><span class="p">:</span>
             <span class="c1"># debug print amount of requests to be processed.</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_flush_trigger</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
@@ -572,7 +572,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 21, 2022</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

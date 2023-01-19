@@ -391,20 +391,20 @@
 
 
 <div class="viewcode-block" id="LegacyParser"><a class="viewcode-back" href="../../../../../../api/jina.jaml.parsers.executor.legacy/#jina.jaml.parsers.executor.legacy.LegacyParser">[docs]</a><span class="k">class</span> <span class="nc">LegacyParser</span><span class="p">(</span><span class="n">VersionedYAMLParser</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Legacy parser for executor.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Legacy parser for executor.&quot;&quot;&quot;</span>
 
     <span class="n">version</span> <span class="o">=</span> <span class="s1">&#39;legacy&#39;</span>  <span class="c1"># the version number this parser designed for</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_get_all_arguments</span><span class="p">(</span><span class="n">class_</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">        :param class_: target class from which we want to retrieve arguments</span>
 <span class="sd">        :return: all the arguments of all the classes from which `class_` inherits</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">def</span> <span class="nf">get_class_arguments</span><span class="p">(</span><span class="n">class_</span><span class="p">):</span>
-            <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            :param class_: the class to check</span>
 <span class="sd">            :return: a list containing the arguments from `class_`</span>
 <span class="sd">            &quot;&quot;&quot;</span>
@@ -413,7 +413,7 @@
             <span class="k">return</span> <span class="n">class_arguments</span>
 
         <span class="k">def</span> <span class="nf">accumulate_classes</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Set</span><span class="p">[</span><span class="n">Type</span><span class="p">]:</span>
-            <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            :param cls: the class to check</span>
 <span class="sd">            :return: all classes from which cls inherits from</span>
 <span class="sd">            &quot;&quot;&quot;</span>
@@ -440,7 +440,7 @@
         <span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span>
         <span class="n">runtime_args</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;BaseExecutor&#39;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param cls: target class type to parse into, must be a :class:`JAMLCompatible` type</span>
 <span class="sd">        :param data: flow yaml file loaded as python dict</span>
 <span class="sd">        :param runtime_args: Optional runtime_args to be directly passed without being parsed into a yaml config</span>
@@ -501,7 +501,7 @@
 
 <div class="viewcode-block" id="LegacyParser.is_tail_or_head"><a class="viewcode-back" href="../../../../../../api/jina.jaml.parsers.executor.legacy/#jina.jaml.parsers.executor.legacy.LegacyParser.is_tail_or_head">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">is_tail_or_head</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Based on name, compute if this is a tail/head Pod or a main Pod</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Based on name, compute if this is a tail/head Pod or a main Pod</span>
 
 <span class="sd">        :param data: the data for the parser</span>
 <span class="sd">        :return: True if it is tail/head, False otherwise</span>
@@ -513,7 +513,7 @@
             <span class="k">pass</span>  <span class="c1"># name can be None in tests since it&#39;s not passed</span></div>
 
 <div class="viewcode-block" id="LegacyParser.dump"><a class="viewcode-back" href="../../../../../../api/jina.jaml.parsers.executor.legacy/#jina.jaml.parsers.executor.legacy.LegacyParser.dump">[docs]</a>    <span class="k">def</span> <span class="nf">dump</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="s1">&#39;BaseExecutor&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param data: versioned executor object</span>
 <span class="sd">        :return: the dictionary given a versioned flow object</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -555,7 +555,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 21, 2022</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

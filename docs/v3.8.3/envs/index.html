@@ -417,26 +417,26 @@
                     <section id="environment-variables">
 <span id="jina-env-vars"></span><h1>Environment Variables<a class="headerlink" href="#environment-variables" title="Permalink to this heading">#</a></h1>
 <p>Jina uses a number of environment variables to determine different behaviours. To see all supported environment variables and their current values, run</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina -vf
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina<span class="w"> </span>-vf
 </pre></div>
 </div>
 <p>If you use containerized Executors (including <a class="reference internal" href="../how-to/kubernetes/#kubernetes"><span class="std std-ref">Kubernetes</span></a> and <a class="reference internal" href="../how-to/docker-compose/#docker-compose"><span class="std std-ref">Docker Compose</span></a>), you can pass separate environment variables to each Executor in the following way:</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">Include env vars in YAML</label><div class="tab-content docutils">
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
-<span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;1&#39;</span><span class="w"></span>
-<span class="nt">with</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span><span class="w"></span>
-<span class="nt">executors</span><span class="p">:</span><span class="w"></span>
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executor0</span><span class="w"></span>
-<span class="w">  </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">49583</span><span class="w"></span>
-<span class="w">  </span><span class="nt">env</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">JINA_LOG_LEVEL</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">DEBUG</span><span class="w"></span>
-<span class="w">    </span><span class="nt">MYSECRET</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{ ENV.MYSECRET }}</span><span class="w"></span>
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executor1</span><span class="w"></span>
-<span class="w">  </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">62156</span><span class="w"></span>
-<span class="w">  </span><span class="nt">env</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">JINA_LOG_LEVEL</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">INFO</span><span class="w"></span>
-<span class="w">    </span><span class="nt">CUDA_VISIBLE_DEVICES</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span>
+<span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;1&#39;</span>
+<span class="nt">with</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
+<span class="nt">executors</span><span class="p">:</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executor0</span>
+<span class="w">  </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">49583</span>
+<span class="w">  </span><span class="nt">env</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">JINA_LOG_LEVEL</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">DEBUG</span>
+<span class="w">    </span><span class="nt">MYSECRET</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{ ENV.MYSECRET }}</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executor1</span>
+<span class="w">  </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">62156</span>
+<span class="w">  </span><span class="nt">env</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">JINA_LOG_LEVEL</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">INFO</span>
+<span class="w">    </span><span class="nt">CUDA_VISIBLE_DEVICES</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
 </pre></div>
 </div>
 </div>
@@ -559,7 +559,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 21, 2022</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

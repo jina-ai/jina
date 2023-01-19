@@ -612,7 +612,7 @@
 </ul>
 <section id="first-publish">
 <span id="jina-hub-usage"></span><h2>First publish<a class="headerlink" href="#first-publish" title="Permalink to this heading">#</a></h2>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina hub push <span class="o">[</span>--public/--private<span class="o">]</span> &lt;path_to_executor_folder&gt;
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina<span class="w"> </span>hub<span class="w"> </span>push<span class="w"> </span><span class="o">[</span>--public/--private<span class="o">]</span><span class="w"> </span>&lt;path_to_executor_folder&gt;
 </pre></div>
 </div>
 <figure class="align-center">
@@ -632,14 +632,14 @@
 <section id="update-published-executors">
 <h2>Update published Executors<a class="headerlink" href="#update-published-executors" title="Permalink to this heading">#</a></h2>
 <p>To override or update a published Executor, you must have both <code class="docutils literal notranslate"><span class="pre">NAME</span></code> and <code class="docutils literal notranslate"><span class="pre">SECRET</span></code>.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina hub push <span class="o">[</span>--public/--private<span class="o">]</span> --force-update &lt;NAME&gt; --secret &lt;SECRET&gt; &lt;path_to_executor_folder&gt;
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina<span class="w"> </span>hub<span class="w"> </span>push<span class="w"> </span><span class="o">[</span>--public/--private<span class="o">]</span><span class="w"> </span>--force-update<span class="w"> </span>&lt;NAME&gt;<span class="w"> </span>--secret<span class="w"> </span>&lt;SECRET&gt;<span class="w"> </span>&lt;path_to_executor_folder&gt;
 </pre></div>
 </div>
 </section>
 <section id="tagging-an-executor">
 <span id="hub-tags"></span><h2>Tagging an Executor<a class="headerlink" href="#tagging-an-executor" title="Permalink to this heading">#</a></h2>
 <p>Tagging can be useful for versioning Executors or differentiating them by their architecture (e.g. <code class="docutils literal notranslate"><span class="pre">gpu</span></code>, <code class="docutils literal notranslate"><span class="pre">cpu</span></code>).</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina hub push &lt;path_to_executor_folder&gt; -t TAG1 -t TAG2
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina<span class="w"> </span>hub<span class="w"> </span>push<span class="w"> </span>&lt;path_to_executor_folder&gt;<span class="w"> </span>-t<span class="w"> </span>TAG1<span class="w"> </span>-t<span class="w"> </span>TAG2
 </pre></div>
 </div>
 <p>You can specify <code class="docutils literal notranslate"><span class="pre">-t</span></code> or <code class="docutils literal notranslate"><span class="pre">--tags</span></code> parameter to tag an Executor.</p>
@@ -647,13 +647,13 @@
 <li><p>If you <strong>don’t</strong> add the <code class="docutils literal notranslate"><span class="pre">-t</span></code> parameter, the default tag is <code class="docutils literal notranslate"><span class="pre">latest</span></code></p></li>
 <li><p>If you <strong>do</strong> add the <code class="docutils literal notranslate"><span class="pre">-t</span></code> parameter and you still want to have the <code class="docutils literal notranslate"><span class="pre">latest</span></code> tag, you must write it as another <code class="docutils literal notranslate"><span class="pre">-t</span></code> parameter.</p></li>
 </ul>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina hub push .                     <span class="c1"># Result in one tag: latest</span>
-jina hub push . -t v1.0.0           <span class="c1"># Result in one tag: v1.0.0</span>
-jina hub push . -t v1.0.0 -t latest <span class="c1"># Result in two tags: v1.0.0, latest</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina<span class="w"> </span>hub<span class="w"> </span>push<span class="w"> </span>.<span class="w">                     </span><span class="c1"># Result in one tag: latest</span>
+jina<span class="w"> </span>hub<span class="w"> </span>push<span class="w"> </span>.<span class="w"> </span>-t<span class="w"> </span>v1.0.0<span class="w">           </span><span class="c1"># Result in one tag: v1.0.0</span>
+jina<span class="w"> </span>hub<span class="w"> </span>push<span class="w"> </span>.<span class="w"> </span>-t<span class="w"> </span>v1.0.0<span class="w"> </span>-t<span class="w"> </span>latest<span class="w"> </span><span class="c1"># Result in two tags: v1.0.0, latest</span>
 </pre></div>
 </div>
 <p>If you want to create a new tag for an existing Executor, you can also add the <code class="docutils literal notranslate"><span class="pre">-t</span></code> option here:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina hub push <span class="o">[</span>--public/--private<span class="o">]</span> --force-update &lt;NAME&gt; --secret &lt;SECRET&gt; -t TAG &lt;path_to_executor_folder&gt;
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina<span class="w"> </span>hub<span class="w"> </span>push<span class="w"> </span><span class="o">[</span>--public/--private<span class="o">]</span><span class="w"> </span>--force-update<span class="w"> </span>&lt;NAME&gt;<span class="w"> </span>--secret<span class="w"> </span>&lt;SECRET&gt;<span class="w"> </span>-t<span class="w"> </span>TAG<span class="w"> </span>&lt;path_to_executor_folder&gt;
 </pre></div>
 </div>
 <section id="protected-tags">
@@ -662,7 +662,7 @@ jina hub push . -t v1.0.0 -t latest <span class="c1"># Result in two tags: v1.0.
 protected tags are the exact thing you are looking for.</p>
 <p>You can leverage the <code class="docutils literal notranslate"><span class="pre">--protected-tag</span></code> option to create protected tags.
 After being pushed for the first time, the protected tags can not be pushed again.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina hub push <span class="o">[</span>--public/--private<span class="o">]</span> --force-update &lt;NAME&gt; --secret &lt;SECRET&gt; --protected-tag &lt;PROTECTED_TAG_1&gt; --protected-tag &lt;PROTECTED_TAG_2&gt; &lt;path_to_executor_folder&gt;
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina<span class="w"> </span>hub<span class="w"> </span>push<span class="w"> </span><span class="o">[</span>--public/--private<span class="o">]</span><span class="w"> </span>--force-update<span class="w"> </span>&lt;NAME&gt;<span class="w"> </span>--secret<span class="w"> </span>&lt;SECRET&gt;<span class="w"> </span>--protected-tag<span class="w"> </span>&lt;PROTECTED_TAG_1&gt;<span class="w"> </span>--protected-tag<span class="w"> </span>&lt;PROTECTED_TAG_2&gt;<span class="w"> </span>&lt;path_to_executor_folder&gt;
 </pre></div>
 </div>
 </section>
@@ -701,7 +701,7 @@ After being pushed for the first time, the protected tags can not be pushed agai
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Dec 21, 2022.
+                    Last updated on Jan 19, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

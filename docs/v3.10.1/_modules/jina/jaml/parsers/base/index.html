@@ -390,7 +390,7 @@
 
 
 <div class="viewcode-block" id="VersionedYAMLParser"><a class="viewcode-back" href="../../../../../api/jina.jaml.parsers.base/#jina.jaml.parsers.base.VersionedYAMLParser">[docs]</a><span class="k">class</span> <span class="nc">VersionedYAMLParser</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Flow YAML parser for specific version</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Flow YAML parser for specific version</span>
 
 <span class="sd">    Every :class:`VersionedYAMLParser` must implement two methods and one class attribute:</span>
 <span class="sd">        - :meth:`parse`: to load data (in :class:`dict`) into a :class:`BaseFlow` or :class:`BaseExecutor` object</span>
@@ -403,7 +403,7 @@
 <div class="viewcode-block" id="VersionedYAMLParser.parse"><a class="viewcode-back" href="../../../../../api/jina.jaml.parsers.base/#jina.jaml.parsers.base.VersionedYAMLParser.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">runtime_args</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="s1">&#39;Flow&#39;</span><span class="p">,</span> <span class="s1">&#39;BaseExecutor&#39;</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Return the Flow YAML parser given the syntax version number</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the Flow YAML parser given the syntax version number</span>
 
 
 <span class="sd">        .. # noqa: DAR401</span>
@@ -414,7 +414,7 @@
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="VersionedYAMLParser.dump"><a class="viewcode-back" href="../../../../../api/jina.jaml.parsers.base/#jina.jaml.parsers.base.VersionedYAMLParser.dump">[docs]</a>    <span class="k">def</span> <span class="nf">dump</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s1">&#39;Flow&#39;</span><span class="p">,</span> <span class="s1">&#39;BaseExecutor&#39;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return the dictionary given a versioned flow object</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the dictionary given a versioned flow object</span>
 
 
 <span class="sd">        .. # noqa: DAR401</span>
@@ -424,21 +424,21 @@
 
 
 <div class="viewcode-block" id="BaseLegacyParser"><a class="viewcode-back" href="../../../../../api/jina.jaml.parsers.base/#jina.jaml.parsers.base.BaseLegacyParser">[docs]</a><span class="k">class</span> <span class="nc">BaseLegacyParser</span><span class="p">(</span><span class="n">VersionedYAMLParser</span><span class="p">,</span> <span class="n">ABC</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    BaseLegacyParser for classes that need parameter injection and that will be managed inside a runtime</span>
 <span class="sd">    for instance, :class:`BaseExecutor` and :class:`BaseGateway`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_get_all_arguments</span><span class="p">(</span><span class="n">class_</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">        :param class_: target class from which we want to retrieve arguments</span>
 <span class="sd">        :return: all the arguments of all the classes from which `class_` inherits</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">def</span> <span class="nf">get_class_arguments</span><span class="p">(</span><span class="n">class_</span><span class="p">):</span>
-            <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            :param class_: the class to check</span>
 <span class="sd">            :return: a list containing the arguments from `class_`</span>
 <span class="sd">            &quot;&quot;&quot;</span>
@@ -447,7 +447,7 @@
             <span class="k">return</span> <span class="n">class_arguments</span>
 
         <span class="k">def</span> <span class="nf">accumulate_classes</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Set</span><span class="p">[</span><span class="n">Type</span><span class="p">]:</span>
-            <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            :param cls: the class to check</span>
 <span class="sd">            :return: all classes from which cls inherits from</span>
 <span class="sd">            &quot;&quot;&quot;</span>
@@ -481,7 +481,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 21, 2022</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

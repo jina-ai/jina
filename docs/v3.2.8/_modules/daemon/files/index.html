@@ -637,7 +637,7 @@
 <div class="viewcode-block" id="store_files_in_workspace"><a class="viewcode-back" href="../../../api/daemon.files/#daemon.files.store_files_in_workspace">[docs]</a><span class="k">def</span> <span class="nf">store_files_in_workspace</span><span class="p">(</span>
     <span class="n">workspace_id</span><span class="p">:</span> <span class="n">DaemonID</span><span class="p">,</span> <span class="n">files</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">UploadFile</span><span class="p">],</span> <span class="n">logger</span><span class="p">:</span> <span class="s2">&quot;JinaLogger&quot;</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Store the uploaded files in local disk</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Store the uploaded files in local disk</span>
 
 <span class="sd">    :param workspace_id: workspace id representing the local directory</span>
 <span class="sd">    :param files: files uploaded to the workspace endpoint</span>
@@ -667,7 +667,7 @@
 
 
 <div class="viewcode-block" id="is_requirements_txt"><a class="viewcode-back" href="../../../api/daemon.files/#daemon.files.is_requirements_txt">[docs]</a><span class="k">def</span> <span class="nf">is_requirements_txt</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Check if filename is of requirements.txt format</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check if filename is of requirements.txt format</span>
 
 <span class="sd">    :param filename: filename</span>
 <span class="sd">    :return: True if filename is in requirements.txt format</span>
@@ -676,7 +676,7 @@
 
 
 <div class="viewcode-block" id="DaemonFile"><a class="viewcode-back" href="../../../api/daemon.files/#daemon.files.DaemonFile">[docs]</a><span class="k">class</span> <span class="nc">DaemonFile</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Object representing .jinad file&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Object representing .jinad file&quot;&quot;&quot;</span>
 
     <span class="n">extension</span> <span class="o">=</span> <span class="s1">&#39;.jinad&#39;</span>
 
@@ -702,7 +702,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">dockerfile</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Property representing dockerfile value</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Property representing dockerfile value</span>
 
 <span class="sd">        :return: daemon dockerfile in the daemonfile</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -710,7 +710,7 @@
 
     <span class="nd">@dockerfile</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">dockerfile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">DaemonDockerfile</span><span class="p">,</span> <span class="nb">str</span><span class="p">]):</span>
-        <span class="sd">&quot;&quot;&quot;Property setter for dockerfile</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Property setter for dockerfile</span>
 
 <span class="sd">        :param value: allowed values in DaemonDockerfile</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -734,7 +734,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">python</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Property representing python version</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Property representing python version</span>
 
 <span class="sd">        :return: python version in the daemonfile</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -742,7 +742,7 @@
 
     <span class="nd">@python</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">python</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">python</span><span class="p">:</span> <span class="n">PythonVersion</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Property setter for python version</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Property setter for python version</span>
 
 <span class="sd">        :param python: allowed values in PythonVersion</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -756,7 +756,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">jinav</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Property representing python version</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Property representing python version</span>
 
 <span class="sd">        :return: python version in the daemonfile</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -768,7 +768,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Property representing run command</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Property representing run command</span>
 
 <span class="sd">        :return: run command in the daemonfile</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -776,7 +776,7 @@
 
     <span class="nd">@run</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Property setter for run command</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Property setter for run command</span>
 
 <span class="sd">        :param run: command passed in .jinad file</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -787,7 +787,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">ports</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Property representing ports</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Property representing ports</span>
 
 <span class="sd">        :return: ports to be mapped in the daemonfile</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -795,7 +795,7 @@
 
     <span class="nd">@ports</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">ports</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ports</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Property setter for ports command</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Property setter for ports command</span>
 
 <span class="sd">        :param ports: ports passed in .jinad file</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -806,7 +806,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">requirements</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;pip packages mentioned in requirements.txt</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;pip packages mentioned in requirements.txt</span>
 
 <span class="sd">        :return: space separated values</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -826,14 +826,14 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">dockercontext</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;directory for docker context during docker build</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;directory for docker context during docker build</span>
 
 <span class="sd">        :return: docker context directory&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">__rootdir__</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build</span> <span class="o">==</span> <span class="n">DaemonDockerfile</span><span class="o">.</span><span class="n">DEVEL</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_workdir</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">dockerargs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;dict of args to be passed during docker build</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;dict of args to be passed during docker build</span>
 
 <span class="sd">        .. note::</span>
 <span class="sd">            For DEVEL, we expect an already built jina image to be available locally.</span>
@@ -854,7 +854,7 @@
         <span class="p">)</span>
 
 <div class="viewcode-block" id="DaemonFile.process_file"><a class="viewcode-back" href="../../../api/daemon.files/#daemon.files.DaemonFile.process_file">[docs]</a>    <span class="k">def</span> <span class="nf">process_file</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Process .jinad file and set args&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Process .jinad file and set args&quot;&quot;&quot;</span>
         <span class="c1"># Checks if a file .jinad exists in the workspace</span>
         <span class="n">jinad_file_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_workdir</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">extension</span>
         <span class="k">if</span> <span class="n">jinad_file_path</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
@@ -866,7 +866,7 @@
             <span class="p">)</span></div>
 
 <div class="viewcode-block" id="DaemonFile.set_args"><a class="viewcode-back" href="../../../api/daemon.files/#daemon.files.DaemonFile.set_args">[docs]</a>    <span class="k">def</span> <span class="nf">set_args</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;read .jinad file &amp; set properties</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;read .jinad file &amp; set properties</span>
 
 <span class="sd">        :param file: .jinad filepath</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -898,7 +898,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Dec 21, 2022.
+                    Last updated on Jan 19, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

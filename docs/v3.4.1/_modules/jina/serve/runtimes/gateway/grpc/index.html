@@ -595,10 +595,10 @@
 
 
 <div class="viewcode-block" id="GRPCGatewayRuntime"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.gateway.grpc/#jina.serve.runtimes.gateway.grpc.GRPCGatewayRuntime">[docs]</a><span class="k">class</span> <span class="nc">GRPCGatewayRuntime</span><span class="p">(</span><span class="n">GatewayRuntime</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Gateway Runtime for gRPC.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Gateway Runtime for gRPC.&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="GRPCGatewayRuntime.async_setup"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.gateway.grpc/#jina.serve.runtimes.gateway.grpc.GRPCGatewayRuntime.async_setup">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The async method to setup.</span>
 
 <span class="sd">        Create the gRPC server and expose the port for communication.</span>
@@ -675,23 +675,23 @@
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
 
 <div class="viewcode-block" id="GRPCGatewayRuntime.async_teardown"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.gateway.grpc/#jina.serve.runtimes.gateway.grpc.GRPCGatewayRuntime.async_teardown">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_teardown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Close the connection pool&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Close the connection pool&quot;&quot;&quot;</span>
         <span class="c1"># usually async_cancel should already have been called, but then its a noop</span>
         <span class="c1"># if the runtime is stopped without a sigterm (e.g. as a context manager, this can happen)</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">async_cancel</span><span class="p">()</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection_pool</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="GRPCGatewayRuntime.async_cancel"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.gateway.grpc/#jina.serve.runtimes.gateway.grpc.GRPCGatewayRuntime.async_cancel">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;The async method to stop server.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The async method to stop server.&quot;&quot;&quot;</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">stop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="GRPCGatewayRuntime.async_run_forever"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.gateway.grpc/#jina.serve.runtimes.gateway.grpc.GRPCGatewayRuntime.async_run_forever">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_run_forever</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;The async running of server.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The async running of server.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_connection_pool</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">wait_for_termination</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="GRPCGatewayRuntime.process_control"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.gateway.grpc/#jina.serve.runtimes.gateway.grpc.GRPCGatewayRuntime.process_control">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">process_control</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">ControlRequest</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ControlRequest</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Should be used to check readiness by sending STATUS ControlRequests.</span>
 <span class="sd">        Throws for any other command than STATUS.</span>
 
@@ -716,7 +716,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Dec 21, 2022.
+                    Last updated on Jan 19, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

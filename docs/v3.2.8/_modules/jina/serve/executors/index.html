@@ -646,10 +646,10 @@
 
 
 <span class="k">class</span> <span class="nc">ExecutorType</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">JAMLCompatible</span><span class="p">),</span> <span class="nb">type</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;The class of Executor type, which is the metaclass of :class:`BaseExecutor`.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The class of Executor type, which is the metaclass of :class:`BaseExecutor`.&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        # noqa: DAR101</span>
 <span class="sd">        # noqa: DAR102</span>
 
@@ -660,7 +660,7 @@
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">register_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Register a class and wrap update, train, aggregate functions.</span>
 
 <span class="sd">        :param cls: The class.</span>
@@ -688,7 +688,7 @@
 
 
 <div class="viewcode-block" id="BaseExecutor"><a class="viewcode-back" href="../../../../api/jina.serve.executors/#jina.serve.executors.BaseExecutor">[docs]</a><span class="k">class</span> <span class="nc">BaseExecutor</span><span class="p">(</span><span class="n">JAMLCompatible</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">ExecutorType</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The base class of the executor, can be used to build encoder, indexer, etc.</span>
 
 <span class="sd">    Any executor inherited from :class:`BaseExecutor` always has the **meta** defined in :mod:`jina.executors.metas.defaults`.</span>
@@ -720,7 +720,7 @@
         <span class="n">runtime_args</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;`metas` and `requests` are always auto-filled with values from YAML config.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;`metas` and `requests` are always auto-filled with values from YAML config.</span>
 
 <span class="sd">        :param metas: a dict of metas fields</span>
 <span class="sd">        :param requests: a dict of endpoint-function mapping</span>
@@ -819,7 +819,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">metas</span> <span class="o">=</span> <span class="n">target</span>
 
 <div class="viewcode-block" id="BaseExecutor.close"><a class="viewcode-back" href="../../../../api/jina.serve.executors/#jina.serve.executors.BaseExecutor.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Always invoked as executor is destroyed.</span>
 
 <span class="sd">        You can write destructor &amp; saving logic here.</span>
@@ -827,7 +827,7 @@
         <span class="k">pass</span></div>
 
     <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">req_endpoint</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        # noqa: DAR101</span>
 <span class="sd">        # noqa: DAR102</span>
 <span class="sd">        # noqa: DAR201</span>
@@ -842,7 +842,7 @@
             <span class="p">)</span>  <span class="c1"># unbound method, self is required</span>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">__acall__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">req_endpoint</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        # noqa: DAR101</span>
 <span class="sd">        # noqa: DAR102</span>
 <span class="sd">        # noqa: DAR201</span>
@@ -861,7 +861,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">workspace</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the workspace directory of the Executor.</span>
 
 <span class="sd">        :return: returns the workspace of the current shard of this Executor.</span>
@@ -900,7 +900,7 @@
         <span class="n">uses_requests</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Construct an Executor from Hub.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Construct an Executor from Hub.</span>
 
 <span class="sd">        :param uri: a hub Executor scheme starts with `jinahub://`</span>
 <span class="sd">        :param context: context replacement variables in a dict, the value of the dict is the replacement.</span>
@@ -957,7 +957,7 @@
         <span class="n">stop_event</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">,</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Event</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Serve this Executor in a temporary Flow. Useful in testing an Executor in remote settings.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Serve this Executor in a temporary Flow. Useful in testing an Executor in remote settings.</span>
 
 <span class="sd">        :param uses_with: dictionary of parameters to overwrite from the default config&#39;s with field</span>
 <span class="sd">        :param uses_metas: dictionary of parameters to overwrite from the default config&#39;s metas field</span>
@@ -980,7 +980,7 @@
 
 
 <div class="viewcode-block" id="ReducerExecutor"><a class="viewcode-back" href="../../../../api/jina.serve.executors/#jina.serve.executors.ReducerExecutor">[docs]</a><span class="k">class</span> <span class="nc">ReducerExecutor</span><span class="p">(</span><span class="n">BaseExecutor</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    ReducerExecutor is an Executor that performs a reduce operation on a matrix of DocumentArrays coming from shards.</span>
 <span class="sd">    ReducerExecutor relies on DocumentArray.reduce_all to merge all DocumentArray into one DocumentArray which will be</span>
 <span class="sd">    sent to the next deployment.</span>
@@ -990,7 +990,7 @@
 
 <div class="viewcode-block" id="ReducerExecutor.reduce"><a class="viewcode-back" href="../../../../api/jina.serve.executors/#jina.serve.executors.ReducerExecutor.reduce">[docs]</a>    <span class="nd">@requests</span>
     <span class="k">def</span> <span class="nf">reduce</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs_matrix</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s1">&#39;DocumentArray&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Reduce docs_matrix into one `DocumentArray` using `DocumentArray.reduce_all`</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Reduce docs_matrix into one `DocumentArray` using `DocumentArray.reduce_all`</span>
 <span class="sd">        :param docs_matrix: a List of DocumentArrays to be reduced</span>
 <span class="sd">        :param kwargs: extra keyword arguments</span>
 <span class="sd">        :return: the reduced DocumentArray</span>
@@ -1010,7 +1010,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Dec 21, 2022.
+                    Last updated on Jan 19, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

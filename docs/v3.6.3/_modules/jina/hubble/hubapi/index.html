@@ -597,7 +597,7 @@
 
 
 <div class="viewcode-block" id="get_dist_path"><a class="viewcode-back" href="../../../../api/jina.hubble.hubapi/#jina.hubble.hubapi.get_dist_path">[docs]</a><span class="k">def</span> <span class="nf">get_dist_path</span><span class="p">(</span><span class="n">uuid</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="n">Path</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Get the package path according ID and TAG</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the package path according ID and TAG</span>
 <span class="sd">    :param uuid: the UUID of the executor</span>
 <span class="sd">    :param tag: the TAG of the executor</span>
 <span class="sd">    :return: package and its dist-info path</span>
@@ -608,7 +608,7 @@
 
 
 <div class="viewcode-block" id="get_dist_path_of_executor"><a class="viewcode-back" href="../../../../api/jina.hubble.hubapi/#jina.hubble.hubapi.get_dist_path_of_executor">[docs]</a><span class="k">def</span> <span class="nf">get_dist_path_of_executor</span><span class="p">(</span><span class="n">executor</span><span class="p">:</span> <span class="s1">&#39;HubExecutor&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="n">Path</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Return the path of the executor if available.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the path of the executor if available.</span>
 
 <span class="sd">    :param executor: the executor to check</span>
 <span class="sd">    :return: the path of the executor package</span>
@@ -625,7 +625,7 @@
 
 
 <div class="viewcode-block" id="get_config_path"><a class="viewcode-back" href="../../../../api/jina.hubble.hubapi/#jina.hubble.hubapi.get_config_path">[docs]</a><span class="k">def</span> <span class="nf">get_config_path</span><span class="p">(</span><span class="n">local_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Path&#39;</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Get the local configure file</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the local configure file</span>
 <span class="sd">    :param local_id: the random local ID of the executor</span>
 <span class="sd">    :return: json config path</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -633,14 +633,14 @@
 
 
 <div class="viewcode-block" id="get_lockfile"><a class="viewcode-back" href="../../../../api/jina.hubble.hubapi/#jina.hubble.hubapi.get_lockfile">[docs]</a><span class="k">def</span> <span class="nf">get_lockfile</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Get the path of file locker</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the path of file locker</span>
 <span class="sd">    :return: the path of file locker</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">get_hub_packages_dir</span><span class="p">()</span> <span class="o">/</span> <span class="s1">&#39;LOCK&#39;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="load_secret"><a class="viewcode-back" href="../../../../api/jina.hubble.hubapi/#jina.hubble.hubapi.load_secret">[docs]</a><span class="k">def</span> <span class="nf">load_secret</span><span class="p">(</span><span class="n">work_path</span><span class="p">:</span> <span class="s1">&#39;Path&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Get the UUID and Secret from local</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the UUID and Secret from local</span>
 
 <span class="sd">    :param work_path: the local package directory</span>
 <span class="sd">    :return: the UUID and secret</span>
@@ -670,7 +670,7 @@
 
 
 <div class="viewcode-block" id="dump_secret"><a class="viewcode-back" href="../../../../api/jina.hubble.hubapi/#jina.hubble.hubapi.dump_secret">[docs]</a><span class="k">def</span> <span class="nf">dump_secret</span><span class="p">(</span><span class="n">work_path</span><span class="p">:</span> <span class="s1">&#39;Path&#39;</span><span class="p">,</span> <span class="n">uuid8</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">secret</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Dump the UUID and Secret into local file</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Dump the UUID and Secret into local file</span>
 
 <span class="sd">    :param work_path: the local package directory</span>
 <span class="sd">    :param uuid8: the ID of the executor</span>
@@ -710,7 +710,7 @@
     <span class="n">executor</span><span class="p">:</span> <span class="s1">&#39;HubExecutor&#39;</span><span class="p">,</span>
     <span class="n">install_deps</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Install the package in zip format to the Jina Hub root.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Install the package in zip format to the Jina Hub root.</span>
 
 <span class="sd">    :param zip_package: the path of the zip file</span>
 <span class="sd">    :param executor: the executor to install</span>
@@ -744,7 +744,7 @@
 <div class="viewcode-block" id="install_package_dependencies"><a class="viewcode-back" href="../../../../api/jina.hubble.hubapi/#jina.hubble.hubapi.install_package_dependencies">[docs]</a><span class="k">def</span> <span class="nf">install_package_dependencies</span><span class="p">(</span>
     <span class="n">install_deps</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">pkg_dist_path</span><span class="p">:</span> <span class="s1">&#39;Path&#39;</span><span class="p">,</span> <span class="n">pkg_path</span><span class="p">:</span> <span class="s1">&#39;Path&#39;</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">    :param install_deps: if set, then install dependencies</span>
 <span class="sd">    :param pkg_dist_path: package distribution path</span>
@@ -768,7 +768,7 @@
 
 
 <div class="viewcode-block" id="uninstall_local"><a class="viewcode-back" href="../../../../api/jina.hubble.hubapi/#jina.hubble.hubapi.uninstall_local">[docs]</a><span class="k">def</span> <span class="nf">uninstall_local</span><span class="p">(</span><span class="n">uuid</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Uninstall the executor package.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Uninstall the executor package.</span>
 
 <span class="sd">    :param uuid: the UUID of the executor</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -780,7 +780,7 @@
 
 
 <div class="viewcode-block" id="list_local"><a class="viewcode-back" href="../../../../api/jina.hubble.hubapi/#jina.hubble.hubapi.list_local">[docs]</a><span class="k">def</span> <span class="nf">list_local</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;List the locally-available executor packages.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;List the locally-available executor packages.</span>
 
 <span class="sd">    :return: the list of local executors (if found)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -792,7 +792,7 @@
 
 
 <div class="viewcode-block" id="exist_local"><a class="viewcode-back" href="../../../../api/jina.hubble.hubapi/#jina.hubble.hubapi.exist_local">[docs]</a><span class="k">def</span> <span class="nf">exist_local</span><span class="p">(</span><span class="n">uuid</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Check whether the executor exists in local</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check whether the executor exists in local</span>
 
 <span class="sd">    :param uuid: the UUID of the executor</span>
 <span class="sd">    :param tag: the TAG of the executor</span>
@@ -817,7 +817,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 21, 2022</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

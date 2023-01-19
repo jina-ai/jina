@@ -396,7 +396,7 @@
 
 
 <div class="viewcode-block" id="HTTPGateway"><a class="viewcode-back" href="../../../../../../../api/jina.serve.runtimes.gateway.http.gateway/#jina.serve.runtimes.gateway.http.HTTPGateway">[docs]</a><span class="k">class</span> <span class="nc">HTTPGateway</span><span class="p">(</span><span class="n">BaseGateway</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;HTTP Gateway implementation&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;HTTP Gateway implementation&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -414,7 +414,7 @@
         <span class="n">proxy</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Initialize the gateway</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the gateway</span>
 <span class="sd">            Get the app from FastAPI as the REST interface.</span>
 <span class="sd">        :param port: The port of the Gateway, which the client should connect to.</span>
 <span class="sd">        :param title: The title of this HTTP server. It will be used in automatics docs such as Swagger UI.</span>
@@ -451,7 +451,7 @@
             <span class="n">os</span><span class="o">.</span><span class="n">unsetenv</span><span class="p">(</span><span class="s1">&#39;https_proxy&#39;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="HTTPGateway.setup_server"><a class="viewcode-back" href="../../../../../../../api/jina.serve.runtimes.gateway.http.gateway/#jina.serve.runtimes.gateway.http.HTTPGateway.setup_server">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">setup_server</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize and return GRPC server</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">extend_rest_interface</span>
@@ -476,10 +476,10 @@
             <span class="kn">from</span> <span class="nn">uvicorn</span> <span class="kn">import</span> <span class="n">Config</span><span class="p">,</span> <span class="n">Server</span>
 
         <span class="k">class</span> <span class="nc">UviServer</span><span class="p">(</span><span class="n">Server</span><span class="p">):</span>
-            <span class="sd">&quot;&quot;&quot;The uvicorn server.&quot;&quot;&quot;</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;The uvicorn server.&quot;&quot;&quot;</span>
 
             <span class="k">async</span> <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sockets</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-                <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">                </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Setup uvicorn server.</span>
 
 <span class="sd">                :param sockets: sockets of server.</span>
@@ -494,7 +494,7 @@
                     <span class="k">return</span>
 
             <span class="k">async</span> <span class="k">def</span> <span class="nf">serve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-                <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">                </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Start the server.</span>
 
 <span class="sd">                :param kwargs: keyword arguments</span>
@@ -532,25 +532,25 @@
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="HTTPGateway.teardown"><a class="viewcode-back" href="../../../../../../../api/jina.serve.runtimes.gateway.http.gateway/#jina.serve.runtimes.gateway.http.HTTPGateway.teardown">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">teardown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Free resources allocated when setting up HTTP server</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">await</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">teardown</span><span class="p">()</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="HTTPGateway.stop_server"><a class="viewcode-back" href="../../../../../../../api/jina.serve.runtimes.gateway.http.gateway/#jina.serve.runtimes.gateway.http.HTTPGateway.stop_server">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">stop_server</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Stop HTTP server</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">should_exit</span> <span class="o">=</span> <span class="kc">True</span></div>
 
 <div class="viewcode-block" id="HTTPGateway.run_server"><a class="viewcode-back" href="../../../../../../../api/jina.serve.runtimes.gateway.http.gateway/#jina.serve.runtimes.gateway.http.HTTPGateway.run_server">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">run_server</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Run HTTP server forever&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Run HTTP server forever&quot;&quot;&quot;</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">serve</span><span class="p">()</span></div>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">should_exit</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Boolean flag that indicates whether the gateway server should exit or not</span>
 <span class="sd">        :return: boolean flag</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -569,7 +569,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 21, 2022</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

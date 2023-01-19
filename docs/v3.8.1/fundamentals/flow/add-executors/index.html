@@ -443,14 +443,14 @@
 </div>
 <input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--2">YAML</label><div class="tab-content docutils">
 <p><code class="docutils literal notranslate"><span class="pre">flow.yml</span></code>:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
-<span class="nt">executors</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">myexec1</span><span class="w"></span>
-<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">FooExecutor</span><span class="w"></span>
-<span class="w">    </span><span class="nt">py_modules</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">exec.py</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">myexec2</span><span class="w"></span>
-<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">BarExecutor</span><span class="w"></span>
-<span class="w">    </span><span class="nt">py_modules</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">exec.py</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span>
+<span class="nt">executors</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">myexec1</span>
+<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">FooExecutor</span>
+<span class="w">    </span><span class="nt">py_modules</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">exec.py</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">myexec2</span>
+<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">BarExecutor</span>
+<span class="w">    </span><span class="nt">py_modules</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">exec.py</span>
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">exec.py</span></code></p>
@@ -485,13 +485,13 @@
 <p class="admonition-title">Hint: Load multiple Executors from the same module</p>
 <p>You can override the <code class="docutils literal notranslate"><span class="pre">py_modules</span></code> attribute for all Executors in a Flow. This allows you to specify a single Python module
 from which you can then load all of your Executors, without having to specify the module individually for each Executor:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
-<span class="nt">with</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">py_modules</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executors.py</span><span class="w"></span>
-<span class="nt">executors</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">FooExecutor</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">BarExecutor</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span>
+<span class="nt">with</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">py_modules</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executors.py</span>
+<span class="nt">executors</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">FooExecutor</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">BarExecutor</span>
 </pre></div>
 </div>
 <p>In this example, both <code class="docutils literal notranslate"><span class="pre">FooExecutor</span></code> and <code class="docutils literal notranslate"><span class="pre">BarExecutor</span></code> are defined inside of <code class="docutils literal notranslate"><span class="pre">executors.py</span></code>, and both will be located and loaded by the Flow.</p>
@@ -611,7 +611,7 @@ logging specific information in external services, storing partial results, etc.
     <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
     <span class="n">response</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/endpoint&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">DocumentArray</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
     <span class="n">end_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39; Response time took </span><span class="si">{</span><span class="n">end_time</span> <span class="o">-</span> <span class="n">start_time</span><span class="si">}</span><span class="s1">s&#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39; Response time took </span><span class="si">{</span><span class="n">end_time</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">start_time</span><span class="si">}</span><span class="s1">s&#39;</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39; </span><span class="si">{</span><span class="n">response</span><span class="o">.</span><span class="n">texts</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -876,7 +876,7 @@ documentation about <a class="reference external" href="https://docarray.jina.ai
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 21, 2022</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

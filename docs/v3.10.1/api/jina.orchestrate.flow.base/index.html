@@ -748,9 +748,9 @@ Python files, data files.</p>
 <dd><p>Add an inspection on the last changed Deployment in the Flow</p>
 <p>Internally, it adds two Deployments to the Flow. But don’t worry, the overhead is minimized and you
 can remove them by simply using <cite>Flow(inspect=FlowInspectType.REMOVE)</cite> before using the Flow.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>Flow -- PUB-SUB -- BaseDeployment<span class="o">(</span>_pass<span class="o">)</span> -- Flow
-        <span class="p">|</span>
-        -- PUB-SUB -- InspectDeployment <span class="o">(</span>Hanging<span class="o">)</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>Flow<span class="w"> </span>--<span class="w"> </span>PUB-SUB<span class="w"> </span>--<span class="w"> </span>BaseDeployment<span class="o">(</span>_pass<span class="o">)</span><span class="w"> </span>--<span class="w"> </span>Flow
+<span class="w">        </span><span class="p">|</span>
+<span class="w">        </span>--<span class="w"> </span>PUB-SUB<span class="w"> </span>--<span class="w"> </span>InspectDeployment<span class="w"> </span><span class="o">(</span>Hanging<span class="o">)</span>
 </pre></div>
 </div>
 <p>In this way, <code class="xref py py-class docutils literal notranslate"><span class="pre">InspectDeployment</span></code> looks like a simple <code class="docutils literal notranslate"><span class="pre">_pass</span></code> from outside and
@@ -1114,10 +1114,10 @@ implements <code class="xref py py-class docutils literal notranslate"><span cla
 </dd>
 </dl>
 <p>Substitutions are carried in the order and multiple passes to resolve variables with best effort.</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="kt">!BaseEncoder</span><span class="w"></span>
-<span class="nt">metas</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{VAR_A}}</span><span class="w">  </span><span class="c1"># env or context variables</span><span class="w"></span>
-<span class="w">    </span><span class="nt">workspace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my-${{this.name}}</span><span class="w">  </span><span class="c1"># internal reference</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="kt">!BaseEncoder</span>
+<span class="nt">metas</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{VAR_A}}</span><span class="w">  </span><span class="c1"># env or context variables</span>
+<span class="w">    </span><span class="nt">workspace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my-${{this.name}}</span><span class="w">  </span><span class="c1"># internal reference</span>
 </pre></div>
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># load Executor from yaml file</span>
@@ -1385,7 +1385,7 @@ you can set <cite>JINA_HUB_NO_IMAGE_REBUILD</cite> environment variable.</p>
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 21, 2022</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

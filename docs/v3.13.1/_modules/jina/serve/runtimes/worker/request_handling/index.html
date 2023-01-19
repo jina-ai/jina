@@ -422,7 +422,7 @@
 
 
 <div class="viewcode-block" id="WorkerRequestHandler"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.worker.request_handling/#jina.serve.runtimes.worker.request_handling.WorkerRequestHandler">[docs]</a><span class="k">class</span> <span class="nc">WorkerRequestHandler</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Object to encapsulate the code related to handle the data requests passing to executor and its returned values&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Object to encapsulate the code related to handle the data requests passing to executor and its returned values&quot;&quot;&quot;</span>
 
     <span class="n">_KEY_RESULT</span> <span class="o">=</span> <span class="s1">&#39;__results__&#39;</span>
 
@@ -436,7 +436,7 @@
         <span class="n">deployment_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Initialize private parameters and execute private loading functions.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize private parameters and execute private loading functions.</span>
 
 <span class="sd">        :param args: args from CLI</span>
 <span class="sd">        :param logger: the logger provided by the user</span>
@@ -470,7 +470,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_init_batchqueue_dict</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">_all_batch_queues</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">BatchQueue</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Returns a list of all batch queue instances</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a list of all batch queue instances</span>
 <span class="sd">        :return: List of all batch queues for this request handler</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[</span>
@@ -480,7 +480,7 @@
         <span class="p">]</span>
 
     <span class="k">def</span> <span class="nf">_init_batchqueue_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Determines how endpoints and method names map to batch queues. Afterwards, this method initializes the</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Determines how endpoints and method names map to batch queues. Afterwards, this method initializes the</span>
 <span class="sd">        dynamic batching state of the request handler:</span>
 <span class="sd">            * _batchqueue_instances of &quot;shape&quot; exec_endpoint_name -&gt; parameters_key -&gt; batch_queue</span>
 <span class="sd">            * _batchqueue_config mapping each exec_endpoint_name to a dynamic batching configuration</span>
@@ -593,7 +593,7 @@
         <span class="n">tracer_provider</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;trace.TracerProvider&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">meter_provider</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;metrics.MeterProvider&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Load the executor to this runtime, specified by ``uses`` CLI argument.</span>
 <span class="sd">        :param metrics_registry: Optional prometheus metrics registry that will be passed to the executor so that it can expose metrics</span>
 <span class="sd">        :param tracer_provider: Optional tracer_provider that will be provided to the executor for tracing</span>
@@ -771,7 +771,7 @@
 <div class="viewcode-block" id="WorkerRequestHandler.handle"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.worker.request_handling/#jina.serve.runtimes.worker.request_handling.WorkerRequestHandler.handle">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">handle</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">requests</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s1">&#39;DataRequest&#39;</span><span class="p">],</span> <span class="n">tracing_context</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;Context&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataRequest</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Initialize private parameters and execute private loading functions.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize private parameters and execute private loading functions.</span>
 
 <span class="sd">        :param requests: The messages to handle containing a DataRequest</span>
 <span class="sd">        :param tracing_context: Optional OpenTelemetry tracing context from the originating request.</span>
@@ -844,7 +844,7 @@
     <span class="k">def</span> <span class="nf">replace_docs</span><span class="p">(</span>
         <span class="n">request</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s1">&#39;DataRequest&#39;</span><span class="p">],</span> <span class="n">docs</span><span class="p">:</span> <span class="s1">&#39;DocumentArray&#39;</span><span class="p">,</span> <span class="n">ndarrray_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Replaces the docs in a message with new Documents.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Replaces the docs in a message with new Documents.</span>
 
 <span class="sd">        :param request: The request object</span>
 <span class="sd">        :param docs: the new docs to be used</span>
@@ -854,7 +854,7 @@
 
 <div class="viewcode-block" id="WorkerRequestHandler.replace_parameters"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.worker.request_handling/#jina.serve.runtimes.worker.request_handling.WorkerRequestHandler.replace_parameters">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">replace_parameters</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s1">&#39;DataRequest&#39;</span><span class="p">],</span> <span class="n">parameters</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Replaces the parameters in a message with new Documents.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Replaces the parameters in a message with new Documents.</span>
 
 <span class="sd">        :param request: The request object</span>
 <span class="sd">        :param parameters: the new parameters to be used</span>
@@ -863,7 +863,7 @@
 
 <div class="viewcode-block" id="WorkerRequestHandler.merge_routes"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.worker.request_handling/#jina.serve.runtimes.worker.request_handling.WorkerRequestHandler.merge_routes">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">merge_routes</span><span class="p">(</span><span class="n">requests</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s1">&#39;DataRequest&#39;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Merges all routes found in requests into the first message</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Merges all routes found in requests into the first message</span>
 
 <span class="sd">        :param requests: The messages containing the requests with the routes to merge</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -877,7 +877,7 @@
                     <span class="n">existing_executor_routes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">route</span><span class="o">.</span><span class="n">executor</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="WorkerRequestHandler.close"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.worker.request_handling/#jina.serve.runtimes.worker.request_handling.WorkerRequestHandler.close">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Close the data request handler, by closing the executor and the batch queues.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Close the data request handler, by closing the executor and the batch queues.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_closed</span><span class="p">:</span>
             <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">q</span><span class="o">.</span><span class="n">close</span><span class="p">()</span> <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_all_batch_queues</span><span class="p">()])</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_executor</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
@@ -887,7 +887,7 @@
     <span class="k">def</span> <span class="nf">_get_docs_matrix_from_request</span><span class="p">(</span>
         <span class="n">requests</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s1">&#39;DataRequest&#39;</span><span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="s1">&#39;DocumentArray&#39;</span><span class="p">]],</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="s1">&#39;DocumentArray&#39;</span><span class="p">]]]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a docs matrix from a list of DataRequest objects.</span>
 
 <span class="sd">        :param requests: List of DataRequest objects</span>
@@ -911,7 +911,7 @@
     <span class="k">def</span> <span class="nf">get_parameters_dict_from_request</span><span class="p">(</span>
         <span class="n">requests</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s1">&#39;DataRequest&#39;</span><span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Dict&#39;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a parameters dict from a list of DataRequest objects.</span>
 <span class="sd">        :param requests: List of DataRequest objects</span>
 <span class="sd">        :return: parameters matrix: list of parameters (Dict) objects</span>
@@ -932,7 +932,7 @@
         <span class="n">requests</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s1">&#39;DataRequest&#39;</span><span class="p">],</span>
         <span class="n">field</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;DocumentArray&#39;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Gets a field from the message</span>
 
 <span class="sd">        :param requests: requests to get the field from</span>
@@ -955,7 +955,7 @@
 
 <div class="viewcode-block" id="WorkerRequestHandler.reduce"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.worker.request_handling/#jina.serve.runtimes.worker.request_handling.WorkerRequestHandler.reduce">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">reduce</span><span class="p">(</span><span class="n">docs_matrix</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s1">&#39;DocumentArray&#39;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;DocumentArray&#39;</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Reduces a list of DocumentArrays into one DocumentArray. Changes are applied to the first</span>
 <span class="sd">        DocumentArray in-place.</span>
 
@@ -983,7 +983,7 @@
 
 <div class="viewcode-block" id="WorkerRequestHandler.reduce_requests"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.worker.request_handling/#jina.serve.runtimes.worker.request_handling.WorkerRequestHandler.reduce_requests">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">reduce_requests</span><span class="p">(</span><span class="n">requests</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s1">&#39;DataRequest&#39;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s1">&#39;DataRequest&#39;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Reduces a list of requests containing DocumentArrays into one request object. Changes are applied to the first</span>
 <span class="sd">        request object in-place.</span>
 
@@ -1018,7 +1018,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 21, 2022</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

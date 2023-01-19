@@ -596,7 +596,7 @@
 
 
 <div class="viewcode-block" id="TopologyGraph"><a class="viewcode-back" href="../../../../../../../api/jina.serve.runtimes.gateway.graph.topology_graph/#jina.serve.runtimes.gateway.graph.topology_graph.TopologyGraph">[docs]</a><span class="k">class</span> <span class="nc">TopologyGraph</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    :class TopologyGraph is a class that describes a computational graph of nodes, where each node represents</span>
 <span class="sd">        a Deployment that needs to be sent requests in the order respecting the path traversal.</span>
 
@@ -735,7 +735,7 @@
             <span class="n">executor_endpoint_mapping</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">target_executor_pattern</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Task</span><span class="p">]]:</span>
-            <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Gets all the tasks corresponding from all the subgraphs born from this node</span>
 
 <span class="sd">            :param connection_pool: The connection_pool need to actually send the requests</span>
@@ -797,7 +797,7 @@
             <span class="k">return</span> <span class="n">hanging_tasks_tuples</span>
 
         <span class="k">def</span> <span class="nf">add_route</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="s1">&#39;DataRequest&#39;</span><span class="p">):</span>
-            <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">             Add routes to the DataRequest based on the state of request processing</span>
 
 <span class="sd">             :param request: the request to add the routes to</span>
@@ -875,7 +875,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">has_filter_conditions</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">graph_conditions</span><span class="p">)</span>
 
 <div class="viewcode-block" id="TopologyGraph.add_routes"><a class="viewcode-back" href="../../../../../../../api/jina.serve.runtimes.gateway.graph.topology_graph/#jina.serve.runtimes.gateway.graph.topology_graph.TopologyGraph.add_routes">[docs]</a>    <span class="k">def</span> <span class="nf">add_routes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="s1">&#39;DataRequest&#39;</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add routes to the DataRequest based on the state of request processing</span>
 
 <span class="sd">        :param request: the request to add the routes to</span>
@@ -887,7 +887,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">origin_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The list of origin nodes, the one that depend only on the gateway, so all the subgraphs will be born from them and they will</span>
 <span class="sd">        send to their deployments the request as received by the client.</span>
 
@@ -897,7 +897,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">all_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The set of all the nodes inside this Graph</span>
 
 <span class="sd">        :return: A list of nodes</span>
@@ -934,7 +934,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 21, 2022</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

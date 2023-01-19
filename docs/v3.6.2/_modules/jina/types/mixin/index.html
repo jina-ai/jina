@@ -581,7 +581,7 @@
 
 
 <div class="viewcode-block" id="ProtoTypeMixin"><a class="viewcode-back" href="../../../../api/jina.types.mixin/#jina.types.mixin.ProtoTypeMixin">[docs]</a><span class="k">class</span> <span class="nc">ProtoTypeMixin</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;The base mixin class of all Jina types.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The base mixin class of all Jina types.</span>
 
 <span class="sd">    .. note::</span>
 <span class="sd">        - All Jina types should inherit from this class.</span>
@@ -598,7 +598,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="ProtoTypeMixin.to_json"><a class="viewcode-back" href="../../../../api/jina.types.mixin/#jina.types.mixin.ProtoTypeMixin.to_json">[docs]</a>    <span class="k">def</span> <span class="nf">to_json</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return the object in JSON string</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the object in JSON string</span>
 
 <span class="sd">        :return: JSON string of the object</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -609,7 +609,7 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="ProtoTypeMixin.to_dict"><a class="viewcode-back" href="../../../../api/jina.types.mixin/#jina.types.mixin.ProtoTypeMixin.to_dict">[docs]</a>    <span class="k">def</span> <span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return the object in Python dictionary.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the object in Python dictionary.</span>
 
 <span class="sd">        .. note::</span>
 <span class="sd">            Array like object such as :class:`numpy.ndarray` (i.e. anything described as :class:`jina_pb2.NdArrayProto`)</span>
@@ -625,14 +625,14 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">proto</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;jina_pb2._reflection.GeneratedProtocolMessageType&#39;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return the underlying Protobuf object</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the underlying Protobuf object</span>
 
 <span class="sd">        :return: Protobuf representation of the object</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span>
 
 <div class="viewcode-block" id="ProtoTypeMixin.to_bytes"><a class="viewcode-back" href="../../../../api/jina.types.mixin/#jina.types.mixin.ProtoTypeMixin.to_bytes">[docs]</a>    <span class="k">def</span> <span class="nf">to_bytes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return the serialized the message to a string.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the serialized the message to a string.</span>
 
 <span class="sd">        For more Pythonic code, please use ``bytes(...)``.</span>
 
@@ -649,7 +649,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">nbytes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return total bytes consumed by protobuf.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return total bytes consumed by protobuf.</span>
 
 <span class="sd">        :return: number of bytes</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -664,25 +664,25 @@
         <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;&lt;</span><span class="si">{</span><span class="n">typename</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">content</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="si">}</span><span class="s1">&gt;&#39;</span>
 
 <div class="viewcode-block" id="ProtoTypeMixin.MergeFrom"><a class="viewcode-back" href="../../../../api/jina.types.mixin/#jina.types.mixin.ProtoTypeMixin.MergeFrom">[docs]</a>    <span class="k">def</span> <span class="nf">MergeFrom</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">T</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">T</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Merge the content of target</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Merge the content of target</span>
 
 <span class="sd">        :param other: the document to merge from</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">MergeFrom</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">_pb_body</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ProtoTypeMixin.CopyFrom"><a class="viewcode-back" href="../../../../api/jina.types.mixin/#jina.types.mixin.ProtoTypeMixin.CopyFrom">[docs]</a>    <span class="k">def</span> <span class="nf">CopyFrom</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">T</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">T</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Copy the content of target</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Copy the content of target</span>
 
 <span class="sd">        :param other: the document to copy from</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">CopyFrom</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">_pb_body</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ProtoTypeMixin.clear"><a class="viewcode-back" href="../../../../api/jina.types.mixin/#jina.types.mixin.ProtoTypeMixin.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Remove all values from all fields of this Document.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove all values from all fields of this Document.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">Clear</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="ProtoTypeMixin.pop"><a class="viewcode-back" href="../../../../api/jina.types.mixin/#jina.types.mixin.ProtoTypeMixin.pop">[docs]</a>    <span class="k">def</span> <span class="nf">pop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">fields</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Remove the values from the given fields of this Document.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove the values from the given fields of this Document.</span>
 
 <span class="sd">        :param fields: field names</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -714,7 +714,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 21, 2022</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

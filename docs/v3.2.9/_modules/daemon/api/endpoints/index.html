@@ -640,7 +640,7 @@
 
 <div class="viewcode-block" id="startup"><a class="viewcode-back" href="../../../../api/daemon.api.endpoints/#daemon.api.endpoints.startup">[docs]</a><span class="nd">@router</span><span class="o">.</span><span class="n">on_event</span><span class="p">(</span><span class="s1">&#39;startup&#39;</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">startup</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;Start the process&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Start the process&quot;&quot;&quot;</span>
     <span class="kn">from</span> <span class="nn">daemon</span> <span class="kn">import</span> <span class="n">daemon_logger</span><span class="p">,</span> <span class="n">jinad_args</span>
 
     <span class="n">daemon_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
@@ -648,7 +648,7 @@
 <span class="s1">Welcome to Jina daemon - the manager of distributed Jina</span>
 <span class="s1">💬 Swagger UI     :</span><span class="se">\t</span><span class="s1">http://localhost:</span><span class="si">{</span><span class="n">jinad_args</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">/docs</span>
 <span class="s1">📚 Redoc          :</span><span class="se">\t</span><span class="s1">http://localhost:</span><span class="si">{</span><span class="n">jinad_args</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">/redoc</span>
-<span class="s1">🔒 Private address:</span><span class="se">\t</span><span class="s1">http://</span><span class="si">{</span><span class="n">get_internal_ip</span><span class="p">()</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">jinad_args</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1"></span>
+<span class="s1">🔒 Private address:</span><span class="se">\t</span><span class="s1">http://</span><span class="si">{</span><span class="n">get_internal_ip</span><span class="p">()</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">jinad_args</span><span class="o">.</span><span class="n">port</span><span class="si">}</span>
 <span class="s1">🌐 Public address :</span><span class="se">\t</span><span class="s1">http://</span><span class="si">{</span><span class="n">get_public_ip</span><span class="p">()</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">jinad_args</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">&#39;&#39;&#39;</span>
     <span class="p">)</span>
     <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__ready_msg__</span>
@@ -660,7 +660,7 @@
     <span class="n">path</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">_home</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The instruction HTML when user visits `/` directly</span>
 
 
@@ -694,7 +694,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Dec 21, 2022.
+                    Last updated on Jan 19, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

@@ -507,13 +507,13 @@ representing different kinds of data, like text and images.</p>
 </div>
 </div>
 </div>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="o">[{</span><span class="s1">&#39;embedded_by&#39;</span>: <span class="s1">&#39;textIndexer&#39;</span><span class="o">}</span>, <span class="o">{</span><span class="s1">&#39;embedded_by&#39;</span>: <span class="s1">&#39;textIndexer&#39;</span><span class="o">}]</span>
-<span class="o">[[</span><span class="m">0</span>.37511057 <span class="m">0</span>.14902827 <span class="m">0</span>.31666838<span class="o">]</span>
- <span class="o">[</span><span class="m">0</span>.18466062 <span class="m">0</span>.17823904 <span class="m">0</span>.20046065<span class="o">]]</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="o">[{</span><span class="s1">&#39;embedded_by&#39;</span>:<span class="w"> </span><span class="s1">&#39;textIndexer&#39;</span><span class="o">}</span>,<span class="w"> </span><span class="o">{</span><span class="s1">&#39;embedded_by&#39;</span>:<span class="w"> </span><span class="s1">&#39;textIndexer&#39;</span><span class="o">}]</span>
+<span class="o">[[</span><span class="m">0</span>.37511057<span class="w"> </span><span class="m">0</span>.14902827<span class="w"> </span><span class="m">0</span>.31666838<span class="o">]</span>
+<span class="w"> </span><span class="o">[</span><span class="m">0</span>.18466062<span class="w"> </span><span class="m">0</span>.17823904<span class="w"> </span><span class="m">0</span>.20046065<span class="o">]]</span>
 ---------
-<span class="o">[{</span><span class="s1">&#39;embedded_by&#39;</span>: <span class="s1">&#39;imageIndexer&#39;</span><span class="o">}</span>, <span class="o">{</span><span class="s1">&#39;embedded_by&#39;</span>: <span class="s1">&#39;imageIndexer&#39;</span><span class="o">}]</span>
-<span class="o">[[</span><span class="m">0</span>.37511057 <span class="m">0</span>.14902827 <span class="m">0</span>.31666838<span class="o">]</span>
- <span class="o">[</span><span class="m">0</span>.18466062 <span class="m">0</span>.17823904 <span class="m">0</span>.20046065<span class="o">]]</span>
+<span class="o">[{</span><span class="s1">&#39;embedded_by&#39;</span>:<span class="w"> </span><span class="s1">&#39;imageIndexer&#39;</span><span class="o">}</span>,<span class="w"> </span><span class="o">{</span><span class="s1">&#39;embedded_by&#39;</span>:<span class="w"> </span><span class="s1">&#39;imageIndexer&#39;</span><span class="o">}]</span>
+<span class="o">[[</span><span class="m">0</span>.37511057<span class="w"> </span><span class="m">0</span>.14902827<span class="w"> </span><span class="m">0</span>.31666838<span class="o">]</span>
+<span class="w"> </span><span class="o">[</span><span class="m">0</span>.18466062<span class="w"> </span><span class="m">0</span>.17823904<span class="w"> </span><span class="m">0</span>.20046065<span class="o">]]</span>
 </pre></div>
 </div>
 <p>As you can see, the image data was only processed by the <code class="docutils literal notranslate"><span class="pre">ImageIndexer</span></code>, and the text data was only processed by the <code class="docutils literal notranslate"><span class="pre">TextIndexer</span></code>.</p>
@@ -556,13 +556,13 @@ a condition accordingly.</p>
 <span class="nb">print</span><span class="p">(</span><span class="n">filtered_image_data</span><span class="o">.</span><span class="n">tensors</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="o">[</span><span class="s1">&#39;hey there!&#39;</span>, <span class="s1">&#39;hey there!&#39;</span><span class="o">]</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="o">[</span><span class="s1">&#39;hey there!&#39;</span>,<span class="w"> </span><span class="s1">&#39;hey there!&#39;</span><span class="o">]</span>
 ---
-<span class="o">[[[</span><span class="m">0</span>.50535537 <span class="m">0</span>.50538128<span class="o">]</span>
-  <span class="o">[</span><span class="m">0</span>.40446746 <span class="m">0</span>.34972967<span class="o">]]</span>
+<span class="o">[[[</span><span class="m">0</span>.50535537<span class="w"> </span><span class="m">0</span>.50538128<span class="o">]</span>
+<span class="w">  </span><span class="o">[</span><span class="m">0</span>.40446746<span class="w"> </span><span class="m">0</span>.34972967<span class="o">]]</span>
 
- <span class="o">[[</span><span class="m">0</span>.04222604 <span class="m">0</span>.70102327<span class="o">]</span>
-  <span class="o">[</span><span class="m">0</span>.12079661 <span class="m">0</span>.65313938<span class="o">]]]</span>
+<span class="w"> </span><span class="o">[[</span><span class="m">0</span>.04222604<span class="w"> </span><span class="m">0</span>.70102327<span class="o">]</span>
+<span class="w">  </span><span class="o">[</span><span class="m">0</span>.12079661<span class="w"> </span><span class="m">0</span>.65313938<span class="o">]]]</span>
 </pre></div>
 </div>
 <p>As you can see, each filter selects the Documents that contain the desired data fields.
@@ -640,10 +640,10 @@ text data will be sent to <code class="docutils literal notranslate"><span class
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Embedded by: </span><span class="si">{</span><span class="n">embedded_by</span><span class="si">}</span><span class="s1">; Text: </span><span class="si">{</span><span class="n">text</span><span class="si">}</span><span class="s1">, Image: </span><span class="si">{</span><span class="n">image</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>Embedded by: textIndexer<span class="p">;</span> Text: hey there!, Image: None
-Embedded by: textIndexer<span class="p">;</span> Text: hey there!, Image: None
-Embedded by: imageIndexer<span class="p">;</span> Text: , Image: <span class="o">[[</span><span class="m">0</span>.60863086 <span class="m">0</span>.39863197<span class="o">]</span>, <span class="o">[</span><span class="m">0</span>.78668579 <span class="m">0</span>.66100752<span class="o">]]</span>
-Embedded by: imageIndexer<span class="p">;</span> Text: , Image: <span class="o">[[</span><span class="m">0</span>.78359225 <span class="m">0</span>.75458748<span class="o">]</span>, <span class="o">[</span><span class="m">0</span>.56896536 <span class="m">0</span>.66725426<span class="o">]]</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>Embedded<span class="w"> </span>by:<span class="w"> </span>textIndexer<span class="p">;</span><span class="w"> </span>Text:<span class="w"> </span>hey<span class="w"> </span>there!,<span class="w"> </span>Image:<span class="w"> </span>None
+Embedded<span class="w"> </span>by:<span class="w"> </span>textIndexer<span class="p">;</span><span class="w"> </span>Text:<span class="w"> </span>hey<span class="w"> </span>there!,<span class="w"> </span>Image:<span class="w"> </span>None
+Embedded<span class="w"> </span>by:<span class="w"> </span>imageIndexer<span class="p">;</span><span class="w"> </span>Text:<span class="w"> </span>,<span class="w"> </span>Image:<span class="w"> </span><span class="o">[[</span><span class="m">0</span>.60863086<span class="w"> </span><span class="m">0</span>.39863197<span class="o">]</span>,<span class="w"> </span><span class="o">[</span><span class="m">0</span>.78668579<span class="w"> </span><span class="m">0</span>.66100752<span class="o">]]</span>
+Embedded<span class="w"> </span>by:<span class="w"> </span>imageIndexer<span class="p">;</span><span class="w"> </span>Text:<span class="w"> </span>,<span class="w"> </span>Image:<span class="w"> </span><span class="o">[[</span><span class="m">0</span>.78359225<span class="w"> </span><span class="m">0</span>.75458748<span class="o">]</span>,<span class="w"> </span><span class="o">[</span><span class="m">0</span>.56896536<span class="w"> </span><span class="m">0</span>.66725426<span class="o">]]</span>
 </pre></div>
 </div>
 <p>And indeed, that’s exactly what happens!</p>
@@ -702,7 +702,7 @@ itself looks like. Your imagination is the limit!</p>
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 21, 2022</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

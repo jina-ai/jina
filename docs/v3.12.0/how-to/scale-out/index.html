@@ -480,26 +480,26 @@ which could cause performance bottlenecks in an application.</p>
 <p>As Jina reports, it takes around six seconds to complete the task.
 This sounds reasonable (at index time), but bear in mind that this is just a test corpus.
 What if you need to index millions of Documents?</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>           Flow@2011375<span class="o">[</span>I<span class="o">]</span>:🎉 Flow is ready to use!                                        
-	🔗 Protocol: 		GRPC
-	🏠 Local access:	<span class="m">0</span>.0.0.0:52775
-	🔒 Private network:	<span class="m">172</span>.31.29.177:52775
-	🌐 Public address:	<span class="m">54</span>.93.57.58:52775
-⠇       DONE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╸━━━━━ <span class="m">0</span>:00:06 <span class="m">18</span>.1 step/s . <span class="m">115</span> steps <span class="k">done</span> <span class="k">in</span> <span class="m">6</span> seconds
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="w">           </span>Flow@2011375<span class="o">[</span>I<span class="o">]</span>:🎉<span class="w"> </span>Flow<span class="w"> </span>is<span class="w"> </span>ready<span class="w"> </span>to<span class="w"> </span>use!<span class="w">                                        </span>
+<span class="w">	</span>🔗<span class="w"> </span>Protocol:<span class="w"> 		</span>GRPC
+<span class="w">	</span>🏠<span class="w"> </span>Local<span class="w"> </span>access:<span class="w">	</span><span class="m">0</span>.0.0.0:52775
+<span class="w">	</span>🔒<span class="w"> </span>Private<span class="w"> </span>network:<span class="w">	</span><span class="m">172</span>.31.29.177:52775
+<span class="w">	</span>🌐<span class="w"> </span>Public<span class="w"> </span>address:<span class="w">	</span><span class="m">54</span>.93.57.58:52775
+⠇<span class="w">       </span>DONE<span class="w"> </span>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╸━━━━━<span class="w"> </span><span class="m">0</span>:00:06<span class="w"> </span><span class="m">18</span>.1<span class="w"> </span>step/s<span class="w"> </span>.<span class="w"> </span><span class="m">115</span><span class="w"> </span>steps<span class="w"> </span><span class="k">done</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="m">6</span><span class="w"> </span>seconds
 </pre></div>
 </div>
 <p>To do this, you can scale a <a class="reference internal" href="../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a> with just one parameter change:</p>
-<div class="highlight-diff notranslate"><div class="highlight"><pre><span></span><span class="gi">+ f = Flow().add(name=&#39;fast_executor&#39;).add(name=&#39;slow_executor&#39;, uses=MyVectorizer, replicas=2)</span><span class="w"></span>
-<span class="gd">- f = Flow().add(name=&#39;fast_executor&#39;).add(name=&#39;slow_executor&#39;, uses=MyVectorizer)</span><span class="w"></span>
+<div class="highlight-diff notranslate"><div class="highlight"><pre><span></span><span class="gi">+ f = Flow().add(name=&#39;fast_executor&#39;).add(name=&#39;slow_executor&#39;, uses=MyVectorizer, replicas=2)</span>
+<span class="gd">- f = Flow().add(name=&#39;fast_executor&#39;).add(name=&#39;slow_executor&#39;, uses=MyVectorizer)</span>
 </pre></div>
 </div>
 <p>Let’s see how it performs given two <code class="docutils literal notranslate"><span class="pre">replicas</span></code>:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>           Flow@2011375<span class="o">[</span>I<span class="o">]</span>:🎉 Flow is ready to use!                                        
-	🔗 Protocol: 		GRPC
-	🏠 Local access:	<span class="m">0</span>.0.0.0:57040
-	🔒 Private network:	<span class="m">172</span>.31.29.177:57040
-	🌐 Public address:	<span class="m">54</span>.93.57.58:57040
-⠇       DONE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╸━━━━━ <span class="m">0</span>:00:03 <span class="m">37</span>.0 step/s . <span class="m">115</span> steps <span class="k">done</span> <span class="k">in</span> <span class="m">3</span> seconds
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="w">           </span>Flow@2011375<span class="o">[</span>I<span class="o">]</span>:🎉<span class="w"> </span>Flow<span class="w"> </span>is<span class="w"> </span>ready<span class="w"> </span>to<span class="w"> </span>use!<span class="w">                                        </span>
+<span class="w">	</span>🔗<span class="w"> </span>Protocol:<span class="w"> 		</span>GRPC
+<span class="w">	</span>🏠<span class="w"> </span>Local<span class="w"> </span>access:<span class="w">	</span><span class="m">0</span>.0.0.0:57040
+<span class="w">	</span>🔒<span class="w"> </span>Private<span class="w"> </span>network:<span class="w">	</span><span class="m">172</span>.31.29.177:57040
+<span class="w">	</span>🌐<span class="w"> </span>Public<span class="w"> </span>address:<span class="w">	</span><span class="m">54</span>.93.57.58:57040
+⠇<span class="w">       </span>DONE<span class="w"> </span>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╸━━━━━<span class="w"> </span><span class="m">0</span>:00:03<span class="w"> </span><span class="m">37</span>.0<span class="w"> </span>step/s<span class="w"> </span>.<span class="w"> </span><span class="m">115</span><span class="w"> </span>steps<span class="w"> </span><span class="k">done</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="m">3</span><span class="w"> </span>seconds
 </pre></div>
 </div>
 <p>As you can see, it now only takes three seconds to finish the task. If you deploy Jina with Kubernetes, you can consider this <code class="docutils literal notranslate"><span class="pre">Executor</span></code> as a Kubernetes <code class="docutils literal notranslate"><span class="pre">Deployment</span></code> and each <code class="docutils literal notranslate"><span class="pre">replica</span></code> as a <code class="docutils literal notranslate"><span class="pre">Pod</span></code>.</p>
@@ -637,7 +637,7 @@ If you want to partition data across multiple places, use the <code class="docut
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 21, 2022</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

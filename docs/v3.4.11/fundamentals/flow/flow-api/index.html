@@ -692,23 +692,23 @@ This does not affect how you have to configure your Flow API, so the examples he
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--1-input--1" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--1">gRPC</label><div class="tab-content docutils">
 <p>Note that gRPC is the default protocol, so you can just omit it.</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
-<span class="nt">with</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;grpc&#39;</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span>
+<span class="nt">with</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;grpc&#39;</span>
 </pre></div>
 </div>
 </div>
 <input class="tab-input" id="tab-set--1-input--2" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--2">HTTP</label><div class="tab-content docutils">
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
-<span class="nt">with</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;http&#39;</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span>
+<span class="nt">with</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;http&#39;</span>
 </pre></div>
 </div>
 </div>
 <input class="tab-input" id="tab-set--1-input--3" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--3">WebSocket</label><div class="tab-content docutils">
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
-<span class="nt">with</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;websocket&#39;</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span>
+<span class="nt">with</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;websocket&#39;</span>
 </pre></div>
 </div>
 </div>
@@ -742,12 +742,12 @@ These custom endpoints can be added to the HTTP interface using <code class="doc
 </div>
 <input class="tab-input" id="tab-set--2-input--2" name="tab-set--2" type="radio"><label class="tab-label" for="tab-set--2-input--2">YAML</label><div class="tab-content docutils">
 <p>You can enable custom endpoints in a Flow using yaml syntax as well.</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
-<span class="nt">with</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http</span><span class="w"></span>
-<span class="w">  </span><span class="nt">expose_endpoints</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">/foo</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">summary</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my endpoint</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span>
+<span class="nt">with</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http</span>
+<span class="w">  </span><span class="nt">expose_endpoints</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">/foo</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">summary</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my endpoint</span>
 </pre></div>
 </div>
 </div>
@@ -761,15 +761,15 @@ These custom endpoints can be added to the HTTP interface using <code class="doc
 </div>
 </div>
 <input class="tab-input" id="tab-set--3-input--2" name="tab-set--3" type="radio"><label class="tab-label" for="tab-set--3-input--2">YAML</label><div class="tab-content docutils">
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
-<span class="nt">with</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http</span><span class="w"></span>
-<span class="w">  </span><span class="nt">expose_endpoints</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">/bar</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">methods</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;PUT&quot;</span><span class="p p-Indicator">]</span><span class="w"></span>
-<span class="w">      </span><span class="nt">summary</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my endpoint</span><span class="w"></span>
-<span class="w">      </span><span class="nt">tags</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">fine-tuning</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span>
+<span class="nt">with</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http</span>
+<span class="w">  </span><span class="nt">expose_endpoints</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">/bar</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">methods</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;PUT&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">      </span><span class="nt">summary</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my endpoint</span>
+<span class="w">      </span><span class="nt">tags</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">fine-tuning</span>
 </pre></div>
 </div>
 </div>
@@ -787,11 +787,11 @@ For example, in the code snippet below, we didn’t implement any CRUD endpoints
 </div>
 </div>
 <input class="tab-input" id="tab-set--4-input--2" name="tab-set--4" type="radio"><label class="tab-label" for="tab-set--4-input--2">YAML</label><div class="tab-content docutils">
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
-<span class="nt">with</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;http&#39;</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span>
+<span class="nt">with</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;http&#39;</span>
 <span class="w">  </span><span class="nt">no_debug_endpoints</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True,</span><span class="w"> </span>
-<span class="w">  </span><span class="nt">no_crud_endpoints</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True</span><span class="w"></span>
+<span class="w">  </span><span class="nt">no_crud_endpoints</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True</span>
 </pre></div>
 </div>
 </div>
@@ -847,9 +847,9 @@ To enable this endpoint, all you need to do is set <code class="docutils literal
 </div>
 </div>
 <input class="tab-input" id="tab-set--5-input--2" name="tab-set--5" type="radio"><label class="tab-label" for="tab-set--5-input--2">YAML</label><div class="tab-content docutils">
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
-<span class="nt">with</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;http&#39;</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span>
+<span class="nt">with</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;http&#39;</span>
 <span class="w">  </span><span class="nt">expose_graphql_endpont</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True,</span><span class="w"> </span>
 </pre></div>
 </div>
@@ -912,9 +912,9 @@ parameters:</p>
 </div>
 </div>
 <input class="tab-input" id="tab-set--6-input--2" name="tab-set--6" type="radio"><label class="tab-label" for="tab-set--6-input--2">YAML</label><div class="tab-content docutils">
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
-<span class="nt">with</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;http&#39;</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span>
+<span class="nt">with</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;http&#39;</span>
 <span class="w">  </span><span class="nt">cors</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True,</span><span class="w"> </span>
 </pre></div>
 </div>
@@ -1006,7 +1006,7 @@ If you do not wish to rebuild the image, set the environment variable <code clas
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Dec 21, 2022.
+                    Last updated on Jan 19, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

@@ -404,13 +404,13 @@
 
 
 <div class="viewcode-block" id="CompositeGateway"><a class="viewcode-back" href="../../../../../../../api/jina.serve.runtimes.gateway.composite.gateway/#jina.serve.runtimes.gateway.composite.CompositeGateway">[docs]</a><span class="k">class</span> <span class="nc">CompositeGateway</span><span class="p">(</span><span class="n">BaseGateway</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;GRPC Gateway implementation&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;GRPC Gateway implementation&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Initialize the gateway</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the gateway</span>
 <span class="sd">        :param kwargs: keyword args</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
@@ -429,19 +429,19 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">gateways</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gateway</span><span class="p">)</span>
 
 <div class="viewcode-block" id="CompositeGateway.setup_server"><a class="viewcode-back" href="../../../../../../../api/jina.serve.runtimes.gateway.composite.gateway/#jina.serve.runtimes.gateway.composite.CompositeGateway.setup_server">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">setup_server</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        setup GRPC server</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">gateway</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">gateways</span><span class="p">:</span>
             <span class="k">await</span> <span class="n">gateway</span><span class="o">.</span><span class="n">setup_server</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="CompositeGateway.shutdown"><a class="viewcode-back" href="../../../../../../../api/jina.serve.runtimes.gateway.composite.gateway/#jina.serve.runtimes.gateway.composite.CompositeGateway.shutdown">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Free other resources allocated with the server, e.g, gateway object, ...&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Free other resources allocated with the server, e.g, gateway object, ...&quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">gateway</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">gateways</span><span class="p">:</span>
             <span class="k">await</span> <span class="n">gateway</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="CompositeGateway.run_server"><a class="viewcode-back" href="../../../../../../../api/jina.serve.runtimes.gateway.composite.gateway/#jina.serve.runtimes.gateway.composite.CompositeGateway.run_server">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">run_server</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Run GRPC server forever&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Run GRPC server forever&quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">gateway</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">gateways</span><span class="p">:</span>
             <span class="k">await</span> <span class="n">gateway</span><span class="o">.</span><span class="n">run_server</span><span class="p">()</span></div>
 
@@ -465,7 +465,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Dec 21, 2022</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

@@ -636,11 +636,11 @@
 
 
 <div class="viewcode-block" id="DaemonEnum"><a class="viewcode-back" href="../../../../api/daemon.models.enums/#daemon.models.enums.DaemonEnum">[docs]</a><span class="k">class</span> <span class="nc">DaemonEnum</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Base class of Enum in JinaD&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class of Enum in JinaD&quot;&quot;&quot;</span>
 
     <span class="nd">@classproperty</span>
     <span class="k">def</span> <span class="nf">values</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Get all values in Enum</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get all values in Enum</span>
 
 <span class="sd">        :return: Get all values in Enum</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -648,7 +648,7 @@
 
 
 <div class="viewcode-block" id="IDLiterals"><a class="viewcode-back" href="../../../../api/daemon.models.enums/#daemon.models.enums.IDLiterals">[docs]</a><span class="k">class</span> <span class="nc">IDLiterals</span><span class="p">(</span><span class="n">DaemonEnum</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Enum representing all values allowed in DaemonID&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Enum representing all values allowed in DaemonID&quot;&quot;&quot;</span>
 
     <span class="n">JDEPLOYMENT</span> <span class="o">=</span> <span class="s1">&#39;jdeployment&#39;</span>
     <span class="n">JPOD</span> <span class="o">=</span> <span class="s1">&#39;jpod&#39;</span>
@@ -658,7 +658,7 @@
 
 
 <div class="viewcode-block" id="DaemonDockerfile"><a class="viewcode-back" href="../../../../api/daemon.models.enums/#daemon.models.enums.DaemonDockerfile">[docs]</a><span class="k">class</span> <span class="nc">DaemonDockerfile</span><span class="p">(</span><span class="n">DaemonEnum</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Enum representing build value passed in .jinad file&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Enum representing build value passed in .jinad file&quot;&quot;&quot;</span>
 
     <span class="n">DEVEL</span> <span class="o">=</span> <span class="s1">&#39;devel&#39;</span>
     <span class="n">DEFAULT</span> <span class="o">=</span> <span class="s1">&#39;default&#39;</span>
@@ -668,7 +668,7 @@
 
 <div class="viewcode-block" id="DaemonDockerfile.default"><a class="viewcode-back" href="../../../../api/daemon.models.enums/#daemon.models.enums.DaemonDockerfile.default">[docs]</a>    <span class="nd">@classproperty</span>
     <span class="k">def</span> <span class="nf">default</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Get default value for DaemonDockerfile</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get default value for DaemonDockerfile</span>
 
 <span class="sd">        .. note::</span>
 <span class="sd">            set env var `JINA_DAEMON_BUILD` to `DEVEL` if you&#39;re working on dev mode</span>
@@ -686,7 +686,7 @@
 
 
 <div class="viewcode-block" id="PythonVersion"><a class="viewcode-back" href="../../../../api/daemon.models.enums/#daemon.models.enums.PythonVersion">[docs]</a><span class="k">class</span> <span class="nc">PythonVersion</span><span class="p">(</span><span class="n">DaemonEnum</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Enum representing python versions allowed in .jinad file&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Enum representing python versions allowed in .jinad file&quot;&quot;&quot;</span>
 
     <span class="n">PY37</span> <span class="o">=</span> <span class="s1">&#39;3.7&#39;</span>
     <span class="n">PY38</span> <span class="o">=</span> <span class="s1">&#39;3.8&#39;</span>
@@ -694,14 +694,14 @@
 
 <div class="viewcode-block" id="PythonVersion.default"><a class="viewcode-back" href="../../../../api/daemon.models.enums/#daemon.models.enums.PythonVersion.default">[docs]</a>    <span class="nd">@classproperty</span>
     <span class="k">def</span> <span class="nf">default</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Get default value for PythonVersion</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get default value for PythonVersion</span>
 
 <span class="sd">        :return: default value for PythonVersion&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">PY38</span></div></div>
 
 
 <div class="viewcode-block" id="PartialDaemonModes"><a class="viewcode-back" href="../../../../api/daemon.models.enums/#daemon.models.enums.PartialDaemonModes">[docs]</a><span class="k">class</span> <span class="nc">PartialDaemonModes</span><span class="p">(</span><span class="n">DaemonEnum</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Enum representing partial daemon modes&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Enum representing partial daemon modes&quot;&quot;&quot;</span>
 
     <span class="n">POD</span> <span class="o">=</span> <span class="s1">&#39;pod&#39;</span>
     <span class="n">DEPLOYMENT</span> <span class="o">=</span> <span class="s1">&#39;deployment&#39;</span>
@@ -717,7 +717,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Dec 21, 2022.
+                    Last updated on Jan 19, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

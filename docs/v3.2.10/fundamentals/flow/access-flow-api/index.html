@@ -723,7 +723,7 @@ You can again use the <a class="reference external" href="https://api.jina.ai/re
 <section id="use-http-client-to-send-request">
 <h3>Use HTTP client to send request<a class="headerlink" href="#use-http-client-to-send-request" title="Permalink to this heading">#</a></h3>
 <p>With the help of OpenAPI schema, one can send data requests to a Flow via cURL, Postman, or any other HTTP client. Here’s an example that uses cURL.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl --request POST <span class="s1">&#39;http://localhost:12345/post&#39;</span> --header <span class="s1">&#39;Content-Type: application/json&#39;</span> -d <span class="s1">&#39;{&quot;data&quot;: [{&quot;text&quot;: &quot;hello world&quot;}],&quot;execEndpoint&quot;: &quot;/index&quot;}&#39;</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>--request<span class="w"> </span>POST<span class="w"> </span><span class="s1">&#39;http://localhost:12345/post&#39;</span><span class="w"> </span>--header<span class="w"> </span><span class="s1">&#39;Content-Type: application/json&#39;</span><span class="w"> </span>-d<span class="w"> </span><span class="s1">&#39;{&quot;data&quot;: [{&quot;text&quot;: &quot;hello world&quot;}],&quot;execEndpoint&quot;: &quot;/index&quot;}&#39;</span>
 </pre></div>
 </div>
 <details>
@@ -891,7 +891,7 @@ and more.</p>
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Dec 21, 2022.
+                    Last updated on Jan 19, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

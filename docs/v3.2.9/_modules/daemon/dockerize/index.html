@@ -661,7 +661,7 @@
 
 
 <div class="viewcode-block" id="Dockerizer"><a class="viewcode-back" href="../../../api/daemon.dockerize/#daemon.dockerize.Dockerizer">[docs]</a><span class="k">class</span> <span class="nc">Dockerizer</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Helper class to interact with docker client &amp; dockerd&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Helper class to interact with docker client &amp; dockerd&quot;&quot;&quot;</span>
 
     <span class="n">logger</span> <span class="o">=</span> <span class="n">JinaLogger</span><span class="p">(</span><span class="s1">&#39;Dockerizer&#39;</span><span class="p">,</span> <span class="o">**</span><span class="nb">vars</span><span class="p">(</span><span class="n">jinad_args</span><span class="p">))</span>
     <span class="k">try</span><span class="p">:</span>
@@ -692,7 +692,7 @@
 
     <span class="nd">@classproperty</span>
     <span class="k">def</span> <span class="nf">networks</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">DaemonID</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns all local docker networks with name in a pattern of `DaemonID`</span>
 <span class="sd">        :return: list of networks created by jinad</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -700,7 +700,7 @@
 
     <span class="nd">@classproperty</span>
     <span class="k">def</span> <span class="nf">images</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">DaemonID</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns all local docker images with name in a pattern of `DaemonID`</span>
 <span class="sd">        :return: list of images created by jinad</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -708,7 +708,7 @@
 
     <span class="nd">@classproperty</span>
     <span class="k">def</span> <span class="nf">containers</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">DaemonID</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns all local docker containers with name in a pattern of `DaemonID`</span>
 <span class="sd">        :return: list of containers created by jinad</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -716,7 +716,7 @@
 
 <div class="viewcode-block" id="Dockerizer.network"><a class="viewcode-back" href="../../../api/daemon.dockerize/#daemon.dockerize.Dockerizer.network">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">network</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">workspace_id</span><span class="p">:</span> <span class="n">DaemonID</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a docker bridge network with name `workspace_id` using a predefined ipam config.</span>
 <span class="sd">        All containers under `workspace_id` would use this network.</span>
 <span class="sd">        :param workspace_id: workspace id</span>
@@ -737,7 +737,7 @@
                 <span class="n">pool_configs</span><span class="o">=</span><span class="p">[</span>
                     <span class="n">docker</span><span class="o">.</span><span class="n">types</span><span class="o">.</span><span class="n">IPAMPool</span><span class="p">(</span>
                         <span class="n">subnet</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">new_subnet_start</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">workspace_store</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">subnet_size</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
-                        <span class="n">gateway</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">new_subnet_start</span> <span class="o">+</span> <span class="mi">1</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+                        <span class="n">gateway</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">new_subnet_start</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
                     <span class="p">)</span>
                 <span class="p">]</span>
             <span class="p">)</span>
@@ -760,7 +760,7 @@
     <span class="k">def</span> <span class="nf">build</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span> <span class="n">workspace_id</span><span class="p">:</span> <span class="s1">&#39;DaemonID&#39;</span><span class="p">,</span> <span class="n">daemon_file</span><span class="p">:</span> <span class="s1">&#39;DaemonFile&#39;</span><span class="p">,</span> <span class="n">logger</span><span class="p">:</span> <span class="s1">&#39;JinaLogger&#39;</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Build docker image using daemon file &amp; tag it with `workspace_id`</span>
 <span class="sd">        :param workspace_id: workspace id</span>
 <span class="sd">        :param daemon_file: daemon file describing content inside the workdir</span>
@@ -808,7 +808,7 @@
     <span class="k">def</span> <span class="nf">run_custom</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span> <span class="n">workspace_id</span><span class="p">:</span> <span class="n">DaemonID</span><span class="p">,</span> <span class="n">daemon_file</span><span class="p">:</span> <span class="s1">&#39;DaemonFile&#39;</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="s1">&#39;Container&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Run a custom container during workspace creation.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Run a custom container during workspace creation.</span>
 <span class="sd">        .. note::</span>
 <span class="sd">            This invalidates the default entrypint (mini-jinad) &amp; uses the entrypoint provided</span>
 <span class="sd">            mentioned in the .jinad file (`run` section)</span>
@@ -833,7 +833,7 @@
         <span class="n">envs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="p">{},</span>
         <span class="n">device_requests</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="s1">&#39;Container&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Runs a container using an existing image (tagged with `workspace_id`).</span>
 <span class="sd">        Maps `ports` to local dockerhost &amp; tags the container with name `container_id`</span>
 <span class="sd">        .. note::</span>
@@ -870,8 +870,8 @@
         <span class="n">image</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">images</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">metadata</span><span class="o">.</span><span class="n">image_id</span><span class="p">)</span>
         <span class="n">network</span> <span class="o">=</span> <span class="n">metadata</span><span class="o">.</span><span class="n">network</span>
         <span class="bp">cls</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s1">&#39;creating a container using image </span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="n">metadata</span><span class="o">.</span><span class="n">image_id</span><span class="p">,</span> <span class="s2">&quot;cyan&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1"> in network &#39;</span>
-            <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="s2">&quot;cyan&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1"> and ports </span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="n">ports</span><span class="p">,</span> <span class="s2">&quot;cyan&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="sa">f</span><span class="s1">&#39;creating a container using image </span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="n">metadata</span><span class="o">.</span><span class="n">image_id</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;cyan&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1"> in network &#39;</span>
+            <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="n">network</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;cyan&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1"> and ports </span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="n">ports</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;cyan&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span>
         <span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">run_kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
@@ -925,7 +925,7 @@
 
 <div class="viewcode-block" id="Dockerizer.logs"><a class="viewcode-back" href="../../../api/daemon.dockerize/#daemon.dockerize.Dockerizer.logs">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">logs</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Get all logs of a container</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get all logs of a container</span>
 
 <span class="sd">        :param id: container id</span>
 <span class="sd">        :return: logs as str</span>
@@ -953,7 +953,7 @@
 
     <span class="nd">@classproperty</span>
     <span class="k">def</span> <span class="nf">dockersock</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;docker socket path</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;docker socket path</span>
 
 <span class="sd">        :return: abs path to docker socket</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -962,7 +962,7 @@
 
 <div class="viewcode-block" id="Dockerizer.volume"><a class="viewcode-back" href="../../../api/daemon.dockerize/#daemon.dockerize.Dockerizer.volume">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">volume</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">workspace_id</span><span class="p">:</span> <span class="n">DaemonID</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Local volumes to be mounted inside the container during `run`.</span>
 <span class="sd">        .. note::</span>
 <span class="sd">            Local workspace should always be mounted to default WORKDIR for the container (/workspace).</span>
@@ -980,7 +980,7 @@
 
 <div class="viewcode-block" id="Dockerizer.environment"><a class="viewcode-back" href="../../../api/daemon.dockerize/#daemon.dockerize.Dockerizer.environment">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">environment</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">envs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Environment variables to be set inside the container during `run`</span>
 
 <span class="sd">        :param envs: dict of env vars to be set in the container</span>
@@ -999,7 +999,7 @@
 
 <div class="viewcode-block" id="Dockerizer.remove"><a class="viewcode-back" href="../../../api/daemon.dockerize/#daemon.dockerize.Dockerizer.remove">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="n">DaemonID</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Determines type of jinad object &amp; removes that from dockerd</span>
 <span class="sd">        :param id: `DaemonID` describing local docker object</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1012,7 +1012,7 @@
 
 <div class="viewcode-block" id="Dockerizer.containers_in_network"><a class="viewcode-back" href="../../../api/daemon.dockerize/#daemon.dockerize.Dockerizer.containers_in_network">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">containers_in_network</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Get all containers currently connected to network</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get all containers currently connected to network</span>
 <span class="sd">        :param id: network id</span>
 <span class="sd">        :return: list of containers connected to network id</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1025,7 +1025,7 @@
 
 <div class="viewcode-block" id="Dockerizer.rm_network"><a class="viewcode-back" href="../../../api/daemon.dockerize/#daemon.dockerize.Dockerizer.rm_network">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">rm_network</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Remove network from local if no containers are connected</span>
 <span class="sd">        :param id: network id</span>
 <span class="sd">        :return: True if deletion is successful else False</span>
@@ -1040,7 +1040,7 @@
 
             <span class="n">network</span><span class="p">:</span> <span class="s1">&#39;Network&#39;</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">networks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
             <span class="n">network</span><span class="o">.</span><span class="n">remove</span><span class="p">()</span>
-            <span class="bp">cls</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;network </span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="s2">&quot;cyan&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1"> successfully removed&#39;</span><span class="p">)</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;network </span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;cyan&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1"> successfully removed&#39;</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">True</span>
         <span class="k">except</span> <span class="n">docker</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">NotFound</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="bp">cls</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Couldn</span><span class="se">\&#39;</span><span class="s1">t find a network with id: `</span><span class="si">{</span><span class="nb">id</span><span class="si">}</span><span class="s1">`&#39;</span><span class="p">)</span>
@@ -1054,7 +1054,7 @@
 
 <div class="viewcode-block" id="Dockerizer.rm_image"><a class="viewcode-back" href="../../../api/daemon.dockerize/#daemon.dockerize.Dockerizer.rm_image">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">rm_image</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Remove image from local</span>
 <span class="sd">        :param id: image id</span>
 <span class="sd">        :raises KeyError: if image is not found on local</span>
@@ -1074,7 +1074,7 @@
 
 <div class="viewcode-block" id="Dockerizer.rm_container"><a class="viewcode-back" href="../../../api/daemon.dockerize/#daemon.dockerize.Dockerizer.rm_container">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">rm_container</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Remove container from local</span>
 <span class="sd">        :param id: container id</span>
 <span class="sd">        :raises KeyError: if container is not found on local</span>
@@ -1102,7 +1102,7 @@
 
 <div class="viewcode-block" id="Dockerizer.exposed_ports"><a class="viewcode-back" href="../../../api/daemon.dockerize/#daemon.dockerize.Dockerizer.exposed_ports">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">exposed_ports</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Checks the currently running docker containers for ports exposed to the host</span>
 <span class="sd">        :return: A set of ports exposed by all currently running docker containers</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1125,7 +1125,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Dec 21, 2022.
+                    Last updated on Jan 19, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

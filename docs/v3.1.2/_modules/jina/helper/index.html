@@ -686,7 +686,7 @@
 
 
 <div class="viewcode-block" id="deprecated_alias"><a class="viewcode-back" href="../../../api/jina.helper/#jina.helper.deprecated_alias">[docs]</a><span class="k">def</span> <span class="nf">deprecated_alias</span><span class="p">(</span><span class="o">**</span><span class="n">aliases</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Usage, kwargs with key as the deprecated arg name and value be a tuple, (new_name, deprecate_level).</span>
 
 <span class="sd">    With level 0 means warning, level 1 means exception.</span>
@@ -710,7 +710,7 @@
     <span class="kn">from</span> <span class="nn">jina.excepts</span> <span class="kn">import</span> <span class="n">NotSupportedError</span>
 
     <span class="k">def</span> <span class="nf">_rename_kwargs</span><span class="p">(</span><span class="n">func_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">,</span> <span class="n">aliases</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Raise warnings or exceptions for deprecated arguments.</span>
 
 <span class="sd">        :param func_name: Name of the function.</span>
@@ -741,7 +741,7 @@
                     <span class="k">raise</span> <span class="n">NotSupportedError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">alias</span><span class="si">}</span><span class="s1"> has been renamed to `</span><span class="si">{</span><span class="n">new_name</span><span class="si">}</span><span class="s1">`&#39;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">deco</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set Decorator function.</span>
 
 <span class="sd">        :param f: function the decorator is used for</span>
@@ -750,7 +750,7 @@
 
         <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
         <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-            <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Set wrapper function.</span>
 <span class="sd">            :param args: wrapper arguments</span>
 <span class="sd">            :param kwargs: wrapper key word arguments</span>
@@ -781,7 +781,7 @@
 
 
 <div class="viewcode-block" id="get_readable_size"><a class="viewcode-back" href="../../../api/jina.helper/#jina.helper.get_readable_size">[docs]</a><span class="k">def</span> <span class="nf">get_readable_size</span><span class="p">(</span><span class="n">num_bytes</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Transform the bytes into readable value with different units (e.g. 1 KB, 20 MB, 30.1 GB).</span>
 
 <span class="sd">    :param num_bytes: Number of bytes.</span>
@@ -791,11 +791,11 @@
     <span class="k">if</span> <span class="n">num_bytes</span> <span class="o">&lt;</span> <span class="mi">1024</span><span class="p">:</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">num_bytes</span><span class="si">}</span><span class="s1"> Bytes&#39;</span>
     <span class="k">elif</span> <span class="n">num_bytes</span> <span class="o">&lt;</span> <span class="mi">1024</span> <span class="o">**</span> <span class="mi">2</span><span class="p">:</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">num_bytes</span> <span class="o">/</span> <span class="mi">1024</span><span class="si">:</span><span class="s1">.1f</span><span class="si">}</span><span class="s1"> KB&#39;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">num_bytes</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">1024</span><span class="si">:</span><span class="s1">.1f</span><span class="si">}</span><span class="s1"> KB&#39;</span>
     <span class="k">elif</span> <span class="n">num_bytes</span> <span class="o">&lt;</span> <span class="mi">1024</span> <span class="o">**</span> <span class="mi">3</span><span class="p">:</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">num_bytes</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1024</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span><span class="si">:</span><span class="s1">.1f</span><span class="si">}</span><span class="s1"> MB&#39;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">num_bytes</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="mi">1024</span><span class="w"> </span><span class="o">**</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="si">:</span><span class="s1">.1f</span><span class="si">}</span><span class="s1"> MB&#39;</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">num_bytes</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1024</span> <span class="o">**</span> <span class="mi">3</span><span class="p">)</span><span class="si">:</span><span class="s1">.1f</span><span class="si">}</span><span class="s1"> GB&#39;</span></div>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">num_bytes</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="mi">1024</span><span class="w"> </span><span class="o">**</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="si">:</span><span class="s1">.1f</span><span class="si">}</span><span class="s1"> GB&#39;</span></div>
 
 
 <div class="viewcode-block" id="batch_iterator"><a class="viewcode-back" href="../../../api/jina.helper/#jina.helper.batch_iterator">[docs]</a><span class="k">def</span> <span class="nf">batch_iterator</span><span class="p">(</span>
@@ -803,7 +803,7 @@
     <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="n">axis</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">Any</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get an iterator of batches of data.</span>
 
 <span class="sd">    For example:</span>
@@ -854,7 +854,7 @@
 
 
 <div class="viewcode-block" id="parse_arg"><a class="viewcode-back" href="../../../api/jina.helper/#jina.helper.parse_arg">[docs]</a><span class="k">def</span> <span class="nf">parse_arg</span><span class="p">(</span><span class="n">v</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Parse the arguments from string to `Union[bool, int, str, list, float]`.</span>
 
 <span class="sd">    :param v: The string of arguments</span>
@@ -888,7 +888,7 @@
 
 
 <div class="viewcode-block" id="countdown"><a class="viewcode-back" href="../../../api/jina.helper/#jina.helper.countdown">[docs]</a><span class="k">def</span> <span class="nf">countdown</span><span class="p">(</span><span class="n">t</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">reason</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;I am blocking this thread&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Display the countdown in console.</span>
 
 <span class="sd">    For example:</span>
@@ -906,7 +906,7 @@
         <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
         <span class="k">while</span> <span class="n">t</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">t</span> <span class="o">-=</span> <span class="mi">1</span>
-            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;⏳ </span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%3d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">t</span><span class="p">,</span> <span class="s2">&quot;yellow&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1">s left: </span><span class="si">{</span><span class="n">reason</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;⏳ </span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%3d</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="n">t</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;yellow&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1">s left: </span><span class="si">{</span><span class="n">reason</span><span class="si">}</span><span class="s1">&#39;</span>
             <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="se">\r</span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
             <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
             <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
@@ -1025,7 +1025,7 @@
 
 
 <span class="k">def</span> <span class="nf">random_name</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generate a random name from list.</span>
 
 <span class="sd">    :return: A Random name.</span>
@@ -1058,7 +1058,7 @@
 
 
 <div class="viewcode-block" id="random_port"><a class="viewcode-back" href="../../../api/jina.helper/#jina.helper.random_port">[docs]</a><span class="k">def</span> <span class="nf">random_port</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get a random available port number.</span>
 
 <span class="sd">    :return: A random port.</span>
@@ -1100,7 +1100,7 @@
 
 
 <div class="viewcode-block" id="random_identity"><a class="viewcode-back" href="../../../api/jina.helper/#jina.helper.random_identity">[docs]</a><span class="k">def</span> <span class="nf">random_identity</span><span class="p">(</span><span class="n">use_uuid1</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generate random UUID.</span>
 
 <span class="sd">    ..note::</span>
@@ -1118,7 +1118,7 @@
 
 
 <div class="viewcode-block" id="random_uuid"><a class="viewcode-back" href="../../../api/jina.helper/#jina.helper.random_uuid">[docs]</a><span class="k">def</span> <span class="nf">random_uuid</span><span class="p">(</span><span class="n">use_uuid1</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">uuid</span><span class="o">.</span><span class="n">UUID</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get a random UUID.</span>
 
 <span class="sd">    :param use_uuid1: Use UUID1 if True, else use UUID4.</span>
@@ -1128,7 +1128,7 @@
 
 
 <div class="viewcode-block" id="expand_env_var"><a class="viewcode-back" href="../../../api/jina.helper/#jina.helper.expand_env_var">[docs]</a><span class="k">def</span> <span class="nf">expand_env_var</span><span class="p">(</span><span class="n">v</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Expand the environment variables.</span>
 
 <span class="sd">    :param v: String of environment variables.</span>
@@ -1143,7 +1143,7 @@
 <span class="k">def</span> <span class="nf">expand_dict</span><span class="p">(</span>
     <span class="n">d</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">expand_fn</span><span class="o">=</span><span class="n">expand_env_var</span><span class="p">,</span> <span class="n">resolve_cycle_ref</span><span class="o">=</span><span class="kc">True</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Expand variables from YAML file.</span>
 
 <span class="sd">    :param d: Target Dict.</span>
@@ -1248,7 +1248,7 @@
     <span class="n">on_color</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">attrs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Give the text with color.</span>
 
 <span class="sd">    :param text: The target text.</span>
@@ -1322,7 +1322,7 @@
 
 
 <span class="k">def</span> <span class="nf">warn_unknown_args</span><span class="p">(</span><span class="n">unknown_args</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
-    <span class="sd">&quot;&quot;&quot;Creates warnings for all given arguments.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Creates warnings for all given arguments.</span>
 
 <span class="sd">    :param unknown_args: arguments that are possibly unknown to Jina</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1351,11 +1351,11 @@
 
 
 <div class="viewcode-block" id="ArgNamespace"><a class="viewcode-back" href="../../../api/jina.helper/#jina.helper.ArgNamespace">[docs]</a><span class="k">class</span> <span class="nc">ArgNamespace</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Helper function for argparse.Namespace object.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Helper function for argparse.Namespace object.&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="ArgNamespace.kwargs2list"><a class="viewcode-back" href="../../../api/jina.helper/#jina.helper.ArgNamespace.kwargs2list">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">kwargs2list</span><span class="p">(</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert dict to an argparse-friendly list.</span>
 
 <span class="sd">        :param kwargs: dictionary of key-values to be converted</span>
@@ -1388,7 +1388,7 @@
         <span class="n">fallback_parsers</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">ArgumentParser</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">positional_args</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Namespace</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert dict to a namespace.</span>
 
 <span class="sd">        :param kwargs: dictionary of key-values to be converted</span>
@@ -1420,7 +1420,7 @@
     <span class="k">def</span> <span class="nf">get_non_defaults_args</span><span class="p">(</span>
         <span class="n">args</span><span class="p">:</span> <span class="n">Namespace</span><span class="p">,</span> <span class="n">parser</span><span class="p">:</span> <span class="n">ArgumentParser</span><span class="p">,</span> <span class="n">taboo</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get non-default args in a dict.</span>
 
 <span class="sd">        :param args: the namespace to parse</span>
@@ -1441,7 +1441,7 @@
     <span class="k">def</span> <span class="nf">flatten_to_dict</span><span class="p">(</span>
         <span class="n">args</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="s1">&#39;Namespace&#39;</span><span class="p">],</span> <span class="s1">&#39;Namespace&#39;</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Convert argparse.Namespace to dict to be uploaded via REST.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert argparse.Namespace to dict to be uploaded via REST.</span>
 
 <span class="sd">        :param args: namespace or dict or namespace to dict.</span>
 <span class="sd">        :return: pod args</span>
@@ -1462,7 +1462,7 @@
 
 <div class="viewcode-block" id="is_valid_local_config_source"><a class="viewcode-back" href="../../../api/jina.helper/#jina.helper.is_valid_local_config_source">[docs]</a><span class="k">def</span> <span class="nf">is_valid_local_config_source</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
     <span class="c1"># TODO: this function must be refactored before 1.0 (Han 12.22)</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Check if the path is valid.</span>
 
 <span class="sd">    :param path: Local file path.</span>
@@ -1478,7 +1478,7 @@
 
 
 <span class="k">def</span> <span class="nf">get_full_version</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Dict</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]]:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the version of libraries used in Jina and environment variables.</span>
 
 <span class="sd">    :return: Version information and environment variables</span>
@@ -1530,7 +1530,7 @@
 
 
 <span class="k">def</span> <span class="nf">format_full_version_info</span><span class="p">(</span><span class="n">info</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">env_info</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Format the version information.</span>
 
 <span class="sd">    :param info: Version information of Jina libraries.</span>
@@ -1560,7 +1560,7 @@
 
 
 <div class="viewcode-block" id="get_or_reuse_loop"><a class="viewcode-back" href="../../../api/jina.helper/#jina.helper.get_or_reuse_loop">[docs]</a><span class="k">def</span> <span class="nf">get_or_reuse_loop</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get a new eventloop or reuse the current opened eventloop.</span>
 
 <span class="sd">    :return: A new eventloop or reuse the current opened eventloop.</span>
@@ -1579,7 +1579,7 @@
 
 
 <div class="viewcode-block" id="typename"><a class="viewcode-back" href="../../../api/jina.helper/#jina.helper.typename">[docs]</a><span class="k">def</span> <span class="nf">typename</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the typename of object.</span>
 
 <span class="sd">    :param obj: Target object.</span>
@@ -1594,7 +1594,7 @@
 
 
 <div class="viewcode-block" id="CatchAllCleanupContextManager"><a class="viewcode-back" href="../../../api/jina.helper/#jina.helper.CatchAllCleanupContextManager">[docs]</a><span class="k">class</span> <span class="nc">CatchAllCleanupContextManager</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This context manager guarantees, that the :method:``__exit__`` of the</span>
 <span class="sd">    sub context is called, even when there is an Exception in the</span>
 <span class="sd">    :method:``__enter__``.</span>
@@ -1614,10 +1614,10 @@
 
 
 <div class="viewcode-block" id="cached_property"><a class="viewcode-back" href="../../../api/jina.helper/#jina.helper.cached_property">[docs]</a><span class="k">class</span> <span class="nc">cached_property</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;The decorator to cache property of a class.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The decorator to cache property of a class.&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create the :class:`cached_property`.</span>
 
 <span class="sd">        :param func: Cached function.</span>
@@ -1641,7 +1641,7 @@
 
 
 <span class="k">class</span> <span class="nc">_cache_invalidate</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Class for cache invalidation, remove strategy.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class for cache invalidation, remove strategy.</span>
 
 <span class="sd">    :param func: func to wrap as a decorator.</span>
 <span class="sd">    :param attribute: String as the function name to invalidate cached</span>
@@ -1668,7 +1668,7 @@
 
 
 <span class="k">def</span> <span class="nf">cache_invalidate</span><span class="p">(</span><span class="n">attribute</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;The cache invalidator decorator to wrap the method call.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The cache invalidator decorator to wrap the method call.</span>
 
 <span class="sd">    Check the implementation in :class:`_cache_invalidate`.</span>
 
@@ -1683,7 +1683,7 @@
 
 
 <span class="k">def</span> <span class="nf">get_now_timestamp</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the datetime.</span>
 
 <span class="sd">    :return: The datetime in int format.</span>
@@ -1693,7 +1693,7 @@
 
 
 <span class="k">def</span> <span class="nf">get_readable_time</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the datetime in human readable format (e.g. 115 days and 17 hours and 46 minutes and 40 seconds).</span>
 
 <span class="sd">    For example:</span>
@@ -1722,7 +1722,7 @@
 
 
 <div class="viewcode-block" id="get_internal_ip"><a class="viewcode-back" href="../../../api/jina.helper/#jina.helper.get_internal_ip">[docs]</a><span class="k">def</span> <span class="nf">get_internal_ip</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the private IP address of the gateway for connecting from other machine in the same network.</span>
 
 <span class="sd">    :return: Private IP address.</span>
@@ -1741,7 +1741,7 @@
 
 
 <div class="viewcode-block" id="get_public_ip"><a class="viewcode-back" href="../../../api/jina.helper/#jina.helper.get_public_ip">[docs]</a><span class="k">def</span> <span class="nf">get_public_ip</span><span class="p">(</span><span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.3</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the public IP address of the gateway for connecting from other machine in the public network.</span>
 
 <span class="sd">    :param timeout: the seconds to wait until return None.</span>
@@ -1788,7 +1788,7 @@
 
 
 <div class="viewcode-block" id="convert_tuple_to_list"><a class="viewcode-back" href="../../../api/jina.helper/#jina.helper.convert_tuple_to_list">[docs]</a><span class="k">def</span> <span class="nf">convert_tuple_to_list</span><span class="p">(</span><span class="n">d</span><span class="p">:</span> <span class="n">Dict</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert all the tuple type values from a dict to list.</span>
 
 <span class="sd">    :param d: Dict type of data.</span>
@@ -1801,7 +1801,7 @@
 
 
 <span class="k">def</span> <span class="nf">is_jupyter</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Check if we&#39;re running in a Jupyter notebook, using magic command `get_ipython` that only available in Jupyter.</span>
 
 <span class="sd">    :return: True if run in a Jupyter notebook else False.</span>
@@ -1832,7 +1832,7 @@
 
 
 <div class="viewcode-block" id="run_async"><a class="viewcode-back" href="../../../api/jina.helper/#jina.helper.run_async">[docs]</a><span class="k">def</span> <span class="nf">run_async</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Generalized asyncio.run for jupyter notebook.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generalized asyncio.run for jupyter notebook.</span>
 
 <span class="sd">    When running inside jupyter, an eventloop is already exist, can&#39;t be stopped, can&#39;t be killed.</span>
 <span class="sd">    Directly calling asyncio.run will fail, as This function cannot be called when another asyncio event loop</span>
@@ -1852,10 +1852,10 @@
     <span class="n">any_event_loop</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;any_event_loop&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
 
     <span class="k">class</span> <span class="nc">_RunThread</span><span class="p">(</span><span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Create a running thread when in Jupyter notebook.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a running thread when in Jupyter notebook.&quot;&quot;&quot;</span>
 
         <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-            <span class="sd">&quot;&quot;&quot;Run given `func` asynchronously.&quot;&quot;&quot;</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;Run given `func` asynchronously.&quot;&quot;&quot;</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
 
     <span class="k">try</span><span class="p">:</span>
@@ -1891,7 +1891,7 @@
 
 
 <span class="k">def</span> <span class="nf">slugify</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Normalize string, converts to lowercase, removes non-alpha characters, and converts spaces to hyphens.</span>
 
 <span class="sd">    :param value: Original string.</span>
@@ -1902,7 +1902,7 @@
 
 
 <span class="k">def</span> <span class="nf">is_yaml_filepath</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Check if the file is YAML file.</span>
 
 <span class="sd">    :param val: Path of target file.</span>
@@ -1916,7 +1916,7 @@
 
 
 <div class="viewcode-block" id="download_mermaid_url"><a class="viewcode-back" href="../../../api/jina.helper/#jina.helper.download_mermaid_url">[docs]</a><span class="k">def</span> <span class="nf">download_mermaid_url</span><span class="p">(</span><span class="n">mermaid_url</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Download the jpg image from mermaid_url.</span>
 
 <span class="sd">    :param mermaid_url: The URL of the image.</span>
@@ -1937,7 +1937,7 @@
 
 
 <span class="k">def</span> <span class="nf">find_request_binding</span><span class="p">(</span><span class="n">target</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Find `@request` decorated methods in a class.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Find `@request` decorated methods in a class.</span>
 
 <span class="sd">    :param target: the target class to check</span>
 <span class="sd">    :return: a dictionary with key as request type and value as method name</span>
@@ -1970,7 +1970,7 @@
 
 
 <span class="k">def</span> <span class="nf">dunder_get</span><span class="p">(</span><span class="n">_dict</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Returns value for a specified dunderkey</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns value for a specified dunderkey</span>
 <span class="sd">    A &quot;dunderkey&quot; is just a fieldname that may or may not contain</span>
 <span class="sd">    double underscores (dunderscores!) for referencing nested keys in</span>
 <span class="sd">    a dict. eg::</span>
@@ -2016,7 +2016,7 @@
 
 
 <span class="k">def</span> <span class="nf">extend_rest_interface</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="s1">&#39;FastAPI&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;FastAPI&#39;</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Extend Jina built-in FastAPI instance with customized APIs, routing, etc.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Extend Jina built-in FastAPI instance with customized APIs, routing, etc.</span>
 
 <span class="sd">    :param app: the built-in FastAPI instance given by Jina</span>
 <span class="sd">    :return: the extended FastAPI instance</span>
@@ -2068,7 +2068,7 @@
 
 
 <span class="k">def</span> <span class="nf">get_request_header</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Return the header of request.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the header of request.</span>
 
 <span class="sd">    :return: request header</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -2085,7 +2085,7 @@
 
 
 <div class="viewcode-block" id="docarray_graphql_compatible"><a class="viewcode-back" href="../../../api/jina.helper/#jina.helper.docarray_graphql_compatible">[docs]</a><span class="k">def</span> <span class="nf">docarray_graphql_compatible</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;Check if installed docarray version is compatible with GraphQL features.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check if installed docarray version is compatible with GraphQL features.</span>
 
 <span class="sd">    :return: True if compatible, False if not</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -2103,7 +2103,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Dec 21, 2022.
+                    Last updated on Jan 19, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

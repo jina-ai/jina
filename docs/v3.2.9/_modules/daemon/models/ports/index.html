@@ -633,7 +633,7 @@
 
 
 <div class="viewcode-block" id="Ports"><a class="viewcode-back" href="../../../../api/daemon.models.ports/#daemon.models.ports.Ports">[docs]</a><span class="k">class</span> <span class="nc">Ports</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Port names&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Port names&quot;&quot;&quot;</span>
 
     <span class="n">port</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
 
@@ -642,7 +642,7 @@
 
 
 <div class="viewcode-block" id="PortMapping"><a class="viewcode-back" href="../../../../api/daemon.models.ports/#daemon.models.ports.PortMapping">[docs]</a><span class="k">class</span> <span class="nc">PortMapping</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Used to set the additional port mappings in partial-daemon&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Used to set the additional port mappings in partial-daemon&quot;&quot;&quot;</span>
 
     <span class="n">deployment_name</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">pod_name</span><span class="p">:</span> <span class="nb">str</span>
@@ -650,7 +650,7 @@
 
 
 <div class="viewcode-block" id="PortMappings"><a class="viewcode-back" href="../../../../api/daemon.models.ports/#daemon.models.ports.PortMappings">[docs]</a><span class="k">class</span> <span class="nc">PortMappings</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Pydantic model for list of PortMappings&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Pydantic model for list of PortMappings&quot;&quot;&quot;</span>
 
     <span class="n">__root__</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">PortMapping</span><span class="p">]</span>
 
@@ -669,7 +669,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">ports</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Get all ports in current model</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get all ports in current model</span>
 
 <span class="sd">        :return: list of ports</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -682,7 +682,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">docker_ports</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Get all ports for docker client</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get all ports for docker client</span>
 
 <span class="sd">        :return: dict of ports for docker-py syntax</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -690,7 +690,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">deployment_names</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Get all deployment names</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get all deployment names</span>
 
 <span class="sd">        :return: unique list of deployment names</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -698,7 +698,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">pod_names</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Get all pod names</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get all pod names</span>
 
 <span class="sd">        :return: list of pod names</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -714,7 +714,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Dec 21, 2022.
+                    Last updated on Jan 19, 2023.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
