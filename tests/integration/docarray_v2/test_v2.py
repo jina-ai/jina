@@ -1,5 +1,8 @@
 from typing import Optional
 
+from docarray import BaseDocument, DocumentArray
+from docarray.typing import AnyTensor, ImageUrl
+
 from jina import Executor, Flow, requests
 
 
@@ -27,9 +30,6 @@ def test_simple_flow():
 
 
 def test_different_document_schema():
-    from docarray import BaseDocument, DocumentArray
-    from docarray.typing import AnyTensor, ImageUrl
-
     class Image(BaseDocument):
         tensor: Optional[AnyTensor]
         url: ImageUrl
@@ -53,14 +53,27 @@ def test_different_document_schema():
 
 
 def test_send_custom_doc():
-    from docarray import BaseDocument, DocumentArray
-
     class MyDoc(BaseDocument):
         text: str
 
     class MyExec(Executor):
         @requests(on='/foo')
         def foo(self, docs: DocumentArray[MyDoc], **kwargs):
+            docs[0].text = 'hello world'
+
+    with Flow().add(uses=MyExec) as f:
+        doc = f.post(on='/foo', inputs=MyDoc(text='hello'))
+        assert doc[0].text == 'hello world'
+
+
+def test_receive_da_type():
+    class MyDoc(BaseDocument):
+        text: str
+
+    class MyExec(Executor):
+        @requests(on='/foo')
+        def foo(self, docs: DocumentArray[MyDoc], **kwargs):
+            assert docs.__class__.document_type == MyDoc
             docs[0].text = 'hello world'
 
     with Flow().add(uses=MyExec) as f:
