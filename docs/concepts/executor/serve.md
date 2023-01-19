@@ -165,7 +165,8 @@ Let's export the external IP address created and use it to send requests to the 
 ```bash
 export EXTERNAL_IP=`kubectl get service executor-exposed -n my-namespace -o=jsonpath='{.status.loadBalancer.ingress[0].ip}'`
 ```
-To send requests using {meth}`~jina.Client`, make sure to set `stream=False`:
+To send requests using {meth}`~jina.Client`, make sure to set `stream=False` (note that this is only applicable and 
+necessary for Kubernetes deployments of Executors):
 ```python
 import os
 from jina import Client, Document
