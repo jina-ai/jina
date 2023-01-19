@@ -33,7 +33,6 @@
 | `env` | The map of environment variables that are available inside runtime | `object` | `None` |
 | `env_from_secret` | The map of environment variables that are read from kubernetes cluster secrets | `object` | `None` |
 | `floating` | If set, the current Pod/Deployment can not be further chained, and the next `.add()` will chain after the last Pod/Deployment not this current one. | `boolean` | `False` |
-| `stateful` | If set, start consensus module to make sure write operations are properly replicated between all the replicas | `boolean` | `False` |
 | `reload` | If set, the Executor will restart while serving if YAML configuration source or Executor modules are changed. If YAML configuration is changed, the whole deployment is reloaded and new processes will be restarted. If only Python modules of the Executor have changed, they will be reloaded to the interpreter without restarting process. | `boolean` | `False` |
 | `install_requirements` | If set, try to install `requirements.txt` from the local Executor if exists in the Executor folder. If using Hub, install `requirements.txt` in the Hub Executor bundle to local. | `boolean` | `False` |
 | `port` | The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (`--external` or `external=True`) this can be a list of ports. Then, every resulting address will be considered as one replica of the Executor. | `number` | `random in [49152, 65535]` |
@@ -46,6 +45,8 @@
 | `metrics` | If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided. | `boolean` | `False` |
 | `metrics_exporter_host` | If tracing is enabled, this hostname will be used to configure the metrics exporter agent. | `string` | `None` |
 | `metrics_exporter_port` | If tracing is enabled, this port will be used to configure the metrics exporter agent. | `number` | `None` |
+| `stateful` | If set, start consensus module to make sure write operations are properly replicated between all the replicas | `boolean` | `False` |
+| `pod_ports` | When using StatefulExecutors, if they want to restart it is important to keep the RAFT cluster configuration | `number` | `[]` |
 | `force_update` | If set, always pull the latest Hub Executor bundle even it exists on local | `boolean` | `False` |
 | `prefer_platform` | The preferred target Docker platform. (e.g. "linux/amd64", "linux/arm64") | `string` | `None` |
 | `compression` | The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression. | `string` | `None` |

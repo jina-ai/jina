@@ -570,6 +570,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         native: Optional[bool] = False,
         no_reduce: Optional[bool] = False,
         output_array_type: Optional[str] = None,
+        pod_ports: Optional[int] = [],
         polling: Optional[str] = 'ANY',
         port: Optional[int] = None,
         port_monitoring: Optional[int] = None,
@@ -655,6 +656,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
           Supports the same types as `docarray.to_protobuf(.., ndarray_type=...)`, which can be found
           `here <https://docarray.jina.ai/fundamentals/document/serialization/#from-to-protobuf>`.
           Defaults to retaining whatever type is returned by the Executor.
+        :param pod_ports: When using StatefulExecutors, if they want to restart it is important to keep the RAFT cluster configuration
         :param polling: The polling strategy of the Deployment and its endpoints (when `shards>1`).
               Can be defined for all endpoints of a Deployment or by endpoint.
               Define per Deployment:
