@@ -238,7 +238,7 @@ def get_fastapi_app(
 
         """
 
-        da = DocumentArray([])
+        da = DocumentArray()
 
         try:
             _ = await _get_singleton_result(
@@ -265,7 +265,7 @@ def get_fastapi_app(
 
         await manager.connect(websocket)
 
-        da = DocumentArray([])
+        da = DocumentArray()
         try:
             async for _ in streamer.stream(
                 request_iterator=request_generator(

@@ -11,8 +11,6 @@ from typing import (
     Union,
 )
 
-from docarray import BaseDocument
-
 from jina.clients.request.helper import _new_data_request, _new_data_request_from_batch
 from jina.enums import DataInputType
 from jina.helper import batch_iterator
@@ -67,7 +65,7 @@ def request_generator(
                 endpoint=exec_endpoint, target=target_executor, parameters=parameters
             )
         else:
-            if not isinstance(data, Iterable) or isinstance(data, BaseDocument):
+            if not isinstance(data, Iterable):
                 data = [data]
             for batch in batch_iterator(data, request_size):
                 yield _new_data_request_from_batch(
