@@ -414,8 +414,10 @@
 
         <span class="n">parser</span> <span class="o">=</span> <span class="n">set_base_parser</span><span class="p">()</span>
 
+    <span class="kn">from</span> <span class="nn">hubble.executor.parsers.pull</span> <span class="kn">import</span> <span class="n">mixin_hub_pull_options_parser</span>
+
     <span class="kn">from</span> <span class="nn">jina.parsers.orchestrate.base</span> <span class="kn">import</span> <span class="n">mixin_scalable_deployment_parser</span>
-    <span class="kn">from</span> <span class="nn">jina.parsers.orchestrate.pod</span> <span class="kn">import</span> <span class="n">mixin_pod_parser</span><span class="p">,</span> <span class="n">mixin_hub_pull_options_parser</span>
+    <span class="kn">from</span> <span class="nn">jina.parsers.orchestrate.pod</span> <span class="kn">import</span> <span class="n">mixin_pod_parser</span>
     <span class="kn">from</span> <span class="nn">jina.parsers.orchestrate.runtimes.container</span> <span class="kn">import</span> <span class="p">(</span>
         <span class="n">mixin_container_runtime_parser</span><span class="p">,</span>
     <span class="p">)</span>
@@ -537,7 +539,10 @@
         <span class="n">mixin_client_features_parser</span><span class="p">,</span>
         <span class="n">mixin_client_protocol_parser</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="kn">from</span> <span class="nn">jina.parsers.orchestrate.runtimes.remote</span> <span class="kn">import</span> <span class="n">mixin_client_gateway_parser</span><span class="p">,</span> <span class="n">mixin_prefetch_parser</span>
+    <span class="kn">from</span> <span class="nn">jina.parsers.orchestrate.runtimes.remote</span> <span class="kn">import</span> <span class="p">(</span>
+        <span class="n">mixin_client_gateway_parser</span><span class="p">,</span>
+        <span class="n">mixin_prefetch_parser</span><span class="p">,</span>
+    <span class="p">)</span>
 
     <span class="n">mixin_client_gateway_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
     <span class="n">mixin_client_features_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
@@ -687,8 +692,8 @@
         <span class="n">sp</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
             <span class="s1">&#39;pod&#39;</span><span class="p">,</span>
             <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Start a Pod. &#39;</span>
-                        <span class="s1">&#39;You should rarely use this directly unless you &#39;</span>
-                        <span class="s1">&#39;are doing low-level orchestration&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;You should rarely use this directly unless you &#39;</span>
+            <span class="s1">&#39;are doing low-level orchestration&#39;</span><span class="p">,</span>
             <span class="n">formatter_class</span><span class="o">=</span><span class="n">_chf</span><span class="p">,</span>
             <span class="o">**</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">help</span><span class="o">=</span><span class="s1">&#39;Start a Pod&#39;</span><span class="p">))</span> <span class="k">if</span> <span class="n">_SHOW_ALL_ARGS</span> <span class="k">else</span> <span class="p">{},</span>
         <span class="p">)</span>
@@ -698,8 +703,8 @@
         <span class="n">sp</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
             <span class="s1">&#39;deployment&#39;</span><span class="p">,</span>
             <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Start a Deployment. &#39;</span>
-                        <span class="s1">&#39;You should rarely use this directly unless you &#39;</span>
-                        <span class="s1">&#39;are doing low-level orchestration&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;You should rarely use this directly unless you &#39;</span>
+            <span class="s1">&#39;are doing low-level orchestration&#39;</span><span class="p">,</span>
             <span class="n">formatter_class</span><span class="o">=</span><span class="n">_chf</span><span class="p">,</span>
             <span class="o">**</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">help</span><span class="o">=</span><span class="s1">&#39;Start a Deployment&#39;</span><span class="p">))</span> <span class="k">if</span> <span class="n">_SHOW_ALL_ARGS</span> <span class="k">else</span> <span class="p">{},</span>
         <span class="p">)</span>
@@ -729,7 +734,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jan 13, 2023</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

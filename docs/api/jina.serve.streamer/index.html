@@ -476,7 +476,7 @@ provide information associated with the request to the deployment.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>docs</strong> (<a class="reference external" href="https://docarray.jina.ai/api/docarray.array.document/#docarray.array.document.DocumentArray" title="(in DocArray v0.20.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code></a>) – The Documents to be sent to all the Executors</p></li>
+<li><p><strong>docs</strong> (<a class="reference external" href="https://docarray.jina.ai/api/docarray.array.document/#docarray.array.document.DocumentArray" title="(in DocArray v0.21.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code></a>) – The Documents to be sent to all the Executors</p></li>
 <li><p><strong>request_size</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – The amount of Documents to be put inside a single request.</p></li>
 <li><p><strong>return_results</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – If set to True, the generator will yield Responses and not <cite>DocumentArrays</cite></p></li>
 <li><p><strong>exec_endpoint</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – The executor endpoint to which to send the Documents</p></li>
@@ -540,6 +540,16 @@ The streamer object does not have tracing/instrumentation capabilities.</p>
 </dl>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.serve.streamer.GatewayStreamer.warmup">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">warmup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stop_event</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/streamer/#GatewayStreamer.warmup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.streamer.GatewayStreamer.warmup" title="Permalink to this definition">#</a></dt>
+<dd><p>Executes warmup task on each deployment. This forces the gateway to establish connection and open a
+gRPC channel to each executor so that the first request doesn’t need to experience the penalty of
+eastablishing a brand new gRPC channel.
+:type stop_event: <code class="xref py py-class docutils literal notranslate"><span class="pre">Event</span></code>
+:param stop_event: signal to indicate if an early termination of the task is required for graceful teardown.</p>
+</dd></dl>
+
 </dd></dl>
 
 </section>
@@ -557,7 +567,7 @@ The streamer object does not have tracing/instrumentation capabilities.</p>
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jan 13, 2023</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -597,6 +607,7 @@ The streamer object does not have tracing/instrumentation capabilities.</p>
 <li><a class="reference internal" href="#jina.serve.streamer.GatewayStreamer.Call"><code class="docutils literal notranslate"><span class="pre">GatewayStreamer.Call()</span></code></a></li>
 <li><a class="reference internal" href="#jina.serve.streamer.GatewayStreamer.process_single_data"><code class="docutils literal notranslate"><span class="pre">GatewayStreamer.process_single_data()</span></code></a></li>
 <li><a class="reference internal" href="#jina.serve.streamer.GatewayStreamer.get_streamer"><code class="docutils literal notranslate"><span class="pre">GatewayStreamer.get_streamer()</span></code></a></li>
+<li><a class="reference internal" href="#jina.serve.streamer.GatewayStreamer.warmup"><code class="docutils literal notranslate"><span class="pre">GatewayStreamer.warmup()</span></code></a></li>
 </ul>
 </li>
 </ul>

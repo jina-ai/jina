@@ -80,7 +80,7 @@ The following concepts are covered in the user guide:
 **Deployment**
     Deployment is an abstraction around {class}`~jina.Executor` that lets the {term}`Gateway` communicate with an Executor. It encapsulates and abstracts internal replication details.
 
-**gRPC, Websocket, HTTP**
+**gRPC, WebSocket, HTTP**
     These are network protocols for transmitting data. gRPC is always used for communication between {term}`Gateway` and {term}`Deployment`.
 
 **TLS**

@@ -589,6 +589,13 @@
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="jina.serve.runtimes.worker.WorkerRuntime.cancel_warmup_task">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cancel_warmup_task</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.worker.WorkerRuntime.cancel_warmup_task" title="Permalink to this definition">#</a></dt>
+<dd><p>Cancel warmup task if exists and is not completed. Cancellation is required if the Flow is being terminated before the
+task is successful or hasn’t reached the max timeout.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="jina.serve.runtimes.worker.WorkerRuntime.is_ready">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_ready</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctrl_address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.worker.WorkerRuntime.is_ready" title="Permalink to this definition">#</a></dt>
 <dd><p>Check if status is ready.</p>
@@ -672,7 +679,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jan 13, 2023</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -719,6 +726,7 @@
 <li><a class="reference internal" href="#jina.serve.runtimes.worker.WorkerRuntime.Watch"><code class="docutils literal notranslate"><span class="pre">WorkerRuntime.Watch()</span></code></a></li>
 <li><a class="reference internal" href="#jina.serve.runtimes.worker.WorkerRuntime.aio_tracing_client_interceptors"><code class="docutils literal notranslate"><span class="pre">WorkerRuntime.aio_tracing_client_interceptors()</span></code></a></li>
 <li><a class="reference internal" href="#jina.serve.runtimes.worker.WorkerRuntime.aio_tracing_server_interceptors"><code class="docutils literal notranslate"><span class="pre">WorkerRuntime.aio_tracing_server_interceptors()</span></code></a></li>
+<li><a class="reference internal" href="#jina.serve.runtimes.worker.WorkerRuntime.cancel_warmup_task"><code class="docutils literal notranslate"><span class="pre">WorkerRuntime.cancel_warmup_task()</span></code></a></li>
 <li><a class="reference internal" href="#jina.serve.runtimes.worker.WorkerRuntime.is_ready"><code class="docutils literal notranslate"><span class="pre">WorkerRuntime.is_ready()</span></code></a></li>
 <li><a class="reference internal" href="#jina.serve.runtimes.worker.WorkerRuntime.run_forever"><code class="docutils literal notranslate"><span class="pre">WorkerRuntime.run_forever()</span></code></a></li>
 <li><a class="reference internal" href="#jina.serve.runtimes.worker.WorkerRuntime.teardown"><code class="docutils literal notranslate"><span class="pre">WorkerRuntime.teardown()</span></code></a></li>

@@ -684,6 +684,13 @@ running/terminating the Gateway object.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.GatewayRuntime.cancel_warmup_task">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cancel_warmup_task</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.GatewayRuntime.cancel_warmup_task" title="Permalink to this definition">#</a></dt>
+<dd><p>Cancel warmup task if exists and is not completed. Cancellation is required if the Flow is being terminated before the
+task is successful or hasn’t reached the max timeout.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="jina.serve.runtimes.gateway.GatewayRuntime.run_forever">
 <span class="sig-name descname"><span class="pre">run_forever</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.GatewayRuntime.run_forever" title="Permalink to this definition">#</a></dt>
 <dd><p>Running method to block the main thread.</p>
@@ -727,7 +734,7 @@ running/terminating the Gateway object.</p>
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jan 13, 2023</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -772,6 +779,7 @@ running/terminating the Gateway object.</p>
 <li><a class="reference internal" href="#jina.serve.runtimes.gateway.GatewayRuntime.wait_for_ready_or_shutdown"><code class="docutils literal notranslate"><span class="pre">GatewayRuntime.wait_for_ready_or_shutdown()</span></code></a></li>
 <li><a class="reference internal" href="#jina.serve.runtimes.gateway.GatewayRuntime.aio_tracing_client_interceptors"><code class="docutils literal notranslate"><span class="pre">GatewayRuntime.aio_tracing_client_interceptors()</span></code></a></li>
 <li><a class="reference internal" href="#jina.serve.runtimes.gateway.GatewayRuntime.aio_tracing_server_interceptors"><code class="docutils literal notranslate"><span class="pre">GatewayRuntime.aio_tracing_server_interceptors()</span></code></a></li>
+<li><a class="reference internal" href="#jina.serve.runtimes.gateway.GatewayRuntime.cancel_warmup_task"><code class="docutils literal notranslate"><span class="pre">GatewayRuntime.cancel_warmup_task()</span></code></a></li>
 <li><a class="reference internal" href="#jina.serve.runtimes.gateway.GatewayRuntime.run_forever"><code class="docutils literal notranslate"><span class="pre">GatewayRuntime.run_forever()</span></code></a></li>
 <li><a class="reference internal" href="#jina.serve.runtimes.gateway.GatewayRuntime.teardown"><code class="docutils literal notranslate"><span class="pre">GatewayRuntime.teardown()</span></code></a></li>
 <li><a class="reference internal" href="#jina.serve.runtimes.gateway.GatewayRuntime.tracing_client_interceptor"><code class="docutils literal notranslate"><span class="pre">GatewayRuntime.tracing_client_interceptor()</span></code></a></li>

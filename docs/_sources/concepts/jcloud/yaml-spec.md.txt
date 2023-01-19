@@ -258,7 +258,7 @@ JCloud provides support Ingress gateways to expose your Flows to the public inte
 In JCloud. We use [Let's Encrypt](https://letsencrypt.org/) for TLS.
 
 ```{hint}
-The JCloud gateway is different from Jina's gateway. In JCloud, a gateway works as a proxy to distribute internet traffic between Flows, each of which has a Jina gateway (which is responsible for managing external gRPC/HTTP/Websocket traffic to your Executors)
+The JCloud gateway is different from Jina's gateway. In JCloud, a gateway works as a proxy to distribute internet traffic between Flows, each of which has a Jina gateway (which is responsible for managing external gRPC/HTTP/WebSocket traffic to your Executors)
 ```
 
 ### Set timeout

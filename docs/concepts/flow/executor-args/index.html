@@ -653,27 +653,32 @@
 <td><p><code class="docutils literal notranslate"><span class="pre">boolean</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">compression</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">prefer_platform</span></code></p></td>
+<td><p>The preferred target Docker platform. (e.g. “linux/amd64”, “linux/arm64”)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">compression</span></code></p></td>
 <td><p>The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">uses_before_address</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">uses_before_address</span></code></p></td>
 <td><p>The address of the uses-before runtime</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">uses_after_address</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">uses_after_address</span></code></p></td>
 <td><p>The address of the uses-before runtime</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">connection_list</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">connection_list</span></code></p></td>
 <td><p>dictionary JSON with a list of connections to configure</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">timeout_send</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">timeout_send</span></code></p></td>
 <td><p>The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">number</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
@@ -695,7 +700,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jan 13, 2023</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

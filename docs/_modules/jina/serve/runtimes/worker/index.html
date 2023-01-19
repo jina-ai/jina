@@ -541,7 +541,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_health_servicer</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_grpc_server</span>
         <span class="p">)</span>
 
-        <span class="n">reflection</span><span class="o">.</span><span class="n">enable_server_reflection</span><span class="p">(</span><span class="n">service_names</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_grpc_server</span><span class="p">)</span>     
+        <span class="n">reflection</span><span class="o">.</span><span class="n">enable_server_reflection</span><span class="p">(</span><span class="n">service_names</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_grpc_server</span><span class="p">)</span>
         <span class="n">bind_addr</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;start listening on </span><span class="si">{</span><span class="n">bind_addr</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_grpc_server</span><span class="o">.</span><span class="n">add_insecure_port</span><span class="p">(</span><span class="n">bind_addr</span><span class="p">)</span>
@@ -705,6 +705,7 @@
 <span class="sd">        :param context: grpc context</span>
 <span class="sd">        :returns: the response request</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;recv _status request&#39;</span><span class="p">)</span>
         <span class="n">info_proto</span> <span class="o">=</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">JinaInfoProto</span><span class="p">()</span>
         <span class="n">version</span><span class="p">,</span> <span class="n">env_info</span> <span class="o">=</span> <span class="n">get_full_version</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">version</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -748,7 +749,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jan 13, 2023</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

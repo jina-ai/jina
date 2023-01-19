@@ -436,6 +436,18 @@
 </ul>
 </dd>
 </dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.serve.runtimes.head.request_handling.HeaderRequestHandler.warmup">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">warmup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">connection_pool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop_event</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deployment</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/head/request_handling/#HeaderRequestHandler.warmup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.head.request_handling.HeaderRequestHandler.warmup" title="Permalink to this definition">#</a></dt>
+<dd><p>Executes warmup task against the deployments from the connection pool.
+:type connection_pool: <a class="reference internal" href="../jina.serve.networking/#jina.serve.networking.GrpcConnectionPool" title="jina.serve.networking.GrpcConnectionPool"><code class="xref py py-class docutils literal notranslate"><span class="pre">GrpcConnectionPool</span></code></a>
+:param connection_pool: GrpcConnectionPool that implements the warmup to the connected deployments.
+:type stop_event: <code class="xref py py-class docutils literal notranslate"><span class="pre">Event</span></code>
+:param stop_event: signal to indicate if an early termination of the task is required for graceful teardown.
+:type deployment: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
+:param deployment: deployment name that need to be warmed up.</p>
+</dd></dl>
+
 </dd></dl>
 
 </section>
@@ -453,7 +465,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jan 13, 2023</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -486,7 +498,10 @@
                     <div class="toc-tree">
                         <ul>
 <li><a class="reference internal" href="#">jina.serve.runtimes.head.request_handling module</a><ul>
-<li><a class="reference internal" href="#jina.serve.runtimes.head.request_handling.HeaderRequestHandler"><code class="docutils literal notranslate"><span class="pre">HeaderRequestHandler</span></code></a></li>
+<li><a class="reference internal" href="#jina.serve.runtimes.head.request_handling.HeaderRequestHandler"><code class="docutils literal notranslate"><span class="pre">HeaderRequestHandler</span></code></a><ul>
+<li><a class="reference internal" href="#jina.serve.runtimes.head.request_handling.HeaderRequestHandler.warmup"><code class="docutils literal notranslate"><span class="pre">HeaderRequestHandler.warmup()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

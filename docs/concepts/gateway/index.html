@@ -438,7 +438,7 @@ configure it yourself.</p>
 <a class="reference internal" href="yaml-spec/#gateway-yaml-spec"><span class="std std-ref">found here</span></a>.</p>
 <section id="set-protocol-in-python">
 <span id="flow-protocol"></span><h2>Set protocol in Python<a class="headerlink" href="#set-protocol-in-python" title="Permalink to this heading">#</a></h2>
-<p>You can use three different protocols to serve the <code class="docutils literal notranslate"><span class="pre">Flow</span></code>: gRPC, HTTP and Websocket.</p>
+<p>You can use three different protocols to serve the <code class="docutils literal notranslate"><span class="pre">Flow</span></code>: gRPC, HTTP and WebSocket.</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">gRPC</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span>
@@ -571,7 +571,7 @@ protocols.</p>
 <section id="enable-tls-for-client-traffics">
 <span id="flow-tls"></span><span id="custom-http"></span><h2>Enable TLS for client traffics<a class="headerlink" href="#enable-tls-for-client-traffics" title="Permalink to this heading">#</a></h2>
 <p>You can enable TLS encryption between your Gateway and Clients, for any of the protocols supported by Jina (HTTP, gRPC,
-and Websocket).</p>
+and WebSocket).</p>
 <div class="caution admonition">
 <p class="admonition-title">Caution</p>
 <p>Enabling TLS will encrypt the data that is transferred between the Flow and the Client.
@@ -683,8 +683,8 @@ docker<span class="w"> </span>run<span class="w"> </span>--network<span class="o
 </div>
 </section>
 <section id="use-http-websocket">
-<h3>Use HTTP/Websocket<a class="headerlink" href="#use-http-websocket" title="Permalink to this heading">#</a></h3>
-<p>When using HTTP or Websocket as the Gateway protocol, you can use curl to target the <code class="docutils literal notranslate"><span class="pre">/status</span></code> endpoint and get the Jina
+<h3>Use HTTP/WebSocket<a class="headerlink" href="#use-http-websocket" title="Permalink to this heading">#</a></h3>
+<p>When using HTTP or WebSocket as the Gateway protocol, you can use curl to target the <code class="docutils literal notranslate"><span class="pre">/status</span></code> endpoint and get the Jina
 info.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>http://localhost:12345/status
 </pre></div>
@@ -780,7 +780,7 @@ info.</p>
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jan 13, 2023</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -820,7 +820,7 @@ info.</p>
 <li><a class="reference internal" href="#enable-in-flow-compression">Enable in-Flow compression</a></li>
 <li><a class="reference internal" href="#get-environment-information">Get environment information</a><ul>
 <li><a class="reference internal" href="#use-grpc">Use gRPC</a></li>
-<li><a class="reference internal" href="#use-http-websocket">Use HTTP/Websocket</a></li>
+<li><a class="reference internal" href="#use-http-websocket">Use HTTP/WebSocket</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#see-further">See further</a></li>

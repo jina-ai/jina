@@ -530,17 +530,22 @@
 
 <div class="viewcode-block" id="GatewayRuntime.async_teardown"><a class="viewcode-back" href="../../../../../api/jina.serve.runtimes.gateway/#jina.serve.runtimes.gateway.GatewayRuntime.async_teardown">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_teardown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Shutdown the server.&quot;&quot;&quot;</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">cancel_warmup_task</span><span class="p">()</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">gateway</span><span class="o">.</span><span class="n">streamer</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">gateway</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">async_cancel</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="GatewayRuntime.async_cancel"><a class="viewcode-back" href="../../../../../api/jina.serve.runtimes.gateway/#jina.serve.runtimes.gateway.GatewayRuntime.async_cancel">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Stop the server.&quot;&quot;&quot;</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">cancel_warmup_task</span><span class="p">()</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">gateway</span><span class="o">.</span><span class="n">streamer</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">gateway</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="GatewayRuntime.async_run_forever"><a class="viewcode-back" href="../../../../../api/jina.serve.runtimes.gateway/#jina.serve.runtimes.gateway.GatewayRuntime.async_run_forever">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_run_forever</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Running method of the server.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">warmup_task</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">gateway</span><span class="o">.</span><span class="n">streamer</span><span class="o">.</span><span class="n">warmup</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">warmup_stop_event</span><span class="p">)</span>
+        <span class="p">)</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">gateway</span><span class="o">.</span><span class="n">run_server</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">is_cancel</span><span class="o">.</span><span class="n">set</span><span class="p">()</span></div>
 
@@ -618,7 +623,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jan 13, 2023</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

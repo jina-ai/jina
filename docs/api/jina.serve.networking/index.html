@@ -523,6 +523,13 @@ which is safe to use in this scenario.</p>
 <dd><p>Close all connections and clean up internal state</p>
 </dd></dl>
 
+<dl class="py property">
+<dt class="sig sig-object py" id="jina.serve.networking.ReplicaList.warmup_stubs">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">warmup_stubs</span></span><a class="headerlink" href="#jina.serve.networking.ReplicaList.warmup_stubs" title="Permalink to this definition">#</a></dt>
+<dd><p>Return set of warmup stubs
+:returns: Set of stubs. The set doesn’t remove any items once added.</p>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -606,6 +613,15 @@ Stub is chosen based on availability and type of requests</p>
 <dd class="field-odd"><p>Tuple of response and metadata about the response</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.serve.networking.GrpcConnectionPool.ConnectionStubs.send_info_rpc">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">send_info_rpc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/networking/#GrpcConnectionPool.ConnectionStubs.send_info_rpc"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.networking.GrpcConnectionPool.ConnectionStubs.send_info_rpc" title="Permalink to this definition">#</a></dt>
+<dd><p>Use the JinaInfoRPC stub to send request to the _status endpoint exposed by the Runtime
+:type timeout: <code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]
+:param timeout: defines timeout for sending request
+:returns: JinaInfoProto</p>
 </dd></dl>
 
 </dd></dl>
@@ -725,6 +741,16 @@ Stub is chosen based on availability and type of requests</p>
 <dt class="sig sig-object py" id="jina.serve.networking.GrpcConnectionPool.close">
 <em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/networking/#GrpcConnectionPool.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.networking.GrpcConnectionPool.close" title="Permalink to this definition">#</a></dt>
 <dd><p>Closes the connection pool</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.serve.networking.GrpcConnectionPool.warmup">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">warmup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">deployment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop_event</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/networking/#GrpcConnectionPool.warmup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.networking.GrpcConnectionPool.warmup" title="Permalink to this definition">#</a></dt>
+<dd><p>Executes JinaInfoRPC against the provided deployment. A single task is created for each replica connection.
+:type deployment: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
+:param deployment: deployment name and the replicas that needs to be warmed up.
+:type stop_event: <code class="xref py py-class docutils literal notranslate"><span class="pre">Event</span></code>
+:param stop_event: signal to indicate if an early termination of the task is required for graceful teardown.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -927,7 +953,7 @@ Documentation is here <a class="reference external" href="https://github.com/grp
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jan 13, 2023</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -969,6 +995,7 @@ Documentation is here <a class="reference external" href="https://github.com/grp
 <li><a class="reference internal" href="#jina.serve.networking.ReplicaList.has_connection"><code class="docutils literal notranslate"><span class="pre">ReplicaList.has_connection()</span></code></a></li>
 <li><a class="reference internal" href="#jina.serve.networking.ReplicaList.has_connections"><code class="docutils literal notranslate"><span class="pre">ReplicaList.has_connections()</span></code></a></li>
 <li><a class="reference internal" href="#jina.serve.networking.ReplicaList.close"><code class="docutils literal notranslate"><span class="pre">ReplicaList.close()</span></code></a></li>
+<li><a class="reference internal" href="#jina.serve.networking.ReplicaList.warmup_stubs"><code class="docutils literal notranslate"><span class="pre">ReplicaList.warmup_stubs</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#jina.serve.networking.GrpcConnectionPool"><code class="docutils literal notranslate"><span class="pre">GrpcConnectionPool</span></code></a><ul>
@@ -980,6 +1007,7 @@ Documentation is here <a class="reference external" href="https://github.com/grp
 <li><a class="reference internal" href="#jina.serve.networking.GrpcConnectionPool.ConnectionStubs.STUB_MAPPING"><code class="docutils literal notranslate"><span class="pre">GrpcConnectionPool.ConnectionStubs.STUB_MAPPING</span></code></a></li>
 <li><a class="reference internal" href="#jina.serve.networking.GrpcConnectionPool.ConnectionStubs.send_discover_endpoint"><code class="docutils literal notranslate"><span class="pre">GrpcConnectionPool.ConnectionStubs.send_discover_endpoint()</span></code></a></li>
 <li><a class="reference internal" href="#jina.serve.networking.GrpcConnectionPool.ConnectionStubs.send_requests"><code class="docutils literal notranslate"><span class="pre">GrpcConnectionPool.ConnectionStubs.send_requests()</span></code></a></li>
+<li><a class="reference internal" href="#jina.serve.networking.GrpcConnectionPool.ConnectionStubs.send_info_rpc"><code class="docutils literal notranslate"><span class="pre">GrpcConnectionPool.ConnectionStubs.send_info_rpc()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#jina.serve.networking.GrpcConnectionPool.send_requests"><code class="docutils literal notranslate"><span class="pre">GrpcConnectionPool.send_requests()</span></code></a></li>
@@ -988,6 +1016,7 @@ Documentation is here <a class="reference external" href="https://github.com/grp
 <li><a class="reference internal" href="#jina.serve.networking.GrpcConnectionPool.add_connection"><code class="docutils literal notranslate"><span class="pre">GrpcConnectionPool.add_connection()</span></code></a></li>
 <li><a class="reference internal" href="#jina.serve.networking.GrpcConnectionPool.remove_connection"><code class="docutils literal notranslate"><span class="pre">GrpcConnectionPool.remove_connection()</span></code></a></li>
 <li><a class="reference internal" href="#jina.serve.networking.GrpcConnectionPool.close"><code class="docutils literal notranslate"><span class="pre">GrpcConnectionPool.close()</span></code></a></li>
+<li><a class="reference internal" href="#jina.serve.networking.GrpcConnectionPool.warmup"><code class="docutils literal notranslate"><span class="pre">GrpcConnectionPool.warmup()</span></code></a></li>
 <li><a class="reference internal" href="#jina.serve.networking.GrpcConnectionPool.get_grpc_channel"><code class="docutils literal notranslate"><span class="pre">GrpcConnectionPool.get_grpc_channel()</span></code></a></li>
 <li><a class="reference internal" href="#jina.serve.networking.GrpcConnectionPool.send_request_sync"><code class="docutils literal notranslate"><span class="pre">GrpcConnectionPool.send_request_sync()</span></code></a></li>
 <li><a class="reference internal" href="#jina.serve.networking.GrpcConnectionPool.send_health_check_sync"><code class="docutils literal notranslate"><span class="pre">GrpcConnectionPool.send_health_check_sync()</span></code></a></li>

@@ -44,6 +44,7 @@
 | `metrics_exporter_host` | If tracing is enabled, this hostname will be used to configure the metrics exporter agent. | `string` | `None` |
 | `metrics_exporter_port` | If tracing is enabled, this port will be used to configure the metrics exporter agent. | `number` | `None` |
 | `force_update` | If set, always pull the latest Hub Executor bundle even it exists on local | `boolean` | `False` |
+| `prefer_platform` | The preferred target Docker platform. (e.g. "linux/amd64", "linux/arm64") | `string` | `None` |
 | `compression` | The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression. | `string` | `None` |
 | `uses_before_address` | The address of the uses-before runtime | `string` | `None` |
 | `uses_after_address` | The address of the uses-before runtime | `string` | `None` |

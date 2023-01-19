@@ -472,7 +472,8 @@
               <span class="p">[</span><span class="o">--</span><span class="n">monitoring</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">monitoring</span>  <span class="p">[</span><span class="o">...</span><span class="p">]]</span> <span class="p">[</span><span class="o">--</span><span class="n">retries</span><span class="p">]</span>
               <span class="p">[</span><span class="o">--</span><span class="n">tracing</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">traces</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">host</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">traces</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">port</span><span class="p">]</span>
               <span class="p">[</span><span class="o">--</span><span class="n">metrics</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">metrics</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">host</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">metrics</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">port</span><span class="p">]</span>
-              <span class="p">[</span><span class="o">--</span><span class="n">force</span><span class="o">-</span><span class="n">update</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">compression</span> <span class="p">{</span><span class="n">NoCompression</span><span class="p">,</span> <span class="n">Deflate</span><span class="p">,</span> <span class="n">Gzip</span><span class="p">}]</span>
+              <span class="p">[</span><span class="o">--</span><span class="n">force</span><span class="o">-</span><span class="n">update</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">prefer</span><span class="o">-</span><span class="n">platform</span><span class="p">]</span>
+              <span class="p">[</span><span class="o">--</span><span class="n">compression</span> <span class="p">{</span><span class="n">NoCompression</span><span class="p">,</span> <span class="n">Deflate</span><span class="p">,</span> <span class="n">Gzip</span><span class="p">}]</span>
               <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">before</span><span class="o">-</span><span class="n">address</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">after</span><span class="o">-</span><span class="n">address</span><span class="p">]</span>
               <span class="p">[</span><span class="o">--</span><span class="n">connection</span><span class="o">-</span><span class="nb">list</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">send</span><span class="p">]</span>
 </pre></div>
@@ -681,7 +682,7 @@ container.</p>
 </dd>
 <dt><kbd>--port, --port-in</kbd></dt>
 <dd><p>The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (<cite>–external</cite> or <cite>external=True</cite>) this can be a list of ports. Then, every resulting address will be considered as one replica of the Executor.</p>
-<p>Default: [63957]</p>
+<p>Default: [60720]</p>
 </dd>
 <dt><kbd>--monitoring</kbd></dt>
 <dd><p>If set, spawn an http server with a prometheus endpoint to expose metrics</p>
@@ -689,7 +690,7 @@ container.</p>
 </dd>
 <dt><kbd>--port-monitoring</kbd></dt>
 <dd><p>The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</p>
-<p>Default: [59677]</p>
+<p>Default: [54697]</p>
 </dd>
 <dt><kbd>--retries</kbd></dt>
 <dd><p>Number of retries per gRPC call. If &lt;0 it defaults to max(3, num_replicas)</p>
@@ -723,6 +724,9 @@ container.</p>
 <dt><kbd>--force-update, --force</kbd></dt>
 <dd><p>If set, always pull the latest Hub Executor bundle even it exists on local</p>
 <p>Default: False</p>
+</dd>
+<dt><kbd>--prefer-platform</kbd></dt>
+<dd><p>The preferred target Docker platform. (e.g. “linux/amd64”, “linux/arm64”)</p>
 </dd>
 </dl>
 </section>
@@ -836,7 +840,7 @@ container.</p>
 <dl class="option-list">
 <dt><kbd>--timeout</kbd></dt>
 <dd><p>Timeout in millisecond of one check
--1 for waiting forever</p>
+Use -1 for waiting forever</p>
 <p>Default: 3000</p>
 </dd>
 <dt><kbd>--attempts</kbd></dt>
@@ -1248,7 +1252,7 @@ which should be structured as a python package.</p>
 </dd>
 <dt><kbd>--port-monitoring</kbd></dt>
 <dd><p>The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</p>
-<p>Default: [51940]</p>
+<p>Default: [49361]</p>
 </dd>
 <dt><kbd>--retries</kbd></dt>
 <dd><p>Number of retries per gRPC call. If &lt;0 it defaults to max(3, num_replicas)</p>
@@ -1880,7 +1884,7 @@ which should be structured as a python package.</p>
          <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">monitoring</span>  <span class="p">[</span><span class="o">...</span><span class="p">]]</span> <span class="p">[</span><span class="o">--</span><span class="n">retries</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">tracing</span><span class="p">]</span>
          <span class="p">[</span><span class="o">--</span><span class="n">traces</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">host</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">traces</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">port</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">metrics</span><span class="p">]</span>
          <span class="p">[</span><span class="o">--</span><span class="n">metrics</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">host</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">metrics</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">port</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">force</span><span class="o">-</span><span class="n">update</span><span class="p">]</span>
-         <span class="p">[</span><span class="o">--</span><span class="n">compression</span> <span class="p">{</span><span class="n">NoCompression</span><span class="p">,</span> <span class="n">Deflate</span><span class="p">,</span> <span class="n">Gzip</span><span class="p">}]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">prefer</span><span class="o">-</span><span class="n">platform</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">compression</span> <span class="p">{</span><span class="n">NoCompression</span><span class="p">,</span> <span class="n">Deflate</span><span class="p">,</span> <span class="n">Gzip</span><span class="p">}]</span>
          <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">before</span><span class="o">-</span><span class="n">address</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">after</span><span class="o">-</span><span class="n">address</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">connection</span><span class="o">-</span><span class="nb">list</span><span class="p">]</span>
          <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">send</span><span class="p">]</span>
 </pre></div>
@@ -2089,7 +2093,7 @@ container.</p>
 </dd>
 <dt><kbd>--port, --port-in</kbd></dt>
 <dd><p>The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (<cite>–external</cite> or <cite>external=True</cite>) this can be a list of ports. Then, every resulting address will be considered as one replica of the Executor.</p>
-<p>Default: [54701]</p>
+<p>Default: [51713]</p>
 </dd>
 <dt><kbd>--monitoring</kbd></dt>
 <dd><p>If set, spawn an http server with a prometheus endpoint to expose metrics</p>
@@ -2097,7 +2101,7 @@ container.</p>
 </dd>
 <dt><kbd>--port-monitoring</kbd></dt>
 <dd><p>The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</p>
-<p>Default: [49784]</p>
+<p>Default: [62553]</p>
 </dd>
 <dt><kbd>--retries</kbd></dt>
 <dd><p>Number of retries per gRPC call. If &lt;0 it defaults to max(3, num_replicas)</p>
@@ -2131,6 +2135,9 @@ container.</p>
 <dt><kbd>--force-update, --force</kbd></dt>
 <dd><p>If set, always pull the latest Hub Executor bundle even it exists on local</p>
 <p>Default: False</p>
+</dd>
+<dt><kbd>--prefer-platform</kbd></dt>
+<dd><p>The preferred target Docker platform. (e.g. “linux/amd64”, “linux/arm64”)</p>
 </dd>
 </dl>
 </section>
@@ -2178,7 +2185,7 @@ container.</p>
                 <span class="p">[</span><span class="o">--</span><span class="n">monitoring</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">monitoring</span>  <span class="p">[</span><span class="o">...</span><span class="p">]]</span> <span class="p">[</span><span class="o">--</span><span class="n">retries</span><span class="p">]</span>
                 <span class="p">[</span><span class="o">--</span><span class="n">tracing</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">traces</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">host</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">traces</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">port</span><span class="p">]</span>
                 <span class="p">[</span><span class="o">--</span><span class="n">metrics</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">metrics</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">host</span><span class="p">]</span>
-                <span class="p">[</span><span class="o">--</span><span class="n">metrics</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">port</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">force</span><span class="o">-</span><span class="n">update</span><span class="p">]</span>
+                <span class="p">[</span><span class="o">--</span><span class="n">metrics</span><span class="o">-</span><span class="n">exporter</span><span class="o">-</span><span class="n">port</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">force</span><span class="o">-</span><span class="n">update</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">prefer</span><span class="o">-</span><span class="n">platform</span><span class="p">]</span>
                 <span class="p">[</span><span class="o">--</span><span class="n">compression</span> <span class="p">{</span><span class="n">NoCompression</span><span class="p">,</span> <span class="n">Deflate</span><span class="p">,</span> <span class="n">Gzip</span><span class="p">}]</span>
                 <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">before</span><span class="o">-</span><span class="n">address</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">after</span><span class="o">-</span><span class="n">address</span><span class="p">]</span>
                 <span class="p">[</span><span class="o">--</span><span class="n">connection</span><span class="o">-</span><span class="nb">list</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">send</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">before</span><span class="p">]</span>
@@ -2391,7 +2398,7 @@ container.</p>
 </dd>
 <dt><kbd>--port, --port-in</kbd></dt>
 <dd><p>The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (<cite>–external</cite> or <cite>external=True</cite>) this can be a list of ports. Then, every resulting address will be considered as one replica of the Executor.</p>
-<p>Default: [52939]</p>
+<p>Default: [62717]</p>
 </dd>
 <dt><kbd>--monitoring</kbd></dt>
 <dd><p>If set, spawn an http server with a prometheus endpoint to expose metrics</p>
@@ -2399,7 +2406,7 @@ container.</p>
 </dd>
 <dt><kbd>--port-monitoring</kbd></dt>
 <dd><p>The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</p>
-<p>Default: [64135]</p>
+<p>Default: [64772]</p>
 </dd>
 <dt><kbd>--retries</kbd></dt>
 <dd><p>Number of retries per gRPC call. If &lt;0 it defaults to max(3, num_replicas)</p>
@@ -2433,6 +2440,9 @@ container.</p>
 <dt><kbd>--force-update, --force</kbd></dt>
 <dd><p>If set, always pull the latest Hub Executor bundle even it exists on local</p>
 <p>Default: False</p>
+</dd>
+<dt><kbd>--prefer-platform</kbd></dt>
+<dd><p>The preferred target Docker platform. (e.g. “linux/amd64”, “linux/arm64”)</p>
 </dd>
 </dl>
 </section>
@@ -2593,7 +2603,7 @@ container.</p>
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jan 13, 2023</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

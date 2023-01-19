@@ -400,10 +400,13 @@
 <span></span><span class="kn">import</span> <span class="nn">asyncio</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
 
+<span class="kn">from</span> <span class="nn">jina.serve.networking</span> <span class="kn">import</span> <span class="n">GrpcConnectionPool</span>
 <span class="kn">from</span> <span class="nn">jina.serve.runtimes.monitoring</span> <span class="kn">import</span> <span class="n">MonitoringRequestMixin</span>
 <span class="kn">from</span> <span class="nn">jina.serve.runtimes.worker.request_handling</span> <span class="kn">import</span> <span class="n">WorkerRequestHandler</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+    <span class="kn">import</span> <span class="nn">threading</span>
+
     <span class="kn">from</span> <span class="nn">opentelemetry.metrics</span> <span class="kn">import</span> <span class="n">Meter</span>
     <span class="kn">from</span> <span class="nn">prometheus_client</span> <span class="kn">import</span> <span class="n">CollectorRegistry</span>
 
@@ -563,7 +566,9 @@
         <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">worker_results</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">reduce</span><span class="p">:</span>
             <span class="c1"># worker returned multiple responses, but the head is configured to skip reduction</span>
             <span class="c1"># just concatenate the docs in this case</span>
-            <span class="n">response_request</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">docs</span> <span class="o">=</span> <span class="n">WorkerRequestHandler</span><span class="o">.</span><span class="n">get_docs_from_request</span><span class="p">(</span><span class="n">requests</span><span class="p">)</span>
+            <span class="n">response_request</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">docs</span> <span class="o">=</span> <span class="n">WorkerRequestHandler</span><span class="o">.</span><span class="n">get_docs_from_request</span><span class="p">(</span>
+                <span class="n">requests</span>
+            <span class="p">)</span>
 
         <span class="n">merged_metadata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_merge_metadata</span><span class="p">(</span>
             <span class="n">metadata</span><span class="p">,</span>
@@ -575,7 +580,26 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_update_end_request_metrics</span><span class="p">(</span><span class="n">response_request</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">response_request</span><span class="p">,</span> <span class="n">merged_metadata</span></div>
+        <span class="k">return</span> <span class="n">response_request</span><span class="p">,</span> <span class="n">merged_metadata</span>
+
+<div class="viewcode-block" id="HeaderRequestHandler.warmup"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.head.request_handling/#jina.serve.runtimes.head.request_handling.HeaderRequestHandler.warmup">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">warmup</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">connection_pool</span><span class="p">:</span> <span class="n">GrpcConnectionPool</span><span class="p">,</span>
+        <span class="n">stop_event</span><span class="p">:</span> <span class="s1">&#39;threading.Event&#39;</span><span class="p">,</span>
+        <span class="n">deployment</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;Executes warmup task against the deployments from the connection pool.</span>
+<span class="sd">        :param connection_pool: GrpcConnectionPool that implements the warmup to the connected deployments.</span>
+<span class="sd">        :param stop_event: signal to indicate if an early termination of the task is required for graceful teardown.</span>
+<span class="sd">        :param deployment: deployment name that need to be warmed up.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Running HeadRuntime warmup&#39;</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">await</span> <span class="n">connection_pool</span><span class="o">.</span><span class="n">warmup</span><span class="p">(</span><span class="n">deployment</span><span class="o">=</span><span class="n">deployment</span><span class="p">,</span> <span class="n">stop_event</span><span class="o">=</span><span class="n">stop_event</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;error with HeadRuntime warmup up task: </span><span class="si">{</span><span class="n">ex</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="k">return</span></div></div>
 </pre></div>
                 </article>
             </div>
@@ -590,7 +614,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jan 13, 2023</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

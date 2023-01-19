@@ -403,8 +403,8 @@
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span>
 
-<span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">random_port</span>
 <span class="kn">from</span> <span class="nn">jina.enums</span> <span class="kn">import</span> <span class="n">PodRoleType</span>
+<span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">random_port</span>
 <span class="kn">from</span> <span class="nn">jina.parsers.helper</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">_SHOW_ALL_ARGS</span><span class="p">,</span>
     <span class="n">CastToIntAction</span><span class="p">,</span>
@@ -450,7 +450,7 @@
         <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="mi">600000</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s1">&#39;The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting &#39;</span>
-             <span class="s1">&#39;forever&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;forever&#39;</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
@@ -495,7 +495,7 @@
         <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s1">&#39;If set, starting a Pod/Deployment does not block the thread/process. It then relies on &#39;</span>
-             <span class="s1">&#39;`wait_start_success` at outer function for the postpone check.&#39;</span>
+        <span class="s1">&#39;`wait_start_success` at outer function for the postpone check.&#39;</span>
         <span class="k">if</span> <span class="n">_SHOW_ALL_ARGS</span>
         <span class="k">else</span> <span class="n">argparse</span><span class="o">.</span><span class="n">SUPPRESS</span><span class="p">,</span>
     <span class="p">)</span>
@@ -505,7 +505,7 @@
         <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s1">&#39;If set, the current Pod/Deployment can not be further chained, &#39;</span>
-             <span class="s1">&#39;and the next `.add()` will chain after the last Pod/Deployment not this current one.&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;and the next `.add()` will chain after the last Pod/Deployment not this current one.&#39;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="k">if</span> <span class="n">pod_type</span> <span class="o">!=</span> <span class="s1">&#39;gateway&#39;</span><span class="p">:</span>
         <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
@@ -521,7 +521,7 @@
             <span class="s1">&#39;--install-requirements&#39;</span><span class="p">,</span>
             <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
             <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-            <span class="n">help</span><span class="o">=</span><span class="s1">&#39;If set, try to install `requirements.txt` from the local Executor if exists in the Executor folder. If using Hub, install `requirements.txt` in the Hub Executor bundle to local.&#39;</span>
+            <span class="n">help</span><span class="o">=</span><span class="s1">&#39;If set, try to install `requirements.txt` from the local Executor if exists in the Executor folder. If using Hub, install `requirements.txt` in the Hub Executor bundle to local.&#39;</span><span class="p">,</span>
         <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
@@ -602,7 +602,7 @@
         <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s1">&#39;If set, the sdk implementation of the OpenTelemetry tracer will be available and will be enabled for automatic tracing of requests and customer span creation. &#39;</span>
-             <span class="s1">&#39;Otherwise a no-op implementation will be provided.&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Otherwise a no-op implementation will be provided.&#39;</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="n">arg_group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
@@ -624,7 +624,7 @@
         <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s1">&#39;If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. &#39;</span>
-             <span class="s1">&#39;Otherwise a no-op implementation will be provided.&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Otherwise a no-op implementation will be provided.&#39;</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="n">arg_group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
@@ -640,21 +640,6 @@
         <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s1">&#39;If tracing is enabled, this port will be used to configure the metrics exporter agent.&#39;</span><span class="p">,</span>
     <span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="mixin_hub_pull_options_parser"><a class="viewcode-back" href="../../../../../api/jina.parsers.orchestrate.pod/#jina.parsers.orchestrate.pod.mixin_hub_pull_options_parser">[docs]</a><span class="k">def</span> <span class="nf">mixin_hub_pull_options_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Add the arguments for hub pull options to the parser</span>
-<span class="sd">    :param parser: the parser configure</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">gp</span> <span class="o">=</span> <span class="n">add_arg_group</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Pull&#39;</span><span class="p">)</span>
-    <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s1">&#39;--force-update&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;--force&#39;</span><span class="p">,</span>
-        <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;If set, always pull the latest Hub Executor bundle even it exists on local&#39;</span><span class="p">,</span>
-    <span class="p">)</span></div>
 </pre></div>
                 </article>
             </div>
@@ -669,7 +654,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jan 13, 2023</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

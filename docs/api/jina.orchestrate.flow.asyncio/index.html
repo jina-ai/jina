@@ -668,6 +668,7 @@ JSON dict, {endpoint: PollingType}
 {‘/custom’: ‘ALL’, ‘/search’: ‘ANY’, ‘*’: ‘ANY’}</p></li>
 <li><p><strong>port</strong> – The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (<cite>–external</cite> or <cite>external=True</cite>) this can be a list of ports. Then, every resulting address will be considered as one replica of the Executor.</p></li>
 <li><p><strong>port_monitoring</strong> – The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</p></li>
+<li><p><strong>prefer_platform</strong> – The preferred target Docker platform. (e.g. “linux/amd64”, “linux/arm64”)</p></li>
 <li><p><strong>py_modules</strong> – <p>The customized python modules need to be imported before loading the executor</p>
 <p>Note that the recommended way is to only import a single module - a simple python file, if your
 executor can be defined in a single file, or an <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> file if you have multiple files,
@@ -1348,7 +1349,7 @@ do the modification on top of it then return, otherwise, do in-line modification
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncGenerator</span></code>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<a class="reference external" href="https://docarray.jina.ai/api/docarray.array.document/#docarray.array.document.DocumentArray" title="(in DocArray v0.20.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code></a>, Response]]</p>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncGenerator</span></code>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<a class="reference external" href="https://docarray.jina.ai/api/docarray.array.document/#docarray.array.document.DocumentArray" title="(in DocArray v0.21.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code></a>, Response]]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1513,7 +1514,7 @@ you can set <cite>JINA_HUB_NO_IMAGE_REBUILD</cite> environment variable.</p>
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jan 13, 2023</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

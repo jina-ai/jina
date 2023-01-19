@@ -608,7 +608,7 @@ to Exceptions caused by an Executor, but in case of network connectivity issues,
 This can help to overcome transient network connectivity issues.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">max_attempts</span></code> parameter determines the number of sending attempts, including the original request.
 The <code class="docutils literal notranslate"><span class="pre">initial_backoff</span></code>, <code class="docutils literal notranslate"><span class="pre">max_backoff</span></code>, and <code class="docutils literal notranslate"><span class="pre">backoff_multiplier</span></code> parameters determine the randomized delay in seconds before retry attempts.</p>
-<p>The initial retry attempt will occur at random(0, initial_backoff). In general, the n-th attempt will occur at random(0, min(initial_backoff*backoff_multiplier**(n-1), max_backoff)).</p>
+<p>The initial retry attempt will occur at <code class="docutils literal notranslate"><span class="pre">random(0,</span> <span class="pre">initial_backoff)</span></code>. In general, the <em>n-th</em> attempt will occur at <code class="docutils literal notranslate"><span class="pre">random(0,</span> <span class="pre">min(initial_backoff*backoff_multiplier**(n-1),</span> <span class="pre">max_backoff))</span></code>.</p>
 </section>
 </section>
 
@@ -643,7 +643,7 @@ The <code class="docutils literal notranslate"><span class="pre">initial_backoff
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jan 13, 2023</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

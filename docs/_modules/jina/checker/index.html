@@ -424,21 +424,26 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="n">total_time</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="n">total_success</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">timeout</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">timeout</span> <span class="o">/</span> <span class="mi">1000</span> <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">timeout</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span> <span class="k">else</span> <span class="kc">None</span>
             <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">attempts</span><span class="p">):</span>
                 <span class="k">with</span> <span class="n">TimeContext</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s1">&#39;ping </span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">target</span><span class="si">}</span><span class="s1"> on </span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1"> at </span><span class="si">{</span><span class="n">j</span><span class="si">}</span><span class="s1"> round&#39;</span><span class="p">,</span> <span class="n">default_logger</span>
                 <span class="p">)</span> <span class="k">as</span> <span class="n">tc</span><span class="p">:</span>
                     <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">target</span> <span class="o">==</span> <span class="s1">&#39;executor&#39;</span><span class="p">:</span>
                         <span class="n">hostname</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="n">protocol</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">parse_host_scheme</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">host</span><span class="p">)</span>
-                        <span class="n">r</span> <span class="o">=</span> <span class="n">WorkerRuntime</span><span class="o">.</span><span class="n">is_ready</span><span class="p">(</span><span class="n">ctrl_address</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">hostname</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">port</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+                        <span class="n">r</span> <span class="o">=</span> <span class="n">WorkerRuntime</span><span class="o">.</span><span class="n">is_ready</span><span class="p">(</span>
+                            <span class="n">ctrl_address</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">hostname</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">port</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+                            <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
+                        <span class="p">)</span>
                     <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">target</span> <span class="o">==</span> <span class="s1">&#39;gateway&#39;</span><span class="p">:</span>
                         <span class="n">hostname</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="n">protocol</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">parse_host_scheme</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">host</span><span class="p">)</span>
                         <span class="n">r</span> <span class="o">=</span> <span class="n">GatewayRuntime</span><span class="o">.</span><span class="n">is_ready</span><span class="p">(</span>
                             <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">hostname</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">port</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
-                            <span class="n">protocol</span><span class="o">=</span><span class="n">GatewayProtocolType</span><span class="o">.</span><span class="n">from_string</span><span class="p">(</span><span class="n">protocol</span><span class="p">)</span>
+                            <span class="n">protocol</span><span class="o">=</span><span class="n">GatewayProtocolType</span><span class="o">.</span><span class="n">from_string</span><span class="p">(</span><span class="n">protocol</span><span class="p">),</span>
+                            <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
                         <span class="p">)</span>
                     <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">target</span> <span class="o">==</span> <span class="s1">&#39;flow&#39;</span><span class="p">:</span>
-                        <span class="n">r</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">host</span><span class="p">)</span><span class="o">.</span><span class="n">is_flow_ready</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">timeout</span> <span class="o">/</span> <span class="mi">1000</span><span class="p">)</span>
+                        <span class="n">r</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">host</span><span class="p">)</span><span class="o">.</span><span class="n">is_flow_ready</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
                     <span class="k">if</span> <span class="ow">not</span> <span class="n">r</span><span class="p">:</span>
                         <span class="n">default_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
                             <span class="s1">&#39;not responding, attempt (</span><span class="si">%d</span><span class="s1">/</span><span class="si">%d</span><span class="s1">) in 1s&#39;</span>
@@ -491,7 +496,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jan 13, 2023</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

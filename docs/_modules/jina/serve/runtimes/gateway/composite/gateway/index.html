@@ -397,7 +397,8 @@
                 </div>
                 <article role="main">
                     <h1>Source code for jina.serve.runtimes.gateway.composite.gateway</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">copy</span>
+<span></span><span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">import</span> <span class="nn">copy</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
 
 <span class="kn">from</span> <span class="nn">jina.serve.gateway</span> <span class="kn">import</span> <span class="n">BaseGateway</span>
@@ -429,24 +430,34 @@
             <span class="n">gateway_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="o">!=</span> <span class="s1">&#39;runtime_args&#39;</span><span class="p">}</span>
             <span class="n">gateway_kwargs</span><span class="p">[</span><span class="s1">&#39;runtime_args&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">vars</span><span class="p">(</span><span class="n">runtime_args</span><span class="p">))</span>
             <span class="n">gateway</span> <span class="o">=</span> <span class="n">gateway_cls</span><span class="p">(</span><span class="o">**</span><span class="n">gateway_kwargs</span><span class="p">)</span>
+            <span class="n">gateway</span><span class="o">.</span><span class="n">streamer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">streamer</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">gateways</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gateway</span><span class="p">)</span>
 
 <div class="viewcode-block" id="CompositeGateway.setup_server"><a class="viewcode-back" href="../../../../../../../api/jina.serve.runtimes.gateway.composite.gateway/#jina.serve.runtimes.gateway.composite.CompositeGateway.setup_server">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">setup_server</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        setup GRPC server</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">tasks</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">gateway</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">gateways</span><span class="p">:</span>
-            <span class="k">await</span> <span class="n">gateway</span><span class="o">.</span><span class="n">setup_server</span><span class="p">()</span></div>
+            <span class="n">tasks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="n">gateway</span><span class="o">.</span><span class="n">setup_server</span><span class="p">()))</span>
+
+        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="n">tasks</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="CompositeGateway.shutdown"><a class="viewcode-back" href="../../../../../../../api/jina.serve.runtimes.gateway.composite.gateway/#jina.serve.runtimes.gateway.composite.CompositeGateway.shutdown">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Free other resources allocated with the server, e.g, gateway object, ...&quot;&quot;&quot;</span>
+        <span class="n">shutdown_tasks</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">gateway</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">gateways</span><span class="p">:</span>
-            <span class="k">await</span> <span class="n">gateway</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span></div>
+            <span class="n">shutdown_tasks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="n">gateway</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()))</span>
+
+        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="n">shutdown_tasks</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="CompositeGateway.run_server"><a class="viewcode-back" href="../../../../../../../api/jina.serve.runtimes.gateway.composite.gateway/#jina.serve.runtimes.gateway.composite.CompositeGateway.run_server">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">run_server</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Run GRPC server forever&quot;&quot;&quot;</span>
+        <span class="n">run_server_tasks</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">gateway</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">gateways</span><span class="p">:</span>
-            <span class="k">await</span> <span class="n">gateway</span><span class="o">.</span><span class="n">run_server</span><span class="p">()</span></div>
+            <span class="n">run_server_tasks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="n">gateway</span><span class="o">.</span><span class="n">run_server</span><span class="p">()))</span>
+
+        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="n">run_server_tasks</span><span class="p">)</span></div>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_deepcopy_with_ignore_attrs</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">ignore_attrs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
@@ -484,7 +495,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jan 13, 2023</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

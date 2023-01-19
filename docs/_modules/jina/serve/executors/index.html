@@ -954,6 +954,7 @@
         <span class="n">polling</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;ANY&#39;</span><span class="p">,</span> 
         <span class="n">port</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
         <span class="n">port_monitoring</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">prefer_platform</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
         <span class="n">py_modules</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
         <span class="n">quiet</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
         <span class="n">quiet_error</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
@@ -1041,6 +1042,7 @@
 <span class="sd">              {&#39;/custom&#39;: &#39;ALL&#39;, &#39;/search&#39;: &#39;ANY&#39;, &#39;*&#39;: &#39;ANY&#39;}</span>
 <span class="sd">        :param port: The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (`--external` or `external=True`) this can be a list of ports. Then, every resulting address will be considered as one replica of the Executor.</span>
 <span class="sd">        :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</span>
+<span class="sd">        :param prefer_platform: The preferred target Docker platform. (e.g. &quot;linux/amd64&quot;, &quot;linux/arm64&quot;)</span>
 <span class="sd">        :param py_modules: The customized python modules need to be imported before loading the executor</span>
 <span class="sd">          </span>
 <span class="sd">          Note that the recommended way is to only import a single module - a simple python file, if your</span>
@@ -1287,7 +1289,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jan 13, 2023</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

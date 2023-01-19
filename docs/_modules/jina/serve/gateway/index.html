@@ -475,7 +475,7 @@
 
         <span class="kn">import</span> <span class="nn">json</span>
 
-        <span class="kn">from</span> <span class="nn">jina.serve.streamer</span> <span class="kn">import</span> <span class="n">GatewayStreamer</span>
+        <span class="kn">from</span> <span class="nn">jina.serve.streamer</span> <span class="kn">import</span> <span class="n">GatewayStreamer</span><span class="p">,</span> <span class="n">_ExecutorStreamer</span>
 
         <span class="n">graph_description</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">runtime_args</span><span class="o">.</span><span class="n">graph_description</span><span class="p">)</span>
         <span class="n">graph_conditions</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">runtime_args</span><span class="o">.</span><span class="n">graph_conditions</span><span class="p">)</span>
@@ -512,6 +512,8 @@
             <span class="n">runtime_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">runtime_args</span><span class="o">.</span><span class="n">runtime_name</span><span class="p">,</span>
             <span class="n">prefetch</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">runtime_args</span><span class="o">.</span><span class="n">prefetch</span><span class="p">,</span>
         <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">executor</span> <span class="o">=</span> <span class="p">{</span><span class="n">executor_name</span><span class="p">:</span> <span class="n">_ExecutorStreamer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">streamer</span><span class="o">.</span><span class="n">_connection_pool</span><span class="p">,</span> <span class="n">executor_name</span><span class="o">=</span><span class="n">executor_name</span><span class="p">)</span> <span class="k">for</span> <span class="n">executor_name</span> <span class="ow">in</span> <span class="n">deployments_addresses</span><span class="o">.</span><span class="n">keys</span><span class="p">()}</span>
 
     <span class="k">def</span> <span class="nf">_add_runtime_args</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_runtime_args</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]):</span>
         <span class="kn">from</span> <span class="nn">jina.parsers</span> <span class="kn">import</span> <span class="n">set_gateway_runtime_args_parser</span>
@@ -594,7 +596,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jan 13, 2023</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

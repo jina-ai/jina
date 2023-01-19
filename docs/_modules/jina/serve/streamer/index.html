@@ -397,11 +397,14 @@
                 </div>
                 <article role="main">
                     <h1>Source code for jina.serve.streamer</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">json</span>
+<span></span><span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Union</span>
 
-<span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
+<span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span>
 
 <span class="kn">from</span> <span class="nn">jina.logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
 <span class="kn">from</span> <span class="nn">jina.serve.networking</span> <span class="kn">import</span> <span class="n">GrpcConnectionPool</span>
@@ -464,6 +467,7 @@
 <span class="sd">        :param aio_tracing_client_interceptors: Optional list of aio grpc tracing server interceptors.</span>
 <span class="sd">        :param tracing_client_interceptor: Optional gprc tracing server interceptor.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logger</span>
         <span class="n">topology_graph</span> <span class="o">=</span> <span class="n">TopologyGraph</span><span class="p">(</span>
             <span class="n">graph_representation</span><span class="o">=</span><span class="n">graph_representation</span><span class="p">,</span>
             <span class="n">graph_conditions</span><span class="o">=</span><span class="n">graph_conditions</span><span class="p">,</span>
@@ -477,6 +481,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">runtime_name</span> <span class="o">=</span> <span class="n">runtime_name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">aio_tracing_client_interceptors</span> <span class="o">=</span> <span class="n">aio_tracing_client_interceptors</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tracing_client_interceptor</span> <span class="o">=</span> <span class="n">tracing_client_interceptor</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_executor_addresses</span> <span class="o">=</span> <span class="n">executor_addresses</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_connection_pool</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_connection_pool</span><span class="p">(</span>
             <span class="n">executor_addresses</span><span class="p">,</span>
@@ -619,7 +624,71 @@
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_set_env_streamer_args</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;JINA_STREAMER_ARGS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span></div>
+        <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;JINA_STREAMER_ARGS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+
+<div class="viewcode-block" id="GatewayStreamer.warmup"><a class="viewcode-back" href="../../../../api/jina.serve.streamer/#jina.serve.streamer.GatewayStreamer.warmup">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">warmup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stop_event</span><span class="p">:</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;Executes warmup task on each deployment. This forces the gateway to establish connection and open a</span>
+<span class="sd">        gRPC channel to each executor so that the first request doesn&#39;t need to experience the penalty of</span>
+<span class="sd">        eastablishing a brand new gRPC channel.</span>
+<span class="sd">        :param stop_event: signal to indicate if an early termination of the task is required for graceful teardown.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Running GatewayRuntime warmup&#39;</span><span class="p">)</span>
+        <span class="n">deployments</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_executor_addresses</span><span class="o">.</span><span class="n">keys</span><span class="p">()}</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">deployment_warmup_tasks</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">deployment</span> <span class="ow">in</span> <span class="n">deployments</span><span class="p">:</span>
+                <span class="n">deployment_warmup_tasks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_connection_pool</span><span class="o">.</span><span class="n">warmup</span><span class="p">(</span>
+                            <span class="n">deployment</span><span class="o">=</span><span class="n">deployment</span><span class="p">,</span> <span class="n">stop_event</span><span class="o">=</span><span class="n">stop_event</span>
+                        <span class="p">)</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+
+            <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="n">deployment_warmup_tasks</span><span class="p">,</span> <span class="n">return_exceptions</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;error with GatewayRuntime warmup up task: </span><span class="si">{</span><span class="n">ex</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="k">return</span></div></div>
+
+
+<span class="k">class</span> <span class="nc">_ExecutorStreamer</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connection_pool</span><span class="p">:</span> <span class="n">GrpcConnectionPool</span><span class="p">,</span> <span class="n">executor_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_connection_pool</span><span class="p">:</span> <span class="n">GrpcConnectionPool</span> <span class="o">=</span> <span class="n">connection_pool</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">executor_name</span> <span class="o">=</span> <span class="n">executor_name</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">post</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">inputs</span><span class="p">:</span> <span class="n">DocumentArray</span><span class="p">,</span>
+        <span class="n">request_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
+        <span class="n">on</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">parameters</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="n">reqs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">docs_batch</span> <span class="ow">in</span> <span class="n">inputs</span><span class="o">.</span><span class="n">batch</span><span class="p">(</span><span class="n">batch_size</span><span class="o">=</span><span class="n">request_size</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+            <span class="n">req</span> <span class="o">=</span> <span class="n">DataRequest</span><span class="p">()</span>
+            <span class="n">req</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">exec_endpoint</span> <span class="o">=</span> <span class="n">on</span>
+            <span class="n">req</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">target_executor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">executor_name</span>
+            <span class="n">req</span><span class="o">.</span><span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span>
+            <span class="n">req</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">docs</span> <span class="o">=</span> <span class="n">docs_batch</span>
+            <span class="n">reqs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">req</span><span class="p">)</span>
+
+        <span class="n">tasks</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_connection_pool</span><span class="o">.</span><span class="n">send_requests_once</span><span class="p">(</span>
+            <span class="n">requests</span><span class="o">=</span><span class="p">[</span><span class="n">req</span><span class="p">],</span>
+            <span class="n">deployment</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">executor_name</span><span class="p">,</span>
+            <span class="n">head</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">endpoint</span><span class="o">=</span><span class="n">on</span>
+        <span class="p">)</span> <span class="k">for</span> <span class="n">req</span> <span class="ow">in</span> <span class="n">reqs</span><span class="p">]</span>
+
+        <span class="n">results</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="n">tasks</span><span class="p">)</span>
+        
+        <span class="n">docs</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="o">.</span><span class="n">empty</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">resp</span><span class="p">,</span><span class="n">_</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
+            <span class="n">docs</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">resp</span><span class="o">.</span><span class="n">docs</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">docs</span>
 </pre></div>
                 </article>
             </div>
@@ -634,7 +703,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jan 13, 2023</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

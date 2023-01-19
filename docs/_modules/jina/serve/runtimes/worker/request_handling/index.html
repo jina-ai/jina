@@ -937,9 +937,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">requests</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="n">result</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">(</span>
-                    <span class="n">d</span>
-                    <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">requests</span><span class="p">)</span>
-                    <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="s1">&#39;docs&#39;</span><span class="p">)</span>
+                <span class="n">d</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">requests</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="s1">&#39;docs&#39;</span><span class="p">)</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">result</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">requests</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;docs&#39;</span><span class="p">)</span>
@@ -1011,7 +1009,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jan 13, 2023</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

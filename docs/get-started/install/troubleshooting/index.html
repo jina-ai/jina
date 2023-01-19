@@ -429,7 +429,7 @@
 <section id="on-linux-mac-building-wheels-takes-long-time">
 <h2>On Linux/Mac, building wheels takes long time<a class="headerlink" href="#on-linux-mac-building-wheels-takes-long-time" title="Permalink to this heading">#</a></h2>
 <p>The normal installation of Jina takes 10 seconds. If yours takes longer than this, then it is likely you unnecessarily built wheels from scratch.</p>
-<p>Every upstream dependency of Jina has pre-built wheels exhaustively for x86/arm64, macos/Linux and Python 3.7/3.8/3.9, including <code class="docutils literal notranslate"><span class="pre">numpy</span></code>, <code class="docutils literal notranslate"><span class="pre">protobuf</span></code>, <code class="docutils literal notranslate"><span class="pre">grpcio</span></code> etc. This means when you install Jina, your <code class="docutils literal notranslate"><span class="pre">pip</span></code> should directly leverage the pre-built wheels instead of building them from scratch locally. For example, you should expect the install log to contain <code class="docutils literal notranslate"><span class="pre">-cp38-cp38-macosx_10_15_x86_64.whl</span></code> when installing Jina on MacOS with Python 3.8.</p>
+<p>Every upstream dependency of Jina has pre-built wheels exhaustively for x86/arm64, macos/Linux and Python 3.7/3.8/3.9, including <code class="docutils literal notranslate"><span class="pre">numpy</span></code>, <code class="docutils literal notranslate"><span class="pre">protobuf</span></code>, <code class="docutils literal notranslate"><span class="pre">grpcio</span></code> etc. This means when you install Jina, your <code class="docutils literal notranslate"><span class="pre">pip</span></code> should directly leverage the pre-built wheels instead of building them from scratch locally. For example, you should expect the install log to contain <code class="docutils literal notranslate"><span class="pre">-cp38-cp38-macosx_10_15_x86_64.whl</span></code> when installing Jina on macOS with Python 3.8.</p>
 <p>If you find you are building wheels during installation (see an example below), then it is a sign that you are installing Jina <strong>wrongly</strong>.</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Collecting numpy==2.0.*
   Downloading numpy-2.0.18.tar.gz (801 kB)
@@ -500,7 +500,7 @@ Building wheels for collected packages: numpy
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jan 13, 2023</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

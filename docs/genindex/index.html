@@ -920,6 +920,16 @@
         </ul></li>
         <li><a href="../api/jina.clients.helper/#jina.clients.helper.callback_exec">callback_exec() (in module jina.clients.helper)</a>
 </li>
+        <li><a href="../api/jina.serve.runtimes.asyncio/#jina.serve.runtimes.asyncio.AsyncNewLoopRuntime.cancel_warmup_task">cancel_warmup_task() (jina.serve.runtimes.asyncio.AsyncNewLoopRuntime method)</a>
+
+        <ul>
+          <li><a href="../api/jina.serve.runtimes.gateway/#jina.serve.runtimes.gateway.GatewayRuntime.cancel_warmup_task">(jina.serve.runtimes.gateway.GatewayRuntime method)</a>
+</li>
+          <li><a href="../api/jina.serve.runtimes.head/#jina.serve.runtimes.head.HeadRuntime.cancel_warmup_task">(jina.serve.runtimes.head.HeadRuntime method)</a>
+</li>
+          <li><a href="../api/jina.serve.runtimes.worker/#jina.serve.runtimes.worker.WorkerRuntime.cancel_warmup_task">(jina.serve.runtimes.worker.WorkerRuntime method)</a>
+</li>
+        </ul></li>
         <li><a href="../api/jina.parsers.helper/#jina.parsers.helper.CastHostAction">CastHostAction (class in jina.parsers.helper)</a>
 </li>
         <li><a href="../api/jina.parsers.helper/#jina.parsers.helper.CastToIntAction">CastToIntAction (class in jina.parsers.helper)</a>
@@ -1104,12 +1114,12 @@
 </li>
         <li><a href="../api/jina.jaml.helper/#jina.jaml.helper.JinaLoader.compose_document">compose_document() (jina.jaml.helper.JinaLoader method)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.jaml.helper/#jina.jaml.helper.JinaLoader.compose_mapping_node">compose_mapping_node() (jina.jaml.helper.JinaLoader method)</a>
 </li>
         <li><a href="../api/jina.jaml.helper/#jina.jaml.helper.JinaLoader.compose_node">compose_node() (jina.jaml.helper.JinaLoader method)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.jaml.helper/#jina.jaml.helper.JinaLoader.compose_scalar_node">compose_scalar_node() (jina.jaml.helper.JinaLoader method)</a>
 </li>
         <li><a href="../api/jina.jaml.helper/#jina.jaml.helper.JinaLoader.compose_sequence_node">compose_sequence_node() (jina.jaml.helper.JinaLoader method)</a>
@@ -2113,7 +2123,7 @@
 </li>
         <li><a href="../api/jina.enums/#jina.enums.GatewayProtocolType.GRPC">GRPC (jina.enums.GatewayProtocolType attribute)</a>
 </li>
-        <li><a href="../concepts/preliminaries/#term-gRPC-Websocket-HTTP"><strong>gRPC, Websocket, HTTP</strong></a>
+        <li><a href="../concepts/preliminaries/#term-gRPC-WebSocket-HTTP"><strong>gRPC, WebSocket, HTTP</strong></a>
 </li>
         <li><a href="../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.Deployment.grpc_metadata">grpc_metadata (jina.orchestrate.deployments.Deployment property)</a>
 </li>
@@ -3846,8 +3856,6 @@
 </li>
         <li><a href="../api/jina.parsers.orchestrate.runtimes.remote/#jina.parsers.orchestrate.runtimes.remote.mixin_http_gateway_parser">mixin_http_gateway_parser() (in module jina.parsers.orchestrate.runtimes.remote)</a>
 </li>
-        <li><a href="../api/jina.parsers.orchestrate.pod/#jina.parsers.orchestrate.pod.mixin_hub_pull_options_parser">mixin_hub_pull_options_parser() (in module jina.parsers.orchestrate.pod)</a>
-</li>
         <li><a href="../api/jina.parsers.orchestrate.pod/#jina.parsers.orchestrate.pod.mixin_pod_parser">mixin_pod_parser() (in module jina.parsers.orchestrate.pod)</a>
 </li>
         <li><a href="../api/jina.parsers.orchestrate.pod/#jina.parsers.orchestrate.pod.mixin_pod_runtime_args_parser">mixin_pod_runtime_args_parser() (in module jina.parsers.orchestrate.pod)</a>
@@ -5047,6 +5055,8 @@
 </li>
         <li><a href="../api/jina.serve.networking/#jina.serve.networking.GrpcConnectionPool.send_health_check_sync">send_health_check_sync() (jina.serve.networking.GrpcConnectionPool static method)</a>
 </li>
+        <li><a href="../api/jina.serve.networking/#jina.serve.networking.GrpcConnectionPool.ConnectionStubs.send_info_rpc">send_info_rpc() (jina.serve.networking.GrpcConnectionPool.ConnectionStubs method)</a>
+</li>
         <li><a href="../api/jina.clients.base.helper/#jina.clients.base.helper.AioHttpClientlet.send_message">send_message() (jina.clients.base.helper.AioHttpClientlet method)</a>
 
         <ul>
@@ -5573,6 +5583,16 @@
           <li><a href="../api/jina.orchestrate.pods/#jina.orchestrate.pods.Pod.wait_start_success">(jina.orchestrate.pods.Pod method)</a>
 </li>
         </ul></li>
+        <li><a href="../api/jina.serve.networking/#jina.serve.networking.GrpcConnectionPool.warmup">warmup() (jina.serve.networking.GrpcConnectionPool method)</a>
+
+        <ul>
+          <li><a href="../api/jina.serve.runtimes.head.request_handling/#jina.serve.runtimes.head.request_handling.HeaderRequestHandler.warmup">(jina.serve.runtimes.head.request_handling.HeaderRequestHandler method)</a>
+</li>
+          <li><a href="../api/jina.serve.streamer/#jina.serve.streamer.GatewayStreamer.warmup">(jina.serve.streamer.GatewayStreamer method)</a>
+</li>
+        </ul></li>
+        <li><a href="../api/jina.serve.networking/#jina.serve.networking.ReplicaList.warmup_stubs">warmup_stubs (jina.serve.networking.ReplicaList property)</a>
+</li>
         <li><a href="../api/jina.enums/#jina.enums.LogVerbosity.WARNING">WARNING (jina.enums.LogVerbosity attribute)</a>
 </li>
         <li><a href="../api/jina.serve.runtimes.worker/#jina.serve.runtimes.worker.WorkerRuntime.Watch">Watch() (jina.serve.runtimes.worker.WorkerRuntime method)</a>
@@ -5723,7 +5743,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jan 13, 2023</div>
+                            Last updated on Jan 19, 2023</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
