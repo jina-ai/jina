@@ -9,8 +9,6 @@ def test_simple_flow():
     class MyExec(Executor):
         @requests(on='/foo')
         def foo(self, docs: DocumentArray, **kwargs):
-            print(docs)
-            print(len(docs))
             docs[0].text = 'hello world'
 
         @requests(on='/bar')
@@ -52,3 +50,19 @@ def test_different_document_schema():
         )
         docs = docs.stack()
         assert docs.tensor.ndim == 4
+
+
+def test_send_custom_doc():
+    from docarray import BaseDocument, DocumentArray
+
+    class MyDoc(BaseDocument):
+        text: str
+
+    class MyExec(Executor):
+        @requests(on='/foo')
+        def foo(self, docs: DocumentArray[MyDoc], **kwargs):
+            docs[0].text = 'hello world'
+
+    with Flow().add(uses=MyExec) as f:
+        doc = f.post(on='/foo', inputs=MyDoc(text='hello'))
+        assert doc[0].text == 'hello world'
