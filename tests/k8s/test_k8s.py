@@ -1837,12 +1837,13 @@ async def test_deployment_serve_k8s(logger, docker_images, tmpdir, k8s_cluster):
             port,
             namespace,
         ):
-            client = Client(port=port)
-            client.show_progress = True
-            docs = client.post('/debug', inputs=DocumentArray.empty(3), stream=False)
-            for doc in docs:
-                assert doc.tags['shards'] == 1
-                assert doc.tags['parallel'] == 3
+            client = Client(port=port, asyncio=True)
+            async for resp in client.post(
+                '/debug', inputs=DocumentArray.empty(3), stream=False
+            ):
+                for doc in resp.docs:
+                    assert doc.tags['shards'] == 1
+                    assert doc.tags['parallel'] == 3
 
     except Exception as exc:
         logger.error(f' Exception raised {exc}')
