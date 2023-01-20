@@ -248,7 +248,7 @@ jobs:
           JINAHUB_USERNAME: ${{ secrets.JINAHUB_USERNAME }}
           JINAHUB_PASSWORD: ${{ secrets.JINAHUB_PASSWORD }}
 
-  k8s-test:
+  k8s-flow-test:
     needs: update-schema
     runs-on: ubuntu-latest
     steps:
@@ -267,11 +267,52 @@ jobs:
           export JINA_LOG_LEVEL="ERROR"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Test k8s
+      - name: Test k8s Flow
         run: |
           export LINKERD2_VERSION=stable-2.11.4
           curl --proto '=https' --tlsv1.2 -sSfL https://run.linkerd.io/install | sh
-          pytest -v -s --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml ./tests/k8s/test_k8s.py ./tests/k8s/test_graceful_request_handling.py
+          pytest -v -s --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml ./tests/k8s/test_k8s_flow.py
+        timeout-minutes: 45
+        env:
+          JINA_K8S_USE_TEST_PIP: 1
+      - name: Check codecov file
+        id: check_files
+        uses: andstor/file-existence-action@v1
+        with:
+          files: "coverage.xml"
+      - name: Upload coverage from test to Codecov
+        uses: codecov/codecov-action@v3.1.1
+        if: steps.check_files.outputs.files_exists == 'true' && ${{ matrix.python-version }} == '3.7'
+        with:
+          file: coverage.xml
+          name: ${{ matrix.test-path }}-codecov
+          flags: ${{ steps.test.outputs.codecov_flag }}
+          fail_ci_if_error: false
+
+  k8s-graceful-and-deployment-test:
+    needs: update-schema
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2.5.0
+      - name: Set up Python 3.7
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.7
+      - name: Prepare enviroment
+        run: |
+          docker build -f Dockerfiles/test-pip.Dockerfile -t jinaai/jina:test-pip .
+          python -m pip install --upgrade pip
+          python -m pip install wheel
+          pip install ".[all]" --no-cache-dir
+          jina
+          export JINA_LOG_LEVEL="ERROR"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Test graceful request handling on k8s and Executor deployment on k8s
+        run: |
+          export LINKERD2_VERSION=stable-2.11.4
+          curl --proto '=https' --tlsv1.2 -sSfL https://run.linkerd.io/install | sh
+          pytest -v -s --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml ./tests/k8s/test_k8s_deployment.py ./tests/k8s/test_graceful_request_handling.py
         timeout-minutes: 45
         env:
           JINA_K8S_USE_TEST_PIP: 1
@@ -392,7 +433,7 @@ jobs:
   # just for blocking the merge until all parallel core-test are successful
   success-all-steps:
     runs-on: ubuntu-latest
-    needs: [core-test, import-test, hub-test, k8s-test, k8s-failures-test, docker-compose-test, docker-image-test, benchmark-pre-release, update-schema, update-docker]
+    needs: [core-test, import-test, hub-test, k8s-flow-test, k8s-graceful-and-deployment-test, k8s-failures-test, docker-compose-test, docker-image-test, benchmark-pre-release, update-schema, update-docker]
     if: always()
     steps:
       - uses: technote-space/workflow-conclusion-action@v2
