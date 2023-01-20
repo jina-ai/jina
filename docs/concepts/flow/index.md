@@ -117,11 +117,20 @@ from jina import Flow, Document
 f = Flow.load_config('my.yml')
 
 with f:
-    f.post(on='/bar', inputs=Document(), on_done=print)
+    try:
+        f.post(on='/bar', inputs=Document(), on_done=print)
+    except Exception as ex:
+        # handle exception
+        pass
 ```
 
 ````
 
+```{caution}
+The statement `with f:` starts the Flow, and exiting the indented with block stops the Flow, including all Executors defined in it.
+Exceptions raised inside the `with f:` block will close the Flow context manager. If this is not intended then care must be taken to 
+surround the statements that can potentially raise an exception with a `try-except` block.
+```
 
 
 
