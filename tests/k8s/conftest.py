@@ -80,6 +80,7 @@ class KindClusterWrapper:
         out = subprocess.check_output(
             [f'{Path.home()}/.linkerd2/bin/linkerd', 'check'],
             env=os.environ,
+            stderr=subprocess.PIPE,
         )
 
         print(f'linkerd check yields {out.decode() if out else "nothing"}')
@@ -113,6 +114,7 @@ class KindClusterWrapper:
         out = subprocess.check_output(
             [f'{Path.home()}/.linkerd2/bin/linkerd-smi', 'check'],
             env=os.environ,
+            stderr=subprocess.PIPE,
         )
 
         print(f'linkerd check yields {out.decode() if out else "nothing"}')
