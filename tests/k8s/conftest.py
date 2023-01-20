@@ -78,7 +78,7 @@ class KindClusterWrapper:
         timeout = time.time() + 60 * 5  # 5 minutes from now
         while True:
             # nodes = self._cluster.kubectl('get', 'pods', '-n', 'linkerd')
-            linkerd_pods = core_client.list_namespaced_pod('linkerd')
+            linkerd_pods = core_client.list_namespaced_pod('linkerd').items
             if linkerd_pods.items is not None:
                 try:
                     all_ready = all(
