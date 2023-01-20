@@ -133,6 +133,7 @@ def run_raft(
     raft_bootstrap = args.raft_bootstrap
     executor_target = f'{args.host}:{args.port + 1}'
     raft_configuration = pascal_case_dict(args.raft_configuration or {})
+    raft_configuration['WorkerRequestHandlersArgs'] = args
     is_ready.wait()
     jraft.run(address, raft_id, raft_dir, raft_bootstrap, executor_target, **raft_configuration)
 

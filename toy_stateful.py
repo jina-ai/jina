@@ -88,7 +88,8 @@ if __name__ == '__main__':
                                               stateful=True,
                                               raft_bootstrap=True,
                                               raft_configuration={'snapshot_interval': 10, 'snapshot_threshold': 5, 'trailing_logs': 10,
-                                                                  'LogLevel': 'INFO'})
+                                                                  'LogLevel': 'INFO'},
+                                              uses_with={'a': 'b'})
         with f:
             f.block()
     elif option == 'index_no_snapshot':

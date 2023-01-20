@@ -8,9 +8,9 @@ package main
 
 // Workaround missing variadic function support
 // https://github.com/golang/go/issues/975
-int PyArg_ParseTuple_run(PyObject * args, PyObject * kwargs, char **myAddr, char **raftId, char **raftDir, bool *raftBootstrap, char **executorTarget, int *HeartbeatTimeout, int *ElectionTimeout, int *CommitTimeout, int *MaxAppendEntries, bool *BatchApplyCh, bool *ShutdownOnRemove, uint64_t *TrailingLogs, int *snapshotInterval, uint64_t *SnapshotThreshold, int *LeaderLeaseTimeout, char **LogLevel, bool *NoSnapshotRestoreOnStart) {
-    static char *kwlist[] = {"myAddr", "raftId", "raftDir", "raftBootstrap", "executorTarget", "HeartbeatTimeout", "ElectionTimeout", "CommitTimeout", "MaxAppendEntries", "BatchApplyCh", "ShutdownOnRemove", "TrailingLogs", "SnapshotInterval", "SnapshotThreshold", "LeaderLeaseTimeout", "LogLevel", "NoSnapshotRestoreOnStart", NULL};
-    return PyArg_ParseTupleAndKeywords(args, kwargs, "sssps|llllppklklsp", kwlist, myAddr, raftId, raftDir, raftBootstrap, executorTarget, HeartbeatTimeout, ElectionTimeout, CommitTimeout, MaxAppendEntries, BatchApplyCh, ShutdownOnRemove, TrailingLogs, snapshotInterval, SnapshotThreshold, LeaderLeaseTimeout, LogLevel, NoSnapshotRestoreOnStart);
+int PyArg_ParseTuple_run(PyObject * args, PyObject * kwargs, char **myAddr, char **raftId, char **raftDir, bool *raftBootstrap, char **executorTarget, int *HeartbeatTimeout, int *ElectionTimeout, int *CommitTimeout, int *MaxAppendEntries, bool *BatchApplyCh, bool *ShutdownOnRemove, uint64_t *TrailingLogs, int *snapshotInterval, uint64_t *SnapshotThreshold, int *LeaderLeaseTimeout, char **LogLevel, bool *NoSnapshotRestoreOnStart, PyObject** WorkerRequestHandlersArgs) {
+    static char *kwlist[] = {"myAddr", "raftId", "raftDir", "raftBootstrap", "executorTarget", "HeartbeatTimeout", "ElectionTimeout", "CommitTimeout", "MaxAppendEntries", "BatchApplyCh", "ShutdownOnRemove", "TrailingLogs", "SnapshotInterval", "SnapshotThreshold", "LeaderLeaseTimeout", "LogLevel", "NoSnapshotRestoreOnStart", "WorkerRequestHandlersArgs", NULL};
+    return PyArg_ParseTupleAndKeywords(args, kwargs, "sssps|llllppklklspO", kwlist, myAddr, raftId, raftDir, raftBootstrap, executorTarget, HeartbeatTimeout, ElectionTimeout, CommitTimeout, MaxAppendEntries, BatchApplyCh, ShutdownOnRemove, TrailingLogs, snapshotInterval, SnapshotThreshold, LeaderLeaseTimeout, LogLevel, NoSnapshotRestoreOnStart, WorkerRequestHandlersArgs);
 }
 
 int PyArg_ParseTuple_add_voter(PyObject * args, char **a, char **b, char **c) {

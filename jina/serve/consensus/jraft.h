@@ -22,9 +22,19 @@ typedef struct { const char *p; ptrdiff_t n; } _GoString_;
 #line 3 "run.go"
  #include <Python.h>
  #include <stdbool.h>
- int PyArg_ParseTuple_run(PyObject * args, PyObject * kwargs, char **myAddr, char **raftId, char **raftDir, bool *raftBootstrap, char **executorTarget, int *HeartbeatTimeout, int *ElectionTimeout, int *CommitTimeout, int *MaxAppendEntries, bool *BatchApplyCh, bool *ShutdownOnRemove, uint64_t *TrailingLogs, int *snapshotInterval, uint64_t *SnapshotThreshold, int *LeaderLeaseTimeout, char **LogLevel, bool *NoSnapshotRestoreOnStart);
+ int PyArg_ParseTuple_run(PyObject * args, PyObject * kwargs, char **myAddr, char **raftId, char **raftDir, bool *raftBootstrap, char **executorTarget, int *HeartbeatTimeout, int *ElectionTimeout, int *CommitTimeout, int *MaxAppendEntries, bool *BatchApplyCh, bool *ShutdownOnRemove, uint64_t *TrailingLogs, int *snapshotInterval, uint64_t *SnapshotThreshold, int *LeaderLeaseTimeout, char **LogLevel, bool *NoSnapshotRestoreOnStart, PyObject** WorkerRequestHandlersArgs);
  int PyArg_ParseTuple_add_voter(PyObject * args, char **a, char **b, char **c);
  void raise_exception(char *msg);
+ static PyObject* call_python_function(const char* module_name, const char* function_name, PyObject* WorkerRequestHandlersArgs) {
+     PyObject* function;
+     PyObject* args;
+     PyObject* result;
+     PyObject* module;
+     module = PyImport_ImportModule(module_name);
+     function = PyObject_GetAttrString(module, function_name);
+     result = PyObject_CallFunctionObjArgs(function, WorkerRequestHandlersArgs, NULL);
+     return result;
+ }
 
 #line 1 "cgo-generated-wrapper"
 

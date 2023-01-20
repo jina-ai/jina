@@ -19,16 +19,24 @@ import (
     pb "jraft/jina-go-proto"
 )
 
+/*
+
+#cgo pkg-config: python3
+#include <Python.h>
+*/
+import "C"
+
 
 type executorFSM struct {
     executor *executor
+    worker   *C.PyObject
     mtx      sync.RWMutex
     snapshot *snapshot
     write_endpoints  []string
 }
 
 
-func NewExecutorFSM(target string) *executorFSM {
+func NewExecutorFSM(target string, Worker *C.PyObject) *executorFSM {
     executor := &executor{
                 target:             target,
                 connection_options: defaultExecutorDialOptions(),
@@ -42,6 +50,7 @@ func NewExecutorFSM(target string) *executorFSM {
     return &executorFSM{
         executor: executor,
         write_endpoints: write_endpoints,
+        worker: Worker,
     }
 }
 

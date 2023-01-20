@@ -20,20 +20,32 @@ if TYPE_CHECKING:  # pragma: no cover
     from prometheus_client import CollectorRegistry
 
 
+def create_worker_request_handler(args):
+    import os
+    os.environ['JINA_LOG_LEVEL'] = 'DEBUG'
+    from jina.logging.logger import JinaLogger
+    print(f' uses_with {args.uses_with}')
+    args.workspace = 'STUPID'
+    logger = JinaLogger('TEST')
+    logger.warning(f' HEY HERE CREATING')
+    w = WorkerRequestHandler(args, logger)
+    return w
+
+
 class WorkerRequestHandler:
     """Object to encapsulate the code related to handle the data requests passing to executor and its returned values"""
 
     _KEY_RESULT = '__results__'
 
     def __init__(
-        self,
-        args: 'argparse.Namespace',
-        logger: 'JinaLogger',
-        metrics_registry: Optional['CollectorRegistry'] = None,
-        tracer_provider: Optional['trace.TracerProvider'] = None,
-        meter_provider: Optional['metrics.MeterProvider'] = None,
-        deployment_name: str = '',
-        **kwargs,
+            self,
+            args: 'argparse.Namespace',
+            logger: 'JinaLogger',
+            metrics_registry: Optional['CollectorRegistry'] = None,
+            tracer_provider: Optional['trace.TracerProvider'] = None,
+            meter_provider: Optional['metrics.MeterProvider'] = None,
+            deployment_name: str = '',
+            **kwargs,
     ):
         """Initialize private parameters and execute private loading functions.
 
@@ -122,16 +134,16 @@ class WorkerRequestHandler:
             }
 
     def _init_monitoring(
-        self,
-        metrics_registry: Optional['CollectorRegistry'] = None,
-        meter: Optional['metrics.Meter'] = None,
+            self,
+            metrics_registry: Optional['CollectorRegistry'] = None,
+            meter: Optional['metrics.Meter'] = None,
     ):
 
         if metrics_registry:
 
             with ImportExtensions(
-                required=True,
-                help_text='You need to install the `prometheus_client` to use the montitoring functionality of jina',
+                    required=True,
+                    help_text='You need to install the `prometheus_client` to use the montitoring functionality of jina',
             ):
                 from jina.serve.monitoring import _SummaryDeprecated
                 from prometheus_client import Counter, Summary
@@ -186,10 +198,10 @@ class WorkerRequestHandler:
             self._sent_response_size_histogram = None
 
     def _load_executor(
-        self,
-        metrics_registry: Optional['CollectorRegistry'] = None,
-        tracer_provider: Optional['trace.TracerProvider'] = None,
-        meter_provider: Optional['metrics.MeterProvider'] = None,
+            self,
+            metrics_registry: Optional['CollectorRegistry'] = None,
+            tracer_provider: Optional['trace.TracerProvider'] = None,
+            meter_provider: Optional['metrics.MeterProvider'] = None,
     ):
         """
         Load the executor to this runtime, specified by ``uses`` CLI argument.
@@ -366,8 +378,11 @@ class WorkerRequestHandler:
         )
         return docs
 
+    async def try_call_async(self):
+        print(f' TRY CALL ASYNC')
+
     async def handle(
-        self, requests: List['DataRequest'], tracing_context: Optional['Context'] = None
+            self, requests: List['DataRequest'], tracing_context: Optional['Context'] = None
     ) -> DataRequest:
         """Initialize private parameters and execute private loading functions.
 
@@ -437,7 +452,7 @@ class WorkerRequestHandler:
 
     @staticmethod
     def replace_docs(
-        request: List['DataRequest'], docs: 'DocumentArray', ndarrray_type: str = None
+            request: List['DataRequest'], docs: 'DocumentArray', ndarrray_type: str = None
     ) -> None:
         """Replaces the docs in a message with new Documents.
 
@@ -480,7 +495,7 @@ class WorkerRequestHandler:
 
     @staticmethod
     def _get_docs_matrix_from_request(
-        requests: List['DataRequest'],
+            requests: List['DataRequest'],
     ) -> Tuple[Optional[List['DocumentArray']], Optional[Dict[str, 'DocumentArray']]]:
         """
         Returns a docs matrix from a list of DataRequest objects.
@@ -504,7 +519,7 @@ class WorkerRequestHandler:
 
     @staticmethod
     def get_parameters_dict_from_request(
-        requests: List['DataRequest'],
+            requests: List['DataRequest'],
     ) -> 'Dict':
         """
         Returns a parameters dict from a list of DataRequest objects.
@@ -524,7 +539,7 @@ class WorkerRequestHandler:
 
     @staticmethod
     def get_docs_from_request(
-        requests: List['DataRequest'],
+            requests: List['DataRequest'],
     ) -> 'DocumentArray':
         """
         Gets a field from the message

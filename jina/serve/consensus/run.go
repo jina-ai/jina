@@ -2,9 +2,19 @@ package main
 
 // #include <Python.h>
 // #include <stdbool.h>
-// int PyArg_ParseTuple_run(PyObject * args, PyObject * kwargs, char **myAddr, char **raftId, char **raftDir, bool *raftBootstrap, char **executorTarget, int *HeartbeatTimeout, int *ElectionTimeout, int *CommitTimeout, int *MaxAppendEntries, bool *BatchApplyCh, bool *ShutdownOnRemove, uint64_t *TrailingLogs, int *snapshotInterval, uint64_t *SnapshotThreshold, int *LeaderLeaseTimeout, char **LogLevel, bool *NoSnapshotRestoreOnStart);
+// int PyArg_ParseTuple_run(PyObject * args, PyObject * kwargs, char **myAddr, char **raftId, char **raftDir, bool *raftBootstrap, char **executorTarget, int *HeartbeatTimeout, int *ElectionTimeout, int *CommitTimeout, int *MaxAppendEntries, bool *BatchApplyCh, bool *ShutdownOnRemove, uint64_t *TrailingLogs, int *snapshotInterval, uint64_t *SnapshotThreshold, int *LeaderLeaseTimeout, char **LogLevel, bool *NoSnapshotRestoreOnStart, PyObject** WorkerRequestHandlersArgs);
 // int PyArg_ParseTuple_add_voter(PyObject * args, char **a, char **b, char **c);
 // void raise_exception(char *msg);
+// static PyObject* call_python_function(const char* module_name, const char* function_name, PyObject* WorkerRequestHandlersArgs) {
+//     PyObject* function;
+//     PyObject* args;
+//     PyObject* result;
+//     PyObject* module;
+//     module = PyImport_ImportModule(module_name);
+//     function = PyObject_GetAttrString(module, function_name);
+//     result = PyObject_CallFunctionObjArgs(function, WorkerRequestHandlersArgs, NULL);
+//     return result;
+// }
 import "C"
 
 
@@ -126,7 +136,8 @@ func Run(myAddr string,
          SnapshotThreshold uint64,
          LeaderLeaseTimeout int,
          LogLevel string,
-         NoSnapshotRestoreOnStart bool) {
+         NoSnapshotRestoreOnStart bool,
+         WorkerRequestHandler *C.PyObject) {
 
     log.Printf("Calling Run %s, %s, %s, %p, %s", myAddr, raftId, raftDir, raftBootstrap, executorTarget)
     if raftId == "" {
@@ -142,7 +153,7 @@ func Run(myAddr string,
     if err != nil {
         log.Fatalf("failed to listen: %v", err)
     }
-    executorFSM := jinaraft.NewExecutorFSM(executorTarget)
+    executorFSM := jinaraft.NewExecutorFSM(executorTarget, WorkerRequestHandler)
 
     r, tm, err := NewRaft(ctx,
                         raftId,
@@ -238,12 +249,16 @@ func main() {
         *SnapshotThreshold,
         *LeaderLeaseTimeout,
         *LogLevel,
-        *NoSnapshotRestoreOnStart)
+        *NoSnapshotRestoreOnStart,
+        C.Py_None)
 }
 
 
 //export run
 func run(self *C.PyObject, args *C.PyObject, kwargs *C.PyObject) *C.PyObject {
+    // Seems that I do not have to initialize because this is already called from Python
+//     C.Py_Initialize()
+//     defer C.Py_Finalize()
     var myAddr *C.char
     var raftId *C.char
     var raftDir *C.char
@@ -261,6 +276,7 @@ func run(self *C.PyObject, args *C.PyObject, kwargs *C.PyObject) *C.PyObject {
     var LeaderLeaseTimeout C.int
     var LogLevel *C.char
     var NoSnapshotRestoreOnStart C.bool
+    var WorkerRequestHandlersArgs *C.PyObject
 
     raftDefaultConfig := raft.DefaultConfig()
     HeartbeatTimeout         = C.int(int64(raftDefaultConfig.HeartbeatTimeout / time.Millisecond))
@@ -294,7 +310,15 @@ func run(self *C.PyObject, args *C.PyObject, kwargs *C.PyObject) *C.PyObject {
                              &SnapshotThreshold,
                              &LeaderLeaseTimeout,
                              &LogLevel,
-                             &NoSnapshotRestoreOnStart) != 0 {
+                             &NoSnapshotRestoreOnStart,
+                             &WorkerRequestHandlersArgs) != 0 {
+         WorkerRequestHandler := C.call_python_function(C.CString("jina.serve.runtimes.worker.request_handling"), C.CString("create_worker_request_handler"), WorkerRequestHandlersArgs)
+         if WorkerRequestHandler == nil {
+             fmt.Println("Failed to get PyObject")
+             C.Py_IncRef(C.Py_None);
+             return C.Py_None;
+         }
+         log.Printf("REFERENCE COUNT OF OBJECT %v", WorkerRequestHandler.ob_refcnt)
         Run(C.GoString(myAddr),
             C.GoString(raftId),
             C.GoString(raftDir),
@@ -311,7 +335,9 @@ func run(self *C.PyObject, args *C.PyObject, kwargs *C.PyObject) *C.PyObject {
             uint64(SnapshotThreshold),
             int(LeaderLeaseTimeout),
             C.GoString(LogLevel),
-            NoSnapshotRestoreOnStart != false)
+            NoSnapshotRestoreOnStart != false,
+            WorkerRequestHandler,
+            )
     }
     C.Py_IncRef(C.Py_None);
     return C.Py_None;
