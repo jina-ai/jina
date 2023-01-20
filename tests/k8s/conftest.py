@@ -99,18 +99,6 @@ class KindClusterWrapper:
 
             time.sleep(4)
 
-        while True:
-            namespaced_pods = core_client.list_namespaced_pod(namespace)
-            if (
-                namespaced_pods.items is not None
-                and len(namespaced_pods.items) == expected_deployments
-            ):
-                break
-            logger.info(
-                f'Waiting for all {expected_deployments} Deployments to be created, only got {len(namespaced_pods.items) if namespaced_pods.items is not None else None}'
-            )
-            await asyncio.sleep(1.0)
-
     def _install_linkderd(self, kind_cluster: KindCluster) -> None:
         # linkerd < 2.12: only linkerd install is needed
         # in later versions, linkerd install --crds will be needed
