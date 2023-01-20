@@ -16,7 +16,7 @@ from typing import (
 )
 
 from docarray import BaseDocument
-from docarray.base_document import AnyDocument
+from docarray.documents.legacy.legacy_document import Document
 
 from jina.constants import __cache_path__
 from jina.helper import iscoroutinefunction
@@ -126,8 +126,8 @@ def requests(
     ] = None,
     *,
     on: Optional[Union[str, Sequence[str]]] = None,
-    input_doc: Type[BaseDocument] = AnyDocument,
-    output_doc: Type[BaseDocument] = AnyDocument,
+    input_doc: Optional[Type[BaseDocument]] = Document,
+    output_doc: Optional[Type[BaseDocument]] = Document,
 ):
     """
     `@requests` defines the endpoints of an Executor. It has a keyword `on=` to define the endpoint.
@@ -221,13 +221,16 @@ def requests(
         def _inject_owner_attrs(self, owner, name):
             if not hasattr(owner, 'requests'):
                 owner.requests = {}
+
+            request_return = _request_return(self.fn, input_doc, output_doc)
+
             if isinstance(on, (list, tuple)):
                 for o in on:
-                    owner.requests_by_class[owner.__name__][o] = self.fn
+                    owner.requests_by_class[owner.__name__][o] = request_return
             else:
                 owner.requests_by_class[owner.__name__][
                     on or __default_endpoint__
-                ] = _request_return(self.fn, input_doc, output_doc)
+                ] = request_return
 
             setattr(owner, name, self.fn)
 

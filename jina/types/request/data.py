@@ -1,5 +1,5 @@
 import copy
-from typing import Dict, Optional, TypeVar, Union
+from typing import Dict, Optional, Type, TypeVar, Union
 
 from docarray.documents.legacy import DocumentArray
 from google.protobuf import json_format
@@ -24,9 +24,14 @@ class DataRequest(Request):
     """
 
     class _DataContent:
-        def __init__(self, content: 'jina_pb2.DataRequestProto.DataContentProto'):
+        def __init__(
+            self,
+            content: 'jina_pb2.DataRequestProto.DataContentProto',
+            document_array_cls: Type[DocumentArray],
+        ):
             self._content = content
             self._loaded_doc_array = None
+            self.document_array_cls = document_array_cls
 
         @property
         def docs(self) -> 'DocumentArray':
@@ -35,11 +40,11 @@ class DataRequest(Request):
             .. # noqa: DAR201"""
             if not self._loaded_doc_array:
                 if self._content.WhichOneof('documents') == 'docs_bytes':
-                    self._loaded_doc_array = DocumentArray.from_bytes(
+                    self._loaded_doc_array = self.document_array_cls.from_bytes(
                         self._content.docs_bytes
                     )
                 else:
-                    self._loaded_doc_array = DocumentArray.from_protobuf(
+                    self._loaded_doc_array = self.document_array_cls.from_protobuf(
                         self._content.docs
                     )
 
@@ -100,6 +105,7 @@ class DataRequest(Request):
     ):
         self.buffer = None
         self._pb_body = None
+        self.document_array_cls = DocumentArray
 
         try:
             if isinstance(request, jina_pb2.DataRequestProto):
@@ -250,7 +256,9 @@ class DataRequest(Request):
 
         :return: the data content as an instance of _DataContent wrapping docs
         """
-        return DataRequest._DataContent(self.proto_with_data.data)
+        return DataRequest._DataContent(
+            self.proto_with_data.data, document_array_cls=self.document_array_cls
+        )
 
     @property
     def parameters(self) -> Dict:
