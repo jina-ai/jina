@@ -79,7 +79,7 @@ class KindClusterWrapper:
         while True:
             # nodes = self._cluster.kubectl('get', 'pods', '-n', 'linkerd')
             linkerd_pods = core_client.list_namespaced_pod('linkerd').items
-            if linkerd_pods.items is not None:
+            if linkerd_pods is not None:
                 try:
                     all_ready = all(
                         [
