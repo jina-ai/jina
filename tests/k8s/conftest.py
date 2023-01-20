@@ -164,6 +164,7 @@ class KindClusterWrapper:
     def _set_kube_config(self):
         self._log.info(f'Setting KUBECONFIG to {self._kube_config_path}')
         os.environ['KUBECONFIG'] = self._kube_config_path
+        load_cluster_config()
 
     def load_docker_images(
         self, images: List[str], image_tag_map: Dict[str, str]
@@ -229,8 +230,7 @@ def set_test_pip_version() -> None:
     del os.environ['JINA_GATEWAY_IMAGE']
 
 
-@pytest.fixture(autouse=True)
-def load_cluster_config(k8s_cluster: KindClusterWrapper) -> None:
+def load_cluster_config() -> None:
     import kubernetes
 
     try:
