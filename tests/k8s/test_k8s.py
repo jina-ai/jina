@@ -1838,10 +1838,10 @@ async def test_deployment_serve_k8s(logger, docker_images, tmpdir, k8s_cluster):
             namespace,
         ):
             client = Client(port=port, asyncio=True)
-            async for resp in client.post(
+            async for docs in client.post(
                 '/debug', inputs=DocumentArray.empty(3), stream=False
             ):
-                for doc in resp.docs:
+                for doc in docs:
                     assert doc.tags['shards'] == 1
                     assert doc.tags['parallel'] == 3
 
