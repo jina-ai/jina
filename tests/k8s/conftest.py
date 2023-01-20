@@ -69,12 +69,60 @@ class KindClusterWrapper:
         if returncode is not None and returncode != 0:
             raise Exception(f'Installing {tool_name} failed with {returncode}')
 
+    def _wait_linkerd(self):
+        from kubernetes import client as k8s_client
+
+        api_client = k8s_client.ApiClient()
+        core_client = k8s_client.CoreV1Api(api_client=api_client)
+
+        timeout = time.time() + 60 * 5  # 5 minutes from now
+        while True:
+            # nodes = self._cluster.kubectl('get', 'pods', '-n', 'linkerd')
+            linkerd_pods = core_client.list_namespaced_pod('linkerd')
+            self._log.info('linkerd pods: ')
+            self._log.info(linkerd_pods.items)
+            if linkerd_pods.items is not None:
+                try:
+                    all_ready = all(
+                        [
+                            container.ready
+                            for pod in core_client.list_namespaced_pod('linkerd').items
+                            for container in pod.status.container_statuses
+                        ]
+                    )
+                except Exception as e:
+                    print(e)
+                    all_ready = False
+                if all_ready:
+                    break
+            if time.time() > timeout:
+                self._log.warning('Timeout waiting for node readiness.')
+                break
+
+            time.sleep(4)
+
+        while True:
+            namespaced_pods = core_client.list_namespaced_pod(namespace)
+            if (
+                namespaced_pods.items is not None
+                and len(namespaced_pods.items) == expected_deployments
+            ):
+                break
+            logger.info(
+                f'Waiting for all {expected_deployments} Deployments to be created, only got {len(namespaced_pods.items) if namespaced_pods.items is not None else None}'
+            )
+            await asyncio.sleep(1.0)
+
     def _install_linkderd(self, kind_cluster: KindCluster) -> None:
         # linkerd < 2.12: only linkerd install is needed
         # in later versions, linkerd install --crds will be needed
         self._linkerd_install_cmd(
             kind_cluster, [f'{Path.home()}/.linkerd2/bin/linkerd', 'install'], 'Linkerd'
         )
+
+        self._log.info('waiting for linkerd to be ready')
+
+        self._wait_linkerd()
 
         self._log.info('check linkerd status')
         try:
