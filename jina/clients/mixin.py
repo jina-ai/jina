@@ -1,16 +1,18 @@
 import time
 import warnings
 from functools import partialmethod
-from typing import TYPE_CHECKING, AsyncGenerator, Dict, List, Optional, Union
+from typing import TYPE_CHECKING, AsyncGenerator, Dict, List, Optional, Type, Union
 
 from jina.helper import deprecate_by, get_or_reuse_loop, run_async
 from jina.importer import ImportExtensions
 
 if TYPE_CHECKING:  # pragma: no cover
-    from docarray.documents.legacy import DocumentArray
 
     from jina.clients.base import CallbackFnType, InputType
     from jina.types.request.data import Response
+
+from docarray import DocumentArray
+from docarray.documents.legacy import DocumentArray as LegacyDocumentArray
 
 
 def _include_results_field_in_param(parameters: Optional['Dict']) -> 'Dict':
@@ -225,6 +227,7 @@ class PostMixin:
         backoff_multiplier: float = 1.5,
         results_in_order: bool = False,
         stream: bool = True,
+        return_type: Type[DocumentArray] = LegacyDocumentArray,
         **kwargs,
     ) -> Optional[Union['DocumentArray', List['Response']]]:
         """Post a general data request to the Flow.
@@ -246,6 +249,7 @@ class PostMixin:
         :param backoff_multiplier: The n-th attempt will occur at random(0, min(initialBackoff*backoffMultiplier**(n-1), maxBackoff))
         :param results_in_order: return the results in the same order as the inputs
         :param stream: Applicable only to grpc client. If True, the requests are sent to the target using the gRPC streaming interface otherwise the gRPC unary interface will be used. The value is True by default.
+        :param return_type: the DocumentArray type to be returned. By default, it is `LegacyDocumentArray`.
         :param kwargs: additional parameters
         :return: None or DocumentArray containing all response Documents
 
@@ -259,17 +263,16 @@ class PostMixin:
 
         parameters = _include_results_field_in_param(parameters)
 
-        from docarray.documents.legacy import DocumentArray
-
         return_results = (on_always is None) and (on_done is None)
 
         async def _get_results(*args, **kwargs):
-            result = [] if return_responses else DocumentArray([])
+            result = [] if return_responses else return_type([])
             async for resp in c._get_results(*args, **kwargs):
                 if return_results:
                     if return_responses:
                         result.append(resp)
                     else:
+                        resp.document_array_cls = return_type
                         result.extend(resp.data.docs)
             if return_results:
                 return result
@@ -322,6 +325,7 @@ class AsyncPostMixin:
         backoff_multiplier: float = 1.5,
         results_in_order: bool = False,
         stream: bool = True,
+        return_type: Type[DocumentArray] = DocumentArray,
         **kwargs,
     ) -> AsyncGenerator[None, Union['DocumentArray', 'Response']]:
         """Async Post a general data request to the Flow.
@@ -343,6 +347,7 @@ class AsyncPostMixin:
         :param backoff_multiplier: The n-th attempt will occur at random(0, min(initialBackoff*backoffMultiplier**(n-1), maxBackoff))
         :param results_in_order: return the results in the same order as the inputs
         :param stream: Applicable only to grpc client. If True, the requests are sent to the target using the gRPC streaming interface otherwise the gRPC unary interface will be used. The value is True by default.
+        :param return_type: the DocumentArray type to be returned. By default, it is `LegacyDocumentArray`.
         :param kwargs: additional parameters, can be used to pass metadata or authentication information in the server call
         :yield: Response object
 
@@ -370,9 +375,11 @@ class AsyncPostMixin:
             backoff_multiplier=backoff_multiplier,
             results_in_order=results_in_order,
             stream=stream,
+            return_type=return_type,
             **kwargs,
         ):
             if not return_responses:
+                result.document_array_cls = return_type
                 yield result.data.docs
             else:
                 yield result

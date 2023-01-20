@@ -105,7 +105,8 @@ class DataRequest(Request):
     ):
         self.buffer = None
         self._pb_body = None
-        self.document_array_cls = DocumentArray
+        self._document_array_cls = DocumentArray
+        self._data = None
 
         try:
             if isinstance(request, jina_pb2.DataRequestProto):
@@ -128,6 +129,22 @@ class DataRequest(Request):
             raise BadRequestType(
                 f'fail to construct a {self.__class__} object from {request}'
             ) from ex
+
+    @property
+    def document_array_cls(self) -> Type[DocumentArray]:
+        """Get the DocumentArray class to be used for deserialization.
+
+        .. # noqa: DAR201"""
+        return self._document_array_cls
+
+    @document_array_cls.setter
+    def document_array_cls(self, item_type: Type[DocumentArray]):
+        """Get the DocumentArray class to be used for deserialization.
+        .. # noqa: DAR101"""
+        self._document_array_cls = item_type
+
+        if self._data is not None:
+            self.data.document_array_cls = item_type
 
     @property
     def is_decompressed(self) -> bool:
@@ -250,15 +267,18 @@ class DataRequest(Request):
         .. # noqa: DAR201"""
         return self.data.docs
 
-    @cached_property
+    @property
     def data(self) -> 'DataRequest._DataContent':
         """Get the data contained in this data request
 
         :return: the data content as an instance of _DataContent wrapping docs
         """
-        return DataRequest._DataContent(
-            self.proto_with_data.data, document_array_cls=self.document_array_cls
-        )
+        if self._data is None:
+            self._data = DataRequest._DataContent(
+                self.proto_with_data.data, document_array_cls=self.document_array_cls
+            )
+
+        return self._data
 
     @property
     def parameters(self) -> Dict:

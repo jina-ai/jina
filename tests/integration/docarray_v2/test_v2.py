@@ -66,7 +66,7 @@ def test_send_custom_doc():
         assert doc[0].text == 'hello world'
 
 
-def test_receive_da_type():
+def test_input_output_type():
     class MyDoc(BaseDocument):
         text: str
 
@@ -81,6 +81,19 @@ def test_receive_da_type():
             docs[0].text = 'hello world'
             return docs
 
+    with Flow().add(uses=MyExec) as f:
+        docs = f.post(
+            on='/foo', inputs=MyDoc(text='hello'), return_type=DocumentArray[MyDoc]
+        )
+        assert docs[0].text == 'hello world'
+        assert docs.__class__.document_type == MyDoc
+
+
+def test_input_output_type_annotation():
+    class MyDoc(BaseDocument):
+        text: str
+
+    class MyExec(Executor):
         @requests(on='/bar')
         def bar(self, docs: DocumentArray[MyDoc], **kwargs) -> DocumentArray[MyDoc]:
             assert docs.__class__.document_type == MyDoc
@@ -88,10 +101,8 @@ def test_receive_da_type():
             return docs
 
     with Flow().add(uses=MyExec) as f:
-        docs = f.post(on='/foo', inputs=MyDoc(text='hello'))
+        docs = f.post(
+            on='/bar', inputs=MyDoc(text='hello'), return_type=DocumentArray[MyDoc]
+        )
         assert docs[0].text == 'hello world'
-        # assert docs.__class__.document_type == MyDoc
-
-        docs = f.post(on='/bar', inputs=MyDoc(text='hello'))
-        assert docs[0].text == 'hello world'
-        # assert docs.__class__.document_type == MyDoc
+        assert docs.__class__.document_type == MyDoc
