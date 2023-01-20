@@ -4,7 +4,7 @@ import json
 import os
 from abc import ABC
 from collections import defaultdict
-from typing import List
+from typing import TYPE_CHECKING, AsyncIterator, List
 
 import grpc
 from grpc_health.v1 import health, health_pb2, health_pb2_grpc
@@ -19,6 +19,9 @@ from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.head.request_handling import HeaderRequestHandler
 from jina.serve.runtimes.helper import _get_grpc_server_options
 from jina.types.request.data import DataRequest, Response
+
+if TYPE_CHECKING:  # pragma: no cover
+    from jina.types.request import Request
 
 
 class HeadRuntime(AsyncNewLoopRuntime, ABC):
@@ -134,6 +137,8 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
             interceptors=self.aio_tracing_server_interceptors(),
         )
 
+        jina_pb2_grpc.add_JinaRPCServicer_to_server(self, self._grpc_server)
+
         jina_pb2_grpc.add_JinaSingleDataRequestRPCServicer_to_server(
             self, self._grpc_server
         )
@@ -143,6 +148,7 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
         )
         jina_pb2_grpc.add_JinaInfoRPCServicer_to_server(self, self._grpc_server)
         service_names = (
+            jina_pb2.DESCRIPTOR.services_by_name['JinaRPC'].full_name,
             jina_pb2.DESCRIPTOR.services_by_name['JinaSingleDataRequestRPC'].full_name,
             jina_pb2.DESCRIPTOR.services_by_name['JinaDataRequestRPC'].full_name,
             jina_pb2.DESCRIPTOR.services_by_name['JinaDiscoverEndpointsRPC'].full_name,
@@ -314,3 +320,20 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
         for k, v in env_info.items():
             infoProto.envs[k] = str(v)
         return infoProto
+
+    async def stream(
+        self, request_iterator, context=None, *args, **kwargs
+    ) -> AsyncIterator['Request']:
+        """
+        stream requests from client iterator and stream responses back.
+
+        :param request_iterator: iterator of requests
+        :param context: context of the grpc call
+        :param args: positional arguments
+        :param kwargs: keyword arguments
+        :yield: responses to the request
+        """
+        async for request in request_iterator:
+            yield self.process_data([request], context)
+
+    Call = stream

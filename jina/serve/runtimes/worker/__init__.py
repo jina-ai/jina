@@ -2,7 +2,7 @@ import argparse
 import asyncio
 import os
 from abc import ABC
-from typing import TYPE_CHECKING, List, Optional
+from typing import TYPE_CHECKING, AsyncIterator, List, Optional
 
 import grpc
 from grpc_health.v1 import health, health_pb2, health_pb2_grpc
@@ -20,6 +20,8 @@ from jina.types.request.data import DataRequest
 
 if TYPE_CHECKING:  # pragma: no cover
     from opentelemetry.propagate import Context
+
+    from jina.types.request import Request
 
 
 class WorkerRuntime(AsyncNewLoopRuntime, ABC):
@@ -121,6 +123,8 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
             interceptors=self.aio_tracing_server_interceptors(),
         )
 
+        jina_pb2_grpc.add_JinaRPCServicer_to_server(self, self._grpc_server)
+
         jina_pb2_grpc.add_JinaSingleDataRequestRPCServicer_to_server(
             self, self._grpc_server
         )
@@ -131,6 +135,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         )
         jina_pb2_grpc.add_JinaInfoRPCServicer_to_server(self, self._grpc_server)
         service_names = (
+            jina_pb2.DESCRIPTOR.services_by_name['JinaRPC'].full_name,
             jina_pb2.DESCRIPTOR.services_by_name['JinaSingleDataRequestRPC'].full_name,
             jina_pb2.DESCRIPTOR.services_by_name['JinaDataRequestRPC'].full_name,
             jina_pb2.DESCRIPTOR.services_by_name['JinaDiscoverEndpointsRPC'].full_name,
@@ -336,3 +341,20 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         """
         self.logger.debug(f'Receive Watch request')
         return await self._health_servicer.Watch(request, context)
+
+    async def stream(
+        self, request_iterator, context=None, *args, **kwargs
+    ) -> AsyncIterator['Request']:
+        """
+        stream requests from client iterator and stream responses back.
+
+        :param request_iterator: iterator of requests
+        :param context: context of the grpc call
+        :param args: positional arguments
+        :param kwargs: keyword arguments
+        :yield: responses to the request
+        """
+        async for request in request_iterator:
+            yield self.process_data([request], context)
+
+    Call = stream
