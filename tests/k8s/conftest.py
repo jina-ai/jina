@@ -111,13 +111,17 @@ class KindClusterWrapper:
             raise Exception(f"Installing linkerd failed with {returncode}")
 
         self._log.info('check linkerd status')
-        out = subprocess.check_output(
-            [f'{Path.home()}/.linkerd2/bin/linkerd-smi', 'check'],
-            env=os.environ,
-            stderr=subprocess.PIPE,
-        )
-
-        print(f'linkerd check yields {out.decode() if out else "nothing"}')
+        try:
+            out = subprocess.check_output(
+                [f'{Path.home()}/.linkerd2/bin/linkerd-smi', 'check'],
+                env=os.environ,
+                stderr=subprocess.STDOUT,
+            )
+            print(f'linkerd check yields {out.decode() if out else "nothing"}')
+        except subprocess.CalledProcessError as e:
+            print(
+                f'linkerd check failed with error code { e.returncode } and output { e.output }'
+            )
 
     def _set_kube_config(self):
         self._log.info(f'Setting KUBECONFIG to {self._kube_config_path}')
