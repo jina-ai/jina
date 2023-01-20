@@ -35,7 +35,7 @@ import (
     "github.com/Jille/raftadmin"
     "github.com/hashicorp/raft"
     boltdb "github.com/hashicorp/raft-boltdb"
-    jinaraft "jraft/jina_raft"
+    //jinaraft "jraft/jina_raft"
     pb "jraft/jina-go-proto"
     "google.golang.org/grpc"
     "google.golang.org/grpc/credentials/insecure"
@@ -153,7 +153,7 @@ func Run(myAddr string,
     if err != nil {
         log.Fatalf("failed to listen: %v", err)
     }
-    executorFSM := jinaraft.NewExecutorFSM(executorTarget, WorkerRequestHandler)
+    executorFSM := NewExecutorFSM(executorTarget, WorkerRequestHandler)
 
     r, tm, err := NewRaft(ctx,
                         raftId,
@@ -177,15 +177,15 @@ func Run(myAddr string,
         log.Fatalf("failed to start raft: %v", err)
     }
     grpcServer := grpc.NewServer()
-    pb.RegisterJinaSingleDataRequestRPCServer(grpcServer, &jinaraft.RpcInterface{
+    pb.RegisterJinaSingleDataRequestRPCServer(grpcServer, &RpcInterface{
         Executor: executorFSM,
         Raft:     r,
     })
-    pb.RegisterJinaDiscoverEndpointsRPCServer(grpcServer, &jinaraft.RpcInterface{
+    pb.RegisterJinaDiscoverEndpointsRPCServer(grpcServer, &RpcInterface{
         Executor: executorFSM,
         Raft:     r,
     })
-    pb.RegisterJinaInfoRPCServer(grpcServer, &jinaraft.RpcInterface{
+    pb.RegisterJinaInfoRPCServer(grpcServer, &RpcInterface{
         Executor: executorFSM,
         Raft:     r,
     })

@@ -20,18 +20,6 @@ if TYPE_CHECKING:  # pragma: no cover
     from prometheus_client import CollectorRegistry
 
 
-def create_worker_request_handler(args):
-    import os
-    os.environ['JINA_LOG_LEVEL'] = 'DEBUG'
-    from jina.logging.logger import JinaLogger
-    print(f' uses_with {args.uses_with}')
-    args.workspace = 'STUPID'
-    logger = JinaLogger('TEST')
-    logger.warning(f' HEY HERE CREATING')
-    w = WorkerRequestHandler(args, logger)
-    return w
-
-
 class WorkerRequestHandler:
     """Object to encapsulate the code related to handle the data requests passing to executor and its returned values"""
 
@@ -378,8 +366,9 @@ class WorkerRequestHandler:
         )
         return docs
 
-    async def try_call_async(self):
-        print(f' TRY CALL ASYNC')
+    def handle_binary_request(self, binary_request):
+        requests = [DataRequest(binary_request)]
+        return asyncio.run(self.handle(requests)).SerializeToString()
 
     async def handle(
             self, requests: List['DataRequest'], tracing_context: Optional['Context'] = None
@@ -608,3 +597,20 @@ class WorkerRequestHandler:
         WorkerRequestHandler.replace_parameters(requests[0], params)
 
         return requests[0]
+
+
+def create_worker_request_handler(args):
+    import os
+    os.environ['JINA_LOG_LEVEL'] = 'DEBUG'
+    from jina.logging.logger import JinaLogger
+    print(f' uses_with {args.uses_with}')
+    args.workspace = 'STUPID'
+    logger = JinaLogger('TEST')
+    logger.warning(f' HEY HERE CREATING')
+    w = WorkerRequestHandler(args, logger)
+    return w
+
+
+def get_write_endpoints(worker_request_handler: WorkerRequestHandler):
+    worker_request_handler.logger.warning(f'write_endpoints {worker_request_handler._executor.write_endpoints}')
+    return worker_request_handler._executor.write_endpoints
