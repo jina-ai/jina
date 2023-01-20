@@ -15,7 +15,7 @@ from typing import (
     Union,
 )
 
-from docarray import BaseDocument
+from docarray import DocumentArray
 from docarray.documents.legacy.legacy_document import Document
 
 from jina.constants import __cache_path__
@@ -105,10 +105,10 @@ def _init_requests_by_class(cls):
         _inherit_from_parent_class_inner(cls)
 
 
-class _request_return(NamedTuple):
+class _FunctionAndSchema(NamedTuple):
     fn: Callable
-    input_doc: Type[BaseDocument]
-    output_doc: Type[BaseDocument]
+    input_doc: Type[DocumentArray]
+    output_doc: Type[DocumentArray]
 
 
 def requests(
@@ -126,8 +126,8 @@ def requests(
     ] = None,
     *,
     on: Optional[Union[str, Sequence[str]]] = None,
-    input_doc: Optional[Type[BaseDocument]] = Document,
-    output_doc: Optional[Type[BaseDocument]] = Document,
+    input_doc: Optional[Type[DocumentArray]] = None,
+    output_doc: Optional[Type[DocumentArray]] = None,
 ):
     """
     `@requests` defines the endpoints of an Executor. It has a keyword `on=` to define the endpoint.
@@ -218,19 +218,37 @@ def requests(
             else:
                 return fn
 
-        def _inject_owner_attrs(self, owner, name):
+        def _inject_owner_attrs(self, owner, name, input_doc, output_doc):
             if not hasattr(owner, 'requests'):
                 owner.requests = {}
 
-            request_return = _request_return(self.fn, input_doc, output_doc)
+            if input_doc is None:
+                docs_annotation = self.fn.__annotations__.get('docs', None)
+                input_doc = docs_annotation or DocumentArray[Document]
+                if not issubclass(input_doc, DocumentArray):
+                    raise TypeError(
+                        f'input_doc must be a subclass of DocumentArray, '
+                        f'but {input_doc} is given'
+                    )
+
+            if output_doc is None:
+                return_annotation = self.fn.__annotations__.get('return', None)
+                output_doc = return_annotation or DocumentArray[Document]
+                if not issubclass(output_doc, DocumentArray):
+                    raise TypeError(
+                        f'output_doc must be a subclass of DocumentArray, '
+                        f'but {output_doc} is given'
+                    )
+
+            function_and_schema = _FunctionAndSchema(self.fn, input_doc, output_doc)
 
             if isinstance(on, (list, tuple)):
                 for o in on:
-                    owner.requests_by_class[owner.__name__][o] = request_return
+                    owner.requests_by_class[owner.__name__][o] = function_and_schema
             else:
                 owner.requests_by_class[owner.__name__][
                     on or __default_endpoint__
-                ] = request_return
+                ] = function_and_schema
 
             setattr(owner, name, self.fn)
 
@@ -239,7 +257,7 @@ def requests(
             if self._batching_decorator:
                 self._batching_decorator._inject_owner_attrs(owner, name)
             self.fn.class_name = owner.__name__
-            self._inject_owner_attrs(owner, name)
+            self._inject_owner_attrs(owner, name, input_doc, output_doc)
 
         def __call__(self, *args, **kwargs):
             # this is needed to make this decorator work in combination with `@requests`

@@ -395,9 +395,10 @@ class WorkerRequestHandler:
         self._record_request_size_monitoring(requests)
 
         params = self._parse_params(requests[0].parameters, self._executor.metas.name)
-        requests[0].document_array_cls = DocumentArray[
-            self._executor.requests[exec_endpoint].input_doc
-        ]
+        requests[0].document_array_cls = self._executor.requests[
+            exec_endpoint
+        ].input_doc
+
         if exec_endpoint in self._batchqueue_config:
             assert len(requests) == 1, 'dynamic batching does not support no_reduce'
 

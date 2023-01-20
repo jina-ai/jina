@@ -73,15 +73,25 @@ def test_receive_da_type():
     class MyExec(Executor):
         @requests(
             on='/foo',
-            input_doc=MyDoc,
-            output_doc=MyDoc,
+            input_doc=DocumentArray[MyDoc],
+            output_doc=DocumentArray[MyDoc],
         )
-        def foo(self, docs: DocumentArray[MyDoc], **kwargs) -> DocumentArray[MyDoc]:
+        def foo(self, docs, **kwargs):
+            assert docs.__class__.document_type == MyDoc
+            docs[0].text = 'hello world'
+            return docs
+
+        @requests(on='/bar')
+        def bar(self, docs: DocumentArray[MyDoc], **kwargs) -> DocumentArray[MyDoc]:
             assert docs.__class__.document_type == MyDoc
             docs[0].text = 'hello world'
             return docs
 
     with Flow().add(uses=MyExec) as f:
         docs = f.post(on='/foo', inputs=MyDoc(text='hello'))
+        assert docs[0].text == 'hello world'
+        # assert docs.__class__.document_type == MyDoc
+
+        docs = f.post(on='/bar', inputs=MyDoc(text='hello'))
         assert docs[0].text == 'hello world'
         # assert docs.__class__.document_type == MyDoc
