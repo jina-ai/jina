@@ -77,13 +77,17 @@ class KindClusterWrapper:
         )
 
         self._log.info('check linkerd status')
-        out = subprocess.check_output(
-            [f'{Path.home()}/.linkerd2/bin/linkerd', 'check'],
-            env=os.environ,
-            stderr=subprocess.PIPE,
-        )
-
-        print(f'linkerd check yields {out.decode() if out else "nothing"}')
+        try:
+            out = subprocess.check_output(
+                [f'{Path.home()}/.linkerd2/bin/linkerd', 'check'],
+                env=os.environ,
+                stderr=subprocess.STDOUT,
+            )
+            print(f'linkerd check yields {out.decode() if out else "nothing"}')
+        except subprocess.CalledProcessError as e:
+            print(
+                f'linkerd check failed with error code { e.returncode } and output { e.output }'
+            )
 
     def install_linkderd_smi(self) -> None:
         self._log.info('Installing Linkerd SMI to Cluster...')
