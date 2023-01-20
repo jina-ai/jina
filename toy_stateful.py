@@ -6,8 +6,6 @@ from jina.serve.executors.decorators import write
 from jina.parsers import set_pod_parser
 from jina.orchestrate.pods.factory import PodFactory
 
-import subprocess
-
 os.environ['JINA_LOG_LEVEL'] = 'DEBUG'
 
 
@@ -89,7 +87,7 @@ if __name__ == '__main__':
                                               pod_ports=PORTS_REPLICAS_SNAPSHOT,
                                               stateful=True,
                                               raft_bootstrap=True,
-                                              raft_configuration={'snapshot_interval': 10, 'snapshot_threshold': 5,
+                                              raft_configuration={'snapshot_interval': 10, 'snapshot_threshold': 5, 'trailing_logs': 10,
                                                                   'LogLevel': 'INFO'})
         with f:
             f.block()
@@ -101,7 +99,7 @@ if __name__ == '__main__':
                                                  pod_ports=PORTS_REPLICAS_NO_SNAPSHOT,
                                                  stateful=True,
                                                  raft_bootstrap=True,
-                                                 raft_configuration={'snapshot_interval': 10, 'snapshot_threshold': 5,
+                                                 raft_configuration={'snapshot_interval': 10, 'snapshot_threshold': 5, 'trailing_logs': 10,
                                                                      'LogLevel': 'INFO'})
         f.block()
     elif option == 'restore_snapshot':
@@ -112,7 +110,7 @@ if __name__ == '__main__':
                                               pod_ports=PORTS_REPLICAS_SNAPSHOT,
                                               stateful=True,
                                               raft_bootstrap=False,
-                                              raft_configuration={'snapshot_interval': 10, 'snapshot_threshold': 5,
+                                              raft_configuration={'snapshot_interval': 10, 'snapshot_threshold': 5, 'trailing_logs': 10,
                                                                   'LogLevel': 'INFO'})
         with f:
             f.block()
@@ -124,7 +122,7 @@ if __name__ == '__main__':
                                                  pod_ports=PORTS_REPLICAS_NO_SNAPSHOT,
                                                  stateful=True,
                                                  raft_bootstrap=False,
-                                                 raft_configuration={'snapshot_interval': 10, 'snapshot_threshold': 5,
+                                                 raft_configuration={'snapshot_interval': 10, 'snapshot_threshold': 5, 'trailing_logs': 10,
                                                                      'LogLevel': 'INFO'})
         with f:
             f.block()
