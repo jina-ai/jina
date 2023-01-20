@@ -107,8 +107,8 @@ def _init_requests_by_class(cls):
 
 class _FunctionAndSchema(NamedTuple):
     fn: Callable
-    input_doc: Type[DocumentArray]
-    output_doc: Type[DocumentArray]
+    input_type: Type[DocumentArray]
+    output_type: Type[DocumentArray]
 
 
 def requests(
