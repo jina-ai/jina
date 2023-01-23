@@ -3,17 +3,7 @@ import functools
 import inspect
 import os
 from pathlib import Path
-from typing import (
-    TYPE_CHECKING,
-    Callable,
-    Dict,
-    List,
-    NamedTuple,
-    Optional,
-    Sequence,
-    Type,
-    Union,
-)
+from typing import Callable, Dict, List, Optional, Sequence, Type, Union
 
 from jina._docarray import Document, DocumentArray, docarray_v2
 from jina.constants import __cache_path__
@@ -98,12 +88,6 @@ def _init_requests_by_class(cls):
         # assume that `requests` is called when importing class, so parent classes will be processed before
         # inherit all the requests from parents
         _inherit_from_parent_class_inner(cls)
-
-
-class _FunctionAndSchema(NamedTuple):
-    fn: Callable
-    input_type: Type[DocumentArray]
-    output_type: Type[DocumentArray]
 
 
 def requests(
@@ -243,7 +227,9 @@ def requests(
                         f'but {output_doc} is given'
                     )
 
-            function_and_schema = _FunctionAndSchema(self.fn, input_doc, output_doc)
+            from jina.serve.executors import _FunctionWithSchema
+
+            function_and_schema = _FunctionWithSchema(self.fn, input_doc, output_doc)
 
             if isinstance(on, (list, tuple)):
                 for o in on:
