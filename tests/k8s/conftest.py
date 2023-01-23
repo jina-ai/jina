@@ -26,6 +26,8 @@ class KindClusterWrapper:
         )
         self._log = logger
         self._set_kube_config()
+        self._log.info('waiting for node to become ready...')
+        time.sleep(60 * 5)
         self._install_linkderd(kind_cluster)
         self._loaded_images = set()
 
@@ -102,6 +104,12 @@ class KindClusterWrapper:
     def _install_linkderd(self, kind_cluster: KindCluster) -> None:
         # linkerd < 2.12: only linkerd install is needed
         # in later versions, linkerd install --crds will be needed
+        kube_out = subprocess.check_output(
+            (str(self._cluster.kubectl_path), 'get', 'node'),
+            env=os.environ,
+        )
+        self._log.info(f'nodes before linkerd install: {kube_out}')
+
         self._linkerd_install_cmd(
             kind_cluster, [f'{Path.home()}/.linkerd2/bin/linkerd', 'install'], 'Linkerd'
         )
