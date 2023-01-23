@@ -48,6 +48,11 @@ func (rpc *RpcInterface) ProcessSingleData(
         }
     }
 
+    bytes, err := proto.Marshal(dataRequestProto)
+    if err != nil {
+        log.Print("marshaling error: ", err)
+        return nil, err
+    }
     if found {
         log.Printf("Calling a Write Endpoint")
         log.Printf("rpc method process single data to endpoint %s", *endpoint)
@@ -56,11 +61,7 @@ func (rpc *RpcInterface) ProcessSingleData(
             log.Print("Error: %v", err)
             return nil, err
         }
-        bytes, err := proto.Marshal(dataRequestProto)
-        if err != nil {
-            log.Print("marshaling error: ", err)
-            return nil, err
-        }
+
         // replicate logs to the followers and then to itself
         log.Printf("calling raft.Apply")
         // here we should read the `on=` from dat
@@ -78,7 +79,7 @@ func (rpc *RpcInterface) ProcessSingleData(
         }
     } else {
         log.Printf("Calling a Read Endpoint")
-        return rpc.Executor.Read(ctx, dataRequestProto)
+        return rpc.Executor.Read(bytes)
     }
 }
 

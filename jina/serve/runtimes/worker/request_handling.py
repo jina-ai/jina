@@ -370,6 +370,10 @@ class WorkerRequestHandler:
         requests = [DataRequest(binary_request)]
         return asyncio.run(self.handle(requests)).SerializeToString()
 
+    def try_one_thing(self, *args, **kwargs):
+        requests = []
+        return asyncio.run(self.handle(requests)).SerializeToString()
+
     async def handle(
             self, requests: List['DataRequest'], tracing_context: Optional['Context'] = None
     ) -> DataRequest:
@@ -415,6 +419,7 @@ class WorkerRequestHandler:
             )
             await task
         else:
+            params = self._parse_params(requests[0].parameters, self._executor.metas.name)
             docs = WorkerRequestHandler.get_docs_from_request(requests)
 
             docs_matrix, docs_map = WorkerRequestHandler._get_docs_matrix_from_request(
@@ -426,7 +431,7 @@ class WorkerRequestHandler:
                 parameters=params,
                 docs_matrix=docs_matrix,
                 docs_map=docs_map,
-                tracing_context=tracing_context,
+                tracing_context=None,
             )
 
             _ = self._set_result(requests, return_data, docs)
@@ -600,17 +605,28 @@ class WorkerRequestHandler:
 
 
 def create_worker_request_handler(args):
-    import os
-    os.environ['JINA_LOG_LEVEL'] = 'DEBUG'
     from jina.logging.logger import JinaLogger
-    print(f' uses_with {args.uses_with}')
-    args.workspace = 'STUPID'
-    logger = JinaLogger('TEST')
+    logger = JinaLogger(args.name)
     logger.warning(f' HEY HERE CREATING')
-    w = WorkerRequestHandler(args, logger)
-    return w
+    # HERE I COULD BUILD ALL THE METRICS OBJECTS AND SO ON
+    return WorkerRequestHandler(args, logger)
 
 
 def get_write_endpoints(worker_request_handler: WorkerRequestHandler):
     worker_request_handler.logger.warning(f'write_endpoints {worker_request_handler._executor.write_endpoints}')
     return worker_request_handler._executor.write_endpoints
+
+
+def call_try_one_thing(worker_request_handler: WorkerRequestHandler):
+    worker_request_handler.logger.warning('call_try_one_thing')
+    return worker_request_handler.try_one_thing()
+
+
+def handle_binary_request(worker_request_handler: WorkerRequestHandler, binary_data_request):
+    worker_request_handler.logger.warning('handle_binary_request')
+    return worker_request_handler.handle_binary_request(binary_data_request)
+
+
+def endpoint_discovery(worker_request_handler: WorkerRequestHandler):
+    worker_request_handler.logger.warning('handle_binary_request')
+    return list(worker_request_handler._executor.requests.keys())

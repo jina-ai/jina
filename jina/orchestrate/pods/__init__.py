@@ -134,8 +134,10 @@ def run_raft(
     executor_target = f'{args.host}:{args.port + 1}'
     raft_configuration = pascal_case_dict(args.raft_configuration or {})
     raft_configuration['WorkerRequestHandlersArgs'] = args
-    is_ready.wait()
+    # Here I will only be able to handle shutdown after jraft.RUN hapopens
+    is_ready.set()
     jraft.run(address, raft_id, raft_dir, raft_bootstrap, executor_target, **raft_configuration)
+    print(f' HEY HERE JRAFT RUN FINISHED')
 
 
 class BasePod(ABC):
@@ -357,43 +359,42 @@ class Pod(BasePod):
     def __init__(self, args: 'argparse.Namespace'):
         super().__init__(args)
         self.runtime_cls = self._get_runtime_cls()
-        cargs = None
         if self.args.stateful and self.args.pod_role == PodRoleType.WORKER:
-            cargs_stateful = copy.deepcopy(args)
             self.raft_worker = multiprocessing.Process(target=run_raft,
                                                        kwargs={
-                                                           'args': cargs_stateful,
+                                                           'args': args,
                                                            'is_ready': self.is_ready,
                                                        },
                                                        name=self.name,
                                                        daemon=True)
-            cargs = copy.deepcopy(cargs_stateful)
-            cargs.port += 1
-        # if stateful, have a raft_worker
-        self.worker = multiprocessing.Process(
-            target=run,
-            kwargs={
-                'args': cargs or args,
-                'name': self.name,
-                'envs': self._envs,
-                'is_started': self.is_started,
-                'is_shutdown': self.is_shutdown,
-                'is_ready': self.is_ready,
-                'runtime_cls': self.runtime_cls,
-                'jaml_classes': JAML.registered_classes(),
-            },
-            name=self.name,
-            daemon=False,
-        )
+        else:
+            # if stateful, have a raft_worker
+            self.worker = multiprocessing.Process(
+                target=run,
+                kwargs={
+                    'args': args,
+                    'name': self.name,
+                    'envs': self._envs,
+                    'is_started': self.is_started,
+                    'is_shutdown': self.is_shutdown,
+                    'is_ready': self.is_ready,
+                    'runtime_cls': self.runtime_cls,
+                    'jaml_classes': JAML.registered_classes(),
+                },
+                name=self.name,
+                daemon=False,
+            )
 
     def start(self):
         """Start the Pod.
         This method calls :meth:`start` in :class:`multiprocesssing.Process`.
         .. #noqa: DAR201
         """
-        self.worker.start()
         if self.args.stateful and self.args.pod_role == PodRoleType.WORKER:
             self.raft_worker.start()
+            time.sleep(5)
+        else:
+            self.worker.start()
         self.is_forked = multiprocessing.get_start_method().lower() == 'fork'
         if not self.args.noblock_on_start:
             self.wait_start_success()
@@ -407,7 +408,10 @@ class Pod(BasePod):
         :param kwargs: extra keyword arguments to pass to join
         """
         self.logger.debug(f'joining the process')
-        self.worker.join(*args, **kwargs)
+        if self.args.stateful and self.args.pod_role == PodRoleType.WORKER:
+            self.raft_worker.join(*args, **kwargs)
+        else:
+            self.worker.join(*args, **kwargs)
         self.logger.debug(f'successfully joined the process')
 
     def _terminate(self):
@@ -415,9 +419,10 @@ class Pod(BasePod):
         This method calls :meth:`terminate` in :class:`multiprocesssing.Process`.
         """
         self.logger.debug(f'terminating the runtime process')
-        self.worker.terminate()
         if self.args.stateful and self.args.pod_role == PodRoleType.WORKER:
             self.raft_worker.terminate()
+        else:
+            self.worker.terminate()
         self.logger.debug(f'runtime process properly terminated')
 
     def _get_runtime_cls(self) -> AsyncNewLoopRuntime:

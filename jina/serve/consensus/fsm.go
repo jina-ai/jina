@@ -8,10 +8,12 @@ import (
 //     "io/ioutil"
      "log"
      "sync"
+     "unsafe"
 //     "time"
-//     "errors"
+     "errors"
+      "reflect"
 
-//     "google.golang.org/protobuf/proto"
+    "google.golang.org/protobuf/proto"
 //     "google.golang.org/protobuf/types/known/emptypb"
     empty "github.com/golang/protobuf/ptypes/empty"
 
@@ -34,13 +36,20 @@ static PyObject* call_python_function(const char* module_name, const char* funct
     result = PyObject_CallFunctionObjArgs(function, WorkerRequestHandlersArgs, NULL);
     return result;
 }
+
+static PyObject* call_handle_binary_request(PyObject* function, PyObject* WorkerRequestHandlersArgs, PyObject* BinaryData) {
+    PyObject* result;
+    result = PyObject_CallFunctionObjArgs(function, WorkerRequestHandlersArgs, BinaryData, NULL);
+    return result;
+}
 */
 import "C"
-
 
 type executorFSM struct {
     //executor *executor
     executor   *C.PyObject
+    module     *C.PyObject
+    handle_binary_request_func *C.PyObject
     mtx      sync.RWMutex
     snapshot *snapshot
     write_endpoints  []string
@@ -49,21 +58,35 @@ type executorFSM struct {
 
 func NewExecutorFSM(target string, Worker *C.PyObject) *executorFSM {
     log.Printf("Avoiding compilation error %v", target)
-//     executor := &executor{
-//                 target:             target,
-//                 connection_options: defaultExecutorDialOptions(),
-//             }
-
-//     conn, _ := executor.newConnection()
-//     defer conn.Close()
-//     client := pb.NewJinaDiscoverEndpointsRPCClient(conn)
-//     response, _ := client.EndpointDiscovery(context.Background(), &emptypb.Empty{})
+    module := C.PyImport_ImportModule(C.CString("jina.serve.runtimes.worker.request_handling"))
+    function := C.PyObject_GetAttrString(module, C.CString("handle_binary_request"));
     write_endpoints := C.call_python_function(C.CString("jina.serve.runtimes.worker.request_handling"), C.CString("get_write_endpoints"), Worker)
+    ret := C.call_python_function(C.CString("jina.serve.runtimes.worker.request_handling"), C.CString("call_try_one_thing"), Worker)
     log.Printf("I need to find a way to convert this PyObject into a List of strings %v", write_endpoints)
+    log.Printf("ret %v", ret)
 
+    var WriteEndpoints []string
+    for i := 0; i < int(C.PyList_Size(write_endpoints)); i++ {
+        item := C.PyList_GetItem(write_endpoints, C.long(i))
+        py_str := C.PyUnicode_AsUTF8String(item)
+        //defer C.Py_DECREF(py_str)
+        if (py_str == nil) {
+            log.Printf("Failed to convert item to string")
+            return nil
+        }
+        var go_str string
+        c_str := C.PyBytes_AsString(py_str)
+        header := (*reflect.StringHeader)(unsafe.Pointer(&go_str))
+        header.Data = uintptr(unsafe.Pointer(c_str))
+        header.Len = int(C.PyBytes_Size(py_str))
+        WriteEndpoints = append(WriteEndpoints, go_str)
+    }
+    log.Printf("WRITE ENDPOINTS %v", WriteEndpoints)
     return &executorFSM{
         executor: Worker,
-        write_endpoints: []string{},
+        module: module,
+        handle_binary_request_func: function,
+        write_endpoints: WriteEndpoints,
     }
 }
 
@@ -81,7 +104,29 @@ func (fsm *executorFSM) Apply(l *raft.Log) interface{} {
     fsm.mtx.Lock()
     // TODO: Learn how to extract l.data and pass bytes to Python and back, in Python load DataRequest from those bytes and also here
     defer fsm.mtx.Unlock()
-    return nil
+    log.Printf("Length Data %v", len(l.Data))
+    cstr := (*C.char)(unsafe.Pointer(&l.Data[0]))
+    pyBytes := C.PyBytes_FromStringAndSize(cstr, C.long(len(l.Data)))
+    ret := C.call_handle_binary_request(fsm.handle_binary_request_func, fsm.executor, pyBytes)
+    log.Printf("ret %v", ret)
+//     if (C.PyBytes_Check(ret) == 0) {
+//         fmt.Println("Object is not a bytes object")
+//         return
+//     }
+    var go_bytes []byte
+    c_bytes := C.PyBytes_AsString(ret)
+    length := C.PyBytes_Size(ret)
+    header := (*reflect.SliceHeader)(unsafe.Pointer(&go_bytes))
+    header.Data = uintptr(unsafe.Pointer(c_bytes))
+    header.Len = int(length)
+    header.Cap = int(length)
+    response := &pb.DataRequestProto{}
+    err := proto.Unmarshal(go_bytes, response)
+    if err != nil {
+        log.Printf("EROR UNMARSHALLING RESPONSE FROM PYTHON: %v", err)
+        return err
+    }
+    return response
 //     for {
 //         if !fsm.isSnapshotInProgress() {
 //             // we need not to return error but make it slow, wait until not anymore in progress
@@ -237,9 +282,29 @@ func (fsm *executorFSM) Restore(r io.ReadCloser) error {
 //     return err
 }
 
-func (fsm *executorFSM) Read(ctx context.Context, dataRequestProto *pb.DataRequestProto) (*pb.DataRequestProto, error) {
+func (fsm *executorFSM) Read(bytes []byte) (*pb.DataRequestProto, error) {
     log.Printf("executorFSM call Read endpoint")
-    return nil, nil
+    fsm.mtx.Lock()
+    // TODO: Learn how to extract l.data and pass bytes to Python and back, in Python load DataRequest from those bytes and also here
+    defer fsm.mtx.Unlock()
+    cstr := (*C.char)(unsafe.Pointer(&bytes[0]))
+
+    pyBytes := C.PyBytes_FromStringAndSize(cstr, C.long(len(bytes)))
+    ret := C.call_handle_binary_request(fsm.handle_binary_request_func, fsm.executor, pyBytes)
+    var go_bytes []byte
+    c_bytes := C.PyBytes_AsString(ret)
+    length := C.PyBytes_Size(ret)
+    header := (*reflect.SliceHeader)(unsafe.Pointer(&go_bytes))
+    header.Data = uintptr(unsafe.Pointer(c_bytes))
+    header.Len = int(length)
+    header.Cap = int(length)
+    response := &pb.DataRequestProto{}
+    err := proto.Unmarshal(go_bytes, response)
+    if err != nil {
+        log.Printf("EROR UNMARSHALLING RESPONSE FROM PYTHON: %v", err)
+        return nil, err
+    }
+    return response, nil
 //     conn, err := fsm.executor.newConnection()
 //     if err != nil {
 //         return nil, err
@@ -256,8 +321,9 @@ func (fsm *executorFSM) Read(ctx context.Context, dataRequestProto *pb.DataReque
 }
 
 func (fsm *executorFSM) EndpointDiscovery(ctx context.Context, empty *empty.Empty) (*pb.EndpointsProto, error) {
+    err := errors.New("Temporary errror")
     log.Printf("executorFSM call EndpointDiscovery")
-    return nil, nil
+    return nil, err
 //     conn, err := fsm.executor.newConnection()
 //     if err != nil {
 //         return nil, err

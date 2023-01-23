@@ -205,7 +205,7 @@ func Run(myAddr string,
         if err != nil {
             log.Fatalf("Error returned while shutting RAFT down: %v", err)
         }
-        os.Exit(0)
+        return
     }()
     if err := grpcServer.Serve(sock); err != nil {
         log.Fatalf("failed to serve: %v", err)
