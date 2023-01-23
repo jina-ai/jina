@@ -5,7 +5,7 @@ import uuid
 import pytest
 from docarray import DocumentArray
 
-from jina import Client, Executor, requests
+from jina import Client, Executor, Flow, requests
 from jina.parsers import set_gateway_parser
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.gateway import GatewayRuntime
@@ -874,3 +874,15 @@ def test_custom_num_retries_headful(port_generator, retries, capfd):
         worker_process.join()
         head_process.terminate()
         head_process.join()
+
+
+def test_not_found_error_message(capfd):
+    depl_name = 'dummyexec'
+    addr = 'https://blah.wolf.jina.ai/'
+    f = Flow().add(host=addr, external=True, name=depl_name)
+    with pytest.raises(ConnectionError) as e:
+        with f:
+            f.post(inputs=[], on='/foo')
+
+    assert 'blah.wolf.jina.ai' in str(e.value)
+    assert depl_name in str(e.value)
