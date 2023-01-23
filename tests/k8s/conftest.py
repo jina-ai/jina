@@ -105,6 +105,13 @@ class KindClusterWrapper:
         # linkerd < 2.12: only linkerd install is needed
         # in later versions, linkerd install --crds will be needed
         kube_out = subprocess.check_output(
+            (str(self._cluster.kind_path), 'version'),
+            env=os.environ,
+        )
+
+        self._log.info(f'kind version: {kube_out}')
+
+        kube_out = subprocess.check_output(
             (str(self._cluster.kubectl_path), 'get', 'node'),
             env=os.environ,
         )
