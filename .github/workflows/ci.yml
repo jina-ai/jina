@@ -352,7 +352,6 @@ jobs:
       fail-fast: false
       matrix:
         python-version: [3.7]
-        test-path: ${{fromJson(needs.prep-testbed.outputs.matrix)}}
     steps:
       - uses: actions/checkout@v2.5.0
       - name: Set up Python ${{ matrix.python-version }}
@@ -367,10 +366,11 @@ jobs:
           pip install ".[all]" --no-cache-dir
           jina
           export JINA_LOG_LEVEL="ERROR"
+          pip install -U "git+https://github.com/docarray/docarray@feat-jina-compatibility#egg=docarray"
       - name: Test
         id: test
         run: |
-          pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml --timeout=600 -v -s --ignore-glob='tests/integration/hub_usage/dummyhub*' ${{ matrix.test-path }}
+          pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml --timeout=600 -v -s --ignore-glob='tests/integration/hub_usage/dummyhub*' tests/integration/docarray_v2
 
           echo "flag it as jina for codeoverage"
           echo "codecov_flag=jina" >> $GITHUB_OUTPUT
