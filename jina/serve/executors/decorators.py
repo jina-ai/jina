@@ -15,7 +15,7 @@ from typing import (
     Union,
 )
 
-from jina._docarray import Document, DocumentArray
+from jina._docarray import Document, DocumentArray, docarray_v2
 from jina.constants import __cache_path__
 from jina.helper import iscoroutinefunction
 from jina.importer import ImportExtensions
@@ -219,7 +219,11 @@ def requests(
 
             if input_doc is None:
                 docs_annotation = self.fn.__annotations__.get('docs', None)
-                input_doc = docs_annotation or DocumentArray[Document]
+                input_doc = (
+                    docs_annotation or DocumentArray[Document]
+                    if docarray_v2
+                    else DocumentArray
+                )
                 if not issubclass(input_doc, DocumentArray):
                     raise TypeError(
                         f'input_doc must be a subclass of DocumentArray, '
@@ -228,7 +232,11 @@ def requests(
 
             if output_doc is None:
                 return_annotation = self.fn.__annotations__.get('return', None)
-                output_doc = return_annotation or DocumentArray[Document]
+                output_doc = (
+                    return_annotation or DocumentArray[Document]
+                    if docarray_v2
+                    else DocumentArray
+                )
                 if not issubclass(output_doc, DocumentArray):
                     raise TypeError(
                         f'output_doc must be a subclass of DocumentArray, '
