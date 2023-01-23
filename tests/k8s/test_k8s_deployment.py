@@ -68,22 +68,16 @@ async def create_executor_deployment_and_wait_ready(
 
     # wait for all the pods to be up
     resp = app_client.list_namespaced_deployment(namespace=namespace)
-    resp2 = app_client.list_namespaced_stateful_set(namespace=namespace)
     deployment_names = set([item.metadata.name for item in resp.items])
-    sset_names = set([item.metadata.name for item in resp2.items])
-    all_execs_names = deployment_names.union(sset_names)
-    assert all_execs_names == set(deployment_replicas_expected.keys())
-    while len(all_execs_names) > 0:
+    while len(deployment_names) > 0:
         deployments_ready = []
-        for deployment_name in all_execs_names:
-            if deployment_name in deployment_names:
-                api_response = app_client.read_namespaced_deployment(
-                    name=deployment_name, namespace=namespace
-                )
-            elif deployment_name in sset_names:
-                api_response = app_client.read_namespaced_stateful_set(
-                    name=deployment_name, namespace=namespace
-                )
+        for deployment_name in deployment_names:
+            api_response = app_client.read_namespaced_deployment(
+                name=deployment_name, namespace=namespace
+            )
+            print('api_response.status:', api_response.status)
+            print('namespaced events:', core_client.list_namespaced_event(namespace))
+
             expected_num_replicas = deployment_replicas_expected[deployment_name]
             if (
                 api_response.status.ready_replicas is not None
@@ -97,8 +91,8 @@ async def create_executor_deployment_and_wait_ready(
                 )
 
         for deployment_name in deployments_ready:
-            all_execs_names.remove(deployment_name)
-        logger.info(f'Waiting for {all_execs_names} to be ready')
+            deployment_names.remove(deployment_name)
+        logger.info(f'Waiting for {deployment_names} to be ready')
         await asyncio.sleep(1.0)
 
 
