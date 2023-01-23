@@ -11,8 +11,7 @@ if TYPE_CHECKING:  # pragma: no cover
     from jina.clients.base import CallbackFnType, InputType
     from jina.types.request.data import Response
 
-from docarray import DocumentArray
-from docarray.documents.legacy import DocumentArray as LegacyDocumentArray
+from jina._docarray import DocumentArray, LegacyDocumentArray
 
 
 def _include_results_field_in_param(parameters: Optional['Dict']) -> 'Dict':
@@ -178,7 +177,7 @@ class ProfileMixin:
         :param show_table: whether to show the table or not.
         :return: the latency report in a dict.
         """
-        from docarray.documents.legacy import Document
+        from jina._docarray import Document
 
         st = time.perf_counter()
         r = self.client.post(on='/', inputs=Document(), return_responses=True)
@@ -195,7 +194,7 @@ class AsyncProfileMixin:
         :param show_table: whether to show the table or not.
         :return: the latency report in a dict.
         """
-        from docarray.documents.legacy import Document
+        from jina._docarray import Document
 
         st = time.perf_counter()
         async for r in self.client.post(

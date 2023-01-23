@@ -11,18 +11,16 @@ from typing import (
     Union,
 )
 
-from docarray import BaseDocument
-
+from jina._docarray import BaseDocument
 from jina.clients.request.helper import _new_data_request, _new_data_request_from_batch
 from jina.enums import DataInputType
 from jina.helper import batch_iterator
 from jina.logging.predefined import default_logger
 
 if TYPE_CHECKING:  # pragma: no cover
-    from docarray.document import DocumentSourceType
-    from docarray.document.mixins.content import DocumentContentType
-    from docarray.documents.legacy import Document
-
+    from jina._docarray import Document
+    from jina._docarray.document import DocumentSourceType
+    from jina._docarray.document.mixins.content import DocumentContentType
     from jina.types.request import Request
 
     SingletonDataType = Union[

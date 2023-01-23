@@ -114,8 +114,7 @@ class GRPCGateway(BaseGateway):
         :param context: grpc context
         :returns: the response request
         """
-        from docarray.documents.legacy import Document, DocumentArray
-
+        from jina._docarray import Document, DocumentArray
         from jina.serve.executors import __dry_run_endpoint__
 
         da = DocumentArray([Document()])

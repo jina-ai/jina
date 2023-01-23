@@ -15,9 +15,7 @@ from typing import (
     Union,
 )
 
-from docarray import DocumentArray
-from docarray.documents.legacy.legacy_document import Document
-
+from jina._docarray import Document, DocumentArray
 from jina.constants import __cache_path__
 from jina.helper import iscoroutinefunction
 from jina.importer import ImportExtensions
@@ -137,7 +135,7 @@ def requests(
     .. code-block:: python
 
         from jina import Executor, requests, Flow
-        from docarray.documents.legacy import Document
+        from jina._docarray import Document
 
 
         # define Executor with custom `@requests` endpoints

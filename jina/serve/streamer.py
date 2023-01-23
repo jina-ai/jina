@@ -4,8 +4,7 @@ import os
 import threading
 from typing import TYPE_CHECKING, Dict, List, Optional, Sequence, Union
 
-from docarray import DocumentArray
-
+from jina._docarray import DocumentArray
 from jina.logging.logger import JinaLogger
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.gateway.graph.topology_graph import TopologyGraph

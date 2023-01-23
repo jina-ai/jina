@@ -85,7 +85,7 @@ def Client(
     .. code-block:: python
 
         from jina import Client
-        from docarray.documents.legacy import Document
+        from jina._docarray import Document
 
         # select protocol from 'grpc', 'http', or 'websocket'; default is 'grpc'
         # select asyncio True of False; default is False

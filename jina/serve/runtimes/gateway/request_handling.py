@@ -3,8 +3,8 @@ import copy
 from typing import TYPE_CHECKING, Callable, List, Optional, Tuple
 
 import grpc.aio
-from docarray.documents.legacy import DocumentArray as LegacyDocumentArray
 
+from jina._docarray import LegacyDocumentArray
 from jina.excepts import InternalNetworkError
 from jina.helper import GATEWAY_NAME
 from jina.logging.logger import JinaLogger

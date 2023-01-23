@@ -18,7 +18,7 @@ class GRPCClient(GRPCBaseClient, PostMixin, HealthCheckMixin, ProfileMixin):
     .. code-block:: python
 
         from jina import Client
-        from docarray.documents.legacy import Document
+        from jina._docarray import Document
 
         # select host address to connect to
         c = Client(
@@ -51,7 +51,7 @@ class AsyncGRPCClient(GRPCBaseClient, AsyncPostMixin, AsyncHealthCheckMixin):
     .. code-block:: python
 
         from jina import Client
-        from docarray.documents.legacy import Document
+        from jina._docarray import Document
 
         # async inputs for the client
         async def async_inputs():

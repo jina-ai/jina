@@ -125,7 +125,7 @@ _set_nofile()
 # ONLY FIRST CLASS CITIZENS ARE ALLOWED HERE, namely Document, Executor Flow
 
 # Document
-from docarray.documents.legacy import Document, DocumentArray
+# from jina._docarray import Document, DocumentArray
 
 # Client
 from jina.clients import Client

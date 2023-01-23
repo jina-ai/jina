@@ -1,9 +1,9 @@
 import copy
 from typing import Dict, Optional, Type, TypeVar, Union
 
-from docarray import DocumentArray
 from google.protobuf import json_format
 
+from jina._docarray import DocumentArray
 from jina.excepts import BadRequestType
 from jina.helper import cached_property, random_identity, typename
 from jina.proto import jina_pb2

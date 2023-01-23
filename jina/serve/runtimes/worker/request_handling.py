@@ -3,8 +3,7 @@ import functools
 import json
 from typing import TYPE_CHECKING, Dict, List, Optional, Tuple
 
-from docarray import DocumentArray
-
+from jina._docarray import DocumentArray
 from jina.constants import __default_endpoint__
 from jina.excepts import BadConfigSource
 from jina.importer import ImportExtensions
