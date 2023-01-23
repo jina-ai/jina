@@ -352,6 +352,56 @@ jobs:
       fail-fast: false
       matrix:
         python-version: [3.7]
+        test-path: tests/integration/docarray_v2
+    steps:
+      - uses: actions/checkout@v2.5.0
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Prepare environment
+        run: |
+          docker build -f Dockerfiles/test-pip.Dockerfile -t jinaai/jina:test-pip .
+          python -m pip install --upgrade pip
+          python -m pip install wheel
+          pip install ".[all]" --no-cache-dir
+          jina
+          export JINA_LOG_LEVEL="ERROR"
+          pip install "git+https://github.com/docarray/docarray@feat-jina-compatibility#egg=docarray"
+      - name: Test
+        id: test
+        run: |
+          pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml --timeout=600 -v -s --ignore-glob='tests/integration/hub_usage/dummyhub*' ${{ matrix.test-path }}
+
+          echo "flag it as jina for codeoverage"
+          echo "codecov_flag=jina" >> $GITHUB_OUTPUT
+        timeout-minutes: 30
+        env:
+          JINA_AUTH_TOKEN: "${{ secrets.JINA_AUTH_TOKEN }}"
+#      - name: Check codecov file
+#        id: check_files
+#        uses: andstor/file-existence-action@v1
+#        with:
+#          files: "coverage.xml"
+#      - name: Upload coverage from test to Codecov
+#        uses: codecov/codecov-action@v3.1.1
+#        if: steps.check_files.outputs.files_exists == 'true' && ${{ matrix.python-version }} == '3.7'
+#        with:
+#          file: coverage.xml
+#          name: ${{ matrix.test-path }}-codecov
+#          flags: ${{ steps.test.outputs.codecov_flag }}
+#          fail_ci_if_error: false
+
+
+  docarray-v2-test:
+    needs: prep-testbed
+    runs-on: ubuntu-latest
+    env:
+      JINA_RANDOM_PORT_MIN: 16384
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [3.7]
         test-path: ${{fromJson(needs.prep-testbed.outputs.matrix)}}
     steps:
       - uses: actions/checkout@v2.5.0
