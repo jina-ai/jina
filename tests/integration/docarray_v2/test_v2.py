@@ -75,8 +75,8 @@ def test_input_output_type():
     class MyExec(Executor):
         @requests(
             on='/foo',
-            input_doc=DocumentArray[MyDoc],
-            output_doc=DocumentArray[MyDoc],
+            input_type=DocumentArray[MyDoc],
+            ouput_type=DocumentArray[MyDoc],
         )
         def foo(self, docs, **kwargs):
             assert docs.__class__.document_type == MyDoc

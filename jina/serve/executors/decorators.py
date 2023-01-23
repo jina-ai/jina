@@ -105,8 +105,8 @@ def requests(
     ] = None,
     *,
     on: Optional[Union[str, Sequence[str]]] = None,
-    input_doc: Optional[Type[DocumentArray]] = None,
-    output_doc: Optional[Type[DocumentArray]] = None,
+    input_type: Optional[Type[DocumentArray]] = None,
+    ouput_type: Optional[Type[DocumentArray]] = None,
 ):
     """
     `@requests` defines the endpoints of an Executor. It has a keyword `on=` to define the endpoint.
@@ -152,8 +152,8 @@ def requests(
 
     :param func: the method to decorate
     :param on: the endpoint string, by convention starts with `/`
-    :param input_doc: the type of the input document
-    :param output_doc: the type of the output document
+    :param input_type: the type of the input document
+    :param ouput_type: the type of the output document
     :return: decorated function
     """
     from jina.constants import __args_executor_func__, __default_endpoint__
@@ -197,47 +197,28 @@ def requests(
             else:
                 return fn
 
-        def _inject_owner_attrs(self, owner, name, input_doc, output_doc):
+        def _inject_owner_attrs(self, owner, name, input_type, ouput_type):
             if not hasattr(owner, 'requests'):
                 owner.requests = {}
 
-            if input_doc is None:
-                docs_annotation = self.fn.__annotations__.get('docs', None)
-                input_doc = (
-                    docs_annotation or DocumentArray[Document]
-                    if docarray_v2
-                    else DocumentArray
-                )
-                if not issubclass(input_doc, DocumentArray):
-                    raise TypeError(
-                        f'input_doc must be a subclass of DocumentArray, '
-                        f'but {input_doc} is given'
-                    )
-
-            if output_doc is None:
-                return_annotation = self.fn.__annotations__.get('return', None)
-                output_doc = (
-                    return_annotation or DocumentArray[Document]
-                    if docarray_v2
-                    else DocumentArray
-                )
-                if not issubclass(output_doc, DocumentArray):
-                    raise TypeError(
-                        f'output_doc must be a subclass of DocumentArray, '
-                        f'but {output_doc} is given'
-                    )
-
             from jina.serve.executors import _FunctionWithSchema
 
-            function_and_schema = _FunctionWithSchema(self.fn, input_doc, output_doc)
+            fn_with_schema = _FunctionWithSchema._get_function_with_schema(self.fn)
+
+            input_type = input_type if input_type else fn_with_schema.input_type
+            output_type = ouput_type if ouput_type else fn_with_schema.output_type
+
+            fn_with_schema = _FunctionWithSchema(
+                fn_with_schema.fn, input_type, output_type
+            )
 
             if isinstance(on, (list, tuple)):
                 for o in on:
-                    owner.requests_by_class[owner.__name__][o] = function_and_schema
+                    owner.requests_by_class[owner.__name__][o] = fn_with_schema
             else:
                 owner.requests_by_class[owner.__name__][
                     on or __default_endpoint__
-                ] = function_and_schema
+                ] = fn_with_schema
 
             setattr(owner, name, self.fn)
 
@@ -246,7 +227,7 @@ def requests(
             if self._batching_decorator:
                 self._batching_decorator._inject_owner_attrs(owner, name)
             self.fn.class_name = owner.__name__
-            self._inject_owner_attrs(owner, name, input_doc, output_doc)
+            self._inject_owner_attrs(owner, name, input_type, ouput_type)
 
         def __call__(self, *args, **kwargs):
             # this is needed to make this decorator work in combination with `@requests`

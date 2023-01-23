@@ -16,11 +16,12 @@ from typing import (
     NamedTuple,
     Optional,
     Type,
+    TypeVar,
     Union,
     overload,
 )
 
-from jina._docarray import DocumentArray
+from jina._docarray import DocumentArray, LegacyDocumentArray
 from jina.constants import __args_executor_init__, __cache_path__, __default_endpoint__
 from jina.enums import BetterEnum
 from jina.helper import (
@@ -97,10 +98,24 @@ class ExecutorType(type(JAMLCompatible), type):
         return cls
 
 
+T = TypeVar('T', bound='_FunctionWithSchema')
+
+
 class _FunctionWithSchema(NamedTuple):
     fn: Callable
-    input_type: Type[DocumentArray] = DocumentArray
-    output_type: Type[DocumentArray] = DocumentArray
+    input_type: Type[DocumentArray] = LegacyDocumentArray
+    output_type: Type[DocumentArray] = LegacyDocumentArray
+
+    @staticmethod
+    def _get_function_with_schema(fn: Callable) -> T:
+
+        docs_annotation = fn.__annotations__.get('docs', None)
+        return_annotation = fn.__annotations__.get('return', None)
+
+        input_type = docs_annotation or LegacyDocumentArray
+        output_type = return_annotation or LegacyDocumentArray
+
+        return _FunctionWithSchema(fn, input_type, output_type)
 
 
 class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
@@ -285,10 +300,10 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                 _func = getattr(self.__class__, func)
                 if callable(_func):
                     # the target function is not decorated with `@requests` yet
-                    self.requests[endpoint] = _func
+                    self.requests[endpoint] = _FunctionWithSchema(_func)
                 elif typename(_func) == 'jina.executors.decorators.FunctionMapper':
                     # the target function is already decorated with `@requests`, need unwrap with `.fn`
-                    self.requests[endpoint] = _func.fn
+                    self.requests[endpoint] = _FunctionWithSchema(_func.fn)
                 else:
                     raise TypeError(
                         f'expect {typename(self)}.{func} to be a function, but receiving {typename(_func)}'
