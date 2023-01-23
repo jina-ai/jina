@@ -107,7 +107,7 @@ class _FunctionWithSchema(NamedTuple):
     output_type: Type[DocumentArray] = LegacyDocumentArray
 
     @staticmethod
-    def _get_function_with_schema(fn: Callable) -> T:
+    def get_function_with_schema(fn: Callable) -> T:
 
         docs_annotation = fn.__annotations__.get('docs', None)
         return_annotation = fn.__annotations__.get('return', None)
@@ -300,10 +300,14 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                 _func = getattr(self.__class__, func)
                 if callable(_func):
                     # the target function is not decorated with `@requests` yet
-                    self.requests[endpoint] = _FunctionWithSchema(_func)
+                    self.requests[
+                        endpoint
+                    ] = _FunctionWithSchema.get_function_with_schema(_func)
                 elif typename(_func) == 'jina.executors.decorators.FunctionMapper':
                     # the target function is already decorated with `@requests`, need unwrap with `.fn`
-                    self.requests[endpoint] = _FunctionWithSchema(_func.fn)
+                    self.requests[
+                        endpoint
+                    ] = _FunctionWithSchema.get_function_with_schema(_func.fn)
                 else:
                     raise TypeError(
                         f'expect {typename(self)}.{func} to be a function, but receiving {typename(_func)}'

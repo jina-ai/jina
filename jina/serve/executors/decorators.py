@@ -203,7 +203,7 @@ def requests(
 
             from jina.serve.executors import _FunctionWithSchema
 
-            fn_with_schema = _FunctionWithSchema._get_function_with_schema(self.fn)
+            fn_with_schema = _FunctionWithSchema.get_function_with_schema(self.fn)
 
             input_type = input_type if input_type else fn_with_schema.input_type
             output_type = ouput_type if ouput_type else fn_with_schema.output_type
