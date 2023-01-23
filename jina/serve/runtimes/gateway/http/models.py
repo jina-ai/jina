@@ -4,13 +4,10 @@ from enum import Enum
 from types import SimpleNamespace
 from typing import TYPE_CHECKING, Callable, Dict, List, Optional, Union
 
+from docarray.document.pydantic_model import PydanticDocument, PydanticDocumentArray
 from google.protobuf.descriptor import Descriptor, FieldDescriptor
 from pydantic import BaseConfig, BaseModel, Field, create_model, root_validator
 
-from jina._docarray.document.pydantic_model import (
-    PydanticDocument,
-    PydanticDocumentArray,
-)
 from jina.proto.jina_pb2 import DataRequestProto, JinaInfoProto, RouteProto, StatusProto
 
 if TYPE_CHECKING:  # pragma: no cover
