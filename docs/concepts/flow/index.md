@@ -128,8 +128,7 @@ with f:
 
 ```{caution}
 The statement `with f:` starts the Flow, and exiting the indented with block stops the Flow, including all Executors defined in it.
-Exceptions raised inside the `with f:` block will close the Flow context manager. If this is not intended then care must be taken to 
-surround the statements that can potentially raise an exception with a `try-except` block.
+Exceptions raised inside the `with f:` block will close the Flow context manager. If you don't want this, use a `try...except` block to surround the statements that could potentially raise an exception.
 ```
 
 
