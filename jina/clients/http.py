@@ -23,7 +23,7 @@ class HTTPClient(
     .. code-block:: python
 
         from jina import Client
-        from jina._docarray import Document
+        from docarray import Document
 
         # select host address to connect to
         c = Client(
@@ -62,7 +62,7 @@ class AsyncHTTPClient(
     .. code-block:: python
 
         from jina import Client
-        from jina._docarray import Document
+        from docarray import Document
 
         # async inputs for the client
         async def async_inputs():

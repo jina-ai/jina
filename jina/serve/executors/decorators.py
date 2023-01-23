@@ -119,8 +119,7 @@ def requests(
     .. code-block:: python
 
         from jina import Executor, requests, Flow
-        from jina._docarray import Document
-
+        from docarray import Document
 
         # define Executor with custom `@requests` endpoints
         class MyExecutor(Executor):
