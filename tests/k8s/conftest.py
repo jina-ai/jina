@@ -122,6 +122,7 @@ class KindClusterWrapper:
             print(
                 f'linkerd check failed with error code { e.returncode } and output { e.output }'
             )
+            raise
 
     def install_linkderd_smi(self) -> None:
         self._log.info('Installing Linkerd SMI to Cluster...')
@@ -165,6 +166,12 @@ class KindClusterWrapper:
         self._log.info(f'Setting KUBECONFIG to {self._kube_config_path}')
         os.environ['KUBECONFIG'] = self._kube_config_path
         load_cluster_config()
+
+        kube_out = subprocess.check_output(
+            (str(self._cluster.kubectl_path), 'get', 'node'),
+            env=os.environ,
+        )
+        self._log.info(f'nodes: {kube_out}')
 
     def load_docker_images(
         self, images: List[str], image_tag_map: Dict[str, str]
