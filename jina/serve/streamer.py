@@ -2,10 +2,9 @@ import asyncio
 import json
 import os
 import threading
-import time
 from typing import TYPE_CHECKING, Dict, List, Optional, Sequence, Union
 
-from docarray.documents.legacy import Document, DocumentArray
+from docarray import DocumentArray
 
 from jina.logging.logger import JinaLogger
 from jina.serve.networking import GrpcConnectionPool

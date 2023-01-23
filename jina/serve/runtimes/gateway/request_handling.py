@@ -3,7 +3,7 @@ import copy
 from typing import TYPE_CHECKING, Callable, List, Optional, Tuple
 
 import grpc.aio
-from docarray.documents.legacy import DocumentArray
+from docarray.documents.legacy import DocumentArray as LegacyDocumentArray
 
 from jina.excepts import InternalNetworkError
 from jina.helper import GATEWAY_NAME
@@ -136,7 +136,7 @@ class GatewayRequestHandler(MonitoringRequestMixin):
                         return len(request_doc_ids)  # put new/unknown docs at the end
 
                 sorted_docs = sorted(response.data.docs, key=sort_by_request_order)
-                response.data.docs = DocumentArray(sorted_docs)
+                response.data.docs = LegacyDocumentArray(sorted_docs)
 
             async def _process_results_at_end_gateway(
                 tasks: List[asyncio.Task], request_graph: TopologyGraph

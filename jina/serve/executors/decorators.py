@@ -22,9 +22,6 @@ from jina.constants import __cache_path__
 from jina.helper import iscoroutinefunction
 from jina.importer import ImportExtensions
 
-if TYPE_CHECKING:  # pragma: no cover
-    from docarray.documents.legacy import DocumentArray
-
 
 @functools.lru_cache()
 def _get_locks_root() -> Path:

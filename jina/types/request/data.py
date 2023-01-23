@@ -1,7 +1,7 @@
 import copy
 from typing import Dict, Optional, Type, TypeVar, Union
 
-from docarray.documents.legacy import DocumentArray
+from docarray import DocumentArray
 from google.protobuf import json_format
 
 from jina.excepts import BadRequestType
