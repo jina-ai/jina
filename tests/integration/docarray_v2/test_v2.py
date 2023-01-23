@@ -1,6 +1,8 @@
 from typing import Optional
 
+import numpy as np
 from docarray import BaseDocument, DocumentArray
+from docarray.documents import Image
 from docarray.typing import AnyTensor, ImageUrl
 
 from jina import Executor, Flow, requests
@@ -106,3 +108,30 @@ def test_input_output_type_annotation():
         )
         assert docs[0].text == 'hello world'
         assert docs.__class__.document_type == MyDoc
+
+
+def test_different_output_input():
+    class InputDoc(BaseDocument):
+        img: Image
+
+    class OutputDoc(BaseDocument):
+        embedding: AnyTensor
+
+    class MyExec(Executor):
+        @requests(on='/bar')
+        def bar(
+            self, docs: DocumentArray[InputDoc], **kwargs
+        ) -> DocumentArray[OutputDoc]:
+            docs_return = DocumentArray[OutputDoc](
+                [OutputDoc(embedding=np.zeros((100, 1))) for _ in range(len(docs))]
+            )
+            return docs_return
+
+    with Flow().add(uses=MyExec) as f:
+        docs = f.post(
+            on='/bar',
+            inputs=InputDoc(img=Image(tensor=np.zeros((3, 224, 224)))),
+            return_type=DocumentArray[OutputDoc],
+        )
+        assert docs[0].embedding.shape == (100, 1)
+        assert docs.__class__.document_type == OutputDoc
