@@ -26,8 +26,6 @@ class KindClusterWrapper:
         )
         self._log = logger
         self._set_kube_config()
-        self._log.info('waiting for node to become ready...')
-        time.sleep(60 * 5)
         self._install_linkderd(kind_cluster)
         self._loaded_images = set()
 
@@ -71,59 +69,12 @@ class KindClusterWrapper:
         if returncode is not None and returncode != 0:
             raise Exception(f'Installing {tool_name} failed with {returncode}')
 
-    def _wait_linkerd(self):
-        from kubernetes import client as k8s_client
-
-        api_client = k8s_client.ApiClient()
-        core_client = k8s_client.CoreV1Api(api_client=api_client)
-
-        timeout = time.time() + 60 * 5  # 5 minutes from now
-        while True:
-            # nodes = self._cluster.kubectl('get', 'pods', '-n', 'linkerd')
-            linkerd_pods = core_client.list_namespaced_pod('linkerd').items
-            if linkerd_pods is not None:
-                try:
-                    all_ready = all(
-                        [
-                            container.ready
-                            for pod in linkerd_pods
-                            for container in pod.status.container_statuses
-                        ]
-                    )
-                except Exception as e:
-                    print(e)
-                    all_ready = False
-                if all_ready:
-                    break
-            if time.time() > timeout:
-                self._log.warning('Timeout waiting for node readiness.')
-                break
-
-            time.sleep(4)
-
     def _install_linkderd(self, kind_cluster: KindCluster) -> None:
         # linkerd < 2.12: only linkerd install is needed
         # in later versions, linkerd install --crds will be needed
-        kube_out = subprocess.check_output(
-            (str(self._cluster.kind_path), 'version'),
-            env=os.environ,
-        )
-
-        self._log.info(f'kind version: {kube_out}')
-
-        kube_out = subprocess.check_output(
-            (str(self._cluster.kubectl_path), 'get', 'node'),
-            env=os.environ,
-        )
-        self._log.info(f'nodes before linkerd install: {kube_out}')
-
         self._linkerd_install_cmd(
             kind_cluster, [f'{Path.home()}/.linkerd2/bin/linkerd', 'install'], 'Linkerd'
         )
-
-        self._log.info('waiting for linkerd to be ready')
-
-        self._wait_linkerd()
 
         self._log.info('check linkerd status')
         try:
@@ -181,12 +132,6 @@ class KindClusterWrapper:
         self._log.info(f'Setting KUBECONFIG to {self._kube_config_path}')
         os.environ['KUBECONFIG'] = self._kube_config_path
         load_cluster_config()
-
-        kube_out = subprocess.check_output(
-            (str(self._cluster.kubectl_path), 'get', 'node'),
-            env=os.environ,
-        )
-        self._log.info(f'nodes: {kube_out}')
 
     def load_docker_images(
         self, images: List[str], image_tag_map: Dict[str, str]
