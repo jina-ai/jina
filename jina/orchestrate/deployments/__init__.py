@@ -186,7 +186,7 @@ class Deployment(PostMixin, BaseOrchestrator):
         native: Optional[bool] = False,
         no_reduce: Optional[bool] = False,
         output_array_type: Optional[str] = None,
-        pod_ports: Optional[int] = [],
+        pod_ports: Optional[int] = None,
         polling: Optional[str] = 'ANY',
         port: Optional[int] = None,
         port_monitoring: Optional[int] = None,
