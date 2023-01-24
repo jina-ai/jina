@@ -97,6 +97,14 @@ def _test_error(gateway_port, error_ports, protocol):
         assert str(port) in err_info.value.args[0]
 
 
+def _test_error_host_addr(gateway_port, host_addr, protocol):
+    with pytest.raises(ConnectionError) as err_info:  # assert correct error is thrown
+        _send_request(gateway_port, protocol)
+    # assert error message contains the port(s) of the broken executor(s)
+    print(f'OUTPUT:\n\n\n\n{err_info.value.args[0]}\n\n\n\n')
+    assert str(host_addr) in err_info.value.args[0]
+
+
 @pytest.mark.parametrize(
     'fail_before_endpoint_discovery', [True, False]
 )  # if not before, then after
@@ -178,6 +186,44 @@ async def test_runtimes_headless_topology(
         worker_process.terminate()
         gateway_process.join()
         worker_process.join()
+
+
+@pytest.mark.parametrize('protocol', ['http', 'websocket', 'grpc'])
+@pytest.mark.asyncio
+async def test_runtimes_resource_not_found(port_generator, protocol):
+    gateway_port = port_generator()
+    graph_description = '{"start-gateway": ["pod0"], "pod0": ["end-gateway"]}'
+    pod_addresses = f'{{"pod0": ["https://blah.wolf.jina.ai/"]}}'
+
+    gateway_process = _create_gateway(
+        gateway_port, graph_description, pod_addresses, protocol
+    )
+
+    time.sleep(1.0)
+
+    AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+        timeout=5.0,
+        ctrl_address=f'0.0.0.0:{gateway_port}',
+        ready_or_shutdown_event=multiprocessing.Event(),
+    )
+
+    try:
+        # ----------- 1. test that useful errors are given when endpoint discovery fails -----------
+        # we have to do this in a new process because otherwise grpc will be sad and everything will crash :(
+        p = multiprocessing.Process(
+            target=_test_error_host_addr,
+            args=(gateway_port, 'blah.wolf.jina.ai', protocol),
+        )
+        p.start()
+        p.join()
+        assert (
+            p.exitcode == 0
+        )  # if exitcode != 0 then test in other process did not pass and this should fail
+    except Exception:
+        assert False
+    finally:  # clean up runtimes
+        gateway_process.terminate()
+        gateway_process.join()
 
 
 @pytest.mark.parametrize('protocol', ['grpc', 'http', 'grpc'])
@@ -874,15 +920,3 @@ def test_custom_num_retries_headful(port_generator, retries, capfd):
         worker_process.join()
         head_process.terminate()
         head_process.join()
-
-
-def test_not_found_error_message(capfd):
-    depl_name = 'dummyexec'
-    addr = 'https://blah.wolf.jina.ai/'
-    f = Flow().add(host=addr, external=True, name=depl_name)
-    with pytest.raises(ConnectionError) as e:
-        with f:
-            f.post(inputs=[], on='/foo')
-
-    assert 'blah.wolf.jina.ai' in str(e.value)
-    assert depl_name in str(e.value)
