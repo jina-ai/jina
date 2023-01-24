@@ -39,6 +39,8 @@ def _new_data_request(
 def _new_doc_from_data(
     data, data_type: DataInputType
 ) -> Tuple['Document', 'DataInputType']:
+    def _build_doc_from_content():
+        return Document(content=data), DataInputType.CONTENT
 
     if data_type == DataInputType.DICT:
         return (
@@ -57,8 +59,15 @@ def _new_doc_from_data(
                 else (Document.from_dict(data), DataInputType.DICT)
             )
         else:
-            d = Document(data)
-            return d, DataInputType.DOCUMENT  # NOT HIT
+            try:
+                d = Document(data)
+                return d, DataInputType.DOCUMENT  # NOT HIT
+            except ValueError:
+                # AUTO has a fallback, now reconsider it as content
+                if data_type == DataInputType.AUTO:
+                    return _build_doc_from_content()
+                else:
+                    raise
 
 
 def _add_docs(req: DataRequest, batch, data_type: DataInputType) -> None:
