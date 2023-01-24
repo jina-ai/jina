@@ -11,7 +11,7 @@ if TYPE_CHECKING:  # pragma: no cover
     from jina.clients.base import CallbackFnType, InputType
     from jina.types.request.data import Response
 
-from jina._docarray import DocumentArray, LegacyDocumentArray
+from jina._docarray import DocumentArray
 
 
 def _include_results_field_in_param(parameters: Optional['Dict']) -> 'Dict':
@@ -227,7 +227,7 @@ class PostMixin:
         results_in_order: bool = False,
         stream: bool = True,
         prefetch: Optional[int] = None,
-        return_type: Type[DocumentArray] = LegacyDocumentArray,
+        return_type: Type[DocumentArray] = DocumentArray,
         **kwargs,
     ) -> Optional[Union['DocumentArray', List['Response']]]:
         """Post a general data request to the Flow.
@@ -250,7 +250,7 @@ class PostMixin:
         :param results_in_order: return the results in the same order as the inputs
         :param stream: Applicable only to grpc client. If True, the requests are sent to the target using the gRPC streaming interface otherwise the gRPC unary interface will be used. The value is True by default.
         :param prefetch: How many Requests are processed from the Client at the same time. If not provided then Gateway prefetch value will be used.
-        :param return_type: the DocumentArray type to be returned. By default, it is `LegacyDocumentArray`.
+        :param return_type: the DocumentArray type to be returned. By default, it is `DocumentArray`.
         :param kwargs: additional parameters
         :return: None or DocumentArray containing all response Documents
 
@@ -351,7 +351,7 @@ class AsyncPostMixin:
         :param results_in_order: return the results in the same order as the inputs
         :param stream: Applicable only to grpc client. If True, the requests are sent to the target using the gRPC streaming interface otherwise the gRPC unary interface will be used. The value is True by default.
         :param prefetch: How many Requests are processed from the Client at the same time. If not provided then Gateway prefetch value will be used.
-        :param return_type: the DocumentArray type to be returned. By default, it is `LegacyDocumentArray`.
+        :param return_type: the DocumentArray type to be returned. By default, it is `DocumentArray`.
         :param kwargs: additional parameters, can be used to pass metadata or authentication information in the server call
         :yield: Response object
 

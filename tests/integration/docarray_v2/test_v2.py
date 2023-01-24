@@ -8,29 +8,6 @@ from docarray.typing import AnyTensor, ImageUrl
 from jina import Executor, Flow, requests
 
 
-def test_simple_flow():
-    from docarray.documents.legacy import Document, DocumentArray
-
-    class MyExec(Executor):
-        @requests(on='/foo')
-        def foo(self, docs: DocumentArray, **kwargs):
-            docs[0].text = 'hello world'
-
-        @requests(on='/bar')
-        def bar(self, docs: DocumentArray, **kwargs):
-            new_docs = DocumentArray(
-                [Document(text='new docs') for _ in range(len(docs))]
-            )
-            return new_docs
-
-    with Flow().add(uses=MyExec) as f:
-        doc = f.post(on='/foo', inputs=Document(text='hello'))
-        assert doc[0].text == 'hello world'
-
-        doc = f.post(on='/bar', inputs=Document(text='hello'))
-        assert doc.text == ['new docs']
-
-
 def test_different_document_schema():
     class Image(BaseDocument):
         tensor: Optional[AnyTensor]
@@ -49,6 +26,7 @@ def test_different_document_schema():
             inputs=DocumentArray[Image](
                 [Image(url='https://via.placeholder.com/150.png')]
             ),
+            return_type=DocumentArray[Image],
         )
         docs = docs.stack()
         assert docs.tensor.ndim == 4

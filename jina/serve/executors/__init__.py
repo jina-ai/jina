@@ -21,7 +21,7 @@ from typing import (
     overload,
 )
 
-from jina._docarray import DocumentArray, LegacyDocumentArray
+from jina._docarray import DocumentArray
 from jina.constants import __args_executor_init__, __cache_path__, __default_endpoint__
 from jina.enums import BetterEnum
 from jina.helper import (
@@ -103,8 +103,8 @@ T = TypeVar('T', bound='_FunctionWithSchema')
 
 class _FunctionWithSchema(NamedTuple):
     fn: Callable
-    input_type: Type[DocumentArray] = LegacyDocumentArray
-    output_type: Type[DocumentArray] = LegacyDocumentArray
+    input_type: Type[DocumentArray] = DocumentArray
+    output_type: Type[DocumentArray] = DocumentArray
 
     @staticmethod
     def get_function_with_schema(fn: Callable) -> T:
@@ -112,8 +112,8 @@ class _FunctionWithSchema(NamedTuple):
         docs_annotation = fn.__annotations__.get('docs', None)
         return_annotation = fn.__annotations__.get('return', None)
 
-        input_type = docs_annotation or LegacyDocumentArray
-        output_type = return_annotation or LegacyDocumentArray
+        input_type = docs_annotation or DocumentArray
+        output_type = return_annotation or DocumentArray
 
         return _FunctionWithSchema(fn, input_type, output_type)
 
