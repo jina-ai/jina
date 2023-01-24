@@ -1840,7 +1840,10 @@ class Flow(
             except Exception as ex:
                 results[_deployment_name] = repr(ex)
 
-        def _polling_status(progress, task):
+        def _polling_status(progress, num_tasks_to_wait):
+            task = progress.add_task(
+                'wait', total=num_tasks_to_wait, pending_str='', start=False
+            )
 
             progress.update(task, total=len(results))
             progress.start_task(task)
@@ -1883,10 +1886,6 @@ class Flow(
             transient=True,
         )
         with progress:
-            task = progress.add_task(
-                'wait', total=len(wait_for_ready_coros), pending_str='', start=False
-            )
-
             # kick off ip getter thread, address, http, graphq
             all_panels = []
 
@@ -1897,7 +1896,7 @@ class Flow(
 
             # kick off spinner thread
             t_m = threading.Thread(
-                target=_polling_status, args=(progress, task), daemon=True
+                target=_polling_status, args=(progress, len(wait_for_ready_coros)), daemon=True
             )
             threads.append(t_m)
 
