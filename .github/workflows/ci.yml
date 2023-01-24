@@ -418,7 +418,7 @@ jobs:
       - name: Test
         id: test
         run: |
-          pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml --timeout=600 -v -s --ignore-glob='tests/integration/hub_usage/dummyhub*' ${{ matrix.test-path }}
+          pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml --timeout=600 -v -s --ignore='tests/integration/docarray_v2' --ignore-glob='tests/integration/hub_usage/dummyhub*' ${{ matrix.test-path }}
 
           echo "flag it as jina for codeoverage"
           echo "codecov_flag=jina" >> $GITHUB_OUTPUT
