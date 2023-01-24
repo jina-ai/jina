@@ -1001,23 +1001,26 @@ class GrpcConnectionPool:
         # connection failures have the code grpc.StatusCode.UNAVAILABLE
         # cancelled requests have the code grpc.StatusCode.CANCELLED
         # timed out requests have the code grpc.StatusCode.DEADLINE_EXCEEDED
+        # if an Executor is down behind an API gateway, grpc.StatusCode.NOT_FOUND is returned
         # requests usually gets cancelled when the server shuts down
         # retries for cancelled requests will hit another replica in K8s
         self._logger.debug(
             f'GRPC call to {current_deployment} errored, with error {format_grpc_error(error)} and for the {retry_i + 1}th time.'
         )
-        if (
-            error.code() != grpc.StatusCode.UNAVAILABLE
-            and error.code() != grpc.StatusCode.CANCELLED
-            and error.code() != grpc.StatusCode.DEADLINE_EXCEEDED
-            and error.code() != grpc.StatusCode.UNKNOWN
-            and error.code() != grpc.StatusCode.INTERNAL
-        ):
+        errors_to_retry = [
+            grpc.StatusCode.UNAVAILABLE,
+            grpc.StatusCode.DEADLINE_EXCEEDED,
+            grpc.StatusCode.NOT_FOUND,
+        ]
+        errors_to_handle = errors_to_retry + [
+            grpc.StatusCode.CANCELLED,
+            grpc.StatusCode.UNKNOWN,
+            grpc.StatusCode.INTERNAL,
+        ]
+
+        if error.code() not in errors_to_handle:
             return error
-        elif (
-            error.code() == grpc.StatusCode.UNAVAILABLE
-            or error.code() == grpc.StatusCode.DEADLINE_EXCEEDED
-        ) and retry_i >= total_num_tries - 1:  # retries exhausted. if we land here it already failed once, therefore -1
+        elif error.code() in errors_to_retry and retry_i >= total_num_tries - 1:
             self._logger.debug(
                 f'GRPC call for {current_deployment} failed, retries exhausted'
             )
