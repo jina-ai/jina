@@ -371,6 +371,11 @@ jobs:
         id: test
         run: |
           pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml --timeout=600 -v -s --ignore-glob='tests/integration/hub_usage/dummyhub*' ${{ matrix.test-path }}
+          if [[ "${{ matrix.test-path }}" == *"tests/integration/instrumentation/" ]]
+          then
+            echo "sleeping to let open telemetry export daemon thread expire by itself"
+            sleep 2
+          fi 
 
           echo "flag it as jina for codeoverage"
           echo "codecov_flag=jina" >> $GITHUB_OUTPUT
