@@ -17,7 +17,7 @@ executors:
       resources:
         cpu: 2
         memory: 8G
-        gpu: 2
+        gpu: 1
   - name: indexer
     uses: jinaai+docker://<username>/Indexer
     jcloud:
@@ -105,7 +105,7 @@ executors:
     uses: jinaai+docker://<username>/Executor1
     jcloud:
       resources:
-        gpu: 2
+        gpu: 1
 ```
 
 ### Spot vs on-demand instance
@@ -198,7 +198,7 @@ executors:
 On JCloud, demand-based autoscaling functionality is naturally offered thanks to the underlying Kubernetes architecture. This means that you can maintain [serverless](https://en.wikipedia.org/wiki/Serverless_computing) deployments in a cost-effective way with no headache of setting the [right number of replicas](https://docs.jina.ai/how-to/scale-out/#scale-out-your-executor) anymore!
 
 
-### Autoscaling with `jinahub+serveless://` 
+### Autoscaling with `jinaai+serverless://` 
 
 The easiest way to scale out your Executor is to use a Serverless Executor. This can be enabled by using `jinaai+serverless://` instead of `jinaai+docker://` in Executor's `uses`, such as:
 

@@ -4,10 +4,11 @@ from jina.parsers.orchestrate.runtimes.container import mixin_container_runtime_
 from jina.parsers.orchestrate.runtimes.head import mixin_head_parser
 
 
-def set_pod_parser(parser=None):
+def set_pod_parser(parser=None, default_name=None):
     """Set the parser for the Pod
 
     :param parser: an optional existing parser to build upon
+    :param default_name: default pod name
     :return: the parser
     """
     if not parser:
@@ -18,6 +19,7 @@ def set_pod_parser(parser=None):
     from hubble.executor.parsers.pull import mixin_hub_pull_options_parser
 
     from jina.parsers.orchestrate.base import mixin_scalable_deployment_parser
+    
     from jina.parsers.orchestrate.pod import mixin_pod_parser
     from jina.parsers.orchestrate.runtimes.container import (
         mixin_container_runtime_parser,
@@ -25,7 +27,7 @@ def set_pod_parser(parser=None):
     from jina.parsers.orchestrate.runtimes.remote import mixin_remote_runtime_parser
     from jina.parsers.orchestrate.runtimes.worker import mixin_worker_runtime_parser
 
-    mixin_scalable_deployment_parser(parser)
+    mixin_scalable_deployment_parser(parser, default_name=default_name)
     mixin_worker_runtime_parser(parser)
     mixin_container_runtime_parser(parser)
     mixin_remote_runtime_parser(parser)
@@ -47,7 +49,7 @@ def set_deployment_parser(parser=None):
 
         parser = set_base_parser()
 
-    set_pod_parser(parser)
+    set_pod_parser(parser, default_name='executor')
 
     from jina.parsers.orchestrate.deployment import mixin_base_deployment_parser
 
