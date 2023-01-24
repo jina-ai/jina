@@ -299,12 +299,16 @@ def get_fastapi_app(
             import strawberry
             from strawberry.fastapi import GraphQLRouter
 
-            from jina._docarray import DocumentArray
-            from jina._docarray.document.strawberry_type import (
-                JSONScalar,
-                StrawberryDocument,
-                StrawberryDocumentInput,
-            )
+            from jina._docarray import DocumentArray, docarray_v2
+
+            if not docarray_v2:
+                from docarray.document.strawberry_type import (
+                    JSONScalar,
+                    StrawberryDocument,
+                    StrawberryDocumentInput,
+                )
+            else:
+                raise NotImplementedError('GraphQL is not yet supported for DocArrayV2')
 
             async def get_docs_from_endpoint(
                 data, target_executor, parameters, exec_endpoint
