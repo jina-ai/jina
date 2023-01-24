@@ -3,9 +3,12 @@ import os
 
 import pytest
 from docarray import DocumentArray
+from pytest_kind import cluster
 
 from jina import Deployment
 from tests.k8s.conftest import shell_portforward
+
+cluster.KIND_VERSION = 'v0.11.1'
 
 
 async def create_executor_deployment_and_wait_ready(
