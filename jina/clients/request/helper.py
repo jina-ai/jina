@@ -44,7 +44,7 @@ def _new_doc_from_data(
         return (
             (Document(**data), DataInputType.DICT)
             if docarray_v2
-            else (Document.from_dict(**data), DataInputType.DICT)
+            else (Document.from_dict(data), DataInputType.DICT)
         )
     if data_type == DataInputType.AUTO or data_type == DataInputType.DOCUMENT:
         if isinstance(data, BaseDocument):
@@ -54,7 +54,7 @@ def _new_doc_from_data(
             return (
                 (Document(**data), DataInputType.DICT)
                 if docarray_v2
-                else (Document.from_dict(**data), DataInputType.DICT)
+                else (Document.from_dict(data), DataInputType.DICT)
             )
         else:
             d = Document(data)
