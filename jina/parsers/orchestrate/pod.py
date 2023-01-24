@@ -273,7 +273,7 @@ def mixin_stateful_parser(parser):
         '--pod-ports',
         type=str,
         nargs='+',
-        default=[],
+        default=None,
         action=CastToIntAction,
         help='When using StatefulExecutors, if they want to restart it is important to keep the RAFT cluster configuration ',
     )

@@ -1115,7 +1115,7 @@ class Deployment(PostMixin, BaseOrchestrator):
 
         for shard_id in range(shards):
             replica_args = []
-            pod_ports = self.args.pod_ports
+            pod_ports = self.args.pod_ports or []
             if len(pod_ports) > 0 and len(pod_ports) != replicas:
                 pod_ports = [random_port() for _ in range(replicas)]
                 self.logger.warning(
