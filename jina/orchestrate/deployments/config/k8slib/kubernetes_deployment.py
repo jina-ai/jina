@@ -37,6 +37,7 @@ def get_template_yamls(
     protocol: Optional[Union[str, List[str]]] = None,
     volumes: Optional[List[str]] = None,
     timeout_ready: int = 600000,
+    k8s_port: Optional[int] = GrpcConnectionPool.K8S_PORT,
 ) -> List[Dict]:
     """Get the yaml description of a service on Kubernetes
 
@@ -67,12 +68,13 @@ def get_template_yamls(
     :param timeout_ready: The timeout in milliseconds of a Pod waits for the runtime to be ready. This parameter will be
         reflected in Kubernetes in the startup configuration where the failureThreshold will be calculated depending on
         timeout_ready. Value -1 is not supported for kubernetes
+    :param k8s_port: Default kubernetes service port to be used
     :return: Return a dictionary with all the yaml configuration needed for a deployment
     """
     # we can always assume the ports are the same for all executors since they run on different k8s pods
     # port expose can be defined by the user
     if not port:
-        port = GrpcConnectionPool.K8S_PORT
+        port = k8s_port
 
     if not port_monitoring:
         port_monitoring = GrpcConnectionPool.K8S_PORT_MONITORING

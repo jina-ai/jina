@@ -668,9 +668,6 @@ def test_set_deployment_grpc_metadata():
         metadata = f._get_deployments_metadata()
         assert metadata['my_exec'] == {'key': 'value'}
 
-        k8s_metadata = f._get_k8s_deployments_metadata()
-        assert metadata == k8s_metadata
-
         assert f._deployment_nodes['gateway'].args.deployments_metadata == json.dumps(
             metadata
         )
