@@ -105,7 +105,7 @@ class WorkerRequestHandler:
                 func.fn.__name__: [] for func in self._executor.requests.values()
             }
             for endpoint, func in self._executor.requests.items():
-                func_endpoints[func.__name__].append(endpoint)
+                func_endpoints[func.fn.__name__].append(endpoint)
             for func_name, dbatch_config in dbatch_functions:
                 for endpoint in func_endpoints[func_name]:
                     if endpoint not in self._batchqueue_config:
