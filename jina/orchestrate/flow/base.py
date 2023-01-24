@@ -1751,6 +1751,7 @@ class Flow(
         super().__exit__(exc_type, exc_val, exc_tb)
         if self._client:
             self._client.teardown_instrumentation()
+            self._client = None
 
         # unset all envs to avoid any side-effect
         if self.args.env:
