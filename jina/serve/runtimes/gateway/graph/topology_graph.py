@@ -98,6 +98,14 @@ class TopologyGraph:
                     f' You can increase the allowed time by setting `timeout_send` in your Flow YAML `with` block or Flow `__init__()` method.'
                 )
                 raise err
+            elif err_code == grpc.StatusCode.NOT_FOUND:
+                err._details = (
+                    err.details()
+                    + f'\n|Gateway: Connection error with deployment `{self.name}` at address(es) {err.dest_addr}.'
+                    f' Connection with {err.dest_addr} succeeded, but `{self.name}` was not found.'
+                    f' Possibly `{self.name}` is behind an API gateway but not reachable.'
+                )
+                raise err
             else:
                 raise
 
