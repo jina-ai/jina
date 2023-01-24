@@ -365,6 +365,7 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install wheel
           pip install ".[all]" --no-cache-dir
+          pip install -U protobuf==4.21.12
           jina
           export JINA_LOG_LEVEL="ERROR"
       - name: Test
