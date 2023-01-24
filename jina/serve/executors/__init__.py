@@ -114,16 +114,21 @@ class _FunctionWithSchema(NamedTuple):
 
         docs_annotation = fn.__annotations__.get('docs', None)
         if type(docs_annotation) is str:
-            raise TypeError(
+            warnings.warn(
                 f'`docs` annotation must be a type hint, got {docs_annotation}'
-                ' instead, you should maybe remove the string annotation'
+                ' instead, you should maybe remove the string annotation. Default value'
+                'DocumentArray will be used instead.'
             )
+            docs_annotation = None
+
         return_annotation = fn.__annotations__.get('return', None)
         if type(return_annotation) is str:
-            raise TypeError(
-                f'`docs` annotation must be a type hint, got {docs_annotation}'
-                ' instead, you should maybe remove the string annotation'
+            warnings.warn(
+                f'`docs` annotation must be a type hint, got {return_annotation}'
+                ' instead, you should maybe remove the string annotation. Default value'
+                'DocumentArray will be used instead.'
             )
+            return_annotation = None
 
         input_type = docs_annotation or DocumentArray
         output_type = return_annotation or DocumentArray
