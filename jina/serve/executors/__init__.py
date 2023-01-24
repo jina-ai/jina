@@ -113,13 +113,13 @@ class _FunctionWithSchema(NamedTuple):
     def get_function_with_schema(fn: Callable) -> T:
 
         docs_annotation = fn.__annotations__.get('docs', None)
-        if type(docs_annotation) is not type:
+        if type(docs_annotation) is str:
             raise TypeError(
                 f'`docs` annotation must be a type hint, got {docs_annotation}'
                 ' instead, you should maybe remove the string annotation'
             )
         return_annotation = fn.__annotations__.get('return', None)
-        if type(return_annotation) is not type:
+        if type(return_annotation) is str:
             raise TypeError(
                 f'`docs` annotation must be a type hint, got {docs_annotation}'
                 ' instead, you should maybe remove the string annotation'

@@ -54,7 +54,7 @@ def test_input_output_type():
         @requests(
             on='/foo',
             input_type=DocumentArray[MyDoc],
-            ouput_type=DocumentArray[MyDoc],
+            output_type=DocumentArray[MyDoc],
         )
         def foo(self, docs, **kwargs):
             assert docs.__class__.document_type == MyDoc
