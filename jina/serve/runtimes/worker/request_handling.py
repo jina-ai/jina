@@ -102,7 +102,7 @@ class WorkerRequestHandler:
 
             # Process function configs
             func_endpoints: Dict[str, List[str]] = {
-                func.__name__: [] for func in self._executor.requests.values()
+                func.fn.__name__: [] for func in self._executor.requests.values()
             }
             for endpoint, func in self._executor.requests.items():
                 func_endpoints[func.__name__].append(endpoint)
