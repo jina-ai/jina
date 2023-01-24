@@ -523,6 +523,8 @@ class Flow(
         else:
             self.logger = JinaLogger(self.__class__.__name__, **self._common_kwargs)
 
+        self._client = None
+
     def _update_args(self, args, **kwargs):
         from jina.helper import ArgNamespace
         from jina.parsers.flow import set_flow_parser
@@ -1747,6 +1749,8 @@ class Flow(
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         super().__exit__(exc_type, exc_val, exc_tb)
+        if self._client:
+            self._client.teardown_instrumentation()
 
         # unset all envs to avoid any side-effect
         if self.args.env:
@@ -1991,13 +1995,16 @@ class Flow(
 
         .. # noqa: DAR201"""
 
-        kwargs = dict(
-            host=self.host,
-            port=self.port,
-            protocol=self.protocol,
-        )
-        kwargs.update(self._gateway_kwargs)
-        return Client(**kwargs)
+        if not self._client:
+            kwargs = dict(
+                host=self.host,
+                port=self.port,
+                protocol=self.protocol,
+            )
+            kwargs.update(self._gateway_kwargs)
+            self._client = Client(**kwargs)
+
+        return self._client
 
     @property
     def _mermaid_str(self):
