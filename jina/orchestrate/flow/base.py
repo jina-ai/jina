@@ -1896,7 +1896,9 @@ class Flow(
 
             # kick off spinner thread
             t_m = threading.Thread(
-                target=_polling_status, args=(progress, len(wait_for_ready_coros)), daemon=True
+                target=_polling_status,
+                args=(progress, len(wait_for_ready_coros)),
+                daemon=True,
             )
             threads.append(t_m)
 
