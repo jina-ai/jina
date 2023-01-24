@@ -212,6 +212,10 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
             context.set_details(
                 f'|Head: Connection to worker (Executor) pod at address {err.dest_addr} could be established, but timed out.'
             )
+        elif err_code == grpc.StatusCode.NOT_FOUND:
+            context.set_details(
+                f'|Head: Connection to worker (Executor) pod at address {err.dest_addr} could be established, but resource was not found.'
+            )
         context.set_code(err.code())
         self.logger.error(f'Error while getting responses from Pods: {err.details()}')
         if err.request_id:
