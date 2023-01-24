@@ -17,7 +17,7 @@ executors:
       resources:
         cpu: 2
         memory: 8G
-        gpu: 2
+        gpu: 1
   - name: indexer
     uses: jinaai+docker://<username>/Indexer
     jcloud:
@@ -105,7 +105,7 @@ executors:
     uses: jinaai+docker://<username>/Executor1
     jcloud:
       resources:
-        gpu: 2
+        gpu: 1
 ```
 
 ### Spot vs on-demand instance
