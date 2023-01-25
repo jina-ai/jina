@@ -12,7 +12,7 @@ from jina.excepts import BadClientInput, BadServerFlow, InternalNetworkError
 from jina.logging.profile import ProgressBar
 from jina.proto import jina_pb2, jina_pb2_grpc
 from jina.serve.helper import extract_trailing_metadata
-from jina.serve.networking import GrpcConnectionPool
+from jina.serve.networking.utils import get_default_grpc_options, get_grpc_channel
 from jina.serve.stream import RequestStreamer
 from jina.types.request.data import Request
 
@@ -35,7 +35,7 @@ class GRPCBaseClient(BaseClient):
         :return: boolean indicating the health/readiness of the Flow
         """
         try:
-            async with GrpcConnectionPool.get_grpc_channel(
+            async with get_grpc_channel(
                 f'{self.args.host}:{self.args.port}',
                 asyncio=True,
                 tls=self.args.tls,
@@ -184,7 +184,7 @@ class GRPCBaseClient(BaseClient):
             req_iter = self._get_requests(**kwargs)
             continue_on_error = self.continue_on_error
             # while loop with retries, check in which state the `iterator` remains after failure
-            options = GrpcConnectionPool.get_default_grpc_options()
+            options = get_default_grpc_options()
             if max_attempts > 1:
                 service_config_json = json.dumps(
                     {
@@ -219,7 +219,7 @@ class GRPCBaseClient(BaseClient):
                 metadata = metadata + (('__prefetch__', str(prefetch)),)
 
             with self._lock:
-                async with GrpcConnectionPool.get_grpc_channel(
+                async with get_grpc_channel(
                     f'{self.args.host}:{self.args.port}',
                     options=options,
                     asyncio=True,

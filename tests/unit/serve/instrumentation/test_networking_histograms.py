@@ -9,7 +9,7 @@ from opentelemetry.sdk.metrics.export import (
     Metric,
 )
 
-from jina.serve.networking import _NetworkingHistograms
+from jina.serve.networking._instrumentation import _NetworkingHistograms
 
 
 @pytest.fixture
