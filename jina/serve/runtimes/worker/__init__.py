@@ -123,7 +123,6 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
             interceptors=self.aio_tracing_server_interceptors(),
         )
 
-        print('adding JinaRPCServicer')
         jina_pb2_grpc.add_JinaRPCServicer_to_server(self, self._grpc_server)
 
         jina_pb2_grpc.add_JinaSingleDataRequestRPCServicer_to_server(
