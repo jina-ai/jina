@@ -1,9 +1,11 @@
 from dataclasses import dataclass
-from typing import Dict, Optional
+from typing import TYPE_CHECKING, Dict, Optional
 
 import grpc
 from opentelemetry.metrics import Histogram
-from prometheus_client import Summary
+
+if TYPE_CHECKING:
+    from prometheus_client import Summary
 
 
 @dataclass
