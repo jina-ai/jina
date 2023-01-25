@@ -405,8 +405,8 @@ jobs:
           pip install -U "git+https://github.com/docarray/docarray@feat-rewrite-v2#egg=docarray[common]"
           python -m pip install --upgrade pip
           python -m pip install wheel
-          pip install ".[all]" --no-cache-dir
-          pip install -U protobuf==4.21.12
+          pip install -U protobuf==3.20.3
+          pip install ".[common]" --no-cache-dir
           jina
           export JINA_LOG_LEVEL="ERROR"
       - name: Test
