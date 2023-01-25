@@ -34,7 +34,11 @@ class BaseOrchestrator(ExitStack, ABC):
 
 
         .. # noqa: DAR201"""
-        return get_internal_ip()
+        if getattr(self, '_internal_ip', None):
+            return self._internal_ip
+        else:
+            self._internal_ip = get_internal_ip()
+        return self._internal_ip
 
     @property
     def address_public(self) -> str:
@@ -42,4 +46,8 @@ class BaseOrchestrator(ExitStack, ABC):
 
 
         .. # noqa: DAR201"""
-        return get_public_ip()
+        if getattr(self, '_public_ip', None):
+            return self._public_ip
+        else:
+            self._public_ip = get_public_ip()
+        return self._public_ip
