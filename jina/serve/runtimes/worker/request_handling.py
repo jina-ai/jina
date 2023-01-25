@@ -271,7 +271,7 @@ class WorkerRequestHandler:
         new_executor = new_cls.__new__(new_cls)
         new_executor.__dict__ = self._executor.__dict__
         for k, v in requests.items():
-            requests[k] = getattr(new_executor.__class__, requests[k].__name__)
+            requests[k] = getattr(new_executor.__class__, requests[k].fn.__name__)
         self._executor = new_executor
         self._executor.requests.clear()
         requests = {k: v.__name__ for k, v in requests.items()}
