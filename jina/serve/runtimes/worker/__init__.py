@@ -123,6 +123,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
             interceptors=self.aio_tracing_server_interceptors(),
         )
 
+        print('adding JinaRPCServicer')
         jina_pb2_grpc.add_JinaRPCServicer_to_server(self, self._grpc_server)
 
         jina_pb2_grpc.add_JinaSingleDataRequestRPCServicer_to_server(
@@ -355,6 +356,6 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         :yield: responses to the request
         """
         async for request in request_iterator:
-            yield self.process_data([request], context)
+            yield await self.process_data([request], context)
 
     Call = stream
