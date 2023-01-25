@@ -250,6 +250,45 @@ Below are the defaults and requirements for the configurations:
 
 After JCloud deployment using the autoscaling configuration, the Flow serving part is just the same; the only difference you may notice is it takes a few extra seconds to handle the initial requests since it needs to scale the deployments behind the scenes. Let JCloud handle the scaling from now on, and you should only worry about the code!
 
+## Configure Availability Tolerance
+
+In case of any unlikely event that would cause the service disruption of executors, JCloud allows users to specify a tolerance level in terms of number of replicas.
+
+The JCloud parameters minAvailable and maxUnavailable ensures the absense of some replicas of an executor to be with in the limits of toleration.
+
+| Name           | Default |                                     Allowed                                     | Description                                                      |
+|:---------------|:-------:|:-------------------------------------------------------------------------------:|:-----------------------------------------------------------------|
+ | minAvailable   |   NA    | lesser than [replicas](https://docs.jina.ai/concepts/flow/scale-out/#scale-out) | the minimum number of replicas available during the disruption   |
+ | maxUnavailable |   NA    | lesser than [replicas](https://docs.jina.ai/concepts/flow/scale-out/#scale-out) | the maximum number of replicas unavailable during the disruption |
+
+```{code-block} yaml
+---
+emphasize-lines: 5-6
+---
+jtype: Flow
+executors:
+  - uses: jinahub+docker://Sentencizer
+    replicas: 5
+    jcloud:
+      minAvailable: 2
+```
+> In case of unlike disruption, it is ensured that at least 2 replicas would still be available. 3 replicas may be unavailable.
+
+```{code-block} yaml
+---
+emphasize-lines: 5-6
+---
+jtype: Flow
+executors:
+  - uses: jinahub+docker://Sentencizer
+    replicas: 5
+    jcloud:
+      maxUnavailable: 2
+```
+> In case of unlike disruption, it is ensured that at maximum 2 replicas would not be available. At least 3 replicas would still be available.
+
+
+
 
 ## Configure gateway
 
