@@ -8,9 +8,8 @@ from threading import Event
 import grpc
 import pytest
 import requests as req
-from jina import Document
 
-from jina import DocumentArray, Executor, requests
+from jina import Client, Document, DocumentArray, Executor, requests
 from jina.clients.request import request_generator
 from jina.proto import jina_pb2, jina_pb2_grpc
 from jina.serve.networking import GrpcConnectionPool
@@ -20,9 +19,16 @@ from jina.serve.runtimes.worker.request_handling import WorkerRequestHandler
 from tests.helper import _generate_pod_args
 
 
+def _gen_test_data_message():
+    for _ in range(3):
+        yield _create_test_data_message()
+
+
 @pytest.mark.slow
 @pytest.mark.timeout(5)
-def test_worker_runtime():
+@pytest.mark.parametrize('stream', [True, False])
+@pytest.mark.asyncio
+async def test_worker_runtime(stream):
     args = _generate_pod_args()
 
     cancel_event = multiprocessing.Event()
@@ -49,13 +55,19 @@ def test_worker_runtime():
         target,
         options=GrpcConnectionPool.get_default_grpc_options(),
     ) as channel:
-        stub = jina_pb2_grpc.JinaSingleDataRequestRPCStub(channel)
-        response, call = stub.process_single_data.with_call(_create_test_data_message())
+        if stream:
+            stub = jina_pb2_grpc.JinaRPCStub(channel)
+            for resp in stub.Call(request_generator('/', DocumentArray.empty(3))):
+                assert resp
+        else:
+            stub = jina_pb2_grpc.JinaSingleDataRequestRPCStub(channel)
+            response, call = stub.process_single_data.with_call(
+                _create_test_data_message()
+            )
+            assert response
 
     cancel_event.set()
     runtime_thread.join()
-
-    assert response
 
     assert not AsyncNewLoopRuntime.is_ready(f'{args.host}:{args.port}')
 
