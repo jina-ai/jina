@@ -406,7 +406,8 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install wheel
           pip install -U protobuf==3.20.3
-          pip install ".[common]" --no-cache-dir
+          pip install ".[common,devel]" --no-cache-dir
+          pip install pytest
           jina
           export JINA_LOG_LEVEL="ERROR"
       - name: Test
