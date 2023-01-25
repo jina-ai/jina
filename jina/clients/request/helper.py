@@ -69,6 +69,9 @@ def _new_doc_from_data(
                 else:
                     raise
 
+    elif data_type == DataInputType.CONTENT:
+        return _build_doc_from_content()
+
 
 def _add_docs(req: DataRequest, batch, data_type: DataInputType) -> None:
     da = DocumentArray([])
