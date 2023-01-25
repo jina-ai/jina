@@ -166,8 +166,8 @@ def deprecated_method(new_function_name):
 
 
 def retry(
-    num_retry: int = 3,
-    message: str = 'Calling {func_name} failed, retry attempt {attempt}/{num_retry}. Error: {error!r}',
+        num_retry: int = 3,
+        message: str = 'Calling {func_name} failed, retry attempt {attempt}/{num_retry}. Error: {error!r}',
 ):
     """
     Retry calling a function again in case of an error.
@@ -211,18 +211,18 @@ def get_readable_size(num_bytes: Union[int, float]) -> str:
     num_bytes = int(num_bytes)
     if num_bytes < 1024:
         return f'{num_bytes} Bytes'
-    elif num_bytes < 1024**2:
+    elif num_bytes < 1024 ** 2:
         return f'{num_bytes / 1024:.1f} KB'
-    elif num_bytes < 1024**3:
+    elif num_bytes < 1024 ** 3:
         return f'{num_bytes / (1024 ** 2):.1f} MB'
     else:
         return f'{num_bytes / (1024 ** 3):.1f} GB'
 
 
 def batch_iterator(
-    data: Iterable[Any],
-    batch_size: int,
-    axis: int = 0,
+        data: Iterable[Any],
+        batch_size: int,
+        axis: int = 0,
 ) -> Iterator[Any]:
     """
     Get an iterator of batches of data.
@@ -261,7 +261,7 @@ def batch_iterator(
             yield data
             return
         for _ in range(0, len(data), batch_size):
-            yield data[_ : _ + batch_size]
+            yield data[_: _ + batch_size]
     elif isinstance(data, Iterable):
         # as iterator, there is no way to know the length of it
         iterator = iter(data)
@@ -566,7 +566,7 @@ def expand_env_var(v: str) -> Optional[Union[bool, int, str, list, float]]:
 
 
 def expand_dict(
-    d: Dict, expand_fn=expand_env_var, resolve_cycle_ref=True
+        d: Dict, expand_fn=expand_env_var, resolve_cycle_ref=True
 ) -> Dict[str, Any]:
     """
     Expand variables from YAML file.
@@ -668,10 +668,10 @@ if __windows__:
 
 
 def colored(
-    text: str,
-    color: Optional[str] = None,
-    on_color: Optional[str] = None,
-    attrs: Optional[Union[str, list]] = None,
+        text: str,
+        color: Optional[str] = None,
+        on_color: Optional[str] = None,
+        attrs: Optional[Union[str, list]] = None,
 ) -> str:
     """
     Give the text with color.
@@ -728,10 +728,10 @@ def colored(
 
 
 def colored_rich(
-    text: str,
-    color: Optional[str] = None,
-    on_color: Optional[str] = None,
-    attrs: Optional[Union[str, list]] = None,
+        text: str,
+        color: Optional[str] = None,
+        on_color: Optional[str] = None,
+        attrs: Optional[Union[str, list]] = None,
 ) -> str:
     """
     Give the text with color. You should only use it when printing with rich print. Othersiwe please see the colored
@@ -827,11 +827,11 @@ class ArgNamespace:
 
     @staticmethod
     def kwargs2namespace(
-        kwargs: Dict[str, Union[str, int, bool]],
-        parser: ArgumentParser,
-        warn_unknown: bool = False,
-        fallback_parsers: Optional[List[ArgumentParser]] = None,
-        positional_args: Optional[Tuple[str, ...]] = None,
+            kwargs: Dict[str, Union[str, int, bool]],
+            parser: ArgumentParser,
+            warn_unknown: bool = False,
+            fallback_parsers: Optional[List[ArgumentParser]] = None,
+            positional_args: Optional[Tuple[str, ...]] = None,
     ) -> Namespace:
         """
         Convert dict to a namespace.
@@ -865,7 +865,7 @@ class ArgNamespace:
 
     @staticmethod
     def get_non_defaults_args(
-        args: Namespace, parser: ArgumentParser, taboo: Optional[Set[str]] = None
+            args: Namespace, parser: ArgumentParser, taboo: Optional[Set[str]] = None
     ) -> Dict:
         """
         Get non-default args in a dict.
@@ -886,7 +886,7 @@ class ArgNamespace:
 
     @staticmethod
     def flatten_to_dict(
-        args: Union[Dict[str, 'Namespace'], 'Namespace']
+            args: Union[Dict[str, 'Namespace'], 'Namespace']
     ) -> Dict[str, Any]:
         """Convert argparse.Namespace to dict to be uploaded via REST.
 
@@ -981,7 +981,7 @@ def get_full_version() -> Optional[Tuple[Dict, Dict]]:
             'uptime': __uptime__,
             'ci-vendor': get_ci_vendor() or __unset_msg__,
             'internal': 'jina-ai'
-            in os.getenv('GITHUB_ACTION_REPOSITORY', __unset_msg__),
+                        in os.getenv('GITHUB_ACTION_REPOSITORY', __unset_msg__),
         }
 
         env_info = {k: os.getenv(k, __unset_msg__) for k in __jina_env__}
@@ -1219,14 +1219,12 @@ def get_public_ip(timeout: float = 0.3):
     """
     import urllib.request
 
-    results = []
-
     def _get_ip(url):
         try:
             req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
             with urllib.request.urlopen(req, timeout=timeout) as fp:
                 _ip = fp.read().decode().strip()
-                results.append(_ip)
+                return _ip
 
         except:
             pass  # intentionally ignored, public ip is not showed
@@ -1237,17 +1235,8 @@ def get_public_ip(timeout: float = 0.3):
         'https://checkip.amazonaws.com/',
     ]
 
-    threads = []
-
     for idx, ip in enumerate(ip_server_list):
-        t = threading.Thread(target=_get_ip, args=(ip,))
-        threads.append(t)
-        t.start()
-
-    for t in threads:
-        t.join(timeout)
-
-    for r in results:
+        r = _get_ip(ip)
         if r:
             return r
 
@@ -1653,7 +1642,7 @@ def is_port_free(host: Union[str, List[str]], port: Union[int, List[int]]) -> bo
             return _single_port_free(host, port)
         else:
             return all([_single_port_free(_h, port) for _h in host])
-    
+
 
 def send_telemetry_event(event: str, obj: Any, **kwargs) -> None:
     """Sends in a thread a request with telemetry for a given event
@@ -1686,4 +1675,3 @@ def send_telemetry_event(event: str, obj: Any, **kwargs) -> None:
             pass
 
     threading.Thread(target=_telemetry, daemon=True).start()
-
