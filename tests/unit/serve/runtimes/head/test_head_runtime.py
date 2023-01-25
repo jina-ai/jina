@@ -51,8 +51,9 @@ async def test_regular_data_case(stream):
     _destroy_runtime(args, cancel_event, runtime_thread)
 
 
+@pytest.mark.parametrize('stream', [True, False])
 @pytest.mark.parametrize('disable_reduce', [False, True])
-def test_message_merging(disable_reduce):
+def test_message_merging(disable_reduce, stream):
     if not disable_reduce:
         args = _generate_pod_args()
     else:
@@ -240,6 +241,7 @@ async def test_head_runtime_reflection():
         service_name in service_names
         for service_name in [
             'jina.JinaDataRequestRPC',
+            'jina.JinaRPC',
             'jina.JinaSingleDataRequestRPC',
         ]
     )

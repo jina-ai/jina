@@ -295,6 +295,7 @@ async def test_worker_runtime_reflection():
     assert all(
         service_name in service_names
         for service_name in [
+            'jina.JinaRPC',
             'jina.JinaDataRequestRPC',
             'jina.JinaSingleDataRequestRPC',
         ]
