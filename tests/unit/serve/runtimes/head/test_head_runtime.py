@@ -7,8 +7,8 @@ from typing import List
 
 import grpc
 import pytest
-
 from docarray import Document, DocumentArray
+
 from jina.clients.request import request_generator
 from jina.enums import PollingType
 from jina.proto import jina_pb2_grpc
@@ -20,7 +20,9 @@ from jina.types.request.data import DataRequest
 from tests.helper import _generate_pod_args
 
 
-def test_regular_data_case():
+@pytest.mark.parametrize('stream', [True, False])
+@pytest.mark.asyncio
+async def test_regular_data_case(stream):
     args = _generate_pod_args()
     args.polling = PollingType.ANY
     connection_list_dict = {0: [f'fake_ip:8080']}
@@ -31,19 +33,27 @@ def test_regular_data_case():
         f'{args.host}:{args.port}',
         options=GrpcConnectionPool.get_default_grpc_options(),
     ) as channel:
-        stub = jina_pb2_grpc.JinaSingleDataRequestRPCStub(channel)
-        response, call = stub.process_single_data.with_call(_create_test_data_message())
-
-    assert response
-    assert 'is-error' in dict(call.trailing_metadata())
-    assert len(response.docs) == 1
+        if stream:
+            stub = jina_pb2_grpc.JinaRPCStub(channel)
+            for resp in stub.Call(request_generator('/', DocumentArray.empty(3))):
+                assert resp
+                assert len(resp.docs) == 3
+        else:
+            stub = jina_pb2_grpc.JinaSingleDataRequestRPCStub(channel)
+            response, call = stub.process_single_data.with_call(
+                _create_test_data_message()
+            )
+            assert response
+            assert 'is-error' in dict(call.trailing_metadata())
+            assert len(response.docs) == 1
     assert not handle_queue.empty()
 
     _destroy_runtime(args, cancel_event, runtime_thread)
 
 
+@pytest.mark.parametrize('stream', [True, False])
 @pytest.mark.parametrize('disable_reduce', [False, True])
-def test_message_merging(disable_reduce):
+def test_message_merging(disable_reduce, stream):
     if not disable_reduce:
         args = _generate_pod_args()
     else:
@@ -231,6 +241,7 @@ async def test_head_runtime_reflection():
         service_name in service_names
         for service_name in [
             'jina.JinaDataRequestRPC',
+            'jina.JinaRPC',
             'jina.JinaSingleDataRequestRPC',
         ]
     )
