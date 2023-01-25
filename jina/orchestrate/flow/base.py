@@ -523,6 +523,8 @@ class Flow(
         else:
             self.logger = JinaLogger(self.__class__.__name__, **self._common_kwargs)
 
+        self._client = None
+
     def _update_args(self, args, **kwargs):
         from jina.helper import ArgNamespace
         from jina.parsers.flow import set_flow_parser
@@ -726,15 +728,6 @@ class Flow(
 
         return graph_dict if graph_dict else None
 
-    def _get_k8s_deployments_metadata(self) -> Dict[str, List[str]]:
-        graph_dict = {}
-
-        for node, v in self._deployment_nodes.items():
-            if v.grpc_metadata:
-                graph_dict[node] = v.grpc_metadata
-
-        return graph_dict or None
-
     def _get_docker_compose_deployments_addresses(self) -> Dict[str, List[str]]:
         graph_dict = {}
         from jina.orchestrate.deployments.config.docker_compose import port
@@ -878,7 +871,7 @@ class Flow(
         metrics_exporter_host: Optional[str] = None,
         metrics_exporter_port: Optional[int] = None,
         monitoring: Optional[bool] = False,
-        name: Optional[str] = None,
+        name: Optional[str] = 'executor',
         native: Optional[bool] = False,
         no_reduce: Optional[bool] = False,
         output_array_type: Optional[str] = None,
@@ -1747,6 +1740,9 @@ class Flow(
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         super().__exit__(exc_type, exc_val, exc_tb)
+        if self._client:
+            self._client.teardown_instrumentation()
+            self._client = None
 
         # unset all envs to avoid any side-effect
         if self.args.env:
@@ -1835,7 +1831,10 @@ class Flow(
             except Exception as ex:
                 results[_deployment_name] = repr(ex)
 
-        def _polling_status(progress, task):
+        def _polling_status(progress, num_tasks_to_wait):
+            task = progress.add_task(
+                'wait', total=num_tasks_to_wait, pending_str='', start=False
+            )
 
             progress.update(task, total=len(results))
             progress.start_task(task)
@@ -1878,10 +1877,6 @@ class Flow(
             transient=True,
         )
         with progress:
-            task = progress.add_task(
-                'wait', total=len(wait_for_ready_coros), pending_str='', start=False
-            )
-
             # kick off ip getter thread, address, http, graphq
             all_panels = []
 
@@ -1892,7 +1887,9 @@ class Flow(
 
             # kick off spinner thread
             t_m = threading.Thread(
-                target=_polling_status, args=(progress, task), daemon=True
+                target=_polling_status,
+                args=(progress, len(wait_for_ready_coros)),
+                daemon=True,
             )
             threads.append(t_m)
 
@@ -1991,13 +1988,16 @@ class Flow(
 
         .. # noqa: DAR201"""
 
-        kwargs = dict(
-            host=self.host,
-            port=self.port,
-            protocol=self.protocol,
-        )
-        kwargs.update(self._gateway_kwargs)
-        return Client(**kwargs)
+        if not self._client:
+            kwargs = dict(
+                host=self.host,
+                port=self.port,
+                protocol=self.protocol,
+            )
+            kwargs.update(self._gateway_kwargs)
+            self._client = Client(**kwargs)
+
+        return self._client
 
     @property
     def _mermaid_str(self):
@@ -2720,48 +2720,21 @@ class Flow(
         if self._build_level.value < FlowBuildLevel.GRAPH.value:
             self.build(copy_flow=False)
 
-        from jina.orchestrate.deployments.config.k8s import K8sDeploymentConfig
-
         k8s_namespace = k8s_namespace or self.args.name or 'default'
 
         for node, v in self._deployment_nodes.items():
-            if v.external or (node == 'gateway' and not include_gateway):
+
+            if node == 'gateway' and not include_gateway:
                 continue
-            if node == 'gateway' and v.args.default_port:
-                from jina.serve.networking import GrpcConnectionPool
-
-                v.args.port = GrpcConnectionPool.K8S_PORT
-                v.first_pod_args.port = GrpcConnectionPool.K8S_PORT
-
-                v.args.port_monitoring = GrpcConnectionPool.K8S_PORT_MONITORING
-                v.first_pod_args.port_monitoring = (
-                    GrpcConnectionPool.K8S_PORT_MONITORING
-                )
-
-                v.args.default_port = False
 
             deployment_base = os.path.join(output_base_path, node)
-            k8s_deployment = K8sDeploymentConfig(
-                args=v.args,
+            v._to_kubernetes_yaml(
+                deployment_base,
                 k8s_namespace=k8s_namespace,
                 k8s_deployments_addresses=self._get_k8s_deployments_addresses(
                     k8s_namespace
-                )
-                if node == 'gateway'
-                else None,
-                k8s_deployments_metadata=self._get_k8s_deployments_metadata()
-                if node == 'gateway'
-                else None,
+                ),
             )
-            configs = k8s_deployment.to_kubernetes_yaml()
-            for name, k8s_objects in configs:
-                filename = os.path.join(deployment_base, f'{name}.yml')
-                os.makedirs(deployment_base, exist_ok=True)
-                with open(filename, 'w+') as fp:
-                    for i, k8s_object in enumerate(k8s_objects):
-                        yaml.dump(k8s_object, fp)
-                        if i < len(k8s_objects) - 1:
-                            fp.write('---\n')
 
         self.logger.info(
             f'K8s yaml files have been created under [b]{output_base_path}[/]. You can use it by running [b]kubectl apply -R -f {output_base_path}[/]'

@@ -194,7 +194,10 @@ def get_fastapi_app(
             except InternalNetworkError as err:
                 import grpc
 
-                if err.code() == grpc.StatusCode.UNAVAILABLE:
+                if (
+                    err.code() == grpc.StatusCode.UNAVAILABLE
+                    or err.code() == grpc.StatusCode.NOT_FOUND
+                ):
                     response.status_code = status.HTTP_503_SERVICE_UNAVAILABLE
                 elif err.code() == grpc.StatusCode.DEADLINE_EXCEEDED:
                     response.status_code = status.HTTP_504_GATEWAY_TIMEOUT
