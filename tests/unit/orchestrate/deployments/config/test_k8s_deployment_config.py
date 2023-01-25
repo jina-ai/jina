@@ -291,14 +291,19 @@ def test_k8s_yaml_gateway(deployments_addresses, custom_gateway, port, protocol)
         os.environ['JINA_GATEWAY_IMAGE'] = custom_gateway
     elif 'JINA_GATEWAY_IMAGE' in os.environ:
         del os.environ['JINA_GATEWAY_IMAGE']
-    args_list = ['--env', 'ENV_VAR:ENV_VALUE', '--port', *port]
+    args_list = [
+        '--env',
+        'ENV_VAR:ENV_VALUE',
+        '--port',
+        *port,
+        '--deployments-addresses',
+        json.dumps(deployments_addresses),
+    ]
     if protocol:
         args_list.extend(['--protocol', *protocol])
     args = set_gateway_parser().parse_args(args_list)  # envs are
     # ignored for gateway
-    deployment_config = K8sDeploymentConfig(
-        args, 'default-namespace', deployments_addresses
-    )
+    deployment_config = K8sDeploymentConfig(args, 'default-namespace')
     yaml_configs = deployment_config.to_kubernetes_yaml()
     assert len(yaml_configs) == 1
     name, configs = yaml_configs[0]
@@ -439,6 +444,7 @@ def test_k8s_yaml_regular_deployment(
         image_required=True,
         rebuild_image=True,
         *,
+        prefer_platform=None,
         secret=None,
         force=False,
     ):

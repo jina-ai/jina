@@ -4,8 +4,8 @@ import argparse
 from dataclasses import dataclass
 from typing import Dict
 
-from jina.helper import random_port
 from jina.enums import PodRoleType
+from jina.helper import random_port
 from jina.parsers.helper import (
     _SHOW_ALL_ARGS,
     CastToIntAction,
@@ -51,7 +51,7 @@ def mixin_pod_parser(parser, pod_type: str = 'worker'):
         type=int,
         default=600000,
         help='The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting '
-             'forever',
+        'forever',
     )
 
     gp.add_argument(
@@ -60,6 +60,14 @@ def mixin_pod_parser(parser, pod_type: str = 'worker'):
         metavar='KEY: VALUE',
         nargs='*',
         help='The map of environment variables that are available inside runtime',
+    )
+
+    gp.add_argument(
+        '--env-from-secret',
+        action=KVAppendAction,
+        metavar='KEY: VALUE',
+        nargs='*',
+        help='The map of environment variables that are read from kubernetes cluster secrets',
     )
 
     # hidden CLI used for internal only
@@ -88,7 +96,7 @@ def mixin_pod_parser(parser, pod_type: str = 'worker'):
         action='store_true',
         default=False,
         help='If set, starting a Pod/Deployment does not block the thread/process. It then relies on '
-             '`wait_start_success` at outer function for the postpone check.'
+        '`wait_start_success` at outer function for the postpone check.'
         if _SHOW_ALL_ARGS
         else argparse.SUPPRESS,
     )
@@ -98,7 +106,7 @@ def mixin_pod_parser(parser, pod_type: str = 'worker'):
         action='store_true',
         default=False,
         help='If set, the current Pod/Deployment can not be further chained, '
-             'and the next `.add()` will chain after the last Pod/Deployment not this current one.',
+        'and the next `.add()` will chain after the last Pod/Deployment not this current one.',
     )
     if pod_type != 'gateway':
         gp.add_argument(
@@ -114,7 +122,7 @@ def mixin_pod_parser(parser, pod_type: str = 'worker'):
             '--install-requirements',
             action='store_true',
             default=False,
-            help='If set, try to install `requirements.txt` from the local Executor if exists in the Executor folder. If using Hub, install `requirements.txt` in the Hub Executor bundle to local.'
+            help='If set, try to install `requirements.txt` from the local Executor if exists in the Executor folder. If using Hub, install `requirements.txt` in the Hub Executor bundle to local.',
         )
     else:
         gp.add_argument(
@@ -195,7 +203,7 @@ def mixin_pod_runtime_args_parser(arg_group, pod_type='worker'):
         action='store_true',
         default=False,
         help='If set, the sdk implementation of the OpenTelemetry tracer will be available and will be enabled for automatic tracing of requests and customer span creation. '
-             'Otherwise a no-op implementation will be provided.',
+        'Otherwise a no-op implementation will be provided.',
     )
 
     arg_group.add_argument(
@@ -217,7 +225,7 @@ def mixin_pod_runtime_args_parser(arg_group, pod_type='worker'):
         action='store_true',
         default=False,
         help='If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. '
-             'Otherwise a no-op implementation will be provided.',
+        'Otherwise a no-op implementation will be provided.',
     )
 
     arg_group.add_argument(
@@ -232,19 +240,4 @@ def mixin_pod_runtime_args_parser(arg_group, pod_type='worker'):
         type=int,
         default=None,
         help='If tracing is enabled, this port will be used to configure the metrics exporter agent.',
-    )
-
-
-def mixin_hub_pull_options_parser(parser):
-    """Add the arguments for hub pull options to the parser
-    :param parser: the parser configure
-    """
-
-    gp = add_arg_group(parser, title='Pull')
-    gp.add_argument(
-        '--force-update',
-        '--force',
-        action='store_true',
-        default=False,
-        help='If set, always pull the latest Hub Executor bundle even it exists on local',
     )

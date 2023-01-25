@@ -46,7 +46,6 @@ def _cli_to_schema(
             pv['type'] = 'Union[str, Type[\'BaseExecutor\'], dict]'
         if p['name'] == 'protocol':
             pv['type'] = 'Union[str, List[str]]'
-            print(_schema)
 
         pv['description'] = pv['description'].replace('\n', '\n' + ' ' * 10)
 
@@ -302,6 +301,16 @@ entries = [
         overload_fn='serve',
         class_method=True,
         regex_tag='executor_serve',
+    ),
+    dict(
+        cli_entrypoint='deployment',
+        doc_str_title='Create a Deployment to serve or deploy and Executor or Gateway',
+        doc_str_return='None',
+        return_type=None,
+        filepath='../jina/orchestrate/deployments/__init__.py',
+        overload_fn='__init__',
+        class_method=True,
+        regex_tag='deployment',
     ),
 ]
 

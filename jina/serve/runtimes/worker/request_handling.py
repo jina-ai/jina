@@ -414,10 +414,7 @@ class WorkerRequestHandler:
             )
             await task
         else:
-            docs = WorkerRequestHandler.get_docs_from_request(
-                requests,
-                field='docs',
-            )
+            docs = WorkerRequestHandler.get_docs_from_request(requests)
 
             docs_matrix, docs_map = WorkerRequestHandler._get_docs_matrix_from_request(
                 requests
@@ -531,26 +528,20 @@ class WorkerRequestHandler:
     @staticmethod
     def get_docs_from_request(
         requests: List['DataRequest'],
-        field: str,
     ) -> 'DocumentArray':
         """
         Gets a field from the message
 
-        :param requests: requests to get the field from
-        :param field: field name to access
+        :param requests: requests to get the docs from
 
         :returns: DocumentArray extracted from the field from all messages
         """
         if len(requests) > 1:
             result = DocumentArray(
-                [
-                    d
-                    for r in reversed([request for request in requests])
-                    for d in getattr(r, field)
-                ]
+                d for r in requests for d in getattr(r, 'docs')
             )
         else:
-            result = getattr(requests[0], field)
+            result = getattr(requests[0], 'docs')
 
         return result
 

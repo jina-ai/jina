@@ -24,7 +24,7 @@ However, you can always explicitly configure the Gateway in Python using the
 
 ## Set protocol in Python
 
-You can use three different protocols to serve the `Flow`: gRPC, HTTP and Websocket.
+You can use three different protocols to serve the `Flow`: gRPC, HTTP and WebSocket.
 
 ````{tab} gRPC
 
@@ -192,7 +192,7 @@ In case you want to serve a Flow using multiple protocols, make sure to specify 
 ## Enable TLS for client traffics
 
 You can enable TLS encryption between your Gateway and Clients, for any of the protocols supported by Jina (HTTP, gRPC,
-and Websocket).
+and WebSocket).
 
 ````{admonition} Caution
 :class: caution
@@ -318,9 +318,9 @@ The error-free output below signifies a correctly running Gateway:
 You can also use it to check Executor status, as Executor's communication protocol is gRPC.
 ```
 
-### Use HTTP/Websocket
+### Use HTTP/WebSocket
 
-When using HTTP or Websocket as the Gateway protocol, you can use curl to target the `/status` endpoint and get the Jina
+When using HTTP or WebSocket as the Gateway protocol, you can use curl to target the `/status` endpoint and get the Jina
 info.
 
 ```shell

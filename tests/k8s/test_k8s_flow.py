@@ -191,6 +191,32 @@ def k8s_flow_configmap(docker_images, jina_k3_env):
 
 
 @pytest.fixture
+def k8s_flow_env_from_secret(docker_images, jina_k3_env):
+    flow = Flow(name='k8s-flow-env-from-secret', port=9090, protocol='http').add(
+        name='test_executor',
+        uses=f'docker://{docker_images[0]}',
+        env_from_secret={
+            'SECRET_USERNAME': {'name': 'mysecret', 'key': 'username'},
+            'SECRET_PASSWORD': {'name': 'mysecret', 'key': 'password'},
+        },
+    )
+    return flow
+
+
+@pytest.fixture
+def k8s_dummy_secret():
+    from kubernetes import client
+
+    secret = client.V1Secret(
+        api_version='v1',
+        kind='Secret',
+        metadata=client.V1ObjectMeta(name='mysecret'),
+        string_data={'username': 'jina', 'password': '123456'},
+    )
+    return secret
+
+
+@pytest.fixture
 def k8s_flow_gpu(docker_images):
     flow = Flow(name='k8s-flow-gpu', port=9090, protocol='http').add(
         name='test_executor',
@@ -587,6 +613,65 @@ async def test_flow_with_configmap(k8s_flow_configmap, docker_images, tmpdir, lo
                     text=True,
                 ).stdout.strip("\n")
                 print(out)
+        raise exc
+
+
+@pytest.mark.timeout(3600)
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    'docker_images', [['test-executor', 'jinaai/jina']], indirect=True
+)
+async def test_flow_with_env_from_secret(
+    k8s_flow_env_from_secret, k8s_dummy_secret, docker_images, tmpdir, logger
+):
+    from kubernetes import client
+
+    namespace = f'test-flow-with-env-from-secret'.lower()
+    api_client = client.ApiClient()
+    core_client = client.CoreV1Api(api_client=api_client)
+    app_client = client.AppsV1Api(api_client=api_client)
+
+    try:
+        dump_path = os.path.join(str(tmpdir), 'test-flow-with-env-from-secret')
+        k8s_flow_env_from_secret.to_kubernetes_yaml(dump_path, k8s_namespace=namespace)
+
+        # create namespace
+        core_client.create_namespace(
+            client.V1Namespace(metadata=client.V1ObjectMeta(name=namespace))
+        )
+
+        # create secret
+        core_client.create_namespaced_secret(namespace=namespace, body=k8s_dummy_secret)
+
+        await create_all_flow_deployments_and_wait_ready(
+            dump_path,
+            namespace=namespace,
+            api_client=api_client,
+            app_client=app_client,
+            core_client=core_client,
+            deployment_replicas_expected={
+                'gateway': 1,
+                'test-executor': 1,
+            },
+            logger=logger,
+        )
+
+        # get username and password from pod env
+        resp = await run_test(
+            flow=k8s_flow_env_from_secret,
+            namespace=namespace,
+            core_client=core_client,
+            endpoint='/env',
+        )
+
+        docs = resp[0].docs
+        assert len(docs) == 10
+        for doc in docs:
+            assert doc.tags['SECRET_USERNAME'] == 'jina'
+            assert doc.tags['SECRET_PASSWORD'] == '123456'
+
+    except Exception as exc:
+        logger.error(f' Exception raised {exc}')
         raise exc
 
 
@@ -1554,4 +1639,56 @@ async def test_really_slow_executor_liveness_probe_works(docker_images, tmpdir, 
                     text=True,
                 ).stdout.strip("\n")
                 print(out)
+        raise exc
+
+
+@pytest.mark.asyncio
+@pytest.mark.timeout(3600)
+@pytest.mark.parametrize(
+    'docker_images',
+    [['slow-load-executor']],
+    indirect=True,
+)
+async def test_flow_slow_load_executor(logger, docker_images, tmpdir, k8s_cluster):
+    from kubernetes import client
+
+    api_client = client.ApiClient()
+    core_client = client.CoreV1Api(api_client=api_client)
+    app_client = client.AppsV1Api(api_client=api_client)
+    try:
+        port = 8080
+        flow = Flow().add(
+            name='slow_load_executor',
+            uses=f'docker://{docker_images[0]}',
+            timeout_ready=65000,
+        )
+
+        dump_path = os.path.join(str(tmpdir), 'k8s-slow-load-executor')
+        namespace = 'slow-load-executor'
+        flow.to_kubernetes_yaml(dump_path, k8s_namespace=namespace)
+
+        await create_all_flow_deployments_and_wait_ready(
+            dump_path,
+            namespace=namespace,
+            api_client=api_client,
+            app_client=app_client,
+            core_client=core_client,
+            deployment_replicas_expected={'gateway': 1, 'slow-load-executor': 1},
+            logger=logger,
+        )
+
+        executor_pod_name = (
+            core_client.list_namespaced_pod(
+                namespace=namespace, label_selector='app=slow-load-executor'
+            )
+            .items[0]
+            .metadata.name
+        )
+        with shell_portforward(
+            k8s_cluster._cluster.kubectl_path, executor_pod_name, port, port, namespace
+        ):
+            assert AsyncNewLoopRuntime.is_ready(f'localhost:{port}')
+
+    except Exception as exc:
+        logger.error(f' Exception raised {exc}')
         raise exc

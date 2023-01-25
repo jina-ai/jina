@@ -17,7 +17,7 @@ executors:
       resources:
         cpu: 2
         memory: 8G
-        gpu: 2
+        gpu: 1
   - name: indexer
     uses: jinaai+docker://<username>/Indexer
     jcloud:
@@ -105,7 +105,7 @@ executors:
     uses: jinaai+docker://<username>/Executor1
     jcloud:
       resources:
-        gpu: 2
+        gpu: 1
 ```
 
 ### Spot vs on-demand instance
@@ -149,22 +149,31 @@ executors:
 
 ### Storage
 
-JCloud supports two kinds of storage types: [efs](https://aws.amazon.com/efs/) (default) and [ebs](https://aws.amazon.com/ebs/). The former is a network file storage, whereas the latter is a block device.
+JCloud supports three kinds of storage: ephemeral (default), [efs](https://aws.amazon.com/efs/) (network file storage) and [ebs](https://aws.amazon.com/ebs/) (block device).
+
+`ephemeral` storage will assign space to an Executor when it is created. Data in `ephemeral` storage is deleted permanently if Executors are restarted or rescheduled.
 
 ````{hint}
 
-By default, we attach an `efs` to all Executors in a Flow. This lets the `efs` resize dynamically, so you don't need to shrink/grow volumes manually.
+By default, we assign `ephemeral` storage to all Executors in a Flow. This lets the storage resize dynamically, so you don't need to shrink/grow volumes manually.
 
-If your Executor needs high IO, you can use `ebs` instead. Please note that:
+If your Executor needs to share data with other Executors and retain data persistency, consider using `efs`. Note that:
+
+- IO performance is slower compared to `ebs` or `ephemeral`
+- The disk can be shared with other Executors or Flows.
+- Default storage size is `5G`, maximum storage size parameter is `10G`.
+
+If your Executor needs high IO, you can use `ebs` instead. Note that:
 
 - The disk cannot be shared with other Executors or Flows.
 - You must pass a storage size parameter (default: `1G`, max `10G`).
 
 ````
+JCloud also supports retaining the data a Flow was using while active. You can set the `retain` argument to `true` to enable this feature.
 
 ```{code-block} yaml
 ---
-emphasize-lines: 5-9,12,15
+emphasize-lines: 5-10,12,15
 ---
 jtype: Flow
 executors:
@@ -175,6 +184,7 @@ executors:
         storage:
           type: ebs
           size: 10G
+          retain: true
   - name: executor2
     uses: jinaai+docker://<username>/Executor2
     jcloud:
@@ -188,7 +198,7 @@ executors:
 On JCloud, demand-based autoscaling functionality is naturally offered thanks to the underlying Kubernetes architecture. This means that you can maintain [serverless](https://en.wikipedia.org/wiki/Serverless_computing) deployments in a cost-effective way with no headache of setting the [right number of replicas](https://docs.jina.ai/how-to/scale-out/#scale-out-your-executor) anymore!
 
 
-### Autoscaling with `jinahub+serveless://` 
+### Autoscaling with `jinaai+serverless://` 
 
 The easiest way to scale out your Executor is to use a Serverless Executor. This can be enabled by using `jinaai+serverless://` instead of `jinaai+docker://` in Executor's `uses`, such as:
 
@@ -231,12 +241,12 @@ executors:
 
 Below are the defaults and requirements for the configurations:
 
-| Name   | Default     | Allowed                  | Description                                     |
-| ------ | ----------- | ------------------------ | ----------------------------------------------- |
+| Name   | Default     | Allowed                  | Description                                       |
+| ------ | ----------- | ------------------------ | ------------------------------------------------- |
 | min    | 1           | int                      | Minimum number of replicas (`0` means serverless) |
-| max    | 2           | int, up to 5             | Maximum number of replicas                      |
-| metric | concurrency | `concurrency`  /   `rps` | Metric for scaling                              |
-| target | 100         | int                      | Target number after which replicas autoscale    |
+| max    | 2           | int, up to 5             | Maximum number of replicas                        |
+| metric | concurrency | `concurrency`  /   `rps` | Metric for scaling                                |
+| target | 100         | int                      | Target number after which replicas autoscale      |
 
 After JCloud deployment using the autoscaling configuration, the Flow serving part is just the same; the only difference you may notice is it takes a few extra seconds to handle the initial requests since it needs to scale the deployments behind the scenes. Let JCloud handle the scaling from now on, and you should only worry about the code!
 
@@ -248,7 +258,7 @@ JCloud provides support Ingress gateways to expose your Flows to the public inte
 In JCloud. We use [Let's Encrypt](https://letsencrypt.org/) for TLS.
 
 ```{hint}
-The JCloud gateway is different from Jina's gateway. In JCloud, a gateway works as a proxy to distribute internet traffic between Flows, each of which has a Jina gateway (which is responsible for managing external gRPC/HTTP/Websocket traffic to your Executors)
+The JCloud gateway is different from Jina's gateway. In JCloud, a gateway works as a proxy to distribute internet traffic between Flows, each of which has a Jina gateway (which is responsible for managing external gRPC/HTTP/WebSocket traffic to your Executors)
 ```
 
 ### Set timeout

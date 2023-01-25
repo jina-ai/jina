@@ -4,8 +4,11 @@ import os
 import time
 
 import pytest
+from pytest_kind import cluster
 
 from jina import Document, Flow
+
+cluster.KIND_VERSION = 'v0.11.1'
 
 cur_dir = os.path.dirname(__file__)
 

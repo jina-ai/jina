@@ -1,4 +1,5 @@
 import argparse
+import asyncio
 import json
 import os
 from abc import ABC
@@ -158,24 +159,35 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
                 service, health_pb2.HealthCheckResponse.SERVING
             )
         reflection.enable_server_reflection(service_names, self._grpc_server)
-     
+
         bind_addr = f'{self.args.host}:{self.args.port}'
         self._grpc_server.add_insecure_port(bind_addr)
         self.logger.debug(f'start listening on {bind_addr}')
         await self._grpc_server.start()
 
+    def _warmup(self):
+        self.warmup_task = asyncio.create_task(
+            self.request_handler.warmup(
+                connection_pool=self.connection_pool,
+                stop_event=self.warmup_stop_event,
+                deployment=self._deployment_name,
+            )
+        )
+
     async def async_run_forever(self):
         """Block until the GRPC server is terminated"""
+        self._warmup()
         await self._grpc_server.wait_for_termination()
 
     async def async_cancel(self):
         """Stop the GRPC server"""
         self.logger.debug('cancel HeadRuntime')
-
+        await self.cancel_warmup_task()
         await self._grpc_server.stop(0)
 
     async def async_teardown(self):
         """Close the connection pool"""
+        await self.cancel_warmup_task()
         await self._health_servicer.enter_graceful_shutdown()
         await self.async_cancel()
         await self.connection_pool.close()
@@ -199,6 +211,10 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
         elif err_code == grpc.StatusCode.DEADLINE_EXCEEDED:
             context.set_details(
                 f'|Head: Connection to worker (Executor) pod at address {err.dest_addr} could be established, but timed out.'
+            )
+        elif err_code == grpc.StatusCode.NOT_FOUND:
+            context.set_details(
+                f'|Head: Connection to worker (Executor) pod at address {err.dest_addr} could be established, but resource was not found.'
             )
         context.set_code(err.code())
         self.logger.error(f'Error while getting responses from Pods: {err.details()}')
@@ -294,6 +310,7 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
         :param context: grpc context
         :returns: the response request
         """
+        self.logger.debug('recv _status request')
         infoProto = jina_pb2.JinaInfoProto()
         version, env_info = get_full_version()
         for k, v in version.items():

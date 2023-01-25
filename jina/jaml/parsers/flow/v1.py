@@ -2,9 +2,9 @@ import argparse
 import os
 from typing import Any, Dict, Optional
 
-from jina.orchestrate.flow.base import Flow
 from jina.helper import GATEWAY_NAME, ArgNamespace, expand_env_var
 from jina.jaml.parsers.base import VersionedYAMLParser
+from jina.orchestrate.flow.base import Flow
 from jina.parsers import set_deployment_parser, set_gateway_parser
 
 
@@ -122,7 +122,7 @@ class V1Parser(VersionedYAMLParser):
                 if t in kwargs:
                     kwargs.pop(t)
             if k != GATEWAY_NAME:
-                last_name = kwargs['name']
+                last_name = v.args.name
                 r['executors'].append(kwargs)
 
         gateway_kwargs = {}

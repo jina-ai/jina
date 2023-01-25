@@ -3,15 +3,11 @@ import os
 import socket
 
 import pytest
+import yaml
 
-from jina.constants import __default_host__, __default_executor__
-from jina import (
-    Document,
-    DocumentArray,
-    Executor,
-    requests,
-)
+from jina import Document, DocumentArray, Executor, requests
 from jina.clients.request import request_generator
+from jina.constants import __default_executor__, __default_host__
 from jina.enums import PollingType
 from jina.excepts import RuntimeFailToStart
 from jina.orchestrate.deployments import Deployment
@@ -71,7 +67,7 @@ def pod_args_singleton():
 
 
 def test_name(pod_args):
-    with Deployment(pod_args) as pod:
+    with Deployment(pod_args, include_gateway=False) as pod:
         assert pod.name == 'test'
 
 
@@ -80,7 +76,9 @@ def test_name(pod_args):
 )
 @pytest.mark.parametrize('hostname', ['localhost', '127.0.0.1', '0.0.0.0'])
 def test_host(hostname, runtime_cls):
-    with Deployment(get_deployment_args_with_host(hostname, runtime_cls)) as pod:
+    with Deployment(
+        get_deployment_args_with_host(hostname, runtime_cls), include_gateway=False
+    ) as pod:
         assert pod.host == hostname
         assert pod.head_host is None
 
@@ -91,25 +89,26 @@ def test_host(hostname, runtime_cls):
 def test_wrong_hostname(runtime_cls):
     with pytest.raises(RuntimeFailToStart):
         with Deployment(
-            get_deployment_args_with_host('inexisting.hostname.local', runtime_cls)
+            get_deployment_args_with_host('inexisting.hostname.local', runtime_cls),
+            include_gateway=False,
         ) as pod:
             pass
 
 
 def test_is_ready(pod_args):
-    with Deployment(pod_args) as pod:
+    with Deployment(pod_args, include_gateway=False) as pod:
         assert pod.is_ready is True
 
 
 def test_equal(pod_args, pod_args_singleton):
-    pod1 = Deployment(pod_args)
-    pod2 = Deployment(pod_args)
+    pod1 = Deployment(pod_args, include_gateway=False)
+    pod2 = Deployment(pod_args, include_gateway=False)
     assert pod1 == pod2
     pod1.close()
     pod2.close()
     # test not equal
-    pod1 = Deployment(pod_args)
-    pod2 = Deployment(pod_args_singleton)
+    pod1 = Deployment(pod_args, include_gateway=False)
+    pod2 = Deployment(pod_args_singleton, include_gateway=False)
     assert pod1 != pod2
     pod1.close()
     pod2.close()
@@ -130,7 +129,7 @@ def test_uses_before_after(pod_args, shards):
     pod_args.uses_before = 'MyDummyExecutor'
     pod_args.uses_after = 'ChildDummyExecutor2'
     pod_args.uses = 'ChildDummyExecutor'
-    with Deployment(pod_args) as pod:
+    with Deployment(pod_args, include_gateway=False) as pod:
         if shards == 2:
             assert (
                 pod.head_args.uses_before_address
@@ -152,7 +151,7 @@ def test_mermaid_str_no_secret(pod_args):
     pod_args.uses_before = 'jinahub+docker://MyDummyExecutor:Dummy@Secret'
     pod_args.uses_after = 'ChildDummyExecutor2'
     pod_args.uses = 'jinahub://ChildDummyExecutor:Dummy@Secret'
-    pod = Deployment(pod_args)
+    pod = Deployment(pod_args, include_gateway=False)
     assert 'Dummy@Secret' not in ''.join(pod._mermaid_str)
 
 
@@ -161,10 +160,10 @@ def test_mermaid_str_no_secret(pod_args):
 def test_pod_context_replicas(replicas):
     args_list = ['--replicas', str(replicas)]
     args = set_deployment_parser().parse_args(args_list)
-    with Deployment(args) as bp:
+    with Deployment(args, include_gateway=False) as bp:
         assert bp.num_pods == replicas
 
-    Deployment(args).start().close()
+    Deployment(args, include_gateway=False).start().close()
 
 
 @pytest.mark.slow
@@ -173,10 +172,10 @@ def test_pod_context_shards_replicas(shards):
     args_list = ['--replicas', str(3)]
     args_list.extend(['--shards', str(shards)])
     args = set_deployment_parser().parse_args(args_list)
-    with Deployment(args) as bp:
+    with Deployment(args, include_gateway=False) as bp:
         assert bp.num_pods == shards * 3 + 1 if shards > 1 else 3
 
-    Deployment(args).start().close()
+    Deployment(args, include_gateway=False).start().close()
 
 
 @pytest.mark.parametrize('metadata', [{'key1': 'value1', 'key2': 'value2'}])
@@ -185,7 +184,7 @@ def test_pod_context_grpc_metadata(metadata):
     for k, v in metadata.items():
         args_list.extend(['--grpc-metadata', f'{k}:{v}'])
     args = set_deployment_parser().parse_args(args_list)
-    with Deployment(args) as bp:
+    with Deployment(args, include_gateway=False) as bp:
         assert bp.grpc_metadata == metadata
 
 
@@ -201,24 +200,35 @@ class AppendNameExecutor(Executor):
 
 
 @pytest.mark.slow
-def test_pod_activates_replicas():
-    args_list = ['--replicas', '3', '--shards', '2', '--no-reduce']
+def test_pod_activates_shards_replicas():
+    shards = 2
+    replicas = 3
+    args_list = ['--replicas', str(replicas), '--shards', str(shards), '--no-reduce']
     args = set_deployment_parser().parse_args(args_list)
     args.uses = 'AppendNameExecutor'
-    with Deployment(args) as pod:
+    with Deployment(args, include_gateway=False) as pod:
         assert pod.num_pods == 7
         response_texts = set()
-        # replicas are used in a round robin fashion, so sending 3 requests should hit each one time
+        # replicas and shards are used in a round robin fashion, so sending 6 requests should hit each one time
         for _ in range(6):
             response = GrpcConnectionPool.send_request_sync(
                 _create_test_data_message(),
                 f'{pod.head_args.host}:{pod.head_args.port}',
             )
             response_texts.update(response.response.docs.texts)
-        assert 4 == len(response_texts)
-        assert all(text in response_texts for text in ['0', '1', '2', 'client'])
+        print(response_texts)
+        assert 7 == len(response_texts)
+        assert all(
+            text in response_texts
+            for text in ['client']
+            + [
+                f'executor/shard-{s}/rep-{r}'
+                for s in range(shards)
+                for r in range(replicas)
+            ]
+        )
 
-    Deployment(args).start().close()
+    Deployment(args, include_gateway=False).start().close()
 
 
 class AppendParamExecutor(Executor):
@@ -265,7 +275,7 @@ def test_pod_naming_with_shards():
             '3',
         ]
     )
-    with Deployment(args) as pod:
+    with Deployment(args, include_gateway=False) as pod:
         assert pod.head_pod.name == 'pod/head'
 
         assert pod.shards[0].args[0].name == 'pod/shard-0/rep-0'
@@ -284,7 +294,7 @@ def test_pod_activates_shards():
     args = set_deployment_parser().parse_args(args_list)
     args.uses = 'AppendShardExecutor'
     args.polling = PollingType.ALL
-    with Deployment(args) as pod:
+    with Deployment(args, include_gateway=False) as pod:
         assert pod.num_pods == 3 * 3 + 1
         response_texts = set()
         # replicas are used in a round robin fashion, so sending 3 requests should hit each one time
@@ -297,7 +307,7 @@ def test_pod_activates_shards():
         assert 4 == len(response_texts)
         assert all(text in response_texts for text in ['0', '1', '2', 'client'])
 
-    Deployment(args).start().close()
+    Deployment(args, include_gateway=False).start().close()
 
 
 @pytest.mark.slow
@@ -323,16 +333,16 @@ def test_gateway_pod(protocol, uses, graph_description):
             protocol,
         ]
     )
-    with Deployment(args) as p:
+    with Deployment(args, include_gateway=False) as p:
         assert len(p.all_args) == 1
         assert p.all_args[0].uses == uses
 
-    Deployment(args).start().close()
+    Deployment(args, include_gateway=False).start().close()
 
 
 def test_pod_naming_with_replica():
     args = set_deployment_parser().parse_args(['--name', 'pod', '--replicas', '2'])
-    with Deployment(args) as bp:
+    with Deployment(args, include_gateway=False) as bp:
         assert bp.head_pod is None
         assert bp.shards[0]._pods[0].name == 'pod/rep-0'
         assert bp.shards[0]._pods[1].name == 'pod/rep-1'
@@ -340,13 +350,13 @@ def test_pod_naming_with_replica():
 
 def test_pod_args_remove_uses_ba():
     args = set_deployment_parser().parse_args([])
-    with Deployment(args) as p:
+    with Deployment(args, include_gateway=False) as p:
         assert p.num_pods == 1
 
     args = set_deployment_parser().parse_args(
         ['--uses-before', __default_executor__, '--uses-after', __default_executor__]
     )
-    with Deployment(args) as p:
+    with Deployment(args, include_gateway=False) as p:
         assert p.num_pods == 1
 
     args = set_deployment_parser().parse_args(
@@ -359,7 +369,7 @@ def test_pod_args_remove_uses_ba():
             '2',
         ]
     )
-    with Deployment(args) as p:
+    with Deployment(args, include_gateway=False) as p:
         assert p.num_pods == 2
 
 
@@ -397,7 +407,7 @@ def test_dynamic_polling_with_config(polling):
             json.dumps(endpoint_polling),
         ]
     )
-    pod = Deployment(args)
+    pod = Deployment(args, include_gateway=False)
 
     with pod:
         response = GrpcConnectionPool.send_request_sync(
@@ -458,7 +468,7 @@ def test_dynamic_polling_default_config(polling):
             polling,
         ]
     )
-    pod = Deployment(args)
+    pod = Deployment(args, include_gateway=False)
 
     with pod:
         response = GrpcConnectionPool.send_request_sync(
@@ -489,7 +499,7 @@ def test_dynamic_polling_overwrite_default_config(polling):
             json.dumps(endpoint_polling),
         ]
     )
-    pod = Deployment(args)
+    pod = Deployment(args, include_gateway=False)
 
     with pod:
         response = GrpcConnectionPool.send_request_sync(
@@ -530,10 +540,42 @@ def test_pod_remote_pod_replicas_host(num_shards, num_replicas):
         ]
     )
     assert args.host == [__default_host__]
-    with Deployment(args) as pod:
+    with Deployment(args, include_gateway=False) as pod:
         assert pod.num_pods == num_shards * num_replicas + (1 if num_shards > 1 else 0)
         pod_args = dict(pod.pod_args['pods'])
         for k, replica_args in pod_args.items():
             assert len(replica_args) == num_replicas
             for replica_arg in replica_args:
                 assert replica_arg.host == __default_host__
+
+
+@pytest.mark.parametrize(
+    'uses',
+    ['jinahub+docker://DummyHubExecutor', 'jinaai+docker://jina-ai/DummyHubExecutor'],
+)
+@pytest.mark.parametrize('shards', [1, 2, 3])
+@pytest.mark.parametrize('replicas', [1, 2, 3])
+def test_to_k8s_yaml(tmpdir, uses, replicas, shards):
+    dep = Deployment(port_expose=2020, uses=uses, replicas=replicas, shards=shards)
+    dep.to_kubernetes_yaml(output_base_path=tmpdir)
+
+    if shards == 1:
+        shards_iter = ['']
+    else:
+        shards_iter = [f'-{shard}' for shard in range(shards)]
+    for shard in shards_iter:
+        with open(os.path.join(tmpdir, f'executor{shard}.yml')) as f:
+            exec_yaml = list(yaml.safe_load_all(f))[-1]
+            assert exec_yaml['spec']['replicas'] == replicas
+            assert exec_yaml['spec']['template']['spec']['containers'][0][
+                'image'
+            ].startswith('jinahub/')
+
+    if shards != 1:
+        with open(os.path.join(tmpdir, f'executor-head.yml')) as f:
+            head_yaml = list(yaml.safe_load_all(f))[-1]
+            assert head_yaml['metadata']['name'] == 'executor-head'
+            assert head_yaml['spec']['replicas'] == 1
+            assert head_yaml['spec']['template']['spec']['containers'][0][
+                'image'
+            ].startswith('jinaai/')

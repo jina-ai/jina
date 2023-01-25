@@ -11,7 +11,7 @@ import pytest
 from pytest_kind import cluster
 
 from jina import Document, Flow
-from tests.k8s.test_k8s import create_all_flow_deployments_and_wait_ready
+from tests.k8s.test_k8s_flow import create_all_flow_deployments_and_wait_ready
 
 cluster.KIND_VERSION = 'v0.11.1'
 
