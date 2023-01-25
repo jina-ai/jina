@@ -338,6 +338,6 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
         :yield: responses to the request
         """
         async for request in request_iterator:
-            yield self.process_data([request], context)
+            yield await self.process_data([request], context)
 
     Call = stream
