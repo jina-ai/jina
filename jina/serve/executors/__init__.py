@@ -547,7 +547,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         .. code-block:: python
 
             from jina import Executor
-            from jina._docarray import Document, DocumentArray
+            from docarray import Document, DocumentArray
 
             executor = Executor.from_hub(
                 uri='jinahub://CLIPImageEncoder', install_requirements=True
