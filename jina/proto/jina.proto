@@ -162,7 +162,7 @@ service JinaSingleDataRequestRPC {
 }
 
 /**
- * jina Gateway gRPC service.
+ * jina streaming gRPC service.
  */
 service JinaRPC {
     // Pass in a Request and a filled Request with matches will be returned.

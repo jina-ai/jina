@@ -5,7 +5,7 @@ import os
 import uuid
 import tempfile
 from abc import ABC
-from typing import TYPE_CHECKING, List, Optional
+from typing import TYPE_CHECKING, AsyncIterator, List, Optional
 
 import grpc
 from grpc_health.v1 import health, health_pb2, health_pb2_grpc
@@ -22,6 +22,8 @@ from jina.types.request.data import DataRequest
 
 if TYPE_CHECKING:  # pragma: no cover
     from opentelemetry.propagate import Context
+
+    from jina.types.request import Request
 
 
 class WorkerRuntime(AsyncNewLoopRuntime, ABC):
@@ -130,6 +132,8 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
             interceptors=self.aio_tracing_server_interceptors(),
         )
 
+        jina_pb2_grpc.add_JinaRPCServicer_to_server(self, self._grpc_server)
+
         jina_pb2_grpc.add_JinaSingleDataRequestRPCServicer_to_server(
             self, self._grpc_server
         )
@@ -157,6 +161,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         )
 
         service_names = (
+            jina_pb2.DESCRIPTOR.services_by_name['JinaRPC'].full_name,
             jina_pb2.DESCRIPTOR.services_by_name['JinaSingleDataRequestRPC'].full_name,
             jina_pb2.DESCRIPTOR.services_by_name['JinaDataRequestRPC'].full_name,
             jina_pb2.DESCRIPTOR.services_by_name['JinaDiscoverEndpointsRPC'].full_name,
@@ -388,6 +393,23 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
             status=jina_pb2.RestoreSnapshotStatusProto.Status.RUNNING,
         )
 
+    async def stream(
+            self, request_iterator, context=None, *args, **kwargs
+    ) -> AsyncIterator['Request']:
+        """
+        stream requests from client iterator and stream responses back.
+
+        :param request_iterator: iterator of requests
+        :param context: context of the grpc call
+        :param args: positional arguments
+        :param kwargs: keyword arguments
+        :yield: responses to the request
+        """
+        async for request in request_iterator:
+            yield await self.process_data([request], context)
+
+    Call = stream
+
     async def snapshot(self, request, context) -> jina_pb2.SnapshotStatusProto:
         """
         method to start a snapshot process of the Executor
@@ -427,7 +449,8 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
 
         :return: the status of the snapshot
         """
-        self.logger.debug(f'Checking status of snapshot with ID of request {request.value} and current snapshot {self._snapshot.id.value if self._snapshot else "DOES NOT EXIST"}')
+        self.logger.debug(
+            f'Checking status of snapshot with ID of request {request.value} and current snapshot {self._snapshot.id.value if self._snapshot else "DOES NOT EXIST"}')
         if not self._snapshot or (self._snapshot.id.value != request.value):
             return jina_pb2.SnapshotStatusProto(
                 id=jina_pb2.SnapshotId(value=request.value),
@@ -490,7 +513,8 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
 
         :return: the status of the snapshot
         """
-        self.logger.debug(f'Checking status of restore with ID of request {request.value} and current restore {self._restore.id.value if self._restore else "DOES NOT EXIST"}')
+        self.logger.debug(
+            f'Checking status of restore with ID of request {request.value} and current restore {self._restore.id.value if self._restore else "DOES NOT EXIST"}')
         if not self._restore or (self._restore.id.value != request.value):
             return jina_pb2.RestoreSnapshotStatusProto(
                 id=jina_pb2.RestoreId(value=request.value),
