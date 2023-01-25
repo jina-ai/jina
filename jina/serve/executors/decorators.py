@@ -199,7 +199,7 @@ def requests(
             else:
                 return fn
 
-        def _inject_owner_attrs(self, owner, name, input_type, output_type):
+        def _inject_owner_attrs(self, owner, name, input_type_arg, output_type_arg):
             if not hasattr(owner, 'requests'):
                 owner.requests = {}
 
@@ -207,11 +207,15 @@ def requests(
 
             fn_with_schema = _FunctionWithSchema.get_function_with_schema(self.fn)
 
-            input_type = input_type if input_type else fn_with_schema.input_type
-            output_type = output_type if output_type else fn_with_schema.output_type
+            input_type_arg = (
+                input_type_arg if input_type_arg else fn_with_schema.input_type
+            )
+            output_type_arg = (
+                output_type_arg if output_type_arg else fn_with_schema.output_type
+            )
 
             fn_with_schema = _FunctionWithSchema(
-                fn_with_schema.fn, input_type, output_type
+                fn_with_schema.fn, input_type_arg, output_type_arg
             )
 
             if isinstance(on, (list, tuple)):
