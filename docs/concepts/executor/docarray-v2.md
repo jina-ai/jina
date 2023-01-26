@@ -97,10 +97,10 @@ the Executor. You can pass the return type by using the `return_type` parameter 
 ---
 emphasize-lines: 7
 ---
-from jina import Flow
+from jina import Deployment
 
-with Flow().add(uses=MyExec) as f:
-    docs = f.post(
+with Deployment(uses=MyExec) as dep:
+    docs = dep.post(
         on='/bar',
         inputs=InputDoc(img=Image(tensor=np.zeros((3, 224, 224)))),
         return_type=DocumentArray[OutputDoc],
