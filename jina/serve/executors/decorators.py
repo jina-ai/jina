@@ -105,8 +105,8 @@ def requests(
     ] = None,
     *,
     on: Optional[Union[str, Sequence[str]]] = None,
-    input_type: Optional[Type[DocumentArray]] = None,
-    output_type: Optional[Type[DocumentArray]] = None,
+    request_schema: Optional[Type[DocumentArray]] = None,
+    response_schema: Optional[Type[DocumentArray]] = None,
 ):
     """
     `@requests` defines the endpoints of an Executor. It has a keyword `on=` to
@@ -154,8 +154,8 @@ def requests(
 
     :param func: the method to decorate
     :param on: the endpoint string, by convention starts with `/`
-    :param input_type: the type of the input document
-    :param output_type: the type of the output document
+    :param request_schema: the type of the input document
+    :param response_schema: the type of the output document
     :return: decorated function
     """
     from jina.constants import __args_executor_func__, __default_endpoint__
@@ -199,7 +199,9 @@ def requests(
             else:
                 return fn
 
-        def _inject_owner_attrs(self, owner, name, input_type_arg, output_type_arg):
+        def _inject_owner_attrs(
+            self, owner, name, request_schema_arg, response_schema_arg
+        ):
             if not hasattr(owner, 'requests'):
                 owner.requests = {}
 
@@ -207,15 +209,19 @@ def requests(
 
             fn_with_schema = _FunctionWithSchema.get_function_with_schema(self.fn)
 
-            input_type_arg = (
-                input_type_arg if input_type_arg else fn_with_schema.input_type
+            request_schema_arg = (
+                request_schema_arg
+                if request_schema_arg
+                else fn_with_schema.request_schema
             )
-            output_type_arg = (
-                output_type_arg if output_type_arg else fn_with_schema.output_type
+            response_schema_arg = (
+                response_schema_arg
+                if response_schema_arg
+                else fn_with_schema.response_schema
             )
 
             fn_with_schema = _FunctionWithSchema(
-                fn_with_schema.fn, input_type_arg, output_type_arg
+                fn_with_schema.fn, request_schema_arg, response_schema_arg
             )
 
             if isinstance(on, (list, tuple)):
@@ -233,7 +239,7 @@ def requests(
             if self._batching_decorator:
                 self._batching_decorator._inject_owner_attrs(owner, name)
             self.fn.class_name = owner.__name__
-            self._inject_owner_attrs(owner, name, input_type, output_type)
+            self._inject_owner_attrs(owner, name, request_schema, response_schema)
 
         def __call__(self, *args, **kwargs):
             # this is needed to make this decorator work in combination with `@requests`

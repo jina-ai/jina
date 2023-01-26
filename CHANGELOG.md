@@ -1662,7 +1662,7 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 
 ### 🆕 New Features
 
- - [[```fda57905```](https://github.com/jina-ai/jina/commit/fda579051f6d58bc13db7ea67b78d1f7f95265b3)] __-__ __client__: auto detect input_type (*Han Xiao*)
+ - [[```fda57905```](https://github.com/jina-ai/jina/commit/fda579051f6d58bc13db7ea67b78d1f7f95265b3)] __-__ __client__: auto detect request_schema (*Han Xiao*)
  - [[```6702c61c```](https://github.com/jina-ai/jina/commit/6702c61c99e999a8ab5fb733c720304a5dc6d3ad)] __-__ __crafter__: add Any2Buffer convert (*Han Xiao*)
  - [[```9dfe9188```](https://github.com/jina-ai/jina/commit/9dfe9188d8df75cf3fa1220e86d064be1cbd21df)] __-__ __crafter__: add buffer, data_uri, file_path convert (*Han Xiao*)
  - [[```c2d3e819```](https://github.com/jina-ai/jina/commit/c2d3e8199ff38e85754b45d2fca96b28d72a5f8a)] __-__ __proto__: add mime_type to proto (*Han Xiao*)

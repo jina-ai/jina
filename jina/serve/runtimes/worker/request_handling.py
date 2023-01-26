@@ -399,7 +399,7 @@ class WorkerRequestHandler:
         try:
             requests[0].document_array_cls = self._executor.requests[
                 exec_endpoint
-            ].input_type
+            ].request_schema
         except AttributeError:
             pass
 

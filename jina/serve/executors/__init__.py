@@ -106,8 +106,8 @@ T = TypeVar('T', bound='_FunctionWithSchema')
 
 class _FunctionWithSchema(NamedTuple):
     fn: Callable
-    input_type: Type[DocumentArray] = DocumentArray
-    output_type: Type[DocumentArray] = DocumentArray
+    request_schema: Type[DocumentArray] = DocumentArray
+    response_schema: Type[DocumentArray] = DocumentArray
 
     @staticmethod
     def get_function_with_schema(fn: Callable) -> T:
@@ -130,10 +130,10 @@ class _FunctionWithSchema(NamedTuple):
             )
             return_annotation = None
 
-        input_type = docs_annotation or DocumentArray
-        output_type = return_annotation or DocumentArray
+        request_schema = docs_annotation or DocumentArray
+        response_schema = return_annotation or DocumentArray
 
-        return _FunctionWithSchema(fn, input_type, output_type)
+        return _FunctionWithSchema(fn, request_schema, response_schema)
 
 
 class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):

@@ -46,15 +46,15 @@ def test_send_custom_doc():
         assert doc[0].text == 'hello world'
 
 
-def test_input_output_type():
+def test_input_response_schema():
     class MyDoc(BaseDocument):
         text: str
 
     class MyExec(Executor):
         @requests(
             on='/foo',
-            input_type=DocumentArray[MyDoc],
-            output_type=DocumentArray[MyDoc],
+            request_schema=DocumentArray[MyDoc],
+            response_schema=DocumentArray[MyDoc],
         )
         def foo(self, docs, **kwargs):
             assert docs.__class__.document_type == MyDoc
@@ -69,7 +69,7 @@ def test_input_output_type():
         assert docs.__class__.document_type == MyDoc
 
 
-def test_input_output_type_annotation():
+def test_input_response_schema_annotation():
     class MyDoc(BaseDocument):
         text: str
 

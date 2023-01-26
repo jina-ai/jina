@@ -68,8 +68,8 @@ For our Executor we define:
 Note that here the type hint is actually more that just a hint -- the Executor uses it to infer the actual
 schema of the endpoint.
 
-You can also explicitly define the schema of the endpoint by using the `input_type` and
-`output_type` parameters of the `requests` decorator:
+You can also explicitly define the schema of the endpoint by using the `request_schema` and
+`response_schema` parameters of the `requests` decorator:
 
 
 ```{code-block} python
@@ -79,8 +79,8 @@ emphasize-lines: 4,5
 class MyExec(Executor):
     @requests(
         on='/bar',
-        input_type=DocumentArray[InputDoc],
-        output_type=DocumentArray[OutputDoc],
+        request_schema=DocumentArray[InputDoc],
+        response_schema=DocumentArray[OutputDoc],
     )
     def bar(self, docs, **kwargs) 
         docs_return = DocumentArray[OutputDoc](
@@ -89,8 +89,8 @@ class MyExec(Executor):
         return docs_return
 ```
 
-If there is no `input_type` and `output_type` the type hint is used to infer the schema. If both exist, `input_type`
-and `output_type` will be used.
+If there is no `request_schema` and `response_schema` the type hint is used to infer the schema. If both exist, `request_schema`
+and `response_schema` will be used.
 
 
 ## (Beta) Client API
