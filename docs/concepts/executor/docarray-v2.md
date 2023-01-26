@@ -20,7 +20,7 @@ At the heart of DocArray v2 is a new schema that is more flexible and expressive
 You can refer to the [DocArray v2 readme](https://github.com/docarray/docarray/tree/feat-rewrite-v2) for more details.
 
 
-On the Jina side this has quite a big impact on the spirit of how you build an Executor:
+On the Jina side, this flexibility extends to every Executor, where you can now customize input and output schemas
 
 - With DocArray v1 (the version currently used in Jina), a Document has a fixed schema and an Executor performs in-place operations on it. 
 - With DocArray v2, an Executor defines its own input and output schemas. It also provides several predefined schemas that you can use out of the box.
