@@ -41,17 +41,11 @@ class _ConnectionPoolMap:
         self.tracing_client_interceptor = tracing_client_interceptor
 
     def add_replica(self, deployment: str, shard_id: int, address: str):
-        self._logger.info(
-            f'--->adding replicas with deployment: {deployment}, address: {address}, shard_id: {shard_id}'
-        )
         self._add_connection(deployment, shard_id, address, 'shards')
 
     def add_head(
         self, deployment: str, address: str, head_id: Optional[int] = 0
     ):  # the head_id is always 0 for now, this will change when scaling the head
-        self._logger.info(
-            f'--->adding head with deployment: {deployment}, address: {address}, head_id: {head_id}'
-        )
         self._add_connection(deployment, head_id, address, 'heads')
 
     def get_replicas(
