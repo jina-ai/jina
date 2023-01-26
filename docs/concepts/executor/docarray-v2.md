@@ -23,7 +23,6 @@ the version that is currently used in Jina, the `Document` as a fixed schema and
 on directly on it. With DocArray v2 things change slightly. Each executor will need to define its own input schema
 and output schema. Of course, we still provided predefined schema. We believe this will allow Executor to be more
 expressive and flexible.
-expressive and flexible.
 
 ## New (Beta) Executor API
 
