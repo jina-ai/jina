@@ -93,5 +93,5 @@ async def test_synchornization_when_resetting_connection(replica_list, logger):
         return_exceptions=True,
     )
     # TODO invert the assert statement after refactoring because the channel must be
-    # only if there are no references to it.
+    # closed only if there are no references to it.
     assert any([issubclass(type(response), BaseException) for response in responses])
