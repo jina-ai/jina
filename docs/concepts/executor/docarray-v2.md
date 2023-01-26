@@ -9,7 +9,7 @@ purpose it is built on top of [Pydantic](https://pydantic-docs.helpmanual.io/) a
 DocArray-v2 adapt to user data whereas DocArray-v1 force user to adapt to the Document schema.
 
 ```{warning} Beta support
-DocArray v2 is  still in alpha and its support in Jina is still an experimental feature, and the API is subject to 
+DocArray v2 is  still in alpha, its support in Jina is still an experimental feature, and the API is subject to 
 change.
 ```
 
@@ -21,8 +21,8 @@ You can refer to the [DocArray v2 readme](https://github.com/docarray/docarray/t
 
 
 On Jina side this has actually quite a big impact on the spirit of how you are building Executor. Indeed, with DocArray v1
-the version that is currently used in Jina, the `Document` as a fixed schema and the Executor performs in place operations
-on directly on it. With DocArray v2 things change slightly. Each executor will need to define its own input schema
+the version that is currently used in Jina, the `Document` has a fixed schema and the Executor performs in-place operations
+on it. With DocArray v2 things change slightly. Each executor will need to define its own input schema
 and output schema. Of course, there still are predefined schemas that you can use out of the box. This Executor to be 
 more expressive and flexible.3
 
@@ -86,7 +86,7 @@ class MyExec(Executor):
         return docs_return
 ```
 
-If there is no `input_type` and `output_type` the type hint is used to infer the schema. If there are both `input_type`
+If there is no `input_type` and `output_type` the type hint is used to infer the schema. If both exist, `input_type`
 and `output_type` will be used.
 
 
