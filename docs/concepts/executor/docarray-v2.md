@@ -1,9 +1,9 @@
 (docarray-v2)=
 
 
-# (Beta) Docarray-V2
+# (Beta) DocArray v2
 
-Jina provide an early support for [DocArray-v2](https://github.com/docarray/docarray/commits/feat-rewrite-v2) which
+Jina provides early support for [DocArray-v2](https://github.com/docarray/docarray/commits/feat-rewrite-v2) which
 is a rewrite of DocArray.
 
 ```{warning} Beta support
@@ -18,15 +18,15 @@ At the heart of DocArray v2 is a new schema that is more flexible and expressive
 You can refer to the [DocArray v2 readme](https://github.com/docarray/docarray/tree/feat-rewrite-v2) for more details.
 
 
-On Jina side this has actually quite a big impact on the spirit of how we are building Executor. Indeed, with docarray v1
-the version that is currently used in Jina, the `Document` as a fixed schema and the Executor perform in place operation
+On Jina side this has actually quite a big impact on the spirit of how we are building Executor. Indeed, with DocArray v1
+the version that is currently used in Jina, the `Document` as a fixed schema and the Executor performs in place operations
 on directly on it. With DocArray v2 things change slightly. Each executor will need to define its own input schema
 and output schema. Of course, we still provided predefined schema. We believe this will allow Executor to be more
 expressive and flexible.
 
-## New (Beta) Executor API
+## (Beta) New Executor API
 
-To reflect the change with DocArray v2, we have slightly extended the Executor API to support schema definition. The 
+To reflect the change with DocArray v2, the Executor API now supports schema definition. The 
 design is freely inspired by [FastAPI](https://fastapi.tiangolo.com/). 
 
 
@@ -90,8 +90,7 @@ and `output_type` will be used.
 
 ## (Beta) Client API
 
-The client will be impacted as well as we will need to provide a way to specify the schema of the data that is return 
-the Executor. You can pass the return type by using the `return_type` parameter of the `client.post`
+In the client, you similarly specify the schema that is expected to be returned by the Flow. You can pass the return type by using the `return_type` parameter of the `client.post`
 
 ```{code-block} python
 ---
