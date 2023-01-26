@@ -42,6 +42,13 @@ class DummyGateway(Gateway):
                 'arg3': self.arg3,
             }
 
+        @app.get(path='/runtime_info')
+        def _get_info():
+            return {
+                'ports': self.ports,
+                'protocols': self.protocols,
+            }
+
         @app.get(
             path='/stream',
             response_model=ProcessedResponseModel,
