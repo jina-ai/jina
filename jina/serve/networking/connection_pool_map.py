@@ -2,11 +2,11 @@ import os
 from typing import TYPE_CHECKING, Dict, List, Optional, Sequence
 
 from jina.logging.logger import JinaLogger
-from jina.serve.networking._instrumentation import (
+from jina.serve.networking.instrumentation import (
     _NetworkingHistograms,
     _NetworkingMetrics,
 )
-from jina.serve.networking._replica_list import ReplicaList
+from jina.serve.networking.replica_list import _ReplicaList
 
 if TYPE_CHECKING:  # pragma: no cover
 
@@ -28,7 +28,7 @@ class _ConnectionPoolMap:
     ):
         self._logger = logger
         # this maps deployments to shards or heads
-        self._deployments: Dict[str, Dict[str, Dict[int, ReplicaList]]] = {}
+        self._deployments: Dict[str, Dict[str, Dict[int, _ReplicaList]]] = {}
         # dict stores last entity id used for a particular deployment, used for round robin
         self._access_count: Dict[str, int] = {}
         self._metrics = metrics
@@ -54,7 +54,7 @@ class _ConnectionPoolMap:
         head: bool,
         entity_id: Optional[int] = None,
         increase_access_count: bool = True,
-    ) -> Optional[ReplicaList]:
+    ) -> Optional[_ReplicaList]:
         # returns all replicas of a given deployment, using a given shard
         if deployment in self._deployments:
             type_ = 'heads' if head else 'shards'
@@ -69,7 +69,7 @@ class _ConnectionPoolMap:
             )
             return None
 
-    def get_replicas_all_shards(self, deployment: str) -> List[ReplicaList]:
+    def get_replicas_all_shards(self, deployment: str) -> List[_ReplicaList]:
         # returns all replicas of a given deployment, for all available shards
         # result is a list of 'shape' (num_shards, num_replicas), containing all replicas for all shards
         replicas = []
@@ -94,7 +94,7 @@ class _ConnectionPoolMap:
         type_: str,
         entity_id: Optional[int] = None,
         increase_access_count: bool = True,
-    ) -> Optional[ReplicaList]:
+    ) -> Optional[_ReplicaList]:
         try:
             if entity_id is None and len(self._deployments[deployment][type_]) > 0:
                 # select a random entity
@@ -133,7 +133,7 @@ class _ConnectionPoolMap:
     ):
         self._add_deployment(deployment)
         if entity_id not in self._deployments[deployment][type]:
-            connection_list = ReplicaList(
+            connection_list = _ReplicaList(
                 metrics=self._metrics,
                 histograms=self._histograms,
                 logger=self._logger,

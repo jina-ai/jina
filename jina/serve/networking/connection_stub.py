@@ -5,7 +5,7 @@ import grpc
 
 from jina.proto import jina_pb2, jina_pb2_grpc
 from jina.serve.instrumentation import MetricsTimer
-from jina.serve.networking._instrumentation import (
+from jina.serve.networking.instrumentation import (
     _NetworkingHistograms,
     _NetworkingMetrics,
 )
@@ -17,7 +17,7 @@ if TYPE_CHECKING:  # pragma: no cover
     from grpc.aio._interceptor import ClientInterceptor
 
 
-class ConnectionStubs:
+class _ConnectionStubs:
     """
     Maintains a list of grpc stubs available for a particular connection
     """
@@ -220,7 +220,7 @@ def create_async_channel_stub(
     tls=False,
     root_certificates: Optional[str] = None,
     aio_tracing_client_interceptors: Optional[Sequence['ClientInterceptor']] = None,
-) -> Tuple[ConnectionStubs, grpc.aio.Channel]:
+) -> Tuple[_ConnectionStubs, grpc.aio.Channel]:
     """
     Creates an async GRPC Channel. This channel has to be closed eventually!
 
@@ -242,6 +242,6 @@ def create_async_channel_stub(
     )
 
     return (
-        ConnectionStubs(address, channel, deployment_name, metrics, histograms),
+        _ConnectionStubs(address, channel, deployment_name, metrics, histograms),
         channel,
     )

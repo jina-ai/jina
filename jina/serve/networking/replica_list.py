@@ -6,8 +6,8 @@ import grpc
 from grpc.aio import ClientInterceptor
 
 from jina.excepts import EstablishGrpcConnectionError
-from jina.serve.networking._connection_stub import create_async_channel_stub
-from jina.serve.networking._instrumentation import (
+from jina.serve.networking.connection_stub import create_async_channel_stub
+from jina.serve.networking.instrumentation import (
     _NetworkingHistograms,
     _NetworkingMetrics,
 )
@@ -21,7 +21,7 @@ if TYPE_CHECKING:
 GRACE_PERIOD_DESTROY_CONNECTION = 0.5
 
 
-class ReplicaList:
+class _ReplicaList:
     """
     Maintains a list of connections to replicas and uses round robin for selecting a replica
     """

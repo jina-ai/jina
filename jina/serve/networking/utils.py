@@ -8,7 +8,7 @@ from grpc_reflection.v1alpha.reflection_pb2 import ServerReflectionRequest
 from grpc_reflection.v1alpha.reflection_pb2_grpc import ServerReflectionStub
 
 from jina.proto import jina_pb2_grpc
-from jina.serve.networking._instrumentation import (
+from jina.serve.networking.instrumentation import (
     _aio_channel_with_tracing_interceptor,
     _channel_with_tracing_interceptor,
 )

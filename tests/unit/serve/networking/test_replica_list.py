@@ -3,14 +3,14 @@ import asyncio
 import pytest
 from grpc import ChannelConnectivity
 
-from jina.serve.networking._connection_stub import ConnectionStubs
-from jina.serve.networking._instrumentation import _NetworkingHistograms
-from jina.serve.networking._replica_list import ReplicaList
+from jina.serve.networking.connection_stub import _ConnectionStubs
+from jina.serve.networking.instrumentation import _NetworkingHistograms
+from jina.serve.networking.replica_list import _ReplicaList
 
 
 @pytest.fixture()
 def replica_list(logger, metrics):
-    return ReplicaList(
+    return _ReplicaList(
         metrics=metrics,
         histograms=_NetworkingHistograms(),
         logger=logger,
@@ -72,7 +72,7 @@ async def test_close(replica_list):
     assert not len(replica_list.warmup_stubs)
 
 
-async def _print_channel_attributes(connection_stub: ConnectionStubs):
+async def _print_channel_attributes(connection_stub: _ConnectionStubs):
     await asyncio.sleep(0.5)
     # currently the channel can get destroyed even if a different co-routine is
     # holding a reference

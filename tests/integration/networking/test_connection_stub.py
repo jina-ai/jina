@@ -2,7 +2,7 @@ import pytest
 
 from jina import Document, DocumentArray, Flow
 from jina.serve.networking import _NetworkingHistograms
-from jina.serve.networking._connection_stub import ConnectionStubs
+from jina.serve.networking.connection_stub import _ConnectionStubs
 from jina.serve.networking.utils import get_grpc_channel
 from jina.types.request.data import DataRequest
 from tests.integration.networking import DummyExecutor
@@ -15,7 +15,7 @@ async def test_init_stubs(metrics, port_generator):
     with flow:
         address = f'0.0.0.0:{executor_port}'
         channel = get_grpc_channel(address=address, asyncio=True)
-        connection_stub = ConnectionStubs(
+        connection_stub = _ConnectionStubs(
             address=address,
             channel=channel,
             deployment_name='executor0',
@@ -34,7 +34,7 @@ async def test_send_discover_endpoint(metrics, port_generator):
     with flow:
         address = f'0.0.0.0:{executor_port}'
         channel = get_grpc_channel(address=address, asyncio=True)
-        connection_stub = ConnectionStubs(
+        connection_stub = _ConnectionStubs(
             address='executor0',
             channel=channel,
             deployment_name='executor-0',
@@ -53,7 +53,7 @@ async def test_send_info_rpc(metrics, port_generator):
     with flow:
         address = f'0.0.0.0:{executor_port}'
         channel = get_grpc_channel(address=address, asyncio=True)
-        connection_stub = ConnectionStubs(
+        connection_stub = _ConnectionStubs(
             address='executor0',
             channel=channel,
             deployment_name='executor-0',
@@ -73,7 +73,7 @@ async def test_send_requests(metrics, port_generator):
     with flow:
         address = f'0.0.0.0:{executor_port}'
         channel = get_grpc_channel(address=address, asyncio=True)
-        connection_stub = ConnectionStubs(
+        connection_stub = _ConnectionStubs(
             address='executor0',
             channel=channel,
             deployment_name='executor-0',

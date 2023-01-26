@@ -12,13 +12,13 @@ from jina.importer import ImportExtensions
 from jina.logging.logger import JinaLogger
 from jina.proto import jina_pb2
 from jina.serve.helper import format_grpc_error
-from jina.serve.networking._connection_pool_map import _ConnectionPoolMap
-from jina.serve.networking._connection_stub import create_async_channel_stub
-from jina.serve.networking._instrumentation import (
+from jina.serve.networking.connection_pool_map import _ConnectionPoolMap
+from jina.serve.networking.connection_stub import create_async_channel_stub
+from jina.serve.networking.instrumentation import (
     _NetworkingHistograms,
     _NetworkingMetrics,
 )
-from jina.serve.networking._replica_list import ReplicaList
+from jina.serve.networking.replica_list import _ReplicaList
 from jina.serve.networking.utils import DEFAULT_MINIMUM_RETRIES
 from jina.types.request import Request
 
@@ -326,7 +326,7 @@ class GrpcConnectionPool:
         total_num_tries: int = 1,  # number of retries + 1
         current_address: str = '',  # the specific address that was contacted during this attempt
         current_deployment: str = '',  # the specific deployment that was contacted during this attempt
-        connection_list: Optional[ReplicaList] = None,
+        connection_list: Optional[_ReplicaList] = None,
     ) -> 'Optional[Union[AioRpcError, InternalNetworkError]]':
         # connection failures, cancelled requests, and timed out requests should be retried
         # all other cases should not be retried and will be raised immediately
@@ -381,7 +381,7 @@ class GrpcConnectionPool:
     def _send_requests(
         self,
         requests: List[Request],
-        connections: ReplicaList,
+        connections: _ReplicaList,
         endpoint: Optional[str] = None,
         metadata: Optional[Dict[str, str]] = None,
         timeout: Optional[float] = None,
@@ -438,7 +438,7 @@ class GrpcConnectionPool:
 
     def _send_discover_endpoint(
         self,
-        connection_list: ReplicaList,
+        connection_list: _ReplicaList,
         timeout: Optional[float] = None,
         retries: Optional[int] = -1,
     ) -> asyncio.Task:
