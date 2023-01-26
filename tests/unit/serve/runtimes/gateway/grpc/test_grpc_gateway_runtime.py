@@ -7,13 +7,13 @@ from multiprocessing import Process
 
 import grpc
 import pytest
-
 from docarray import Document, DocumentArray
+
 from jina.clients.request import request_generator
 from jina.helper import random_port
 from jina.parsers import set_gateway_parser
 from jina.serve import networking
-from jina.serve.networking import GrpcConnectionPool
+from jina.serve.networking.utils import get_available_services
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.gateway import GatewayRuntime
 
@@ -476,7 +476,7 @@ async def test_grpc_gateway_runtime_reflection():
     assert AsyncNewLoopRuntime.is_ready(ctrl_address=f'127.0.0.1:{port}')
 
     async with grpc.aio.insecure_channel(f'127.0.0.1:{port}') as channel:
-        service_names = await GrpcConnectionPool.get_available_services(channel)
+        service_names = await get_available_services(channel)
 
     assert all(
         service_name in service_names

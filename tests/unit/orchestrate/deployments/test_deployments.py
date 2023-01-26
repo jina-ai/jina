@@ -1,6 +1,5 @@
 import json
 import os
-import socket
 
 import pytest
 import yaml
@@ -12,7 +11,7 @@ from jina.enums import PollingType
 from jina.excepts import RuntimeFailToStart
 from jina.orchestrate.deployments import Deployment
 from jina.parsers import set_deployment_parser, set_gateway_parser
-from jina.serve.networking import GrpcConnectionPool
+from jina.serve.networking.utils import send_request_sync
 from tests.unit.test_helper import MyDummyExecutor
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
@@ -211,7 +210,7 @@ def test_pod_activates_shards_replicas():
         response_texts = set()
         # replicas and shards are used in a round robin fashion, so sending 6 requests should hit each one time
         for _ in range(6):
-            response = GrpcConnectionPool.send_request_sync(
+            response = send_request_sync(
                 _create_test_data_message(),
                 f'{pod.head_args.host}:{pod.head_args.port}',
             )
@@ -245,7 +244,7 @@ class AppendParamExecutor(Executor):
 async def _send_requests(pod):
     response_texts = set()
     for _ in range(3):
-        response = GrpcConnectionPool.send_request_sync(
+        response = send_request_sync(
             _create_test_data_message(),
             f'{pod.head_args.host}:{pod.head_args.port}',
         )
@@ -298,7 +297,7 @@ def test_pod_activates_shards():
         assert pod.num_pods == 3 * 3 + 1
         response_texts = set()
         # replicas are used in a round robin fashion, so sending 3 requests should hit each one time
-        response = GrpcConnectionPool.send_request_sync(
+        response = send_request_sync(
             _create_test_data_message(),
             f'{pod.head_args.host}:{pod.head_args.port}',
         )
@@ -410,14 +409,14 @@ def test_dynamic_polling_with_config(polling):
     pod = Deployment(args, include_gateway=False)
 
     with pod:
-        response = GrpcConnectionPool.send_request_sync(
+        response = send_request_sync(
             _create_test_data_message(endpoint='/all'),
             f'{pod.head_args.host}:{pod.head_args.port}',
             endpoint='/all',
         )
         assert len(response.docs) == 1 + 2  # 1 source doc + 2 docs added by each shard
 
-        response = GrpcConnectionPool.send_request_sync(
+        response = send_request_sync(
             _create_test_data_message(endpoint='/any'),
             f'{pod.head_args.host}:{pod.head_args.port}',
             endpoint='/any',
@@ -426,7 +425,7 @@ def test_dynamic_polling_with_config(polling):
             len(response.docs) == 1 + 1
         )  # 1 source doc + 1 doc added by the one shard
 
-        response = GrpcConnectionPool.send_request_sync(
+        response = send_request_sync(
             _create_test_data_message(endpoint='/no_polling'),
             f'{pod.head_args.host}:{pod.head_args.port}',
             endpoint='/no_polling',
@@ -471,14 +470,14 @@ def test_dynamic_polling_default_config(polling):
     pod = Deployment(args, include_gateway=False)
 
     with pod:
-        response = GrpcConnectionPool.send_request_sync(
+        response = send_request_sync(
             _create_test_data_message(endpoint='/search'),
             f'{pod.head_args.host}:{pod.head_args.port}',
             endpoint='/search',
         )
         assert len(response.docs) == 1 + 2
 
-        response = GrpcConnectionPool.send_request_sync(
+        response = send_request_sync(
             _create_test_data_message(endpoint='/index'),
             f'{pod.head_args.host}:{pod.head_args.port}',
             endpoint='/index',
@@ -502,7 +501,7 @@ def test_dynamic_polling_overwrite_default_config(polling):
     pod = Deployment(args, include_gateway=False)
 
     with pod:
-        response = GrpcConnectionPool.send_request_sync(
+        response = send_request_sync(
             _create_test_data_message(endpoint='/search'),
             f'{pod.head_args.host}:{pod.head_args.port}',
             endpoint='/search',
@@ -511,7 +510,7 @@ def test_dynamic_polling_overwrite_default_config(polling):
             len(response.docs) == 1 + 1
         )  # 1 source doc + 1 doc added by the one shard
 
-        response = GrpcConnectionPool.send_request_sync(
+        response = send_request_sync(
             _create_test_data_message(endpoint='/index'),
             f'{pod.head_args.host}:{pod.head_args.port}',
             endpoint='/index',

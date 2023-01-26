@@ -11,7 +11,7 @@ from grpc import RpcError
 from jina.constants import __windows__
 from jina.helper import send_telemetry_event
 from jina.serve.instrumentation import InstrumentationMixin
-from jina.serve.networking import GrpcConnectionPool
+from jina.serve.networking.utils import send_health_check_sync
 from jina.serve.runtimes.base import BaseRuntime
 from jina.serve.runtimes.monitoring import MonitoringMixin
 from jina.types.request.data import DataRequest
@@ -194,9 +194,7 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, InstrumentationMixin, AB
         try:
             from grpc_health.v1 import health_pb2, health_pb2_grpc
 
-            response = GrpcConnectionPool.send_health_check_sync(
-                ctrl_address, timeout=timeout
-            )
+            response = send_health_check_sync(ctrl_address, timeout=timeout)
             return (
                 response.status == health_pb2.HealthCheckResponse.ServingStatus.SERVING
             )
