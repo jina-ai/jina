@@ -8,6 +8,7 @@ import threading
 import time
 from argparse import Namespace
 from collections import defaultdict
+from contextlib import ExitStack
 from itertools import cycle
 from typing import TYPE_CHECKING, Dict, List, Optional, Set, Type, Union, overload
 
@@ -27,6 +28,7 @@ from jina.constants import (
 from jina.enums import DeploymentRoleType, GatewayProtocolType, PodRoleType, PollingType
 from jina.helper import ArgNamespace, parse_host_scheme, random_port
 from jina.importer import ImportExtensions
+from jina.jaml import JAMLCompatible
 from jina.logging.logger import JinaLogger
 from jina.orchestrate.deployments.install_requirements_helper import (
     _get_package_path_from_uses,
@@ -47,7 +49,13 @@ if TYPE_CHECKING:
     from jina.serve.executors import BaseExecutor
 
 
-class Deployment(PostMixin, BaseOrchestrator):
+class DeploymentType(type(ExitStack), type(JAMLCompatible)):
+    """Type of Deployment, metaclass of :class:`Deployment`"""
+
+    pass
+
+
+class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=DeploymentType):
     """A Deployment is an immutable set of pods, which run in replicas. They share the same input and output socket.
     Internally, the pods can run with the process/thread backend. They can be also run in their own containers
     :param args: arguments parsed from the CLI

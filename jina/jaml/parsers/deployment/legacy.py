@@ -1,23 +1,25 @@
-from typing import Any, Dict, Optional, Type
+from typing import TYPE_CHECKING, Any, Dict, Optional, Type
 
 from jina.jaml.parsers.base import BaseLegacyParser
-from jina.serve.gateway import BaseGateway
+
+if TYPE_CHECKING:
+    from jina.orchestrate.deployments import Deployment
 
 
-class GatewayLegacyParser(BaseLegacyParser):
+class DeploymentLegacyParser(BaseLegacyParser):
     """Legacy parser for gateway."""
 
     def parse(
         self,
-        cls: Type['BaseGateway'],
+        cls: Type['Deployment'],
         data: Dict,
         runtime_args: Optional[Dict[str, Any]] = None,
-    ) -> 'BaseGateway':
+    ) -> 'Deployment':
         """
         :param cls: target class type to parse into, must be a :class:`JAMLCompatible` type
-        :param data: gateway yaml file loaded as python dict
+        :param data: deployment yaml file loaded as python dict
         :param runtime_args: Optional runtime_args to be directly passed without being parsed into a yaml config
-        :return: the Gateway YAML parser given the syntax version number
+        :return: the Deployment YAML parser given the syntax version number
         """
         from jina.logging.predefined import default_logger
 
@@ -37,10 +39,10 @@ class GatewayLegacyParser(BaseLegacyParser):
         obj.is_updated = False
         return obj
 
-    def dump(self, data: 'BaseGateway') -> Dict:
+    def dump(self, data: 'Deployment') -> Dict:
         """
-        :param data: versioned gateway object
-        :return: the dictionary given a versioned gateway object
+        :param data: versioned deployment object
+        :return: the dictionary given a versioned deployment object
         """
         a = {k: v for k, v in data._init_kwargs_dict.items()}
         r = {}
