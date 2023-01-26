@@ -16,7 +16,7 @@ from jina.constants import __cache_path__
 from jina.excepts import RuntimeFailToStart
 from jina.helper import random_port
 from jina.serve.executors.metas import get_default_metas
-from jina.serve.networking import GrpcConnectionPool
+from jina.serve.networking.utils import send_request_async
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.worker import WorkerRuntime
 from jina.serve.executors.decorators import write
@@ -554,7 +554,7 @@ async def test_blocking_sync_exec():
     for i in range(REQUEST_COUNT):
         send_tasks.append(
             asyncio.create_task(
-                GrpcConnectionPool.send_request_async(
+                send_request_async(
                     _create_test_data_message(),
                     target=f'{args.host}:{args.port}',
                     timeout=3.0,
