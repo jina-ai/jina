@@ -3,7 +3,7 @@
 
 # (Beta) Docarray-V2
 
-Jina provide an early support  for [DocArray-v2](https://github.com/docarray/docarray/commits/feat-rewrite-v2) which
+Jina provide an early support for [DocArray-v2](https://github.com/docarray/docarray/commits/feat-rewrite-v2) which
 is a rewrite of DocArray.
 
 ```{warning} Beta support
