@@ -20,11 +20,11 @@ At the heart of DocArray v2 is a new schema that is more flexible and expressive
 You can refer to the [DocArray v2 readme](https://github.com/docarray/docarray/tree/feat-rewrite-v2) for more details.
 
 
-On Jina side this has actually quite a big impact on the spirit of how we are building Executor. Indeed, with DocArray v1
+On Jina side this has actually quite a big impact on the spirit of how you are building Executor. Indeed, with DocArray v1
 the version that is currently used in Jina, the `Document` as a fixed schema and the Executor performs in place operations
 on directly on it. With DocArray v2 things change slightly. Each executor will need to define its own input schema
-and output schema. Of course, we still provided predefined schema. We believe this will allow Executor to be more
-expressive and flexible.
+and output schema. Of course, there still are predefined schemas that you can use out of the box. This Executor to be 
+more expressive and flexible.3
 
 ## (Beta) New Executor API
 
@@ -60,9 +60,9 @@ class MyExec(Executor):
         return docs_return
 ```
 
-For our Executor we define an input schema `InputDoc` and an output schema `OutputDoc` which are `Document`. 
-We then define the `bar` endpoint which takes as input a `DocumentArray` of `InputDoc` and return a `DocumentArray` of
-`OutputDoc`. Note that here the type hint is actually more that just a hint, and like in FastAPI we infer the actual
+For our Executor you define an input schema `InputDoc` and an output schema `OutputDoc` which are `Document`. 
+You then define the `bar` endpoint which takes as input a `DocumentArray` of `InputDoc` and return a `DocumentArray` of
+`OutputDoc`. Note that here the type hint is actually more that just a hint, the Executor infer the actual
 schema of the endpoint from the type hint.
 
 There is also a way to explicitly define the schema of the endpoint. This is done by using the `input_type` and
