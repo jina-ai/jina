@@ -1,19 +1,11 @@
-from dataclasses import dataclass
-
 import pytest
 
-from jina import Document, DocumentArray, Executor, Flow, requests
+from jina import Document, DocumentArray, Flow
 from jina.serve.networking import _NetworkingHistograms
 from jina.serve.networking._connection_stub import ConnectionStubs
 from jina.serve.networking.utils import get_grpc_channel
 from jina.types.request.data import DataRequest
-
-
-@dataclass
-class DummyExecutor(Executor):
-    @requests
-    def foo(self, docs, **kwargs):
-        docs[0].text = 'dummy'
+from tests.integration.networking import DummyExecutor
 
 
 @pytest.mark.asyncio
