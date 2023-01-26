@@ -4,7 +4,9 @@
 # (Beta) DocArray v2
 
 Jina provides early support for [DocArray-v2](https://github.com/docarray/docarray/commits/feat-rewrite-v2) which
-is a rewrite of DocArray.
+is a rewrite of DocArray. DocArray-v2 put the dataclass feature of DocArray-v1 as a first-class citizen and for this 
+purpose it is built on top of [Pydantic](https://pydantic-docs.helpmanual.io/) and . An important spirit shift is that 
+DocArray-v2 adapt to user data whereas DocArray-v1 force user to adapt to the Document schema.
 
 ```{warning} Beta support
 DocArray v2 is  still in alpha and its support in Jina is still an experimental feature, and the API is subject to 
