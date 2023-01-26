@@ -3,10 +3,10 @@
 
 # (Beta) DocArray v2
 
-Jina provides early support for [DocArray-v2](https://github.com/docarray/docarray/commits/feat-rewrite-v2) which
-is a rewrite of DocArray. DocArray-v2 put the dataclass feature of DocArray-v1 as a first-class citizen and for this 
-purpose it is built on top of [Pydantic](https://pydantic-docs.helpmanual.io/) and . An important spirit shift is that 
-DocArray-v2 adapt to user data whereas DocArray-v1 force user to adapt to the Document schema.
+Jina provides early support for [DocArray v2](https://github.com/docarray/docarray/commits/feat-rewrite-v2) which
+is a rewrite of DocArray. DocArray v2 makes the dataclass feature of DocArray-v1 a first-class citizen and for this 
+purpose it is built on top of [pydantic](https://pydantic-docs.helpmanual.io/) and . An important shift is that 
+DocArray v2 adapts to users' data, whereas DocArray v1 forces user to adapt to the Document schema.
 
 ```{warning} Beta support
 DocArray v2 is  still in alpha, its support in Jina is still an experimental feature, and the API is subject to 
@@ -20,16 +20,15 @@ At the heart of DocArray v2 is a new schema that is more flexible and expressive
 You can refer to the [DocArray v2 readme](https://github.com/docarray/docarray/tree/feat-rewrite-v2) for more details.
 
 
-On Jina side this has actually quite a big impact on the spirit of how you are building Executor. Indeed, with DocArray v1
-the version that is currently used in Jina, the `Document` has a fixed schema and the Executor performs in-place operations
-on it. With DocArray v2 things change slightly. Each executor will need to define its own input schema
-and output schema. Of course, there still are predefined schemas that you can use out of the box. This Executor to be 
-more expressive and flexible.3
+On the Jina side this has quite a big impact on the spirit of how you build an Executor:
+
+- With DocArray v1 (the version currently used in Jina), a Document has a fixed schema and an Executor performs in-place operations on it. 
+- With DocArray v2, an Executor defines its own input and output schemas. It also provides several predefined schemas that you can use out of the box.
 
 ## (Beta) New Executor API
 
 To reflect the change with DocArray v2, the Executor API now supports schema definition. The 
-design is freely inspired by [FastAPI](https://fastapi.tiangolo.com/). 
+design is inspired by [FastAPI](https://fastapi.tiangolo.com/). 
 
 
 ```{code-block} python
@@ -60,13 +59,17 @@ class MyExec(Executor):
         return docs_return
 ```
 
-For our Executor you define an input schema `InputDoc` and an output schema `OutputDoc` which are `Document`. 
-You then define the `bar` endpoint which takes as input a `DocumentArray` of `InputDoc` and return a `DocumentArray` of
-`OutputDoc`. Note that here the type hint is actually more that just a hint, the Executor infer the actual
-schema of the endpoint from the type hint.
+For our Executor we define:
 
-There is also a way to explicitly define the schema of the endpoint. This is done by using the `input_type` and
-`output_type` parameters of the `requests` decorator.
+- An input schema `InputDoc` and an output schema `OutputDoc`, which are Documents. 
+- The `bar` endpoint which takes as input a DocumentArray of `InputDoc` and returns a DocumentArray of
+`OutputDoc`. 
+
+Note that here the type hint is actually more that just a hint -- the Executor uses it to infer the actual
+schema of the endpoint.
+
+You can also explicitly define the schema of the endpoint by using the `input_type` and
+`output_type` parameters of the `requests` decorator:
 
 
 ```{code-block} python
@@ -92,7 +95,7 @@ and `output_type` will be used.
 
 ## (Beta) Client API
 
-In the client, you similarly specify the schema that is expected to be returned by the Flow. You can pass the return type by using the `return_type` parameter of the `client.post`
+In the client, you similarly specify the schema that you expect the Flow to return. You can pass the return type by using the `return_type` parameter of the `client.post`
 
 ```{code-block} python
 ---
