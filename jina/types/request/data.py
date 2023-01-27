@@ -1,9 +1,9 @@
 import copy
-from typing import Dict, Optional, TypeVar, Union
+from typing import Dict, Optional, Type, TypeVar, Union
 
-from docarray import DocumentArray
 from google.protobuf import json_format
 
+from jina._docarray import DocumentArray, docarray_v2
 from jina.excepts import BadRequestType
 from jina.helper import cached_property, random_identity, typename
 from jina.proto import jina_pb2
@@ -24,9 +24,14 @@ class DataRequest(Request):
     """
 
     class _DataContent:
-        def __init__(self, content: 'jina_pb2.DataRequestProto.DataContentProto'):
+        def __init__(
+            self,
+            content: 'jina_pb2.DataRequestProto.DataContentProto',
+            document_array_cls: Type[DocumentArray],
+        ):
             self._content = content
             self._loaded_doc_array = None
+            self.document_array_cls = document_array_cls
 
         @property
         def docs(self) -> 'DocumentArray':
@@ -35,11 +40,11 @@ class DataRequest(Request):
             .. # noqa: DAR201"""
             if not self._loaded_doc_array:
                 if self._content.WhichOneof('documents') == 'docs_bytes':
-                    self._loaded_doc_array = DocumentArray.from_bytes(
+                    self._loaded_doc_array = self.document_array_cls.from_bytes(
                         self._content.docs_bytes
                     )
                 else:
-                    self._loaded_doc_array = DocumentArray.from_protobuf(
+                    self._loaded_doc_array = self.document_array_cls.from_protobuf(
                         self._content.docs
                     )
 
@@ -51,21 +56,24 @@ class DataRequest(Request):
 
             :param value: a DocumentArray
             """
-            self.set_docs_convert_arrays(value, None)
+            self.set_docs_convert_arrays(value)
 
         def set_docs_convert_arrays(
             self, value: DocumentArray, ndarray_type: Optional[str] = None
         ):
-            """ " Convert embedding and tensor to given type, then set DocumentArray
-
+            """Convert embedding and tensor to given type, then set DocumentArray
             :param value: a DocumentArray
-            :param ndarray_type: type embedding and tensor will be converted to
+            :param ndarray_type: type tensor and embedding will be converted to
             """
             if value is not None:
                 self._loaded_doc_array = None
-                self._content.docs.CopyFrom(
-                    value.to_protobuf(ndarray_type=ndarray_type)
-                )
+
+                if docarray_v2:
+                    self._content.docs.CopyFrom(value.to_protobuf())
+                else:
+                    self._content.docs.CopyFrom(
+                        value.to_protobuf(ndarray_type=ndarray_type)
+                    )
 
         @property
         def docs_bytes(self) -> bytes:
@@ -105,6 +113,8 @@ class DataRequest(Request):
     ):
         self.buffer = None
         self._pb_body = None
+        self._document_array_cls = DocumentArray
+        self._data = None
 
         try:
             if isinstance(request, jina_pb2.DataRequestProto):
@@ -127,6 +137,22 @@ class DataRequest(Request):
             raise BadRequestType(
                 f'fail to construct a {self.__class__} object from {request}'
             ) from ex
+
+    @property
+    def document_array_cls(self) -> Type[DocumentArray]:
+        """Get the DocumentArray class to be used for deserialization.
+
+        .. # noqa: DAR201"""
+        return self._document_array_cls
+
+    @document_array_cls.setter
+    def document_array_cls(self, item_type: Type[DocumentArray]):
+        """Get the DocumentArray class to be used for deserialization.
+        .. # noqa: DAR101"""
+        self._document_array_cls = item_type
+
+        if self._data is not None:
+            self.data.document_array_cls = item_type
 
     @property
     def is_decompressed(self) -> bool:
@@ -235,7 +261,9 @@ class DataRequest(Request):
         from google.protobuf.json_format import MessageToDict
 
         d = MessageToDict(
-            self.proto_wo_data, preserving_proto_field_name=True, use_integers_for_enums=True
+            self.proto_wo_data,
+            preserving_proto_field_name=True,
+            use_integers_for_enums=True,
         )
         d['data'] = da.to_dict()
         return d
@@ -247,13 +275,18 @@ class DataRequest(Request):
         .. # noqa: DAR201"""
         return self.data.docs
 
-    @cached_property
+    @property
     def data(self) -> 'DataRequest._DataContent':
         """Get the data contained in this data request
 
         :return: the data content as an instance of _DataContent wrapping docs
         """
-        return DataRequest._DataContent(self.proto_with_data.data)
+        if self._data is None:
+            self._data = DataRequest._DataContent(
+                self.proto_with_data.data, document_array_cls=self.document_array_cls
+            )
+
+        return self._data
 
     @property
     def parameters(self) -> Dict:

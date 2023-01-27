@@ -3,8 +3,7 @@ import functools
 import json
 from typing import TYPE_CHECKING, Dict, List, Optional, Tuple
 
-from docarray import DocumentArray
-
+from jina._docarray import DocumentArray
 from jina.constants import __default_endpoint__
 from jina.excepts import BadConfigSource
 from jina.importer import ImportExtensions
@@ -103,10 +102,10 @@ class WorkerRequestHandler:
 
             # Process function configs
             func_endpoints: Dict[str, List[str]] = {
-                func.__name__: [] for func in self._executor.requests.values()
+                func.fn.__name__: [] for func in self._executor.requests.values()
             }
             for endpoint, func in self._executor.requests.items():
-                func_endpoints[func.__name__].append(endpoint)
+                func_endpoints[func.fn.__name__].append(endpoint)
             for func_name, dbatch_config in dbatch_functions:
                 for endpoint in func_endpoints[func_name]:
                     if endpoint not in self._batchqueue_config:
@@ -272,7 +271,7 @@ class WorkerRequestHandler:
         new_executor = new_cls.__new__(new_cls)
         new_executor.__dict__ = self._executor.__dict__
         for k, v in requests.items():
-            requests[k] = getattr(new_executor.__class__, requests[k].__name__)
+            requests[k] = getattr(new_executor.__class__, requests[k].fn.__name__)
         self._executor = new_executor
         self._executor.requests.clear()
         requests = {k: v.__name__ for k, v in requests.items()}
@@ -397,6 +396,13 @@ class WorkerRequestHandler:
 
         params = self._parse_params(requests[0].parameters, self._executor.metas.name)
 
+        try:
+            requests[0].document_array_cls = self._executor.requests[
+                exec_endpoint
+            ].request_schema
+        except AttributeError:
+            pass
+
         if exec_endpoint in self._batchqueue_config:
             assert len(requests) == 1, 'dynamic batching does not support no_reduce'
 
@@ -440,15 +446,15 @@ class WorkerRequestHandler:
 
     @staticmethod
     def replace_docs(
-        request: List['DataRequest'], docs: 'DocumentArray', ndarrray_type: str = None
+        request: List['DataRequest'], docs: 'DocumentArray', ndarray_type: str = None
     ) -> None:
         """Replaces the docs in a message with new Documents.
 
         :param request: The request object
         :param docs: the new docs to be used
-        :param ndarrray_type: type tensor and embedding will be converted to
+        :param ndarray_type: type tensor and embedding will be converted to
         """
-        request.data.set_docs_convert_arrays(docs, ndarray_type=ndarrray_type)
+        request.data.set_docs_convert_arrays(docs, ndarray_type=ndarray_type)
 
     @staticmethod
     def replace_parameters(request: List['DataRequest'], parameters: Dict) -> None:
@@ -537,9 +543,7 @@ class WorkerRequestHandler:
         :returns: DocumentArray extracted from the field from all messages
         """
         if len(requests) > 1:
-            result = DocumentArray(
-                d for r in requests for d in getattr(r, 'docs')
-            )
+            result = DocumentArray(d for r in requests for d in getattr(r, 'docs'))
         else:
             result = getattr(requests[0], 'docs')
 
