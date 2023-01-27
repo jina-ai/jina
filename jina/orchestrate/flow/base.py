@@ -1877,14 +1877,6 @@ class Flow(
             transient=True,
         )
         with progress:
-            # kick off ip getter thread, address, http, graphq
-            all_panels = []
-
-            t_ip = threading.Thread(
-                target=self._get_summary_table, args=(all_panels, results), daemon=True
-            )
-            threads.append(t_ip)
-
             # kick off spinner thread
             t_m = threading.Thread(
                 target=_polling_status,
@@ -1935,6 +1927,9 @@ class Flow(
                 self.close()
                 raise RuntimeFailToStart
             from rich.rule import Rule
+
+            all_panels = []
+            self._get_summary_table(all_panels)
 
             print(
                 Rule(':tada: Flow is ready to serve!'), *all_panels
@@ -2252,10 +2247,7 @@ class Flow(
     def __iter__(self):
         return self._deployment_nodes.items().__iter__()
 
-    def _get_summary_table(self, all_panels: List[Panel], results):
-
-        results['summary'] = 'pending'
-
+    def _get_summary_table(self, all_panels: List[Panel]):
         address_table = self._init_table()
 
         if not isinstance(self.protocol, list):
@@ -2404,7 +2396,6 @@ class Flow(
                 )
             )
 
-        results['summary'] = 'done'
         return all_panels
 
     @allowed_levels([FlowBuildLevel.RUNNING])
