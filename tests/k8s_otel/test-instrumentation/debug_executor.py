@@ -1,7 +1,8 @@
 from typing import Optional
+
 from opentelemetry.context.context import Context
 
-from jina import Executor, requests, DocumentArray
+from jina import DocumentArray, Executor, requests
 
 
 class ExecutorTestWithTracing(Executor):
@@ -14,7 +15,7 @@ class ExecutorTestWithTracing(Executor):
 
     @requests
     def testing(
-        self, docs: 'DocumentArray', tracing_context: Optional[Context], **kwargs
+        self, docs: DocumentArray, tracing_context: Optional[Context], **kwargs
     ):
         if self.request_counter:
             self.request_counter.add(1)

@@ -4,8 +4,7 @@ import os
 import threading
 from typing import TYPE_CHECKING, Dict, List, Optional, Sequence, Union
 
-from docarray import DocumentArray
-
+from jina._docarray import DocumentArray
 from jina.logging.logger import JinaLogger
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.gateway.graph.topology_graph import TopologyGraph
@@ -275,17 +274,16 @@ class _ExecutorStreamer:
             reqs.append(req)
 
         tasks = [
-        self._connection_pool.send_requests_once(
-            requests=[req],
-            deployment=self.executor_name,
-            head=True,
-            endpoint=on
-        ) for req in reqs]
+            self._connection_pool.send_requests_once(
+                requests=[req], deployment=self.executor_name, head=True, endpoint=on
+            )
+            for req in reqs
+        ]
 
         results = await asyncio.gather(*tasks)
-        
+
         docs = DocumentArray.empty()
-        for resp,_ in results:
+        for resp, _ in results:
             docs.extend(resp.docs)
-        
+
         return docs

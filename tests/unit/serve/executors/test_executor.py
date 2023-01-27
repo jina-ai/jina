@@ -591,14 +591,14 @@ def test_executors_inheritance_binding():
         pass
 
     assert set(A().requests.keys()) == {'/index', '/default', '_jina_dry_run_'}
-    assert A().requests['/index'] == A.a
-    assert A().requests['/default'] == A.default_a
+    assert A().requests['/index'].fn == A.a
+    assert A().requests['/default'].fn == A.default_a
     assert set(B().requests.keys()) == {'/index', '/default', '_jina_dry_run_'}
-    assert B().requests['/index'] == B.b
-    assert B().requests['/default'] == A.default_a
+    assert B().requests['/index'].fn == B.b
+    assert B().requests['/default'].fn == A.default_a
     assert set(C().requests.keys()) == {'/index', '/default', '_jina_dry_run_'}
-    assert C().requests['/index'] == B.b
-    assert C().requests['/default'] == A.default_a
+    assert C().requests['/index'].fn == B.b
+    assert C().requests['/default'].fn == A.default_a
 
 
 @pytest.mark.parametrize(

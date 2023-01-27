@@ -125,17 +125,17 @@ _set_nofile()
 # ONLY FIRST CLASS CITIZENS ARE ALLOWED HERE, namely Document, Executor Flow
 
 # Document
-from docarray import Document, DocumentArray
+from jina._docarray import Document, DocumentArray
 
 # Client
 from jina.clients import Client
+
+# Deployment
+from jina.orchestrate.deployments import Deployment
 from jina.orchestrate.flow.asyncio import AsyncFlow
 
 # Flow
 from jina.orchestrate.flow.base import Flow
-
-# Deployment
-from jina.orchestrate.deployments import Deployment
 
 # Executor
 from jina.serve.executors import BaseExecutor as Executor
