@@ -12,7 +12,7 @@ OVERRIDEN_EXECUTOR1_PARAMS = {
 
 class DummyOverrideParams(Executor):
     @requests()
-    def bar(self, docs: 'DocumentArray', parameters: Dict, *args, **kwargs):
+    def bar(self, docs: DocumentArray, parameters: Dict, *args, **kwargs):
         for doc in docs:
             doc.tags = parameters
 

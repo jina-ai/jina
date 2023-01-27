@@ -11,16 +11,16 @@ from typing import (
     Union,
 )
 
+from jina._docarray import Document
 from jina.clients.request.helper import _new_data_request, _new_data_request_from_batch
 from jina.enums import DataInputType
 from jina.helper import batch_iterator
 from jina.logging.predefined import default_logger
 
 if TYPE_CHECKING:  # pragma: no cover
-    from docarray.document import DocumentSourceType
-    from docarray.document.mixins.content import DocumentContentType
-
-    from docarray import Document
+    from jina._docarray import Document
+    from jina._docarray.document import DocumentSourceType
+    from jina._docarray.document.mixins.content import DocumentContentType
     from jina.types.request import Request
 
     SingletonDataType = Union[
@@ -65,7 +65,7 @@ def request_generator(
                 endpoint=exec_endpoint, target=target_executor, parameters=parameters
             )
         else:
-            if not isinstance(data, Iterable):
+            if not isinstance(data, Iterable) or isinstance(data, Document):
                 data = [data]
             for batch in batch_iterator(data, request_size):
                 yield _new_data_request_from_batch(
