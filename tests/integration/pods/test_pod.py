@@ -15,7 +15,7 @@ from jina.resources.health_check.gateway import (
     check_health_websocket,
 )
 from jina.resources.health_check.pod import check_health_pod
-from jina.serve.networking import GrpcConnectionPool
+from jina.serve.networking.utils import send_request_sync
 from tests.helper import _generate_pod_args
 
 
@@ -503,7 +503,7 @@ async def _activate_worker(head_port, worker_port, shard_id=None):
     activate_msg.add_related_entity(
         'worker', '127.0.0.1', worker_port, shard_id=shard_id
     )
-    GrpcConnectionPool.send_request_sync(activate_msg, f'127.0.0.1:{head_port}')
+    send_request_sync(activate_msg, f'127.0.0.1:{head_port}')
 
 
 async def _start_create_pod(pod, port_generator, type='worker', executor=None):
