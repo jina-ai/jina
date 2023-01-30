@@ -34,7 +34,7 @@ batching enabled.
 ---
 emphasize-lines: 12
 ---
-from jina import Executor, requests, dynamic_batching, Flow, DocumentArray, Document
+from jina import Executor, requests, dynamic_batching, DocumentArray, Document, Deployment
 import numpy as np
 import torch
 
@@ -51,14 +51,14 @@ class MyExecutor(Executor):
     def embed(self, docs: DocumentArray, **kwargs):
         docs.embeddings = self.model(torch.Tensor(docs.tensors))
 
-flow = Flow().add(uses=MyExecutor)
+dep = Deployment(uses=MyExecutor)
 ```
 ````
 
 ````{tab} Using uses_dynamic_batching argument
 This argument is a dictionary mapping each endpoint to its corresponding configuration:
 ```python
-from jina import requests, dynamic_batching, Executor, DocumentArray
+from jina import requests, dynamic_batching, Executor, DocumentArray, Deployment
 
 
 class MyExecutor(Executor):
@@ -75,7 +75,7 @@ class MyExecutor(Executor):
         docs.embeddings = self.model(docs.tensors)
 
 
-flow = Flow().add(
+dep = Deployment(
     uses=MyExecutor,
     uses_dynamic_batching={'/bar': {'preferred_batch_size': 10, 'timeout': 200}},
 )

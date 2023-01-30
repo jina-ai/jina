@@ -1,7 +1,7 @@
 (dockerize-exec)=
 # Containerize
 
-Once you understand what an {class}`~jina.Executor` is and how to use it inside a {class}`~jina.Flow`, you may want to wrap it into a container so you can isolate its dependencies and make it ready to run in the cloud or Kubernetes.
+Once you understand what an {class}`~jina.Executor` is, you may want to wrap it into a container so you can isolate its dependencies and make it ready to run in the cloud or Kubernetes.
 
 ````{tip}
 The recommended way to containerize an Executor is to leverage {ref}`Executor Hub <jina-hub>` to ensure your Executor can run as a container. It handles auto-provisioning, building, version control, etc:
@@ -16,8 +16,6 @@ jina hub push .
 
 The image building happens on the cloud, and once done the image is available immediately for anyone to use.
 ````
-
-
 
 You can also build a Docker image yourself and use it like any other Executor. There are some requirements
 on how this image needs to be built:
@@ -53,11 +51,7 @@ RUN pip install jina
 
 ## Set Jina Executor CLI as entrypoint
 
-When a containerized Executor is run inside a Flow,
-Jina executes `docker run` with extra arguments under the hood.
-
-This means that Jina assumes that whatever runs inside the container also runs like it would in a regular OS process. Therefore, ensure that
-the basic entrypoint of the image calls `jina executor` [CLI](../../api/jina_cli.rst) command.
+Jina executes `docker run` with extra arguments under the hood. This means that Jina assumes that whatever runs inside the container also runs like it would in a regular OS process. Therefore, ensure that the basic entrypoint of the image calls `jina executor` [CLI](../../api/jina_cli.rst) command.
 
 ```dockerfile
 ENTRYPOINT ["jina", "executor", "--uses", "config.yml"]
@@ -169,12 +163,12 @@ my_containerized_executor        latest             5cead0161cb5   13 seconds ag
 The containerized Executor can be used like any other, the only difference being the 'docker' prefix in the `uses`
  parameter:
 ```python
-from jina import Flow, DocumentArray, Document
+from jina import Deployment, DocumentArray, Document
 
-f = Flow().add(uses='docker://my_containerized_executor')
+dep = Deployment(uses='docker://my_containerized_executor')
 
-with f:
-    returned_docs = f.post(on='/', inputs=DocumentArray([Document()]))
+with dep:
+    returned_docs = dep.post(on='/', inputs=DocumentArray([Document()]))
 
 for doc in returned_docs:
     print(f'Document returned with text: "{doc.text}"')
