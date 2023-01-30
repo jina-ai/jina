@@ -7,7 +7,6 @@ import functools
 import inspect
 import multiprocessing
 import os
-import typing
 import warnings
 from types import SimpleNamespace
 from typing import (
@@ -204,7 +203,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         self._init_instrumentation(runtime_args)
         self._init_monitoring()
         self._init_workspace = workspace
-        self.logger = JinaLogger(self.__class__.__name__)
+        self.logger = JinaLogger(self.__class__.__name__, **vars(self.runtime_args))
         if __dry_run_endpoint__ not in self.requests:
             self.requests[__dry_run_endpoint__] = _FunctionWithSchema(
                 self._dry_run_func
