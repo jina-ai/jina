@@ -262,7 +262,7 @@ from jina import Executor, requests
 class MyExecutor(Executor):
     @requests
     def foo(self, **kwargs):
-        raise NotImplementedError('no time for it')
+        raise NotImplementedError('No time for it')
 ```
 
 ````{dropdown} Example usage and output
@@ -270,15 +270,15 @@ class MyExecutor(Executor):
 ```python
 from jina import Deployment
 
-f = Flow().add(uses=MyExecutor)
+dep = Deployment(uses=MyExecutor)
 
 
 def print_why(resp, exception):
     print(resp.status.description)
 
 
-with f:
-    f.post('', on_error=print_why)
+with dep:
+    dep.post('', on_error=print_why)
 ```
 
 ```shell
