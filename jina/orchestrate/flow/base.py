@@ -2793,18 +2793,6 @@ class Flow(
         )
 
     @property
-    def client_args(self) -> argparse.Namespace:
-        """Get Client settings.
-
-        # noqa: DAR201
-        """
-        if 'port' in self._gateway_kwargs:
-            kwargs = copy.deepcopy(self._gateway_kwargs)
-            kwargs['port'] = self._gateway_kwargs['port']
-
-        return ArgNamespace.kwargs2namespace(kwargs, set_client_cli_parser())
-
-    @property
     def gateway_args(self) -> argparse.Namespace:
         """Get Gateway settings.
 
@@ -2818,6 +2806,8 @@ class Flow(
         :param kwargs: new network settings
         """
         self._gateway_kwargs.update(kwargs)
+        # reset client
+        self._client = None
 
     def __getattribute__(self, item):
         obj = super().__getattribute__(item)
