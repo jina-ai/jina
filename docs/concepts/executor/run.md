@@ -2,7 +2,7 @@
 
 You can use {class}`~jina.Executor` objects directly, just like a regular Python object.
 
-One can instantiate an Executor object from a local Python class, or from the [Executor Hub](https://cloud.jina.ai/):
+You can instantiate an Executor object from a local Python class, or from the [Executor Hub](https://cloud.jina.ai/executors):
 
 ### From a local Python class
 
@@ -17,16 +17,16 @@ class MyExec(Executor):
             d.text = 'hello world'
 
 
-m = MyExec()
-da = DocumentArray([Document(text='test')])
-m.foo(da)
-print(f'Text: {da[0].text}')
+executor = MyExec()
+docs = DocumentArray([Document(text='hello')])
+
+executor.foo(da)
+print(f'Text: {docs[0].text}')
 ```
 
 ```text
 Text: hello world
 ```
-
 
 ### From the Executor Hub
 You can pull an Executor from [Executor Hub](https://cloud.jina.ai/) and use it directly as a Python object.
@@ -47,34 +47,6 @@ print(docs.embeddings.shape)
 ```text
 (1, 512)
 ```
-
-
-## Run inside an async eventloop
-
-If the Executor contains {ref}`async functions<async-executors>`, you can run it inside an asyncio eventloop.
-
-```python
-import asyncio
-from jina import Executor, requests
-
-
-class MyExecutor(Executor):
-    @requests
-    async def foo(self, **kwargs):
-        await asyncio.sleep(1.0)
-        print(kwargs)
-
-
-async def main():
-    m = MyExecutor()
-    call1 = asyncio.create_task(m.foo())
-    call2 = asyncio.create_task(m.foo())
-    await asyncio.gather(call1, call2)
-
-
-asyncio.run(main())
-```
-
 
 ## Run as a process
 
@@ -124,5 +96,3 @@ WorkerRuntime@ 1[L]: Executor CLIPTextEncoder started
 ```
 
 Just like that, our Executor is up and running.
-
-
