@@ -40,7 +40,6 @@ The Hub architecture looks like the following:
 :hidden:
 
 hub-portal
-create-hub-executor
 push-executor
 use-hub-executor
 ../../../how-to/sandbox

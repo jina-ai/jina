@@ -32,6 +32,7 @@ class MyExecutor(Executor):
 :hidden:
 
 basics
+create
 add-endpoints
 run
 serve
