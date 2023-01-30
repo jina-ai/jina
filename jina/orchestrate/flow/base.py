@@ -35,7 +35,6 @@ from rich.progress import (
     TextColumn,
     TimeElapsedColumn,
 )
-from rich.table import Table
 
 from jina.clients import Client
 from jina.clients.mixin import AsyncPostMixin, HealthCheckMixin, PostMixin, ProfileMixin
@@ -55,10 +54,7 @@ from jina.excepts import (
 from jina.helper import (
     GATEWAY_NAME,
     ArgNamespace,
-    CatchAllCleanupContextManager,
     download_mermaid_url,
-    get_internal_ip,
-    get_public_ip,
     is_port_free,
     random_ports,
     send_telemetry_event,
@@ -637,6 +633,9 @@ class Flow(
                 deployment_role=DeploymentRoleType.GATEWAY,
                 expose_endpoints=json.dumps(self._endpoints_mapping),
                 env=self.env,
+                log_config=kwargs.get('log_config')
+                if 'log_config' in kwargs
+                else self.args.log_config,
             )
         )
 
@@ -1220,6 +1219,9 @@ class Flow(
             dict(
                 name=deployment_name,
                 deployment_role=deployment_role,
+                log_config=kwargs.get('log_config')
+                if 'log_config' in kwargs
+                else self.args.log_config,
             )
         )
         parser = set_deployment_parser()
@@ -2706,7 +2708,6 @@ class Flow(
         :param k8s_namespace: The name of the k8s namespace to set for the configurations. If None, the name of the Flow will be used.
         :param include_gateway: Defines if the gateway deployment should be included, defaults to True
         """
-        import yaml
 
         if self._build_level.value < FlowBuildLevel.GRAPH.value:
             self.build(copy_flow=False)
