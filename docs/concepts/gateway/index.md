@@ -379,15 +379,19 @@ The `Gateway` logging can also be individually configured using a custom `loggin
 `logging.json.yml` is described in more detail in the {ref}`Custom logging configuration <logging-configuration>` section.
 
 ````{tab} Python
-from jina import Flow 
+```python
+from jina import Flow
 
 f = Flow().config_gateway(log_config='./logging.json.yml')
+```
 ````
 
 ````{tab} YAML
+```yaml
 jtype: Flow
 gateway:
   log_config: './logging.json.yml'
+```
 ````
 
 

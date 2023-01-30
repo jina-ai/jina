@@ -344,9 +344,11 @@ configs:
 The logging configuration can be used as follows:
 
 ````{tab} Python
+```python
 from jina import Flow
 
 f = Flow(log_config='./logging.json.yml')
+```
 ````
 
 ````{tab} YAML
@@ -354,6 +356,7 @@ f = Flow(log_config='./logging.json.yml')
 jtype: Flow
 with:
     log_config: './logging.json.yml'
+```
 ````
 
 ### Overriding logging configuration
