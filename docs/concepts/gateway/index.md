@@ -371,12 +371,31 @@ curl http://localhost:12345/status
 }
 ```
 
+(gateway-logging-configuration)=
+## Custom logging configuration
+
+The {ref}`Custom logging configuration <logging-configuration>` section describes customizing the logging configuration for all entities of the `Flow`.
+The `Gateway` logging can also be individually configured using a custom `logging.json.yml` file as in the below example. The custom logging file
+`logging.json.yml` is described in more detail in the {ref}`Custom logging configuration <logging-configuration>` section.
+
+````{tab} Python
+from jina import Flow 
+
+f = Flow().config_gateway(log_config='./logging.json.yml')
+````
+
+````{tab} YAML
+jtype: Flow
+gateway:
+  log_config: './logging.json.yml'
+````
+
+
 ## See further
 
 - {ref}`Access the Flow with the Client <client>`
 - {ref}`Deployment with Kubernetes <kubernetes>`
 - {ref}`Deployment with Docker Compose <docker-compose>`
-- {ref}`Custom logging configuration <logging-configuration>`
 
 ```{toctree}
 :hidden:

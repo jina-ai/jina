@@ -343,7 +343,7 @@ configs:
 
 The logging configuration can be used as follows:
 
-````{tab}python
+````{tab} Python
 from jina import Flow
 
 f = Flow(log_config='./logging.json.yml')
@@ -354,4 +354,25 @@ f = Flow(log_config='./logging.json.yml')
 jtype: Flow
 with:
     log_config: './logging.json.yml'
+````
+
+### Overriding logging configuration
+
+The default logging or custom logging configuration at the `Flow` level will be propagated to the `Gateway` and `Executor` entities.
+If that is not desired, every `Gateway` or `Executor` entity can be provided a custom logging configuration. 
+
+Two different `Executors` can be configured as in the below example.
+
+```python
+from jina import Flow
+
+f = (
+    Flow().add(log_config='./logging.json.yml').add(log_config='./logging.file.yml')
+)  # Create a Flow with two Executors
+```
+
+The `logging.file.yml` is another YAML file with a custom `FileHandler` configuration.
+
+````{hint}
+Refer to {ref}`Gateway logging configuration <gateway-logging-configuration>` section for configuring the `Gateway` logging.
 ````
