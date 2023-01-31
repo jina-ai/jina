@@ -379,3 +379,9 @@ The `logging.file.yml` is another YAML file with a custom `FileHandler` configur
 ````{hint}
 Refer to {ref}`Gateway logging configuration <gateway-logging-configuration>` section for configuring the `Gateway` logging.
 ````
+
+````{caution}
+When exporting the Flow to Kubernetes, the log_config file path must refer to the absolute local path of each container. The custom logging
+file must be included during the containerization process. If the availability of the file is unknown then its best to rely on the default
+configuration.
+````
