@@ -65,8 +65,7 @@ f.save_config('flow.yml')
 
 ## Start and stop
 
-When a {class}`~jina.Flow` starts, all its {ref}`added Executors <flow-add-executors>` will start as well, making it
-possible to {ref}`reach the service through its API <third-party-client>`.
+When a {class}`~jina.Flow` starts, all its {ref}`added Executors <flow-add-executors>` will start as well, making it possible to {ref}`reach the service through its API <third-party-client>`.
 
 There are three ways to start a Flow: In Python, from a YAML file, or from the terminal.
 
@@ -116,8 +115,7 @@ f.close()
 ```
 ````
 
-The statement `with f:` starts the Flow, and exiting the indented `with` block stops the Flow, including all Executors
-defined in it.
+The statement `with f:` starts the Flow, and exiting the indented `with` block stops the Flow, including all Executors defined in it.
 
 A successful start of a Flow looks like this:
 
@@ -125,8 +123,7 @@ A successful start of a Flow looks like this:
 :scale: 70%
 ```
 
-Your addresses and entrypoints can be found in the output. When you enable more features such as monitoring, HTTP
-gateway, TLS encryption, this display expands to contain more information.
+Your addresses and entrypoints can be found in the output. When you enable more features such as monitoring, HTTP gateway, TLS encryption, this display expands to contain more information.
 
 (multiprocessing-spawn)=
 
@@ -322,7 +319,7 @@ For more in-depth guides on Flow deployment, check our how-tos for {ref}`Docker 
 
 ## Logging Configuration
 
-The default {class}`jina.logging.logger.JinaLogger` uses rich console logging set up that writes to the system console.
+The default {class}`jina.logging.logger.JinaLogger` uses rich console logging that writes to the system console.
 The `log_config` argument can be used to pass in a string of the pre-configured logging configuration names in Jina or
 the absolute YAML file path of the custom logging configuration. For most cases, the default logging configuration
 sufficiently covers local, Docker and Kubernetes environments.
@@ -362,9 +359,9 @@ with:
 ### Overriding logging configuration
 
 The default logging or custom logging configuration at the `Flow` level will be propagated to the `Gateway` and `Executor` entities.
-If that is not desired, every `Gateway` or `Executor` entity can be provided a custom logging configuration. 
+If that is not desired, every `Gateway` or `Executor` entity can be provided with a custom logging configuration. 
 
-Two different `Executors` can be configured as in the below example.
+You can configure two different `Executors` as in the below example:
 
 ```python
 from jina import Flow
