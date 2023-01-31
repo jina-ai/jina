@@ -371,7 +371,7 @@ f = (
 )  # Create a Flow with two Executors
 ```
 
-The `logging.file.yml` is another YAML file with a custom `FileHandler` configuration.
+`logging.file.yml` is another YAML file with a custom `FileHandler` configuration.
 
 ````{hint}
 Refer to {ref}`Gateway logging configuration <gateway-logging-configuration>` section for configuring the `Gateway` logging.
