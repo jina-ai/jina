@@ -379,5 +379,5 @@ Refer to {ref}`Gateway logging configuration <gateway-logging-configuration>` se
 ````{caution}
 When exporting the Flow to Kubernetes, the log_config file path must refer to the absolute local path of each container. The custom logging
 file must be included during the containerization process. If the availability of the file is unknown then its best to rely on the default
-configuration.
+configuration. This restriction also applies to dockerized `Executors`. 
 ````
