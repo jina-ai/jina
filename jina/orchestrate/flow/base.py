@@ -117,6 +117,7 @@ class Flow(
         *,
         asyncio: Optional[bool] = False,
         host: Optional[str] = '0.0.0.0',
+        log_config: Optional[str] = None,
         metrics: Optional[bool] = False,
         metrics_exporter_host: Optional[str] = None,
         metrics_exporter_port: Optional[int] = None,
@@ -134,6 +135,7 @@ class Flow(
 
         :param asyncio: If set, then the input and output of this Client work in an asynchronous manner.
         :param host: The host of the Gateway, which the client should connect to, by default it is 0.0.0.0.
+        :param log_config: The config name or the absolute path to the YAML config file of the logger used in this object.
         :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.
         :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.
         :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.
@@ -233,7 +235,7 @@ class Flow(
         :param graph_description: Routing graph for the gateway
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
         :param host: The host address of the runtime, by default it is 0.0.0.0.
-        :param log_config: The YAML config of the logger used in this object.
+        :param log_config: The config name or the absolute path to the YAML config file of the logger used in this object.
         :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.
         :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.
         :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.
@@ -321,7 +323,7 @@ class Flow(
         :param inspect: The strategy on those inspect deployments in the flow.
 
               If `REMOVE` is given then all inspect deployments are removed when building the flow.
-        :param log_config: The YAML config of the logger used in this object.
+        :param log_config: The config name or the absolute path to the YAML config file of the logger used in this object.
         :param name: The name of this object.
 
               This will be used in the following places:
@@ -383,6 +385,7 @@ class Flow(
 
         :param asyncio: If set, then the input and output of this Client work in an asynchronous manner.
         :param host: The host of the Gateway, which the client should connect to, by default it is 0.0.0.0.
+        :param log_config: The config name or the absolute path to the YAML config file of the logger used in this object.
         :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.
         :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.
         :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.
@@ -416,7 +419,7 @@ class Flow(
         :param graph_description: Routing graph for the gateway
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
         :param host: The host address of the runtime, by default it is 0.0.0.0.
-        :param log_config: The YAML config of the logger used in this object.
+        :param log_config: The config name or the absolute path to the YAML config file of the logger used in this object.
         :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.
         :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.
         :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.
@@ -479,7 +482,7 @@ class Flow(
         :param inspect: The strategy on those inspect deployments in the flow.
 
               If `REMOVE` is given then all inspect deployments are removed when building the flow.
-        :param log_config: The YAML config of the logger used in this object.
+        :param log_config: The config name or the absolute path to the YAML config file of the logger used in this object.
         :param name: The name of this object.
 
               This will be used in the following places:
@@ -935,7 +938,7 @@ class Flow(
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
         :param host: The host of the Gateway, which the client should connect to, by default it is 0.0.0.0. In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts.  Then, every resulting address will be considered as one replica of the Executor.
         :param install_requirements: If set, try to install `requirements.txt` from the local Executor if exists in the Executor folder. If using Hub, install `requirements.txt` in the Hub Executor bundle to local.
-        :param log_config: The YAML config of the logger used in this object.
+        :param log_config: The config name or the absolute path to the YAML config file of the logger used in this object.
         :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.
         :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.
         :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.
@@ -1084,7 +1087,7 @@ class Flow(
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
         :param host: The host of the Gateway, which the client should connect to, by default it is 0.0.0.0. In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts.  Then, every resulting address will be considered as one replica of the Executor.
         :param install_requirements: If set, try to install `requirements.txt` from the local Executor if exists in the Executor folder. If using Hub, install `requirements.txt` in the Hub Executor bundle to local.
-        :param log_config: The YAML config of the logger used in this object.
+        :param log_config: The config name or the absolute path to the YAML config file of the logger used in this object.
         :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.
         :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.
         :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.
@@ -1332,7 +1335,7 @@ class Flow(
         :param graph_description: Routing graph for the gateway
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
         :param host: The host address of the runtime, by default it is 0.0.0.0.
-        :param log_config: The YAML config of the logger used in this object.
+        :param log_config: The config name or the absolute path to the YAML config file of the logger used in this object.
         :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.
         :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.
         :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.
@@ -1429,7 +1432,7 @@ class Flow(
         :param graph_description: Routing graph for the gateway
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
         :param host: The host address of the runtime, by default it is 0.0.0.0.
-        :param log_config: The YAML config of the logger used in this object.
+        :param log_config: The config name or the absolute path to the YAML config file of the logger used in this object.
         :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.
         :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.
         :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.
