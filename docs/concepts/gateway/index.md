@@ -11,7 +11,10 @@ supports multiple protocols and endpoints, such as gRPC, HTTP, WebSocket, and Gr
 with the Flow using the protocol of their choice.
 
 In most cases, the Gateway is automatically configured when you initialize a Flow object, so you do not need to
-configure it yourself.
+configure it yourself. 
+
+
+
 
 However, you can always explicitly configure the Gateway in Python using the
 {meth}`~jina.Flow.config_gateway` method, or in YAML. The full YAML specification for configuring the Gateway can be

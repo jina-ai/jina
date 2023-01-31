@@ -1,8 +1,9 @@
 (flow)=
-
 # Basics
 
+
 A {class}`~jina.Flow` defines how your Executors are connected together and how your data *flows* through them.
+
 
 ## Create
 
@@ -38,8 +39,8 @@ An empty Flow contains only {ref}`the Gateway<gateway>`.
 :scale: 70%
 ```
 
-For production, you should define your Flows with YAML. This is because YAML files are independent of the Python logic
-code and easier to maintain.
+For production, you should define your Flows with YAML. This is because YAML files are independent of the Python logic code and easier to maintain.
+
 
 ### Conversion between Python and YAML
 
@@ -73,6 +74,7 @@ There are three ways to start a Flow: In Python, from a YAML file, or from the t
 - As an entrypoint from terminal: use `Jina CLI <cli>` and a Flow YAML file.
 - As an entrypoint from Python code: use Flow as a context manager inside `if __name__ == '__main__'`
 - No context manager: manually call {meth}`~jina.Flow.start` and {meth}`~jina.Flow.close`.
+
 
 ````{tab} General in Python
 ```python
@@ -117,6 +119,7 @@ f.close()
 
 The statement `with f:` starts the Flow, and exiting the indented `with` block stops the Flow, including all Executors defined in it.
 
+
 A successful start of a Flow looks like this:
 
 ```{figure} success-flow.png
@@ -126,11 +129,9 @@ A successful start of a Flow looks like this:
 Your addresses and entrypoints can be found in the output. When you enable more features such as monitoring, HTTP gateway, TLS encryption, this display expands to contain more information.
 
 (multiprocessing-spawn)=
+### Set multiprocessing `spawn` 
 
-### Set multiprocessing `spawn`
-
-Some corner cases require forcing a `spawn` start method for multiprocessing, for example if you encounter "Cannot
-re-initialize CUDA in forked subprocess".
+Some corner cases require forcing a `spawn` start method for multiprocessing, for example if you encounter "Cannot re-initialize CUDA in forked subprocess". 
 
 You can use `JINA_MP_START_METHOD=spawn` before starting the Python script to enable this.
 
@@ -163,15 +164,13 @@ with f:
     f.block()
 ```
 
-The `.block()` method blocks the execution of the current thread or process, enabling external clients to access the
-Flow.
+The `.block()` method blocks the execution of the current thread or process, enabling external clients to access the Flow.
 
-In this case, the Flow can be stopped by interrupting the thread or process.
+In this case, the Flow can be stopped by interrupting the thread or process. 
 
 ### Server until an event
 
-Alternatively, a `multiprocessing` or `threading` `Event` object can be passed to `.block()`, which stops the Flow once
-set.
+Alternatively, a `multiprocessing` or `threading` `Event` object can be passed to `.block()`, which stops the Flow once set.
 
 ```python
 from jina import Flow
@@ -196,13 +195,13 @@ e.set()  # set event and stop (unblock) the Flow
 
 ### Serve on Google Colab
 
-Google Colab provides an easy-to-use Jupyter notebook environment with GPU/TPU support. Flow is fully compatible with
-Google Colab and you can use it in the following ways:
+Google Colab provides an easy-to-use Jupyter notebook environment with GPU/TPU support. Flow is fully compatible with Google Colab and you can use it in the following ways:
 
 ```{figure} jina-on-colab.svg
 :align: center
 :width: 70%
 ```
+
 
 ```{button-link} https://colab.research.google.com/github/jina-ai/jina/blob/master/docs/Using_Jina_on_Colab.ipynb
 :color: primary
@@ -213,15 +212,16 @@ Google Colab and you can use it in the following ways:
 
 Please follow the walk through and enjoy the free GPU/TPU!
 
+
 ```{tip}
 Hosing services on Google Colab is not recommended if your server aims to be long-lived or permanent. It is often used for quick experiments, demonstrations or leveraging its free GPU/TPU. For stable, secure and free hosting of Jina Flow, check out [JCloud](https://docs.jina.ai/concepts/jcloud/).
 
 ```
 
+
 ## Visualize
 
 A {class}`~jina.Flow` has a built-in `.plot()` function which can be used to visualize the `Flow`:
-
 ```python
 from jina import Flow
 
@@ -255,10 +255,9 @@ You can also visualize a remote Flow by passing the URL to `jina export flowchar
 
 ## Export
 
-A {class}`~jina.Flow` YAML can be exported as a Docker Compose YAML or a Kubernetes YAML bundle.
+A {class}`~jina.Flow` YAML can be exported as a Docker Compose YAML or a Kubernetes YAML bundle. 
 
 ### Docker Compose
-
 ```python
 from jina import Flow
 
@@ -274,10 +273,9 @@ jina export docker-compose flow.yml docker-compose.yml
 
 This will generate a single `docker-compose.yml` file containing all the Executors of the Flow.
 
-For advanced utilization of Docker Compose with Jina, refer to {ref}`How to <docker-compose>`
+For advanced utilization of Docker Compose with Jina, refer to {ref}`How to <docker-compose>` 
 
 (kubernetes-export)=
-
 ### Kubernetes
 
 ```python
@@ -296,7 +294,8 @@ jina export kubernetes flow.yml ./my-k8s
 This generates the Kubernetes configuration files for all the {class}`~jina.Executor`s in the Flow.
 The generated folder can be used directly with `kubectl` to deploy the Flow to an existing Kubernetes cluster.
 
-For advanced utilisation of Kubernetes with Jina please refer to {ref}`How to <kubernetes>`
+For advanced utilisation of Kubernetes with Jina please refer to {ref}`How to <kubernetes>` 
+
 
 ```{tip}
 Based on your local Jina version, Executor Hub may rebuild the Docker image during the YAML generation process.
