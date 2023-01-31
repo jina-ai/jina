@@ -252,14 +252,14 @@ After JCloud deployment using the autoscaling configuration, the Flow serving pa
 
 ## Configure Availability Tolerance
 
-In case of any unlikely event that would cause the service disruption of executors, JCloud allows users to specify a tolerance level in terms of number of replicas.
+If service issues cause disruption of Executors, JCloud lets you specify a tolerance level for number of replicas that stay up or go down.
 
-The JCloud parameters minAvailable and maxUnavailable ensures the absense of some replicas of an executor to be with in the limits of toleration.
+The JCloud parameters `minAvailable` and `maxUnavailable` ensure that Executors will stay up even if a certain number of replicas go down.
 
-| Name           | Default |                                     Allowed                                     | Description                                                      |
-|:---------------|:-------:|:-------------------------------------------------------------------------------:|:-----------------------------------------------------------------|
- | minAvailable   |   NA    | lesser than [replicas](https://docs.jina.ai/concepts/flow/scale-out/#scale-out) | the minimum number of replicas available during the disruption   |
- | maxUnavailable |   NA    | lesser than [replicas](https://docs.jina.ai/concepts/flow/scale-out/#scale-out) | the maximum number of replicas unavailable during the disruption |
+| Name             | Default |                                          Allowed                                          | Description                                              |
+|:-----------------|:-------:|:-----------------------------------------------------------------------------------------:|:---------------------------------------------------------|
+ | `minAvailable`   |   N/A   | Lower than number of [replicas](https://docs.jina.ai/concepts/flow/scale-out/#scale-out)  | Minimum number of replicas available during disruption   |
+| `maxUnavailable` |   N/A   | Lower than numbers of [replicas](https://docs.jina.ai/concepts/flow/scale-out/#scale-out) | Maximum number of replicas unavailable during disruption |
 
 ```{code-block} yaml
 ---
@@ -272,7 +272,7 @@ executors:
     jcloud:
       minAvailable: 2
 ```
-> In case of unlike disruption, it is ensured that at least 2 replicas would still be available. 3 replicas may be unavailable.
+> In case of unlike disruption, ensure at least two replicas will still be available, while 3 may be down.
 
 ```{code-block} yaml
 ---
@@ -285,12 +285,10 @@ executors:
     jcloud:
       maxUnavailable: 2
 ```
-> In case of unlike disruption, it is ensured that at maximum 2 replicas would not be available. At least 3 replicas would still be available.
+> In case of unlike disruption, ensure that if a maximum of 2 replicas are down, at least 3 replicas will still be available.
 
 
-
-
-## Configure gateway
+## Configure Gateway
 
 JCloud provides support Ingress gateways to expose your Flows to the public internet with TLS.
 
