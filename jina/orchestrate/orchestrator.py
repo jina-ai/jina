@@ -51,3 +51,12 @@ class BaseOrchestrator(ExitStack, ABC):
         else:
             self._public_ip = get_public_ip()
         return self._public_ip
+
+    @property
+    def _entity_id(self) -> str:
+        import uuid
+
+        if hasattr(self, '_entity_id_'):
+            return self._entity_id_
+        self._entity_id_ = uuid.uuid1().hex
+        return self._entity_id_
