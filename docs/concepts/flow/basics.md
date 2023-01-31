@@ -195,7 +195,7 @@ e.set()  # set event and stop (unblock) the Flow
 
 ### Serve on Google Colab
 
-Google Colab provides an easy-to-use Jupyter notebook environment with GPU/TPU support. Flow is fully compatible with Google Colab and you can use it in the following ways:
+[Google Colab](https://colab.research.google.com/) provides an easy-to-use Jupyter notebook environment with GPU/TPU support. Flow is fully compatible with Google Colab and you can use it in the following ways:
 
 ```{figure} jina-on-colab.svg
 :align: center
