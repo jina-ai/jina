@@ -118,7 +118,7 @@ class JinaLogger:
         name: Optional[str] = None,
         log_config: Optional[str] = None,
         quiet: bool = False,
-        suppress_root_logging: bool = False,
+        suppress_root_logging: bool = True,
         **kwargs,
     ):
 
