@@ -1812,15 +1812,15 @@ class Flow(
     def _wait_until_all_ready(self):
         results = {}
         threads = []
-        results_access = threading.Lock()
+        results_lock = threading.Lock()
 
         async def _async_wait_ready(_deployment_name, _deployment):
             try:
                 if not _deployment.external:
-                    with results_access:
+                    with results_lock:
                         results[_deployment_name] = 'pending'
                     await _deployment.async_wait_start_success()
-                    with results_access:
+                    with results_lock:
                         results[_deployment_name] = 'done'
             except Exception as ex:
                 results[_deployment_name] = repr(ex)
@@ -1828,19 +1828,21 @@ class Flow(
         def _wait_ready(_deployment_name, _deployment):
             try:
                 if not _deployment.external:
-                    with results_access:
+                    with results_lock:
                         results[_deployment_name] = 'pending'
                     _deployment.wait_start_success()
-                    with results_access:
+                    with results_lock:
                         results[_deployment_name] = 'done'
             except Exception as ex:
-                with results_access:
+                with results_lock:
                     results[_deployment_name] = repr(ex)
 
         def _polling_status(num_tasks_to_wait):
             progress = Progress(
                 SpinnerColumn(),
-                TextColumn('Waiting [b]{task.fields[pending_str]}[/]...', justify='right'),
+                TextColumn(
+                    'Waiting [b]{task.fields[pending_str]}[/]...', justify='right'
+                ),
                 BarColumn(),
                 MofNCompleteColumn(),
                 TimeElapsedColumn(),
@@ -1850,14 +1852,14 @@ class Flow(
                 task = progress.add_task(
                     'wait', total=num_tasks_to_wait, pending_str='', start=False
                 )
-                with results_access:
+                with results_lock:
                     progress.update(task, total=len(results))
                 progress.start_task(task)
 
                 while True:
                     num_done = 0
                     pendings = []
-                    with results_access:
+                    with results_lock:
                         for _k, _v in results.items():
                             sys.stdout.flush()
                             if _v == 'pending':
@@ -1866,7 +1868,9 @@ class Flow(
                                 num_done += 1
                             else:
                                 if 'JINA_EARLY_STOP' in os.environ:
-                                    self.logger.error(f'Flow is aborted due to {_k} {_v}.')
+                                    self.logger.error(
+                                        f'Flow is aborted due to {_k} {_v}.'
+                                    )
                                     os._exit(1)
 
                     pending_str = ' '.join(pendings)
@@ -1885,11 +1889,13 @@ class Flow(
             await asyncio.gather(*wait_for_ready_coros)
 
         # kick off spinner thread
-        threads.append(threading.Thread(
-            target=_polling_status,
-            args=(len(wait_for_ready_coros),),
-            daemon=True,
-        ))
+        threads.append(
+            threading.Thread(
+                target=_polling_status,
+                args=(len(wait_for_ready_coros),),
+                daemon=True,
+            )
+        )
 
         for t in threads:
             t.start()
