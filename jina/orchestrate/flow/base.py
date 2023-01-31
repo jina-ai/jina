@@ -1990,6 +1990,7 @@ class Flow(
                 host=self.host,
                 port=self.port,
                 protocol=self.protocol,
+                log_config=self.args.log_config,
             )
             kwargs.update(self._gateway_kwargs)
             self._client = Client(**kwargs)
