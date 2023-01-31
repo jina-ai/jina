@@ -24,7 +24,7 @@ from jina.constants import (
     __docker_host__,
     __windows__,
 )
-from jina.enums import DeploymentRoleType, GatewayProtocolType, PodRoleType, PollingType
+from jina.enums import DeploymentRoleType, PodRoleType, PollingType
 from jina.helper import ArgNamespace, parse_host_scheme, random_port
 from jina.importer import ImportExtensions
 from jina.logging.logger import JinaLogger
@@ -305,7 +305,7 @@ class Deployment(PostMixin, BaseOrchestrator):
                     self._gateway_kwargs[field] = kwargs.pop(field)
 
             # arguments common to both gateway and the Executor
-            for field in ['host']:
+            for field in ['host', 'log_config']:
                 if field in kwargs:
                     self._gateway_kwargs[field] = kwargs[field]
 
@@ -313,6 +313,9 @@ class Deployment(PostMixin, BaseOrchestrator):
         if args is None:
             args = ArgNamespace.kwargs2namespace(kwargs, parser, True)
         self.args = args
+        log_config = kwargs.get('log_config')
+        if log_config:
+            self.args.log_config = log_config
         self.args.polling = (
             args.polling if hasattr(args, 'polling') else PollingType.ANY
         )
