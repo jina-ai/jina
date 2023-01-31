@@ -25,7 +25,12 @@ from jina.constants import (
     __windows__,
 )
 from jina.enums import DeploymentRoleType, GatewayProtocolType, PodRoleType, PollingType
-from jina.helper import ArgNamespace, parse_host_scheme, random_port
+from jina.helper import (
+    ArgNamespace,
+    parse_host_scheme,
+    random_port,
+    send_telemetry_event,
+)
 from jina.importer import ImportExtensions
 from jina.logging.logger import JinaLogger
 from jina.orchestrate.deployments.install_requirements_helper import (
@@ -371,6 +376,15 @@ class Deployment(PostMixin, BaseOrchestrator):
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
         super().__exit__(exc_type, exc_val, exc_tb)
         self.join()
+        if self._include_gateway:
+            self._stop_time = time.time()
+            send_telemetry_event(
+                event='stop',
+                obj=self,
+                entity_id=self._entity_id,
+                duration=self._stop_time - self._start_time,
+                exc_type=str(exc_type),
+            )
         self.logger.close()
 
     def _parse_addresses_into_host_and_port(self):
@@ -766,7 +780,7 @@ class Deployment(PostMixin, BaseOrchestrator):
             ([self.pod_args['uses_before']] if self.pod_args['uses_before'] else [])
             + ([self.pod_args['uses_after']] if self.pod_args['uses_after'] else [])
             + ([self.pod_args['head']] if self.pod_args['head'] else [])
-            + ([self.pod_args['gateway']] if self.pod_args['gateway'] else [])
+            + ([self.pod_args['gateway']] if self._include_gateway else [])
         )
         for shard_id in self.pod_args['pods']:
             all_args += self.pod_args['pods'][shard_id]
@@ -826,6 +840,7 @@ class Deployment(PostMixin, BaseOrchestrator):
             If one of the :class:`Pod` fails to start, make sure that all of them
             are properly closed.
         """
+        self._start_time = time.time()
         if self.is_sandbox and not self._sandbox_deployed:
             self.update_sandbox_args()
 
@@ -850,7 +865,7 @@ class Deployment(PostMixin, BaseOrchestrator):
                 _args.noblock_on_start = True
             self.head_pod = PodFactory.build_pod(_args)
             self.enter_context(self.head_pod)
-        if self.pod_args['gateway'] is not None:
+        if self._include_gateway:
             _args = self.pod_args['gateway']
             if getattr(self.args, 'noblock_on_start', False):
                 _args.noblock_on_start = True
@@ -864,13 +879,15 @@ class Deployment(PostMixin, BaseOrchestrator):
             )
             self.enter_context(self.shards[shard_id])
 
-        if self.pod_args['gateway']:
+        if self._include_gateway:
             all_panels = []
             self._get_summary_table(all_panels)
 
             from rich.rule import Rule
 
             print(Rule(':tada: Deployment is ready to serve!'), *all_panels)
+
+            send_telemetry_event(event='start', obj=self, entity_id=self._entity_id)
 
         return self
 
