@@ -248,9 +248,9 @@ Below are the defaults and requirements for the configurations:
 | metric | concurrency | `concurrency`  /   `rps` | Metric for scaling                                |
 | target | 100         | int                      | Target number after which replicas autoscale      |
 
-After JCloud deployment using the autoscaling configuration, the Flow serving part is just the same; the only difference you may notice is it takes a few extra seconds to handle the initial requests since it needs to scale the deployments behind the scenes. Let JCloud handle the scaling from now on, and you should only worry about the code!
+After JCloud deployment using the autoscaling configuration, the Flow serving part is just the same: the only difference you may notice is it takes a few extra seconds to handle the initial requests since it needs to scale the deployments behind the scenes. Let JCloud handle the scaling from now on, and you can deal with the code!
 
-## Configure Availability Tolerance
+## Configure availability tolerance
 
 If service issues cause disruption of Executors, JCloud lets you specify a tolerance level for number of replicas that stay up or go down.
 
@@ -267,12 +267,12 @@ emphasize-lines: 5-6
 ---
 jtype: Flow
 executors:
-  - uses: jinahub+docker://Sentencizer
+  - uses: jinaai+docker://<username>/Executor1
     replicas: 5
     jcloud:
       minAvailable: 2
 ```
-> In case of unlike disruption, ensure at least two replicas will still be available, while 3 may be down.
+> In case of disruption, ensure at least two replicas will still be available, while three may be down.
 
 ```{code-block} yaml
 ---
@@ -280,12 +280,12 @@ emphasize-lines: 5-6
 ---
 jtype: Flow
 executors:
-  - uses: jinahub+docker://Sentencizer
+  - uses: jinaai+docker://<username>/Executor1
     replicas: 5
     jcloud:
       maxUnavailable: 2
 ```
-> In case of unlike disruption, ensure that if a maximum of 2 replicas are down, at least 3 replicas will still be available.
+> In case of disruption, ensure that if a maximum of two replicas are down, at least three replicas will still be available.
 
 
 ## Configure Gateway
