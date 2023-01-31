@@ -74,3 +74,10 @@ def mixin_client_features_parser(parser):
         default=None,
         help='If tracing is enabled, this port will be used to configure the metrics exporter agent.',
     )
+
+    parser.add_argument(
+        '--log-config',
+        type=str,
+        default='default',
+        help='The config name or the absolute path to the YAML config file of the logger used in this object.',
+    )

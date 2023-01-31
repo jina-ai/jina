@@ -42,7 +42,7 @@ def mixin_essential_parser(parser, default_name=None):
         '--log-config',
         type=str,
         default='default',
-        help='The YAML config of the logger used in this object.',
+        help='The config name or the absolute path to the YAML config file of the logger used in this object.',
     )
 
     gp.add_argument(
