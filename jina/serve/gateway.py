@@ -67,7 +67,7 @@ class BaseGateway(JAMLCompatible, metaclass=GatewayType):
         """
         self._add_runtime_args(runtime_args)
         self.name = name
-        self.logger = JinaLogger(self.name)
+        self.logger = JinaLogger(self.name, **vars(self.runtime_args))
         self.tracing = self.runtime_args.tracing
         self.tracer_provider = self.runtime_args.tracer_provider
         self.grpc_tracing_server_interceptors = (
@@ -114,7 +114,12 @@ class BaseGateway(JAMLCompatible, metaclass=GatewayType):
             prefetch=self.runtime_args.prefetch,
         )
 
-        self.executor = {executor_name: _ExecutorStreamer(self.streamer._connection_pool, executor_name=executor_name) for executor_name in deployments_addresses.keys()}
+        self.executor = {
+            executor_name: _ExecutorStreamer(
+                self.streamer._connection_pool, executor_name=executor_name
+            )
+            for executor_name in deployments_addresses.keys()
+        }
 
     def _add_runtime_args(self, _runtime_args: Optional[Dict]):
         from jina.parsers import set_gateway_runtime_args_parser
