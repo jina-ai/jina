@@ -578,3 +578,33 @@ def test_to_k8s_yaml(tmpdir, uses, replicas, shards):
             assert head_yaml['spec']['template']['spec']['containers'][0][
                 'image'
             ].startswith('jinaai/')
+
+
+def test_gateway(pod_args):
+    with Deployment(pod_args, include_gateway=True) as pod:
+        assert pod.gateway_pod
+
+
+def test_log_config(pod_args, monkeypatch):
+    monkeypatch.delenv('JINA_LOG_LEVEL', raising=True)  # ignore global env
+    log_config_path = os.path.join(cur_dir, '../../logging/yaml/file.yml')
+    with Deployment(pod_args, log_config=log_config_path, include_gateway=True) as pod:
+        assert pod.args.log_config == log_config_path
+        assert pod.gateway_pod.args.log_config == log_config_path
+        for _, pods in pod.pod_args['pods'].items():
+            for replica_args in pods:
+                assert replica_args.log_config == log_config_path
+
+
+def test_log_config_shards(pod_args, monkeypatch):
+    pod_args.shards = 3
+    monkeypatch.delenv('JINA_LOG_LEVEL', raising=True)  # ignore global env
+    log_config_path = os.path.join(cur_dir, '../../logging/yaml/file.yml')
+    with Deployment(pod_args, log_config=log_config_path, include_gateway=True) as pod:
+        assert pod.args.log_config == log_config_path
+        assert pod.gateway_pod.args.log_config == log_config_path
+        assert pod.head_args.log_config == log_config_path
+        assert pod.head_pod.args.log_config == log_config_path
+        for _, shards in pod.pod_args['pods'].items():
+            for shard_args in shards:
+                assert shard_args.log_config == log_config_path

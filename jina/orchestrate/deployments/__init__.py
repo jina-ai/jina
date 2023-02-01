@@ -24,7 +24,7 @@ from jina.constants import (
     __docker_host__,
     __windows__,
 )
-from jina.enums import DeploymentRoleType, GatewayProtocolType, PodRoleType, PollingType
+from jina.enums import DeploymentRoleType, PodRoleType, PollingType
 from jina.helper import (
     ArgNamespace,
     parse_host_scheme,
@@ -206,7 +206,7 @@ class Deployment(PostMixin, BaseOrchestrator):
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
         :param host: The host of the Gateway, which the client should connect to, by default it is 0.0.0.0. In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts.  Then, every resulting address will be considered as one replica of the Executor.
         :param install_requirements: If set, try to install `requirements.txt` from the local Executor if exists in the Executor folder. If using Hub, install `requirements.txt` in the Hub Executor bundle to local.
-        :param log_config: The YAML config of the logger used in this object.
+        :param log_config: The config name or the absolute path to the YAML config file of the logger used in this object.
         :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.
         :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.
         :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.
@@ -310,7 +310,7 @@ class Deployment(PostMixin, BaseOrchestrator):
                     self._gateway_kwargs[field] = kwargs.pop(field)
 
             # arguments common to both gateway and the Executor
-            for field in ['host']:
+            for field in ['host', 'log_config']:
                 if field in kwargs:
                     self._gateway_kwargs[field] = kwargs[field]
 
@@ -318,6 +318,9 @@ class Deployment(PostMixin, BaseOrchestrator):
         if args is None:
             args = ArgNamespace.kwargs2namespace(kwargs, parser, True)
         self.args = args
+        log_config = kwargs.get('log_config')
+        if log_config:
+            self.args.log_config = log_config
         self.args.polling = (
             args.polling if hasattr(args, 'polling') else PollingType.ANY
         )

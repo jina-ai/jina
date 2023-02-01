@@ -35,7 +35,6 @@ from rich.progress import (
     TextColumn,
     TimeElapsedColumn,
 )
-from rich.table import Table
 
 from jina.clients import Client
 from jina.clients.mixin import AsyncPostMixin, HealthCheckMixin, PostMixin, ProfileMixin
@@ -55,10 +54,7 @@ from jina.excepts import (
 from jina.helper import (
     GATEWAY_NAME,
     ArgNamespace,
-    CatchAllCleanupContextManager,
     download_mermaid_url,
-    get_internal_ip,
-    get_public_ip,
     is_port_free,
     random_ports,
     send_telemetry_event,
@@ -121,6 +117,7 @@ class Flow(
         *,
         asyncio: Optional[bool] = False,
         host: Optional[str] = '0.0.0.0',
+        log_config: Optional[str] = None,
         metrics: Optional[bool] = False,
         metrics_exporter_host: Optional[str] = None,
         metrics_exporter_port: Optional[int] = None,
@@ -138,6 +135,7 @@ class Flow(
 
         :param asyncio: If set, then the input and output of this Client work in an asynchronous manner.
         :param host: The host of the Gateway, which the client should connect to, by default it is 0.0.0.0.
+        :param log_config: The config name or the absolute path to the YAML config file of the logger used in this object.
         :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.
         :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.
         :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.
@@ -237,7 +235,7 @@ class Flow(
         :param graph_description: Routing graph for the gateway
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
         :param host: The host address of the runtime, by default it is 0.0.0.0.
-        :param log_config: The YAML config of the logger used in this object.
+        :param log_config: The config name or the absolute path to the YAML config file of the logger used in this object.
         :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.
         :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.
         :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.
@@ -325,7 +323,7 @@ class Flow(
         :param inspect: The strategy on those inspect deployments in the flow.
 
               If `REMOVE` is given then all inspect deployments are removed when building the flow.
-        :param log_config: The YAML config of the logger used in this object.
+        :param log_config: The config name or the absolute path to the YAML config file of the logger used in this object.
         :param name: The name of this object.
 
               This will be used in the following places:
@@ -387,6 +385,7 @@ class Flow(
 
         :param asyncio: If set, then the input and output of this Client work in an asynchronous manner.
         :param host: The host of the Gateway, which the client should connect to, by default it is 0.0.0.0.
+        :param log_config: The config name or the absolute path to the YAML config file of the logger used in this object.
         :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.
         :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.
         :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.
@@ -420,7 +419,7 @@ class Flow(
         :param graph_description: Routing graph for the gateway
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
         :param host: The host address of the runtime, by default it is 0.0.0.0.
-        :param log_config: The YAML config of the logger used in this object.
+        :param log_config: The config name or the absolute path to the YAML config file of the logger used in this object.
         :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.
         :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.
         :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.
@@ -483,7 +482,7 @@ class Flow(
         :param inspect: The strategy on those inspect deployments in the flow.
 
               If `REMOVE` is given then all inspect deployments are removed when building the flow.
-        :param log_config: The YAML config of the logger used in this object.
+        :param log_config: The config name or the absolute path to the YAML config file of the logger used in this object.
         :param name: The name of this object.
 
               This will be used in the following places:
@@ -637,6 +636,9 @@ class Flow(
                 deployment_role=DeploymentRoleType.GATEWAY,
                 expose_endpoints=json.dumps(self._endpoints_mapping),
                 env=self.env,
+                log_config=kwargs.get('log_config')
+                if 'log_config' in kwargs
+                else self.args.log_config,
             )
         )
 
@@ -936,7 +938,7 @@ class Flow(
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
         :param host: The host of the Gateway, which the client should connect to, by default it is 0.0.0.0. In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts.  Then, every resulting address will be considered as one replica of the Executor.
         :param install_requirements: If set, try to install `requirements.txt` from the local Executor if exists in the Executor folder. If using Hub, install `requirements.txt` in the Hub Executor bundle to local.
-        :param log_config: The YAML config of the logger used in this object.
+        :param log_config: The config name or the absolute path to the YAML config file of the logger used in this object.
         :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.
         :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.
         :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.
@@ -1085,7 +1087,7 @@ class Flow(
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
         :param host: The host of the Gateway, which the client should connect to, by default it is 0.0.0.0. In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts.  Then, every resulting address will be considered as one replica of the Executor.
         :param install_requirements: If set, try to install `requirements.txt` from the local Executor if exists in the Executor folder. If using Hub, install `requirements.txt` in the Hub Executor bundle to local.
-        :param log_config: The YAML config of the logger used in this object.
+        :param log_config: The config name or the absolute path to the YAML config file of the logger used in this object.
         :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.
         :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.
         :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.
@@ -1220,6 +1222,9 @@ class Flow(
             dict(
                 name=deployment_name,
                 deployment_role=deployment_role,
+                log_config=kwargs.get('log_config')
+                if 'log_config' in kwargs
+                else self.args.log_config,
             )
         )
         parser = set_deployment_parser()
@@ -1330,7 +1335,7 @@ class Flow(
         :param graph_description: Routing graph for the gateway
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
         :param host: The host address of the runtime, by default it is 0.0.0.0.
-        :param log_config: The YAML config of the logger used in this object.
+        :param log_config: The config name or the absolute path to the YAML config file of the logger used in this object.
         :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.
         :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.
         :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.
@@ -1427,7 +1432,7 @@ class Flow(
         :param graph_description: Routing graph for the gateway
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
         :param host: The host address of the runtime, by default it is 0.0.0.0.
-        :param log_config: The YAML config of the logger used in this object.
+        :param log_config: The config name or the absolute path to the YAML config file of the logger used in this object.
         :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.
         :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.
         :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.
@@ -2000,6 +2005,7 @@ class Flow(
                 host=self.host,
                 port=self.port,
                 protocol=self.protocol,
+                log_config=self.args.log_config,
             )
             kwargs.update(self._gateway_kwargs)
             self._client = Client(**kwargs)
@@ -2718,7 +2724,6 @@ class Flow(
         :param k8s_namespace: The name of the k8s namespace to set for the configurations. If None, the name of the Flow will be used.
         :param include_gateway: Defines if the gateway deployment should be included, defaults to True
         """
-        import yaml
 
         if self._build_level.value < FlowBuildLevel.GRAPH.value:
             self.build(copy_flow=False)
@@ -2804,18 +2809,6 @@ class Flow(
         )
 
     @property
-    def client_args(self) -> argparse.Namespace:
-        """Get Client settings.
-
-        # noqa: DAR201
-        """
-        if 'port' in self._gateway_kwargs:
-            kwargs = copy.deepcopy(self._gateway_kwargs)
-            kwargs['port'] = self._gateway_kwargs['port']
-
-        return ArgNamespace.kwargs2namespace(kwargs, set_client_cli_parser())
-
-    @property
     def gateway_args(self) -> argparse.Namespace:
         """Get Gateway settings.
 
@@ -2829,6 +2822,8 @@ class Flow(
         :param kwargs: new network settings
         """
         self._gateway_kwargs.update(kwargs)
+        # reset client
+        self._client = None
 
     def __getattribute__(self, item):
         obj = super().__getattribute__(item)
