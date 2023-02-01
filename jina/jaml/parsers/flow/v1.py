@@ -2,6 +2,7 @@ import argparse
 import os
 from typing import Any, Dict, Optional
 
+from jina import Deployment
 from jina.helper import GATEWAY_NAME, ArgNamespace, expand_env_var
 from jina.jaml.parsers.base import VersionedYAMLParser
 from jina.orchestrate.flow.base import Flow
@@ -69,6 +70,9 @@ class V1Parser(VersionedYAMLParser):
 
         pp = data.get('executors', data.get('deployments', []))
         for deployments in pp:
+            if isinstance(deployments, str):
+                dep = Deployment.load_config(deployments)
+                getattr(obj, 'add')(dep)
             p_deployment_attr = {
                 kk: expand_env_var(vv) for kk, vv in deployments.items()
             }
