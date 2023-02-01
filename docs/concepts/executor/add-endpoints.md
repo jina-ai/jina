@@ -36,6 +36,30 @@ class RequestExecutor(Executor):
         print(f'Calling bar')
 ```
 
+Run the example:
+```python
+from jina import Deployment
+
+dep = Deployment(uses=RequestExecutor)
+with dep:
+    dep.post(on='/index', inputs=[])
+    dep.post(on='/other', inputs=[])
+    dep.post(on='/search', inputs=[])
+```
+
+```shell
+─────────────────────── 🎉 Deployment is ready to serve! ───────────────────────
+╭────────────── 🔗 Endpoint ───────────────╮
+│  ⛓     Protocol                    GRPC │
+│  🏠       Local           0.0.0.0:59525  │
+│  🔒     Private      192.168.1.13:59525  │
+│  🌍      Public   197.244.143.223:59525  │
+╰──────────────────────────────────────────╯
+Calling foo
+Calling bar
+Calling foo
+```
+
 ### Default binding
 
 A class method decorated with plain `@requests` (without `on=`) is the default handler for all endpoints.
@@ -242,6 +266,7 @@ class MyExec(Executor):
     @requests(on='/status')
     def status(self, **kwargs):
         return {'internal_parameter': 20}
+
 
 with Deployment(uses=MyExec) as dep:
     print(dep.post(on='/status').to_dict()["parameters"])
