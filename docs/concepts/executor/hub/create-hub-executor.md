@@ -1,4 +1,4 @@
-(create-executor)=
+(create-hub-executor)=
 # Create
 
 To create your {class}`~jina.Executor`, run:
