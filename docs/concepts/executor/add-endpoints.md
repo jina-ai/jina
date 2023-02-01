@@ -87,7 +87,13 @@ class MyExecutor(Executor):
 If a class has no `@requests` decorator, the request simply passes through without any processing.
 
 ## Arguments
+All Executor methods decorated by `@requests` need to follow the signature below to be usable as a microservice to be orchestrated either using {class}`~jina.Flow` or {class}`~jina.Deployment`.
+Some arguments are only relevant when an Executor is part of the Flow like `docs_matrix` and `docs_map` and are explained 
+in the {ref}`Executor in Flow section<executor-in-flow>`.
 
+The `async` definition is optional.
+
+The full endpoint signature is the following:
 ```python
 from typing import Dict, Union, List, Optional
 from jina import Executor, requests, DocumentArray
@@ -95,7 +101,17 @@ from jina import Executor, requests, DocumentArray
 
 class MyExecutor(Executor):
     @requests
-    def foo(
+    async def foo(
+        self,
+        docs: DocumentArray,
+        parameters: Dict,
+        docs_matrix: Optional[List[DocumentArray]],
+        docs_map: Optional[Dict[str, DocumentArray]],
+    ) -> Union[DocumentArray, Dict, None]:
+        pass
+
+    @requests
+    def bar(
         self,
         docs: DocumentArray,
         parameters: Dict,
