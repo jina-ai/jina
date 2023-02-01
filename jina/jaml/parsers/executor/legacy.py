@@ -113,7 +113,7 @@ class ExecutorLegacyParser(BaseLegacyParser):
             r['metas'] = p
 
         if hasattr(data, 'requests'):
-            r['requests'] = {k: v.__name__ for k, v in data.requests.items()}
+            r['requests'] = {k: v.fn.__name__ for k, v in data.requests.items()}
 
         if hasattr(data, 'dynamic_batching'):
             r['dynamic_batching'] = data.dynamic_batching

@@ -384,6 +384,55 @@ jobs:
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
 
+  docarray-v-two-test:
+    needs: prep-testbed
+    runs-on: ubuntu-latest
+    env:
+      JINA_RANDOM_PORT_MIN: 16384
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [3.7]
+    steps:
+      - uses: actions/checkout@v2.5.0
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Prepare environment
+        run: |
+          docker build -f Dockerfiles/test-pip.Dockerfile -t jinaai/jina:test-pip .
+          pip install -U "git+https://github.com/docarray/docarray@feat-rewrite-v2#egg=docarray[common]"
+          python -m pip install --upgrade pip
+          python -m pip install wheel
+          pip install -U protobuf==3.20.3
+          pip install ".[common,devel,test]" --no-cache-dir
+          jina
+          export JINA_LOG_LEVEL="ERROR"
+      - name: Test
+        id: test
+        run: |
+          pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml --timeout=600 -v -s --ignore-glob='tests/integration/hub_usage/dummyhub*' tests/integration/docarray_v2
+
+          echo "flag it as jina for codeoverage"
+          echo "codecov_flag=jina" >> $GITHUB_OUTPUT
+        timeout-minutes: 30
+        env:
+          JINA_AUTH_TOKEN: "${{ secrets.JINA_AUTH_TOKEN }}"
+      - name: Check codecov file
+        id: check_files
+        uses: andstor/file-existence-action@v1
+        with:
+          files: "coverage.xml"
+      - name: Upload coverage from test to Codecov
+        uses: codecov/codecov-action@v3.1.1
+        if: steps.check_files.outputs.files_exists == 'true' && ${{ matrix.python-version }} == '3.7'
+        with:
+          file: coverage.xml
+          name: ${{ matrix.test-path }}-codecov
+          flags: ${{ steps.test.outputs.codecov_flag }}
+          fail_ci_if_error: false
+
   core-test:
     needs: prep-testbed
     runs-on: ubuntu-latest
@@ -411,12 +460,13 @@ jobs:
       - name: Test
         id: test
         run: |
-          pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml --timeout=600 -v -s --ignore-glob='tests/integration/hub_usage/dummyhub*' ${{ matrix.test-path }}
+          pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml --timeout=600 -v -s --ignore-glob='tests/integration/docarray_v2/*' --ignore-glob='tests/integration/hub_usage/dummyhub*' ${{ matrix.test-path }}
           if [[ "${{ matrix.test-path }}" == *"tests/integration/instrumentation/" ]]
           then
             echo "sleeping to let open telemetry export daemon thread expire by itself"
             sleep 2
           fi 
+
 
           echo "flag it as jina for codeoverage"
           echo "codecov_flag=jina" >> $GITHUB_OUTPUT
@@ -502,7 +552,8 @@ jobs:
   # just for blocking the merge until all parallel core-test are successful
   success-all-test:
     runs-on: ubuntu-latest
-    needs: [commit-lint, core-test, import-test, hub-test, k8s-flow-test, k8s-graceful-and-deployment-test, k8s-failures-test, docker-compose-test, docker-image-test, check-docstring, check-black, code-injection]
+    needs: [commit-lint, core-test, docarray-v-two-test, import-test, hub-test, k8s-flow-test, k8s-failures-test, docker-compose-test, docker-image-test, check-docstring, check-black, code-injection]
+
     if: always()
     steps:
       - uses: technote-space/workflow-conclusion-action@v2

@@ -1,16 +1,17 @@
 import time
 import warnings
 from functools import partialmethod
-from typing import TYPE_CHECKING, AsyncGenerator, Dict, List, Optional, Union
+from typing import TYPE_CHECKING, AsyncGenerator, Dict, List, Optional, Type, Union
 
 from jina.helper import deprecate_by, get_or_reuse_loop, run_async
 from jina.importer import ImportExtensions
 
 if TYPE_CHECKING:  # pragma: no cover
-    from docarray import DocumentArray
 
     from jina.clients.base import CallbackFnType, InputType
     from jina.types.request.data import Response
+
+from jina._docarray import DocumentArray
 
 
 def _include_results_field_in_param(parameters: Optional['Dict']) -> 'Dict':
@@ -226,6 +227,7 @@ class PostMixin:
         results_in_order: bool = False,
         stream: bool = True,
         prefetch: Optional[int] = None,
+        return_type: Type[DocumentArray] = DocumentArray,
         **kwargs,
     ) -> Optional[Union['DocumentArray', List['Response']]]:
         """Post a general data request to the Flow.
@@ -248,6 +250,7 @@ class PostMixin:
         :param results_in_order: return the results in the same order as the inputs
         :param stream: Applicable only to grpc client. If True, the requests are sent to the target using the gRPC streaming interface otherwise the gRPC unary interface will be used. The value is True by default.
         :param prefetch: How many Requests are processed from the Client at the same time. If not provided then Gateway prefetch value will be used.
+        :param return_type: the DocumentArray type to be returned. By default, it is `DocumentArray`.
         :param kwargs: additional parameters
         :return: None or DocumentArray containing all response Documents
 
@@ -261,17 +264,16 @@ class PostMixin:
 
         parameters = _include_results_field_in_param(parameters)
 
-        from docarray import DocumentArray
-
         return_results = (on_always is None) and (on_done is None)
 
         async def _get_results(*args, **kwargs):
-            result = [] if return_responses else DocumentArray()
+            result = [] if return_responses else return_type([])
             async for resp in c._get_results(*args, **kwargs):
                 if return_results:
                     if return_responses:
                         result.append(resp)
                     else:
+                        resp.document_array_cls = return_type
                         result.extend(resp.data.docs)
             if return_results:
                 return result
@@ -326,6 +328,7 @@ class AsyncPostMixin:
         results_in_order: bool = False,
         stream: bool = True,
         prefetch: Optional[int] = None,
+        return_type: Type[DocumentArray] = DocumentArray,
         **kwargs,
     ) -> AsyncGenerator[None, Union['DocumentArray', 'Response']]:
         """Async Post a general data request to the Flow.
@@ -348,6 +351,7 @@ class AsyncPostMixin:
         :param results_in_order: return the results in the same order as the inputs
         :param stream: Applicable only to grpc client. If True, the requests are sent to the target using the gRPC streaming interface otherwise the gRPC unary interface will be used. The value is True by default.
         :param prefetch: How many Requests are processed from the Client at the same time. If not provided then Gateway prefetch value will be used.
+        :param return_type: the DocumentArray type to be returned. By default, it is `DocumentArray`.
         :param kwargs: additional parameters, can be used to pass metadata or authentication information in the server call
         :yield: Response object
 
@@ -376,9 +380,11 @@ class AsyncPostMixin:
             results_in_order=results_in_order,
             stream=stream,
             prefetch=prefetch,
+            return_type=return_type,
             **kwargs,
         ):
             if not return_responses:
+                result.document_array_cls = return_type
                 yield result.data.docs
             else:
                 yield result

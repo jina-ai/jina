@@ -1,8 +1,6 @@
-import asyncio
-from typing import TYPE_CHECKING, Optional, Sequence, Union
+from typing import TYPE_CHECKING, Optional, Sequence
 from urllib.parse import urlparse
 
-import grpc
 from grpc.aio import ClientInterceptor
 
 from jina.excepts import EstablishGrpcConnectionError
@@ -17,8 +15,6 @@ if TYPE_CHECKING:
     from opentelemetry.instrumentation.grpc._client import (
         OpenTelemetryClientInterceptor,
     )
-
-GRACE_PERIOD_DESTROY_CONNECTION = 0.5
 
 
 class _ReplicaList:
@@ -44,7 +40,6 @@ class _ReplicaList:
         self._metrics = metrics
         self._histograms = histograms
         self._logger = logger
-        self._destroyed_event = asyncio.Event()
         self.aio_tracing_client_interceptors = aio_tracing_client_interceptors
         self.tracing_client_interceptors = tracing_client_interceptor
         self._deployment_name = deployment_name
@@ -52,9 +47,7 @@ class _ReplicaList:
         # this set is not updated in reset_connection and remove_connection
         self._warmup_stubs = set()
 
-    async def reset_connection(
-        self, address: str, deployment_name: str
-    ) -> Union[grpc.aio.Channel, None]:
+    async def reset_connection(self, address: str, deployment_name: str):
         """
         Removes and then re-adds a connection.
         Result is the same as calling :meth:`remove_connection` and then :meth:`add_connection`, but this allows for
@@ -62,7 +55,6 @@ class _ReplicaList:
 
         :param address: Target address of this connection
         :param deployment_name: Target deployment of this connection
-        :returns: The reset connection or None if there was no connection for the given address
         """
         self._logger.debug(f'resetting connection for {deployment_name} to {address}')
 
@@ -71,25 +63,15 @@ class _ReplicaList:
             and self._address_to_connection_idx[address] is not None
         ):
             # remove connection:
-            # in contrast to remove_connection(), we don't 'shorten' the data structures below, instead just set to None
-            # so if someone else accesses them in the meantime, they know that they can just wait
+            # in contrast to remove_connection(), we don't 'shorten' the data structures below, instead
+            # update the data structure with the new connection and let the old connection be colleced by
+            # the GC
             id_to_reset = self._address_to_connection_idx[address]
-            self._address_to_connection_idx[address] = None
-            connection_to_reset = self._connections[id_to_reset]
-            self._connections[id_to_reset] = None
-            channel_to_reset = self._address_to_channel[address]
-            self._address_to_channel[address] = None
-            self._destroyed_event.clear()
-            await self._destroy_connection(channel_to_reset)
-            self._destroyed_event.set()
             # re-add connection:
             self._address_to_connection_idx[address] = id_to_reset
             stubs, channel = self._create_connection(address, deployment_name)
             self._address_to_channel[address] = channel
             self._connections[id_to_reset] = stubs
-
-            return connection_to_reset
-        return None
 
     def add_connection(self, address: str, deployment_name: str):
         """
@@ -107,7 +89,7 @@ class _ReplicaList:
             stubs, _ = self._create_connection(address, deployment_name)
             self._warmup_stubs.add(stubs)
 
-    async def remove_connection(self, address: str) -> Union[grpc.aio.Channel, None]:
+    async def remove_connection(self, address: str):
         """
         Remove connection with address from the connection list
 
@@ -118,7 +100,6 @@ class _ReplicaList:
             which is safe to use in this scenario.
 
         :param address: Remove connection for this address
-        :returns: The removed connection or None if there was not any for the given address
         """
         if address in self._address_to_connection_idx:
             self._rr_counter = (
@@ -127,20 +108,11 @@ class _ReplicaList:
                 else 0
             )
             idx_to_delete = self._address_to_connection_idx.pop(address)
-            popped_connection = self._connections.pop(idx_to_delete)
-            closing_channel = self._address_to_channel[address]
-            del self._address_to_channel[address]
-            await self._destroy_connection(
-                closing_channel, grace=GRACE_PERIOD_DESTROY_CONNECTION
-            )
+            self._connections.pop(idx_to_delete)
             # update the address/idx mapping
             for address in self._address_to_connection_idx:
                 if self._address_to_connection_idx[address] > idx_to_delete:
                     self._address_to_connection_idx[address] -= 1
-
-            return popped_connection
-
-        return None
 
     def _create_connection(self, address, deployment_name: str):
         parsed_address = urlparse(address)
@@ -156,10 +128,6 @@ class _ReplicaList:
             aio_tracing_client_interceptors=self.aio_tracing_client_interceptors,
         )
         return stubs, channel
-
-    async def _destroy_connection(self, connection, grace=0.5):
-        # we should handle graceful termination better, 0.5 is a rather random number here
-        await connection.close(grace)
 
     async def get_next_connection(self, num_retries=3):
         """
@@ -193,13 +161,7 @@ class _ReplicaList:
                 self._logger.debug(
                     f' No valid connection found for {self._deployment_name}, give chance for potential resetting of connection'
                 )
-                try:
-                    await asyncio.wait_for(
-                        self._destroyed_event.wait(),
-                        timeout=GRACE_PERIOD_DESTROY_CONNECTION,
-                    )
-                finally:
-                    return await self._get_next_connection(num_retries=num_retries - 1)
+                return await self._get_next_connection(num_retries=num_retries - 1)
         except IndexError:
             # This can happen as a race condition while _removing_ connections
             self._rr_counter = 0
