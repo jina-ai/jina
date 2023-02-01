@@ -1,9 +1,5 @@
 # Run
 
-You can use {class}`~jina.Executor` objects directly, just like a regular Python object.
-
-You can instantiate an Executor object from a local Python class, or from the [Executor Hub](https://cloud.jina.ai/executors):
-
 ### From a local Python class
 
 ```python
