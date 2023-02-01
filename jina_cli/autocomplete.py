@@ -89,6 +89,7 @@ ac_table = {
             '--quiet',
             '--quiet-error',
             '--workspace-id',
+            '--suppress-root-logging',
             '--uses',
             '--reload',
             '--env',
@@ -401,6 +402,7 @@ ac_table = {
             '--log-config',
             '--protocol',
             '--prefetch',
+            '--suppress-root-logging',
         ],
     },
 }

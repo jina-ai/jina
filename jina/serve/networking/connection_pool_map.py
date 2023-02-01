@@ -170,10 +170,8 @@ class _ConnectionPoolMap:
             self._logger.debug(
                 f'removing connection for deployment {deployment}/{type}/{entity_id} to {address}'
             )
-            connection = await self._deployments[deployment][type][
-                entity_id
-            ].remove_connection(address)
+            await self._deployments[deployment][type][entity_id].remove_connection(
+                address
+            )
             if not self._deployments[deployment][type][entity_id].has_connections():
-                del self._deployments[deployment][type][entity_id]
-            return connection
-        return None
+                self._deployments[deployment][type].pop(entity_id)

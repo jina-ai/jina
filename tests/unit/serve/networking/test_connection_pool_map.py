@@ -23,10 +23,8 @@ async def test_head_addition_removal(logger, metrics, port_generator):
     assert len(replica_list.get_all_connections()) == 1
     assert not connection_pool.get_replicas(deployment=head_deployment, head=False)
 
-    removed_connection = await connection_pool.remove_head(
-        deployment=head_deployment, address=head_address
-    )
-    assert removed_connection
+    await connection_pool.remove_head(deployment=head_deployment, address=head_address)
+    assert not connection_pool.get_replicas(deployment=head_deployment, head=True)
 
 
 @pytest.mark.asyncio
@@ -57,14 +55,14 @@ async def test_replica_addition_removal(logger, metrics, port_generator):
         deployment=replica_1_deployment, head=False
     ).has_connections()
 
-    removed_connection_0 = await connection_pool.remove_replica(
+    await connection_pool.remove_replica(
         deployment=replica_0_deployment, address=replica_0_address
     )
-    assert removed_connection_0
-    removed_connection_1 = await connection_pool.remove_replica(
+    assert not connection_pool.get_replicas(deployment=replica_0_deployment, head=False)
+    await connection_pool.remove_replica(
         deployment=replica_1_deployment, address=replica_1_address
     )
-    assert removed_connection_1
+    assert not connection_pool.get_replicas(deployment=replica_1_deployment, head=False)
 
 
 def test_independent_shards_and_replicas(logger, metrics, port_generator):
