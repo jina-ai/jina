@@ -248,10 +248,47 @@ Below are the defaults and requirements for the configurations:
 | metric | concurrency | `concurrency`  /   `rps` | Metric for scaling                                |
 | target | 100         | int                      | Target number after which replicas autoscale      |
 
-After JCloud deployment using the autoscaling configuration, the Flow serving part is just the same; the only difference you may notice is it takes a few extra seconds to handle the initial requests since it needs to scale the deployments behind the scenes. Let JCloud handle the scaling from now on, and you should only worry about the code!
+After JCloud deployment using the autoscaling configuration, the Flow serving part is just the same: the only difference you may notice is it takes a few extra seconds to handle the initial requests since it needs to scale the deployments behind the scenes. Let JCloud handle the scaling from now on, and you can deal with the code!
+
+## Configure availability tolerance
+
+If service issues cause disruption of Executors, JCloud lets you specify a tolerance level for number of replicas that stay up or go down.
+
+The JCloud parameters `minAvailable` and `maxUnavailable` ensure that Executors will stay up even if a certain number of replicas go down.
+
+| Name             | Default |                                          Allowed                                          | Description                                              |
+|:-----------------|:-------:|:-----------------------------------------------------------------------------------------:|:---------------------------------------------------------|
+ | `minAvailable`   |   N/A   | Lower than number of [replicas](https://docs.jina.ai/concepts/flow/scale-out/#scale-out)  | Minimum number of replicas available during disruption   |
+| `maxUnavailable` |   N/A   | Lower than numbers of [replicas](https://docs.jina.ai/concepts/flow/scale-out/#scale-out) | Maximum number of replicas unavailable during disruption |
+
+```{code-block} yaml
+---
+emphasize-lines: 5-6
+---
+jtype: Flow
+executors:
+  - uses: jinaai+docker://<username>/Executor1
+    replicas: 5
+    jcloud:
+      minAvailable: 2
+```
+> In case of disruption, ensure at least two replicas will still be available, while three may be down.
+
+```{code-block} yaml
+---
+emphasize-lines: 5-6
+---
+jtype: Flow
+executors:
+  - uses: jinaai+docker://<username>/Executor1
+    replicas: 5
+    jcloud:
+      maxUnavailable: 2
+```
+> In case of disruption, ensure that if a maximum of two replicas are down, at least three replicas will still be available.
 
 
-## Configure gateway
+## Configure Gateway
 
 JCloud provides support Ingress gateways to expose your Flows to the public internet with TLS.
 
