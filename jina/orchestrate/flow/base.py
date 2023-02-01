@@ -1812,54 +1812,74 @@ class Flow(
     def _wait_until_all_ready(self):
         results = {}
         threads = []
+        results_lock = threading.Lock()
 
         async def _async_wait_ready(_deployment_name, _deployment):
             try:
                 if not _deployment.external:
-                    results[_deployment_name] = 'pending'
+                    with results_lock:
+                        results[_deployment_name] = 'pending'
                     await _deployment.async_wait_start_success()
-                    results[_deployment_name] = 'done'
+                    with results_lock:
+                        results[_deployment_name] = 'done'
             except Exception as ex:
                 results[_deployment_name] = repr(ex)
 
         def _wait_ready(_deployment_name, _deployment):
             try:
                 if not _deployment.external:
-                    results[_deployment_name] = 'pending'
+                    with results_lock:
+                        results[_deployment_name] = 'pending'
                     _deployment.wait_start_success()
-                    results[_deployment_name] = 'done'
+                    with results_lock:
+                        results[_deployment_name] = 'done'
             except Exception as ex:
-                results[_deployment_name] = repr(ex)
+                with results_lock:
+                    results[_deployment_name] = repr(ex)
 
-        def _polling_status(progress, num_tasks_to_wait):
-            task = progress.add_task(
-                'wait', total=num_tasks_to_wait, pending_str='', start=False
+        def _polling_status(num_tasks_to_wait):
+            progress = Progress(
+                SpinnerColumn(),
+                TextColumn(
+                    'Waiting [b]{task.fields[pending_str]}[/]...', justify='right'
+                ),
+                BarColumn(),
+                MofNCompleteColumn(),
+                TimeElapsedColumn(),
+                transient=True,
             )
+            with progress:
+                task = progress.add_task(
+                    'wait', total=num_tasks_to_wait, pending_str='', start=False
+                )
+                with results_lock:
+                    progress.update(task, total=len(results))
+                progress.start_task(task)
 
-            progress.update(task, total=len(results))
-            progress.start_task(task)
+                while True:
+                    num_done = 0
+                    pendings = []
+                    with results_lock:
+                        for _k, _v in results.items():
+                            sys.stdout.flush()
+                            if _v == 'pending':
+                                pendings.append(_k)
+                            elif _v == 'done':
+                                num_done += 1
+                            else:
+                                if 'JINA_EARLY_STOP' in os.environ:
+                                    self.logger.error(
+                                        f'Flow is aborted due to {_k} {_v}.'
+                                    )
+                                    os._exit(1)
 
-            while True:
-                num_done = 0
-                pendings = []
-                for _k, _v in results.items():
-                    sys.stdout.flush()
-                    if _v == 'pending':
-                        pendings.append(_k)
-                    elif _v == 'done':
-                        num_done += 1
-                    else:
-                        if 'JINA_EARLY_STOP' in os.environ:
-                            self.logger.error(f'Flow is aborted due to {_k} {_v}.')
-                            os._exit(1)
+                    pending_str = ' '.join(pendings)
 
-                pending_str = ' '.join(pendings)
+                    progress.update(task, completed=num_done, pending_str=pending_str)
 
-                progress.update(task, completed=num_done, pending_str=pending_str)
-
-                if not pendings:
-                    break
-                time.sleep(0.1)
+                    if not pendings:
+                        break
+                    time.sleep(0.1)
 
         wait_for_ready_coros = []
         for k, v in self:
@@ -1868,72 +1888,64 @@ class Flow(
         async def _async_wait_all():
             await asyncio.gather(*wait_for_ready_coros)
 
-        progress = Progress(
-            SpinnerColumn(),
-            TextColumn('Waiting [b]{task.fields[pending_str]}[/]...', justify='right'),
-            BarColumn(),
-            MofNCompleteColumn(),
-            TimeElapsedColumn(),
-            transient=True,
-        )
-        with progress:
-            # kick off spinner thread
-            t_m = threading.Thread(
+        # kick off spinner thread
+        threads.append(
+            threading.Thread(
                 target=_polling_status,
-                args=(progress, len(wait_for_ready_coros)),
+                args=(len(wait_for_ready_coros),),
                 daemon=True,
             )
-            threads.append(t_m)
+        )
 
-            for t in threads:
+        for t in threads:
+            t.start()
+
+        # kick off all deployments wait-ready tasks
+        try:
+            _ = asyncio.get_event_loop()
+        except:
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+
+        async def _f():
+            pass
+
+        running_in_event_loop = False
+        try:
+            asyncio.get_event_loop().run_until_complete(_f())
+        except:
+            running_in_event_loop = True
+
+        if not running_in_event_loop:
+            asyncio.get_event_loop().run_until_complete(_async_wait_all())
+        else:
+            new_threads = []
+            for k, v in self:
+                new_threads.append(
+                    threading.Thread(target=_wait_ready, args=(k, v), daemon=True)
+                )
+            threads.extend(new_threads)
+            for t in new_threads:
                 t.start()
 
-            # kick off all deployments wait-ready tasks
-            try:
-                _ = asyncio.get_event_loop()
-            except:
-                loop = asyncio.new_event_loop()
-                asyncio.set_event_loop(loop)
+        for t in threads:
+            t.join()
 
-            async def _f():
-                pass
+        error_deployments = [k for k, v in results.items() if v != 'done']
+        if error_deployments:
+            self.logger.error(
+                f'Flow is aborted due to {error_deployments} can not be started.'
+            )
+            self.close()
+            raise RuntimeFailToStart
+        from rich.rule import Rule
 
-            running_in_event_loop = False
-            try:
-                asyncio.get_event_loop().run_until_complete(_f())
-            except:
-                running_in_event_loop = True
+        all_panels = []
+        self._get_summary_table(all_panels)
 
-            if not running_in_event_loop:
-                asyncio.get_event_loop().run_until_complete(_async_wait_all())
-            else:
-                new_threads = []
-                for k, v in self:
-                    new_threads.append(
-                        threading.Thread(target=_wait_ready, args=(k, v), daemon=True)
-                    )
-                threads.extend(new_threads)
-                for t in new_threads:
-                    t.start()
-
-            for t in threads:
-                t.join()
-
-            error_deployments = [k for k, v in results.items() if v != 'done']
-            if error_deployments:
-                self.logger.error(
-                    f'Flow is aborted due to {error_deployments} can not be started.'
-                )
-                self.close()
-                raise RuntimeFailToStart
-            from rich.rule import Rule
-
-            all_panels = []
-            self._get_summary_table(all_panels)
-
-            print(
-                Rule(':tada: Flow is ready to serve!'), *all_panels
-            )  # can't use logger here see : https://github.com/Textualize/rich/discussions/2024
+        print(
+            Rule(':tada: Flow is ready to serve!'), *all_panels
+        )  # can't use logger here see : https://github.com/Textualize/rich/discussions/2024
         self.logger.debug(
             f'{self.num_deployments} Deployments (i.e. {self.num_pods} Pods) are running in this Flow'
         )
