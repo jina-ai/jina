@@ -125,6 +125,7 @@ class Flow(
         prefetch: Optional[int] = 1000,
         protocol: Optional[Union[str, List[str]]] = 'GRPC',
         proxy: Optional[bool] = False,
+        suppress_root_logging: Optional[bool] = False,
         tls: Optional[bool] = False,
         traces_exporter_host: Optional[str] = None,
         traces_exporter_port: Optional[int] = None,
@@ -145,6 +146,7 @@ class Flow(
               Used to control the speed of data input into a Flow. 0 disables prefetch (1000 requests is the default)
         :param protocol: Communication protocol between server and client.
         :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
+        :param suppress_root_logging: If set, then no root handlers will be suppressed from logging.
         :param tls: If set, connect to gateway using tls encryption
         :param traces_exporter_host: If tracing is enabled, this hostname will be used to configure the trace exporter agent.
         :param traces_exporter_port: If tracing is enabled, this port will be used to configure the trace exporter agent.
@@ -313,6 +315,7 @@ class Flow(
         quiet: Optional[bool] = False,
         quiet_error: Optional[bool] = False,
         reload: Optional[bool] = False,
+        suppress_root_logging: Optional[bool] = False,
         uses: Optional[str] = None,
         workspace: Optional[str] = None,
         **kwargs,
@@ -336,6 +339,7 @@ class Flow(
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
         :param reload: If set, auto-reloading on file changes is enabled: the Flow will restart while blocked if  YAML configuration source is changed. This also applies apply to underlying Executors, if their source code or YAML configuration has changed.
+        :param suppress_root_logging: If set, then no root handlers will be suppressed from logging.
         :param uses: The YAML path represents a flow. It can be either a local file path or a URL.
         :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.
 
@@ -395,6 +399,7 @@ class Flow(
               Used to control the speed of data input into a Flow. 0 disables prefetch (1000 requests is the default)
         :param protocol: Communication protocol between server and client.
         :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
+        :param suppress_root_logging: If set, then no root handlers will be suppressed from logging.
         :param tls: If set, connect to gateway using tls encryption
         :param traces_exporter_host: If tracing is enabled, this hostname will be used to configure the trace exporter agent.
         :param traces_exporter_port: If tracing is enabled, this port will be used to configure the trace exporter agent.
@@ -495,6 +500,7 @@ class Flow(
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
         :param reload: If set, auto-reloading on file changes is enabled: the Flow will restart while blocked if  YAML configuration source is changed. This also applies apply to underlying Executors, if their source code or YAML configuration has changed.
+        :param suppress_root_logging: If set, then no root handlers will be suppressed from logging.
         :param uses: The YAML path represents a flow. It can be either a local file path or a URL.
         :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.
 
