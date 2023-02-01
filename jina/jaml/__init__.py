@@ -740,6 +740,7 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
                     else _extra_search_paths,
                 )
 
+            from jina.orchestrate.deployments import Deployment
             from jina.orchestrate.flow.base import Flow
 
             if issubclass(cls, Flow):
@@ -758,6 +759,15 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
                     JAML.dump(no_tag_yml),
                     include_unknown_tags=False,
                     jtype_whitelist=('Flow',),
+                )
+            elif issubclass(cls, Deployment):
+                no_tag_yml['with']['extra_search_paths'] = (
+                    no_tag_yml['with'].get('extra_search_paths') or []
+                ) + (extra_search_paths or [])
+                tag_yml = JAML.unescape(
+                    JAML.dump(no_tag_yml),
+                    include_unknown_tags=False,
+                    jtype_whitelist=('Deployment',),
                 )
             else:
                 # revert yaml's tag and load again, this time with substitution
