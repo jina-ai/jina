@@ -70,7 +70,7 @@ Here we show how to build a basic Executor with a dependency on another external
 
 ### Write the Executor
 
-You can define your soon-to-be-Dockerized Executor exactly like any other Executor.
+You can define your soon-to-be-dockerized Executor exactly like any other Executor.
 
 We do this here in the `my_executor.py` file:
 

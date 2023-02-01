@@ -28,8 +28,9 @@ print(f'Text: {docs[0].text}')
 Text: hello world
 ```
 
-### From the Executor Hub
-You can pull an Executor from [Executor Hub](https://cloud.jina.ai/) and use it directly as a Python object.
+### From Executor Hub
+
+[Executor Hub](https://cloud.jina.ai/executors) is Jina AI's marketplace for Executors, letting you pull Executors to your local machine without getting your hands dirty implementing functionality from scratch. Check the {ref}`docs <jina-hub>` for more information.
 
 ```python
 from docarray import Document, DocumentArray
@@ -70,7 +71,7 @@ jina executor --uses my-exec.yml --port 12345
 
 ### From Executor Hub
 
-In this example, we use `CLIPTextEncoder` to create embeddings for our Documents.
+In this example, we use [`CLIPTextEncoder`](https://cloud.jina.ai/executor/livtkbkg) to create embeddings for our Documents.
 
 ````{tab} With Docker
 

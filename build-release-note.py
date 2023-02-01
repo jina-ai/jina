@@ -1,0 +1,1 @@
+../team-tech-content/release-note-maker/build-release-note.py
