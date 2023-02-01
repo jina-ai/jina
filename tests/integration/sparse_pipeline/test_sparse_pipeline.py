@@ -1,12 +1,11 @@
-from typing import Any
 import os
+from typing import Any
 
-import pytest
 import numpy as np
+import pytest
 from scipy import sparse
 
-from jina import Flow, Document, DocumentArray, requests, Executor
-
+from jina import Document, DocumentArray, Executor, Flow, requests
 from tests import validate_callback
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
@@ -33,13 +32,13 @@ class DummyCSRSparseIndexEncoder(Executor):
         self.docs = DocumentArray()
 
     @requests(on='/index')
-    def encode(self, docs: 'DocumentArray', *args, **kwargs) -> Any:
+    def encode(self, docs: DocumentArray, *args, **kwargs) -> Any:
         for i, doc in enumerate(docs):
             doc.embedding = sparse.coo_matrix(doc.content)
         self.docs.extend(docs)
 
     @requests(on='/search')
-    def query(self, docs: 'DocumentArray', parameters, *args, **kwargs):
+    def query(self, docs: DocumentArray, parameters, *args, **kwargs):
         top_k = int(parameters['top_k'])
         for doc in docs:
             doc.matches = self.docs[:top_k]

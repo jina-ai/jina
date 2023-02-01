@@ -22,11 +22,11 @@ class CrudIndexer(Executor):
             self.logger.warning(f'No data found at {self._dump_location}')
 
     @requests(on='/index')
-    def index(self, docs: 'DocumentArray', **kwargs):
+    def index(self, docs: DocumentArray, **kwargs):
         self._docs.extend(docs)
 
     @requests(on='/update')
-    def update(self, docs: 'DocumentArray', **kwargs):
+    def update(self, docs: DocumentArray, **kwargs):
         self.delete(docs)
         self.index(docs)
 
@@ -35,7 +35,7 @@ class CrudIndexer(Executor):
         self._docs.save_json(self._dump_location)
 
     @requests(on='/delete')
-    def delete(self, docs: 'DocumentArray', **kwargs):
+    def delete(self, docs: DocumentArray, **kwargs):
         # TODO we can do del _docs[d.id] once
         # tests.unit.types.arrays.test_documentarray.test_delete_by_id is fixed
         ids_to_delete = [d.id for d in docs]
@@ -47,7 +47,7 @@ class CrudIndexer(Executor):
             del self._docs[i]
 
     @requests(on='/search')
-    def search(self, docs: 'DocumentArray', parameters: Dict, **kwargs):
+    def search(self, docs: DocumentArray, parameters: Dict, **kwargs):
         top_k = int(parameters.get('top_k', 1))
         a = np.stack(docs[:, 'embedding'])
         b = np.stack(self._docs[:, 'embedding'])

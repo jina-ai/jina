@@ -39,8 +39,6 @@ class K8sDeploymentConfig:
             common_args: Union['Namespace', Dict],
             deployment_args: Union['Namespace', Dict],
             k8s_namespace: str,
-            k8s_deployments_addresses: Optional[Dict[str, List[str]]] = None,
-            k8s_deployments_metadata: Optional[Dict[str, Dict[str, str]]] = None,
         ):
             self.name = name
             self.dns_name = to_compatible_name(name)
@@ -52,14 +50,11 @@ class K8sDeploymentConfig:
             self.deployment_args = deployment_args
             self.num_replicas = getattr(self.deployment_args, 'replicas', 1)
             self.k8s_namespace = k8s_namespace
-            self.k8s_deployments_addresses = k8s_deployments_addresses
-            self.k8s_deployments_metadata = k8s_deployments_metadata
 
         def get_gateway_yamls(
             self,
         ) -> List[Dict]:
             cargs = copy.copy(self.deployment_args)
-            cargs.deployments_addresses = self.k8s_deployments_addresses
             from jina.helper import ArgNamespace
             from jina.parsers import set_gateway_parser
 
@@ -133,7 +128,7 @@ class K8sDeploymentConfig:
             )
 
         def get_runtime_yamls(
-            self,
+            self, k8s_port: Optional[int] = GrpcConnectionPool.K8S_PORT
         ) -> List[Dict]:
             cargs = copy.copy(self.deployment_args)
 
@@ -215,14 +210,14 @@ class K8sDeploymentConfig:
                 port_monitoring=cargs.port_monitoring,
                 volumes=getattr(cargs, 'volumes', None),
                 timeout_ready=cargs.timeout_ready,
+                k8s_port=k8s_port,
             )
 
     def __init__(
         self,
         args: Union['Namespace', Dict],
         k8s_namespace: Optional[str] = None,
-        k8s_deployments_addresses: Optional[Dict[str, List[str]]] = None,
-        k8s_deployments_metadata: Optional[Dict[str, Dict[str, str]]] = None,
+        k8s_port: Optional[int] = GrpcConnectionPool.K8S_PORT,
     ):
         # External Deployments should be ignored in a K8s based Flow
         assert not (hasattr(args, 'external') and args.external)
@@ -232,8 +227,7 @@ class K8sDeploymentConfig:
                 'You need to use a containerized Executor. You may check `jina hub --help` to see how Jina Hub can help you building containerized Executors.'
             )
         self.k8s_namespace = k8s_namespace
-        self.k8s_deployments_addresses = k8s_deployments_addresses
-        self.k8s_deployments_metadata = k8s_deployments_metadata
+        self.k8s_port = k8s_port
         self.head_deployment = None
         self.args = copy.copy(args)
         if k8s_namespace is not None:
@@ -241,7 +235,7 @@ class K8sDeploymentConfig:
             self.args.k8s_namespace = k8s_namespace
         self.name = self.args.name
 
-        self.deployment_args = self._get_deployment_args(self.args)
+        self.deployment_args = self._get_deployment_args(self.args, k8s_port=k8s_port)
 
         if self.deployment_args['head_deployment'] is not None:
             self.head_deployment = self._K8sDeployment(
@@ -253,7 +247,6 @@ class K8sDeploymentConfig:
                 deployment_args=self.deployment_args['head_deployment'],
                 pod_type=PodRoleType.HEAD,
                 k8s_namespace=self.k8s_namespace,
-                k8s_deployments_addresses=self.k8s_deployments_addresses,
             )
         self.worker_deployments = []
         deployment_args = self.deployment_args['deployments']
@@ -271,16 +264,12 @@ class K8sDeploymentConfig:
                     else PodRoleType.GATEWAY,
                     jina_deployment_name=self.name,
                     k8s_namespace=self.k8s_namespace,
-                    k8s_deployments_addresses=self.k8s_deployments_addresses
-                    if name == 'gateway'
-                    else None,
-                    k8s_deployments_metadata=self.k8s_deployments_metadata
-                    if name == 'gateway'
-                    else None,
                 )
             )
 
-    def _get_deployment_args(self, args):
+    def _get_deployment_args(
+        self, args, k8s_port: Optional[int] = GrpcConnectionPool.K8S_PORT
+    ):
         parsed_args = {
             'head_deployment': None,
             'deployments': [],
@@ -296,7 +285,7 @@ class K8sDeploymentConfig:
                     self.args
                 )
                 parsed_args['head_deployment'].gpus = None
-                parsed_args['head_deployment'].port = GrpcConnectionPool.K8S_PORT
+                parsed_args['head_deployment'].port = k8s_port
                 parsed_args[
                     'head_deployment'
                 ].port_monitoring = GrpcConnectionPool.K8S_PORT_MONITORING
@@ -341,7 +330,10 @@ class K8sDeploymentConfig:
             cargs.uses_before = None
             cargs.uses_after = None
             if args.name != 'gateway':
-                cargs.port = GrpcConnectionPool.K8S_PORT
+                if shards > 1:
+                    cargs.port = GrpcConnectionPool.K8S_PORT
+                else:
+                    cargs.port = k8s_port
                 cargs.port_monitoring = GrpcConnectionPool.K8S_PORT_MONITORING
 
             cargs.uses_before_address = None
@@ -377,7 +369,7 @@ class K8sDeploymentConfig:
             return [
                 (
                     deployment.dns_name,
-                    deployment.get_runtime_yamls(),
+                    deployment.get_runtime_yamls(k8s_port=self.k8s_port),
                 )
                 for deployment in deployments
             ]

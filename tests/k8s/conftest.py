@@ -77,12 +77,18 @@ class KindClusterWrapper:
         )
 
         self._log.info('check linkerd status')
-        out = subprocess.check_output(
-            [f'{Path.home()}/.linkerd2/bin/linkerd', 'check'],
-            env=os.environ,
-        )
-
-        print(f'linkerd check yields {out.decode() if out else "nothing"}')
+        try:
+            out = subprocess.check_output(
+                [f'{Path.home()}/.linkerd2/bin/linkerd', 'check'],
+                env=os.environ,
+                stderr=subprocess.STDOUT,
+            )
+            print(f'linkerd check yields {out.decode() if out else "nothing"}')
+        except subprocess.CalledProcessError as e:
+            print(
+                f'linkerd check failed with error code { e.returncode } and output { e.output }'
+            )
+            raise
 
     def install_linkderd_smi(self) -> None:
         self._log.info('Installing Linkerd SMI to Cluster...')
@@ -110,16 +116,22 @@ class KindClusterWrapper:
             raise Exception(f"Installing linkerd failed with {returncode}")
 
         self._log.info('check linkerd status')
-        out = subprocess.check_output(
-            [f'{Path.home()}/.linkerd2/bin/linkerd-smi', 'check'],
-            env=os.environ,
-        )
-
-        print(f'linkerd check yields {out.decode() if out else "nothing"}')
+        try:
+            out = subprocess.check_output(
+                [f'{Path.home()}/.linkerd2/bin/linkerd-smi', 'check'],
+                env=os.environ,
+                stderr=subprocess.STDOUT,
+            )
+            print(f'linkerd check yields {out.decode() if out else "nothing"}')
+        except subprocess.CalledProcessError as e:
+            print(
+                f'linkerd check failed with error code { e.returncode } and output { e.output }'
+            )
 
     def _set_kube_config(self):
         self._log.info(f'Setting KUBECONFIG to {self._kube_config_path}')
         os.environ['KUBECONFIG'] = self._kube_config_path
+        load_cluster_config()
 
     def load_docker_images(
         self, images: List[str], image_tag_map: Dict[str, str]
@@ -185,8 +197,7 @@ def set_test_pip_version() -> None:
     del os.environ['JINA_GATEWAY_IMAGE']
 
 
-@pytest.fixture(autouse=True)
-def load_cluster_config(k8s_cluster: KindClusterWrapper) -> None:
+def load_cluster_config() -> None:
     import kubernetes
 
     try:

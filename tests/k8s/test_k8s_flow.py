@@ -202,15 +202,16 @@ def k8s_flow_env_from_secret(docker_images, jina_k3_env):
     )
     return flow
 
+
 @pytest.fixture
 def k8s_dummy_secret():
     from kubernetes import client
-    
+
     secret = client.V1Secret(
         api_version='v1',
         kind='Secret',
         metadata=client.V1ObjectMeta(name='mysecret'),
-        string_data={'username': 'jina', 'password': '123456'}
+        string_data={'username': 'jina', 'password': '123456'},
     )
     return secret
 
@@ -635,7 +636,9 @@ async def test_flow_with_env_from_secret(
         k8s_flow_env_from_secret.to_kubernetes_yaml(dump_path, k8s_namespace=namespace)
 
         # create namespace
-        core_client.create_namespace(client.V1Namespace(metadata=client.V1ObjectMeta(name=namespace)))
+        core_client.create_namespace(
+            client.V1Namespace(metadata=client.V1ObjectMeta(name=namespace))
+        )
 
         # create secret
         core_client.create_namespaced_secret(namespace=namespace, body=k8s_dummy_secret)

@@ -1,8 +1,8 @@
 import json
 import os
-import socket
 
 import pytest
+import yaml
 
 from jina import Document, DocumentArray, Executor, requests
 from jina.clients.request import request_generator
@@ -11,7 +11,7 @@ from jina.enums import PollingType
 from jina.excepts import RuntimeFailToStart
 from jina.orchestrate.deployments import Deployment
 from jina.parsers import set_deployment_parser, set_gateway_parser
-from jina.serve.networking import GrpcConnectionPool
+from jina.serve.networking.utils import send_request_sync
 from tests.unit.test_helper import MyDummyExecutor
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
@@ -199,22 +199,33 @@ class AppendNameExecutor(Executor):
 
 
 @pytest.mark.slow
-def test_pod_activates_replicas():
-    args_list = ['--replicas', '3', '--shards', '2', '--no-reduce']
+def test_pod_activates_shards_replicas():
+    shards = 2
+    replicas = 3
+    args_list = ['--replicas', str(replicas), '--shards', str(shards), '--no-reduce']
     args = set_deployment_parser().parse_args(args_list)
     args.uses = 'AppendNameExecutor'
     with Deployment(args, include_gateway=False) as pod:
         assert pod.num_pods == 7
         response_texts = set()
-        # replicas are used in a round robin fashion, so sending 3 requests should hit each one time
+        # replicas and shards are used in a round robin fashion, so sending 6 requests should hit each one time
         for _ in range(6):
-            response = GrpcConnectionPool.send_request_sync(
+            response = send_request_sync(
                 _create_test_data_message(),
                 f'{pod.head_args.host}:{pod.head_args.port}',
             )
             response_texts.update(response.response.docs.texts)
-        assert 4 == len(response_texts)
-        assert all(text in response_texts for text in ['0', '1', '2', 'client'])
+        print(response_texts)
+        assert 7 == len(response_texts)
+        assert all(
+            text in response_texts
+            for text in ['client']
+            + [
+                f'executor/shard-{s}/rep-{r}'
+                for s in range(shards)
+                for r in range(replicas)
+            ]
+        )
 
     Deployment(args, include_gateway=False).start().close()
 
@@ -233,7 +244,7 @@ class AppendParamExecutor(Executor):
 async def _send_requests(pod):
     response_texts = set()
     for _ in range(3):
-        response = GrpcConnectionPool.send_request_sync(
+        response = send_request_sync(
             _create_test_data_message(),
             f'{pod.head_args.host}:{pod.head_args.port}',
         )
@@ -286,7 +297,7 @@ def test_pod_activates_shards():
         assert pod.num_pods == 3 * 3 + 1
         response_texts = set()
         # replicas are used in a round robin fashion, so sending 3 requests should hit each one time
-        response = GrpcConnectionPool.send_request_sync(
+        response = send_request_sync(
             _create_test_data_message(),
             f'{pod.head_args.host}:{pod.head_args.port}',
         )
@@ -398,14 +409,14 @@ def test_dynamic_polling_with_config(polling):
     pod = Deployment(args, include_gateway=False)
 
     with pod:
-        response = GrpcConnectionPool.send_request_sync(
+        response = send_request_sync(
             _create_test_data_message(endpoint='/all'),
             f'{pod.head_args.host}:{pod.head_args.port}',
             endpoint='/all',
         )
         assert len(response.docs) == 1 + 2  # 1 source doc + 2 docs added by each shard
 
-        response = GrpcConnectionPool.send_request_sync(
+        response = send_request_sync(
             _create_test_data_message(endpoint='/any'),
             f'{pod.head_args.host}:{pod.head_args.port}',
             endpoint='/any',
@@ -414,7 +425,7 @@ def test_dynamic_polling_with_config(polling):
             len(response.docs) == 1 + 1
         )  # 1 source doc + 1 doc added by the one shard
 
-        response = GrpcConnectionPool.send_request_sync(
+        response = send_request_sync(
             _create_test_data_message(endpoint='/no_polling'),
             f'{pod.head_args.host}:{pod.head_args.port}',
             endpoint='/no_polling',
@@ -459,14 +470,14 @@ def test_dynamic_polling_default_config(polling):
     pod = Deployment(args, include_gateway=False)
 
     with pod:
-        response = GrpcConnectionPool.send_request_sync(
+        response = send_request_sync(
             _create_test_data_message(endpoint='/search'),
             f'{pod.head_args.host}:{pod.head_args.port}',
             endpoint='/search',
         )
         assert len(response.docs) == 1 + 2
 
-        response = GrpcConnectionPool.send_request_sync(
+        response = send_request_sync(
             _create_test_data_message(endpoint='/index'),
             f'{pod.head_args.host}:{pod.head_args.port}',
             endpoint='/index',
@@ -490,7 +501,7 @@ def test_dynamic_polling_overwrite_default_config(polling):
     pod = Deployment(args, include_gateway=False)
 
     with pod:
-        response = GrpcConnectionPool.send_request_sync(
+        response = send_request_sync(
             _create_test_data_message(endpoint='/search'),
             f'{pod.head_args.host}:{pod.head_args.port}',
             endpoint='/search',
@@ -499,7 +510,7 @@ def test_dynamic_polling_overwrite_default_config(polling):
             len(response.docs) == 1 + 1
         )  # 1 source doc + 1 doc added by the one shard
 
-        response = GrpcConnectionPool.send_request_sync(
+        response = send_request_sync(
             _create_test_data_message(endpoint='/index'),
             f'{pod.head_args.host}:{pod.head_args.port}',
             endpoint='/index',
@@ -535,3 +546,65 @@ def test_pod_remote_pod_replicas_host(num_shards, num_replicas):
             assert len(replica_args) == num_replicas
             for replica_arg in replica_args:
                 assert replica_arg.host == __default_host__
+
+
+@pytest.mark.parametrize(
+    'uses',
+    ['jinahub+docker://DummyHubExecutor', 'jinaai+docker://jina-ai/DummyHubExecutor'],
+)
+@pytest.mark.parametrize('shards', [1, 2, 3])
+@pytest.mark.parametrize('replicas', [1, 2, 3])
+def test_to_k8s_yaml(tmpdir, uses, replicas, shards):
+    dep = Deployment(port_expose=2020, uses=uses, replicas=replicas, shards=shards)
+    dep.to_kubernetes_yaml(output_base_path=tmpdir)
+
+    if shards == 1:
+        shards_iter = ['']
+    else:
+        shards_iter = [f'-{shard}' for shard in range(shards)]
+    for shard in shards_iter:
+        with open(os.path.join(tmpdir, f'executor{shard}.yml')) as f:
+            exec_yaml = list(yaml.safe_load_all(f))[-1]
+            assert exec_yaml['spec']['replicas'] == replicas
+            assert exec_yaml['spec']['template']['spec']['containers'][0][
+                'image'
+            ].startswith('jinahub/')
+
+    if shards != 1:
+        with open(os.path.join(tmpdir, f'executor-head.yml')) as f:
+            head_yaml = list(yaml.safe_load_all(f))[-1]
+            assert head_yaml['metadata']['name'] == 'executor-head'
+            assert head_yaml['spec']['replicas'] == 1
+            assert head_yaml['spec']['template']['spec']['containers'][0][
+                'image'
+            ].startswith('jinaai/')
+
+
+def test_gateway(pod_args):
+    with Deployment(pod_args, include_gateway=True) as pod:
+        assert pod.gateway_pod
+
+
+def test_log_config(pod_args, monkeypatch):
+    monkeypatch.delenv('JINA_LOG_LEVEL', raising=True)  # ignore global env
+    log_config_path = os.path.join(cur_dir, '../../logging/yaml/file.yml')
+    with Deployment(pod_args, log_config=log_config_path, include_gateway=True) as pod:
+        assert pod.args.log_config == log_config_path
+        assert pod.gateway_pod.args.log_config == log_config_path
+        for _, pods in pod.pod_args['pods'].items():
+            for replica_args in pods:
+                assert replica_args.log_config == log_config_path
+
+
+def test_log_config_shards(pod_args, monkeypatch):
+    pod_args.shards = 3
+    monkeypatch.delenv('JINA_LOG_LEVEL', raising=True)  # ignore global env
+    log_config_path = os.path.join(cur_dir, '../../logging/yaml/file.yml')
+    with Deployment(pod_args, log_config=log_config_path, include_gateway=True) as pod:
+        assert pod.args.log_config == log_config_path
+        assert pod.gateway_pod.args.log_config == log_config_path
+        assert pod.head_args.log_config == log_config_path
+        assert pod.head_pod.args.log_config == log_config_path
+        for _, shards in pod.pod_args['pods'].items():
+            for shard_args in shards:
+                assert shard_args.log_config == log_config_path

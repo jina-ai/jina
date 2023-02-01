@@ -43,5 +43,6 @@ file-structure
 containerize
 instrumentation
 executor-in-flow
+docarray-v2
 yaml-spec
 ```
