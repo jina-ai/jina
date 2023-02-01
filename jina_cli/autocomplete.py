@@ -398,6 +398,7 @@ ac_table = {
             '--metrics',
             '--metrics-exporter-host',
             '--metrics-exporter-port',
+            '--log-config',
             '--protocol',
             '--prefetch',
         ],

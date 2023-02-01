@@ -66,7 +66,7 @@ class GatewayStreamer:
         :param aio_tracing_client_interceptors: Optional list of aio grpc tracing server interceptors.
         :param tracing_client_interceptor: Optional gprc tracing server interceptor.
         """
-        self.logger = logger
+        self.logger = logger or JinaLogger(self.__class__.__name__)
         topology_graph = TopologyGraph(
             graph_representation=graph_representation,
             graph_conditions=graph_conditions,
@@ -91,7 +91,9 @@ class GatewayStreamer:
             aio_tracing_client_interceptors,
             tracing_client_interceptor,
         )
-        request_handler = GatewayRequestHandler(metrics_registry, meter, runtime_name)
+        request_handler = GatewayRequestHandler(
+            metrics_registry, meter, runtime_name, logger
+        )
 
         self._streamer = RequestStreamer(
             request_handler=request_handler.handle_request(

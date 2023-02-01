@@ -5,7 +5,7 @@ import uuid
 import pytest
 from docarray import DocumentArray
 
-from jina import Client, Executor, Flow, requests
+from jina import Client, Executor, requests
 from jina.parsers import set_gateway_parser
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.gateway import GatewayRuntime
@@ -45,12 +45,12 @@ def _create_worker(port):
     return p
 
 
-def _create_gateway(port, graph, pod_addr, protocol, retries=-1):
+def _create_gateway(port, graph, pod_addr, protocol, retries=-1, log_config='default'):
     # create a single worker runtime
     # create a single gateway runtime
     p = multiprocessing.Process(
         target=_create_gateway_runtime,
-        args=(graph, pod_addr, port, protocol, retries),
+        args=(graph, pod_addr, port, protocol, retries, log_config),
     )
     p.start()
     time.sleep(0.1)
@@ -811,12 +811,12 @@ def _test_custom_retry(gateway_port, error_ports, protocol, retries, capfd):
     out, err = capfd.readouterr()
     if retries > 0:  # do as many retries as specified
         for i in range(retries):
-            assert f'attempt {i+1}/{retries}' in out
+            assert f'attempt {i + 1}/{retries}' in out
     elif retries == 0:  # do no retries
         assert 'attempt' not in out
     elif retries < 0:  # use default retry policy, doing at least 3 retries
         for i in range(3):
-            assert f'attempt {i+1}' in out
+            assert f'attempt {i + 1}' in out
 
 
 @pytest.mark.parametrize('retries', [-1, 0, 5])
@@ -842,7 +842,12 @@ def test_custom_num_retries(port_generator, retries, capfd):
         )
 
     gateway_process = _create_gateway(
-        gateway_port, graph_description, pod_addresses, 'grpc', retries=retries
+        gateway_port,
+        graph_description,
+        pod_addresses,
+        'grpc',
+        retries=retries,
+        log_config='json',
     )
     AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
         timeout=5.0,
