@@ -6,7 +6,7 @@
 Executors use `docarray.DocumentArray` as input and output data structure. [Read DocArray's docs](https://docarray.jina.ai) to see how it works.
 ```
 
-An {class}`~jina.Executor` is a self-contained microservice with a gRPC gateway. 
+An {class}`~jina.Executor` is a self-contained microservice exposed using the gRPC protocol. 
 It contains functions (decorated with `@requests`) that process `DocumentArray`s. To create an Executor, you need to follow three principles:
 
 1. An Executor should subclass directly from the `jina.Executor` class.
