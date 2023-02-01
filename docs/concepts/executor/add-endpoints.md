@@ -201,7 +201,7 @@ with f:
     )
 
 
-with Deployment(uses=DummyExecutor, port=12345, replicas=2) as dep:
+with Deployment(uses=DummyExecutor) as dep:
     docs = dep.post(
         on='/index',
         inputs=DocumentArray([Document(text='hello') for _ in range(50)]),
