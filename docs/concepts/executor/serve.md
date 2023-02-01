@@ -121,12 +121,12 @@ with Deployment(uses=MyExec, port=12345, replicas=2) as dep:
 
 (kubernetes-executor)=
 ## Serve via Kubernetes
-You can generate Kubernetes configuration files for your containerized Executor by using the static `Executor.to_kubernetes_yaml()` method:
+You can generate Kubernetes configuration files for your containerized Executor by using the static `Deployment.to_kubernetes_yaml()` method:
 
 ```python
 from jina import Executor
 
-Executor.to_kubernetes_yaml(
+Deployment.to_kubernetes_yaml(
     output_base_path='/tmp/config_out_folder',
     port_expose=8080,
     uses='jinaai+docker://jina-ai/DummyHubExecutor',
