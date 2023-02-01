@@ -152,7 +152,7 @@ class DummyAsyncExecutor(Executor):
             doc.text = doc.text.upper()
 
 
-with Deployment(uses=DummyAsyncExecutor, port=12345, replicas=2) as dep:
+with Deployment(uses=DummyAsyncExecutor) as dep:
     docs = dep.post(
         on='/index',
         inputs=DocumentArray([Document(text='hello') for _ in range(50)]),
