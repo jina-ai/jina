@@ -18,6 +18,7 @@
 </p>
 
 <!-- start jina-description -->
+<!--start jina-description-->
 
 Jina is a MLOps framework that empowers anyone to build multimodal AI services via cloud native technologies. It uplifts a local PoC into a production-ready service. Jina handles the infrastructure complexity, making advanced solution engineering and cloud-native technologies accessible to every developer. 
 
