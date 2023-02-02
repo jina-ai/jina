@@ -159,7 +159,7 @@ class GRPCGateway(BaseGateway):
         :param kwargs: keyword arguments
         :yield: responses to the request after streaming to Executors in Flow
         """
-        async for resp in self.streamer.stream(
+        async for resp in self.streamer.rpc_stream(
             request_iterator=request_iterator, context=context, *args, **kwargs
         ):
             yield resp

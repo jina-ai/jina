@@ -2,14 +2,26 @@ import asyncio
 import json
 import os
 import threading
-from typing import TYPE_CHECKING, Dict, List, Optional, Sequence, Union
+from typing import (
+    TYPE_CHECKING,
+    AsyncIterator,
+    Dict,
+    List,
+    Optional,
+    Sequence,
+    Tuple,
+    Union,
+)
 
 from jina._docarray import DocumentArray
+from jina.excepts import ExecutorError
 from jina.logging.logger import JinaLogger
+from jina.proto import jina_pb2
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.gateway.graph.topology_graph import TopologyGraph
 from jina.serve.runtimes.gateway.request_handling import GatewayRequestHandler
 from jina.serve.stream import RequestStreamer
+from jina.types.request import Request
 from jina.types.request.data import DataRequest
 
 __all__ = ['GatewayStreamer']
@@ -133,7 +145,7 @@ class GatewayStreamer:
 
         return connection_pool
 
-    def stream(self, *args, **kwargs):
+    def rpc_stream(self, *args, **kwargs):
         """
         stream requests from client iterator and stream responses back.
 
@@ -142,6 +154,39 @@ class GatewayStreamer:
         :return: An iterator over the responses from the Executors
         """
         return self._streamer.stream(*args, **kwargs)
+
+    async def stream(
+        self,
+        request_iterator,
+        context=None,
+        results_in_order: bool = False,
+        prefetch: Optional[int] = None,
+    ) -> AsyncIterator[Tuple['Request', 'ExecutorError']]:
+        """
+        stream requests from client iterator and yield responses and unpacked executor exception if any.
+
+        :param request_iterator: iterator of requests
+        :param context: context of the grpc call
+        :param results_in_order: return the results in the same order as the request_iterator
+        :param prefetch: How many Requests are processed from the Client at the same time. If not provided then the prefetch value from the metadata will be utilized.
+        :yield: tuple of response and error from Executors
+        """
+        async for response in self._streamer.stream(
+            request_iterator=request_iterator,
+            context=context,
+            results_in_order=results_in_order,
+            prefetch=prefetch,
+        ):
+            error = None
+            if jina_pb2.StatusProto.ERROR == response.status.code:
+                exception = response.status.exception
+                error = ExecutorError(
+                    name=exception.name,
+                    args=exception.args,
+                    stacks=exception.stacks,
+                    executor=exception.executor,
+                )
+            yield response, error
 
     async def stream_docs(
         self,
@@ -179,7 +224,7 @@ class GatewayStreamer:
                     req.parameters = parameters
                 yield req
 
-        async for resp in self.stream(
+        async for resp in self.rpc_stream(
             request_iterator=_req_generator(), results_in_order=results_in_order
         ):
             if return_results:
@@ -194,7 +239,7 @@ class GatewayStreamer:
         await self._streamer.wait_floating_requests_end()
         await self._connection_pool.close()
 
-    Call = stream
+    Call = rpc_stream
 
     async def process_single_data(
         self, request: DataRequest, context=None
