@@ -1,11 +1,11 @@
 <p align="center">
 <!-- survey banner start -->
-<a href="https://10sw1tcpld4.typeform.com/to/EGAEReM7?utm_source=xxxxx&utm_medium=xxxxx&utm_campaign=xxxxx&utm_term=xxxxx&utm_content=xxxxx"><img src="./.github/banner.svg?raw=true"></a>
+<a href="https://10sw1tcpld4.typeform.com/to/EGAEReM7?utm_source=xxxxx&utm_medium=xxxxx&utm_campaign=xxxxx&utm_term=xxxxx&utm_content=xxxxx">
+  <img src="./.github/banner.svg?raw=true">
+</a>
 <!-- survey banner start -->
-<p align="center">
 
 <p align="center">
-<br><br><br>
 <a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/docs/_static/logo-light.svg?raw=true" alt="Jina logo: Build multimodal AI services via cloud native technologies · Neural Search · Generative AI · Cloud Native" width="150px"></a>
 <br><br><br>
 </p>
