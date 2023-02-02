@@ -10,6 +10,7 @@ from typing import (
     Optional,
     Sequence,
     Tuple,
+    Type,
     Union,
 )
 
@@ -161,6 +162,8 @@ class GatewayStreamer:
         context=None,
         results_in_order: bool = False,
         prefetch: Optional[int] = None,
+        return_responses: bool = False,
+        return_type: Type[DocumentArray] = DocumentArray,
     ) -> AsyncIterator[Tuple['Request', 'ExecutorError']]:
         """
         stream requests from client iterator and yield responses and unpacked executor exception if any.
@@ -169,24 +172,30 @@ class GatewayStreamer:
         :param context: context of the grpc call
         :param results_in_order: return the results in the same order as the request_iterator
         :param prefetch: How many Requests are processed from the Client at the same time. If not provided then the prefetch value from the metadata will be utilized.
+        :param return_responses: if set to True, the result will come as Response and not as a `DocumentArray`
+        :param return_type: the DocumentArray type to be returned. By default, it is `DocumentArray`.
         :yield: tuple of response and error from Executors
         """
-        async for response in self._streamer.stream(
+        async for result in self._streamer.stream(
             request_iterator=request_iterator,
             context=context,
             results_in_order=results_in_order,
             prefetch=prefetch,
         ):
             error = None
-            if jina_pb2.StatusProto.ERROR == response.status.code:
-                exception = response.status.exception
+            if jina_pb2.StatusProto.ERROR == result.status.code:
+                exception = result.status.exception
                 error = ExecutorError(
                     name=exception.name,
                     args=exception.args,
                     stacks=exception.stacks,
                     executor=exception.executor,
                 )
-            yield response, error
+            if not return_responses:
+                result.document_array_cls = return_type
+                yield result.data.docs, error
+            else:
+                yield result, error
 
     async def stream_docs(
         self,
