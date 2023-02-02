@@ -24,8 +24,13 @@ from jina.constants import (
     __docker_host__,
     __windows__,
 )
-from jina.enums import DeploymentRoleType, GatewayProtocolType, PodRoleType, PollingType
-from jina.helper import ArgNamespace, parse_host_scheme, random_port
+from jina.enums import DeploymentRoleType, PodRoleType, PollingType
+from jina.helper import (
+    ArgNamespace,
+    parse_host_scheme,
+    random_port,
+    send_telemetry_event,
+)
 from jina.importer import ImportExtensions
 from jina.logging.logger import JinaLogger
 from jina.orchestrate.deployments.install_requirements_helper import (
@@ -36,7 +41,8 @@ from jina.orchestrate.orchestrator import BaseOrchestrator
 from jina.orchestrate.pods.factory import PodFactory
 from jina.parsers import set_deployment_parser, set_gateway_parser
 from jina.parsers.helper import _update_gateway_args
-from jina.serve.networking import host_is_local, in_docker
+from jina.serve.networking import GrpcConnectionPool
+from jina.serve.networking.utils import host_is_local, in_docker
 
 WRAPPED_SLICE_BASE = r'\[[-\d:]+\]'
 
@@ -135,7 +141,7 @@ class Deployment(PostMixin, BaseOrchestrator):
         metrics_exporter_host: Optional[str] = None,
         metrics_exporter_port: Optional[int] = None,
         monitoring: Optional[bool] = False,
-        name: Optional[str] = None,
+        name: Optional[str] = 'executor',
         native: Optional[bool] = False,
         no_reduce: Optional[bool] = False,
         output_array_type: Optional[str] = None,
@@ -200,7 +206,7 @@ class Deployment(PostMixin, BaseOrchestrator):
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
         :param host: The host of the Gateway, which the client should connect to, by default it is 0.0.0.0. In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts.  Then, every resulting address will be considered as one replica of the Executor.
         :param install_requirements: If set, try to install `requirements.txt` from the local Executor if exists in the Executor folder. If using Hub, install `requirements.txt` in the Hub Executor bundle to local.
-        :param log_config: The YAML config of the logger used in this object.
+        :param log_config: The config name or the absolute path to the YAML config file of the logger used in this object.
         :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.
         :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.
         :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.
@@ -304,7 +310,7 @@ class Deployment(PostMixin, BaseOrchestrator):
                     self._gateway_kwargs[field] = kwargs.pop(field)
 
             # arguments common to both gateway and the Executor
-            for field in ['host']:
+            for field in ['host', 'log_config']:
                 if field in kwargs:
                     self._gateway_kwargs[field] = kwargs[field]
 
@@ -312,6 +318,9 @@ class Deployment(PostMixin, BaseOrchestrator):
         if args is None:
             args = ArgNamespace.kwargs2namespace(kwargs, parser, True)
         self.args = args
+        log_config = kwargs.get('log_config')
+        if log_config:
+            self.args.log_config = log_config
         self.args.polling = (
             args.polling if hasattr(args, 'polling') else PollingType.ANY
         )
@@ -371,6 +380,15 @@ class Deployment(PostMixin, BaseOrchestrator):
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
         super().__exit__(exc_type, exc_val, exc_tb)
         self.join()
+        if self._include_gateway:
+            self._stop_time = time.time()
+            send_telemetry_event(
+                event='stop',
+                obj=self,
+                entity_id=self._entity_id,
+                duration=self._stop_time - self._start_time,
+                exc_type=str(exc_type),
+            )
         self.logger.close()
 
     def _parse_addresses_into_host_and_port(self):
@@ -766,7 +784,7 @@ class Deployment(PostMixin, BaseOrchestrator):
             ([self.pod_args['uses_before']] if self.pod_args['uses_before'] else [])
             + ([self.pod_args['uses_after']] if self.pod_args['uses_after'] else [])
             + ([self.pod_args['head']] if self.pod_args['head'] else [])
-            + ([self.pod_args['gateway']] if self.pod_args['gateway'] else [])
+            + ([self.pod_args['gateway']] if self._include_gateway else [])
         )
         for shard_id in self.pod_args['pods']:
             all_args += self.pod_args['pods'][shard_id]
@@ -826,6 +844,7 @@ class Deployment(PostMixin, BaseOrchestrator):
             If one of the :class:`Pod` fails to start, make sure that all of them
             are properly closed.
         """
+        self._start_time = time.time()
         if self.is_sandbox and not self._sandbox_deployed:
             self.update_sandbox_args()
 
@@ -850,7 +869,7 @@ class Deployment(PostMixin, BaseOrchestrator):
                 _args.noblock_on_start = True
             self.head_pod = PodFactory.build_pod(_args)
             self.enter_context(self.head_pod)
-        if self.pod_args['gateway'] is not None:
+        if self._include_gateway:
             _args = self.pod_args['gateway']
             if getattr(self.args, 'noblock_on_start', False):
                 _args.noblock_on_start = True
@@ -864,13 +883,15 @@ class Deployment(PostMixin, BaseOrchestrator):
             )
             self.enter_context(self.shards[shard_id])
 
-        if self.pod_args['gateway']:
+        if self._include_gateway:
             all_panels = []
             self._get_summary_table(all_panels)
 
             from rich.rule import Rule
 
             print(Rule(':tada: Deployment is ready to serve!'), *all_panels)
+
+            send_telemetry_event(event='start', obj=self, entity_id=self._entity_id)
 
         return self
 
@@ -1398,3 +1419,79 @@ class Deployment(PostMixin, BaseOrchestrator):
         )
 
         return all_panels
+
+    def _to_kubernetes_yaml(
+        self,
+        output_base_path: str,
+        k8s_namespace: Optional[str] = None,
+        k8s_deployments_addresses: Optional[Dict] = None,
+        k8s_port: Optional[int] = GrpcConnectionPool.K8S_PORT,
+    ):
+        import yaml
+
+        from jina.orchestrate.deployments.config.k8s import K8sDeploymentConfig
+
+        if self.external:
+            self.logger.warning(
+                'The Deployment is external, cannot create YAML deployment files'
+            )
+            return
+
+        if self.args.name == 'gateway':
+            if self.args.default_port:
+                from jina.serve.networking import GrpcConnectionPool
+
+                self.args.port = GrpcConnectionPool.K8S_PORT
+                self.first_pod_args.port = GrpcConnectionPool.K8S_PORT
+
+                self.args.port_monitoring = GrpcConnectionPool.K8S_PORT_MONITORING
+                self.first_pod_args.port_monitoring = (
+                    GrpcConnectionPool.K8S_PORT_MONITORING
+                )
+
+                self.args.default_port = False
+
+            self.args.deployments_addresses = k8s_deployments_addresses
+        elif self._include_gateway and self.port:
+            self.args.port = self._gateway_kwargs['port']
+
+        k8s_deployment = K8sDeploymentConfig(
+            args=self.args, k8s_namespace=k8s_namespace, k8s_port=k8s_port
+        )
+
+        configs = k8s_deployment.to_kubernetes_yaml()
+
+        for name, k8s_objects in configs:
+            filename = os.path.join(output_base_path, f'{name}.yml')
+            os.makedirs(output_base_path, exist_ok=True)
+            with open(filename, 'w+') as fp:
+                for i, k8s_object in enumerate(k8s_objects):
+                    yaml.dump(k8s_object, fp)
+                    if i < len(k8s_objects) - 1:
+                        fp.write('---\n')
+
+    def to_kubernetes_yaml(
+        self,
+        output_base_path: str,
+        k8s_namespace: Optional[str] = None,
+    ):
+        """
+        Converts a Jina Deployment into a set of yaml deployments to deploy in Kubernetes.
+
+        If you don't want to rebuild image on Jina Hub,
+        you can set `JINA_HUB_NO_IMAGE_REBUILD` environment variable.
+
+        :param output_base_path: The base path where to dump all the yaml files
+        :param k8s_namespace: The name of the k8s namespace to set for the configurations. If None, the name of the Flow will be used.
+        """
+        k8s_namespace = k8s_namespace or 'default'
+        self._to_kubernetes_yaml(
+            output_base_path,
+            k8s_namespace=k8s_namespace,
+            k8s_port=self.port or GrpcConnectionPool.K8S_PORT,
+        )
+        self.logger.info(
+            f'K8s yaml files have been created under [b]{output_base_path}[/]. You can use it by running [b]kubectl apply -R -f {output_base_path}[/]'
+        )
+
+    to_k8s_yaml = to_kubernetes_yaml

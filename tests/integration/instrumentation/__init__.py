@@ -60,9 +60,7 @@ class ExecutorTestWithTracing(Executor):
             self.request_counter = None
 
     @requests(on='/search')
-    def empty(
-        self, docs: 'DocumentArray', tracing_context: Optional[Context], **kwargs
-    ):
+    def empty(self, docs: DocumentArray, tracing_context: Optional[Context], **kwargs):
         if self.request_counter:
             self.request_counter.add(1)
 
@@ -88,9 +86,7 @@ class ExecutorFailureWithTracing(Executor):
         self.failure_counter = 0
 
     @requests(on='/search')
-    def empty(
-        self, docs: 'DocumentArray', tracing_context: Optional[Context], **kwargs
-    ):
+    def empty(self, docs: DocumentArray, tracing_context: Optional[Context], **kwargs):
         if self.tracer:
             with self.tracer.start_span('dummy', context=tracing_context) as span:
                 span.set_attribute('len_docs', len(docs))

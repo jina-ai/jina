@@ -13,7 +13,7 @@ from jina.clients.request import request_generator
 from jina.enums import PollingType
 from jina.parsers import set_gateway_parser
 from jina.proto import jina_pb2_grpc
-from jina.serve.networking import GrpcConnectionPool
+from jina.serve.networking.utils import get_default_grpc_options
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.gateway import GatewayRuntime
 from jina.serve.runtimes.head import HeadRuntime
@@ -718,7 +718,12 @@ def _create_head_runtime(
 
 
 def _create_gateway_runtime(
-    graph_description, pod_addresses, port, protocol='grpc', retries=-1
+    graph_description,
+    pod_addresses,
+    port,
+    protocol='grpc',
+    retries=-1,
+    log_config='default',
 ):
     with GatewayRuntime(
         set_gateway_parser().parse_args(
@@ -733,6 +738,8 @@ def _create_gateway_runtime(
                 str(retries),
                 '--protocol',
                 protocol,
+                '--log-config',
+                log_config,
             ]
         )
     ) as runtime:
@@ -786,7 +793,7 @@ async def test_head_runtime_with_offline_shards(port_generator):
 
     with grpc.insecure_channel(
         f'0.0.0.0:{head_port}',
-        options=GrpcConnectionPool.get_default_grpc_options(),
+        options=get_default_grpc_options(),
     ) as channel:
         stub = jina_pb2_grpc.JinaSingleDataRequestRPCStub(channel)
         _, call = stub.process_single_data.with_call(
@@ -830,7 +837,7 @@ def test_runtime_slow_processing_readiness(port_generator):
         def _send_messages():
             with grpc.insecure_channel(
                 f'0.0.0.0:{worker_port}',
-                options=GrpcConnectionPool.get_default_grpc_options(),
+                options=get_default_grpc_options(),
             ) as channel:
                 stub = jina_pb2_grpc.JinaSingleDataRequestRPCStub(channel)
                 resp, _ = stub.process_single_data.with_call(

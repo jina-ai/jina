@@ -2,11 +2,9 @@ import asyncio
 import json
 import os
 import threading
-import time
 from typing import TYPE_CHECKING, Dict, List, Optional, Sequence, Union
 
-from docarray import Document, DocumentArray
-
+from jina._docarray import DocumentArray
 from jina.logging.logger import JinaLogger
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.gateway.graph.topology_graph import TopologyGraph
@@ -68,7 +66,7 @@ class GatewayStreamer:
         :param aio_tracing_client_interceptors: Optional list of aio grpc tracing server interceptors.
         :param tracing_client_interceptor: Optional gprc tracing server interceptor.
         """
-        self.logger = logger
+        self.logger = logger or JinaLogger(self.__class__.__name__)
         topology_graph = TopologyGraph(
             graph_representation=graph_representation,
             graph_conditions=graph_conditions,
@@ -93,7 +91,9 @@ class GatewayStreamer:
             aio_tracing_client_interceptors,
             tracing_client_interceptor,
         )
-        request_handler = GatewayRequestHandler(metrics_registry, meter, runtime_name)
+        request_handler = GatewayRequestHandler(
+            metrics_registry, meter, runtime_name, logger
+        )
 
         self._streamer = RequestStreamer(
             request_handler=request_handler.handle_request(
@@ -276,17 +276,16 @@ class _ExecutorStreamer:
             reqs.append(req)
 
         tasks = [
-        self._connection_pool.send_requests_once(
-            requests=[req],
-            deployment=self.executor_name,
-            head=True,
-            endpoint=on
-        ) for req in reqs]
+            self._connection_pool.send_requests_once(
+                requests=[req], deployment=self.executor_name, head=True, endpoint=on
+            )
+            for req in reqs
+        ]
 
         results = await asyncio.gather(*tasks)
-        
+
         docs = DocumentArray.empty()
-        for resp,_ in results:
+        for resp, _ in results:
             docs.extend(resp.docs)
-        
+
         return docs

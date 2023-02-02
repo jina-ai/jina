@@ -8,21 +8,31 @@ from threading import Event
 import grpc
 import pytest
 import requests as req
-from jina import Document
 
-from jina import DocumentArray, Executor, requests
+from jina import Client, Document, DocumentArray, Executor, requests
 from jina.clients.request import request_generator
 from jina.proto import jina_pb2, jina_pb2_grpc
-from jina.serve.networking import GrpcConnectionPool
+from jina.serve.networking.utils import (
+    get_available_services,
+    get_default_grpc_options,
+    send_request_async,
+)
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.worker import WorkerRuntime
 from jina.serve.runtimes.worker.request_handling import WorkerRequestHandler
 from tests.helper import _generate_pod_args
 
 
+def _gen_test_data_message():
+    for _ in range(3):
+        yield _create_test_data_message()
+
+
 @pytest.mark.slow
 @pytest.mark.timeout(5)
-def test_worker_runtime():
+@pytest.mark.parametrize('stream', [True, False])
+@pytest.mark.asyncio
+async def test_worker_runtime(stream):
     args = _generate_pod_args()
 
     cancel_event = multiprocessing.Event()
@@ -47,15 +57,21 @@ def test_worker_runtime():
     target = f'{args.host}:{args.port}'
     with grpc.insecure_channel(
         target,
-        options=GrpcConnectionPool.get_default_grpc_options(),
+        options=get_default_grpc_options(),
     ) as channel:
-        stub = jina_pb2_grpc.JinaSingleDataRequestRPCStub(channel)
-        response, call = stub.process_single_data.with_call(_create_test_data_message())
+        if stream:
+            stub = jina_pb2_grpc.JinaRPCStub(channel)
+            for resp in stub.Call(request_generator('/', DocumentArray.empty(3))):
+                assert resp
+        else:
+            stub = jina_pb2_grpc.JinaSingleDataRequestRPCStub(channel)
+            response, call = stub.process_single_data.with_call(
+                _create_test_data_message()
+            )
+            assert response
 
     cancel_event.set()
     runtime_thread.join()
-
-    assert response
 
     assert not AsyncNewLoopRuntime.is_ready(f'{args.host}:{args.port}')
 
@@ -118,7 +134,7 @@ async def test_worker_runtime_slow_async_exec(uses):
     results = []
     async with grpc.aio.insecure_channel(
         target,
-        options=GrpcConnectionPool.get_default_grpc_options(),
+        options=get_default_grpc_options(),
     ) as channel:
         stub = jina_pb2_grpc.JinaSingleDataRequestRPCStub(channel)
         tasks = []
@@ -175,7 +191,7 @@ def test_error_in_worker_runtime(monkeypatch):
     target = f'{args.host}:{args.port}'
     with grpc.insecure_channel(
         target,
-        options=GrpcConnectionPool.get_default_grpc_options(),
+        options=get_default_grpc_options(),
     ) as channel:
         stub = jina_pb2_grpc.JinaSingleDataRequestRPCStub(channel)
         response, call = stub.process_single_data.with_call(_create_test_data_message())
@@ -243,7 +259,7 @@ async def test_worker_runtime_slow_init_exec():
         ready_or_shutdown_event=Event(),
     )
 
-    result = await GrpcConnectionPool.send_request_async(
+    result = await send_request_async(
         _create_test_data_message(), f'{args.host}:{args.port}', timeout=1.0
     )
 
@@ -279,10 +295,11 @@ async def test_worker_runtime_reflection():
     )
 
     async with grpc.aio.insecure_channel(f'{args.host}:{args.port}') as channel:
-        service_names = await GrpcConnectionPool.get_available_services(channel)
+        service_names = await get_available_services(channel)
     assert all(
         service_name in service_names
         for service_name in [
+            'jina.JinaRPC',
             'jina.JinaDataRequestRPC',
             'jina.JinaSingleDataRequestRPC',
         ]
@@ -349,7 +366,7 @@ async def test_decorator_monitoring(port_generator):
         ready_or_shutdown_event=Event(),
     )
 
-    await GrpcConnectionPool.send_request_async(
+    await send_request_async(
         _create_test_data_message(), f'{args.host}:{args.port}', timeout=1.0
     )
 
@@ -417,7 +434,7 @@ async def test_decorator_monitoring(port_generator):
         ready_or_shutdown_event=Event(),
     )
 
-    await GrpcConnectionPool.send_request_async(
+    await send_request_async(
         _create_test_data_message(), f'{args.host}:{args.port}', timeout=1.0
     )
 
@@ -460,9 +477,7 @@ async def test_error_in_worker_runtime_with_exit_on_exceptions(monkeypatch):
     )
 
     target = f'{args.host}:{args.port}'
-    response = await GrpcConnectionPool.send_request_async(
-        _create_test_data_message(), target
-    )
+    response = await send_request_async(_create_test_data_message(), target)
     assert response.header.status.code == jina_pb2.StatusProto.ERROR
 
     cancel_event.set()

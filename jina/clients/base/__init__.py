@@ -60,6 +60,24 @@ class BaseClient(InstrumentationMixin, ABC):
         )
         send_telemetry_event(event='start', obj=self)
 
+    def teardown_instrumentation(self):
+        """Shut down the OpenTelemetry tracer and meter if available. This ensures that the daemon threads for
+        exporting metrics data is properly cleaned up.
+        """
+        try:
+            if self.tracing and self.tracer_provider:
+                if hasattr(self.tracer_provider, 'force_flush'):
+                    self.tracer_provider.force_flush()
+                if hasattr(self.tracer_provider, 'shutdown'):
+                    self.tracer_provider.shutdown()
+            if self.metrics and self.meter_provider:
+                if hasattr(self.meter_provider, 'force_flush'):
+                    self.meter_provider.force_flush()
+                if hasattr(self.meter_provider, 'shutdown'):
+                    self.meter_provider.shutdown()
+        except Exception as ex:
+            self.logger.warning(f'Exception during instrumentation teardown, {str(ex)}')
+
     @staticmethod
     def check_input(inputs: Optional['InputType'] = None, **kwargs) -> None:
         """Validate the inputs and print the first request if success.

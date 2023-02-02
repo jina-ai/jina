@@ -105,6 +105,7 @@ class JinaLogger:
 
     :param context: The context identifier of the class, module or method.
     :param log_config: The configuration file for the logger.
+    :param suppress_root_logging: The flag determines whether to suppress root logging.
     configuration to group logs by deployment.
     :return:: an executor object.
     """
@@ -117,6 +118,7 @@ class JinaLogger:
         name: Optional[str] = None,
         log_config: Optional[str] = None,
         quiet: bool = False,
+        suppress_root_logging: bool = True,
         **kwargs,
     ):
 
@@ -131,9 +133,10 @@ class JinaLogger:
         if not name:
             name = os.getenv('JINA_DEPLOYMENT_NAME', context)
 
-        # Remove all handlers associated with the root logger object.
-        for handler in logging.root.handlers[:]:
-            logging.root.removeHandler(handler)
+        # Remove all handlers associated with the root logger object when suppress_root_logging is true.
+        if suppress_root_logging:
+            for handler in logging.root.handlers[:]:
+                logging.root.removeHandler(handler)
 
         self.logger = logging.getLogger(context)
         self.logger.propagate = False

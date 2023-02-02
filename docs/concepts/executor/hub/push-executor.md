@@ -149,3 +149,29 @@ jina hub status [<path_to_executor_folder>] [--id TASK_ID] [--verbose] [--replay
 - The parameter `--replay`, prints build status from the beginning.
 
 <script id="asciicast-Asd8bQ9YqsuJBVV1V7EfWmCu3" src="https://asciinema.org/a/Asd8bQ9YqsuJBVV1V7EfWmCu3.js" async></script>
+
+
+## ARM64 architecture support 
+
+````{admonition} Hint
+:class: Hint
+As of January 10, 2023 you can push Executors for the ARM64 architecture.
+````
+````{admonition} Note
+:class: note
+Executor docker images are linux images. Even if you are running on a Mac or Windows machine, the underlying OS is still linux.
+````
+
+If you run `jina hub push` on an ARM64-based machine, you automatically push an ARM64 Executor.
+However, if you provide your own Dockerfile, it will need to work for both "linux/amd64" and "linux/arm64".
+
+If you don't want this behavior, you can explicitly specify the `--platform` parameter:
+
+```bash
+# Push for both platforms
+jina hub push --platform linux/arm64,linux/amd64 <path_to_executor_folder>
+# Push for AMD64 only
+jina hub push --platform linux/amd64 <path_to_executor_folder>
+# Push for ARM64 only (not recommended)
+jina hub push --platform linux/arm64 <path_to_executor_folder>
+```
