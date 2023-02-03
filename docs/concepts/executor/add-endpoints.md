@@ -86,14 +86,15 @@ class MyExecutor(Executor):
 
 If a class has no `@requests` decorator, the request simply passes through without any processing.
 
+(endpoint-arguments)=
 ## Arguments
 All Executor methods decorated by `@requests` need to follow the signature below to be usable as a microservice to be orchestrated either using {class}`~jina.Flow` or {class}`~jina.Deployment`.
-Some arguments are only relevant when an Executor is part of the Flow like `docs_matrix` and `docs_map` and are explained 
-in the {ref}`Executor in Flow section<executor-in-flow>`.
+
 
 The `async` definition is optional.
 
 The full endpoint signature is the following:
+
 ```python
 from typing import Dict, Union, List, Optional
 from jina import Executor, requests, DocumentArray
@@ -105,18 +106,7 @@ class MyExecutor(Executor):
         self,
         docs: DocumentArray,
         parameters: Dict,
-        docs_matrix: Optional[List[DocumentArray]],
-        docs_map: Optional[Dict[str, DocumentArray]],
-    ) -> Union[DocumentArray, Dict, None]:
-        pass
-
-    @requests
-    def bar(
-        self,
-        docs: DocumentArray,
-        parameters: Dict,
-        docs_matrix: Optional[List[DocumentArray]],
-        docs_map: Optional[Dict[str, DocumentArray]],
+        tracing_context: Optional['Context']
     ) -> Union[DocumentArray, Dict, None]:
         pass
 ```
@@ -125,8 +115,12 @@ Let's take a look at these arguments:
 
 - `docs`: A DocumentArray that is part of the request. Since an Executor wraps functionality related to `DocumentArray`, it's usually the main data format inside Executor methods. Note that these `docs` can be also change in place, just like any other `list`-like object in a Python function.
 - `parameters`: A Dict object that passes extra parameters to Executor functions.
-- `tracing_context`: Context needed if you want to add custom traces. Check {ref}`how to add custom traces in your Executor <instrumenting-executor>`.
+- `tracing_context`: Context needed if you want to add {ref}`custom traces <instrumenting-executor>` in your Executor.
 
+````{admonition} Flow-specific arguments
+:class: hint
+If you use an Executor in a Flow and want to merge incoming DocumentArrays from multiple Executors, you may also be interested in {ref}`some additional arguments <merge-upstream-documentarrays>`.
+````
 
 ````{admonition} Hint
 :class: hint
@@ -156,115 +150,6 @@ class MyExecutor(Executor):
         print(kwargs['docs_matrix'])
 ```
 ````
-
-(async-executors)=
-## Async coroutines
-
-You can naturally call async coroutines within {class}`~jina.Executor`s, letting you leverage asynchronous
-Python to write concurrent code. 
-
-```python
-from jina import Executor, requests
-
-
-class MyExecutor(Executor):
-    @requests
-    async def encode(self, docs, *kwargs):
-        await some_coroutines()
-```
-
-This example has a heavy lifting API which we call several times, and we leverage the
-async Python features to speed up the {class}`~jina.Executor`'s call by calling the API multiple times concurrently. As a counterpart, in an example without `coroutines`, all 50 API calls are queued and nothing is done concurrently.
-
-
-````{tab} Async coroutines
-```python
-import asyncio
-
-from jina import Executor, requests, Document, DocumentArray, Deployment
-
-
-class DummyAsyncExecutor(Executor):
-    @requests
-    async def process(self, docs: DocumentArray, **kwargs):
-        await asyncio.sleep(1)
-        for doc in docs:
-            doc.text = doc.text.upper()
-
-
-with Deployment(uses=DummyAsyncExecutor) as dep:
-    docs = dep.post(
-        on='/index',
-        inputs=DocumentArray([Document(text='hello') for _ in range(50)]),
-        request_size=1,
-        show_progress=True,
-    )
-```
-
-```shell
-────────────────────────── 🎉 Deployment is ready to serve! ──────────────────────────
-╭────────────── 🔗 Endpoint ───────────────╮
-│  ⛓     Protocol                    GRPC  │
-│  🏠       Local           0.0.0.0:54153  │
-│  🔒     Private     192.168.1.187:54153  │
-│  🌍      Public    212.231.186.65:54153  │
-╰──────────────────────────────────────────╯
-
-  DONE ━━━━━━━━━━━━━━━━━━━━━━ 0:00:01 100% ETA: 0:00:00 50 steps done in 1      
-                                                        second  
-```
-
-````
-
-````{tab} Sync version
-```python
-import time
-
-from jina import Executor, requests, DocumentArray, Document, Deployment
-
-
-class DummyExecutor(Executor):
-    @requests
-    def process(self, docs: DocumentArray, **kwargs):
-        time.sleep(1)
-        for doc in docs:
-            doc.text = doc.text.upper()
-
-
-f = Flow().add(uses=DummyExecutor)
-
-with f:
-    f.index(
-        inputs=DocumentArray([Document(text="hello") for _ in range(50)]),
-        request_size=1,
-        show_progress=True,
-    )
-
-
-with Deployment(uses=DummyExecutor) as dep:
-    docs = dep.post(
-        on='/index',
-        inputs=DocumentArray([Document(text='hello') for _ in range(50)]),
-        request_size=1,
-        show_progress=True,
-    )
-```
-
-```shell
-────────────────────────── 🎉 Deployment is ready to serve! ──────────────────────────
-╭────────────── 🔗 Endpoint ───────────────╮
-│  ⛓     Protocol                    GRPC  │
-│  🏠       Local           0.0.0.0:52340  │
-│  🔒     Private     192.168.1.187:52340  │
-│  🌍      Public    212.231.186.65:52340  │
-╰──────────────────────────────────────────╯
-
-  DONE ━━━━━━━━━━━━━━━━━━━━━━ 0:00:50 100% ETA: 0:00:00 50 steps done in 50     
-                                                        seconds        
-```
-````
-
-Processing data is 50x faster when using `coroutines` because it happens concurrently.
 
 ## Returns
 

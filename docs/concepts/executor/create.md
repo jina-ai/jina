@@ -31,18 +31,13 @@ MyExecutor/
 - `README.md` describes how to use your Executor.
 - `Dockerfile` is only generated if you choose advanced configuration.
 
+For a more detailed breakdown of the file structure, see `{ref} here <executor-file-structure>`.
 
 ## Tips
 
-* Use `jina hub new` CLI to create an Executor
-
-  To create an Executor, always use this command and follow the instructions. This ensures the correct file 
+* Use `jina hub new` CLI to create an Executor: To create an Executor, always use this command and follow the instructions. This ensures the correct file 
 structure.
-
-* You don't need to manually write a Dockerfile
-
-  The build system automatically generates an optimized Dockerfile according to your Executor package.
-
+* You don't need to manually write a Dockerfile: The build system automatically generates an optimized Dockerfile according to your Executor package.
 
 ```{tip}
 In the `jina hub new` wizard you can choose from four Dockerfile templates: `cpu`, `tf-gpu`, `torch-gpu`, and `jax-gpu`.
