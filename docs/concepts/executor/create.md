@@ -47,13 +47,3 @@ structure.
 ```{tip}
 In the `jina hub new` wizard you can choose from four Dockerfile templates: `cpu`, `tf-gpu`, `torch-gpu`, and `jax-gpu`.
 ```
-
-
-* If you push your Executor to the [Executor Hub](https://cloud.jina.ai/executors), you don't need to bump the Jina version
-
-  Hub Executors are version-agnostic. When you pull an Executor from Executor Hub, it will select the right Jina version for you. You don't need to upgrade your version of Jina.
-
-
-* Fill in metadata of your Executor correctly
-
-  Information you include under the `metas` key in `config.yml` is displayed on Executor Hub. `The specification can be found here<config.yml>`.
