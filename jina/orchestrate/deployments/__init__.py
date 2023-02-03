@@ -1075,7 +1075,11 @@ class Deployment(PostMixin, BaseOrchestrator):
 
         cuda_device_map = None
         if self.args.env or os.environ.get('CUDA_VISIBLE_DEVICES', '').startswith('RR'):
-            cuda_visible_devices = self.args.env.get('CUDA_VISIBLE_DEVICES') if self.args.env and 'CUDA_VISIBLE_DEVICES' in self.args.env else os.environ.get('CUDA_VISIBLE_DEVICES', None)
+            cuda_visible_devices = (
+                self.args.env.get('CUDA_VISIBLE_DEVICES')
+                if self.args.env and 'CUDA_VISIBLE_DEVICES' in self.args.env
+                else os.environ.get('CUDA_VISIBLE_DEVICES', None)
+            )
             cuda_device_map = Deployment._roundrobin_cuda_device(
                 cuda_visible_devices, replicas
             )
