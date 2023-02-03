@@ -4,11 +4,12 @@ from dataclasses import dataclass
 
 import pytest
 
-from jina import DocumentArray, Executor, requests
+from jina import Document, DocumentArray, Executor, requests
 from jina.excepts import ExecutorError
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.worker import WorkerRuntime
 from jina.serve.streamer import GatewayStreamer
+from jina.types.request import Request
 from jina.types.request.data import DataRequest
 from tests.helper import _generate_pod_args
 
@@ -115,19 +116,18 @@ async def test_custom_gateway(
 
 
 @pytest.mark.asyncio
-async def test_gateway_stream_executor_error(port_generator):
-    from jina import Document
-
+@pytest.mark.parametrize('return_responses', [False, True])
+async def test_gateway_stream_executor_error(port_generator, return_responses):
     pod_port = port_generator()
+    da = DocumentArray(
+        [
+            Document(text='Request0'),
+            Document(text='Request1'),
+            Document(text='Request2'),
+        ]
+    )
 
     def _req_generator():
-        da = DocumentArray(
-            [
-                Document(text='Request0'),
-                Document(text='Request1'),
-                Document(text='Request2'),
-            ]
-        )
         for docs_batch in da.batch(batch_size=1, shuffle=False):
             req = DataRequest()
             req.data.docs = docs_batch
@@ -160,10 +160,12 @@ async def test_gateway_stream_executor_error(port_generator):
     )
 
     try:
+        responses = []
         errors = []
-        async for _, error in gateway_streamer.stream(
-            request_iterator=_req_generator()
+        async for response, error in gateway_streamer.stream(
+            request_iterator=_req_generator(), return_responses=return_responses
         ):
+            responses.append(response)
             if error:
                 errors.append(error)
 
@@ -173,6 +175,15 @@ async def test_gateway_stream_executor_error(port_generator):
         assert error.name == 'ValueError'
         assert error.args == ['custom exception']
         assert error.executor == 'TestExecutor'
+
+        if return_responses:
+            assert all([isinstance(response, Request) for response in responses])
+        else:
+            assert all([isinstance(response, DocumentArray) for response in responses])
+            for index, result_da in enumerate(responses):
+                assert da[index] == result_da[0]
+
     finally:
         pod_process.terminate()
         pod_process.join()
+        await gateway_streamer.close()

@@ -191,11 +191,11 @@ class GatewayStreamer:
                     stacks=exception.stacks,
                     executor=exception.executor,
                 )
-            if not return_responses:
+            if return_responses:
+                yield result, error
+            else:
                 result.document_array_cls = return_type
                 yield result.data.docs, error
-            else:
-                yield result, error
 
     async def stream_docs(
         self,
