@@ -224,7 +224,7 @@ class MyGateway(FastAPIBaseGateway):
         return app
 ```
 
-### Recovering Executor error
+### Recovering Executor errors
 Exceptions raised by an `Executor` are captured in the server object which can be extracted by using the {meth}`jina.serve.streamer.stream()` method. The `stream` method
 returns an `AsyncGenerator` of a tuple of `DocumentArray` and an optional {class}`jina.excepts.ExecutorError` class that be used to check if the `Executor` has issues processing the input request.
 The error can be utilized for retries, handling partial responses or returning default responses.
