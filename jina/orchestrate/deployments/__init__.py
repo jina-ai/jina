@@ -1562,4 +1562,4 @@ class Deployment(PostMixin, BaseOrchestrator):
         filename = os.path.join(output_base_path, f'{name}.json')
         os.makedirs(output_base_path, exist_ok=True)
         with open(filename, 'w+') as fp:
-            fp.write(job.to_str())
+            fp.write(job.to_str().replace('\'', '"'))
