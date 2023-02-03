@@ -25,6 +25,7 @@ from jina.constants import (
     __windows__,
 )
 from jina.enums import DeploymentRoleType, PodRoleType, PollingType
+from jina.excepts import NoContainerizedError
 from jina.helper import (
     ArgNamespace,
     parse_host_scheme,
@@ -1495,3 +1496,70 @@ class Deployment(PostMixin, BaseOrchestrator):
         )
 
     to_k8s_yaml = to_kubernetes_yaml
+
+    def to_kubernetes_job(
+        self, output_base_path: str, k8s_namespace: Optional[str] = None
+    ):
+        """Generate a Kubernetes Job for running batch job using Executor. The output is a json file that can be applied to the Kubernetes cluster.
+        :param output_base_path: The base path where to dump all the yaml files
+        :param k8s_namespace: The name of the k8s namespace to set for the configurations. If None, the name of the Flow will be used.
+        """
+        from kubernetes import client
+
+        from jina.orchestrate.deployments.config.helper import (
+            construct_runtime_container_args,
+            validate_uses,
+        )
+        from jina.orchestrate.deployments.config.k8s import K8sDeploymentConfig
+
+        k8s_namespace = k8s_namespace or 'default'
+        name = self.args.name
+        image = self.args.uses
+
+        k8s_deployment_config = K8sDeploymentConfig(
+            args=self.args,
+            k8s_namespace=k8s_namespace,
+            k8s_port=GrpcConnectionPool.K8S_PORT,
+        )
+
+        if not validate_uses(self.args.uses):
+            raise NoContainerizedError(
+                f'Executor "{self.args.uses}" is not valid to be used in K8s. '
+                'You need to use a containerized Executor. You may check `jina hub --help` to see how Jina Hub can help you building containerized Executors.'
+            )
+
+        # https://github.com/kubernetes-client/python/blob/master/examples/job_crud.py
+        # Configure Pod template container
+        cargs = copy.deepcopy(self.args)
+        if cargs.uses != __default_executor__:
+            cargs.uses = 'config.yml'
+        container = client.V1Container(
+            name=name,
+            image=image,
+            command=["jina"],
+            args=construct_runtime_container_args(
+                cargs=cargs,
+                uses_with=None,
+                uses_metas=None,
+                pod_type=PodRoleType.WORKER,
+            ),
+        )
+        # Create and configure a spec section
+        template = client.V1PodTemplateSpec(
+            metadata=client.V1ObjectMeta(labels={"app": name}),
+            spec=client.V1PodSpec(restart_policy="Never", containers=[container]),
+        )
+        # Create the specification of deployment
+        spec = client.V1JobSpec(template=template, backoff_limit=0)
+        # Instantiate the job object
+        job = client.V1Job(
+            api_version="batch/v1",
+            kind="Job",
+            metadata=client.V1ObjectMeta(name='job0'),
+            spec=spec,
+        )
+
+        filename = os.path.join(output_base_path, f'{name}.json')
+        os.makedirs(output_base_path, exist_ok=True)
+        with open(filename, 'w+') as fp:
+            fp.write(job.to_str())
