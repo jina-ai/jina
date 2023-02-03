@@ -46,7 +46,6 @@ Text: hello world
 basics
 create
 add-endpoints
-run
 serve
 dynamic-batching
 health-check
