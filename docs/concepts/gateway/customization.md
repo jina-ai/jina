@@ -245,7 +245,7 @@ async def get(text: str):
             errors.append(error)
         else:
             results.append(docs[0].text)
-    return {'results': results, errors=[error.name for error in errors]}
+    return {'results': results, 'errors': [error.name for error in errors]}
 ```
 
 (executor-streamer)=
