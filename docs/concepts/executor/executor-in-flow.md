@@ -5,7 +5,7 @@ You can chain Executors together into a {ref}`Flow <flow-cookbook>`, which orche
 
 When developing an Executor to put into a Flow, there are several practices you should follow:
 
-<flow-specific-arguments>
+(flow-specific-arguments)=
 ## Flow-specific arguments
 
 When an Executor is instantiated in the context of a Flow, Jina adds a few extra arguments. You can use some of these when developing your Executor's internal logic.
