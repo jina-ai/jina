@@ -1035,7 +1035,7 @@ class Deployment(PostMixin, BaseOrchestrator):
         return all_devices[slice(*[int(p) if p else None for p in parts])]
 
     @staticmethod
-    def _roundrobin_cuda_device(device_str: str, replicas: int):
+    def _roundrobin_cuda_device(device_str: Optional[str], replicas: int):
         """Parse cuda device string with RR prefix
 
         :param device_str: `RRm:n`, where `RR` is the prefix, m:n is python slice format
@@ -1074,9 +1074,14 @@ class Deployment(PostMixin, BaseOrchestrator):
         sharding_enabled = shards and shards > 1
 
         cuda_device_map = None
-        if self.args.env:
+        if self.args.env or os.environ.get('CUDA_VISIBLE_DEVICES', '').startswith('RR'):
+            cuda_visible_devices = (
+                self.args.env.get('CUDA_VISIBLE_DEVICES')
+                if self.args.env and 'CUDA_VISIBLE_DEVICES' in self.args.env
+                else os.environ.get('CUDA_VISIBLE_DEVICES', None)
+            )
             cuda_device_map = Deployment._roundrobin_cuda_device(
-                self.args.env.get('CUDA_VISIBLE_DEVICES'), replicas
+                cuda_visible_devices, replicas
             )
 
         for shard_id in range(shards):
@@ -1095,6 +1100,7 @@ class Deployment(PostMixin, BaseOrchestrator):
                     _args.host = self.args.host
 
                 if cuda_device_map:
+                    _args.env = _args.env or {}
                     _args.env['CUDA_VISIBLE_DEVICES'] = str(cuda_device_map[replica_id])
 
                 if _args.name:
