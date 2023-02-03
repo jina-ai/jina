@@ -166,16 +166,16 @@ class GatewayStreamer:
         results_in_order: bool = False,
     ) -> AsyncIterator[Tuple[Union[DocumentArray, 'Request'], 'ExecutorError']]:
         """
-        stream documents and yield responses and unpacked executor exception if any.
+        stream Documents and yield Documents or Responses and unpacked Executor error if any.
 
         :param docs: The Documents to be sent to all the Executors
         :param request_size: The amount of Documents to be put inside a single request.
         :param return_results: If set to True, the generator will yield Responses and not `DocumentArrays`
-        :param exec_endpoint: The executor endpoint to which to send the Documents
+        :param exec_endpoint: The Executor endpoint to which to send the Documents
         :param target_executor: A regex expression indicating the Executors that should receive the Request
         :param parameters: Parameters to be attached to the Requests
         :param results_in_order: return the results in the same order as the request_iterator
-        :yield: tuple of response and error from Executors
+        :yield: tuple of Documents or Responses and unpacked error from Executors if any
         """
         async for result in self.stream_docs(
             docs=docs,
@@ -217,7 +217,7 @@ class GatewayStreamer:
         :param docs: The Documents to be sent to all the Executors
         :param request_size: The amount of Documents to be put inside a single request.
         :param return_results: If set to True, the generator will yield Responses and not `DocumentArrays`
-        :param exec_endpoint: The executor endpoint to which to send the Documents
+        :param exec_endpoint: The Executor endpoint to which to send the Documents
         :param target_executor: A regex expression indicating the Executors that should receive the Request
         :param parameters: Parameters to be attached to the Requests
         :param results_in_order: return the results in the same order as the request_iterator
