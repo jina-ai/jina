@@ -116,8 +116,8 @@ async def test_custom_gateway(
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize('return_responses', [False, True])
-async def test_gateway_stream_executor_error(port_generator, return_responses):
+@pytest.mark.parametrize('return_results', [False, True])
+async def test_gateway_stream_executor_error(port_generator, return_results):
     pod_port = port_generator()
     da = DocumentArray(
         [
@@ -126,12 +126,6 @@ async def test_gateway_stream_executor_error(port_generator, return_responses):
             Document(text='Request2'),
         ]
     )
-
-    def _req_generator():
-        for docs_batch in da.batch(batch_size=1, shuffle=False):
-            req = DataRequest()
-            req.data.docs = docs_batch
-            yield req
 
     @dataclass
     class TestExecutor(Executor):
@@ -163,7 +157,7 @@ async def test_gateway_stream_executor_error(port_generator, return_responses):
         responses = []
         errors = []
         async for response, error in gateway_streamer.stream(
-            request_iterator=_req_generator(), return_responses=return_responses
+            docs=da, request_size=1, return_results=return_results
         ):
             responses.append(response)
             if error:
@@ -176,7 +170,7 @@ async def test_gateway_stream_executor_error(port_generator, return_responses):
         assert error.args == ['custom exception']
         assert error.executor == 'TestExecutor'
 
-        if return_responses:
+        if return_results:
             assert all([isinstance(response, Request) for response in responses])
         else:
             assert all([isinstance(response, DocumentArray) for response in responses])

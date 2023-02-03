@@ -10,7 +10,6 @@ from typing import (
     Optional,
     Sequence,
     Tuple,
-    Type,
     Union,
 )
 
@@ -158,29 +157,34 @@ class GatewayStreamer:
 
     async def stream(
         self,
-        request_iterator,
-        context=None,
+        docs: DocumentArray,
+        request_size: int = 100,
+        return_results: bool = False,
+        exec_endpoint: Optional[str] = None,
+        target_executor: Optional[str] = None,
+        parameters: Optional[Dict] = None,
         results_in_order: bool = False,
-        prefetch: Optional[int] = None,
-        return_responses: bool = False,
-        return_type: Type[DocumentArray] = DocumentArray,
-    ) -> AsyncIterator[Tuple['Request', 'ExecutorError']]:
+    ) -> AsyncIterator[Tuple[Union[DocumentArray, 'Request'], 'ExecutorError']]:
         """
-        stream requests from client iterator and yield responses and unpacked executor exception if any.
+        stream documents and yield responses and unpacked executor exception if any.
 
-        :param request_iterator: iterator of requests
-        :param context: context of the grpc call
+        :param docs: The Documents to be sent to all the Executors
+        :param request_size: The amount of Documents to be put inside a single request.
+        :param return_results: If set to True, the generator will yield Responses and not `DocumentArrays`
+        :param exec_endpoint: The executor endpoint to which to send the Documents
+        :param target_executor: A regex expression indicating the Executors that should receive the Request
+        :param parameters: Parameters to be attached to the Requests
         :param results_in_order: return the results in the same order as the request_iterator
-        :param prefetch: How many Requests are processed from the Client at the same time. If not provided then the prefetch value from the metadata will be utilized.
-        :param return_responses: if set to True, the result will come as Response and not as a `DocumentArray`
-        :param return_type: the DocumentArray type to be returned. By default, it is `DocumentArray`.
         :yield: tuple of response and error from Executors
         """
-        async for result in self._streamer.stream(
-            request_iterator=request_iterator,
-            context=context,
+        async for result in self.stream_docs(
+            docs=docs,
+            request_size=request_size,
+            return_results=True,  # force return Responses
+            exec_endpoint=exec_endpoint,
+            target_executor=target_executor,
+            parameters=parameters,
             results_in_order=results_in_order,
-            prefetch=prefetch,
         ):
             error = None
             if jina_pb2.StatusProto.ERROR == result.status.code:
@@ -191,10 +195,10 @@ class GatewayStreamer:
                     stacks=exception.stacks,
                     executor=exception.executor,
                 )
-            if return_responses:
+            if return_results:
                 yield result, error
             else:
-                result.document_array_cls = return_type
+                result.document_array_cls = DocumentArray
                 yield result.data.docs, error
 
     async def stream_docs(
