@@ -74,7 +74,7 @@ Often when you're building a Flow, you want an Executor to receive DocumentArray
 :align: center
 ```
 
-`docs_matrix` and `docs_map` do just that. They Flow-specific arguments that can be used alongside an Executor's {ref}`default arguments <endpoint-arguments>`:
+For this you can use `docs_matrix` or `docs_map`. These Flow-specific arguments that can be used alongside an Executor's {ref}`default arguments <endpoint-arguments>`:
 
 ```{code-block} python
 ---
@@ -202,6 +202,4 @@ class DummyExecutor(Executor):
 
 ## Serve
 
-Both served and shared Executors can be used as part of a Flow, by adding them as an {ref}`external Executor <external-executors>`.
-
-Having a Gateway may be useful if you want to access your Executor with the {ref}`Client <client>` without an additional Flow. If the Executor is only used inside other Flows, you should define a shared Executor to save the costs of running the Gateway in Kubernetes.
+Both served and shared Executors can be used as part of a Flow, by adding them as an {ref}`external Executor <external-executors>`. If the Executor is only used inside other Flows, you should define a shared Executor to save the costs of running the Gateway in Kubernetes.
