@@ -140,6 +140,7 @@ Run the Flow and a sample request that we want to instrument locally. If the bac
 
 ```python
 from jina import Flow, Document, DocumentArray
+import time
 
 with Flow(
     tracing=True,
@@ -150,6 +151,8 @@ with Flow(
     metrics_exporter_port=4317,
 ).add(uses='jinaai://jina-ai/SimpleIndexer') as f:
     f.post('/', DocumentArray([Document(text='hello')]))
+    # allow some time for the metrics data export
+    time.sleep(3)
 ```
 
 ## Viewing Traces in Jaeger UI
