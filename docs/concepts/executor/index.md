@@ -1,7 +1,7 @@
 (executor-cookbook)=
 # {fas}`gears` Executor
 
-An {class}`~jina.Executor` is a self-contained microservice that performs a task on a `DocumentArray`. 
+An {class}`~jina.Executor` is a self-contained gRPC microservice that performs a task on a `DocumentArray`. 
 
 You can create an Executor by extending the `Executor` class and adding logic to endpoint methods.
 
@@ -14,12 +14,13 @@ But what if you want to go bigger? Organize your code into modules, serve and sc
 
 - Executors let you organize DocumentArray-based functions into logical entities that can share configuration state, following OOP.
 - Executors can be easily containerized and shared with your colleagues using `jina hub push/pull`.
+- Executors can be exposed as a service over gRPC using `~jina.Deployment`.
 - Executors can be chained together to form a `~jina.Flow`.
 
 ## Minimum working example
 
 ```python
-from jina import Executor, requests, DocumentArray, Document
+from jina import Executor, requests, DocumentArray, Document, Deployment
 
 
 class MyExecutor(Executor):
@@ -29,14 +30,19 @@ class MyExecutor(Executor):
             d.text = 'hello world'
 
 
-executor = MyExecutor()
-docs = DocumentArray([Document(text='hello')])
-
-executor.foo(da)
-print(f'Text: {docs[0].text}')
+with Deployment(uses=MyExecutor) as dep:
+    response_docs = dep.post(on='/', inputs=DocumentArray([Document(text='hello')]))
+    print(f'Text: {response_docs[0].text}')
 ```
 
 ```text
+─────────────────────── 🎉 Deployment is ready to serve! ───────────────────────
+╭────────────── 🔗 Endpoint ───────────────╮
+│  ⛓     Protocol                    GRPC │
+│  🏠       Local           0.0.0.0:55581  │
+│  🔒     Private       192.168.0.5:55581  │
+│  🌍      Public    158.181.77.236:55581  │
+╰──────────────────────────────────────────╯
 Text: hello world
 ```
 
