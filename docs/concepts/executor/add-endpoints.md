@@ -90,10 +90,9 @@ If a class has no `@requests` decorator, the request simply passes through witho
 ## Arguments
 All Executor methods decorated by `@requests` need to follow the signature below to be usable as a microservice to be orchestrated either using {class}`~jina.Flow` or {class}`~jina.Deployment`.
 
-
 The `async` definition is optional.
 
-The full endpoint signature is the following:
+The endpoint signature looks like the following:
 
 ```python
 from typing import Dict, Union, List, Optional
@@ -106,7 +105,18 @@ class MyExecutor(Executor):
         self,
         docs: DocumentArray,
         parameters: Dict,
-        tracing_context: Optional['Context']
+        tracing_context: Optional['Context'],
+        **kwargs
+    ) -> Union[DocumentArray, Dict, None]:
+        pass
+
+    @requests
+    def bar(
+        self,
+        docs: DocumentArray,
+        parameters: Dict,
+        tracing_context: Optional['Context'],
+        **kwargs
     ) -> Union[DocumentArray, Dict, None]:
         pass
 ```
@@ -199,7 +209,7 @@ from jina import Deployment
 dep = Deployment(uses=MyExecutor)
 
 
-def print_why(resp, exception):
+def print_why(resp):
     print(resp.status.description)
 
 
