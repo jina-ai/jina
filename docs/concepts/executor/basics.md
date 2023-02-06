@@ -3,7 +3,7 @@
 # Basics
 
 ```{tip}
-Executors use `docarray.DocumentArray` as input and output data structure. [Read DocArray's docs](https://docarray.jina.ai) to see how it works.
+Executors use `docarray.DocumentArray` as their input and output data structure. [Read DocArray's docs](https://docarray.jina.ai) to see how it works.
 ```
 
 An {class}`~jina.Executor` is a self-contained microservice exposed using the gRPC protocol. 
@@ -40,10 +40,9 @@ class MyExecutor(Executor):
 
 ````{admonition} What is inside kwargs? 
 :class: hint
-Here, `kwargs` are reserved for Jina to inject `metas` and `requests` (representing the request-to-function mapping) values when the Executor is used inside a Flow. Also when `Executor` is a `dataclass` these parameters are injected by Jina as in the regular case when calling `super().__init__`
+Here, `kwargs` are reserved for Jina to inject `metas` and `requests` (representing the request-to-function mapping) values when the Executor is used inside a {ref}`Flow <flow-cookbook>`.
 
-You can access the values of these arguments in the `__init__` body via `self.metas`/`self.requests`/`self.runtime_args`, 
-or modify their values before passing them to `super().__init__()`.
+You can access the values of these arguments in the `__init__` body via `self.metas`/`self.requests`/`self.runtime_args`, or modify their values before passing them to `super().__init__()`.
 ````
 
 ## Destructor
@@ -52,7 +51,7 @@ You might need to execute some logic when your Executor's destructor is called.
 
 For example, if you want to persist data to disk (e.g. in-memory indexed data, fine-tuned model,...) you can overwrite the {meth}`~jina.serve.executors.BaseExecutor.close` method and add your logic.
 
-Jina ensures the {meth}`~jina.serve.executors.BaseExecutor.close` method is executed when the Executor is terminated inside a {class}`~jina.Flow` or when deployed in any cloud-native environment.
+Jina ensures the {meth}`~jina.serve.executors.BaseExecutor.close` method is executed when the Executor is terminated inside a {class}`~jina.Deployment` or {class}`~jina.Flow`, or when deployed in any cloud-native environment.
 
 You can think of this as Jina using the Executor as a context manager, making sure that the {meth}`~jina.serve.executors.BaseExecutor.close` method is always executed.
 
