@@ -5,7 +5,8 @@
 
 There are different options for deploying and running a standalone Executor:
 * Run the Executor directly from Python with the {class}`~jina.orchestrate.deployments.Deployment` class
-* Run the static {meth}`~jina.serve.executors.BaseExecutor.to_kubernetes_yaml()` method to generate Kubernetes deployment configuration files
+* Run the {meth}`~jina.Deployment.to_kubernetes_yaml()` method to generate Kubernetes deployment configuration files 
+from an instance of {class}`~jina.orchestrate.deployments.Deployment`
 * Run the static {meth}`~jina.serve.executors.BaseExecutor.to_docker_compose_yaml()` method to generate a Docker Compose service file
 
 ```{seealso}
@@ -19,13 +20,13 @@ to achieve this with the {ref}`Flow <flow-cookbook>`
 In Jina there are two ways of running standalone Executors: *Served Executors* and *shared Executors*.
 
 - A **served Executor** is launched by one of the following methods: {class}`~jina.orchestrate.deployments.Deployment`, `to_kubernetes_yaml()`, or `to_docker_compose_yaml()`.
-It resides behind a {ref}`Gateway <architecture-overview>` and can thus be directly accessed by a {ref}`Client <client>`.
+It resides behind a {ref}`Gateway <architecture-overview>` and can be directly accessed by a {ref}`Client <client>`.
 It can also be used as part of a Flow.
 
 - A **shared Executor** is launched using the [Jina CLI](../../cli/index.rst) and does *not* sit behind a Gateway.
-It is intended to be used in one or more Flows.
-Because a shared Executor does not reside behind a Gataway, it cannot be directly accessed by a Client, but it requires
-fewer networking hops when used inside of a Flow.
+It is intended to be used in one or more Flows. However, it can be also accessed by a {ref}`Client <client>`.
+Because a shared Executor does not reside behind a Gataway, it requires fewer networking hops when used inside of a Flow.
+However, it is not suitable for exposing a standalone service, outside the scope of a Flow.
 ````
 
 ## Serve directly
@@ -119,18 +120,27 @@ with Deployment(uses=MyExec, port=12345, replicas=2) as dep:
 ```
 ````
 
-## Serve as a process
+## Serve from the CLI
 
 You can run an Executor from CLI. In this case, the Executor occupies one process. The lifetime of the Executor is the lifetime of the process.
 
-### From a local Executor
+### From a local Executor python class
+````{tab} Python class
 
-With `exec.py` containing the definition of `MyExec`, now creating a new file called `my-exec.yml`:
+```shell
+jina executor --uses MyExec --py-modules executor.py
+```
+````
+
+
+### From a local Executor YAML configuration
+
+With `executor.py` containing the definition of `MyExec`, now creating a new file called `my-exec.yml`:
 
 ```yaml
 jtype: MyExec
 py_modules:
-  - exec.py
+  - executor.py
 ```
 
 This simply points Jina to our file and Executor class. Now we can run the command:
@@ -170,7 +180,7 @@ Just like that, our Executor is up and running.
 
 (kubernetes-executor)=
 ## Serve via Kubernetes
-You can generate Kubernetes configuration files for your containerized Executor by using the static `~jina.Deployment.to_kubernetes_yaml()` method:
+You can generate Kubernetes configuration files for your containerized Executor by using the {meth}`~jina.Deployment.to_kubernetes_yaml()` method:
 
 ```python
 from jina import Deployment
@@ -201,8 +211,9 @@ Let's export the external IP address created and use it to send requests to the 
 ```bash
 export EXTERNAL_IP=`kubectl get service executor-exposed -n my-namespace -o=jsonpath='{.status.loadBalancer.ingress[0].ip}'`
 ```
-To send requests using {meth}`~jina.Client`, make sure to set `stream=False` (note that this is only applicable and 
-necessary for Kubernetes deployments of Executors):
+
+Then, we can send requests using {meth}`~jina.Client`. Since Kubernetes load balancers cannot load balance streaming 
+gRPC requests, it is recommended to set `stream=False` (note that this is only applicable for Kubernetes deployments of Executors):
 ```python
 import os
 from jina import Client, Document

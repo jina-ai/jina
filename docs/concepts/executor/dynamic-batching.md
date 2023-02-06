@@ -32,7 +32,7 @@ batching enabled.
 
 ```{code-block} python
 ---
-emphasize-lines: 12
+emphasize-lines: 14
 ---
 from jina import Executor, requests, dynamic_batching, DocumentArray, Document, Deployment
 import numpy as np
@@ -57,7 +57,10 @@ dep = Deployment(uses=MyExecutor)
 
 ````{tab} Using uses_dynamic_batching argument
 This argument is a dictionary mapping each endpoint to its corresponding configuration:
-```python
+```{code-block} python
+---
+emphasize-lines: 20
+---
 from jina import requests, dynamic_batching, Executor, DocumentArray, Deployment
 
 
@@ -120,7 +123,7 @@ We then deploy with:
 ```python
 from jina import Deployment
 
-with Deployment(uses=’config.yml’) as dep:
+with Deployment(uses='config.yml') as dep:
     dep.block()
 ```
 ````

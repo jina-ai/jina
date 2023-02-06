@@ -27,7 +27,7 @@ metas:
 ### `jtype`
 String specifying the Executor's Python type. Used to locate the correct class in the Python files given by `py_modules`.
 
-(executor-with-keyword)
+(executor-with-keyword)=
 ### `with`
 Collection containing keyword arguments passed to the Executor's `__init__()` method. Valid values depend on the Executor.
 
