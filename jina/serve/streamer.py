@@ -2,14 +2,26 @@ import asyncio
 import json
 import os
 import threading
-from typing import TYPE_CHECKING, Dict, List, Optional, Sequence, Union
+from typing import (
+    TYPE_CHECKING,
+    AsyncIterator,
+    Dict,
+    List,
+    Optional,
+    Sequence,
+    Tuple,
+    Union,
+)
 
 from jina._docarray import DocumentArray
+from jina.excepts import ExecutorError
 from jina.logging.logger import JinaLogger
+from jina.proto import jina_pb2
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.gateway.graph.topology_graph import TopologyGraph
 from jina.serve.runtimes.gateway.request_handling import GatewayRequestHandler
 from jina.serve.stream import RequestStreamer
+from jina.types.request import Request
 from jina.types.request.data import DataRequest
 
 __all__ = ['GatewayStreamer']
@@ -133,7 +145,7 @@ class GatewayStreamer:
 
         return connection_pool
 
-    def stream(self, *args, **kwargs):
+    def rpc_stream(self, *args, **kwargs):
         """
         stream requests from client iterator and stream responses back.
 
@@ -142,6 +154,52 @@ class GatewayStreamer:
         :return: An iterator over the responses from the Executors
         """
         return self._streamer.stream(*args, **kwargs)
+
+    async def stream(
+        self,
+        docs: DocumentArray,
+        request_size: int = 100,
+        return_results: bool = False,
+        exec_endpoint: Optional[str] = None,
+        target_executor: Optional[str] = None,
+        parameters: Optional[Dict] = None,
+        results_in_order: bool = False,
+    ) -> AsyncIterator[Tuple[Union[DocumentArray, 'Request'], 'ExecutorError']]:
+        """
+        stream Documents and yield Documents or Responses and unpacked Executor error if any.
+
+        :param docs: The Documents to be sent to all the Executors
+        :param request_size: The amount of Documents to be put inside a single request.
+        :param return_results: If set to True, the generator will yield Responses and not `DocumentArrays`
+        :param exec_endpoint: The Executor endpoint to which to send the Documents
+        :param target_executor: A regex expression indicating the Executors that should receive the Request
+        :param parameters: Parameters to be attached to the Requests
+        :param results_in_order: return the results in the same order as the request_iterator
+        :yield: tuple of Documents or Responses and unpacked error from Executors if any
+        """
+        async for result in self.stream_docs(
+            docs=docs,
+            request_size=request_size,
+            return_results=True,  # force return Responses
+            exec_endpoint=exec_endpoint,
+            target_executor=target_executor,
+            parameters=parameters,
+            results_in_order=results_in_order,
+        ):
+            error = None
+            if jina_pb2.StatusProto.ERROR == result.status.code:
+                exception = result.status.exception
+                error = ExecutorError(
+                    name=exception.name,
+                    args=exception.args,
+                    stacks=exception.stacks,
+                    executor=exception.executor,
+                )
+            if return_results:
+                yield result, error
+            else:
+                result.document_array_cls = DocumentArray
+                yield result.data.docs, error
 
     async def stream_docs(
         self,
@@ -159,7 +217,7 @@ class GatewayStreamer:
         :param docs: The Documents to be sent to all the Executors
         :param request_size: The amount of Documents to be put inside a single request.
         :param return_results: If set to True, the generator will yield Responses and not `DocumentArrays`
-        :param exec_endpoint: The executor endpoint to which to send the Documents
+        :param exec_endpoint: The Executor endpoint to which to send the Documents
         :param target_executor: A regex expression indicating the Executors that should receive the Request
         :param parameters: Parameters to be attached to the Requests
         :param results_in_order: return the results in the same order as the request_iterator
@@ -179,7 +237,7 @@ class GatewayStreamer:
                     req.parameters = parameters
                 yield req
 
-        async for resp in self.stream(
+        async for resp in self.rpc_stream(
             request_iterator=_req_generator(), results_in_order=results_in_order
         ):
             if return_results:
@@ -194,7 +252,7 @@ class GatewayStreamer:
         await self._streamer.wait_floating_requests_end()
         await self._connection_pool.close()
 
-    Call = stream
+    Call = rpc_stream
 
     async def process_single_data(
         self, request: DataRequest, context=None

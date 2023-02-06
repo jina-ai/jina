@@ -1,11 +1,15 @@
 import multiprocessing
+import time
+from dataclasses import dataclass
 
 import pytest
 
-from jina import DocumentArray, Executor, requests
+from jina import Document, DocumentArray, Executor, requests
+from jina.excepts import ExecutorError
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.worker import WorkerRuntime
 from jina.serve.streamer import GatewayStreamer
+from jina.types.request import Request
 from jina.types.request.data import DataRequest
 from tests.helper import _generate_pod_args
 
@@ -18,23 +22,23 @@ class StreamerTestExecutor(Executor):
             doc.text += text_to_add
 
 
-def _create_worker_runtime(port, name=''):
+def _create_worker_runtime(port, uses, name=''):
     args = _generate_pod_args()
     args.port = port
     args.name = name
-    args.uses = 'StreamerTestExecutor'
+    args.uses = uses
     with WorkerRuntime(args) as runtime:
         runtime.run_forever()
 
 
 def _setup(pod0_port, pod1_port):
     pod0_process = multiprocessing.Process(
-        target=_create_worker_runtime, args=(pod0_port,)
+        target=_create_worker_runtime, args=(pod0_port, 'StreamerTestExecutor')
     )
     pod0_process.start()
 
     pod1_process = multiprocessing.Process(
-        target=_create_worker_runtime, args=(pod1_port,)
+        target=_create_worker_runtime, args=(pod1_port, 'StreamerTestExecutor')
     )
     pod1_process.start()
 
@@ -108,4 +112,72 @@ async def test_custom_gateway(
         pod1_process.terminate()
         pod0_process.join()
         pod1_process.join()
+        await gateway_streamer.close()
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize('return_results', [False, True])
+async def test_gateway_stream_executor_error(port_generator, return_results):
+    pod_port = port_generator()
+    da = DocumentArray(
+        [
+            Document(text='Request0'),
+            Document(text='Request1'),
+            Document(text='Request2'),
+        ]
+    )
+
+    @dataclass
+    class TestExecutor(Executor):
+        counter = 0
+
+        @requests
+        def foo(self, docs, parameters, **kwargs):
+            self.counter += 1
+            if self.counter % 2 == 0:
+                raise ValueError('custom exception')
+
+    pod_process = multiprocessing.Process(
+        target=_create_worker_runtime, args=(pod_port, 'TestExecutor')
+    )
+    pod_process.start()
+    time.sleep(0.1)
+
+    graph_description = {
+        "start-gateway": ["pod0"],
+        "pod0": ["end-gateway"],
+    }
+    pod_addresses = {"pod0": [f"0.0.0.0:{pod_port}"]}
+    # send requests to the gateway
+    gateway_streamer = GatewayStreamer(
+        graph_representation=graph_description, executor_addresses=pod_addresses
+    )
+
+    try:
+        responses = []
+        errors = []
+        async for response, error in gateway_streamer.stream(
+            docs=da, request_size=1, return_results=return_results
+        ):
+            responses.append(response)
+            if error:
+                errors.append(error)
+
+        assert len(errors) == 1
+        error = errors[0]
+        assert type(error) == ExecutorError
+        assert error.name == 'ValueError'
+        assert error.args == ['custom exception']
+        assert error.executor == 'TestExecutor'
+
+        if return_results:
+            assert all([isinstance(response, Request) for response in responses])
+        else:
+            assert all([isinstance(response, DocumentArray) for response in responses])
+            for index, result_da in enumerate(responses):
+                assert da[index] == result_da[0]
+
+    finally:
+        pod_process.terminate()
+        pod_process.join()
         await gateway_streamer.close()
