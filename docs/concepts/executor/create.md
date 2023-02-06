@@ -32,8 +32,7 @@ MyExecutor/
 ├── executor.py
 ├── config.yml
 ├── README.md
-├── requirements.txt
-└── Dockerfile
+└── requirements.txt
 ```
 
 - `executor.py` contains your Executor's main logic. The command should generate the following boilerplate code:
