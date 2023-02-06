@@ -114,7 +114,17 @@ dynamic_batching:
     preferred_batch_size: 10
     timeout: 200
 ```
+
+We then deploy with:
+
+```python
+from jina import Deployment
+
+with Deployment(uses=’config.yml’) as dep:
+    dep.block()
+```
 ````
+
 
 (executor-dynamic-batching-parameters)=
 ## Parameters
