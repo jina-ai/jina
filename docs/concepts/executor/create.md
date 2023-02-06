@@ -13,7 +13,7 @@ It contains functions (decorated with `@requests`) that process `DocumentArray`s
 1. An Executor should subclass directly from the `jina.Executor` class.
 2. An Executor class is a bag of functions with shared state or configuration (via `self`); it can contain an arbitrary number of
 functions with arbitrary names.
-3. Functions decorated by {class}`~jina.requests` are invoked according to their `on=` endpoint. These functions can be coroutines (`async def`) or regular functions.
+3. Functions decorated by {class}`~jina.requests` are exposed as gRPC services according to their `on=` endpoint. These functions can be coroutines (`async def`) or regular functions. This will be explained later in {ref}`Add Endpoints Section<exec-endpoint>`
 
 ## Create an Executor
 
@@ -23,12 +23,7 @@ To create your {class}`~jina.Executor`, run:
 jina hub new
 ```
 
-<script id="asciicast-T98aWaJLe0r0ul3cXGk7AzqUs" src="https://asciinema.org/a/T98aWaJLe0r0ul3cXGk7AzqUs.js" async></script>
-
-For basic configuration (advanced configuration is optional but rarely necessary), you will be asked for: 
-
-- Your Executor's name
-- The path to the folder where it should be saved
+You can ignore the advanced configuration and just provide the Executor name and path. For instance, choose `Myexecutor`.
 
 After running the command, a project with the following structure will be generated:
 
@@ -41,21 +36,25 @@ MyExecutor/
 └── Dockerfile
 ```
 
-- `executor.py` contains your Executor's main logic.
-- `config.yml` is the Executor's {ref}`configuration <executor-yaml-spec>` file, where you can define `__init__` arguments using the `with` keyword. You can also define meta annotations relevant to the Executor, for getting better exposure on Executor Hub.
+- `executor.py` contains your Executor's main logic. The command should generate the following boilerplate code:
+```python
+from jina import DocumentArray, Executor, requests
+
+
+class MyExecutor(Executor):
+    """"""
+
+    @requests
+    def foo(self, docs: DocumentArray, **kwargs):
+        pass
+```
+- `config.yml` is the Executor's {ref}`configuration <executor-yaml-spec>` file, where you can define `__init__` arguments using the `with` keyword.
 - `requirements.txt` describes the Executor's Python dependencies.
 - `README.md` describes how to use your Executor.
-- `Dockerfile` is only generated if you choose advanced configuration.
 
 For a more detailed breakdown of the file structure, see `{ref} here <executor-file-structure>`.
 
 ## Constructor
-
-### Subclass
-
-Every new Executor should be a subclass of {class}`~jina.Executor`. You can name your Executor class freely.
-
-### `__init__`
 
 You only need to implement `__init__` if your Executor contains initial state.
 
@@ -80,6 +79,8 @@ Here, `kwargs` are reserved for Jina to inject `metas` and `requests` (represent
 You can access the values of these arguments in the `__init__` body via `self.metas`/`self.requests`/`self.runtime_args`, or modify their values before passing them to `super().__init__()`.
 ````
 
+Since Executors are runnable through {ref}`YAML configurations <executor-yaml-spec>`, user-defined constructor arguments 
+can be overridden using the {ref}`Executor YAML with keyword<executor-with-keyword>`.
 ## Destructor
 
 You might need to execute some logic when your Executor's destructor is called.
