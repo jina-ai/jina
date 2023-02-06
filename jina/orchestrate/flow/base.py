@@ -1052,7 +1052,7 @@ class Flow(
     @allowed_levels([FlowBuildLevel.EMPTY])
     def add(
         self,
-        deployment: Deployment = None,
+        deployment: Union[str, Deployment] = None,
         **kwargs,
     ) -> Union['Flow', 'AsyncFlow']:
         # implementation_stub_inject_start_add
@@ -1246,11 +1246,14 @@ class Flow(
                     'External Executors with multiple needs have to do auto reduce.'
                 )
             deployment = Deployment(args, needs, include_gateway=False)
+        elif isinstance(deployment, str):
+            deployment = Deployment.load_config(deployment)
 
         op_flow._deployment_nodes[deployment_name] = deployment
 
-        if not args.floating:
-            op_flow._last_deployment = deployment_name
+        # TODO: uncomment later
+        # if not args.floating:
+        #     op_flow._last_deployment = deployment_name
 
         return op_flow
 
