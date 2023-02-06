@@ -42,7 +42,4 @@ The Hub architecture looks like the following:
 hub-portal
 push-executor
 use-hub-executor
-../../../how-to/sandbox
-../../../how-to/debug-executor
-yaml-spec
 ```
