@@ -158,8 +158,6 @@ with Flow(
 Second execute requests using the instrumented {class}`jina.Client`:
 
 ```python
-import time
-
 from jina import Client, Document, DocumentArray
 
 client = Client(
@@ -169,8 +167,7 @@ client = Client(
     traces_exporter_port=4317,
 )
 client.post('/', DocumentArray([Document(text='hello')]))
-# allow some time for the tracing data export
-time.sleep(3)
+client.teardown_instrumentation()
 ```
 
 ```{hint}
