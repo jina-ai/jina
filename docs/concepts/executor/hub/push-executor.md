@@ -7,14 +7,6 @@ There are two ways to share:
 - **Public** (default): Anyone can use public Executors without any restrictions.
 - **Private**: Only people with the `secret` can use private Executors. 
 
-(jina-hub-prepare)=
-## Preparing your Executor
-
-To prepare your Executor for the Hub, follow the {ref}`official steps to create your Executor <create-executor>`. Some points to bear in mind are:
-
-* You don't need to bump the Jina version. Hub Executors are version-agnostic. When you pull an Executor from Executor Hub, it will select the right Jina version for you. You don't need to upgrade your version of Jina.
-* Fill in metadata of your Executor correctly. Information you include under the `metas` key in `config.yml` is displayed on Executor Hub. `The specification can be found here<config.yml>`.
-
 (jina-hub-usage)=
 ## Publishing for the first time
 
