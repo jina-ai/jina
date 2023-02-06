@@ -203,7 +203,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         self._init_instrumentation(runtime_args)
         self._init_monitoring()
         self._init_workspace = workspace
-        self.logger = JinaLogger(self.__class__.__name__)
+        self.logger = JinaLogger(self.__class__.__name__, **vars(self.runtime_args))
         if __dry_run_endpoint__ not in self.requests:
             self.requests[__dry_run_endpoint__] = _FunctionWithSchema(
                 self._dry_run_func
@@ -693,7 +693,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
         :param host: The host of the Gateway, which the client should connect to, by default it is 0.0.0.0. In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts.  Then, every resulting address will be considered as one replica of the Executor.
         :param install_requirements: If set, try to install `requirements.txt` from the local Executor if exists in the Executor folder. If using Hub, install `requirements.txt` in the Hub Executor bundle to local.
-        :param log_config: The YAML config of the logger used in this object.
+        :param log_config: The config name or the absolute path to the YAML config file of the logger used in this object.
         :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.
         :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.
         :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.

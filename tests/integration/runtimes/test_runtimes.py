@@ -718,7 +718,12 @@ def _create_head_runtime(
 
 
 def _create_gateway_runtime(
-    graph_description, pod_addresses, port, protocol='grpc', retries=-1
+    graph_description,
+    pod_addresses,
+    port,
+    protocol='grpc',
+    retries=-1,
+    log_config='default',
 ):
     with GatewayRuntime(
         set_gateway_parser().parse_args(
@@ -733,6 +738,8 @@ def _create_gateway_runtime(
                 str(retries),
                 '--protocol',
                 protocol,
+                '--log-config',
+                log_config,
             ]
         )
     ) as runtime:

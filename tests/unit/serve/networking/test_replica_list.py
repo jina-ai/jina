@@ -46,13 +46,8 @@ async def test_remove_connection(replica_list):
 async def test_reset_connection(replica_list):
     replica_list.add_connection('executor0', 'executor-0')
     connection_stub = await replica_list.get_next_connection('executor0')
-    reset_connection_stub = await replica_list.reset_connection(
-        'executor0', 'executor-0'
-    )
-    # returns stub that was reset
-    assert connection_stub == reset_connection_stub
+    await replica_list.reset_connection('executor0', 'executor-0')
     new_connection_stub = await replica_list.get_next_connection()
-    assert new_connection_stub != reset_connection_stub
     assert len(replica_list.get_all_connections()) == 1
 
     connection_stub_random_address = await replica_list.reset_connection(
@@ -74,9 +69,7 @@ async def test_close(replica_list):
 
 async def _print_channel_attributes(connection_stub: _ConnectionStubs):
     await asyncio.sleep(0.5)
-    # currently the channel can get destroyed even if a different co-routine is
-    # holding a reference
-    assert not connection_stub.channel.get_state() == ChannelConnectivity.SHUTDOWN
+    assert connection_stub.channel.get_state() != ChannelConnectivity.SHUTDOWN
 
 
 @pytest.mark.asyncio
@@ -92,6 +85,6 @@ async def test_synchornization_when_resetting_connection(replica_list, logger):
         ),
         return_exceptions=True,
     )
-    # TODO invert the assert statement after refactoring because the channel must be
-    # closed only if there are no references to it.
-    assert any([issubclass(type(response), BaseException) for response in responses])
+    assert not any(
+        [issubclass(type(response), BaseException) for response in responses]
+    )

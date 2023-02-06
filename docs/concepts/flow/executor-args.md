@@ -2,7 +2,7 @@
 |----|----|----|----|
 | `name` | The name of this object.<br><br>    This will be used in the following places:<br>    - how you refer to this object in Python/YAML/CLI<br>    - visualization<br>    - log message header<br>    - ...<br><br>    When not given, then the default naming strategy will apply. | `string` | `None` |
 | `workspace` | The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`. | `string` | `None` |
-| `log_config` | The YAML config of the logger used in this object. | `string` | `default` |
+| `log_config` | The config name or the absolute path to the YAML config file of the logger used in this object. | `string` | `default` |
 | `quiet` | If set, then no log will be emitted from this object. | `boolean` | `False` |
 | `quiet_error` | If set, then exception stack information will not be added to the log | `boolean` | `False` |
 | `timeout_ctrl` | The timeout in milliseconds of the control request, -1 for waiting forever | `number` | `60` |
