@@ -51,7 +51,7 @@ class MyExecutor(Executor):
 - `requirements.txt` describes the Executor's Python dependencies.
 - `README.md` describes how to use your Executor.
 
-For a more detailed breakdown of the file structure, see `{ref} here <executor-file-structure>`.
+For a more detailed breakdown of the file structure, see {ref}`here <executor-file-structure>`.
 
 ## Constructor
 
