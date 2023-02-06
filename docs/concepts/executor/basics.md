@@ -80,10 +80,3 @@ class MyExecutor(Executor):
 ```
 
 This is important because when an Executor is instantiated in the context of a Flow, Jina adds {ref}`extra arguments <flow-specific-arguments>`.
-
-## See also
-
-- {ref}`Debugging an Executor <debug-executor>`
-- {ref}`Using an Executor on a GPU <gpu-executor>`
-- {ref}`How to use external Executors <external-executors>`
-- {ref}`Custom logging configuration <logging-configuration>`
