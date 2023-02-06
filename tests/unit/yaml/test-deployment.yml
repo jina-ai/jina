@@ -2,5 +2,7 @@ jtype: Deployment
 with:
   replicas: 2
   shards: 3
-  uses: BaseExecutor
+  uses: DummyExternalIndexer
+  py_modules:
+    - dummy_exec.py
 
