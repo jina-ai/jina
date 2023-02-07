@@ -109,22 +109,18 @@ def mixin_base_deployment_parser(parser, title='Base Deployment', default_name=N
         else argparse.SUPPRESS,
     )
 
-    gp.add_argument(
-        '--native',
-        action='store_true',
-        default=False,
-        help='If set, only native Executors is allowed, and the Executor is always run inside WorkerRuntime.',
-    )
-
     return gp
 
 
-def mixin_scalable_deployment_parser(parser):
+def mixin_scalable_deployment_parser(parser, default_name=None):
     """Mixing in arguments required by a scalable deployment into the given parser.
     The deployment is scalable and can have shards, replicas and polling
     :param parser: the parser instance to which we add arguments
+    :param default_name: default pod name
     """
-    gp = add_arg_group(parser, title='Scalable Deployment')
+    gp = mixin_base_deployment_parser(
+        parser, title='Scalable Deployment', default_name=default_name
+    )
 
     gp.add_argument(
         '--polling',
@@ -156,4 +152,11 @@ def mixin_scalable_deployment_parser(parser):
         type=int,
         default=1,
         help='The number of replicas in the deployment',
+    )
+
+    gp.add_argument(
+        '--native',
+        action='store_true',
+        default=False,
+        help='If set, only native Executors is allowed, and the Executor is always run inside WorkerRuntime.',
     )
