@@ -52,3 +52,4 @@ fundamentals/preliminaries/coding-in-python-yaml.md concepts/preliminaries/codin
 fundamentals/architecture-overview.md concepts/preliminaries/index.md
 fundamentals/executor/hub.md concepts/executor/hub
 fundamentals/flow.md concepts/flow
+concepts/executor/run.md concepts/executor/serve.md

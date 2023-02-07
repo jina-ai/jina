@@ -1,5 +1,11 @@
 <p align="center">
-<br><br><br>
+<!-- survey banner start -->
+<a href="https://10sw1tcpld4.typeform.com/to/EGAEReM7?utm_source=readme&utm_medium=github&utm_campaign=user%20experience&utm_term=feb2023&utm_content=survey">
+  <img src="./.github/banner.svg?raw=true">
+</a>
+<!-- survey banner start -->
+
+<p align="center">
 <a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/docs/_static/logo-light.svg?raw=true" alt="Jina logo: Build multimodal AI services via cloud native technologies · Neural Search · Generative AI · Cloud Native" width="150px"></a>
 <br><br><br>
 </p>
