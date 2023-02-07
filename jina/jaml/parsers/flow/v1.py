@@ -71,7 +71,10 @@ class V1Parser(VersionedYAMLParser):
         pp = data.get('executors', data.get('deployments', []))
         for deployments in pp:
             if isinstance(deployments, str):
-                dep = Deployment.load_config(deployments)
+                dep = Deployment.load_config(
+                    deployments,
+                    extra_search_paths=data.get('with', {}).get('extra_search_paths'),
+                )
                 getattr(obj, 'add')(dep)
             elif (
                 isinstance(deployments, dict)
