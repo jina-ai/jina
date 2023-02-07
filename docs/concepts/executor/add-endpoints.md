@@ -180,7 +180,7 @@ class MyExec(Executor):
 
 
 with Deployment(uses=MyExec) as dep:
-    print(dep.post(on='/status').to_dict()["parameters"])
+    print(dep.post(on='/status', return_responses=True)[0].to_dict()["parameters"])
 ```
 
 ```json
