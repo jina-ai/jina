@@ -43,7 +43,7 @@ hub-portal
 create-hub-executor
 push-executor
 use-hub-executor
-../../../how-to/sandbox
-../../../how-to/debug-executor
+sandbox
+debug-executor
 yaml-spec
 ```
