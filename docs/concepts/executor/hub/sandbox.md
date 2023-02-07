@@ -24,30 +24,6 @@ with dep:
 
 This starts a Deployment with one Executor, and sends a Document to it. The Executor processes the Document and returns the result.
 
-### Use with other Executors
-
-To use a sandboxed Executor with other Executors, simply add it as usual to a Jina {ref}`Flow <flow-cookbook>`:
-
-
-```python
-from docarray import Document
-from jina import Deployment, Executor, requests, Flow
-
-
-class MyExecutor(Executor):
-    @requests
-    def process(self, docs, **kwargs):
-        for doc in docs:
-            doc.text = '(first hello, from MyExecutor)' + doc.text
-
-
-f = Flow().add(uses=MyExecutor).add(uses='jinaai+sandbox://jina-ai/Hello')
-
-with f:
-    r = f.post('/', inputs=Document(text='world'))
-    print(r[0].text)
-```
-
 ## Lifecycle
 
 Sandbox is serverless. It is not removed immediately after the Deployment is closed but kept alive for several minutes. If there is no traffic, it automatically scales down to zero to save resources, but it will start again and send a response whenever a new request is sent to the same Sandbox.
