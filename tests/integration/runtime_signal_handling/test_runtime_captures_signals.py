@@ -8,7 +8,7 @@ import pytest
 from jina import Document, DocumentArray, Executor, requests
 from jina.clients.request import request_generator
 from jina.parsers import set_gateway_parser
-from jina.serve.networking import GrpcConnectionPool
+from jina.serve.networking.utils import send_request_sync
 from jina_cli.api import executor_native, gateway
 from tests.helper import _generate_pod_args
 
@@ -58,9 +58,7 @@ def test_executor_runtimes(signal, tmpdir):
     process.start()
     time.sleep(0.5)
 
-    GrpcConnectionPool.send_request_sync(
-        _create_test_data_message(), target=f'{args.host}:{args.port}'
-    )
+    send_request_sync(_create_test_data_message(), target=f'{args.host}:{args.port}')
 
     time.sleep(0.1)
 

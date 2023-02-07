@@ -195,7 +195,7 @@ e.set()  # set event and stop (unblock) the Flow
 
 ### Serve on Google Colab
 
-Google Colab provides an easy-to-use Jupyter notebook environment with GPU/TPU support. Flow is fully compatible with Google Colab and you can use it in the following ways:
+[Google Colab](https://colab.research.google.com/) provides an easy-to-use Jupyter notebook environment with GPU/TPU support. Flow is fully compatible with Google Colab and you can use it in the following ways:
 
 ```{figure} jina-on-colab.svg
 :align: center
@@ -314,3 +314,71 @@ For more in-depth guides on Flow deployment, check our how-tos for {ref}`Docker 
 {ref}`Kubernetes <kubernetes>`.
 ```
 
+(logging-configuration)=
+
+## Logging Configuration
+
+The default {class}`jina.logging.logger.JinaLogger` uses rich console logging that writes to the system console.
+The `log_config` argument can be used to pass in a string of the pre-configured logging configuration names in Jina or
+the absolute YAML file path of the custom logging configuration. For most cases, the default logging configuration
+sufficiently covers local, Docker and Kubernetes environments.
+
+Custom logging handlers can be configured by following
+the Python official [Logging Cookbook](https://docs.python.org/3/howto/logging-cookbook.html#logging-cookbook) examples.
+An example custom logging configuration file defined in a YAML file `logging.json.yml` is:
+
+```yaml
+handlers:
+  - StreamHandler
+level: INFO
+configs:
+  StreamHandler:
+    format: '%(asctime)s:{name:>15}@%(process)2d[%(levelname).1s]:%(message)s'
+    formatter: JsonFormatter
+```
+
+The logging configuration can be used as follows:
+
+````{tab} Python
+```python
+from jina import Flow
+
+f = Flow(log_config='./logging.json.yml')
+```
+````
+
+````{tab} YAML
+```yaml
+jtype: Flow
+with:
+    log_config: './logging.json.yml'
+```
+````
+
+### Overriding logging configuration
+
+The default logging or custom logging configuration at the `Flow` level will be propagated to the `Gateway` and `Executor` entities.
+If that is not desired, every `Gateway` or `Executor` entity can be provided with a custom logging configuration. 
+
+You can configure two different `Executors` as in the below example:
+
+```python
+from jina import Flow
+
+f = (
+    Flow().add(log_config='./logging.json.yml').add(log_config='./logging.file.yml')
+)  # Create a Flow with two Executors
+```
+
+`logging.file.yml` is another YAML file with a custom `FileHandler` configuration.
+
+````{hint}
+Refer to {ref}`Gateway logging configuration <gateway-logging-configuration>` section for configuring the `Gateway` logging.
+````
+
+````{caution}
+When exporting the Flow to Kubernetes, the log_config file path must refer to the absolute local path of each container. The custom logging
+file must be included during the containerization process. If the availability of the file is unknown then its best to rely on the default
+configuration. This restriction also applies to dockerized `Executors`. When running a dockerized Executor locally, the logging configuration
+file can be mounted using {ref}`volumes <mount-local-volumes>`.
+````

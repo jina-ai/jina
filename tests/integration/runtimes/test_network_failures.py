@@ -5,7 +5,7 @@ import uuid
 import pytest
 from docarray import DocumentArray
 
-from jina import Client, Executor, Flow, requests
+from jina import Client, Executor, requests
 from jina.parsers import set_gateway_parser
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.gateway import GatewayRuntime
@@ -45,12 +45,12 @@ def _create_worker(port):
     return p
 
 
-def _create_gateway(port, graph, pod_addr, protocol, retries=-1):
+def _create_gateway(port, graph, pod_addr, protocol, retries=-1, log_config='default'):
     # create a single worker runtime
     # create a single gateway runtime
     p = multiprocessing.Process(
         target=_create_gateway_runtime,
-        args=(graph, pod_addr, port, protocol, retries),
+        args=(graph, pod_addr, port, protocol, retries, log_config),
     )
     p.start()
     time.sleep(0.1)
@@ -95,14 +95,6 @@ def _test_error(gateway_port, error_ports, protocol):
     # assert error message contains the port(s) of the broken executor(s)
     for port in error_ports:
         assert str(port) in err_info.value.args[0]
-
-
-def _test_error_host_addr(gateway_port, host_addr, protocol):
-    with pytest.raises(ConnectionError) as err_info:  # assert correct error is thrown
-        _send_request(gateway_port, protocol)
-    # assert error message contains the port(s) of the broken executor(s)
-    print(f'OUTPUT:\n\n\n\n{err_info.value.args[0]}\n\n\n\n')
-    assert str(host_addr) in err_info.value.args[0]
 
 
 @pytest.mark.parametrize(
@@ -191,10 +183,42 @@ async def test_runtimes_headless_topology(
 @pytest.mark.parametrize('protocol', ['http', 'websocket', 'grpc'])
 @pytest.mark.asyncio
 async def test_runtimes_resource_not_found(port_generator, protocol):
-    gateway_port = port_generator()
-    graph_description = '{"start-gateway": ["pod0"], "pod0": ["end-gateway"]}'
-    pod_addresses = f'{{"pod0": ["https://blah.wolf.jina.ai/"]}}'
+    def _create_patched_worker_runtime(port, name='', executor=None):
+        args = _generate_pod_args()
+        args.port = port
+        args.uses = 'DummyExec'
+        args.name = name
+        if executor:
+            args.uses = executor
 
+        class PatchedWorkerRuntime(WorkerRuntime):
+            async def endpoint_discovery(self, empty, context):
+                import grpc
+
+                context.set_code(grpc.StatusCode.NOT_FOUND)
+
+            async def process_data(self, requests_, context):
+                import grpc
+
+                context.set_code(grpc.StatusCode.NOT_FOUND)
+
+        with PatchedWorkerRuntime(args) as runtime:
+            runtime.run_forever()
+
+    def _create_patched_worker(port):
+        """creates a worker that is monkey patched to return a NOT_FOUND (code 5) grpc error"""
+        # create a single worker runtime
+        p = multiprocessing.Process(target=_create_patched_worker_runtime, args=(port,))
+        p.start()
+        time.sleep(0.1)
+        return p
+
+    gateway_port = port_generator()
+    worker_port = port_generator()
+    graph_description = '{"start-gateway": ["pod0"], "pod0": ["end-gateway"]}'
+    pod_addresses = f'{{"pod0": ["0.0.0.0:{worker_port}"]}}'
+
+    worker_process = _create_patched_worker(worker_port)
     gateway_process = _create_gateway(
         gateway_port, graph_description, pod_addresses, protocol
     )
@@ -211,8 +235,8 @@ async def test_runtimes_resource_not_found(port_generator, protocol):
         # ----------- 1. test that useful errors are given when endpoint discovery fails -----------
         # we have to do this in a new process because otherwise grpc will be sad and everything will crash :(
         p = multiprocessing.Process(
-            target=_test_error_host_addr,
-            args=(gateway_port, 'blah.wolf.jina.ai', protocol),
+            target=_test_error,
+            args=(gateway_port, worker_port, protocol),
         )
         p.start()
         p.join()
@@ -224,6 +248,8 @@ async def test_runtimes_resource_not_found(port_generator, protocol):
     finally:  # clean up runtimes
         gateway_process.terminate()
         gateway_process.join()
+        worker_process.terminate()
+        worker_process.join()
 
 
 @pytest.mark.parametrize('protocol', ['grpc', 'http', 'grpc'])
@@ -785,12 +811,12 @@ def _test_custom_retry(gateway_port, error_ports, protocol, retries, capfd):
     out, err = capfd.readouterr()
     if retries > 0:  # do as many retries as specified
         for i in range(retries):
-            assert f'attempt {i+1}/{retries}' in out
+            assert f'attempt {i + 1}/{retries}' in out
     elif retries == 0:  # do no retries
         assert 'attempt' not in out
     elif retries < 0:  # use default retry policy, doing at least 3 retries
         for i in range(3):
-            assert f'attempt {i+1}' in out
+            assert f'attempt {i + 1}' in out
 
 
 @pytest.mark.parametrize('retries', [-1, 0, 5])
@@ -816,7 +842,12 @@ def test_custom_num_retries(port_generator, retries, capfd):
         )
 
     gateway_process = _create_gateway(
-        gateway_port, graph_description, pod_addresses, 'grpc', retries=retries
+        gateway_port,
+        graph_description,
+        pod_addresses,
+        'grpc',
+        retries=retries,
+        log_config='json',
     )
     AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
         timeout=5.0,

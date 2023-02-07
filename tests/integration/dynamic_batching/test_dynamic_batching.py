@@ -18,7 +18,7 @@ from jina import (
     requests,
 )
 from jina.clients.request import request_generator
-from jina.serve.networking import GrpcConnectionPool
+from jina.serve.networking.utils import send_request_sync
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina_cli.api import executor_native
 from tests.helper import _generate_pod_args
@@ -166,14 +166,17 @@ USES_DYNAMIC_BATCHING_PLACE_HOLDER_EXECUTOR = {
     '/param': {'preferred_batch_size': 4, 'timeout': 2000},
 }
 
-RequestStruct = namedtuple('RequestStruct', ['port', 'endpoint', 'iterator', 'use_stream'])
+RequestStruct = namedtuple(
+    'RequestStruct', ['port', 'endpoint', 'iterator', 'use_stream']
+)
 
 
 def call_api(req: RequestStruct):
     c = Client(port=req.port)
     return c.post(
         req.endpoint,
-        inputs=DocumentArray([Document(text=str(i)) for i in req.iterator]), stream=req.use_stream
+        inputs=DocumentArray([Document(text=str(i)) for i in req.iterator]),
+        stream=req.use_stream,
     )
 
 
@@ -188,7 +191,7 @@ def call_api_with_params(req: RequestStructParams):
         req.endpoint,
         inputs=DocumentArray([Document(text=str(i)) for i in req.iterator]),
         parameters=req.params,
-        stream=req.use_stream
+        stream=req.use_stream,
     )
 
 
@@ -306,6 +309,7 @@ def test_preferred_batch_size(add_parameters, use_stream):
             )
             time_taken = time.time() - start_time
             assert time_taken < TIMEOUT_TOLERANCE
+
 
 @pytest.mark.parametrize('use_stream', [False, True])
 def test_correctness(use_stream):
@@ -434,8 +438,12 @@ def test_param_correctness(use_stream):
                 p.map(
                     call_api_with_params,
                     [
-                        RequestStructParams(f.port, '/param', 'ABCD', PARAM1, use_stream),
-                        RequestStructParams(f.port, '/param', 'ABCD', PARAM2, use_stream),
+                        RequestStructParams(
+                            f.port, '/param', 'ABCD', PARAM1, use_stream
+                        ),
+                        RequestStructParams(
+                            f.port, '/param', 'ABCD', PARAM2, use_stream
+                        ),
                     ],
                 )
             )
@@ -460,8 +468,12 @@ def test_param_correctness(use_stream):
                 p.map(
                     call_api_with_params,
                     [
-                        RequestStructParams(f.port, '/param', 'ABC', PARAM1, use_stream),
-                        RequestStructParams(f.port, '/param', 'ABCD', PARAM2, use_stream),
+                        RequestStructParams(
+                            f.port, '/param', 'ABC', PARAM1, use_stream
+                        ),
+                        RequestStructParams(
+                            f.port, '/param', 'ABCD', PARAM2, use_stream
+                        ),
                         RequestStructParams(f.port, '/param', 'D', PARAM1, use_stream),
                     ],
                 )
@@ -540,7 +552,7 @@ def test_specific_endpoint_batching(uses):
 
 
 def _assert_all_docs_processed(port, num_docs, endpoint):
-    resp = GrpcConnectionPool.send_request_sync(
+    resp = send_request_sync(
         _create_test_data_message(num_docs, endpoint=endpoint),
         target=f'0.0.0.0:{port}',
         endpoint=endpoint,

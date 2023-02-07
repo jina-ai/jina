@@ -16,7 +16,7 @@ from jina.constants import __cache_path__
 from jina.excepts import RuntimeFailToStart
 from jina.helper import random_port
 from jina.serve.executors.metas import get_default_metas
-from jina.serve.networking import GrpcConnectionPool
+from jina.serve.networking.utils import send_request_async
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.worker import WorkerRuntime
 from tests.helper import _generate_pod_args
@@ -553,7 +553,7 @@ async def test_blocking_sync_exec():
     for i in range(REQUEST_COUNT):
         send_tasks.append(
             asyncio.create_task(
-                GrpcConnectionPool.send_request_async(
+                send_request_async(
                     _create_test_data_message(),
                     target=f'{args.host}:{args.port}',
                     timeout=3.0,
@@ -590,14 +590,14 @@ def test_executors_inheritance_binding():
         pass
 
     assert set(A().requests.keys()) == {'/index', '/default', '_jina_dry_run_'}
-    assert A().requests['/index'] == A.a
-    assert A().requests['/default'] == A.default_a
+    assert A().requests['/index'].fn == A.a
+    assert A().requests['/default'].fn == A.default_a
     assert set(B().requests.keys()) == {'/index', '/default', '_jina_dry_run_'}
-    assert B().requests['/index'] == B.b
-    assert B().requests['/default'] == A.default_a
+    assert B().requests['/index'].fn == B.b
+    assert B().requests['/default'].fn == A.default_a
     assert set(C().requests.keys()) == {'/index', '/default', '_jina_dry_run_'}
-    assert C().requests['/index'] == B.b
-    assert C().requests['/default'] == A.default_a
+    assert C().requests['/index'].fn == B.b
+    assert C().requests['/default'].fn == A.default_a
 
 
 @pytest.mark.parametrize(

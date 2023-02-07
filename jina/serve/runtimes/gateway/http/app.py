@@ -92,8 +92,7 @@ def get_fastapi_app(
             }
         )
 
-        from docarray import DocumentArray
-
+        from jina._docarray import DocumentArray
         from jina.proto import jina_pb2
         from jina.serve.executors import __dry_run_endpoint__
         from jina.serve.runtimes.gateway.http.models import (
@@ -115,7 +114,7 @@ def get_fastapi_app(
 
             """
 
-            da = DocumentArray()
+            da = DocumentArray([])
 
             try:
                 _ = await _get_singleton_result(
@@ -301,13 +300,18 @@ def get_fastapi_app(
             from dataclasses import asdict
 
             import strawberry
-            from docarray import DocumentArray
-            from docarray.document.strawberry_type import (
-                JSONScalar,
-                StrawberryDocument,
-                StrawberryDocumentInput,
-            )
             from strawberry.fastapi import GraphQLRouter
+
+            from jina._docarray import DocumentArray, docarray_v2
+
+            if not docarray_v2:
+                from docarray.document.strawberry_type import (
+                    JSONScalar,
+                    StrawberryDocument,
+                    StrawberryDocumentInput,
+                )
+            else:
+                raise NotImplementedError('GraphQL is not yet supported for DocArrayV2')
 
             async def get_docs_from_endpoint(
                 data, target_executor, parameters, exec_endpoint
@@ -374,7 +378,7 @@ def get_fastapi_app(
         :param request_iterator: request iterator, with length of 1
         :return: the first result from the request iterator
         """
-        async for result in streamer.stream(request_iterator=request_iterator):
+        async for result in streamer.rpc_stream(request_iterator=request_iterator):
             result_dict = result.to_dict()
             return result_dict
 

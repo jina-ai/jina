@@ -258,6 +258,6 @@ def test_load_dataclass_executor():
 
     exec = BaseExecutor.load_config(executor_yaml)
     assert exec.my_field == 'this is my field'
-    assert exec.requests['/foo'] == MyDataClassExecutor.baz
+    assert exec.requests['/foo'].fn == MyDataClassExecutor.baz
     assert exec.metas.name == 'test-name-updated'
     assert exec.metas.workspace == 'test-work-space-updated'

@@ -2,6 +2,7 @@ from jina.helper import GATEWAY_NAME
 from jina.parsers.helper import _SHOW_ALL_ARGS
 from jina.parsers.orchestrate.runtimes.container import mixin_container_runtime_parser
 from jina.parsers.orchestrate.runtimes.head import mixin_head_parser
+from jina.parsers.logging import mixin_suppress_root_logging_parser
 
 
 def set_pod_parser(parser=None, default_name=None):
@@ -151,6 +152,7 @@ def set_client_cli_parser(parser=None):
     mixin_client_features_parser(parser)
     mixin_client_protocol_parser(parser)
     mixin_prefetch_parser(parser)
+    mixin_suppress_root_logging_parser(parser)
 
     return parser
 

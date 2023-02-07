@@ -167,7 +167,7 @@ class HTTPBaseClient(BaseClient):
 
                 da = None
                 if 'data' in r_str and r_str['data'] is not None:
-                    from docarray import DocumentArray
+                    from jina._docarray import DocumentArray
 
                     da = DocumentArray.from_dict(r_str['data'])
                     del r_str['data']
