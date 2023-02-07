@@ -1,0 +1,10 @@
+jtype: Deployment
+with:
+  uses:
+    jtype: DummyExecutor
+    py_modules:
+      - executor.py
+    with:
+      arg: world
+  replicas: 2
+  shards: 3

@@ -1060,6 +1060,7 @@ class Flow(
     @allowed_levels([FlowBuildLevel.EMPTY])
     def add(
         self,
+        deployment: Union[str, Deployment] = None,
         **kwargs,
     ) -> Union['Flow', 'AsyncFlow']:
         # implementation_stub_inject_start_add
@@ -1216,49 +1217,59 @@ class Flow(
             op_flow, deployment_name, needs, connect_to_last_deployment=True
         )
 
-        # set the kwargs inherit from `Flow(kwargs1=..., kwargs2=)`
-        for key, value in op_flow._common_kwargs.items():
+        if deployment is None:
 
-            # do not inherit from all the argument from the flow and respect EXECUTOR_ARGS_BLACKLIST
-            if key not in kwargs and key not in EXECUTOR_ARGS_BLACKLIST:
-                kwargs[key] = value
+            # set the kwargs inherit from `Flow(kwargs1=..., kwargs2=)`
+            for key, value in op_flow._common_kwargs.items():
 
-        # update kwargs of this Deployment
-        kwargs.update(
-            dict(
-                name=deployment_name,
-                deployment_role=deployment_role,
-                log_config=kwargs.get('log_config')
-                if 'log_config' in kwargs
-                else self.args.log_config,
+                # do not inherit from all the argument from the flow and respect EXECUTOR_ARGS_BLACKLIST
+                if key not in kwargs and key not in EXECUTOR_ARGS_BLACKLIST:
+                    kwargs[key] = value
+
+            # update kwargs of this Deployment
+            kwargs.update(
+                dict(
+                    name=deployment_name,
+                    deployment_role=deployment_role,
+                    log_config=kwargs.get('log_config')
+                    if 'log_config' in kwargs
+                    else self.args.log_config,
+                )
             )
-        )
-        parser = set_deployment_parser()
-        if deployment_role == DeploymentRoleType.GATEWAY:
-            parser = set_gateway_parser()
+            parser = set_deployment_parser()
+            if deployment_role == DeploymentRoleType.GATEWAY:
+                parser = set_gateway_parser()
 
-        args = ArgNamespace.kwargs2namespace(
-            kwargs, parser, True, fallback_parsers=FALLBACK_PARSERS
-        )
+            args = ArgNamespace.kwargs2namespace(
+                kwargs, parser, True, fallback_parsers=FALLBACK_PARSERS
+            )
 
-        # deployment workspace if not set then derive from flow workspace
-        if args.workspace:
-            args.workspace = os.path.abspath(args.workspace)
+            # deployment workspace if not set then derive from flow workspace
+            if args.workspace:
+                args.workspace = os.path.abspath(args.workspace)
+            else:
+                args.workspace = self.workspace
+
+            args.noblock_on_start = True
+
+            if len(needs) > 1 and args.external and args.no_reduce:
+                raise ValueError(
+                    'External Executors with multiple needs have to do auto reduce.'
+                )
+            deployment = Deployment(args, needs, include_gateway=False)
+            floating = args.floating
+        elif isinstance(deployment, str):
+            deployment = Deployment.load_config(
+                deployment, needs=needs, include_gateway=False
+            )
+            floating = deployment.args.floating
         else:
-            args.workspace = self.workspace
+            deployment.needs = needs
+            floating = deployment.args.floating
 
-        args.noblock_on_start = True
+        op_flow._deployment_nodes[deployment_name] = deployment
 
-        if len(needs) > 1 and args.external and args.no_reduce:
-            raise ValueError(
-                'External Executors with multiple needs have to do auto reduce.'
-            )
-
-        op_flow._deployment_nodes[deployment_name] = Deployment(
-            args, needs, include_gateway=False
-        )
-
-        if not args.floating:
+        if not floating:
             op_flow._last_deployment = deployment_name
 
         return op_flow

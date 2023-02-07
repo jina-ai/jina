@@ -3,7 +3,8 @@ import os
 import pytest
 import yaml
 
-from jina import Gateway
+
+from jina import Deployment, Gateway
 from jina.constants import __default_executor__, __default_host__
 from jina.helper import expand_dict, expand_env_var
 from jina.jaml import JAML
@@ -209,3 +210,17 @@ def test_load_gateway_override_with(yaml_file, gateway_name):
         assert gateway.arg1 == 'arg1'
         assert gateway.arg2 == 'arg2'
         assert gateway.arg3 == 'arg3'
+
+
+@pytest.mark.parametrize(
+    'yaml_file,expected_replicas,expected_shards,expected_uses',
+    [
+        ('test-deployment.yml', 2, 3, 'DummyExternalIndexer'),
+        ('test-deployment-exec-config.yml', 3, 2, 'dummy_ext_exec_success.yml'),
+    ],
+)
+def test_load_deployment(yaml_file, expected_replicas, expected_shards, expected_uses):
+    with Deployment.load_config(f'yaml/{yaml_file}') as dep:
+        assert dep.args.replicas == expected_replicas
+        assert dep.args.shards == expected_shards
+        assert dep.args.uses == expected_uses

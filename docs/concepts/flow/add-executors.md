@@ -112,6 +112,63 @@ This gives the output:
 Both `BarExecutor` and `BazExecutor` only received a single `Document` from `FooExecutor` because they are run in parallel. The last Executor `executor3` receives both DocumentArrays and merges them automatically.
 This automated merging can be disabled with `no_reduce=True`. This is useful for providing custom merge logic in a separate Executor. In this case the last `.add()` call would look like `.add(needs=['barExecutor', 'bazExecutor'], uses=CustomMergeExecutor, no_reduce=True)`. This feature requires Jina >= 3.0.2.
 
+## How Executors process DocumentArrays in a Flow
+
+Let's understand how Executors process DocumentArray's inside a Flow, and how changes are chained and applied, affecting downstream Executors in the Flow.
+
+```python 
+from jina import Executor, requests, Flow, DocumentArray, Document
+
+
+class PrintDocuments(Executor):
+    @requests
+    def foo(self, docs, **kwargs):
+        for doc in docs:
+            print(f' PrintExecutor: received document with text: "{doc.text}"')
+
+
+class ProcessDocuments(Executor):
+    @requests(on='/change_in_place')
+    def in_place(self, docs, **kwargs):
+        # This Executor only works on `docs` and doesn't consider any other arguments
+        for doc in docs:
+            print(f' ProcessDocuments: received document with text "{doc.text}"')
+            doc.text = 'I changed the executor in place'
+
+    @requests(on='/return_different_docarray')
+    def ret_docs(self, docs, **kwargs):
+        # This executor only works on `docs` and doesn't consider any other arguments
+        ret = DocumentArray()
+        for doc in docs:
+            print(f' ProcessDocuments: received document with text: "{doc.text}"')
+            ret.append(Document(text='I returned a different Document'))
+        return ret
+
+
+f = Flow().add(uses=ProcessDocuments).add(uses=PrintDocuments)
+
+with f:
+    f.post(on='/change_in_place', inputs=DocumentArray(Document(text='request1')))
+    f.post(
+        on='/return_different_docarray', inputs=DocumentArray(Document(text='request2'))
+    )
+```
+
+
+```shell
+────────────────────────── 🎉 Flow is ready to serve! ──────────────────────────
+╭────────────── 🔗 Endpoint ───────────────╮
+│  ⛓     Protocol                    GRPC  │
+│  🏠       Local           0.0.0.0:58746  │
+│  🔒     Private     192.168.1.187:58746  │
+│  🌍      Public    212.231.186.65:58746  │
+╰──────────────────────────────────────────╯
+
+ ProcessDocuments: received document with text "request1"
+ PrintExecutor: received document with text: "I changed the executor in place"
+ ProcessDocuments: received document with text: "request2"
+ PrintExecutor: received document with text: "I returned a different Document"
+```
 
 ## Define Executor with `uses`
 

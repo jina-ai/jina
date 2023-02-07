@@ -1,14 +1,13 @@
 (serve-executor-standalone)=
 # Serve
 
-{class}`~jina.Executor`s can be served and accessed over gRPC, allowing you to use them to create a gRPC-based service for various tasks such as model inference, data processing, generative AI, and search services.
+{class}`~jina.Executor`s can be served and accessed over gRPC, allowing you to use them to create a gRPC-based service for tasks like model inference, data processing, generative AI, and search services.
 
 There are different options for deploying and running a standalone Executor:
 * Run the Executor directly from Python with the {class}`~jina.orchestrate.deployments.Deployment` class
-* Run the static {meth}`~jina.serve.executors.BaseExecutor.to_kubernetes_yaml()` method to generate Kubernetes deployment configuration files
+* Run the {meth}`~jina.Deployment.to_kubernetes_yaml()` method to generate Kubernetes deployment configuration files 
+from an instance of {class}`~jina.orchestrate.deployments.Deployment`
 * Run the static {meth}`~jina.serve.executors.BaseExecutor.to_docker_compose_yaml()` method to generate a Docker Compose service file
-
-
 
 ```{seealso}
 Executors can also be combined to form a pipeline of microservices. We will see in a later step how 
@@ -21,16 +20,13 @@ to achieve this with the {ref}`Flow <flow-cookbook>`
 In Jina there are two ways of running standalone Executors: *Served Executors* and *shared Executors*.
 
 - A **served Executor** is launched by one of the following methods: {class}`~jina.orchestrate.deployments.Deployment`, `to_kubernetes_yaml()`, or `to_docker_compose_yaml()`.
-It resides behind a {ref}`Gateway <architecture-overview>` and can thus be directly accessed by a {ref}`Client <client>`.
+It resides behind a {ref}`Gateway <architecture-overview>` and can be directly accessed by a {ref}`Client <client>`.
 It can also be used as part of a Flow.
 
 - A **shared Executor** is launched using the [Jina CLI](../../cli/index.rst) and does *not* sit behind a Gateway.
-It is intended to be used in one or more Flows.
-Because a shared Executor does not reside behind a Gataway, it cannot be directly accessed by a Client, but it requires
-fewer networking hops when used inside of a Flow.
-
-Both served and shared Executors can be used as part of a Flow, by adding them as an {ref}`external Executor <external-executors>`.
-
+It is intended to be used in one or more Flows. However, it can be also accessed by a {ref}`Client <client>`.
+Because a shared Executor does not reside behind a Gataway, it requires fewer networking hops when used inside of a Flow.
+However, it is not suitable for exposing a standalone service, outside the scope of a Flow.
 ````
 
 ## Serve directly
@@ -124,35 +120,91 @@ with Deployment(uses=MyExec, port=12345, replicas=2) as dep:
 ```
 ````
 
-The {class}`~jina.orchestrate.deployments.Deployment` class accepts configuration options similar to 
-{ref}`Executor configuration with Flows <flow-configure-executors>`.
+## Serve from the CLI
 
-````{admonition} See Also
-:class: seealso
+You can run an Executor from CLI. In this case, the Executor occupies one process. The lifetime of the Executor is the lifetime of the process.
 
-For more details on these arguments and the workings of a Flow, see the {ref}`Flow section <flow-cookbook>`.
+### From a local Executor python class
+```shell
+jina executor --uses MyExec --py-modules executor.py
+```
+
+
+### From a local Executor YAML configuration
+
+With `executor.py` containing the definition of `MyExec`, now creating a new file called `my-exec.yml`:
+
+```yaml
+jtype: MyExec
+py_modules:
+  - executor.py
+```
+
+This simply points Jina to our file and Executor class. Now we can run the command:
+
+```bash
+jina executor --uses my-exec.yml --port 12345
+```
+
+### From Executor Hub
+
+In this example, we use [`CLIPTextEncoder`](https://cloud.jina.ai/executor/livtkbkg) to create embeddings for our Documents.
+
+````{tab} With Docker
+
+```bash
+jina executor --uses jinaai+docker://jina-ai/CLIPTextEncoder
+```
+
 ````
+
+````{tab} Without Docker
+
+```bash
+jina executor --uses jinaai://jina-ai/CLIPTextEncoder
+```
+
+````
+
+This might take a few seconds, but in the end you should be greeted with the
+following message:
+
+```bash
+WorkerRuntime@ 1[L]: Executor CLIPTextEncoder started
+```
+
+Just like that, our Executor is up and running.
 
 (kubernetes-executor)=
 ## Serve via Kubernetes
-You can generate Kubernetes configuration files for your containerized Executor by using the {meth}`~jina.Deployment.to_kubernetes_yaml()` method. This works like {ref}`deploying a Flow in Kubernetes <kubernetes>`.
+You can generate Kubernetes configuration files for your containerized Executor by using the {meth}`~jina.Deployment.to_kubernetes_yaml()` method:
 
 ```python
 from jina import Deployment
+
 
 dep = Deployment(
     uses='jinaai+docker://jina-ai/DummyHubExecutor', port_expose=8080, replicas=3
 )
 dep.to_kubernetes_yaml('/tmp/config_out_folder', k8s_namespace='my-namespace')
 ```
+This will give the following output:
+```text
+INFO   executor@8065 K8s yaml files have been created under  [02/07/23 10:03:50]
+       [b]/tmp/config_out_folder[/]. You can use it by                          
+       running [b]kubectl apply -R -f                                           
+       /tmp/config_out_folder[/] 
+```
+Afterwards, you can apply this configuration to your cluster:
 ```shell
 kubectl apply -R -f /tmp/config_out_folder
 ```
+
 The above example deploys the `DummyHubExecutor` from Executor Hub into your Kubernetes cluster.
 
 ````{admonition} Hint
 :class: hint
-The Executor you use needs to be already containerized and stored in a registry accessible from your Kubernetes cluster. We recommend Executor Hub for this.
+The Executor you use needs to be already containerized and stored in a registry accessible from your Kubernetes cluster. We recommend [Executor Hub](https://cloud.jina.ai/executors) for this.
 ````
 
 Once the Executor is deployed, you can expose a service:
@@ -165,8 +217,9 @@ Let's export the external IP address created and use it to send requests to the 
 ```bash
 export EXTERNAL_IP=`kubectl get service executor-exposed -n my-namespace -o=jsonpath='{.status.loadBalancer.ingress[0].ip}'`
 ```
-To send requests using {meth}`~jina.Client`, make sure to set `stream=False` (note that this is only applicable and 
-necessary for Kubernetes deployments of Executors):
+
+Then, we can send requests using {meth}`~jina.Client`. Since Kubernetes load balancers cannot load balance streaming 
+gRPC requests, it is recommended to set `stream=False` (note that this is only applicable for Kubernetes deployments of Executors):
 ```python
 import os
 from jina import Client, Document
@@ -188,13 +241,14 @@ print(client.post(on='/', inputs=Document(), stream=False).texts)
 This type of standalone Executor can be either *external* or *shared*. By default, it is external.
 
 - An external Executor is deployed alongside a {ref}`Gateway <architecture-overview>`. 
-- A shared Executor has no Gateway. 
+- A shared Executor has no Gateway.
 
-Both types of Executor {ref}`can be used directly in any Flow <external-executors>`.
-Having a Gateway may be useful if you want to access your Executor with the {ref}`Client <client>` without an additional Flow. If the Executor is only used inside other Flows, you should define a shared Executor to save the costs of running the Gateway in Kubernetes.
+Although both types can join a {class}`~jina.Flow`, use a shared Executor if the Executor is only intended to join Flows 
+to have less network hops and save the costs of running running the Gateway in Kubernetes.
 
 ## Serve via Docker Compose
-You can generate a Docker Compose service file for your containerized Executor by using the static {meth}`~jina.serve.executors.BaseExecutor.to_docker_compose_yaml` method. This works like {ref}`running a Flow with Docker Compose <docker-compose>`, because your Executor is wrapped automatically in a Flow and uses the very same deployment techniques.
+
+You can generate a Docker Compose service file for your containerized Executor with the static {meth}`~jina.serve.executors.BaseExecutor.to_docker_compose_yaml` method.
 
 ```python
 from jina import Executor
@@ -212,6 +266,6 @@ The above example runs the `DummyHubExecutor` from Executor Hub locally on your 
 
 ````{admonition} Hint
 :class: hint
-The Executor you use needs to be already containerized and stored in an accessible registry. We recommend Executor Hub for this.
+The Executor you use needs to be already containerized and stored in an accessible registry. We recommend [Executor Hub](https://cloud.jina.ai/executors) for this.
 ````
 

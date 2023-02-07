@@ -1,3 +1,4 @@
+(executor-file-structure)=
 # File Structure
 
 Besides organizing your {class}`~jina.Executor` code inline, you can also write it as an "external" module and then use it via YAML. This is useful when your Executor's logic is too complicated to fit into a single file.

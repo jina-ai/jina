@@ -15,9 +15,9 @@ class GatewayLegacyParser(BaseLegacyParser):
     ) -> 'BaseGateway':
         """
         :param cls: target class type to parse into, must be a :class:`JAMLCompatible` type
-        :param data: flow yaml file loaded as python dict
+        :param data: gateway yaml file loaded as python dict
         :param runtime_args: Optional runtime_args to be directly passed without being parsed into a yaml config
-        :return: the Flow YAML parser given the syntax version number
+        :return: the Gateway YAML parser given the syntax version number
         """
         from jina.logging.predefined import default_logger
 
@@ -67,7 +67,7 @@ class GatewayLegacyParser(BaseLegacyParser):
     def dump(self, data: 'BaseGateway') -> Dict:
         """
         :param data: versioned gateway object
-        :return: the dictionary given a versioned flow object
+        :return: the dictionary given a versioned gateway object
         """
         a = {k: v for k, v in data._init_kwargs_dict.items()}
         r = {}
