@@ -57,7 +57,7 @@ class DummyFastAPIGateway(FastAPIBaseGateway):
         )
         async def _process(text: str):
             doc = None
-            async for req in self.streamer.stream(
+            async for req in self.streamer.rpc_stream(
                 request_generator(
                     exec_endpoint='/',
                     data=DocumentArray([Document(text=text)]),

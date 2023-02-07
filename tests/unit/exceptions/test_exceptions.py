@@ -1,9 +1,11 @@
+import traceback
+
 import grpc.aio
 import pytest
 from grpc import StatusCode
 from grpc.aio import Metadata
 
-from jina.excepts import BaseJinaException, InternalNetworkError
+from jina.excepts import BaseJinaException, ExecutorError, InternalNetworkError
 
 
 @pytest.fixture
@@ -49,3 +51,28 @@ def test_ine_trailing_metadata(metadata):
         )
     else:
         assert str(err) == 'I am a grpc error'
+
+
+@pytest.mark.parametrize(
+    'exception_args', [['value error'], ['value error', 'zero length']]
+)
+@pytest.mark.parametrize('executor', [None, 'TestExecutor'])
+def test_executor_error(exception_args, executor):
+    custom_exception = ValueError(exception_args)
+    exception_stack = traceback.format_exception(
+        type(custom_exception),
+        value=custom_exception,
+        tb=custom_exception.__traceback__,
+    )
+
+    executor_error = ExecutorError(
+        name=custom_exception.__class__.__name__,
+        args=exception_args,
+        stacks=exception_stack,
+        executor=executor,
+    )
+    assert executor_error.name == 'ValueError'
+    assert executor_error.args == exception_args
+    assert executor_error.stacks == exception_stack
+    assert executor_error.executor == executor
+    assert str(executor_error) == f'ValueError: {exception_args}\n'
