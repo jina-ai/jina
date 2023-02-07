@@ -1247,13 +1247,14 @@ class Flow(
                 )
             deployment = Deployment(args, needs, include_gateway=False)
         elif isinstance(deployment, str):
-            deployment = Deployment.load_config(deployment)
+            deployment = Deployment.load_config(deployment, needs=needs)
 
         op_flow._deployment_nodes[deployment_name] = deployment
 
         # TODO: uncomment later
         # if not args.floating:
         #     op_flow._last_deployment = deployment_name
+        op_flow._last_deployment = deployment_name
 
         return op_flow
 

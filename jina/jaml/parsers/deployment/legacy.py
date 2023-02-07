@@ -29,6 +29,7 @@ class DeploymentLegacyParser(BaseLegacyParser):
 
         obj = cls(
             **data.get('with', {}),
+            needs=data.get('needs'),
             runtime_args=runtime_args,
         )
         cls._init_from_yaml = False
