@@ -3,7 +3,6 @@ import os
 import pytest
 import yaml
 
-
 from jina import Deployment, Gateway
 from jina.constants import __default_executor__, __default_host__
 from jina.helper import expand_dict, expand_env_var
@@ -190,7 +189,7 @@ def test_load_gateway_external_success(yaml_file, gateway_name):
         assert gateway.runtime_args.timeout_send == 10
         assert gateway.runtime_args.retries == 10
         assert gateway.runtime_args.compression == 'Deflate'
-        assert gateway.runtime_args.prefetch is True
+        assert gateway.runtime_args.prefetch == 100
 
 
 @pytest.mark.parametrize(

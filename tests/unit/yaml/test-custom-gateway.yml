@@ -6,4 +6,4 @@ with:
 timeout_send: 10
 retries: 10
 compression: Deflate
-prefetch: true
+prefetch: 100
