@@ -187,7 +187,6 @@ class Flow(
         metrics_exporter_port: Optional[int] = None,
         monitoring: Optional[bool] = False,
         name: Optional[str] = 'gateway',
-        native: Optional[bool] = False,
         no_crud_endpoints: Optional[bool] = False,
         no_debug_endpoints: Optional[bool] = False,
         port: Optional[int] = None,
@@ -252,7 +251,6 @@ class Flow(
               - ...
 
               When not given, then the default naming strategy will apply.
-        :param native: If set, only native Executors is allowed, and the Executor is always run inside WorkerRuntime.
         :param no_crud_endpoints: If set, `/index`, `/search`, `/update`, `/delete` endpoints are removed from HTTP interface.
 
                   Any executor that has `@requests(on=...)` bound with those values will receive data requests.
@@ -440,7 +438,6 @@ class Flow(
               - ...
 
               When not given, then the default naming strategy will apply.
-        :param native: If set, only native Executors is allowed, and the Executor is always run inside WorkerRuntime.
         :param no_crud_endpoints: If set, `/index`, `/search`, `/update`, `/delete` endpoints are removed from HTTP interface.
 
                   Any executor that has `@requests(on=...)` bound with those values will receive data requests.
@@ -1305,7 +1302,6 @@ class Flow(
         metrics_exporter_port: Optional[int] = None,
         monitoring: Optional[bool] = False,
         name: Optional[str] = 'gateway',
-        native: Optional[bool] = False,
         no_crud_endpoints: Optional[bool] = False,
         no_debug_endpoints: Optional[bool] = False,
         port: Optional[int] = None,
@@ -1370,7 +1366,6 @@ class Flow(
               - ...
 
               When not given, then the default naming strategy will apply.
-        :param native: If set, only native Executors is allowed, and the Executor is always run inside WorkerRuntime.
         :param no_crud_endpoints: If set, `/index`, `/search`, `/update`, `/delete` endpoints are removed from HTTP interface.
 
                   Any executor that has `@requests(on=...)` bound with those values will receive data requests.
@@ -1468,7 +1463,6 @@ class Flow(
               - ...
 
               When not given, then the default naming strategy will apply.
-        :param native: If set, only native Executors is allowed, and the Executor is always run inside WorkerRuntime.
         :param no_crud_endpoints: If set, `/index`, `/search`, `/update`, `/delete` endpoints are removed from HTTP interface.
 
                   Any executor that has `@requests(on=...)` bound with those values will receive data requests.
