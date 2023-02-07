@@ -74,6 +74,7 @@ class V1Parser(VersionedYAMLParser):
                 dep = Deployment.load_config(
                     deployments,
                     extra_search_paths=data.get('with', {}).get('extra_search_paths'),
+                    include_gateway=False,
                 )
                 getattr(obj, 'add')(dep, copy_flow=False)
             elif (
@@ -83,6 +84,7 @@ class V1Parser(VersionedYAMLParser):
                 dep = Deployment.load_config(
                     deployments,
                     extra_search_paths=data.get('with', {}).get('extra_search_paths'),
+                    include_gateway=False,
                 )
                 getattr(obj, 'add')(dep, copy_flow=False)
             else:
