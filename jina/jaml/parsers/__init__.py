@@ -1,10 +1,10 @@
 import warnings
 from typing import List, Optional, Type
 
-from jina import Deployment
 from jina.excepts import BadYAMLVersion
 from jina.jaml import JAMLCompatible
 from jina.jaml.parsers.base import VersionedYAMLParser
+from jina.orchestrate.deployments import Deployment
 from jina.serve.gateway import BaseGateway
 
 

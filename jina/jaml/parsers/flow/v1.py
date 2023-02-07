@@ -2,9 +2,9 @@ import argparse
 import os
 from typing import Any, Dict, Optional
 
-from jina import Deployment
 from jina.helper import GATEWAY_NAME, ArgNamespace, expand_env_var
 from jina.jaml.parsers.base import VersionedYAMLParser
+from jina.orchestrate.deployments import Deployment
 from jina.orchestrate.flow.base import Flow
 from jina.parsers import set_deployment_parser, set_gateway_parser
 
