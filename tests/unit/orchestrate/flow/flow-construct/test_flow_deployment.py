@@ -13,8 +13,18 @@ _deployment_yaml_with_exec_config_path = os.path.join(
 _flow_yaml_with_deployment_config = os.path.join(
     cur_dir, '../../../yaml/test-flow-deployment-nested-config.yml'
 )
+_flow_yaml_with_deployment_config_deployments_keyword = os.path.join(
+    cur_dir, '../../../yaml/test-flow-deployment-nested-config-deployments-keyword.yml'
+)
 _flow_yaml_with_deployment_exec_config = os.path.join(
-    cur_dir, '../../yaml/test-flow-deployment-exec-nested-config.yml'
+    cur_dir, '../../../yaml/test-flow-deployment-exec-nested-config.yml'
+)
+_flow_yaml_with_embedded_deployment_config = os.path.join(
+    cur_dir, '../../../yaml/test-flow-deployment-embedded-config.yml'
+)
+_flow_yaml_with_embedded_deployment_config_deployments_keyword = os.path.join(
+    cur_dir,
+    '../../../yaml/test-flow-deployment-embedded-config-deployments-keyword.yml',
 )
 
 
@@ -33,7 +43,13 @@ def test_flow_deployment(deployment_config):
 
 @pytest.mark.parametrize(
     'flow_config',
-    [_flow_yaml_with_deployment_config, _flow_yaml_with_deployment_exec_config],
+    [
+        _flow_yaml_with_deployment_config,
+        _flow_yaml_with_deployment_exec_config,
+        _flow_yaml_with_deployment_config_deployments_keyword,
+        _flow_yaml_with_embedded_deployment_config,
+        _flow_yaml_with_embedded_deployment_config_deployments_keyword,
+    ],
 )
 def test_flow_load_config_with_deployment(flow_config):
 
