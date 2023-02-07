@@ -98,6 +98,7 @@ class GatewayRuntime(AsyncNewLoopRuntime):
                 'aio_tracing_client_interceptors': self.aio_tracing_client_interceptors(),
                 'tracing_client_interceptor': self.tracing_client_interceptor(),
                 'log_config': self.args.log_config,
+                'default_port': self.args.default_port,
             },
             py_modules=self.args.py_modules,
             extra_search_paths=self.args.extra_search_paths,

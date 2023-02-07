@@ -26,6 +26,33 @@ class GatewayLegacyParser(BaseLegacyParser):
         cls._init_from_yaml = True
         # tmp_p = {kk: expand_env_var(vv) for kk, vv in data.get('with', {}).items()}
 
+        for key in {
+            'name',
+            'port',
+            'protocol',
+            'host',
+            'tracing',
+            'graph_description',
+            'graph_conditions',
+            'deployments_addresses',
+            'deployments_metadata',
+            'deployments_no_reduce',
+            'timeout_send',
+            'retries',
+            'compression',
+            'runtime_name',
+            'prefetch',
+            'meter',
+            'log_config',
+        }:
+            if runtime_args and not runtime_args.get(key) and data.get(key):
+                setattr(runtime_args, key, data.get(key))
+        if runtime_args.get('default_port'):
+            yaml_port = data.get('port')
+            if isinstance(yaml_port, int):
+                yaml_port = [yaml_port]
+            runtime_args['port'] = yaml_port or runtime_args.get('port')
+
         obj = cls(
             **data.get('with', {}),
             metas=data.get('metas', {}),
