@@ -123,7 +123,8 @@ class _FunctionWithSchema(NamedTuple):
         elif not isinstance(docs_annotation, type):
             warnings.warn(
                 f'`docs` annotation must be a class if you want to use it'
-                f'as schema input, got {docs_annotation}, fallback to default behavior'
+                f'as schema input, got {docs_annotation}. try to remove the Optional'
+                f'.fallback to default behavior'
                 ''
             )
             docs_annotation = None
@@ -132,9 +133,10 @@ class _FunctionWithSchema(NamedTuple):
 
         if type(return_annotation) is str:
             warnings.warn(
-                f'`return` annotation must be a type hint, got {return_annotation}'
-                ' instead, you should maybe remove the string annotation. Default value'
-                'DocumentArray will be used instead.'
+                f'`return` annotation must be a class if you want to use it'
+                f'as schema input, got {docs_annotation}. try to remove the Optional'
+                f'.fallback to default behavior'
+                ''
             )
             return_annotation = None
         elif not isinstance(return_annotation, type):
