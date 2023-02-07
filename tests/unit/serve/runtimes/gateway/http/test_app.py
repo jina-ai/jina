@@ -15,7 +15,7 @@ from jina.serve.runtimes.gateway import GatewayRuntime
 
 class ExecutorTest(Executor):
     @requests
-    def empty(self, docs: 'DocumentArray', **kwargs):
+    def empty(self, docs: DocumentArray, **kwargs):
         print(f"# docs {docs}")
 
 

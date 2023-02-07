@@ -20,6 +20,7 @@ def Client(
     *,
     asyncio: Optional[bool] = False,
     host: Optional[str] = '0.0.0.0',
+    log_config: Optional[str] = None,
     metrics: Optional[bool] = False,
     metrics_exporter_host: Optional[str] = None,
     metrics_exporter_port: Optional[int] = None,
@@ -27,6 +28,7 @@ def Client(
     prefetch: Optional[int] = 1000,
     protocol: Optional[Union[str, List[str]]] = 'GRPC',
     proxy: Optional[bool] = False,
+    suppress_root_logging: Optional[bool] = False,
     tls: Optional[bool] = False,
     traces_exporter_host: Optional[str] = None,
     traces_exporter_port: Optional[int] = None,
@@ -44,6 +46,7 @@ def Client(
 
     :param asyncio: If set, then the input and output of this Client work in an asynchronous manner.
     :param host: The host of the Gateway, which the client should connect to, by default it is 0.0.0.0.
+    :param log_config: The config name or the absolute path to the YAML config file of the logger used in this object.
     :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.
     :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.
     :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.
@@ -53,6 +56,7 @@ def Client(
               Used to control the speed of data input into a Flow. 0 disables prefetch (1000 requests is the default)
     :param protocol: Communication protocol between server and client.
     :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
+    :param suppress_root_logging: If set, then no root handlers will be suppressed from logging.
     :param tls: If set, connect to gateway using tls encryption
     :param traces_exporter_host: If tracing is enabled, this hostname will be used to configure the trace exporter agent.
     :param traces_exporter_port: If tracing is enabled, this port will be used to configure the trace exporter agent.
@@ -97,6 +101,7 @@ def Client(
 
     :param asyncio: If set, then the input and output of this Client work in an asynchronous manner.
     :param host: The host of the Gateway, which the client should connect to, by default it is 0.0.0.0.
+    :param log_config: The config name or the absolute path to the YAML config file of the logger used in this object.
     :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.
     :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.
     :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.
@@ -106,6 +111,7 @@ def Client(
               Used to control the speed of data input into a Flow. 0 disables prefetch (1000 requests is the default)
     :param protocol: Communication protocol between server and client.
     :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
+    :param suppress_root_logging: If set, then no root handlers will be suppressed from logging.
     :param tls: If set, connect to gateway using tls encryption
     :param traces_exporter_host: If tracing is enabled, this hostname will be used to configure the trace exporter agent.
     :param traces_exporter_port: If tracing is enabled, this port will be used to configure the trace exporter agent.

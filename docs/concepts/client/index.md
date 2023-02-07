@@ -205,6 +205,29 @@ c.profiling()
     └──  executor1  2ms  29% 
 ```
 
+## Logging configuration
+
+Similar to the {ref}`Flow logging configuration <logging-configuration>`, the {class}`jina.Client` also accepts the `log_config` argument. The Client can be configured as below:
+
+```python
+from jina import Client
+
+client = Client(log_config='./logging.json.yml')
+```
+
+If the Flow is configured with custom logging, the argument will be forwarded to the implicit client.
+
+```python
+from jina import Flow
+
+f = Flow(log_config='./logging.json.yml')
+
+with f:
+    # the implicit client automatically uses the log_config from the Flow for consistency
+    f.post('/')
+```
+
+
 ```{toctree}
 :hidden:
 

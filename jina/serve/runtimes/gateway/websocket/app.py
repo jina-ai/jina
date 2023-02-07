@@ -1,4 +1,3 @@
-import argparse
 from typing import TYPE_CHECKING, Any, AsyncIterator, Dict, List, Optional, Union
 
 from jina.clients.request import request_generator
@@ -185,7 +184,7 @@ def get_fastapi_app(
                         yield DataRequest(request)
 
         try:
-            async for msg in streamer.stream(request_iterator=req_iter()):
+            async for msg in streamer.rpc_stream(request_iterator=req_iter()):
                 await manager.send(websocket, msg)
         except InternalNetworkError as err:
             import grpc
@@ -215,12 +214,11 @@ def get_fastapi_app(
         :param request_iterator: request iterator, with length of 1
         :return: the first result from the request iterator
         """
-        async for k in streamer.stream(request_iterator=request_iterator):
+        async for k in streamer.rpc_stream(request_iterator=request_iterator):
             request_dict = k.to_dict()
             return request_dict
 
-    from docarray import DocumentArray
-
+    from jina._docarray import DocumentArray
     from jina.proto import jina_pb2
     from jina.serve.executors import __dry_run_endpoint__
     from jina.serve.runtimes.gateway.http.models import PROTO_TO_PYDANTIC_MODELS
@@ -238,7 +236,7 @@ def get_fastapi_app(
 
         """
 
-        da = DocumentArray()
+        da = DocumentArray([])
 
         try:
             _ = await _get_singleton_result(
@@ -265,9 +263,9 @@ def get_fastapi_app(
 
         await manager.connect(websocket)
 
-        da = DocumentArray()
+        da = DocumentArray([])
         try:
-            async for _ in streamer.stream(
+            async for _ in streamer.rpc_stream(
                 request_iterator=request_generator(
                     exec_endpoint=__dry_run_endpoint__,
                     data=da,

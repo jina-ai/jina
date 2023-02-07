@@ -35,7 +35,6 @@ from rich.progress import (
     TextColumn,
     TimeElapsedColumn,
 )
-from rich.table import Table
 
 from jina.clients import Client
 from jina.clients.mixin import AsyncPostMixin, HealthCheckMixin, PostMixin, ProfileMixin
@@ -55,10 +54,7 @@ from jina.excepts import (
 from jina.helper import (
     GATEWAY_NAME,
     ArgNamespace,
-    CatchAllCleanupContextManager,
     download_mermaid_url,
-    get_internal_ip,
-    get_public_ip,
     is_port_free,
     random_ports,
     send_telemetry_event,
@@ -76,7 +72,7 @@ from jina.parsers import (
     set_gateway_parser,
 )
 from jina.parsers.flow import set_flow_parser
-from jina.serve.networking import host_is_local, in_docker
+from jina.serve.networking.utils import host_is_local, in_docker
 
 __all__ = ['Flow']
 GATEWAY_ARGS_BLACKLIST = ['uses', 'uses_with']
@@ -121,6 +117,7 @@ class Flow(
         *,
         asyncio: Optional[bool] = False,
         host: Optional[str] = '0.0.0.0',
+        log_config: Optional[str] = None,
         metrics: Optional[bool] = False,
         metrics_exporter_host: Optional[str] = None,
         metrics_exporter_port: Optional[int] = None,
@@ -128,6 +125,7 @@ class Flow(
         prefetch: Optional[int] = 1000,
         protocol: Optional[Union[str, List[str]]] = 'GRPC',
         proxy: Optional[bool] = False,
+        suppress_root_logging: Optional[bool] = False,
         tls: Optional[bool] = False,
         traces_exporter_host: Optional[str] = None,
         traces_exporter_port: Optional[int] = None,
@@ -138,6 +136,7 @@ class Flow(
 
         :param asyncio: If set, then the input and output of this Client work in an asynchronous manner.
         :param host: The host of the Gateway, which the client should connect to, by default it is 0.0.0.0.
+        :param log_config: The config name or the absolute path to the YAML config file of the logger used in this object.
         :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.
         :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.
         :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.
@@ -147,6 +146,7 @@ class Flow(
               Used to control the speed of data input into a Flow. 0 disables prefetch (1000 requests is the default)
         :param protocol: Communication protocol between server and client.
         :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
+        :param suppress_root_logging: If set, then no root handlers will be suppressed from logging.
         :param tls: If set, connect to gateway using tls encryption
         :param traces_exporter_host: If tracing is enabled, this hostname will be used to configure the trace exporter agent.
         :param traces_exporter_port: If tracing is enabled, this port will be used to configure the trace exporter agent.
@@ -237,7 +237,7 @@ class Flow(
         :param graph_description: Routing graph for the gateway
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
         :param host: The host address of the runtime, by default it is 0.0.0.0.
-        :param log_config: The YAML config of the logger used in this object.
+        :param log_config: The config name or the absolute path to the YAML config file of the logger used in this object.
         :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.
         :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.
         :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.
@@ -315,6 +315,7 @@ class Flow(
         quiet: Optional[bool] = False,
         quiet_error: Optional[bool] = False,
         reload: Optional[bool] = False,
+        suppress_root_logging: Optional[bool] = False,
         uses: Optional[str] = None,
         workspace: Optional[str] = None,
         **kwargs,
@@ -325,7 +326,7 @@ class Flow(
         :param inspect: The strategy on those inspect deployments in the flow.
 
               If `REMOVE` is given then all inspect deployments are removed when building the flow.
-        :param log_config: The YAML config of the logger used in this object.
+        :param log_config: The config name or the absolute path to the YAML config file of the logger used in this object.
         :param name: The name of this object.
 
               This will be used in the following places:
@@ -338,6 +339,7 @@ class Flow(
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
         :param reload: If set, auto-reloading on file changes is enabled: the Flow will restart while blocked if  YAML configuration source is changed. This also applies apply to underlying Executors, if their source code or YAML configuration has changed.
+        :param suppress_root_logging: If set, then no root handlers will be suppressed from logging.
         :param uses: The YAML path represents a flow. It can be either a local file path or a URL.
         :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.
 
@@ -387,6 +389,7 @@ class Flow(
 
         :param asyncio: If set, then the input and output of this Client work in an asynchronous manner.
         :param host: The host of the Gateway, which the client should connect to, by default it is 0.0.0.0.
+        :param log_config: The config name or the absolute path to the YAML config file of the logger used in this object.
         :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.
         :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.
         :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.
@@ -396,6 +399,7 @@ class Flow(
               Used to control the speed of data input into a Flow. 0 disables prefetch (1000 requests is the default)
         :param protocol: Communication protocol between server and client.
         :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
+        :param suppress_root_logging: If set, then no root handlers will be suppressed from logging.
         :param tls: If set, connect to gateway using tls encryption
         :param traces_exporter_host: If tracing is enabled, this hostname will be used to configure the trace exporter agent.
         :param traces_exporter_port: If tracing is enabled, this port will be used to configure the trace exporter agent.
@@ -420,7 +424,7 @@ class Flow(
         :param graph_description: Routing graph for the gateway
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
         :param host: The host address of the runtime, by default it is 0.0.0.0.
-        :param log_config: The YAML config of the logger used in this object.
+        :param log_config: The config name or the absolute path to the YAML config file of the logger used in this object.
         :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.
         :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.
         :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.
@@ -483,7 +487,7 @@ class Flow(
         :param inspect: The strategy on those inspect deployments in the flow.
 
               If `REMOVE` is given then all inspect deployments are removed when building the flow.
-        :param log_config: The YAML config of the logger used in this object.
+        :param log_config: The config name or the absolute path to the YAML config file of the logger used in this object.
         :param name: The name of this object.
 
               This will be used in the following places:
@@ -496,6 +500,7 @@ class Flow(
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
         :param reload: If set, auto-reloading on file changes is enabled: the Flow will restart while blocked if  YAML configuration source is changed. This also applies apply to underlying Executors, if their source code or YAML configuration has changed.
+        :param suppress_root_logging: If set, then no root handlers will be suppressed from logging.
         :param uses: The YAML path represents a flow. It can be either a local file path or a URL.
         :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.
 
@@ -637,6 +642,9 @@ class Flow(
                 deployment_role=DeploymentRoleType.GATEWAY,
                 expose_endpoints=json.dumps(self._endpoints_mapping),
                 env=self.env,
+                log_config=kwargs.get('log_config')
+                if 'log_config' in kwargs
+                else self.args.log_config,
             )
         )
 
@@ -936,7 +944,7 @@ class Flow(
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
         :param host: The host of the Gateway, which the client should connect to, by default it is 0.0.0.0. In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts.  Then, every resulting address will be considered as one replica of the Executor.
         :param install_requirements: If set, try to install `requirements.txt` from the local Executor if exists in the Executor folder. If using Hub, install `requirements.txt` in the Hub Executor bundle to local.
-        :param log_config: The YAML config of the logger used in this object.
+        :param log_config: The config name or the absolute path to the YAML config file of the logger used in this object.
         :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.
         :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.
         :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.
@@ -1086,7 +1094,7 @@ class Flow(
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
         :param host: The host of the Gateway, which the client should connect to, by default it is 0.0.0.0. In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts.  Then, every resulting address will be considered as one replica of the Executor.
         :param install_requirements: If set, try to install `requirements.txt` from the local Executor if exists in the Executor folder. If using Hub, install `requirements.txt` in the Hub Executor bundle to local.
-        :param log_config: The YAML config of the logger used in this object.
+        :param log_config: The config name or the absolute path to the YAML config file of the logger used in this object.
         :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.
         :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.
         :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.
@@ -1223,6 +1231,9 @@ class Flow(
                 dict(
                     name=deployment_name,
                     deployment_role=deployment_role,
+                    log_config=kwargs.get('log_config')
+                    if 'log_config' in kwargs
+                    else self.args.log_config,
                 )
             )
             parser = set_deployment_parser()
@@ -1339,7 +1350,7 @@ class Flow(
         :param graph_description: Routing graph for the gateway
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
         :param host: The host address of the runtime, by default it is 0.0.0.0.
-        :param log_config: The YAML config of the logger used in this object.
+        :param log_config: The config name or the absolute path to the YAML config file of the logger used in this object.
         :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.
         :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.
         :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.
@@ -1436,7 +1447,7 @@ class Flow(
         :param graph_description: Routing graph for the gateway
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
         :param host: The host address of the runtime, by default it is 0.0.0.0.
-        :param log_config: The YAML config of the logger used in this object.
+        :param log_config: The config name or the absolute path to the YAML config file of the logger used in this object.
         :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.
         :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.
         :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.
@@ -1821,54 +1832,74 @@ class Flow(
     def _wait_until_all_ready(self):
         results = {}
         threads = []
+        results_lock = threading.Lock()
 
         async def _async_wait_ready(_deployment_name, _deployment):
             try:
                 if not _deployment.external:
-                    results[_deployment_name] = 'pending'
+                    with results_lock:
+                        results[_deployment_name] = 'pending'
                     await _deployment.async_wait_start_success()
-                    results[_deployment_name] = 'done'
+                    with results_lock:
+                        results[_deployment_name] = 'done'
             except Exception as ex:
                 results[_deployment_name] = repr(ex)
 
         def _wait_ready(_deployment_name, _deployment):
             try:
                 if not _deployment.external:
-                    results[_deployment_name] = 'pending'
+                    with results_lock:
+                        results[_deployment_name] = 'pending'
                     _deployment.wait_start_success()
-                    results[_deployment_name] = 'done'
+                    with results_lock:
+                        results[_deployment_name] = 'done'
             except Exception as ex:
-                results[_deployment_name] = repr(ex)
+                with results_lock:
+                    results[_deployment_name] = repr(ex)
 
-        def _polling_status(progress, num_tasks_to_wait):
-            task = progress.add_task(
-                'wait', total=num_tasks_to_wait, pending_str='', start=False
+        def _polling_status(num_tasks_to_wait):
+            progress = Progress(
+                SpinnerColumn(),
+                TextColumn(
+                    'Waiting [b]{task.fields[pending_str]}[/]...', justify='right'
+                ),
+                BarColumn(),
+                MofNCompleteColumn(),
+                TimeElapsedColumn(),
+                transient=True,
             )
+            with progress:
+                task = progress.add_task(
+                    'wait', total=num_tasks_to_wait, pending_str='', start=False
+                )
+                with results_lock:
+                    progress.update(task, total=len(results))
+                progress.start_task(task)
 
-            progress.update(task, total=len(results))
-            progress.start_task(task)
+                while True:
+                    num_done = 0
+                    pendings = []
+                    with results_lock:
+                        for _k, _v in results.items():
+                            sys.stdout.flush()
+                            if _v == 'pending':
+                                pendings.append(_k)
+                            elif _v == 'done':
+                                num_done += 1
+                            else:
+                                if 'JINA_EARLY_STOP' in os.environ:
+                                    self.logger.error(
+                                        f'Flow is aborted due to {_k} {_v}.'
+                                    )
+                                    os._exit(1)
 
-            while True:
-                num_done = 0
-                pendings = []
-                for _k, _v in results.items():
-                    sys.stdout.flush()
-                    if _v == 'pending':
-                        pendings.append(_k)
-                    elif _v == 'done':
-                        num_done += 1
-                    else:
-                        if 'JINA_EARLY_STOP' in os.environ:
-                            self.logger.error(f'Flow is aborted due to {_k} {_v}.')
-                            os._exit(1)
+                    pending_str = ' '.join(pendings)
 
-                pending_str = ' '.join(pendings)
+                    progress.update(task, completed=num_done, pending_str=pending_str)
 
-                progress.update(task, completed=num_done, pending_str=pending_str)
-
-                if not pendings:
-                    break
-                time.sleep(0.1)
+                    if not pendings:
+                        break
+                    time.sleep(0.1)
 
         wait_for_ready_coros = []
         for k, v in self:
@@ -1877,77 +1908,64 @@ class Flow(
         async def _async_wait_all():
             await asyncio.gather(*wait_for_ready_coros)
 
-        progress = Progress(
-            SpinnerColumn(),
-            TextColumn('Waiting [b]{task.fields[pending_str]}[/]...', justify='right'),
-            BarColumn(),
-            MofNCompleteColumn(),
-            TimeElapsedColumn(),
-            transient=True,
-        )
-        with progress:
-            # kick off ip getter thread, address, http, graphq
-            all_panels = []
-
-            t_ip = threading.Thread(
-                target=self._get_summary_table, args=(all_panels, results), daemon=True
-            )
-            threads.append(t_ip)
-
-            # kick off spinner thread
-            t_m = threading.Thread(
+        # kick off spinner thread
+        threads.append(
+            threading.Thread(
                 target=_polling_status,
-                args=(progress, len(wait_for_ready_coros)),
+                args=(len(wait_for_ready_coros),),
                 daemon=True,
             )
-            threads.append(t_m)
+        )
 
-            for t in threads:
+        for t in threads:
+            t.start()
+
+        # kick off all deployments wait-ready tasks
+        try:
+            _ = asyncio.get_event_loop()
+        except:
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+
+        async def _f():
+            pass
+
+        running_in_event_loop = False
+        try:
+            asyncio.get_event_loop().run_until_complete(_f())
+        except:
+            running_in_event_loop = True
+
+        if not running_in_event_loop:
+            asyncio.get_event_loop().run_until_complete(_async_wait_all())
+        else:
+            new_threads = []
+            for k, v in self:
+                new_threads.append(
+                    threading.Thread(target=_wait_ready, args=(k, v), daemon=True)
+                )
+            threads.extend(new_threads)
+            for t in new_threads:
                 t.start()
 
-            # kick off all deployments wait-ready tasks
-            try:
-                _ = asyncio.get_event_loop()
-            except:
-                loop = asyncio.new_event_loop()
-                asyncio.set_event_loop(loop)
+        for t in threads:
+            t.join()
 
-            async def _f():
-                pass
+        error_deployments = [k for k, v in results.items() if v != 'done']
+        if error_deployments:
+            self.logger.error(
+                f'Flow is aborted due to {error_deployments} can not be started.'
+            )
+            self.close()
+            raise RuntimeFailToStart
+        from rich.rule import Rule
 
-            running_in_event_loop = False
-            try:
-                asyncio.get_event_loop().run_until_complete(_f())
-            except:
-                running_in_event_loop = True
+        all_panels = []
+        self._get_summary_table(all_panels)
 
-            if not running_in_event_loop:
-                asyncio.get_event_loop().run_until_complete(_async_wait_all())
-            else:
-                new_threads = []
-                for k, v in self:
-                    new_threads.append(
-                        threading.Thread(target=_wait_ready, args=(k, v), daemon=True)
-                    )
-                threads.extend(new_threads)
-                for t in new_threads:
-                    t.start()
-
-            for t in threads:
-                t.join()
-
-            error_deployments = [k for k, v in results.items() if v != 'done']
-            if error_deployments:
-                self.logger.error(
-                    f'Flow is aborted due to {error_deployments} can not be started.'
-                )
-                self.close()
-                raise RuntimeFailToStart
-            from rich.rule import Rule
-
-            print(
-                Rule(':tada: Flow is ready to serve!'), *all_panels
-            )  # can't use logger here see : https://github.com/Textualize/rich/discussions/2024
+        print(
+            Rule(':tada: Flow is ready to serve!'), *all_panels
+        )  # can't use logger here see : https://github.com/Textualize/rich/discussions/2024
         self.logger.debug(
             f'{self.num_deployments} Deployments (i.e. {self.num_pods} Pods) are running in this Flow'
         )
@@ -2002,6 +2020,7 @@ class Flow(
                 host=self.host,
                 port=self.port,
                 protocol=self.protocol,
+                log_config=self.args.log_config,
             )
             kwargs.update(self._gateway_kwargs)
             self._client = Client(**kwargs)
@@ -2261,10 +2280,7 @@ class Flow(
     def __iter__(self):
         return self._deployment_nodes.items().__iter__()
 
-    def _get_summary_table(self, all_panels: List[Panel], results):
-
-        results['summary'] = 'pending'
-
+    def _get_summary_table(self, all_panels: List[Panel]):
         address_table = self._init_table()
 
         if not isinstance(self.protocol, list):
@@ -2413,7 +2429,6 @@ class Flow(
                 )
             )
 
-        results['summary'] = 'done'
         return all_panels
 
     @allowed_levels([FlowBuildLevel.RUNNING])
@@ -2724,7 +2739,6 @@ class Flow(
         :param k8s_namespace: The name of the k8s namespace to set for the configurations. If None, the name of the Flow will be used.
         :param include_gateway: Defines if the gateway deployment should be included, defaults to True
         """
-        import yaml
 
         if self._build_level.value < FlowBuildLevel.GRAPH.value:
             self.build(copy_flow=False)
@@ -2810,18 +2824,6 @@ class Flow(
         )
 
     @property
-    def client_args(self) -> argparse.Namespace:
-        """Get Client settings.
-
-        # noqa: DAR201
-        """
-        if 'port' in self._gateway_kwargs:
-            kwargs = copy.deepcopy(self._gateway_kwargs)
-            kwargs['port'] = self._gateway_kwargs['port']
-
-        return ArgNamespace.kwargs2namespace(kwargs, set_client_cli_parser())
-
-    @property
     def gateway_args(self) -> argparse.Namespace:
         """Get Gateway settings.
 
@@ -2835,6 +2837,8 @@ class Flow(
         :param kwargs: new network settings
         """
         self._gateway_kwargs.update(kwargs)
+        # reset client
+        self._client = None
 
     def __getattribute__(self, item):
         obj = super().__getattribute__(item)
@@ -2847,12 +2851,3 @@ class Flow(
             )
 
         return obj
-
-    @property
-    def _entity_id(self) -> str:
-        import uuid
-
-        if hasattr(self, '_entity_id_'):
-            return self._entity_id_
-        self._entity_id_ = uuid.uuid1().hex
-        return self._entity_id_

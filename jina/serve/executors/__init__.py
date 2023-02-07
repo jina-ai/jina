@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import asyncio
 import contextlib
 import copy
@@ -7,8 +9,21 @@ import multiprocessing
 import os
 import warnings
 from types import SimpleNamespace
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, Union, overload
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Callable,
+    Dict,
+    List,
+    NamedTuple,
+    Optional,
+    Type,
+    TypeVar,
+    Union,
+    overload,
+)
 
+from jina._docarray import DocumentArray
 from jina.constants import __args_executor_init__, __cache_path__, __default_endpoint__
 from jina.enums import BetterEnum
 from jina.helper import (
@@ -85,6 +100,41 @@ class ExecutorType(type(JAMLCompatible), type):
         return cls
 
 
+T = TypeVar('T', bound='_FunctionWithSchema')
+
+
+class _FunctionWithSchema(NamedTuple):
+    fn: Callable
+    request_schema: Type[DocumentArray] = DocumentArray
+    response_schema: Type[DocumentArray] = DocumentArray
+
+    @staticmethod
+    def get_function_with_schema(fn: Callable) -> T:
+
+        docs_annotation = fn.__annotations__.get('docs', None)
+        if type(docs_annotation) is str:
+            warnings.warn(
+                f'`docs` annotation must be a type hint, got {docs_annotation}'
+                ' instead, you should maybe remove the string annotation. Default value'
+                'DocumentArray will be used instead.'
+            )
+            docs_annotation = None
+
+        return_annotation = fn.__annotations__.get('return', None)
+        if type(return_annotation) is str:
+            warnings.warn(
+                f'`docs` annotation must be a type hint, got {return_annotation}'
+                ' instead, you should maybe remove the string annotation. Default value'
+                'DocumentArray will be used instead.'
+            )
+            return_annotation = None
+
+        request_schema = docs_annotation or DocumentArray
+        response_schema = return_annotation or DocumentArray
+
+        return _FunctionWithSchema(fn, request_schema, response_schema)
+
+
 class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
     """
     The base class of all Executors, can be used to build encoder, indexer, etc.
@@ -153,16 +203,20 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         self._init_instrumentation(runtime_args)
         self._init_monitoring()
         self._init_workspace = workspace
-        self.logger = JinaLogger(self.__class__.__name__)
+        self.logger = JinaLogger(self.__class__.__name__, **vars(self.runtime_args))
         if __dry_run_endpoint__ not in self.requests:
-            self.requests[__dry_run_endpoint__] = self._dry_run_func
+            self.requests[__dry_run_endpoint__] = _FunctionWithSchema(
+                self._dry_run_func
+            )
         else:
             self.logger.warning(
                 f' Endpoint {__dry_run_endpoint__} is defined by the Executor. Be aware that this endpoint is usually reserved to enable health checks from the Client through the gateway.'
                 f' So it is recommended not to expose this endpoint. '
             )
         if type(self) == BaseExecutor:
-            self.requests[__default_endpoint__] = self._dry_run_func
+            self.requests[__default_endpoint__] = _FunctionWithSchema(
+                self._dry_run_func
+            )
 
         try:
             self._lock = (
@@ -252,7 +306,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
     def _add_requests(self, _requests: Optional[Dict]):
         if _requests:
-            func_names = {f.__name__: e for e, f in self.requests.items()}
+            func_names = {f.fn.__name__: e for e, f in self.requests.items()}
             for endpoint, func in _requests.items():
                 # the following line must be `getattr(self.__class__, func)` NOT `getattr(self, func)`
                 # this to ensure we always have `_func` as unbound method
@@ -263,10 +317,14 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                 _func = getattr(self.__class__, func)
                 if callable(_func):
                     # the target function is not decorated with `@requests` yet
-                    self.requests[endpoint] = _func
+                    self.requests[
+                        endpoint
+                    ] = _FunctionWithSchema.get_function_with_schema(_func)
                 elif typename(_func) == 'jina.executors.decorators.FunctionMapper':
                     # the target function is already decorated with `@requests`, need unwrap with `.fn`
-                    self.requests[endpoint] = _func.fn
+                    self.requests[
+                        endpoint
+                    ] = _FunctionWithSchema.get_function_with_schema(_func.fn)
                 else:
                     raise TypeError(
                         f'expect {typename(self)}.{func} to be a function, but receiving {typename(_func)}'
@@ -371,7 +429,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
     async def __acall_endpoint__(
         self, req_endpoint, tracing_context: Optional['Context'], **kwargs
     ):
-        func = self.requests[req_endpoint]
+        func, input_doc, output_doc = self.requests[req_endpoint]
 
         async def exec_func(
             summary, histogram, histogram_metric_labels, tracing_context
@@ -614,7 +672,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
         :param host: The host of the Gateway, which the client should connect to, by default it is 0.0.0.0. In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts.  Then, every resulting address will be considered as one replica of the Executor.
         :param install_requirements: If set, try to install `requirements.txt` from the local Executor if exists in the Executor folder. If using Hub, install `requirements.txt` in the Hub Executor bundle to local.
-        :param log_config: The YAML config of the logger used in this object.
+        :param log_config: The config name or the absolute path to the YAML config file of the logger used in this object.
         :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.
         :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.
         :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.

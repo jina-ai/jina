@@ -25,8 +25,13 @@ from jina.constants import (
     __docker_host__,
     __windows__,
 )
-from jina.enums import DeploymentRoleType, GatewayProtocolType, PodRoleType, PollingType
-from jina.helper import ArgNamespace, parse_host_scheme, random_port
+from jina.enums import DeploymentRoleType, PodRoleType, PollingType
+from jina.helper import (
+    ArgNamespace,
+    parse_host_scheme,
+    random_port,
+    send_telemetry_event,
+)
 from jina.importer import ImportExtensions
 from jina.jaml import JAMLCompatible
 from jina.logging.logger import JinaLogger
@@ -38,7 +43,8 @@ from jina.orchestrate.orchestrator import BaseOrchestrator
 from jina.orchestrate.pods.factory import PodFactory
 from jina.parsers import set_deployment_parser, set_gateway_parser
 from jina.parsers.helper import _update_gateway_args
-from jina.serve.networking import GrpcConnectionPool, host_is_local, in_docker
+from jina.serve.networking import GrpcConnectionPool
+from jina.serve.networking.utils import host_is_local, in_docker
 
 WRAPPED_SLICE_BASE = r'\[[-\d:]+\]'
 
@@ -208,7 +214,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
         :param host: The host of the Gateway, which the client should connect to, by default it is 0.0.0.0. In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts.  Then, every resulting address will be considered as one replica of the Executor.
         :param install_requirements: If set, try to install `requirements.txt` from the local Executor if exists in the Executor folder. If using Hub, install `requirements.txt` in the Hub Executor bundle to local.
-        :param log_config: The YAML config of the logger used in this object.
+        :param log_config: The config name or the absolute path to the YAML config file of the logger used in this object.
         :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.
         :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.
         :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.
@@ -312,7 +318,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                     self._gateway_kwargs[field] = kwargs.pop(field)
 
             # arguments common to both gateway and the Executor
-            for field in ['host']:
+            for field in ['host', 'log_config']:
                 if field in kwargs:
                     self._gateway_kwargs[field] = kwargs[field]
 
@@ -320,6 +326,9 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         if args is None:
             args = ArgNamespace.kwargs2namespace(kwargs, parser, True)
         self.args = args
+        log_config = kwargs.get('log_config')
+        if log_config:
+            self.args.log_config = log_config
         self.args.polling = (
             args.polling if hasattr(args, 'polling') else PollingType.ANY
         )
@@ -379,6 +388,15 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
         super().__exit__(exc_type, exc_val, exc_tb)
         self.join()
+        if self._include_gateway:
+            self._stop_time = time.time()
+            send_telemetry_event(
+                event='stop',
+                obj=self,
+                entity_id=self._entity_id,
+                duration=self._stop_time - self._start_time,
+                exc_type=str(exc_type),
+            )
         self.logger.close()
 
     def _parse_addresses_into_host_and_port(self):
@@ -774,7 +792,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             ([self.pod_args['uses_before']] if self.pod_args['uses_before'] else [])
             + ([self.pod_args['uses_after']] if self.pod_args['uses_after'] else [])
             + ([self.pod_args['head']] if self.pod_args['head'] else [])
-            + ([self.pod_args['gateway']] if self.pod_args['gateway'] else [])
+            + ([self.pod_args['gateway']] if self._include_gateway else [])
         )
         for shard_id in self.pod_args['pods']:
             all_args += self.pod_args['pods'][shard_id]
@@ -834,6 +852,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             If one of the :class:`Pod` fails to start, make sure that all of them
             are properly closed.
         """
+        self._start_time = time.time()
         if self.is_sandbox and not self._sandbox_deployed:
             self.update_sandbox_args()
 
@@ -858,7 +877,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                 _args.noblock_on_start = True
             self.head_pod = PodFactory.build_pod(_args)
             self.enter_context(self.head_pod)
-        if self.pod_args['gateway'] is not None:
+        if self._include_gateway:
             _args = self.pod_args['gateway']
             if getattr(self.args, 'noblock_on_start', False):
                 _args.noblock_on_start = True
@@ -872,13 +891,15 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             )
             self.enter_context(self.shards[shard_id])
 
-        if self.pod_args['gateway']:
+        if self._include_gateway:
             all_panels = []
             self._get_summary_table(all_panels)
 
             from rich.rule import Rule
 
             print(Rule(':tada: Deployment is ready to serve!'), *all_panels)
+
+            send_telemetry_event(event='start', obj=self, entity_id=self._entity_id)
 
         return self
 
@@ -1022,7 +1043,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         return all_devices[slice(*[int(p) if p else None for p in parts])]
 
     @staticmethod
-    def _roundrobin_cuda_device(device_str: str, replicas: int):
+    def _roundrobin_cuda_device(device_str: Optional[str], replicas: int):
         """Parse cuda device string with RR prefix
 
         :param device_str: `RRm:n`, where `RR` is the prefix, m:n is python slice format
@@ -1061,9 +1082,14 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         sharding_enabled = shards and shards > 1
 
         cuda_device_map = None
-        if self.args.env:
+        if self.args.env or os.environ.get('CUDA_VISIBLE_DEVICES', '').startswith('RR'):
+            cuda_visible_devices = (
+                self.args.env.get('CUDA_VISIBLE_DEVICES')
+                if self.args.env and 'CUDA_VISIBLE_DEVICES' in self.args.env
+                else os.environ.get('CUDA_VISIBLE_DEVICES', None)
+            )
             cuda_device_map = Deployment._roundrobin_cuda_device(
-                self.args.env.get('CUDA_VISIBLE_DEVICES'), replicas
+                cuda_visible_devices, replicas
             )
 
         for shard_id in range(shards):
@@ -1082,6 +1108,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                     _args.host = self.args.host
 
                 if cuda_device_map:
+                    _args.env = _args.env or {}
                     _args.env['CUDA_VISIBLE_DEVICES'] = str(cuda_device_map[replica_id])
 
                 if _args.name:
