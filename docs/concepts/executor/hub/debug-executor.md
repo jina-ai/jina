@@ -1,7 +1,7 @@
 (debug-executor)=
 # Debug
 
-````{admonition} Not applicable to Containerized Executor
+````{admonition} Not applicable to containerized Executors
 :class: caution
 This does not work for containerized Executors.
 ````
@@ -25,15 +25,15 @@ Executor.from_hub('jinaai://jina-ai/Hello')
 ```
 ````
 
-## Set the breakpoints
+## Set breakpoints
 
-In the `~/.jina/hub-package` directory there is one subdirectory for each Executor that you pulled, named by the Executor id. You can find the Executor's source files Executor in this directory.
+In the `~/.jina/hub-package` directory there is one subdirectory for each Executor that you pulled, named by the Executor ID. You can find the Executor's source files in this directory.
 
 Once you locate the source, you can set the breakpoints as you always do.
 
 ## Debug your code
 
-You can debug your Executor like any Python code. You can either use the Executor on its own or inside a Flow:
+You can debug your Executor like any Python code. You can either use the Executor on its own or inside a Deployment:
 
 ````{tab} Executor on its own
 ```python
@@ -45,15 +45,15 @@ exec = Executor.from_hub('jinaai://jina-ai/Hello')
 exec.foo()
 ```
 ````
-````{tab} Executor inside a Flow
+````{tab} Executor inside a Deployment
 ```python
 from docarray import Document
-from jina import Flow
+from jina import Deployment
 
-f = Flow().add(uses='jinaai://jina-ai/Hello')
+dep = Deployment(uses='jinaai://jina-ai/Hello')
 
-with f:
-    res = f.post('/', inputs=Document(text='hello'), return_results=True)
+with dep:
+    res = dep.post('/', inputs=Document(text='hello'), return_results=True)
     print(res)
 ```
 ````
