@@ -783,6 +783,11 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         :param kwargs: other kwargs accepted by the Flow, full list can be found `here <https://docs.jina.ai/api/jina.orchestrate.flow.base/>`
 
         """
+        warnings.warn(
+            f'Executor.serve() is no more supported and will be deprecated soon. Use Deployment to serve an Executor instead: '
+            f'https://docs.jina.ai/concepts/executor/serve/',
+            DeprecationWarning,
+        )
         from jina.orchestrate.deployments import Deployment
 
         dep = Deployment(
@@ -835,6 +840,11 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         :param uses_dynamic_batching: dictionary of parameters to overwrite from the default config's dynamic_batching field
         :param kwargs: other kwargs accepted by the Flow, full list can be found `here <https://docs.jina.ai/api/jina.orchestrate.flow.base/>`
         """
+        warnings.warn(
+            f'Executor.to_kubernetes_yaml() is no more supported and will be deprecated soon. Use Deployment to export kubernetes YAML files: '
+            f'https://docs.jina.ai/concepts/executor/serve/#serve-via-kubernetes',
+            DeprecationWarning,
+        )
         from jina.orchestrate.flow.base import Flow
 
         Flow(**kwargs).add(
