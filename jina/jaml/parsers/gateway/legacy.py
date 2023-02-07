@@ -46,7 +46,7 @@ class GatewayLegacyParser(BaseLegacyParser):
             'log_config',
         }:
             if runtime_args and not runtime_args.get(key) and data.get(key):
-                setattr(runtime_args, key, data.get(key))
+                runtime_args[key] = data.get(key)
         if runtime_args.get('default_port'):
             yaml_port = data.get('port')
             if isinstance(yaml_port, int):
