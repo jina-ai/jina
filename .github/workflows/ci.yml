@@ -95,6 +95,8 @@ jobs:
           then
             echo "tree is clean"
           else
+            git status
+            ls
             git add -u
             git commit -m "style: fix overload and cli autocomplete"
             echo "IS_CHANGED=YES" >> $GITHUB_OUTPUT
