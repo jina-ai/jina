@@ -55,7 +55,7 @@ if TYPE_CHECKING:
     from jina.serve.executors import BaseExecutor
 
 
-class DeploymentType(type(JAMLCompatible)):
+class DeploymentType(type(ExitStack), type(JAMLCompatible)):
     """Type of Deployment, metaclass of :class:`Deployment`"""
 
     pass
