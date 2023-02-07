@@ -1246,17 +1246,18 @@ class Flow(
                     'External Executors with multiple needs have to do auto reduce.'
                 )
             deployment = Deployment(args, needs, include_gateway=False)
+            floating = args.floating
         elif isinstance(deployment, str):
             deployment = Deployment.load_config(deployment, needs=needs)
+            floating = deployment.args.floating
         else:
             deployment.needs = needs
+            floating = deployment.args.floating
 
         op_flow._deployment_nodes[deployment_name] = deployment
 
-        # TODO: uncomment later
-        # if not args.floating:
-        #     op_flow._last_deployment = deployment_name
-        op_flow._last_deployment = deployment_name
+        if not floating:
+            op_flow._last_deployment = deployment_name
 
         return op_flow
 
