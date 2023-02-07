@@ -1,6 +1,6 @@
 <p align="center">
 <!-- survey banner start -->
-<a href="https://10sw1tcpld4.typeform.com/to/EGAEReM7?utm_source=xxxxx&utm_medium=xxxxx&utm_campaign=xxxxx&utm_term=xxxxx&utm_content=xxxxx">
+<a href="https://10sw1tcpld4.typeform.com/to/EGAEReM7?utm_source=readme&utm_medium=github&utm_campaign=user%20experience&utm_term=feb2023&utm_content=survey">
   <img src="./.github/banner.svg?raw=true">
 </a>
 <!-- survey banner start -->
