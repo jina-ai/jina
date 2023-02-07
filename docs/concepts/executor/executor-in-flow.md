@@ -5,8 +5,7 @@ You can chain Executors together into a {ref}`Flow <flow-cookbook>`, which orche
 
 When developing an Executor to put into a Flow, there are several practices you should follow:
 
-(flow-specific-arguments)=
-
+(merge-upstream-documentarrays)=
 ## Merging upstream DocumentArrays
 
 Often when you're building a Flow, you want an Executor to receive DocumentArrays from multiple upstream Executors. 
