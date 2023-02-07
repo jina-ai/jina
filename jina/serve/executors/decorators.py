@@ -191,7 +191,7 @@ def write(
 
         def __set_name__(self, owner, name):
             if self._requests_decorator:
-                self._requests_decorator._inject_owner_attrs(owner, name)
+                self._requests_decorator._inject_owner_attrs(owner, name, None, None)
             self._inject_owner_attrs(owner, name)
 
             setattr(owner, name, self.fn)
