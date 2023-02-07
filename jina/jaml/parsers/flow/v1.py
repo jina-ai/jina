@@ -75,13 +75,16 @@ class V1Parser(VersionedYAMLParser):
                     deployments,
                     extra_search_paths=data.get('with', {}).get('extra_search_paths'),
                 )
-                getattr(obj, 'add')(dep)
+                getattr(obj, 'add')(dep, copy_flow=False)
             elif (
                 isinstance(deployments, dict)
                 and deployments.get('jtype') == 'Deployment'
             ):
-                dep = Deployment.load_config(deployments)
-                getattr(obj, 'add')(dep)
+                dep = Deployment.load_config(
+                    deployments,
+                    extra_search_paths=data.get('with', {}).get('extra_search_paths'),
+                )
+                getattr(obj, 'add')(dep, copy_flow=False)
             else:
                 p_deployment_attr = {
                     kk: expand_env_var(vv) for kk, vv in deployments.items()

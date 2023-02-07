@@ -1248,6 +1248,8 @@ class Flow(
             deployment = Deployment(args, needs, include_gateway=False)
         elif isinstance(deployment, str):
             deployment = Deployment.load_config(deployment, needs=needs)
+        else:
+            deployment.needs = needs
 
         op_flow._deployment_nodes[deployment_name] = deployment
 
