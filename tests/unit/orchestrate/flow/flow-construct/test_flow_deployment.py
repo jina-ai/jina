@@ -37,8 +37,8 @@ def test_flow_deployment(deployment_config):
     flow = Flow().add(deployment=deployment_config)
     with flow:
         docs = flow.post(on='/', inputs=DocumentArray.empty(3))
-        assert len(docs) == 3
-        assert all([doc.text == 'indexed' for doc in docs])
+    assert len(docs) == 3
+    assert all([doc.text == 'indexed' for doc in docs])
 
 
 @pytest.mark.parametrize(
@@ -56,5 +56,5 @@ def test_flow_load_config_with_deployment(flow_config):
     flow = Flow.load_config(flow_config)
     with flow:
         docs = flow.post(on='/', inputs=DocumentArray.empty(3))
-        assert len(docs) == 3
-        assert all([doc.text == 'indexed' for doc in docs])
+    assert len(docs) == 3
+    assert all([doc.text == 'indexed' for doc in docs])
