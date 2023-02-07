@@ -9,7 +9,7 @@ The {class}`~jina.Client` supports request tracing, giving you an end-to-end vie
 
 ```{code-block} python
 ---
-emphasize-lines: 6
+emphasize-lines: 4, 5, 6
 ---
 from jina import Flow
 
@@ -29,7 +29,7 @@ with f:
 
 ```{code-block} python
 ---
-emphasize-lines: 3,4
+emphasize-lines: 5, 6, 7
 ---
 from jina import Client
 

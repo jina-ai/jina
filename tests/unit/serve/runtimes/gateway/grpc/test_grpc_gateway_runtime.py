@@ -162,7 +162,7 @@ async def _test(streamer, stream):
     responses = []
     req = request_generator('/', DocumentArray([Document(text='client0-Request')]))
     if stream:
-        async for resp in streamer.stream(request_iterator=req):
+        async for resp in streamer.rpc_stream(request_iterator=req):
             responses.append(resp)
     else:
         for req in request_generator(
