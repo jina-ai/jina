@@ -210,8 +210,8 @@ def test_load_gateway_override_with(yaml_file, gateway_name):
 @pytest.mark.parametrize(
     'yaml_file,expected_replicas,expected_shards,expected_uses',
     [
-        ('test-deployment.yml', 2, 3, 'BaseExecutor'),
-        ('test-deployment-exec-config.yml', 3, 2, 'yaml/dummy_ext_exec_success.yml'),
+        ('test-deployment.yml', 2, 3, 'DummyExternalIndexer'),
+        ('test-deployment-exec-config.yml', 3, 2, 'dummy_ext_exec_success.yml'),
     ],
 )
 def test_load_deployment(yaml_file, expected_replicas, expected_shards, expected_uses):
