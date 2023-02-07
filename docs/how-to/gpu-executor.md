@@ -1,8 +1,8 @@
 (gpu-executor)=
 # Build a GPU Executor
 
-This document will show you how to use an {class}`~jina.Executor` on a GPU, both locally and in a
-Docker container. You will also learn how to use GPU with pre-built Hub executors.
+This document shows you how to use an {class}`~jina.Executor` on a GPU, both locally and in a
+Docker container. You will also learn how to use a GPU with pre-built Hub executors.
 
 Using a GPU significantly speeds up encoding for most deep learning models,
 reducing response latency by anything from 5 to 100 times, depending on the model and inputs used.
@@ -10,7 +10,7 @@ reducing response latency by anything from 5 to 100 times, depending on the mode
 ```{admonition} Important
 :class: caution
 
-This tutorial assumes familiarity with basic Jina concepts, such as Document, [Executor](../concepts/executor/index), and [Flow](../concepts/executor/index). Some knowledge of [Executor Hub](../concepts/executor/hub/index) is also needed for the last part of the tutorial.
+This tutorial assumes familiarity with basic Jina concepts, such as Document, [Executor](../concepts/executor/index), and [Deployment](../concepts/deployment/index). Some knowledge of [Executor Hub](../concepts/executor/hub/index) is also needed for the last part of the tutorial.
 ```
 
 ## Jina and GPUs in a nutshell
@@ -21,7 +21,7 @@ If you already know how to use your GPU, just proceed like you usually would in 
 Jina lets you use GPUs like you would in a Python script or Docker 
 container, without imposing additional requirements or configuration.
 
-Here's a minimal working example, written in PyTorch.
+Here's a minimal working example, written in PyTorch:
 
 ```python
 import torch
@@ -46,22 +46,24 @@ class MyGPUExec(Executor):
 ```
 
 
-````{tab} Use it with CPU 
+````{tab} Use with CPU 
 
 ```python
 from docarray import Document
-from jina import Flow
+from jina import Deployment
 
-f = Flow().add(uses=MyGPUExec, uses_with={'device': 'cpu'})
+dep = Deployment(uses=MyGPUExec, uses_with={'device': 'cpu'})
 docs = DocumentArray(Document())
-with f:
-    docs = f.post(on='/encode', inputs=docs)
+
+with dep:
+    docs = dep.post(on='/encode', inputs=docs)
+
 print(f'Document embedding: {docs.embeddings}')
 print(docs.texts)
 ```
 
 ```shell
-           Flow@80[I]:🎉 Flow is ready to use!
+           Deployment@80[I]:🎉 Deployment is ready to use!
 	🔗 Protocol: 		GRPC
 	🏠 Local access:	0.0.0.0:49618
 	🔒 Private network:	172.28.0.2:49618
@@ -73,22 +75,24 @@ Document embedding: tensor([[0.1769, 0.1557, 0.9266, 0.8655, 0.6291]])
 
 ````
 
-````{tab} Use it with GPU
+````{tab} Use with GPU
 
 ```python
 from docarray import Document
-from jina import Flow
+from jina import Deployment
 
-f = Flow().add(uses=MyGPUExec, uses_with={'device': 'cuda'})
+dep = Deployment(uses=MyGPUExec, uses_with={'device': 'cuda'})
 docs = DocumentArray(Document())
-with f:
-    docs = f.post(on='/encode', inputs=docs)
+
+with dep:
+    docs = dep.post(on='/encode', inputs=docs)
+
 print(f'Document embedding: {docs.embeddings}')
 print(docs.texts)
 ```
 
 ```shell
-           Flow@80[I]:🎉 Flow is ready to use!
+           Deployment@80[I]:🎉 Deployment is ready to use!
 	🔗 Protocol: 		GRPC
 	🏠 Local access:	0.0.0.0:56276
 	🔒 Private network:	172.28.0.2:56276
@@ -100,7 +104,7 @@ Document embedding: tensor([[0.6888, 0.8646, 0.0422, 0.8501, 0.4016]])
 
 ````
 
-Just like that, your code runs on GPU, inside a Jina Flow.
+Just like that, your code runs on GPU, inside a Deployment.
 
 Next, we will go through a more fleshed out example in detail, where we use a language model to embed text in our
 Documents - all on GPU, and thus blazingly fast.
@@ -108,7 +112,7 @@ Documents - all on GPU, and thus blazingly fast.
 (gpu-prerequisites)=
 ## Prerequisites
 
-For this tutorial, you will need to work on a machine with an NVIDIA graphics card. If you
+For this tutorial, you need to work on a machine with an NVIDIA graphics card. If you
 don't have such a machine at home, you can use various free cloud platforms (like Google Colab or Kaggle kernels).
 
 Also ensure you have a recent version of [NVIDIA drivers](https://www.nvidia.com/Download/index.aspx)
@@ -118,7 +122,7 @@ the deep learning framework that you use, that might be required (for local exec
 For the Docker part of the tutorial you will also need to have [Docker](https://docs.docker.com/get-docker/) and 
 [nvidia-docker](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html) installed.
 
-To run Python scripts you will need a virtual environment (for example [venv](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/#creating-a-virtual-environment) or [conda](https://conda.io/projects/conda/en/latest/user-guide/getting-started.html#managing-environments)), and to install Jina inside it using:
+To run Python scripts you need a virtual environment (for example [venv](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/#creating-a-virtual-environment) or [conda](https://conda.io/projects/conda/en/latest/user-guide/getting-started.html#managing-environments)), and install Jina inside it using:
 
 ```bash
 pip install jina
@@ -126,12 +130,11 @@ pip install jina
 
 ## Setting up the Executor
 
-
 ```{admonition} Executor Hub
 :class: hint
 
-Let's create an Executor using [Executor Hub](https://cloud.jina.ai/). This still creates your Executor locally
-and privately, but makes it quick and easy to run your
+Let's create an Executor using `jina hub new`. This creates your Executor locally
+and privately, and makes it quick and easy to run your
 Executor inside a Docker container, or (if you so choose) to publish it to Executor Hub later.
 ```
 
@@ -292,7 +295,7 @@ encoder by encoding 10,000 text documents.
 
 ```python
 from docarray import Document
-from jina import Flow
+from jina import Deployment
 
 from executor import SentenceEncoder
 
@@ -304,9 +307,10 @@ def generate_docs():
         )
 
 
-f = Flow().add(uses=SentenceEncoder, uses_with={'device': 'cpu'})
-with f:
-    f.post(on='/encode', inputs=generate_docs, show_progress=True, request_size=32)
+dep = Deployment(uses=SentenceEncoder, uses_with={'device': 'cpu'})
+
+with dep:
+    dep.post(on='/encode', inputs=generate_docs, show_progress=True, request_size=32)
 ```
 
 ## Running on GPU and CPU locally
@@ -316,8 +320,8 @@ We can observe the speed up by running the same code on both the CPU and GPU.
 To toggle between the two, set your device type to `'cuda'`, and your GPU will take over the work:
 
 ```diff
-+ f = Flow().add(uses=SentenceEncoder, uses_with={'device': 'cuda'})
-- f = Flow().add(uses=SentenceEncoder, uses_with={'device': 'cpu'})
++ dep = Deployment(uses=SentenceEncoder, uses_with={'device': 'cuda'})
+- dep = Deployment(uses=SentenceEncoder, uses_with={'device': 'cpu'})
 ```
 
 Then, run the script:
@@ -333,7 +337,7 @@ And compare the results:
 ```shell
       executor0@26554[L]:ready and listening
         gateway@26554[L]:ready and listening
-           Flow@26554[I]:🎉 Flow is ready to use!
+           Deployment@26554[I]:🎉 Deployment is ready to use!
         🔗 Protocol:            GRPC
         🏠 Local access:        0.0.0.0:56969
         🔒 Private network:     172.31.39.70:56969
@@ -348,7 +352,7 @@ Working... ━━━━━━━━━━━━━━━━━━━━━━━
 ```shell
       executor0@21032[L]:ready and listening
         gateway@21032[L]:ready and listening
-           Flow@21032[I]:🎉 Flow is ready to use!
+           Deployment@21032[I]:🎉 Deployment is ready to use!
         🔗 Protocol:            GRPC
         🏠 Local access:        0.0.0.0:54255
         🔒 Private network:     172.31.39.70:54255
@@ -364,7 +368,7 @@ That's more than a **6x speedup!** And that's not even the best we can do - if w
 ```{admonition} Note
 :class: hint
 
-You've probably noticed that there was a delay (about 3 seconds) when creating the Flow.
+You've probably noticed that there was a delay (about 3 seconds) when creating the Deployment.
 This is because the weights of our model had to be transfered from CPU to GPU when we
 initialized the Executor. However, this action only occurs once in the lifetime of the Executor,
 so for most use cases we don't need to worry about it.
@@ -408,10 +412,11 @@ We need to modify our `main.py` script to use a GPU-base containerized Executor:
 
 ```{code-block} python
 ---
-emphasize-lines: 12
+emphasize-lines: 13
 ---
 
-from jina import Flow, Document, DocumentArray
+from docarray import Document, DocumentArray
+from jina import Depoyment
 
 from executor import SentenceEncoder
 
@@ -421,11 +426,10 @@ def generate_docs():
             text='Using a GPU enables you to significantly speed up encoding'
         )
 
-f = Flow().add(
-    uses='docker://sentence-encoder', uses_with={'device': 'cuda'}, gpus='all'
-)
-with f:
-    f.post(on='/encode', inputs=generate_docs, show_progress=True, request_size=32)
+dep = Deployment(uses='docker://sentence-encoder', uses_with={'device': 'cuda'}, gpus='all')
+
+with dep:
+    dep.post(on='/encode', inputs=generate_docs, show_progress=True, request_size=32)
 ```
 
 If we run this with `python main.py`, we'll get the same output as before, except that now we'll also get the output from the Docker container.
@@ -435,7 +439,7 @@ Every time we start the Executor, the Transformer model gets downloaded again. T
 We can do this with Docker volumes - Jina simply passes the argument to the Docker container. Here's how we modify `main.py`:
 
 ```python
-f = Flow().add(
+dep = Deployment(
     uses='docker://sentence-encoder',
     uses_with={'device': 'cuda'},
     gpus='all',
@@ -455,7 +459,7 @@ We now saw how to use GPU with our Executor locally, and when using it in a Dock
 Nope! Not only that, many Executors on Executor Hub already come with a GPU-enabled version pre-built, usually under the `gpu` tag (see [Executor Hub tags](hub_tags)). Let's modify our example to use the pre-built `TransformerTorchEncoder` from Executor Hub:
 
 ```diff
-f = Flow().add(
+dep = Deployment(
 -   uses='docker://sentence-encoder',
 +   uses='jinaai+docker://jina-ai/TransformerTorchEncoder:latest-gpu',
     uses_with={'device': 'cuda'},
@@ -472,7 +476,6 @@ The first time you run the script, downloading the Docker image takes some time 
 
 When using GPU encoders from Executor Hub, always use `jinaai+docker://`, and not `jinaai://`. As discussed above, these encoders may need CUDA installed (or other system dependencies), and installing that properly can be tricky. For that reason, use Docker images, which already come with all these dependencies pre-installed.
 ```
-
 
 ## Conclusion
 
