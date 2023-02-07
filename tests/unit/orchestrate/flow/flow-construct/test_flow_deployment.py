@@ -3,7 +3,7 @@ import os
 import pytest
 from docarray import DocumentArray
 
-from jina import Flow
+from jina import Deployment, Flow
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 _deployment_yaml_path = os.path.join(cur_dir, '../../../yaml/test-deployment.yml')

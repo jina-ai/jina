@@ -2,6 +2,6 @@ jtype: Deployment
 with:
   replicas: 3
   shards: 2
-  uses: yaml/dummy_ext_exec_success.yml
+  uses: dummy_ext_exec_success.yml
 
 
