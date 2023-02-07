@@ -3,11 +3,11 @@ import os
 import pytest
 import yaml
 
+from jina import Gateway
 from jina.constants import __default_executor__, __default_host__
 from jina.helper import expand_dict, expand_env_var
 from jina.jaml import JAML
 from jina.serve.executors import BaseExecutor
-from jina import Gateway
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -186,6 +186,10 @@ def test_load_gateway_external_success(yaml_file, gateway_name):
         assert gateway.arg1 == 'hello'
         assert gateway.arg2 == 'world'
         assert gateway.arg3 == 'default-arg3'
+        assert gateway.runtime_args.timeout_send == 10
+        assert gateway.runtime_args.retries == 10
+        assert gateway.runtime_args.compression == 'Deflate'
+        assert gateway.runtime_args.prefetch is True
 
 
 @pytest.mark.parametrize(

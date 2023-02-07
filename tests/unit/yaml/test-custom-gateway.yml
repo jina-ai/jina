@@ -3,3 +3,7 @@ py_modules: dummy_gateway.py
 with:
   arg1: hello
   arg2: world
+timeout_send: 10
+retries: 10
+compression: Deflate
+prefetch: true
