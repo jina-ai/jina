@@ -5,7 +5,7 @@ Sandbox lets you run Executors in a cloud environment without downloading them t
 
 This graph shows the difference between using and not using Sandbox.
 
-```{figure} ../../.github/sandbox-advantage.png
+```{figure} ../../../.github/sandbox-advantage.png
 :align: center
 ```
 
