@@ -125,22 +125,6 @@ MergeExec processing pairs of Documents "Exec1" and "Exec2"
 Resulting documents Document merging from "Exec1" and "Exec2"
 ```
 
-## Call a Flow from an Executor
-
-To call other another Jina Flow using `Client` from an `Executor`, you also need to use `async def` and async Client.
-
-```python
-from jina import Client, Executor, requests, DocumentArray
-
-
-class DummyExecutor(Executor):
-    c = Client(host='grpc://0.0.0.0:51234', asyncio=True)
-
-    @requests
-    async def process(self, docs: DocumentArray, **kwargs):
-        self.c.post('/', docs)
-```
-
 ## Serve
 
 Both served and shared Executors can be used as part of a Flow, by adding them as an {ref}`external Executor <external-executors>`. If the Executor is only used inside other Flows, you should define a shared Executor to save the costs of running the Gateway in Kubernetes.
