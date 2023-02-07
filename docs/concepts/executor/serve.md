@@ -125,12 +125,9 @@ with Deployment(uses=MyExec, port=12345, replicas=2) as dep:
 You can run an Executor from CLI. In this case, the Executor occupies one process. The lifetime of the Executor is the lifetime of the process.
 
 ### From a local Executor python class
-````{tab} Python class
-
 ```shell
 jina executor --uses MyExec --py-modules executor.py
 ```
-````
 
 
 ### From a local Executor YAML configuration
@@ -191,9 +188,18 @@ dep = Deployment(
 )
 dep.to_kubernetes_yaml('/tmp/config_out_folder', k8s_namespace='my-namespace')
 ```
+This will give the following output:
+```text
+INFO   executor@8065 K8s yaml files have been created under  [02/07/23 10:03:50]
+       [b]/tmp/config_out_folder[/]. You can use it by                          
+       running [b]kubectl apply -R -f                                           
+       /tmp/config_out_folder[/] 
+```
+Afterwards, you can apply this configuration to your cluster:
 ```shell
 kubectl apply -R -f /tmp/config_out_folder
 ```
+
 The above example deploys the `DummyHubExecutor` from Executor Hub into your Kubernetes cluster.
 
 ````{admonition} Hint
@@ -235,7 +241,10 @@ print(client.post(on='/', inputs=Document(), stream=False).texts)
 This type of standalone Executor can be either *external* or *shared*. By default, it is external.
 
 - An external Executor is deployed alongside a {ref}`Gateway <architecture-overview>`. 
-- A shared Executor has no Gateway. 
+- A shared Executor has no Gateway.
+
+Although both types can join a {class}`~jina.Flow`, use a shared Executor if the Executor is only intended to join Flows 
+to have less network hops and save the costs of running running the Gateway in Kubernetes.
 
 ## Serve via Docker Compose
 

@@ -1,7 +1,7 @@
 (executor-yaml-spec)=
 # {octicon}`file-code` YAML specification
 
-This page outlines the Executor YAML file specification. These configurations can be used in a {class}`~jina.Deployment` with `Deployment(uses='exec.yml)` or loaded directly via `Executor.load_config('exec.yml')`.
+This page outlines the Executor YAML file specification. These configurations can be used in a {class}`~jina.Deployment` with `Deployment(uses='exec.yml)`, in a {class}`~jina.Flow` with `Flow().add(uses='exec.yml)` or loaded directly via `Executor.load_config('exec.yml')`.
 
 Note that Executor YAML configuration always refers back to an Executor defined in a Python file.
 

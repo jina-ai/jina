@@ -157,7 +157,7 @@ class MyExecutor(Executor):
     @requests
     def foo_using_no_arg(self, **kwargs):
         # the args are suppressed into kwargs
-        print(kwargs['docs_matrix'])
+        print(kwargs)
 ```
 ````
 
