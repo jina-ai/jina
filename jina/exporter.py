@@ -1,6 +1,7 @@
 import json
 
 from jina.orchestrate.flow.base import Flow
+from jina.orchestrate.deployments import Deployment
 from jina.jaml import JAML
 from jina.logging.predefined import default_logger
 from jina.schemas import get_full_schema
@@ -12,9 +13,16 @@ def export_kubernetes(args):
 
     :param args: args from CLI
     """
-    Flow.load_config(args.flowpath).to_kubernetes_yaml(
-        output_base_path=args.outpath, k8s_namespace=args.k8s_namespace
-    )
+    from jina.jaml import JAMLCompatible
+
+    obj = JAMLCompatible.load_config(args.flowpath)
+
+    if isinstance(obj, (Flow, Deployment)):
+        obj.to_kubernetes_yaml(
+            output_base_path=args.outpath, k8s_namespace=args.k8s_namespace
+        )
+    else:
+        raise NotImplementedError(f'Object of class {obj.__class__.__name__} cannot be exported to Kubernetes')
 
 
 def export_docker_compose(args):
