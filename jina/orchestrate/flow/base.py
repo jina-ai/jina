@@ -738,33 +738,12 @@ class Flow(
 
     def _get_docker_compose_deployments_addresses(self) -> Dict[str, List[str]]:
         graph_dict = {}
-        from jina.orchestrate.deployments.config.docker_compose import port
-        from jina.orchestrate.deployments.config.helper import to_compatible_name
 
         for node, v in self._deployment_nodes.items():
             if node == GATEWAY_NAME:
                 continue
 
-            if v.external:
-                deployment_docker_compose_address = [
-                    f'{v.protocol}://{v.host}:{v.port}'
-                ]
-            elif v.head_args:
-                deployment_docker_compose_address = [
-                    f'{to_compatible_name(v.head_args.name)}:{port}'
-                ]
-            else:
-                if v.args.replicas == 1:
-                    deployment_docker_compose_address = [
-                        f'{to_compatible_name(v.name)}:{port}'
-                    ]
-                else:
-                    deployment_docker_compose_address = []
-                    for rep_id in range(v.args.replicas):
-                        node_name = f'{v.name}/rep-{rep_id}'
-                        deployment_docker_compose_address.append(
-                            f'{to_compatible_name(node_name)}:{port}'
-                        )
+            deployment_docker_compose_address = v._docker_compose_address
             graph_dict[node] = deployment_docker_compose_address
 
         return graph_dict
@@ -2787,10 +2766,6 @@ class Flow(
         output_path = output_path or 'docker-compose.yml'
         network_name = network_name or 'jina-network'
 
-        from jina.orchestrate.deployments.config.docker_compose import (
-            DockerComposeConfig,
-        )
-
         docker_compose_dict = {
             'version': '3.3',
             'networks': {network_name: {'driver': 'bridge'}},
@@ -2802,11 +2777,10 @@ class Flow(
             if v.external or (node == 'gateway' and not include_gateway):
                 continue
 
-            docker_compose_deployment = DockerComposeConfig(
-                args=v.args,
+            service_configs = v._to_docker_compose_config(
                 deployments_addresses=self._get_docker_compose_deployments_addresses(),
             )
-            service_configs = docker_compose_deployment.to_docker_compose_config()
+
             for service_name, service in service_configs:
                 service['networks'] = [network_name]
                 services[service_name] = service

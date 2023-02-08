@@ -1434,6 +1434,84 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
 
         return all_panels
 
+    @property
+    def _docker_compose_address(self):
+        from jina.orchestrate.deployments.config.docker_compose import port
+        from jina.orchestrate.deployments.config.helper import to_compatible_name
+        if self.external:
+            docker_compose_address = [
+                f'{self.protocol}://{self.host}:{self.port}'
+            ]
+        elif self.head_args:
+            docker_compose_address = [
+                f'{to_compatible_name(self.head_args.name)}:{port}'
+            ]
+        else:
+            if self.args.replicas == 1:
+                docker_compose_address = [
+                    f'{to_compatible_name(self.name)}:{port}'
+                ]
+            else:
+                docker_compose_address = []
+                for rep_id in range(self.args.replicas):
+                    node_name = f'{self.name}/rep-{rep_id}'
+                    docker_compose_address.append(
+                        f'{to_compatible_name(node_name)}:{port}'
+                    )
+        return docker_compose_address
+
+    def _to_docker_compose_config(self,
+                                  deployments_addresses: Optional[Dict[str, List[str]]] = None):
+
+        from jina.orchestrate.deployments.config.docker_compose import (
+            DockerComposeConfig,
+        )
+
+        docker_compose_deployment = DockerComposeConfig(
+            args=self.args,
+            deployments_addresses=deployments_addresses,
+        )
+        return docker_compose_deployment.to_docker_compose_config()
+
+    def to_docker_compose_yaml(
+            self,
+            output_path: Optional[str] = None,
+            network_name: Optional[str] = None,
+    ):
+        import yaml
+        output_path = output_path or 'docker-compose.yml'
+        network_name = network_name or 'jina-network'
+
+        # TODO: Test and check if gateway needs to be added (most likely depending on replicas)
+
+        docker_compose_dict = {
+            'version': '3.3',
+            'networks': {network_name: {'driver': 'bridge'}},
+        }
+        services = {}
+
+        service_configs = self._to_docker_compose_config(
+            deployments_addresses=None,
+        )
+
+        for service_name, service in service_configs:
+            service['networks'] = [network_name]
+            services[service_name] = service
+
+        docker_compose_dict['services'] = services
+        with open(output_path, 'w+') as fp:
+            yaml.dump(docker_compose_dict, fp, sort_keys=False)
+
+        command = (
+            'docker-compose up'
+            if output_path is None
+            else f'docker-compose -f {output_path} up'
+        )
+
+        self.logger.info(
+            f'Docker compose file has been created under [b]{output_path}[/b]. You can use it by running [b]{command}[/b]'
+        )
+
     def _to_kubernetes_yaml(
         self,
         output_base_path: str,
