@@ -1972,6 +1972,11 @@ class Flow(
             f'{self.num_deployments} Deployments (i.e. {self.num_pods} Pods) are running in this Flow'
         )
 
+        print(
+            'Please do your magic here. You can use rich as well we have a table on top '
+            'if you want to fill in it'
+        )
+
     @property
     def num_deployments(self) -> int:
         """Get the number of Deployments in this Flow
