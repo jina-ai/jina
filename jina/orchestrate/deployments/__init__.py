@@ -1438,19 +1438,16 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
     def _docker_compose_address(self):
         from jina.orchestrate.deployments.config.docker_compose import port
         from jina.orchestrate.deployments.config.helper import to_compatible_name
+
         if self.external:
-            docker_compose_address = [
-                f'{self.protocol}://{self.host}:{self.port}'
-            ]
+            docker_compose_address = [f'{self.protocol}://{self.host}:{self.port}']
         elif self.head_args:
             docker_compose_address = [
                 f'{to_compatible_name(self.head_args.name)}:{port}'
             ]
         else:
             if self.args.replicas == 1:
-                docker_compose_address = [
-                    f'{to_compatible_name(self.name)}:{port}'
-                ]
+                docker_compose_address = [f'{to_compatible_name(self.name)}:{port}']
             else:
                 docker_compose_address = []
                 for rep_id in range(self.args.replicas):
@@ -1460,8 +1457,9 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                     )
         return docker_compose_address
 
-    def _to_docker_compose_config(self,
-                                  deployments_addresses: Optional[Dict[str, List[str]]] = None):
+    def _to_docker_compose_config(
+        self, deployments_addresses: Optional[Dict[str, List[str]]] = None
+    ):
 
         from jina.orchestrate.deployments.config.docker_compose import (
             DockerComposeConfig,
@@ -1474,11 +1472,12 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         return docker_compose_deployment.to_docker_compose_config()
 
     def to_docker_compose_yaml(
-            self,
-            output_path: Optional[str] = None,
-            network_name: Optional[str] = None,
+        self,
+        output_path: Optional[str] = None,
+        network_name: Optional[str] = None,
     ):
         import yaml
+
         output_path = output_path or 'docker-compose.yml'
         network_name = network_name or 'jina-network'
 
