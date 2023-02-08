@@ -15,7 +15,7 @@ def export_kubernetes(args):
     """
     from jina.jaml import JAMLCompatible
 
-    obj = JAMLCompatible.load_config(args.flowpath)
+    obj = JAMLCompatible.load_config(args.config_path)
 
     if isinstance(obj, (Flow, Deployment)):
         obj.to_kubernetes_yaml(
@@ -31,7 +31,7 @@ def export_docker_compose(args):
     :param args: args from CLI
     """
 
-    Flow.load_config(args.flowpath).to_docker_compose_yaml(
+    Flow.load_config(args.config_path).to_docker_compose_yaml(
         output_path=args.outpath, network_name=args.network_name
     )
 
@@ -41,7 +41,7 @@ def export_flowchart(args):
 
     :param args: args from CLI
     """
-    Flow.load_config(args.flowpath).plot(
+    Flow.load_config(args.config_path).plot(
         args.outpath, vertical_layout=args.vertical_layout
     )
 

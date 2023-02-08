@@ -16,7 +16,7 @@ def deployment(args: 'Namespace'):
 
     if args.uses:
         dep = Deployment.load_config(args.uses)
-        with f:
+        with dep:
             dep.block()
     else:
         raise ValueError('starting a Deployment from CLI requires a valid `--uses`')
