@@ -186,6 +186,10 @@ def test_load_gateway_external_success(yaml_file, gateway_name):
         assert gateway.arg1 == 'hello'
         assert gateway.arg2 == 'world'
         assert gateway.arg3 == 'default-arg3'
+        assert gateway.runtime_args.timeout_send == 10
+        assert gateway.runtime_args.retries == 10
+        assert gateway.runtime_args.compression == 'Deflate'
+        assert gateway.runtime_args.prefetch == 100
 
 
 @pytest.mark.parametrize(
