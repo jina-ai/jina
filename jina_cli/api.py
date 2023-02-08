@@ -15,11 +15,11 @@ def deployment(args: 'Namespace'):
     from jina.orchestrate.deployments import Deployment
 
     if args.uses:
-        f = Deployment.load_config(args.uses)
+        dep = Deployment.load_config(args.uses)
         with f:
-            f.block()
+            dep.block()
     else:
-        raise ValueError('start a Deployment from CLI requires a valid `--uses`')
+        raise ValueError('starting a Deployment from CLI requires a valid `--uses`')
 
 
 def pod(args: 'Namespace'):
@@ -175,7 +175,7 @@ def flow(args: 'Namespace'):
         with f:
             f.block()
     else:
-        raise ValueError('start a Flow from CLI requires a valid `--uses`')
+        raise ValueError('starting a Flow from CLI requires a valid `--uses`')
 
 
 def hub(args: 'Namespace'):
