@@ -1,6 +1,7 @@
 import json
 
 from jina.orchestrate.flow.base import Flow
+from jina.orchestrate.deployments import Deployment
 from jina.jaml import JAML
 from jina.logging.predefined import default_logger
 from jina.schemas import get_full_schema
@@ -23,9 +24,16 @@ def export_docker_compose(args):
     :param args: args from CLI
     """
 
-    Flow.load_config(args.flowpath).to_docker_compose_yaml(
-        output_path=args.outpath, network_name=args.network_name
-    )
+    from jina.jaml import JAMLCompatible
+
+    obj = JAMLCompatible.load_config(args.config_path)
+
+    if isinstance(obj, (Flow, Deployment)):
+        obj.to_docker_compose_yaml(
+            output_path=args.outpath, network_name=args.network_name
+        )
+    else:
+        raise NotImplementedError(f'Object of class {obj.__class__.__name__} cannot be exported to Docker Compose')
 
 
 def export_flowchart(args):
