@@ -113,7 +113,9 @@ class _FunctionWithSchema(NamedTuple):
 
         docs_annotation = fn.__annotations__.get('docs', None)
 
-        if type(docs_annotation) is str:
+        if docs_annotation is None:
+            pass
+        elif type(docs_annotation) is str:
             warnings.warn(
                 f'`docs` annotation must be a type hint, got {docs_annotation}'
                 ' instead, you should maybe remove the string annotation. Default value'
@@ -131,7 +133,9 @@ class _FunctionWithSchema(NamedTuple):
 
         return_annotation = fn.__annotations__.get('return', None)
 
-        if type(return_annotation) is str:
+        if return_annotation is None:
+            pass
+        elif type(return_annotation) is str:
             warnings.warn(
                 f'`return` annotation must be a class if you want to use it'
                 f'as schema input, got {docs_annotation}. try to remove the Optional'
