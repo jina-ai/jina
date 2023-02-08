@@ -125,7 +125,7 @@ class _FunctionWithSchema(NamedTuple):
         elif not isinstance(docs_annotation, type):
             warnings.warn(
                 f'`docs` annotation must be a class if you want to use it'
-                f'as schema input, got {docs_annotation}. try to remove the Optional'
+                f' as schema input, got {docs_annotation}. try to remove the Optional'
                 f'.fallback to default behavior'
                 ''
             )
@@ -138,7 +138,7 @@ class _FunctionWithSchema(NamedTuple):
         elif type(return_annotation) is str:
             warnings.warn(
                 f'`return` annotation must be a class if you want to use it'
-                f'as schema input, got {docs_annotation}. try to remove the Optional'
+                f' as schema input, got {docs_annotation}. try to remove the Optional'
                 f'.fallback to default behavior'
                 ''
             )
