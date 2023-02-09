@@ -1491,6 +1491,15 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         output_path: Optional[str] = None,
         network_name: Optional[str] = None,
     ):
+        """
+        Converts a Jina Deployment into a Docker compose YAML file
+
+        If you don't want to rebuild image on Jina Hub,
+        you can set `JINA_HUB_NO_IMAGE_REBUILD` environment variable.
+
+        :param output_path: The path where to dump the yaml file
+        :param network_name: The name of the network that will be used by the deployment
+        """
         import yaml
 
         output_path = output_path or 'docker-compose.yml'
