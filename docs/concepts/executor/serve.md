@@ -177,8 +177,8 @@ Just like that, our Executor is up and running.
 
 (kubernetes-executor)=
 ## Serve from Deployment YAML
-In case you want a clear separation between deployment configuration and Executor logic, you can define those 
-configuration in a `Deployment` YAML configuration.
+If you want a clear separation between deployment configuration and Executor logic, you can define the 
+configuration in a `Deployment` YAML configuration. For example:
 This is an example `deployment.yml` config file:
 ```yaml
 jtype: Deployment
@@ -190,7 +190,7 @@ with:
     - my_executor.py
 ```
 
-Then, you can run the deployment either through the CLI or Python API:
+Then, you can run the Deployment through the CLI or Python API:
 ````{tab} Python API
 ```python
 from jina import Deployment
@@ -216,7 +216,7 @@ Unlike the `jina executor` CLI, this command supports replication and sharding.
 ╰───────────────────────────────────────────╯
 ```
 
-Read more about the {ref}`YAML specifications of Deployments <deployment-yaml-spec>`
+Read more about the {ref}`YAML specifications of Deployments <deployment-yaml-spec>`.
 ## Serve via Kubernetes
 You can generate Kubernetes configuration files for your containerized Executor by using the {meth}`~jina.Deployment.to_kubernetes_yaml()` method:
 

@@ -20,7 +20,7 @@ String that is always set to "Deployment", indicating the corresponding Python c
 
 ### `with`
 
-Keyword arguments are passed to a Deployment's `__init__()` method. You can pass your Deployment settings here :
+Keyword arguments are passed to a Deployment's `__init__()` method. You can pass your Deployment settings here:
 
 #### Arguments
 

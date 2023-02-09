@@ -1,6 +1,6 @@
 ## Variables
 
-Jina Flow YAML supports variables and variable substitution according to the [Github Actions syntax](https://docs.github.com/en/actions/learn-github-actions/environment-variables):
+Jina Flow YAML supports variables and variable substitution according to the [GitHub Actions syntax](https://docs.github.com/en/actions/learn-github-actions/environment-variables):
 
 ### Environment variables
 
