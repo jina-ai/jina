@@ -90,6 +90,7 @@ class HTTPBaseClient(BaseClient):
         max_backoff: float = 0.1,
         backoff_multiplier: float = 1.5,
         results_in_order: bool = False,
+        prefetch: Optional[int] = None,
         **kwargs,
     ):
         """
@@ -102,6 +103,7 @@ class HTTPBaseClient(BaseClient):
         :param max_backoff: The maximum accepted backoff after the exponential incremental delay
         :param backoff_multiplier: The n-th attempt will occur at random(0, min(initialBackoff*backoffMultiplier**(n-1), maxBackoff))
         :param results_in_order: return the results in the same order as the inputs
+        :param prefetch: How many Requests are processed from the Client at the same time.
         :param kwargs: kwargs coming from the public interface. Includes arguments to be passed to the `HTTPClientlet`
         :yields: generator over results
         """
@@ -146,11 +148,14 @@ class HTTPBaseClient(BaseClient):
             def _result_handler(result):
                 return result
 
+            streamer_args = vars(self.args)
+            if prefetch:
+                streamer_args['prefetch'] = prefetch
             streamer = RequestStreamer(
                 request_handler=_request_handler,
                 result_handler=_result_handler,
                 logger=self.logger,
-                **vars(self.args),
+                **streamer_args,
             )
             async for response in streamer.stream(
                 request_iterator=request_iterator, results_in_order=results_in_order
@@ -162,7 +167,7 @@ class HTTPBaseClient(BaseClient):
 
                 da = None
                 if 'data' in r_str and r_str['data'] is not None:
-                    from docarray import DocumentArray
+                    from jina._docarray import DocumentArray
 
                     da = DocumentArray.from_dict(r_str['data'])
                     del r_str['data']

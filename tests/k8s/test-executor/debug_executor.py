@@ -41,6 +41,8 @@ class TestExecutor(Executor):
             doc.tags['k2'] = os.environ.get('k2')
             doc.tags['JINA_LOG_LEVEL'] = os.environ.get('JINA_LOG_LEVEL')
             doc.tags['env'] = {'k1': os.environ.get('k1'), 'k2': os.environ.get('k2')}
+            doc.tags['SECRET_USERNAME'] = os.environ.get('SECRET_USERNAME')
+            doc.tags['SECRET_PASSWORD'] = os.environ.get('SECRET_PASSWORD')
 
     @requests(on='/cuda')
     def cuda(self, docs: DocumentArray, **kwargs):

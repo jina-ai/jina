@@ -1,6 +1,7 @@
 import argparse
 import asyncio
 import signal
+import threading
 import time
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Optional, Union
@@ -10,14 +11,13 @@ from grpc import RpcError
 from jina.constants import __windows__
 from jina.helper import send_telemetry_event
 from jina.serve.instrumentation import InstrumentationMixin
-from jina.serve.networking import GrpcConnectionPool
+from jina.serve.networking.utils import send_health_check_sync
 from jina.serve.runtimes.base import BaseRuntime
 from jina.serve.runtimes.monitoring import MonitoringMixin
 from jina.types.request.data import DataRequest
 
 if TYPE_CHECKING:  # pragma: no cover
     import multiprocessing
-    import threading
 
 HANDLED_SIGNALS = (
     signal.SIGINT,  # Unix signal 2. Sent by Ctrl+C.
@@ -76,6 +76,8 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, InstrumentationMixin, AB
         self._start_time = time.time()
         self._loop.run_until_complete(self.async_setup())
         self._send_telemetry_event()
+        self.warmup_task = None
+        self.warmup_stop_event = threading.Event()
 
     def _send_telemetry_event(self):
         send_telemetry_event(event='start', obj=self, entity_id=self._entity_id)
@@ -161,6 +163,21 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, InstrumentationMixin, AB
         """The async method to run until it is stopped."""
         ...
 
+    async def cancel_warmup_task(self):
+        '''Cancel warmup task if exists and is not completed. Cancellation is required if the Flow is being terminated before the
+        task is successful or hasn't reached the max timeout.
+        '''
+        if self.warmup_task:
+            try:
+                if not self.warmup_task.done():
+                    self.logger.debug(f'Cancelling warmup task.')
+                    self.warmup_stop_event.set()
+                    await self.warmup_task
+                    self.warmup_task.exception()
+            except Exception as ex:
+                self.logger.debug(f'exception during warmup task cancellation: {ex}')
+                pass
+
     # Static methods used by the Pod to communicate with the `Runtime` in the separate process
 
     @staticmethod
@@ -177,9 +194,7 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, InstrumentationMixin, AB
         try:
             from grpc_health.v1 import health_pb2, health_pb2_grpc
 
-            response = GrpcConnectionPool.send_health_check_sync(
-                ctrl_address, timeout=timeout
-            )
+            response = send_health_check_sync(ctrl_address, timeout=timeout)
             return (
                 response.status == health_pb2.HealthCheckResponse.ServingStatus.SERVING
             )

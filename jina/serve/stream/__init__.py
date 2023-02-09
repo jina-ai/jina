@@ -6,8 +6,8 @@ from typing import (
     Callable,
     Iterator,
     Optional,
+    Tuple,
     Union,
-    Tuple
 )
 
 from aiostream.aiter_utils import anext
@@ -35,7 +35,9 @@ class RequestStreamer:
 
     def __init__(
         self,
-        request_handler: Callable[['Request'], Tuple[Awaitable['Request'], Optional[Awaitable['Request']]]],
+        request_handler: Callable[
+            ['Request'], Tuple[Awaitable['Request'], Optional[Awaitable['Request']]]
+        ],
         result_handler: Callable[['Request'], Optional['Request']],
         prefetch: int = 0,
         iterate_sync_in_thread: bool = True,
@@ -62,7 +64,12 @@ class RequestStreamer:
         self.total_num_floating_tasks_alive = 0
 
     async def stream(
-        self, request_iterator, context=None, results_in_order: bool = False, *args
+        self,
+        request_iterator,
+        context=None,
+        results_in_order: bool = False,
+        prefetch: Optional[int] = None,
+        *args,
     ) -> AsyncIterator['Request']:
         """
         stream requests from client iterator and stream responses back.
@@ -70,16 +77,25 @@ class RequestStreamer:
         :param request_iterator: iterator of requests
         :param context: context of the grpc call
         :param results_in_order: return the results in the same order as the request_iterator
+        :param prefetch: How many Requests are processed from the Client at the same time. If not provided then the prefetch value from the metadata will be utilized.
         :param args: positional arguments
         :yield: responses from Executors
         """
+        prefetch = prefetch or self._prefetch
         if context is not None:
             for metadatum in context.invocation_metadata():
                 if metadatum.key == '__results_in_order__':
                     results_in_order = metadatum.value == 'true'
+                if metadatum.key == '__prefetch__':
+                    try:
+                        prefetch = int(metadatum.value)
+                    except:
+                        self.logger.debug(f'Couldn\'t parse prefetch to int value!')
 
         async_iter: AsyncIterator = self._stream_requests(
-            request_iterator=request_iterator, results_in_order=results_in_order
+            request_iterator=request_iterator,
+            results_in_order=results_in_order,
+            prefetch=prefetch,
         )
 
         try:
@@ -112,10 +128,12 @@ class RequestStreamer:
         self,
         request_iterator: Union[Iterator, AsyncIterator],
         results_in_order: bool = False,
+        prefetch: Optional[int] = None,
     ) -> AsyncIterator:
         """Implements request and response handling without prefetching
         :param request_iterator: requests iterator from Client
         :param results_in_order: return the results in the same order as the request_iterator
+        :param prefetch: How many Requests are processed from the Client at the same time. If not provided then the prefetch value from the class will be utilized.
         :yield: responses
         """
         result_queue = asyncio.Queue()
@@ -166,8 +184,8 @@ class RequestStreamer:
             async for request in AsyncRequestsIterator(
                 iterator=request_iterator,
                 request_counter=requests_to_handle,
-                prefetch=self._prefetch,
-                iterate_sync_in_thread=self._iterate_sync_in_thread
+                prefetch=prefetch or self._prefetch,
+                iterate_sync_in_thread=self._iterate_sync_in_thread,
             ):
                 num_reqs += 1
                 requests_to_handle.count += 1

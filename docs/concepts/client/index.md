@@ -150,14 +150,13 @@ Client(host='https://my.awesome.flow:1234', port=4321)
 
 ````{admonition} Caution
 :class: caution
-In case you instanciate a `Client` object using the `grpc` protocol, keep in mind that `grpc` clients cannot be used in 
-a multi-threaded environment (check [this gRPC issue](https://github.com/grpc/grpc/issues/25364) for reference).
+
+We apply `RLock` to avoid [this gRPC issue](https://github.com/grpc/grpc/issues/25364), so that `grpc` clients can be used in a multi-threaded environment.
+
 What you should do, is to rely on asynchronous programming or multi-processing rather than multi-threading.
 For instance, if you're building a web server, you can introduce multi-processing based parallelism to your app using 
 `gunicorn`: `gunicorn main:app --workers 4 --worker-class uvicorn.workers.UvicornWorker ...`
 ````
-
-
 
 (client-compress)=
 ## Enable compression
@@ -206,6 +205,29 @@ c.profiling()
     └──  executor1  2ms  29% 
 ```
 
+## Logging configuration
+
+Similar to the {ref}`Flow logging configuration <logging-configuration>`, the {class}`jina.Client` also accepts the `log_config` argument. The Client can be configured as below:
+
+```python
+from jina import Client
+
+client = Client(log_config='./logging.json.yml')
+```
+
+If the Flow is configured with custom logging, the argument will be forwarded to the implicit client.
+
+```python
+from jina import Flow
+
+f = Flow(log_config='./logging.json.yml')
+
+with f:
+    # the implicit client automatically uses the log_config from the Flow for consistency
+    f.post('/')
+```
+
+
 ```{toctree}
 :hidden:
 
@@ -213,6 +235,7 @@ send-receive-data
 send-parameters
 send-graphql-mutation
 callbacks
+rate-limit
 instrumentation
 third-party-clients
 ```

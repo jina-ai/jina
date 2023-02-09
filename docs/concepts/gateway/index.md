@@ -24,7 +24,7 @@ However, you can always explicitly configure the Gateway in Python using the
 
 ## Set protocol in Python
 
-You can use three different protocols to serve the `Flow`: gRPC, HTTP and Websocket.
+You can use three different protocols to serve the `Flow`: gRPC, HTTP and WebSocket.
 
 ````{tab} gRPC
 
@@ -192,7 +192,7 @@ In case you want to serve a Flow using multiple protocols, make sure to specify 
 ## Enable TLS for client traffics
 
 You can enable TLS encryption between your Gateway and Clients, for any of the protocols supported by Jina (HTTP, gRPC,
-and Websocket).
+and WebSocket).
 
 ````{admonition} Caution
 :class: caution
@@ -318,9 +318,9 @@ The error-free output below signifies a correctly running Gateway:
 You can also use it to check Executor status, as Executor's communication protocol is gRPC.
 ```
 
-### Use HTTP/Websocket
+### Use HTTP/WebSocket
 
-When using HTTP or Websocket as the Gateway protocol, you can use curl to target the `/status` endpoint and get the Jina
+When using HTTP or WebSocket as the Gateway protocol, you can use curl to target the `/status` endpoint and get the Jina
 info.
 
 ```shell
@@ -374,7 +374,31 @@ curl http://localhost:12345/status
 }
 ```
 
-## See further
+(gateway-logging-configuration)=
+## Custom logging configuration
+
+The {ref}`Custom logging configuration <logging-configuration>` section describes customizing the logging configuration for all entities of the `Flow`.
+The `Gateway` logging can also be individually configured using a custom `logging.json.yml` file as in the below example. The custom logging file
+`logging.json.yml` is described in more detail in the {ref}`Custom logging configuration <logging-configuration>` section.
+
+````{tab} Python
+```python
+from jina import Flow
+
+f = Flow().config_gateway(log_config='./logging.json.yml')
+```
+````
+
+````{tab} YAML
+```yaml
+jtype: Flow
+gateway:
+  log_config: './logging.json.yml'
+```
+````
+
+
+## See also
 
 - {ref}`Access the Flow with the Client <client>`
 - {ref}`Deployment with Kubernetes <kubernetes>`

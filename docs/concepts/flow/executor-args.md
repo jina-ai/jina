@@ -2,7 +2,7 @@
 |----|----|----|----|
 | `name` | The name of this object.<br><br>    This will be used in the following places:<br>    - how you refer to this object in Python/YAML/CLI<br>    - visualization<br>    - log message header<br>    - ...<br><br>    When not given, then the default naming strategy will apply. | `string` | `None` |
 | `workspace` | The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`. | `string` | `None` |
-| `log_config` | The YAML config of the logger used in this object. | `string` | `default` |
+| `log_config` | The config name or the absolute path to the YAML config file of the logger used in this object. | `string` | `default` |
 | `quiet` | If set, then no log will be emitted from this object. | `boolean` | `False` |
 | `quiet_error` | If set, then exception stack information will not be added to the log | `boolean` | `False` |
 | `timeout_ctrl` | The timeout in milliseconds of the control request, -1 for waiting forever | `number` | `60` |
@@ -29,6 +29,7 @@
 | `runtime_cls` | The runtime class to run inside the Pod | `string` | `WorkerRuntime` |
 | `timeout_ready` | The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting forever | `number` | `600000` |
 | `env` | The map of environment variables that are available inside runtime | `object` | `None` |
+| `env_from_secret` | The map of environment variables that are read from kubernetes cluster secrets | `object` | `None` |
 | `floating` | If set, the current Pod/Deployment can not be further chained, and the next `.add()` will chain after the last Pod/Deployment not this current one. | `boolean` | `False` |
 | `reload` | If set, the Executor will restart while serving if YAML configuration source or Executor modules are changed. If YAML configuration is changed, the whole deployment is reloaded and new processes will be restarted. If only Python modules of the Executor have changed, they will be reloaded to the interpreter without restarting process. | `boolean` | `False` |
 | `install_requirements` | If set, try to install `requirements.txt` from the local Executor if exists in the Executor folder. If using Hub, install `requirements.txt` in the Hub Executor bundle to local. | `boolean` | `False` |
@@ -43,6 +44,7 @@
 | `metrics_exporter_host` | If tracing is enabled, this hostname will be used to configure the metrics exporter agent. | `string` | `None` |
 | `metrics_exporter_port` | If tracing is enabled, this port will be used to configure the metrics exporter agent. | `number` | `None` |
 | `force_update` | If set, always pull the latest Hub Executor bundle even it exists on local | `boolean` | `False` |
+| `prefer_platform` | The preferred target Docker platform. (e.g. "linux/amd64", "linux/arm64") | `string` | `None` |
 | `compression` | The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression. | `string` | `None` |
 | `uses_before_address` | The address of the uses-before runtime | `string` | `None` |
 | `uses_after_address` | The address of the uses-before runtime | `string` | `None` |

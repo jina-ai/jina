@@ -1,10 +1,13 @@
 import asyncio
 from typing import TYPE_CHECKING, Dict, Optional, Tuple
 
+from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.monitoring import MonitoringRequestMixin
 from jina.serve.runtimes.worker.request_handling import WorkerRequestHandler
 
 if TYPE_CHECKING:  # pragma: no cover
+    import threading
+
     from opentelemetry.metrics import Meter
     from prometheus_client import CollectorRegistry
 
@@ -165,7 +168,7 @@ class HeaderRequestHandler(MonitoringRequestMixin):
             # worker returned multiple responses, but the head is configured to skip reduction
             # just concatenate the docs in this case
             response_request.data.docs = WorkerRequestHandler.get_docs_from_request(
-                requests, field='docs'
+                requests
             )
 
         merged_metadata = self._merge_metadata(
@@ -179,3 +182,22 @@ class HeaderRequestHandler(MonitoringRequestMixin):
         self._update_end_request_metrics(response_request)
 
         return response_request, merged_metadata
+
+    async def warmup(
+        self,
+        connection_pool: GrpcConnectionPool,
+        stop_event: 'threading.Event',
+        deployment: str,
+    ):
+        '''Executes warmup task against the deployments from the connection pool.
+        :param connection_pool: GrpcConnectionPool that implements the warmup to the connected deployments.
+        :param stop_event: signal to indicate if an early termination of the task is required for graceful teardown.
+        :param deployment: deployment name that need to be warmed up.
+        '''
+        self.logger.debug(f'Running HeadRuntime warmup')
+
+        try:
+            await connection_pool.warmup(deployment=deployment, stop_event=stop_event)
+        except Exception as ex:
+            self.logger.error(f'error with HeadRuntime warmup up task: {ex}')
+            return

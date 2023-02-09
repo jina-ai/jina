@@ -2,10 +2,10 @@ import argparse
 import asyncio
 import copy
 import multiprocessing
-import threading
 import os
 import re
 import signal
+import threading
 import time
 from typing import TYPE_CHECKING, Dict, Optional, Union
 
@@ -21,6 +21,7 @@ from jina.orchestrate.pods.container_helper import (
     get_docker_network,
     get_gpu_device_requests,
 )
+from jina.parsers import set_gateway_parser
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.gateway import GatewayRuntime
 
@@ -74,9 +75,15 @@ def _docker_run(
 
     args.native = True
 
+    parser = (
+        set_gateway_parser()
+        if args.pod_role == PodRoleType.GATEWAY
+        else set_pod_parser()
+    )
+
     non_defaults = ArgNamespace.get_non_defaults_args(
         args,
-        set_pod_parser(),
+        parser,
         taboo={
             'uses',
             'entrypoint',

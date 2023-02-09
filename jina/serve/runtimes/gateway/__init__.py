@@ -97,6 +97,8 @@ class GatewayRuntime(AsyncNewLoopRuntime):
                 'meter': self.meter,
                 'aio_tracing_client_interceptors': self.aio_tracing_client_interceptors(),
                 'tracing_client_interceptor': self.tracing_client_interceptor(),
+                'log_config': self.args.log_config,
+                'default_port': getattr(self.args, 'default_port', False),
             },
             py_modules=self.args.py_modules,
             extra_search_paths=self.args.extra_search_paths,
@@ -131,17 +133,22 @@ class GatewayRuntime(AsyncNewLoopRuntime):
 
     async def async_teardown(self):
         """Shutdown the server."""
+        await self.cancel_warmup_task()
         await self.gateway.streamer.close()
         await self.gateway.shutdown()
         await self.async_cancel()
 
     async def async_cancel(self):
         """Stop the server."""
+        await self.cancel_warmup_task()
         await self.gateway.streamer.close()
         await self.gateway.shutdown()
 
     async def async_run_forever(self):
         """Running method of the server."""
+        self.warmup_task = asyncio.create_task(
+            self.gateway.streamer.warmup(self.warmup_stop_event)
+        )
         await self.gateway.run_server()
         self.is_cancel.set()
 

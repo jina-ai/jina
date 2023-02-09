@@ -4,7 +4,7 @@ import time
 import pytest
 import requests
 
-from jina import Executor, Flow, helper
+from jina import Deployment, Executor, Flow, helper
 from jina import requests as req
 from jina.clients import Client
 from jina.orchestrate.pods.factory import PodFactory
@@ -110,12 +110,14 @@ def test_client_websocket(mocker, flow_with_websocket, use_stream):
 # Timeout is necessary to fail in case of hanging client requests
 @pytest.mark.timeout(60)
 @pytest.mark.parametrize('use_stream', [True, False])
-def test_client_max_attempts(mocker, flow, use_stream):
-    with flow:
+@pytest.mark.parametrize('flow_or_deployment', ['deployment', 'deployment'])
+def test_client_max_attempts(mocker, use_stream, flow_or_deployment):
+    cntx = Flow() if flow_or_deployment == 'flow' else Deployment(include_gateway=False)
+    with cntx:
         time.sleep(0.5)
         client = Client(
             host='localhost',
-            port=flow.port,
+            port=cntx.port,
         )
         # Test that a regular index request triggers the correct callbacks
         on_always_mock = mocker.Mock()
@@ -175,6 +177,33 @@ def test_all_sync_clients(protocol, mocker, use_stream):
             host='localhost',
             port=f.port,
             protocol=protocol,
+        )
+        c.post('/', on_done=m1, stream=use_stream)
+        c.post('/foo', docs, on_done=m2, stream=use_stream)
+        c.post('/foo', on_done=m3, stream=use_stream)
+        c.post(
+            '/foo', docs, parameters={'hello': 'world'}, on_done=m4, stream=use_stream
+        )
+
+    m1.assert_called_once()
+    m2.assert_called()
+    m3.assert_called_once()
+    m4.assert_called()
+
+
+@pytest.mark.slow
+@pytest.mark.parametrize('use_stream', [True, False])
+def test_deployment_sync_client(mocker, use_stream):
+    dep = Deployment(uses=MyExec, include_gateway=False)
+    docs = list(random_docs(1000))
+    m1 = mocker.Mock()
+    m2 = mocker.Mock()
+    m3 = mocker.Mock()
+    m4 = mocker.Mock()
+    with dep:
+        c = Client(
+            host='localhost',
+            port=dep.port,
         )
         c.post('/', on_done=m1, stream=use_stream)
         c.post('/foo', docs, on_done=m2, stream=use_stream)

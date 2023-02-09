@@ -1,4 +1,4 @@
-from typing import Optional, AsyncIterator, TYPE_CHECKING
+from typing import TYPE_CHECKING, AsyncIterator, Optional
 
 import grpc
 from grpc_health.v1 import health, health_pb2, health_pb2_grpc
@@ -8,21 +8,22 @@ from jina.helper import get_full_version
 from jina.proto import jina_pb2, jina_pb2_grpc
 from jina.serve.gateway import BaseGateway
 from jina.serve.runtimes.helper import _get_grpc_server_options
-from jina.types.request.status import StatusMessage
 from jina.types.request.data import DataRequest
+from jina.types.request.status import StatusMessage
 
 if TYPE_CHECKING:  # pragma: no cover
     from jina.types.request import Request
+
 
 class GRPCGateway(BaseGateway):
     """GRPC Gateway implementation"""
 
     def __init__(
-            self,
-            grpc_server_options: Optional[dict] = None,
-            ssl_keyfile: Optional[str] = None,
-            ssl_certfile: Optional[str] = None,
-            **kwargs,
+        self,
+        grpc_server_options: Optional[dict] = None,
+        ssl_keyfile: Optional[str] = None,
+        ssl_certfile: Optional[str] = None,
+        **kwargs,
     ):
         """Initialize the gateway
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
@@ -45,13 +46,9 @@ class GRPCGateway(BaseGateway):
             interceptors=self.grpc_tracing_server_interceptors,
         )
 
-        jina_pb2_grpc.add_JinaRPCServicer_to_server(
-            self, self.server
-        )
+        jina_pb2_grpc.add_JinaRPCServicer_to_server(self, self.server)
 
-        jina_pb2_grpc.add_JinaSingleDataRequestRPCServicer_to_server(
-            self, self.server
-        )
+        jina_pb2_grpc.add_JinaSingleDataRequestRPCServicer_to_server(self, self.server)
 
         jina_pb2_grpc.add_JinaGatewayDryRunRPCServicer_to_server(self, self.server)
         jina_pb2_grpc.add_JinaInfoRPCServicer_to_server(self, self.server)
@@ -86,7 +83,7 @@ class GRPCGateway(BaseGateway):
             )
             self.server.add_secure_port(bind_addr, server_credentials)
         elif (
-                self.ssl_keyfile != self.ssl_certfile
+            self.ssl_keyfile != self.ssl_certfile
         ):  # if we have only ssl_keyfile and not ssl_certfile or vice versa
             raise ValueError(
                 f"you can't pass a ssl_keyfile without a ssl_certfile and vice versa"
@@ -117,14 +114,13 @@ class GRPCGateway(BaseGateway):
         :param context: grpc context
         :returns: the response request
         """
-        from docarray import Document, DocumentArray
-
+        from jina._docarray import Document, DocumentArray
         from jina.serve.executors import __dry_run_endpoint__
 
         da = DocumentArray([Document()])
         try:
             async for _ in self.streamer.stream_docs(
-                    docs=da, exec_endpoint=__dry_run_endpoint__, request_size=1
+                docs=da, exec_endpoint=__dry_run_endpoint__, request_size=1
             ):
                 pass
             status_message = StatusMessage()
@@ -151,7 +147,9 @@ class GRPCGateway(BaseGateway):
             info_proto.envs[k] = str(v)
         return info_proto
 
-    async def stream(self, request_iterator, context=None, *args, **kwargs) -> AsyncIterator['Request']:
+    async def stream(
+        self, request_iterator, context=None, *args, **kwargs
+    ) -> AsyncIterator['Request']:
         """
         stream requests from client iterator and stream responses back.
 
@@ -161,11 +159,13 @@ class GRPCGateway(BaseGateway):
         :param kwargs: keyword arguments
         :yield: responses to the request after streaming to Executors in Flow
         """
-        async for resp in self.streamer.stream(request_iterator=request_iterator, context=context, *args, **kwargs):
+        async for resp in self.streamer.rpc_stream(
+            request_iterator=request_iterator, context=context, *args, **kwargs
+        ):
             yield resp
 
     async def process_single_data(
-            self, request: DataRequest, context=None
+        self, request: DataRequest, context=None
     ) -> DataRequest:
         """Implements request and response handling of a single DataRequest
         :param request: DataRequest from Client

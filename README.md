@@ -1,5 +1,11 @@
 <p align="center">
-<br><br><br>
+<!-- survey banner start -->
+<a href="https://10sw1tcpld4.typeform.com/to/EGAEReM7?utm_source=readme&utm_medium=github&utm_campaign=user%20experience&utm_term=feb2023&utm_content=survey">
+  <img src="./.github/banner.svg?raw=true">
+</a>
+<!-- survey banner start -->
+
+<p align="center">
 <a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/docs/_static/logo-light.svg?raw=true" alt="Jina logo: Build multimodal AI services via cloud native technologies · Neural Search · Generative AI · Cloud Native" width="150px"></a>
 <br><br><br>
 </p>
@@ -60,7 +66,7 @@ Applications built with Jina enjoy the following features out of the box:
 pip install jina
 ```
 
-Find more install options on [Apple Silicon/Windows](https://docs.jina.ai/get-started/install/).
+Find more install options on [Apple Silicon](https://docs.jina.ai/get-started/install/apple-silicon-m1-m2/)/[Windows](https://docs.jina.ai/get-started/install/windows/).
 
 
 ## Get Started
@@ -74,7 +80,7 @@ Document, Executor and Flow are three fundamental concepts in Jina.
 - [**Executor**](https://docs.jina.ai/concepts/executor/) is a Python class with functions that use Documents as IO.
 - [**Flow**](https://docs.jina.ai/concepts/flow/) ties Executors together into a pipeline and exposes it with an API gateway.
 
-[The full glossary is explained here.](https://docs.jina.ai/concepts/architecture-overview/)
+[The full glossary is explained here.](https://docs.jina.ai/concepts/preliminaries/#)
 
 
 ---

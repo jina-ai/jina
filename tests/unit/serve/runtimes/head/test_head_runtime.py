@@ -7,12 +7,17 @@ from typing import List
 
 import grpc
 import pytest
-
 from docarray import Document, DocumentArray
+
 from jina.clients.request import request_generator
 from jina.enums import PollingType
 from jina.proto import jina_pb2_grpc
-from jina.serve.networking import GrpcConnectionPool
+from jina.serve.networking.utils import (
+    get_available_services,
+    get_default_grpc_options,
+    send_request_sync,
+    send_requests_sync,
+)
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.head import HeadRuntime
 from jina.types.request import Request
@@ -20,7 +25,9 @@ from jina.types.request.data import DataRequest
 from tests.helper import _generate_pod_args
 
 
-def test_regular_data_case():
+@pytest.mark.parametrize('stream', [True, False])
+@pytest.mark.asyncio
+async def test_regular_data_case(stream):
     args = _generate_pod_args()
     args.polling = PollingType.ANY
     connection_list_dict = {0: [f'fake_ip:8080']}
@@ -29,21 +36,29 @@ def test_regular_data_case():
 
     with grpc.insecure_channel(
         f'{args.host}:{args.port}',
-        options=GrpcConnectionPool.get_default_grpc_options(),
+        options=get_default_grpc_options(),
     ) as channel:
-        stub = jina_pb2_grpc.JinaSingleDataRequestRPCStub(channel)
-        response, call = stub.process_single_data.with_call(_create_test_data_message())
-
-    assert response
-    assert 'is-error' in dict(call.trailing_metadata())
-    assert len(response.docs) == 1
+        if stream:
+            stub = jina_pb2_grpc.JinaRPCStub(channel)
+            for resp in stub.Call(request_generator('/', DocumentArray.empty(3))):
+                assert resp
+                assert len(resp.docs) == 3
+        else:
+            stub = jina_pb2_grpc.JinaSingleDataRequestRPCStub(channel)
+            response, call = stub.process_single_data.with_call(
+                _create_test_data_message()
+            )
+            assert response
+            assert 'is-error' in dict(call.trailing_metadata())
+            assert len(response.docs) == 1
     assert not handle_queue.empty()
 
     _destroy_runtime(args, cancel_event, runtime_thread)
 
 
+@pytest.mark.parametrize('stream', [True, False])
 @pytest.mark.parametrize('disable_reduce', [False, True])
-def test_message_merging(disable_reduce):
+def test_message_merging(disable_reduce, stream):
     if not disable_reduce:
         args = _generate_pod_args()
     else:
@@ -56,7 +71,7 @@ def test_message_merging(disable_reduce):
     assert handle_queue.empty()
 
     data_request = _create_test_data_message()
-    result = GrpcConnectionPool.send_requests_sync(
+    result = send_requests_sync(
         [data_request, data_request], f'{args.host}:{args.port}'
     )
     assert result
@@ -77,9 +92,7 @@ def test_uses_before_uses_after():
 
     assert handle_queue.empty()
 
-    result = GrpcConnectionPool.send_request_sync(
-        _create_test_data_message(), f'{args.host}:{args.port}'
-    )
+    result = send_request_sync(_create_test_data_message(), f'{args.host}:{args.port}')
     assert result
     assert _queue_length(handle_queue) == 5  # uses_before + 3 workers + uses_after
     assert len(result.response.docs) == 1
@@ -112,7 +125,7 @@ def test_decompress(monkeypatch):
 
     with grpc.insecure_channel(
         f'{args.host}:{args.port}',
-        options=GrpcConnectionPool.get_default_grpc_options(),
+        options=get_default_grpc_options(),
     ) as channel:
         stub = jina_pb2_grpc.JinaSingleDataRequestRPCStub(channel)
         response, call = stub.process_single_data.with_call(_create_test_data_message())
@@ -147,7 +160,7 @@ def test_dynamic_polling(polling):
 
     with grpc.insecure_channel(
         f'{args.host}:{args.port}',
-        options=GrpcConnectionPool.get_default_grpc_options(),
+        options=get_default_grpc_options(),
     ) as channel:
         stub = jina_pb2_grpc.JinaSingleDataRequestRPCStub(channel)
         response, call = stub.process_single_data.with_call(
@@ -159,7 +172,7 @@ def test_dynamic_polling(polling):
 
     with grpc.insecure_channel(
         f'{args.host}:{args.port}',
-        options=GrpcConnectionPool.get_default_grpc_options(),
+        options=get_default_grpc_options(),
     ) as channel:
         stub = jina_pb2_grpc.JinaSingleDataRequestRPCStub(channel)
         response, call = stub.process_single_data.with_call(
@@ -188,7 +201,7 @@ def test_base_polling(polling):
 
     with grpc.insecure_channel(
         f'{args.host}:{args.port}',
-        options=GrpcConnectionPool.get_default_grpc_options(),
+        options=get_default_grpc_options(),
     ) as channel:
         stub = jina_pb2_grpc.JinaSingleDataRequestRPCStub(channel)
         response, call = stub.process_single_data.with_call(
@@ -200,7 +213,7 @@ def test_base_polling(polling):
 
     with grpc.insecure_channel(
         f'{args.host}:{args.port}',
-        options=GrpcConnectionPool.get_default_grpc_options(),
+        options=get_default_grpc_options(),
     ) as channel:
         stub = jina_pb2_grpc.JinaSingleDataRequestRPCStub(channel)
         response, call = stub.process_single_data.with_call(
@@ -225,12 +238,13 @@ async def test_head_runtime_reflection():
     )
 
     async with grpc.aio.insecure_channel(f'{args.host}:{args.port}') as channel:
-        service_names = await GrpcConnectionPool.get_available_services(channel)
+        service_names = await get_available_services(channel)
 
     assert all(
         service_name in service_names
         for service_name in [
             'jina.JinaDataRequestRPC',
+            'jina.JinaRPC',
             'jina.JinaSingleDataRequestRPC',
         ]
     )
@@ -247,7 +261,7 @@ def test_timeout_behaviour():
 
     with grpc.insecure_channel(
         f'{args.host}:{args.port}',
-        options=GrpcConnectionPool.get_default_grpc_options(),
+        options=get_default_grpc_options(),
     ) as channel:
         stub = jina_pb2_grpc.JinaSingleDataRequestRPCStub(channel)
         response, call = stub.process_single_data.with_call(_create_test_data_message())

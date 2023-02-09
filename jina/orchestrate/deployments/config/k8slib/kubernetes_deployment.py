@@ -1,10 +1,14 @@
 import json
+import math
 import os
+import warnings
 from argparse import Namespace
 from typing import Dict, List, Optional, Tuple, Union
 
 from jina.orchestrate.deployments.config.k8slib import kubernetes_tools
 from jina.serve.networking import GrpcConnectionPool
+
+PERIOD_SECONDS = 5
 
 
 def get_template_yamls(
@@ -20,6 +24,7 @@ def get_template_yamls(
     shard_id: Optional[int] = None,
     port: Optional[Union[int, List[int]]] = None,
     env: Optional[Dict] = None,
+    env_from_secret: Optional[Dict] = None,
     gpus: Optional[Union[int, str]] = None,
     image_name_uses_before: Optional[str] = None,
     image_name_uses_after: Optional[str] = None,
@@ -31,6 +36,8 @@ def get_template_yamls(
     port_monitoring: Optional[int] = None,
     protocol: Optional[Union[str, List[str]]] = None,
     volumes: Optional[List[str]] = None,
+    timeout_ready: int = 600000,
+    k8s_port: Optional[int] = GrpcConnectionPool.K8S_PORT,
 ) -> List[Dict]:
     """Get the yaml description of a service on Kubernetes
 
@@ -46,6 +53,7 @@ def get_template_yamls(
     :param shard_id: id of this shard, None if shards=1 or this is gateway/head
     :param port: port which will be exposed by the deployed containers
     :param env: environment variables to be passed into configmap.
+    :param env_from_secret: environment variables from secret to be passed to this pod
     :param gpus: number of gpus to use, for k8s requires you pass an int number, refers to the number of requested gpus.
     :param image_name_uses_before: image for uses_before container in the k8s deployment
     :param image_name_uses_after: image for uses_after container in the k8s deployment
@@ -57,12 +65,16 @@ def get_template_yamls(
     :param port_monitoring: port which will be exposed, for the prometheus server, by the deployed containers
     :param protocol: In case of being a Gateway, the protocol or protocols list used to expose its server
     :param volumes: If volumes are passed to Executors, Jina will create a StatefulSet instead of Deployment and include the first volume in the volume mounts
+    :param timeout_ready: The timeout in milliseconds of a Pod waits for the runtime to be ready. This parameter will be
+        reflected in Kubernetes in the startup configuration where the failureThreshold will be calculated depending on
+        timeout_ready. Value -1 is not supported for kubernetes
+    :param k8s_port: Default kubernetes service port to be used
     :return: Return a dictionary with all the yaml configuration needed for a deployment
     """
     # we can always assume the ports are the same for all executors since they run on different k8s pods
     # port expose can be defined by the user
     if not port:
-        port = GrpcConnectionPool.K8S_PORT
+        port = k8s_port
 
     if not port_monitoring:
         port_monitoring = GrpcConnectionPool.K8S_PORT_MONITORING
@@ -76,6 +88,13 @@ def get_template_yamls(
         protocols = [protocol]
     else:
         protocols = protocol
+
+    if timeout_ready == -1:
+        warnings.warn(
+            'timeout_ready=-1 is not supported, setting timeout_ready to 10 minutes'
+        )
+        timeout_ready = 600000
+    failure_threshold = max(math.ceil((timeout_ready / 1000) / PERIOD_SECONDS), 3)
 
     template_params = {
         'name': name,
@@ -97,8 +116,11 @@ def get_template_yamls(
         'jina_deployment_name': jina_deployment_name,
         'shard_id': f'\"{shard_id}\"' if shard_id is not None else '\"\"',
         'pod_type': pod_type,
+        'env_from_secret': env_from_secret,
         'protocol': str(protocols[0]).lower() if protocols[0] is not None else '',
         'volume_path': volumes[0] if volumes is not None else None,
+        'period_seconds': PERIOD_SECONDS,
+        'failure_threshold': failure_threshold,
     }
 
     if gpus and gpus != 'all':

@@ -81,7 +81,7 @@ with f:
 
 If `jinaai+docker://` Executors don't load properly or have issues during initialization, ensure you have sufficient Docker resources allocated.
 
-
+(mount-local-volumes)=
 ### Mount local volumes
 
 You can mount volumes into your dockerized Executor by passing a list of volumes with the `volumes` argument:
@@ -148,6 +148,28 @@ You can find the Executor by running `docker images`. You can also indicate whic
 
 ```bash
 jina hub pull jinaai+docker://jina-ai/DummyExecutor:v1.0.0
+```
+
+### Platform awareness of Hub images 
+
+````{admonition} Hint
+:class: hint
+As of January 10, 2023 `jina hub pull` is platform aware. It will automatically select Docker images based on your native CPU architecture (if available).
+````
+If you prefer a specific platform, for example, preferring `AMD64` on an `ARM64` machine, you can explicitly pull with `--prefer-platform`:
+
+````{admonition} Caution
+:class: caution
+When you specify `--prefer-platform` you probably want to also specify `--force` to overwrite the existing image in local cache.
+````
+
+````{admonition} Note
+:class: note
+If the image you specify doesn't support your preferred platform, it will not respect your platform preference.
+````
+
+```bash
+jina hub pull --force --prefer-platform linux/amd64 jinaai+docker://jina-ai/DummyExecutor:v1.0.0
 ```
 
 ### Pull the source code

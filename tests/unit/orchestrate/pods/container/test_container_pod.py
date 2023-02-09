@@ -2,9 +2,11 @@ import os
 import time
 
 import pytest
+import requests
 
 from jina import Flow
 from jina.constants import __cache_path__
+from jina.enums import GatewayProtocolType
 from jina.excepts import RuntimeFailToStart
 from jina.helper import random_port
 from jina.orchestrate.pods.container import ContainerPod
@@ -272,6 +274,11 @@ def test_container_pod_custom_gateway(dummy_custom_gateway_docker_image_built):
         _validate_dummy_custom_gateway_response(
             port, {'arg1': 'hello', 'arg2': 'world', 'arg3': 'default-arg3'}
         )
+
+        # validate protocol inside the gateway
+        resp = requests.get(f'http://127.0.0.1:{port}/runtime_info').json()
+        assert resp['protocols'] == [GatewayProtocolType.HTTP]
+        assert resp['ports'] == [int(port)]
 
         time.sleep(
             2

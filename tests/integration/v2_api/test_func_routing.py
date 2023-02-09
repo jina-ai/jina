@@ -20,7 +20,7 @@ def test_func_simple_routing():
     with f:
         results = Client(port=f.port).post(
             on='/search',
-            inputs=[(Document(), Document()) for _ in range(3)],
+            inputs=[Document() for _ in range(3)],
             parameters={'hello': 'world', 'topk': 10},
             return_responses=True,
         )

@@ -7,12 +7,12 @@ import numpy as np
 import pytest
 from docarray.document.generators import from_ndarray
 
-from jina.constants import __windows__
 from jina import Document, DocumentArray, Executor, Flow, requests
+from jina.constants import __windows__
 from jina.enums import FlowBuildLevel, GatewayProtocolType
 from jina.excepts import RuntimeFailToStart
 from jina.helper import random_identity
-from jina.orchestrate.deployments import BaseDeployment
+from jina.orchestrate.deployments import Deployment
 from jina.serve.executors import BaseExecutor
 from jina.types.request.data import Response
 from tests import random_docs
@@ -356,8 +356,12 @@ def test_return_results_sync_flow(protocol, on_done):
         ('0.0.0.0:12345', ['0.0.0.0'], ['12345']),
         ('123.124.125.0:45678', ['123.124.125.0'], ['45678']),
         ('api.jina.ai:45678', ['api.jina.ai'], ['45678']),
-        (['api.jina.ai','123.124.125.0'], ['api.jina.ai','123.124.125.0'], None),
-        (['api.jina.ai:12345','123.124.125.0:45678'], ['api.jina.ai','123.124.125.0'], ['12345','45678']),
+        (['api.jina.ai', '123.124.125.0'], ['api.jina.ai', '123.124.125.0'], None),
+        (
+            ['api.jina.ai:12345', '123.124.125.0:45678'],
+            ['api.jina.ai', '123.124.125.0'],
+            ['12345', '45678'],
+        ),
     ],
 )
 def test_flow_host_expose_shortcut(input, expected_host, expected_port):
@@ -454,8 +458,8 @@ def test_flow_equalities():
 
 def test_flow_get_item():
     f1 = Flow().add().add(needs='gateway').needs_all(name='joiner')
-    assert isinstance(f1[1], BaseDeployment)
-    assert isinstance(f1['executor0'], BaseDeployment)
+    assert isinstance(f1[1], Deployment)
+    assert isinstance(f1['executor0'], Deployment)
 
 
 class CustomizedExecutor(BaseExecutor):
@@ -663,9 +667,6 @@ def test_set_deployment_grpc_metadata():
     with f:
         metadata = f._get_deployments_metadata()
         assert metadata['my_exec'] == {'key': 'value'}
-
-        k8s_metadata = f._get_k8s_deployments_metadata()
-        assert metadata == k8s_metadata
 
         assert f._deployment_nodes['gateway'].args.deployments_metadata == json.dumps(
             metadata
