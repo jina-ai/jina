@@ -178,7 +178,7 @@ Just like that, our Executor is up and running.
 (kubernetes-executor)=
 ## Serve from Deployment YAML
 If you want a clear separation between deployment configuration and Executor logic, you can define the 
-configuration in a `Deployment` YAML configuration. For example:
+configuration in a `Deployment` YAML configuration.
 This is an example `deployment.yml` config file:
 ```yaml
 jtype: Deployment
