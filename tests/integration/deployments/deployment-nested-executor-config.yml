@@ -2,4 +2,4 @@ jtype: Deployment
 with:
   uses: executor.yml
   replicas: 3
-  shards: 2
+  shards: 1

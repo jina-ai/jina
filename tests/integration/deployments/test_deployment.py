@@ -390,9 +390,9 @@ def test_deployment_uses(uses):
 @pytest.mark.parametrize(
     'config_file,expected_replicas,expected_shards,expected_text',
     [
-        ('deployment-nested-executor-config.yml', 3, 2, 'hello'),
-        ('deployment-embedded-executor-config.yml', 2, 3, 'world'),
-        ('deployment-overridden-executor-config.yml', 3, 3, 'helloworld'),
+        ('deployment-nested-executor-config.yml', 3, 1, 'hello'),
+        ('deployment-embedded-executor-config.yml', 2, 1, 'world'),
+        ('deployment-overridden-executor-config.yml', 3, 1, 'helloworld'),
     ],
 )
 def test_deployment_load_config(

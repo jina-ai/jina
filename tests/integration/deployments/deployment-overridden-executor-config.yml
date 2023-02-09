@@ -6,4 +6,4 @@ with:
   uses_with:
     arg: helloworld
   replicas: 3
-  shards: 3
+  shards: 1

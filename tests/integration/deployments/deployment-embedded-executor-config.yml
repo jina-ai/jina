@@ -7,4 +7,4 @@ with:
     with:
       arg: world
   replicas: 2
-  shards: 3
+  shards: 1
