@@ -13,9 +13,16 @@ def export_kubernetes(args):
 
     :param args: args from CLI
     """
-    Flow.load_config(args.flowpath).to_kubernetes_yaml(
-        output_base_path=args.outpath, k8s_namespace=args.k8s_namespace
-    )
+    from jina.jaml import JAMLCompatible
+
+    obj = JAMLCompatible.load_config(args.config_path)
+
+    if isinstance(obj, (Flow, Deployment)):
+        obj.to_kubernetes_yaml(
+            output_base_path=args.outpath, k8s_namespace=args.k8s_namespace
+        )
+    else:
+        raise NotImplementedError(f'Object of class {obj.__class__.__name__} cannot be exported to Kubernetes')
 
 
 def export_docker_compose(args):
@@ -41,7 +48,7 @@ def export_flowchart(args):
 
     :param args: args from CLI
     """
-    Flow.load_config(args.flowpath).plot(
+    Flow.load_config(args.config_path).plot(
         args.outpath, vertical_layout=args.vertical_layout
     )
 
