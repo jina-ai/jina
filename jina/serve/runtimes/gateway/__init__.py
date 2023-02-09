@@ -6,7 +6,8 @@ from typing import TYPE_CHECKING, Optional, Union
 
 from jina.enums import GatewayProtocolType
 from jina.excepts import PortAlreadyUsed
-from jina.helper import is_port_free, send_telemetry_event
+from jina.helper import ArgNamespace, is_port_free, send_telemetry_event
+from jina.parsers import set_gateway_parser
 from jina.parsers.helper import _update_gateway_args
 from jina.serve.gateway import BaseGateway
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
@@ -56,22 +57,13 @@ class GatewayRuntime(AsyncNewLoopRuntime):
             raise PortAlreadyUsed(f'port:{self.args.port}')
 
         uses_with = self.args.uses_with or {}
+        non_defaults = ArgNamespace.get_non_defaults_args(
+            self.args, set_gateway_parser()
+        )
         self.gateway = BaseGateway.load_config(
             self.args.uses,
             uses_with=dict(
-                name=self.name,
-                grpc_server_options=self.args.grpc_server_options,
-                title=self.args.title,
-                description=self.args.description,
-                no_debug_endpoints=self.args.no_debug_endpoints,
-                no_crud_endpoints=self.args.no_crud_endpoints,
-                expose_endpoints=self.args.expose_endpoints,
-                expose_graphql_endpoint=self.args.expose_graphql_endpoint,
-                cors=self.args.cors,
-                ssl_keyfile=self.args.ssl_keyfile,
-                ssl_certfile=self.args.ssl_certfile,
-                uvicorn_kwargs=self.args.uvicorn_kwargs,
-                proxy=self.args.proxy,
+                **non_defaults,
                 **uses_with,
             ),
             uses_metas={},
