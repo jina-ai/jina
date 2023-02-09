@@ -1,0 +1,5 @@
+!HTTPGateway
+with:
+  cors: true
+  title: my-gateway-title
+  description: my-gateway-description
