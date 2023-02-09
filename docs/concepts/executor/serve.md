@@ -279,7 +279,7 @@ print(client.post(on='/', inputs=Document(), stream=False).texts)
 
 ````{admonition} Hint
 :class: hint
-You can also export an Executor deployment to kubernetes YAML files using the CLI commad, in case you define a Deployment YAML config:
+You can also export an Executor deployment to kubernetes YAML files using the CLI command, in case you define a Deployment YAML config:
 `jina export kubernetes deployment.yml output_path`
 ````
 
