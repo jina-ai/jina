@@ -48,16 +48,15 @@ def test_get_image_name(mocker, monkeypatch, uses):
 
     def _mock_fetch(
         name,
-        tag,
-        image_required=True,
-        rebuild_image=True,
-        *,
-        prefer_platform=None,
-        secret=None,
-        force=False,
+        *args,
+        **kwargs,
     ):
-        mock(name=name, rebuild_image=rebuild_image)
-
+        mock(
+            name=name,
+            rebuild_image=kwargs.get(
+                'rebuild_image', args[2] if len(args) >= 3 else True
+            ),
+        )
         return (
             HubExecutor(
                 uuid='hello',
