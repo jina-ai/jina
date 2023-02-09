@@ -40,7 +40,7 @@ async def run_test(flow, endpoint, num_docs=10, request_size=10):
 
 @pytest.fixture()
 def flow_with_sharding(docker_images, polling):
-    flow = Flow(name='test-flow-with-sharding', port=9090, protocol='http').add(
+    flow = Flow(name='test-flow-with-sharding', port=9090, protocol='grpc').add(
         name='test_executor_sharding',
         shards=2,
         replicas=2,

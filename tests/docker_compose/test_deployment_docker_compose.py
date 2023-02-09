@@ -32,7 +32,7 @@ async def run_test(port, endpoint, num_docs=10, request_size=10):
 @pytest.fixture()
 def deployment_with_replicas_with_sharding(docker_images, polling):
     deployment = Deployment(
-        name='test_executor_sharding',
+        name='test_executor_replicas_sharding',
         port=9090,
         shards=2,
         replicas=2,
@@ -46,7 +46,7 @@ def deployment_with_replicas_with_sharding(docker_images, polling):
 @pytest.fixture()
 def deployment_without_replicas_without_sharding(docker_images):
     deployment = Deployment(
-        name='test_executor_sharding',
+        name='test_executor',
         port=9090,
         uses=f'docker://{docker_images[0]}',
     )
@@ -67,7 +67,7 @@ def deployment_with_replicas_without_sharding(docker_images):
 @pytest.fixture()
 def deployment_without_replicas_with_sharding(docker_images):
     deployment = Deployment(
-        name='test_executor_replicas',
+        name='test_executor_sharding',
         port=9090,
         shards=2,
         uses=f'docker://{docker_images[0]}',
@@ -133,10 +133,10 @@ async def test_deployment_with_replicas_with_sharding(deployment_with_replicas_w
     assert len(docs) == 10
 
     runtimes_to_visit = {
-        'test_executor_sharding-0/rep-0',
-        'test_executor_sharding-1/rep-0',
-        'test_executor_sharding-0/rep-1',
-        'test_executor_sharding-1/rep-1',
+        'test_executor_replicas_sharding-0/rep-0',
+        'test_executor_replicas_sharding-1/rep-0',
+        'test_executor_replicas_sharding-0/rep-1',
+        'test_executor_replicas_sharding-1/rep-1',
     }
 
     for doc in docs:
@@ -159,6 +159,7 @@ async def test_deployment_with_replicas_with_sharding(deployment_with_replicas_w
                     runtimes_to_visit.remove(executor)
 
     assert len(runtimes_to_visit) == 0
+
 
 @pytest.mark.timeout(3600)
 @pytest.mark.asyncio
@@ -170,11 +171,11 @@ async def test_deployment_with_replicas_with_sharding(deployment_with_replicas_w
 @pytest.mark.parametrize('polling', ['ANY', 'ALL'])
 async def test_deployment_without_replicas_with_sharding(deployment_without_replicas_with_sharding, polling, tmpdir):
     dump_path = os.path.join(str(tmpdir), 'docker-compose-deployment-without-replicas-with-sharding.yml')
-    deployment_with_replicas_with_sharding.to_docker_compose_yaml(dump_path)
+    deployment_without_replicas_with_sharding.to_docker_compose_yaml(dump_path)
 
     with DockerComposeServices(dump_path):
         resp = await run_test(
-            port=deployment_with_replicas_with_sharding.port, endpoint='/debug', num_docs=10, request_size=1
+            port=deployment_without_replicas_with_sharding.port, endpoint='/debug', num_docs=10, request_size=1
         )
 
     assert len(resp) == 10
@@ -184,32 +185,26 @@ async def test_deployment_without_replicas_with_sharding(deployment_without_repl
     assert len(docs) == 10
 
     runtimes_to_visit = {
-        'test_executor_sharding-0/rep-0',
-        'test_executor_sharding-1/rep-0',
-        'test_executor_sharding-0/rep-1',
-        'test_executor_sharding-1/rep-1',
+        'test_executor_sharding-0',
+        'test_executor_sharding-1',
     }
 
     for doc in docs:
         if polling == 'ALL':
-            assert len(set(doc.tags['traversed-executors'])) == 2
-            assert set(doc.tags['shard_id']) == {0, 1}
-            assert doc.tags['parallel'] == [2, 2]
-            assert doc.tags['shards'] == [2, 2]
+            assert doc.tags['parallel'] == 1
+            assert doc.tags['shards'] == 2
             for executor in doc.tags['traversed-executors']:
                 if executor in runtimes_to_visit:
                     runtimes_to_visit.remove(executor)
         else:
-            assert len(set(doc.tags['traversed-executors'])) == 1
-            assert len(set(doc.tags['shard_id'])) == 1
-            assert 0 in set(doc.tags['shard_id']) or 1 in set(doc.tags['shard_id'])
-            assert doc.tags['parallel'] == [2]
-            assert doc.tags['shards'] == [2]
+            assert doc.tags['parallel'] == 1
+            assert doc.tags['shards'] == 2
             for executor in doc.tags['traversed-executors']:
                 if executor in runtimes_to_visit:
                     runtimes_to_visit.remove(executor)
 
     assert len(runtimes_to_visit) == 0
+
 
 @pytest.mark.timeout(3600)
 @pytest.mark.asyncio
@@ -234,15 +229,14 @@ async def test_deployment_with_replicas_without_sharding(deployment_with_replica
     assert len(docs) == 10
 
     runtimes_to_visit = {
-        'test_executor_sharding-0/rep-0',
-        'test_executor_sharding-1/rep-0',
-        'test_executor_sharding-0/rep-1',
-        'test_executor_sharding-1/rep-1',
+        'test_executor_replicas/rep-0',
+        'test_executor_replicas/rep-1',
     }
 
     for doc in docs:
         assert len(set(doc.tags['traversed-executors'])) == 1
-        assert doc.tags['parallel'] == [2]
+        assert doc.tags['parallel'] == 2
+        assert doc.tags['shards'] == 1
         for executor in doc.tags['traversed-executors']:
             if executor in runtimes_to_visit:
                 runtimes_to_visit.remove(executor)
@@ -259,7 +253,7 @@ async def test_deployment_with_replicas_without_sharding(deployment_with_replica
 )
 async def test_deployment_without_replicas_without_sharding(deployment_without_replicas_without_sharding, tmpdir):
     dump_path = os.path.join(str(tmpdir), 'docker-compose-deployment-without-replicas-without-sharding.yml')
-    deployment_with_replicas_without_sharding.to_docker_compose_yaml(dump_path)
+    deployment_without_replicas_without_sharding.to_docker_compose_yaml(dump_path)
 
     with DockerComposeServices(dump_path):
         resp = await run_test(
@@ -271,6 +265,20 @@ async def test_deployment_without_replicas_without_sharding(deployment_without_r
     for r in resp[1:]:
         docs.extend(r.docs)
     assert len(docs) == 10
+
+    runtimes_to_visit = {
+        'test_executor',
+    }
+
+    for doc in docs:
+        assert len(set(doc.tags['traversed-executors'])) == 1
+        assert doc.tags['parallel'] == 1
+        assert doc.tags['shards'] == 1
+        for executor in doc.tags['traversed-executors']:
+            if executor in runtimes_to_visit:
+                runtimes_to_visit.remove(executor)
+
+    assert len(runtimes_to_visit) == 0
 
 
 
