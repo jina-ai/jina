@@ -248,20 +248,25 @@ to have less network hops and save the costs of running running the Gateway in K
 
 ## Serve via Docker Compose
 
-You can generate a Docker Compose service file for your containerized Executor with the static {meth}`~jina.serve.executors.BaseExecutor.to_docker_compose_yaml` method.
+You can generate a Docker Compose service file for your containerized Executor with the static {meth}`~jina.Deployment.to_docker_compose_yaml` method.
 
 ```python
-from jina import Executor
+from jina import Deployment
 
-Executor.to_docker_compose_yaml(
+
+dep = Deployment(
+    uses='jinaai+docker://jina-ai/DummyHubExecutor', port_expose=8080, replicas=3
+)
+
+dep.to_docker_compose_yaml(
     output_path='/tmp/docker-compose.yml',
-    port_expose=8080,
-    uses='jinaai+docker://jina-ai/DummyHubExecutor',
 )
 ```
+
 ```shell
 docker-compose -f /tmp/docker-compose.yml up
 ```
+
 The above example runs the `DummyHubExecutor` from Executor Hub locally on your computer using Docker Compose.
 
 ````{admonition} Hint
