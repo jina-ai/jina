@@ -274,3 +274,9 @@ The above example runs the `DummyHubExecutor` from Executor Hub locally on your 
 The Executor you use needs to be already containerized and stored in an accessible registry. We recommend [Executor Hub](https://cloud.jina.ai/executors) for this.
 ````
 
+````{admonition} Hint
+:class: hint
+You can also export an Executor deployment to Docker compose YAML files using the CLI command, in case you define a Deployment YAML config:
+`jina export docker-compose deployment.yml output_path`
+````
+
