@@ -367,7 +367,7 @@ async def test_runtimes_replicas(port_generator):
 
 
 @pytest.mark.asyncio
-async def test_runtimes_with_executor(port_generator):
+async def test_runtimess_with_executor(port_generator):
     graph_description = '{"start-gateway": ["pod0"], "pod0": ["end-gateway"]}'
     runtime_processes = []
 
