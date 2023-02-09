@@ -488,10 +488,10 @@ class GrpcConnectionPool:
         deployment: str,
         stop_event: 'threading.Event',
     ):
-        '''Executes JinaInfoRPC against the provided deployment. A single task is created for each replica connection.
+        """Executes JinaInfoRPC against the provided deployment. A single task is created for each replica connection.
         :param deployment: deployment name and the replicas that needs to be warmed up.
         :param stop_event: signal to indicate if an early termination of the task is required for graceful teardown.
-        '''
+        """
         self._logger.debug(f'starting warmup task for deployment {deployment}')
 
         async def task_wrapper(target_warmup_responses, stub):
