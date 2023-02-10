@@ -931,10 +931,6 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
 
         If not successful, it will raise an error hoping the outer function to catch it
         """
-        if not self.args.noblock_on_start:
-            raise ValueError(
-                f'{self.wait_start_success!r} should only be called when `noblock_on_start` is set to True'
-            )
         try:
             if self.uses_before_pod is not None:
                 self.uses_before_pod.wait_start_success()
@@ -955,10 +951,6 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
 
         If not successful, it will raise an error hoping the outer function to catch it
         """
-        if not self.args.noblock_on_start:
-            raise ValueError(
-                f'{self.async_wait_start_success!r} should only be called when `noblock_on_start` is set to True'
-            )
         try:
             coros = []
             if self.uses_before_pod is not None:
