@@ -618,6 +618,7 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
         uses_dynamic_batching: Optional[Dict] = None,
         needs: Optional[Set[str]] = None,
         include_gateway: bool = True,
+        noblock_on_start: bool = False,
         **kwargs,
     ) -> 'JAMLCompatible':
         """A high-level interface for loading configuration with features
@@ -673,6 +674,8 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
         :param uses_dynamic_batching: dictionary of parameters to overwrite from the default config's dynamic_batching field
         :param needs: the name of the Deployment(s) that this Deployment receives data from. One can also use "gateway" to indicate the connection with the gateway.
         :param include_gateway: Defines if the gateway deployment should be included, defaults to True
+        :param noblock_on_start: If set, starting a Pod/Deployment does not block the thread/process. It then relies on '
+            '`wait_start_success` at outer function for the postpone check.
         :param kwargs: kwargs for parse_config_source
         :return: :class:`JAMLCompatible` object
         """
@@ -771,7 +774,7 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
                 no_tag_yml['with']['include_gateway'] = (
                     no_tag_yml['with'].get('include_gateway') or include_gateway
                 )
-                no_tag_yml['with']['noblock_on_start'] = True
+                no_tag_yml['with']['noblock_on_start'] = noblock_on_start
                 no_tag_yml['with']['deployment_role'] = DeploymentRoleType.DEPLOYMENT
 
                 if needs:

@@ -1260,7 +1260,7 @@ class Flow(
             floating = args.floating
         elif isinstance(deployment, str):
             deployment = Deployment.load_config(
-                deployment, needs=needs, include_gateway=False
+                deployment, needs=needs, include_gateway=False, noblock_on_start=True
             )
             floating = deployment.args.floating
         else:
