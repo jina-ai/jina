@@ -107,8 +107,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
 
         def __enter__(self):
             for _args in self.args:
-                if getattr(self.deployment_args, 'noblock_on_start', False):
-                    _args.noblock_on_start = True
+                _args.noblock_on_start = True
                 self._pods.append(PodFactory.build_pod(_args).start())
             return self
 
@@ -842,6 +841,33 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         )
         return worker_host
 
+    def _wait_until_all_ready(self):
+        wait_for_ready_coro = self.async_wait_start_success()
+
+        try:
+            _ = asyncio.get_event_loop()
+        except:
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+
+        async def _f():
+            pass
+
+        running_in_event_loop = False
+        try:
+            asyncio.get_event_loop().run_until_complete(_f())
+        except:
+            running_in_event_loop = True
+
+        if not running_in_event_loop:
+            asyncio.get_event_loop().run_until_complete(wait_for_ready_coro)
+        else:
+            wait_ready_thread = threading.Thread(
+                target=self.wait_start_success, daemon=True
+            )
+            wait_ready_thread.start()
+            wait_ready_thread.join()
+
     def start(self) -> 'Deployment':
         """
         Start to run all :class:`Pod` in this Deployment.
@@ -861,26 +887,22 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
 
         if self.pod_args['uses_before'] is not None:
             _args = self.pod_args['uses_before']
-            if getattr(self.args, 'noblock_on_start', False):
-                _args.noblock_on_start = True
+            _args.noblock_on_start = True
             self.uses_before_pod = PodFactory.build_pod(_args)
             self.enter_context(self.uses_before_pod)
         if self.pod_args['uses_after'] is not None:
             _args = self.pod_args['uses_after']
-            if getattr(self.args, 'noblock_on_start', False):
-                _args.noblock_on_start = True
+            _args.noblock_on_start = True
             self.uses_after_pod = PodFactory.build_pod(_args)
             self.enter_context(self.uses_after_pod)
         if self.pod_args['head'] is not None:
             _args = self.pod_args['head']
-            if getattr(self.args, 'noblock_on_start', False):
-                _args.noblock_on_start = True
+            _args.noblock_on_start = True
             self.head_pod = PodFactory.build_pod(_args)
             self.enter_context(self.head_pod)
         if self._include_gateway:
             _args = self.pod_args['gateway']
-            if getattr(self.args, 'noblock_on_start', False):
-                _args.noblock_on_start = True
+            _args.noblock_on_start = True
             self.gateway_pod = PodFactory.build_pod(_args)
             self.enter_context(self.gateway_pod)
         for shard_id in self.pod_args['pods']:
@@ -892,6 +914,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             self.enter_context(self.shards[shard_id])
 
         if self._include_gateway:
+            self._wait_until_all_ready()
             all_panels = []
             self._get_summary_table(all_panels)
 
