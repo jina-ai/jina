@@ -910,6 +910,13 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         :param uses_dynamic_batching: dictionary of parameters to overwrite from the default config's requests field
         :param kwargs: other kwargs accepted by the Flow, full list can be found `here <https://docs.jina.ai/api/jina.orchestrate.flow.base/>`
         """
+
+        warnings.warn(
+            f'Executor.to_docker_compose_yaml() is no more supported and will be deprecated soon. Use Deployment to export docker compose YAML files: '
+            f'https://docs.jina.ai/concepts/executor/serve/#serve-via-docker-compose',
+            DeprecationWarning,
+        )
+
         from jina.orchestrate.flow.base import Flow
 
         f = Flow(**kwargs).add(
