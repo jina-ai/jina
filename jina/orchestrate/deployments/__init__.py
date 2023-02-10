@@ -24,6 +24,7 @@ from jina.constants import (
     __default_host__,
     __docker_host__,
     __windows__,
+    __default_grpc_gateway__,
 )
 from jina.enums import DeploymentRoleType, PodRoleType, PollingType
 from jina.helper import (
@@ -1433,6 +1434,109 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         )
 
         return all_panels
+
+    @property
+    def _docker_compose_address(self):
+        from jina.orchestrate.deployments.config.docker_compose import port
+        from jina.orchestrate.deployments.config.helper import to_compatible_name
+
+        if self.external:
+            docker_compose_address = [f'{self.protocol}://{self.host}:{self.port}']
+        elif self.head_args:
+            docker_compose_address = [
+                f'{to_compatible_name(self.head_args.name)}:{port}'
+            ]
+        else:
+            if self.args.replicas == 1:
+                docker_compose_address = [f'{to_compatible_name(self.name)}:{port}']
+            else:
+                docker_compose_address = []
+                for rep_id in range(self.args.replicas):
+                    node_name = f'{self.name}/rep-{rep_id}'
+                    docker_compose_address.append(
+                        f'{to_compatible_name(node_name)}:{port}'
+                    )
+        return docker_compose_address
+
+    def _to_docker_compose_config(self, deployments_addresses=None):
+        from jina.orchestrate.deployments.config.docker_compose import (
+            DockerComposeConfig,
+        )
+
+        docker_compose_deployment = DockerComposeConfig(
+            args=self.args, deployments_addresses=deployments_addresses
+        )
+        return docker_compose_deployment.to_docker_compose_config()
+
+    def _inner_gateway_to_docker_compose_config(self):
+        from jina.orchestrate.deployments.config.docker_compose import (
+            DockerComposeConfig,
+        )
+
+        self.pod_args['gateway'].port = self.pod_args['gateway'].port or [random_port()]
+        cargs = copy.deepcopy(self.pod_args['gateway'])
+        cargs.uses = __default_grpc_gateway__
+        cargs.graph_description = (
+            f'{{"{self.name}": ["end-gateway"], "start-gateway": ["{self.name}"]}}'
+        )
+
+        docker_compose_deployment = DockerComposeConfig(
+            args=cargs,
+            deployments_addresses={self.name: self._docker_compose_address},
+        )
+        return docker_compose_deployment.to_docker_compose_config()
+
+    def to_docker_compose_yaml(
+        self,
+        output_path: Optional[str] = None,
+        network_name: Optional[str] = None,
+    ):
+        """
+        Converts a Jina Deployment into a Docker compose YAML file
+
+        If you don't want to rebuild image on Jina Hub,
+        you can set `JINA_HUB_NO_IMAGE_REBUILD` environment variable.
+
+        :param output_path: The path where to dump the yaml file
+        :param network_name: The name of the network that will be used by the deployment
+        """
+        import yaml
+
+        output_path = output_path or 'docker-compose.yml'
+        network_name = network_name or 'jina-network'
+
+        docker_compose_dict = {
+            'version': '3.3',
+            'networks': {network_name: {'driver': 'bridge'}},
+        }
+        services = {}
+
+        service_configs = self._to_docker_compose_config()
+
+        for service_name, service in service_configs:
+            service['networks'] = [network_name]
+            services[service_name] = service
+
+        if self._include_gateway:
+            service_configs = self._inner_gateway_to_docker_compose_config()
+
+            for service_name, service in service_configs:
+                service['networks'] = [network_name]
+                services[service_name] = service
+
+        docker_compose_dict['services'] = services
+        with open(output_path, 'w+') as fp:
+            yaml.dump(docker_compose_dict, fp, sort_keys=False)
+
+        command = (
+            'docker-compose up'
+            if output_path is None
+            else f'docker-compose -f {output_path} up'
+        )
+
+        self.logger.info(
+            f'Docker compose file has been created under [b]{output_path}[/b]. You can use it by running [b]{command}[/b]'
+        )
 
     def _to_kubernetes_yaml(
         self,

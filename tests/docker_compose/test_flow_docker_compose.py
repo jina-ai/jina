@@ -1,81 +1,16 @@
 # kind version has to be bumped to v0.11.1 since pytest-kind is just using v0.10.0 which does not work on ubuntu in ci
 import os
-import subprocess
-import time
-from typing import Dict, List
-
-import docker
 import pytest
 import requests as req
 
 from jina import Client, Document, Flow
 from jina.helper import random_port
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
+from tests.docker_compose.conftest import DockerComposeServices
 from tests.helper import (
     _validate_custom_gateway_process,
     _validate_dummy_custom_gateway_response,
 )
-
-
-class DockerComposeFlow:
-
-    healthy_status = 'healthy'
-    unhealthy_status = 'unhealthy'
-
-    def __init__(self, dump_path, timeout_second=30):
-        self.dump_path = dump_path
-        self.timeout_second = timeout_second
-
-    def __enter__(self):
-        subprocess.run(
-            f'docker-compose -f {self.dump_path} up --build -d --remove-orphans'.split(
-                ' '
-            )
-        )
-
-        container_ids = (
-            subprocess.run(
-                f'docker-compose -f {self.dump_path} ps -q'.split(' '),
-                capture_output=True,
-            )
-            .stdout.decode("utf-8")
-            .split('\n')
-        )
-        container_ids.remove('')  # remove empty  return line
-
-        if not container_ids:
-            raise RuntimeError('docker-compose ps did not detect any launch container')
-
-        client = docker.from_env()
-
-        init_time = time.time()
-        healthy = False
-
-        while time.time() - init_time < self.timeout_second:
-            if self._are_all_container_healthy(container_ids, client):
-                healthy = True
-                break
-            time.sleep(0.1)
-
-        if not healthy:
-            raise RuntimeError('Docker containers are not healthy')
-
-    @staticmethod
-    def _are_all_container_healthy(
-        container_ids: List[str], client: docker.client.DockerClient
-    ) -> bool:
-
-        for id_ in container_ids:
-            status = client.containers.get(id_).attrs['State']['Health']['Status']
-
-            if status != DockerComposeFlow.healthy_status:
-                return False
-        return True
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        subprocess.run(
-            f'docker-compose -f {self.dump_path} down --remove-orphans'.split(' ')
-        )
 
 
 async def run_test(flow, endpoint, num_docs=10, request_size=10):
@@ -105,7 +40,7 @@ async def run_test(flow, endpoint, num_docs=10, request_size=10):
 
 @pytest.fixture()
 def flow_with_sharding(docker_images, polling):
-    flow = Flow(name='test-flow-with-sharding', port=9090, protocol='http').add(
+    flow = Flow(name='test-flow-with-sharding', port=9090, protocol='grpc').add(
         name='test_executor_sharding',
         shards=2,
         replicas=2,
@@ -169,7 +104,7 @@ def flow_with_needs(docker_images):
 async def test_flow_with_needs(logger, flow_with_needs, tmpdir, docker_images):
     dump_path = os.path.join(str(tmpdir), 'docker-compose-flow-with-need.yml')
     flow_with_needs.to_docker_compose_yaml(dump_path, 'default')
-    with DockerComposeFlow(dump_path):
+    with DockerComposeServices(dump_path):
         resp = await run_test(
             flow=flow_with_needs,
             endpoint='/debug',
@@ -218,7 +153,7 @@ async def test_flow_monitoring(logger, tmpdir, docker_images, port_generator):
         port_monitoring=port2,
     )
     flow.to_docker_compose_yaml(dump_path, 'default')
-    with DockerComposeFlow(dump_path):
+    with DockerComposeServices(dump_path):
         for port in [port1, port2]:
             resp = req.get(f'http://localhost:{port}/')
             assert resp.status_code == 200
@@ -236,7 +171,7 @@ async def test_flow_with_sharding(flow_with_sharding, polling, tmpdir):
     dump_path = os.path.join(str(tmpdir), 'docker-compose-flow-sharding.yml')
     flow_with_sharding.to_docker_compose_yaml(dump_path)
 
-    with DockerComposeFlow(dump_path):
+    with DockerComposeServices(dump_path):
         resp = await run_test(
             flow=flow_with_sharding, endpoint='/debug', num_docs=10, request_size=1
         )
@@ -285,7 +220,7 @@ async def test_flow_with_configmap(flow_configmap, docker_images, tmpdir):
     dump_path = os.path.join(str(tmpdir), 'docker-compose-flow-configmap.yml')
     flow_configmap.to_docker_compose_yaml(dump_path)
 
-    with DockerComposeFlow(dump_path):
+    with DockerComposeServices(dump_path):
         resp = await run_test(
             flow=flow_configmap,
             endpoint='/env',
@@ -318,7 +253,7 @@ async def test_flow_with_workspace(logger, docker_images, tmpdir):
     dump_path = os.path.join(str(tmpdir), 'docker-compose-flow-workspace.yml')
     flow.to_docker_compose_yaml(dump_path)
 
-    with DockerComposeFlow(dump_path):
+    with DockerComposeServices(dump_path):
         resp = await run_test(
             flow=flow,
             endpoint='/workspace',
@@ -355,7 +290,7 @@ async def test_flow_with_custom_gateway(logger, docker_images, tmpdir):
     dump_path = os.path.join(str(tmpdir), 'docker-compose-flow-custom-gateway.yml')
     flow.to_docker_compose_yaml(dump_path)
 
-    with DockerComposeFlow(dump_path):
+    with DockerComposeServices(dump_path):
 
         _validate_dummy_custom_gateway_response(
             flow.port,
@@ -398,7 +333,7 @@ def test_flow_with_multiprotocol_gateway(logger, docker_images, tmpdir, stream):
     )
     flow.to_docker_compose_yaml(dump_path)
 
-    with DockerComposeFlow(dump_path):
+    with DockerComposeServices(dump_path):
         import requests
 
         grpc_client = Client(protocol='grpc', port=grpc_port)
