@@ -194,7 +194,7 @@ def test_all_sync_clients(protocol, mocker, use_stream):
 @pytest.mark.slow
 @pytest.mark.parametrize('use_stream', [True, False])
 def test_deployment_sync_client(mocker, use_stream):
-    dep = Deployment(uses=MyExec, include_gateway=False)
+    dep = Deployment(uses=MyExec)
     docs = list(random_docs(1000))
     m1 = mocker.Mock()
     m2 = mocker.Mock()
