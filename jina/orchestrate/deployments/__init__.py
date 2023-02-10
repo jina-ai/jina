@@ -325,6 +325,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         if args is None:
             args = ArgNamespace.kwargs2namespace(kwargs, parser, True)
         self.args = args
+        self.args.noblock_on_start = True
         log_config = kwargs.get('log_config')
         if log_config:
             self.args.log_config = log_config
