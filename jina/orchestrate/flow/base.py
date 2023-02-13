@@ -1950,6 +1950,12 @@ class Flow(
             f'{self.num_deployments} Deployments (i.e. {self.num_pods} Pods) are running in this Flow'
         )
 
+        print(
+            'Do you love Open Source? Help us get better and be heard in just 1 minute and 30 seconds :sparkling_heart: '
+            ' '
+            'Your feedback will help us build better features for [link=https://github.com/jina-ai/jina]Jina[/link], your loved open-source project :tada: [link=https://10sw1tcpld4.typeform.com/to/EGAEReM7?utm_source=doc&utm_medium=github&utm_campaign=user%20experience&utm_term=feb2023&utm_content=survey]Take the Jina user survey![/link]'
+        )
+
     @property
     def num_deployments(self) -> int:
         """Get the number of Deployments in this Flow
