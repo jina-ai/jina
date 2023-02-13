@@ -3,7 +3,7 @@ from typing import Optional
 import numpy as np
 from docarray import BaseDocument, DocumentArray
 from docarray.documents import Image
-from docarray.typing import AnyTensor, ImageUrl
+from docarray.typing import AnyTensor, AnyUrl, ImageUrl, NdArray
 
 from jina import Deployment, Executor, Flow, requests
 
@@ -128,14 +128,51 @@ def test_deployments():
             self, docs: DocumentArray[InputDoc], **kwargs
         ) -> DocumentArray[OutputDoc]:
             docs_return = DocumentArray[OutputDoc](
-                [OutputDoc(embedding=np.zeros((100, 1))) for _ in range(len(docs))]
+                [OutputDoc(embedding=np.zeros((5, 1))) for _ in range(len(docs))]
             )
             return docs_return
 
     with Deployment(uses=MyExec) as dep:
         docs = dep.post(
             on='/bar',
-            inputs=InputDoc(img=Image(tensor=np.zeros((3, 224, 224)))),
+            inputs=InputDoc(img=Image(tensor=np.zeros((3)))),
+            return_type=DocumentArray[OutputDoc],
+        )
+        assert docs[0].embedding.shape == (5, 1)
+        assert docs.__class__.document_type == OutputDoc
+
+
+def test_interoperability():
+    class InputDoc(BaseDocument):
+        link: AnyUrl
+        array: NdArray
+
+    class OutputDoc(BaseDocument):
+        embedding: AnyTensor
+
+    class MyExec(Executor):
+        @requests(on='/bar')
+        def bar(
+            self, docs: DocumentArray[InputDoc], **kwargs
+        ) -> DocumentArray[OutputDoc]:
+
+            for doc in docs:
+                assert doc.link == 'hello.png'
+                assert (doc.url == np.zeros((3, 224, 224))).all()
+
+            docs_return = DocumentArray[OutputDoc](
+                [OutputDoc(embedding=np.zeros((100, 1))) for _ in range(len(docs))]
+            )
+            return docs_return
+
+    class A(BaseDocument):
+        url: AnyUrl
+        tensor: NdArray
+
+    with Deployment(uses=MyExec) as dep:
+        docs = dep.post(
+            on='/bar',
+            inputs=A(url='hello.png', tensor=np.zeros((3, 224, 224))),
             return_type=DocumentArray[OutputDoc],
         )
         assert docs[0].embedding.shape == (100, 1)
