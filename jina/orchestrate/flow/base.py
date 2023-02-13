@@ -1229,7 +1229,6 @@ class Flow(
             else:
                 args.workspace = self.workspace
 
-            # TODO: check if it is possible to comment this as well
             args.noblock_on_start = True
 
             if len(needs) > 1 and args.external and args.no_reduce:
@@ -1949,6 +1948,12 @@ class Flow(
         )  # can't use logger here see : https://github.com/Textualize/rich/discussions/2024
         self.logger.debug(
             f'{self.num_deployments} Deployments (i.e. {self.num_pods} Pods) are running in this Flow'
+        )
+
+        print(
+            'Do you love Open Source? Help us get better and be heard in just 1 minute and 30 seconds :sparkling_heart: '
+            ' '
+            'Your feedback will help us build better features for [link=https://github.com/jina-ai/jina]Jina[/link], your loved open-source project :tada: [link=https://10sw1tcpld4.typeform.com/to/EGAEReM7?utm_source=doc&utm_medium=github&utm_campaign=user%20experience&utm_term=feb2023&utm_content=survey]Take the Jina user survey![/link]'
         )
 
     @property
