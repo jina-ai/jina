@@ -438,11 +438,11 @@ This assumes that you've already implemented a custom Gateway class and have def
 In this case, dockerizing the gateway should be straighforward:
 * If you need dependencies other than Jina, make sure to add a `requirements.txt` file (for instance, you use a server library).
 * Create a `Dockerfile` which should have the following components:
-1. Use a [Jina based image](https://hub.docker.com/r/jinaai/jina) as the base image in your Dockerfile.
+1. Use a [Jina based image](https://hub.docker.com/r/jinaai/jina) with the `standard` tag, as the base image in your Dockerfile.
 This ensures that everything needed for Jina to run the Gateway is installed. Make sure the Jina Version used supports 
 custom Gateways:
 ```dockerfile
-FROM jinaai/jina:3.12.0-py37-perf
+FROM jinaai/jina:latest-py37-standard
 ```
 Alternatively, you can just install jina using `pip`:
 ```dockerfile
