@@ -665,7 +665,7 @@ class Flow(
         args.deployments_metadata = json.dumps(deployments_metadata)
         args.deployments_no_reduce = json.dumps(deployments_no_reduce)
         self._deployment_nodes[GATEWAY_NAME] = Deployment(
-            args, needs, include_gateway=False
+            args, needs, include_gateway=False, noblock_on_start=True
         )
 
     def _get_deployments_metadata(self) -> Dict[str, Dict[str, str]]:
@@ -1257,11 +1257,13 @@ class Flow(
                 raise ValueError(
                     'External Executors with multiple needs have to do auto reduce.'
                 )
-            deployment = Deployment(args, needs, include_gateway=False)
+            deployment = Deployment(
+                args, needs, include_gateway=False, noblock_on_start=True
+            )
             floating = args.floating
         elif isinstance(deployment, str):
             deployment = Deployment.load_config(
-                deployment, needs=needs, include_gateway=False
+                deployment, needs=needs, include_gateway=False, noblock_on_start=True
             )
             floating = deployment.args.floating
         else:

@@ -914,8 +914,9 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             )
             self.enter_context(self.shards[shard_id])
 
-        if self._include_gateway:
+        if not self.args.noblock_on_start:
             self._wait_until_all_ready()
+        if self._include_gateway:
             all_panels = []
             self._get_summary_table(all_panels)
 
