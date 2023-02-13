@@ -189,11 +189,11 @@ class HeaderRequestHandler(MonitoringRequestMixin):
         stop_event: 'threading.Event',
         deployment: str,
     ):
-        '''Executes warmup task against the deployments from the connection pool.
+        """Executes warmup task against the deployments from the connection pool.
         :param connection_pool: GrpcConnectionPool that implements the warmup to the connected deployments.
         :param stop_event: signal to indicate if an early termination of the task is required for graceful teardown.
         :param deployment: deployment name that need to be warmed up.
-        '''
+        """
         self.logger.debug(f'Running HeadRuntime warmup')
 
         try:
