@@ -1229,7 +1229,6 @@ class Flow(
             else:
                 args.workspace = self.workspace
 
-            # TODO: check if it is possible to comment this as well
             args.noblock_on_start = True
 
             if len(needs) > 1 and args.external and args.no_reduce:
