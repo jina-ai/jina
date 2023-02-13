@@ -204,7 +204,7 @@ def test_pod_activates_shards_replicas():
     args_list = ['--replicas', str(replicas), '--shards', str(shards), '--no-reduce']
     args = set_deployment_parser().parse_args(args_list)
     args.uses = 'AppendNameExecutor'
-    with Deployment(args) as pod:
+    with Deployment(args, include_gateway=False) as pod:
         assert pod.num_pods == 7
         response_texts = set()
         # replicas and shards are used in a round robin fashion, so sending 6 requests should hit each one time
@@ -292,7 +292,7 @@ def test_pod_activates_shards():
     args = set_deployment_parser().parse_args(args_list)
     args.uses = 'AppendShardExecutor'
     args.polling = PollingType.ALL
-    with Deployment(args) as pod:
+    with Deployment(args, include_gateway=False) as pod:
         assert pod.num_pods == 3 * 3 + 1
         response_texts = set()
         # replicas are used in a round robin fashion, so sending 3 requests should hit each one time
@@ -405,7 +405,7 @@ def test_dynamic_polling_with_config(polling):
             json.dumps(endpoint_polling),
         ]
     )
-    pod = Deployment(args)
+    pod = Deployment(args, include_gateway=False)
 
     with pod:
         response = send_request_sync(
@@ -466,7 +466,7 @@ def test_dynamic_polling_default_config(polling):
             polling,
         ]
     )
-    pod = Deployment(args)
+    pod = Deployment(args, include_gateway=False)
 
     with pod:
         response = send_request_sync(
@@ -497,7 +497,7 @@ def test_dynamic_polling_overwrite_default_config(polling):
             json.dumps(endpoint_polling),
         ]
     )
-    pod = Deployment(args)
+    pod = Deployment(args, include_gateway=False)
 
     with pod:
         response = send_request_sync(
@@ -538,7 +538,7 @@ def test_pod_remote_pod_replicas_host(num_shards, num_replicas):
         ]
     )
     assert args.host == [__default_host__]
-    with Deployment(args) as pod:
+    with Deployment(args, include_gateway=False) as pod:
         assert pod.num_pods == num_shards * num_replicas + (1 if num_shards > 1 else 0)
         pod_args = dict(pod.pod_args['pods'])
         for k, replica_args in pod_args.items():
