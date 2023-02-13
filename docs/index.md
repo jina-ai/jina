@@ -1,5 +1,11 @@
 # Welcome to Jina!
 
+```{admonition} Survey
+:class: tip
+
+Take our **[user experience survey](https://10sw1tcpld4.typeform.com/to/EGAEReM7?utm_source=doc&utm_medium=github&utm_campaign=user%20experience&utm_term=feb2023&utm_content=survey)** to let us know your thoughts and help shape the future of Jina!
+```
+
 ```{include} ../README.md
 :start-after: <!-- start jina-description -->
 :end-before: <!-- end jina-description -->

@@ -112,20 +112,42 @@ class _FunctionWithSchema(NamedTuple):
     def get_function_with_schema(fn: Callable) -> T:
 
         docs_annotation = fn.__annotations__.get('docs', None)
-        if type(docs_annotation) is str:
+
+        if docs_annotation is None:
+            pass
+        elif type(docs_annotation) is str:
             warnings.warn(
                 f'`docs` annotation must be a type hint, got {docs_annotation}'
                 ' instead, you should maybe remove the string annotation. Default value'
                 'DocumentArray will be used instead.'
             )
             docs_annotation = None
+        elif not isinstance(docs_annotation, type):
+            warnings.warn(
+                f'`docs` annotation must be a class if you want to use it'
+                f' as schema input, got {docs_annotation}. try to remove the Optional'
+                f'.fallback to default behavior'
+                ''
+            )
+            docs_annotation = None
 
         return_annotation = fn.__annotations__.get('return', None)
-        if type(return_annotation) is str:
+
+        if return_annotation is None:
+            pass
+        elif type(return_annotation) is str:
             warnings.warn(
-                f'`docs` annotation must be a type hint, got {return_annotation}'
-                ' instead, you should maybe remove the string annotation. Default value'
-                'DocumentArray will be used instead.'
+                f'`return` annotation must be a class if you want to use it'
+                f' as schema input, got {docs_annotation}. try to remove the Optional'
+                f'.fallback to default behavior'
+                ''
+            )
+            return_annotation = None
+        elif not isinstance(return_annotation, type):
+            warnings.warn(
+                f'`return` annotation must be a class if you want to use it'
+                f'as schema input, got {docs_annotation}, fallback to default behavior'
+                ''
             )
             return_annotation = None
 
@@ -808,6 +830,11 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         :param kwargs: other kwargs accepted by the Flow, full list can be found `here <https://docs.jina.ai/api/jina.orchestrate.flow.base/>`
 
         """
+        warnings.warn(
+            f'Executor.serve() is no more supported and will be deprecated soon. Use Deployment to serve an Executor instead: '
+            f'https://docs.jina.ai/concepts/executor/serve/',
+            DeprecationWarning,
+        )
         from jina.orchestrate.deployments import Deployment
 
         dep = Deployment(
@@ -860,6 +887,11 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         :param uses_dynamic_batching: dictionary of parameters to overwrite from the default config's dynamic_batching field
         :param kwargs: other kwargs accepted by the Flow, full list can be found `here <https://docs.jina.ai/api/jina.orchestrate.flow.base/>`
         """
+        warnings.warn(
+            f'Executor.to_kubernetes_yaml() is no more supported and will be deprecated soon. Use Deployment to export kubernetes YAML files: '
+            f'https://docs.jina.ai/concepts/executor/serve/#serve-via-kubernetes',
+            DeprecationWarning,
+        )
         from jina.orchestrate.flow.base import Flow
 
         Flow(**kwargs).add(
@@ -903,6 +935,13 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         :param uses_dynamic_batching: dictionary of parameters to overwrite from the default config's requests field
         :param kwargs: other kwargs accepted by the Flow, full list can be found `here <https://docs.jina.ai/api/jina.orchestrate.flow.base/>`
         """
+
+        warnings.warn(
+            f'Executor.to_docker_compose_yaml() is no more supported and will be deprecated soon. Use Deployment to export docker compose YAML files: '
+            f'https://docs.jina.ai/concepts/executor/serve/#serve-via-docker-compose',
+            DeprecationWarning,
+        )
+
         from jina.orchestrate.flow.base import Flow
 
         f = Flow(**kwargs).add(

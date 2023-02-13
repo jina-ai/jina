@@ -1,9 +1,7 @@
 (executor-yaml-spec)=
 # {octicon}`file-code` YAML specification
 
-This page outlines the Executor YAML file specification.
-
-Such configurations can be used in a Flow via `Flow().add(uses='exec.yml')`, or loaded directly via `Executor.load_config('exec.yml')`.
+This page outlines the Executor YAML file specification. These configurations can be used in a {class}`~jina.Deployment` with `Deployment(uses='exec.yml)`, in a {class}`~jina.Flow` with `Flow().add(uses='exec.yml)` or loaded directly via `Executor.load_config('exec.yml')`.
 
 Note that Executor YAML configuration always refers back to an Executor defined in a Python file.
 
@@ -29,6 +27,7 @@ metas:
 ### `jtype`
 String specifying the Executor's Python type. Used to locate the correct class in the Python files given by `py_modules`.
 
+(executor-with-keyword)=
 ### `with`
 Collection containing keyword arguments passed to the Executor's `__init__()` method. Valid values depend on the Executor.
 
@@ -38,7 +37,7 @@ List of strings defining the Executor's Python dependencies. Most notably this m
 ### `metas`
 Collection containing meta-information about the Executor.
 
-Your Executor is annotated with this information when publishing to Executor Hub. To get better appeal on Executor Hub, set the `metas` fields to the correct values:
+Your Executor is annotated with this information when publishing to {ref}`Executor Hub <jina-hub>`. To get better appeal on Executor Hub, set the `metas` fields to the correct values:
 
 - **`name`**: Human-readable name of the Executor.
 - **`description`**: Human-readable description of the Executor. 

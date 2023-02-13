@@ -671,7 +671,7 @@ class Flow(
         args.deployments_metadata = json.dumps(deployments_metadata)
         args.deployments_no_reduce = json.dumps(deployments_no_reduce)
         self._deployment_nodes[GATEWAY_NAME] = Deployment(
-            args, needs, include_gateway=False
+            args, needs, include_gateway=False, noblock_on_start=True
         )
 
     def _get_deployments_metadata(self) -> Dict[str, Dict[str, str]]:
@@ -744,33 +744,12 @@ class Flow(
 
     def _get_docker_compose_deployments_addresses(self) -> Dict[str, List[str]]:
         graph_dict = {}
-        from jina.orchestrate.deployments.config.docker_compose import port
-        from jina.orchestrate.deployments.config.helper import to_compatible_name
 
         for node, v in self._deployment_nodes.items():
             if node == GATEWAY_NAME:
                 continue
 
-            if v.external:
-                deployment_docker_compose_address = [
-                    f'{v.protocol}://{v.host}:{v.port}'
-                ]
-            elif v.head_args:
-                deployment_docker_compose_address = [
-                    f'{to_compatible_name(v.head_args.name)}:{port}'
-                ]
-            else:
-                if v.args.replicas == 1:
-                    deployment_docker_compose_address = [
-                        f'{to_compatible_name(v.name)}:{port}'
-                    ]
-                else:
-                    deployment_docker_compose_address = []
-                    for rep_id in range(v.args.replicas):
-                        node_name = f'{v.name}/rep-{rep_id}'
-                        deployment_docker_compose_address.append(
-                            f'{to_compatible_name(node_name)}:{port}'
-                        )
+            deployment_docker_compose_address = v._docker_compose_address
             graph_dict[node] = deployment_docker_compose_address
 
         return graph_dict
@@ -1074,6 +1053,7 @@ class Flow(
     @allowed_levels([FlowBuildLevel.EMPTY])
     def add(
         self,
+        deployment: Union[str, Deployment] = None,
         **kwargs,
     ) -> Union['Flow', 'AsyncFlow']:
         # implementation_stub_inject_start_add
@@ -1234,49 +1214,62 @@ class Flow(
             op_flow, deployment_name, needs, connect_to_last_deployment=True
         )
 
-        # set the kwargs inherit from `Flow(kwargs1=..., kwargs2=)`
-        for key, value in op_flow._common_kwargs.items():
+        if deployment is None:
 
-            # do not inherit from all the argument from the flow and respect EXECUTOR_ARGS_BLACKLIST
-            if key not in kwargs and key not in EXECUTOR_ARGS_BLACKLIST:
-                kwargs[key] = value
+            # set the kwargs inherit from `Flow(kwargs1=..., kwargs2=)`
+            for key, value in op_flow._common_kwargs.items():
 
-        # update kwargs of this Deployment
-        kwargs.update(
-            dict(
-                name=deployment_name,
-                deployment_role=deployment_role,
-                log_config=kwargs.get('log_config')
-                if 'log_config' in kwargs
-                else self.args.log_config,
+                # do not inherit from all the argument from the flow and respect EXECUTOR_ARGS_BLACKLIST
+                if key not in kwargs and key not in EXECUTOR_ARGS_BLACKLIST:
+                    kwargs[key] = value
+
+            # update kwargs of this Deployment
+            kwargs.update(
+                dict(
+                    name=deployment_name,
+                    deployment_role=deployment_role,
+                    log_config=kwargs.get('log_config')
+                    if 'log_config' in kwargs
+                    else self.args.log_config,
+                )
             )
-        )
-        parser = set_deployment_parser()
-        if deployment_role == DeploymentRoleType.GATEWAY:
-            parser = set_gateway_parser()
+            parser = set_deployment_parser()
+            if deployment_role == DeploymentRoleType.GATEWAY:
+                parser = set_gateway_parser()
 
-        args = ArgNamespace.kwargs2namespace(
-            kwargs, parser, True, fallback_parsers=FALLBACK_PARSERS
-        )
+            args = ArgNamespace.kwargs2namespace(
+                kwargs, parser, True, fallback_parsers=FALLBACK_PARSERS
+            )
 
-        # deployment workspace if not set then derive from flow workspace
-        if args.workspace:
-            args.workspace = os.path.abspath(args.workspace)
+            # deployment workspace if not set then derive from flow workspace
+            if args.workspace:
+                args.workspace = os.path.abspath(args.workspace)
+            else:
+                args.workspace = self.workspace
+
+            # TODO: check if it is possible to comment this as well
+            args.noblock_on_start = True
+
+            if len(needs) > 1 and args.external and args.no_reduce:
+                raise ValueError(
+                    'External Executors with multiple needs have to do auto reduce.'
+                )
+            deployment = Deployment(
+                args, needs, include_gateway=False, noblock_on_start=True
+            )
+            floating = args.floating
+        elif isinstance(deployment, str):
+            deployment = Deployment.load_config(
+                deployment, needs=needs, include_gateway=False, noblock_on_start=True
+            )
+            floating = deployment.args.floating
         else:
-            args.workspace = self.workspace
+            deployment.needs = needs
+            floating = deployment.args.floating
 
-        args.noblock_on_start = True
+        op_flow._deployment_nodes[deployment_name] = deployment
 
-        if len(needs) > 1 and args.external and args.no_reduce:
-            raise ValueError(
-                'External Executors with multiple needs have to do auto reduce.'
-            )
-
-        op_flow._deployment_nodes[deployment_name] = Deployment(
-            args, needs, include_gateway=False
-        )
-
-        if not args.floating:
+        if not floating:
             op_flow._last_deployment = deployment_name
 
         return op_flow
@@ -1924,16 +1917,13 @@ class Flow(
             await asyncio.gather(*wait_for_ready_coros)
 
         # kick off spinner thread
-        threads.append(
-            threading.Thread(
-                target=_polling_status,
-                args=(len(wait_for_ready_coros),),
-                daemon=True,
-            )
+        polling_status_thread = threading.Thread(
+            target=_polling_status,
+            args=(len(wait_for_ready_coros),),
+            daemon=True,
         )
 
-        for t in threads:
-            t.start()
+        polling_status_thread.start()
 
         # kick off all deployments wait-ready tasks
         try:
@@ -1951,19 +1941,19 @@ class Flow(
         except:
             running_in_event_loop = True
 
+        wait_ready_threads = []
         if not running_in_event_loop:
             asyncio.get_event_loop().run_until_complete(_async_wait_all())
         else:
-            new_threads = []
             for k, v in self:
-                new_threads.append(
+                wait_ready_threads.append(
                     threading.Thread(target=_wait_ready, args=(k, v), daemon=True)
                 )
-            threads.extend(new_threads)
-            for t in new_threads:
+            for t in wait_ready_threads:
                 t.start()
 
-        for t in threads:
+        polling_status_thread.join()
+        for t in wait_ready_threads:
             t.join()
 
         error_deployments = [k for k, v in results.items() if v != 'done']
@@ -2800,10 +2790,6 @@ class Flow(
         output_path = output_path or 'docker-compose.yml'
         network_name = network_name or 'jina-network'
 
-        from jina.orchestrate.deployments.config.docker_compose import (
-            DockerComposeConfig,
-        )
-
         docker_compose_dict = {
             'version': '3.3',
             'networks': {network_name: {'driver': 'bridge'}},
@@ -2815,11 +2801,10 @@ class Flow(
             if v.external or (node == 'gateway' and not include_gateway):
                 continue
 
-            docker_compose_deployment = DockerComposeConfig(
-                args=v.args,
+            service_configs = v._to_docker_compose_config(
                 deployments_addresses=self._get_docker_compose_deployments_addresses(),
             )
-            service_configs = docker_compose_deployment.to_docker_compose_config()
+
             for service_name, service in service_configs:
                 service['networks'] = [network_name]
                 services[service_name] = service

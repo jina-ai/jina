@@ -8,6 +8,7 @@ import threading
 import time
 from argparse import Namespace
 from collections import defaultdict
+from contextlib import ExitStack
 from itertools import cycle
 from typing import TYPE_CHECKING, Dict, List, Optional, Set, Type, Union, overload
 
@@ -23,6 +24,7 @@ from jina.constants import (
     __default_host__,
     __docker_host__,
     __windows__,
+    __default_grpc_gateway__,
 )
 from jina.enums import DeploymentRoleType, PodRoleType, PollingType
 from jina.helper import (
@@ -32,6 +34,7 @@ from jina.helper import (
     send_telemetry_event,
 )
 from jina.importer import ImportExtensions
+from jina.jaml import JAMLCompatible
 from jina.logging.logger import JinaLogger
 from jina.orchestrate.deployments.install_requirements_helper import (
     _get_package_path_from_uses,
@@ -53,7 +56,13 @@ if TYPE_CHECKING:
     from jina.serve.executors import BaseExecutor
 
 
-class Deployment(PostMixin, BaseOrchestrator):
+class DeploymentType(type(ExitStack), type(JAMLCompatible)):
+    """Type of Deployment, metaclass of :class:`Deployment`"""
+
+    pass
+
+
+class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=DeploymentType):
     """A Deployment is an immutable set of pods, which run in replicas. They share the same input and output socket.
     Internally, the pods can run with the process/thread backend. They can be also run in their own containers
     :param args: arguments parsed from the CLI
@@ -146,8 +155,7 @@ class Deployment(PostMixin, BaseOrchestrator):
 
         def __enter__(self):
             for _args in self.args:
-                if getattr(self.deployment_args, 'noblock_on_start', False):
-                    _args.noblock_on_start = True
+                _args.noblock_on_start = True
                 self._pods.append(PodFactory.build_pod(_args).start())
             return self
 
@@ -889,6 +897,33 @@ class Deployment(PostMixin, BaseOrchestrator):
         )
         return worker_host
 
+    def _wait_until_all_ready(self):
+        wait_for_ready_coro = self.async_wait_start_success()
+
+        try:
+            _ = asyncio.get_event_loop()
+        except:
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+
+        async def _f():
+            pass
+
+        running_in_event_loop = False
+        try:
+            asyncio.get_event_loop().run_until_complete(_f())
+        except:
+            running_in_event_loop = True
+
+        if not running_in_event_loop:
+            asyncio.get_event_loop().run_until_complete(wait_for_ready_coro)
+        else:
+            wait_ready_thread = threading.Thread(
+                target=self.wait_start_success, daemon=True
+            )
+            wait_ready_thread.start()
+            wait_ready_thread.join()
+
     def start(self) -> 'Deployment':
         """
         Start to run all :class:`Pod` in this Deployment.
@@ -908,26 +943,22 @@ class Deployment(PostMixin, BaseOrchestrator):
 
         if self.pod_args['uses_before'] is not None:
             _args = self.pod_args['uses_before']
-            if getattr(self.args, 'noblock_on_start', False):
-                _args.noblock_on_start = True
+            _args.noblock_on_start = True
             self.uses_before_pod = PodFactory.build_pod(_args)
             self.enter_context(self.uses_before_pod)
         if self.pod_args['uses_after'] is not None:
             _args = self.pod_args['uses_after']
-            if getattr(self.args, 'noblock_on_start', False):
-                _args.noblock_on_start = True
+            _args.noblock_on_start = True
             self.uses_after_pod = PodFactory.build_pod(_args)
             self.enter_context(self.uses_after_pod)
         if self.pod_args['head'] is not None:
             _args = self.pod_args['head']
-            if getattr(self.args, 'noblock_on_start', False):
-                _args.noblock_on_start = True
+            _args.noblock_on_start = True
             self.head_pod = PodFactory.build_pod(_args)
             self.enter_context(self.head_pod)
         if self._include_gateway:
             _args = self.pod_args['gateway']
-            if getattr(self.args, 'noblock_on_start', False):
-                _args.noblock_on_start = True
+            _args.noblock_on_start = True
             self.gateway_pod = PodFactory.build_pod(_args)
             self.enter_context(self.gateway_pod)
         for shard_id in self.pod_args['pods']:
@@ -938,6 +969,8 @@ class Deployment(PostMixin, BaseOrchestrator):
             )
             self.enter_context(self.shards[shard_id])
 
+        if not self.args.noblock_on_start:
+            self._wait_until_all_ready()
         if self._include_gateway:
             all_panels = []
             self._get_summary_table(all_panels)
@@ -955,10 +988,6 @@ class Deployment(PostMixin, BaseOrchestrator):
 
         If not successful, it will raise an error hoping the outer function to catch it
         """
-        if not self.args.noblock_on_start:
-            raise ValueError(
-                f'{self.wait_start_success!r} should only be called when `noblock_on_start` is set to True'
-            )
         try:
             if self.uses_before_pod is not None:
                 self.uses_before_pod.wait_start_success()
@@ -979,10 +1008,6 @@ class Deployment(PostMixin, BaseOrchestrator):
 
         If not successful, it will raise an error hoping the outer function to catch it
         """
-        if not self.args.noblock_on_start:
-            raise ValueError(
-                f'{self.async_wait_start_success!r} should only be called when `noblock_on_start` is set to True'
-            )
         try:
             coros = []
             if self.uses_before_pod is not None:
@@ -1490,6 +1515,109 @@ class Deployment(PostMixin, BaseOrchestrator):
         )
 
         return all_panels
+
+    @property
+    def _docker_compose_address(self):
+        from jina.orchestrate.deployments.config.docker_compose import port
+        from jina.orchestrate.deployments.config.helper import to_compatible_name
+
+        if self.external:
+            docker_compose_address = [f'{self.protocol}://{self.host}:{self.port}']
+        elif self.head_args:
+            docker_compose_address = [
+                f'{to_compatible_name(self.head_args.name)}:{port}'
+            ]
+        else:
+            if self.args.replicas == 1:
+                docker_compose_address = [f'{to_compatible_name(self.name)}:{port}']
+            else:
+                docker_compose_address = []
+                for rep_id in range(self.args.replicas):
+                    node_name = f'{self.name}/rep-{rep_id}'
+                    docker_compose_address.append(
+                        f'{to_compatible_name(node_name)}:{port}'
+                    )
+        return docker_compose_address
+
+    def _to_docker_compose_config(self, deployments_addresses=None):
+        from jina.orchestrate.deployments.config.docker_compose import (
+            DockerComposeConfig,
+        )
+
+        docker_compose_deployment = DockerComposeConfig(
+            args=self.args, deployments_addresses=deployments_addresses
+        )
+        return docker_compose_deployment.to_docker_compose_config()
+
+    def _inner_gateway_to_docker_compose_config(self):
+        from jina.orchestrate.deployments.config.docker_compose import (
+            DockerComposeConfig,
+        )
+
+        self.pod_args['gateway'].port = self.pod_args['gateway'].port or [random_port()]
+        cargs = copy.deepcopy(self.pod_args['gateway'])
+        cargs.uses = __default_grpc_gateway__
+        cargs.graph_description = (
+            f'{{"{self.name}": ["end-gateway"], "start-gateway": ["{self.name}"]}}'
+        )
+
+        docker_compose_deployment = DockerComposeConfig(
+            args=cargs,
+            deployments_addresses={self.name: self._docker_compose_address},
+        )
+        return docker_compose_deployment.to_docker_compose_config()
+
+    def to_docker_compose_yaml(
+        self,
+        output_path: Optional[str] = None,
+        network_name: Optional[str] = None,
+    ):
+        """
+        Converts a Jina Deployment into a Docker compose YAML file
+
+        If you don't want to rebuild image on Jina Hub,
+        you can set `JINA_HUB_NO_IMAGE_REBUILD` environment variable.
+
+        :param output_path: The path where to dump the yaml file
+        :param network_name: The name of the network that will be used by the deployment
+        """
+        import yaml
+
+        output_path = output_path or 'docker-compose.yml'
+        network_name = network_name or 'jina-network'
+
+        docker_compose_dict = {
+            'version': '3.3',
+            'networks': {network_name: {'driver': 'bridge'}},
+        }
+        services = {}
+
+        service_configs = self._to_docker_compose_config()
+
+        for service_name, service in service_configs:
+            service['networks'] = [network_name]
+            services[service_name] = service
+
+        if self._include_gateway:
+            service_configs = self._inner_gateway_to_docker_compose_config()
+
+            for service_name, service in service_configs:
+                service['networks'] = [network_name]
+                services[service_name] = service
+
+        docker_compose_dict['services'] = services
+        with open(output_path, 'w+') as fp:
+            yaml.dump(docker_compose_dict, fp, sort_keys=False)
+
+        command = (
+            'docker-compose up'
+            if output_path is None
+            else f'docker-compose -f {output_path} up'
+        )
+
+        self.logger.info(
+            f'Docker compose file has been created under [b]{output_path}[/b]. You can use it by running [b]{command}[/b]'
+        )
 
     def _to_kubernetes_yaml(
         self,

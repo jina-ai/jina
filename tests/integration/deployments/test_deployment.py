@@ -343,7 +343,8 @@ def _create_regular_deployment(
         args.uses_after = executor if executor else 'NameChangeExecutor'
     if uses_before:
         args.uses_before = executor if executor else 'NameChangeExecutor'
-    return Deployment(args, include_gateway=False)
+    # is this needed ?
+    return Deployment(args, include_gateway=False, noblock_on_start=False)
 
 
 def _create_gateway_deployment(
@@ -385,6 +386,27 @@ def test_deployment_uses(uses):
 
     with depl:
         pass
+
+
+@pytest.mark.parametrize(
+    'config_file,expected_replicas,expected_shards,expected_text',
+    [
+        ('deployment-nested-executor-config.yml', 3, 2, 'hello'),
+        ('deployment-embedded-executor-config.yml', 2, 3, 'world'),
+        ('deployment-overridden-executor-config.yml', 3, 3, 'helloworld'),
+    ],
+)
+def test_deployment_load_config(
+    config_file, expected_replicas, expected_shards, expected_text
+):
+    depl = Deployment.load_config(config_file)
+
+    with depl:
+        assert depl.args.replicas == expected_replicas
+        assert depl.args.shards == expected_shards
+        docs = depl.post(on='/', inputs=DocumentArray.empty(5))
+        assert len(docs) == 5
+        assert all(doc.text == expected_text for doc in docs)
 
 
 class MyServeExec(Executor):

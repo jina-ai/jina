@@ -398,7 +398,7 @@ gateway:
 ````
 
 
-## See further
+## See also
 
 - {ref}`Access the Flow with the Client <client>`
 - {ref}`Deployment with Kubernetes <kubernetes>`
