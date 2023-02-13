@@ -665,7 +665,7 @@ class Flow(
         args.deployments_metadata = json.dumps(deployments_metadata)
         args.deployments_no_reduce = json.dumps(deployments_no_reduce)
         self._deployment_nodes[GATEWAY_NAME] = Deployment(
-            args, needs, include_gateway=False
+            args, needs, include_gateway=False, noblock_on_start=True
         )
 
     def _get_deployments_metadata(self) -> Dict[str, Dict[str, str]]:
@@ -1229,17 +1229,20 @@ class Flow(
             else:
                 args.workspace = self.workspace
 
+            # TODO: check if it is possible to comment this as well
             args.noblock_on_start = True
 
             if len(needs) > 1 and args.external and args.no_reduce:
                 raise ValueError(
                     'External Executors with multiple needs have to do auto reduce.'
                 )
-            deployment = Deployment(args, needs, include_gateway=False)
+            deployment = Deployment(
+                args, needs, include_gateway=False, noblock_on_start=True
+            )
             floating = args.floating
         elif isinstance(deployment, str):
             deployment = Deployment.load_config(
-                deployment, needs=needs, include_gateway=False
+                deployment, needs=needs, include_gateway=False, noblock_on_start=True
             )
             floating = deployment.args.floating
         else:
@@ -1890,16 +1893,13 @@ class Flow(
             await asyncio.gather(*wait_for_ready_coros)
 
         # kick off spinner thread
-        threads.append(
-            threading.Thread(
-                target=_polling_status,
-                args=(len(wait_for_ready_coros),),
-                daemon=True,
-            )
+        polling_status_thread = threading.Thread(
+            target=_polling_status,
+            args=(len(wait_for_ready_coros),),
+            daemon=True,
         )
 
-        for t in threads:
-            t.start()
+        polling_status_thread.start()
 
         # kick off all deployments wait-ready tasks
         try:
@@ -1917,19 +1917,19 @@ class Flow(
         except:
             running_in_event_loop = True
 
+        wait_ready_threads = []
         if not running_in_event_loop:
             asyncio.get_event_loop().run_until_complete(_async_wait_all())
         else:
-            new_threads = []
             for k, v in self:
-                new_threads.append(
+                wait_ready_threads.append(
                     threading.Thread(target=_wait_ready, args=(k, v), daemon=True)
                 )
-            threads.extend(new_threads)
-            for t in new_threads:
+            for t in wait_ready_threads:
                 t.start()
 
-        for t in threads:
+        polling_status_thread.join()
+        for t in wait_ready_threads:
             t.join()
 
         error_deployments = [k for k, v in results.items() if v != 'done']

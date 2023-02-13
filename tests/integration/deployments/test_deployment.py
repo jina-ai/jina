@@ -343,7 +343,8 @@ def _create_regular_deployment(
         args.uses_after = executor if executor else 'NameChangeExecutor'
     if uses_before:
         args.uses_before = executor if executor else 'NameChangeExecutor'
-    return Deployment(args, include_gateway=False)
+    # is this needed ?
+    return Deployment(args, include_gateway=False, noblock_on_start=False)
 
 
 def _create_gateway_deployment(
