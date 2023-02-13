@@ -44,9 +44,16 @@ class DataRequest(Request):
                         self._content.docs_bytes
                     )
                 else:
-                    self._loaded_doc_array = self.document_array_cls.from_protobuf(
-                        self._content.docs
-                    )
+                    if docarray_v2:
+                        self._loaded_doc_array = (
+                            self.document_array_cls.from_protobuf_smart(
+                                self._content.docs
+                            )
+                        )
+                    else:
+                        self._loaded_doc_array = self.document_array_cls.from_protobuf(
+                            self._content.docs
+                        )
 
             return self._loaded_doc_array
 

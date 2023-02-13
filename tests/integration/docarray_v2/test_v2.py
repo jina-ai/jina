@@ -148,7 +148,7 @@ def test_interoperability():
         array: NdArray
 
     class OutputDoc(BaseDocument):
-        embedding: AnyTensor
+        embedding: NdArray
 
     class MyExec(Executor):
         @requests(on='/bar')
