@@ -362,7 +362,7 @@ class WorkerRequestHandler:
                     f'The return type must be DocumentArray / Dict / `None`, '
                     f'but getting {return_data!r}'
                 )
-
+        requests[0].document_array_cls = DocumentArray
         WorkerRequestHandler.replace_docs(
             requests[0], docs, self.args.output_array_type
         )
