@@ -173,7 +173,7 @@ JCloud also supports retaining the data a Flow was using while active. You can s
 
 ```{code-block} yaml
 ---
-emphasize-lines: 5-10,12,15
+emphasize-lines: 7-10,15-16
 ---
 jtype: Flow
 executors:
@@ -182,7 +182,7 @@ executors:
     jcloud:
       resources:
         storage:
-          type: ebs
+          kind: ebs
           size: 10G
           retain: true
   - name: executor2
@@ -190,7 +190,7 @@ executors:
     jcloud:
       resources:
         storage:
-          type: efs
+          kind: efs
 ```
 
 ## Scale out Executors
