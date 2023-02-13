@@ -20,6 +20,8 @@
 | `exit_on_exceptions` | List of exceptions that will cause the Executor to shut down. | `array` | `[]` |
 | `no_reduce` | Disable the built-in reduction mechanism. Set this if the reduction is to be handled by the Executor itself by operating on a `docs_matrix` or `docs_map` | `boolean` | `False` |
 | `grpc_server_options` | Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1} | `object` | `None` |
+| `raft_configuration` | Dictionary of kwargs arguments that will be passed to the RAFT node as configuration options when starting the RAFT node. | `object` | `None` |
+| `raft_bootstrap` | If set, bootstrap the RAFT nodes | `boolean` | `False` |
 | `entrypoint` | The entrypoint command overrides the ENTRYPOINT in Docker image. when not set then the Docker image ENTRYPOINT takes effective. | `string` | `None` |
 | `docker_kwargs` | Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker '<br>container. <br><br>More details can be found in the Docker SDK docs:  https://docker-py.readthedocs.io/en/stable/ | `object` | `None` |
 | `volumes` | The path on the host to be mounted inside the container. <br><br>Note, <br>- If separated by `:`, then the first part will be considered as the local host path and the second part is the path in the container system. <br>- If no split provided, then the basename of that directory will be mounted into container's root path, e.g. `--volumes="/user/test/my-workspace"` will be mounted into `/my-workspace` inside the container. <br>- All volumes are mounted with read-write mode. | `array` | `None` |
@@ -43,6 +45,8 @@
 | `metrics` | If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided. | `boolean` | `False` |
 | `metrics_exporter_host` | If tracing is enabled, this hostname will be used to configure the metrics exporter agent. | `string` | `None` |
 | `metrics_exporter_port` | If tracing is enabled, this port will be used to configure the metrics exporter agent. | `number` | `None` |
+| `stateful` | If set, start consensus module to make sure write operations are properly replicated between all the replicas | `boolean` | `False` |
+| `pod_ports` | When using StatefulExecutors, if they want to restart it is important to keep the RAFT cluster configuration | `number` | `None` |
 | `force_update` | If set, always pull the latest Hub Executor bundle even it exists on local | `boolean` | `False` |
 | `prefer_platform` | The preferred target Docker platform. (e.g. "linux/amd64", "linux/arm64") | `string` | `None` |
 | `compression` | The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression. | `string` | `None` |
