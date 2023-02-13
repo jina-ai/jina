@@ -8,6 +8,7 @@ from jina.constants import __default_executor__, __default_host__
 from jina.helper import expand_dict, expand_env_var
 from jina.jaml import JAML
 from jina.serve.executors import BaseExecutor
+from jina.serve.runtimes.gateway import HTTPGateway
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -192,6 +193,17 @@ def test_load_gateway_external_success(yaml_file, gateway_name):
         assert gateway.runtime_args.prefetch == 100
 
 
+def test_load_http_gateway_success():
+    gateway: HTTPGateway = HTTPGateway.load_config(
+        f'yaml/test-http-gateway.yml', runtime_args={'port': [12345]}
+    )
+    with gateway:
+        assert isinstance(gateway, HTTPGateway)
+        assert gateway.cors is True
+        assert gateway.title == 'my-gateway-title'
+        assert gateway.description == 'my-gateway-description'
+
+
 @pytest.mark.parametrize(
     'yaml_file,gateway_name',
     [
@@ -219,7 +231,7 @@ def test_load_gateway_override_with(yaml_file, gateway_name):
     ],
 )
 def test_load_deployment(yaml_file, expected_replicas, expected_shards, expected_uses):
-    with Deployment.load_config(f'yaml/{yaml_file}') as dep:
+    with Deployment.load_config(os.path.join(cur_dir, f'yaml/{yaml_file}')) as dep:
         assert dep.args.replicas == expected_replicas
         assert dep.args.shards == expected_shards
         assert dep.args.uses == expected_uses
