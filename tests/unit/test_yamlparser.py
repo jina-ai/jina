@@ -231,7 +231,7 @@ def test_load_gateway_override_with(yaml_file, gateway_name):
     ],
 )
 def test_load_deployment(yaml_file, expected_replicas, expected_shards, expected_uses):
-    with Deployment.load_config(f'yaml/{yaml_file}') as dep:
+    with Deployment.load_config(os.path.join(cur_dir, f'yaml/{yaml_file}')) as dep:
         assert dep.args.replicas == expected_replicas
         assert dep.args.shards == expected_shards
         assert dep.args.uses == expected_uses
