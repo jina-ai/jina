@@ -423,3 +423,54 @@ Keys in `labels` have the following restrictions:
     - `user`
     - `jina`-version
 ```
+
+### Monitoring
+
+To enable [tracing support](https://docs.jina.ai/cloud-nativeness/opentelemetry/) in Flows, you can pass `enable: true` argument in the Flow YAML. (Tracing support is not enabled by default in JCloud)
+
+```{code-block} yaml
+---
+emphasize-lines: 2-5
+---
+jtype: Flow
+jcloud:
+  monitor:
+    traces:
+      enable: true
+executors:
+  - name: executor1
+    uses: jinaai+docker://<username>/Executor1
+```
+
+You can pass the `enable: true` argument to `gateway`, so as to only enable the tracing support in gateway:
+
+```{code-block} yaml
+---
+emphasize-lines: 2-5
+---
+jtype: Flow
+gateway:
+  jcloud:
+      monitor:
+        traces:
+          enable: true
+executors:
+  - name: executor1
+    uses: jinaai+docker://<username>/Executor1
+```
+
+You can also only enable tracing support in `executor1`.
+
+```{code-block} yaml
+---
+emphasize-lines: 5-8
+---
+jtype: Flow
+executors:
+  - name: executor1
+    uses: jinaai+docker://<username>/Executor1
+    jcloud:
+      monitor:
+        traces:
+          enable: true
+```
