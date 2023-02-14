@@ -286,26 +286,32 @@ class GatewayStreamer:
         os.environ['JINA_STREAMER_ARGS'] = json.dumps(kwargs)
 
     async def warmup(self, stop_event: threading.Event):
-        '''Executes warmup task on each deployment. This forces the gateway to establish connection and open a
+        """Executes warmup task on each deployment. This forces the gateway to establish connection and open a
         gRPC channel to each executor so that the first request doesn't need to experience the penalty of
         eastablishing a brand new gRPC channel.
         :param stop_event: signal to indicate if an early termination of the task is required for graceful teardown.
-        '''
+        """
         self.logger.debug(f'Running GatewayRuntime warmup')
         deployments = {key for key in self._executor_addresses.keys()}
 
         try:
             deployment_warmup_tasks = []
-            for deployment in deployments:
-                deployment_warmup_tasks.append(
-                    asyncio.create_task(
-                        self._connection_pool.warmup(
-                            deployment=deployment, stop_event=stop_event
+            try:
+                for deployment in deployments:
+                    deployment_warmup_tasks.append(
+                        asyncio.create_task(
+                            self._connection_pool.warmup(
+                                deployment=deployment, stop_event=stop_event
+                            )
                         )
                     )
-                )
 
-            await asyncio.gather(*deployment_warmup_tasks, return_exceptions=True)
+                await asyncio.gather(*deployment_warmup_tasks, return_exceptions=True)
+            except asyncio.CancelledError:
+                if deployment_warmup_tasks:
+                    for task in deployment_warmup_tasks:
+                        task.cancel()
+                raise
         except Exception as ex:
             self.logger.error(f'error with GatewayRuntime warmup up task: {ex}')
             return

@@ -76,7 +76,6 @@ class DockerComposeConfig:
                 'noblock_on_start',
                 'env',
             }
-
             if cargs.uses not in [
                 __default_http_gateway__,
                 __default_websocket_gateway__,
