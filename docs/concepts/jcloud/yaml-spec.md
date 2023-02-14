@@ -426,7 +426,7 @@ Keys in `labels` have the following restrictions:
 
 ### Monitoring
 
-To enable [tracing support](https://docs.jina.ai/cloud-nativeness/opentelemetry/) in Flows, you can pass `enable: true` argument in the Flow YAML. (By default, Jcloud will disable the tracing support)
+To enable [tracing support](https://docs.jina.ai/cloud-nativeness/opentelemetry/) in Flows, you can pass `enable: true` argument in the Flow YAML. (Tracing support is not enabled by default in JCloud)
 
 ```{code-block} yaml
 ---
@@ -442,7 +442,7 @@ executors:
     uses: jinaai+docker://<username>/Executor1
 ```
 
-You can pass the `enable: true` argument to `gateway`, so as to only enable the tracing support in gateway.
+You can pass the `enable: true` argument to `gateway`, so as to only enable the tracing support in gateway:
 
 ```{code-block} yaml
 ---
