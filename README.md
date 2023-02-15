@@ -28,8 +28,8 @@
 Jina is a MLOps framework that empowers anyone to build multimodal AI services via cloud native technologies. It uplifts a local PoC into a production-ready service. Jina handles the infrastructure complexity, making advanced solution engineering and cloud-native technologies accessible to every developer. 
 
 Use cases:
-* Build and deploy a gRPC microservice
-* Deploy and deploy a pipeline
+* [Build and deploy a gRPC microservice](#build-ai--ml-services)
+* [Deploy and deploy a pipeline](#build-a-pipeline)
 
 Applications built with Jina enjoy the following features out of the box:
 
@@ -104,13 +104,13 @@ Start by installing the dependencies:
 pip install jina transformers sentencepiece torch
 ```
 
-Then implement a translation service logic with [Executor](https://docs.jina.ai/concepts/executor/) in `executor/executor.py`:
+Then implement a translation service logic with [Executor](https://docs.jina.ai/concepts/executor/) in `executor.py`:
 ```python
 from jina import Executor, requests, DocumentArray
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 
 
-class FrenchToEnglishTranslator(Executor):
+class Translator(Executor):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.tokenizer = AutoTokenizer.from_pretrained(
@@ -143,7 +143,7 @@ Then serve it either with the Python API or YAML:
 ```python
 from jina import Deployment
 
-with Deployment(uses=FrenchToEnglishTranslator, port=12345, timeout_ready=-1) as dep:
+with Deployment(uses=Translator, port=12345, timeout_ready=-1) as dep:
     dep.block()
 ```
 
@@ -155,9 +155,9 @@ with Deployment(uses=FrenchToEnglishTranslator, port=12345, timeout_ready=-1) as
 ```yaml
 jtype: Deployment
 with:
-  uses: FrenchToEnglishTranslator
+  uses: Translator
   py_modules:
-    - executor.py # name of the module containing FrenchToEnglishTranslator
+    - executor.py # name of the module containing Translator
   timeout_ready: -1
 ```
 And run the YAML Deployemt with the CLI: `jina deployment --uses deployment.yml`
@@ -219,7 +219,7 @@ from jina import Flow, Document
 
 flow = (
     Flow(port=12345)
-    .add(uses=FrenchToEnglishTranslator, timeout_ready=-1)
+    .add(uses=Translator, timeout_ready=-1)
     .add(
         uses='jinaai://alaeddineabdessalem/TextToImage',
         timeout_ready=-1,
@@ -241,7 +241,7 @@ jtype: Flow
 with:
   port: 12345
 executors:
-  - uses: FrenchToEnglishTranslator
+  - uses: Translator
     timeout_ready: -1
     py_modules:
       - translate_executor.py
@@ -334,7 +334,7 @@ jtype: Flow
 with:
   port: 12345
 executors:
-  - uses: FrenchToEnglishTranslator
+  - uses: Translator
     timeout_ready: -1
     py_modules:
       - translate_executor.py
