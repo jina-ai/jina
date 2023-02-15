@@ -95,7 +95,9 @@ Document, Executor and Flow are three fundamental concepts in Jina.
 
 ### Build AI & ML Services
 
-Build fast, reliable and scalable gRPC-based AI services.
+<!-- start build-ai-services -->
+
+Build fast, reliable and scalable gRPC-based AI services with Jina.
 
 Start by installing the dependencies:
 ```shell
@@ -192,7 +194,14 @@ print(docs[0].text)
 ```text
 an astronaut is walking in a park
 ```
+
+<!-- end build-ai-services -->
+
 ### Build a pipeline
+
+
+<!-- start build-pipelines -->
+
 In case your solution can be modeled as a [DAG](https://de.wikipedia.org/wiki/DAG) pipeline, composed of a set of tasks, 
 use Jina [Flow](https://docs.jina.ai/concepts/flow/).
 It orchestrates a set of [Executors](https://docs.jina.ai/concepts/executor/) and a [Gateway](https://docs.jina.ai/concepts/gateway/) to offer an end-to-end service.
@@ -291,6 +300,8 @@ jc deploy my_project
 ```
 Read more about [deploying Flows to JCloud](https://docs.jina.ai/concepts/jcloud/#deploy).
 
+
+<!-- end build-pipelines -->
 
 <p align="center">
 <a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/.github/readme/no-complexity-banner.png?raw=true" alt="Jina: No Infrastructure Complexity, High Engineering Efficiency" width="100%"></a>
