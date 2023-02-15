@@ -70,5 +70,10 @@ def mixin_base_deployment_parser(parser):
     )
 
     gp.add_argument(
-        '--field-map', action=KVAppendAction, metavar='KEY: VALUE', nargs='*', help=''
+        '--field-map',
+        action=KVAppendAction,
+        metavar='KEY: VALUE',
+        nargs='*',
+        help='',
+        default={},
     )

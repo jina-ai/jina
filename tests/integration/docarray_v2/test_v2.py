@@ -42,7 +42,9 @@ def test_send_custom_doc():
             docs[0].text = 'hello world'
 
     with Flow().add(uses=MyExec) as f:
-        doc = f.post(on='/foo', inputs=MyDoc(text='hello'))
+        doc = f.post(
+            on='/foo', inputs=MyDoc(text='hello'), return_type=DocumentArray[MyDoc]
+        )
         assert doc[0].text == 'hello world'
 
 
@@ -111,7 +113,7 @@ def test_different_output_input():
             inputs=InputDoc(img=Image(tensor=np.zeros(3))),
             return_type=DocumentArray[OutputDoc],
         )
-        assert docs[0].embedding.shape == 5
+        assert docs[0].embedding.shape == (5,)
         assert docs.__class__.document_type == OutputDoc
 
 
