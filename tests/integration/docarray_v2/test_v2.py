@@ -179,3 +179,40 @@ def test_interoperability():
         )
         assert docs[0].embedding.shape == (5,)
         assert docs.__class__.document_type == OutputDoc
+
+
+def test_interoperability_flow():
+    class InputDoc(BaseDocument):
+        link: AnyUrl
+        array: NdArray
+
+    class OutputDoc(BaseDocument):
+        embedding: NdArray
+
+    class MyExec(Executor):
+        @requests(on='/bar')
+        def bar(
+            self, docs: DocumentArray[InputDoc], **kwargs
+        ) -> DocumentArray[OutputDoc]:
+
+            for doc in docs:
+                assert doc.link == 'hello.png'
+                assert (doc.array == np.zeros(3)).all()
+
+            docs_return = DocumentArray[OutputDoc](
+                [OutputDoc(embedding=np.zeros(5)) for _ in range(len(docs))]
+            )
+            return docs_return
+
+    class A(BaseDocument):
+        url: AnyUrl
+        tensor: NdArray
+
+    with Flow().add(uses=MyExec, field_map={'url': 'link', 'tensor': 'array'}) as f:
+        docs = f.post(
+            on='/bar',
+            inputs=A(url='hello.png', tensor=np.zeros(3)),
+            return_type=DocumentArray[OutputDoc],
+        )
+        assert docs[0].embedding.shape == (5,)
+        assert docs.__class__.document_type == OutputDoc
