@@ -27,6 +27,10 @@
 
 Jina is a MLOps framework that empowers anyone to build multimodal AI services via cloud native technologies. It uplifts a local PoC into a production-ready service. Jina handles the infrastructure complexity, making advanced solution engineering and cloud-native technologies accessible to every developer. 
 
+Use cases:
+* Build and deploy a gRPC microservice
+* Deploy and deploy a pipeline
+
 Applications built with Jina enjoy the following features out of the box:
 
 🌌 **Universal**
@@ -76,9 +80,9 @@ Find more install options on [Apple Silicon](https://docs.jina.ai/get-started/in
 
 Document, Executor and Flow are three fundamental concepts in Jina.
 
-- [**Document**](https://docarray.jina.ai/) is the fundamental data structure.
-- [**Executor**](https://docs.jina.ai/concepts/executor/) is a Python class with functions that use Documents as IO.
-- [**Flow**](https://docs.jina.ai/concepts/flow/) ties Executors together into a pipeline and exposes it with an API gateway.
+- [**Document**](https://docarray.jina.ai/) from [DocArray](https://github.com/docarray/docarray) is the fundamental data structure behind data validation and serialization.
+- [**Executor**](https://docs.jina.ai/concepts/executor/) is a Python class that can serve logic using Documents.
+- [**Flow**](https://docs.jina.ai/concepts/flow/) and [**Deployment**](https://docs.jina.ai/concepts/executor/serve/#serve-directly) orchestrates Executors into standalone services or pipelines.
 
 [The full glossary is explained here.](https://docs.jina.ai/concepts/preliminaries/#)
 
@@ -89,66 +93,186 @@ Document, Executor and Flow are three fundamental concepts in Jina.
 <a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/.github/readme/streamline-banner.png?raw=true" alt="Jina: Streamline AI & ML Product Delivery" width="100%"></a>
 </p>
 
-### Streamline AI & ML Product Delivery
+### Build AI & ML Services
 
-A new project starts from local. With Jina, you can easily leverage existing deep learning stacks, improve the quality and quickly build the POC.
+Build fast, reliable and scalable gRPC-based AI services.
 
-```python
-import torch
-from jina import DocumentArray
-
-model = torch.nn.Sequential(
-    torch.nn.Linear(
-        in_features=128,
-        out_features=128,
-    ),
-    torch.nn.ReLU(),
-    torch.nn.Linear(in_features=128, out_features=32),
-)
-
-
-docs = DocumentArray.from_files('left/*.jpg')
-docs.embed(model)
+Start by installing the dependencies:
+```shell
+pip install jina transformers sentencepiece torch
 ```
 
-Moving to production, Jina enhances the POC with service endpoint, scalability and adds cloud-native features, making it ready for production without refactoring.
+Then implement a translation service logic with [Executor](https://docs.jina.ai/concepts/executor/):
+```python
+from jina import Executor, requests, DocumentArray
+from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 
+
+class FrenchToEnglishTranslator(Executor):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.tokenizer = AutoTokenizer.from_pretrained(
+            "facebook/mbart-large-50-many-to-many-mmt", src_lang="fr_XX"
+        )
+        self.model = AutoModelForSeq2SeqLM.from_pretrained(
+            "facebook/mbart-large-50-many-to-many-mmt"
+        )
+
+    @requests
+    def translate(self, docs: DocumentArray, **kwargs):
+        for doc in docs:
+            doc.text = self._translate(doc.text)
+
+    def _translate(self, text):
+        encoded_en = self.tokenizer(text, return_tensors="pt")
+        generated_tokens = self.model.generate(
+            **encoded_en, forced_bos_token_id=self.tokenizer.lang_code_to_id["en_XX"]
+        )
+        return self.tokenizer.batch_decode(generated_tokens, skip_special_tokens=True)[
+            0
+        ]
+```
+
+Then serve it either with the Python API or YAML:
 <table>
 <tr>
 <td>
 
 ```python
-from jina import DocumentArray, Executor, requests
-from .embedding import model
+from jina import Deployment
 
-
-class MyExec(Executor):
-    @requests(on='/embed')
-    async def embed(self, docs: DocumentArray, **kwargs):
-        docs.embed(model)
+with Deployment(uses=FrenchToEnglishTranslator, port=12345, timeout_ready=-1) as dep:
+    dep.block()
 ```
 
 </td>
 <td>
-    
+
+`deployment.yml`:
+
 ```yaml
-jtype: Flow
+jtype: Deployment
 with:
-  port: 12345
-executors:
-- uses: MyExec
-  replicas: 2
+  uses: FrenchToEnglishTranslator
+  py_modules:
+    - executor.py # name of the module containing FrenchToEnglishTranslator
+  timeout_ready: -1
 ```
+And run the YAML Deployemt with the CLI: `jina deployment --uses deployment.yml`
+
 </td>
 </tr>
 </table>
 
 
-Finally, the project can be easily deployed to the cloud and serve real traffic.
-
-```bash
-jina cloud deploy ./
+```text
+──────────────────────────────────────── 🎉 Deployment is ready to serve! ─────────────────────────────────────────
+╭────────────── 🔗 Endpoint ───────────────╮
+│  ⛓      Protocol                   GRPC │
+│  🏠        Local          0.0.0.0:65048  │
+│  🔒      Private      172.28.0.12:65048  │
+│  🌍       Public    35.230.97.208:65048  │
+╰──────────────────────────────────────────╯
 ```
+
+And use [Jina Client](https://docs.jina.ai/concepts/client/) to make requests to the service:
+```python
+from jina import Client, Document
+
+client = Client(port=12345)
+docs = client.post(
+    on='/',
+    inputs=[
+        Document(text='un astronaut est en train de faire une promenade dans un parc')
+    ],
+)
+print(docs[0].text)
+```
+
+```text
+an astronaut is walking in a park
+```
+### Build a pipeline
+In case your solution can be modeled as a [DAG](https://de.wikipedia.org/wiki/DAG) pipeline, composed of a set of tasks, 
+use Jina [Flow](https://docs.jina.ai/concepts/flow/).
+It orchestrates a set of [Executors](https://docs.jina.ai/concepts/executor/) and a [Gateway](https://docs.jina.ai/concepts/gateway/) to offer an end-to-end service.
+
+For instance, let's combine our implemented French translation service with a Stable Diffusion image generation service from [Jina Hub](https://cloud.jina.ai/executors).
+Chaining such services with [Flow](https://docs.jina.ai/concepts/flow/) will give us a multilingual image generation service.
+
+Use the Flow either with the Python API or YAML:
+<table>
+<tr>
+<td>
+
+```python
+from jina import Flow, Document
+
+flow = (
+    Flow(port=12345)
+    .add(uses=FrenchToEnglishTranslator, timeout_ready=-1)
+    .add(
+        uses='jinaai://alaeddineabdessalem/TextToImage',
+        timeout_ready=-1,
+        install_requirements=True,
+    )
+)  # use the Executor from jina hub
+
+with flow:
+    flow.block()
+```
+
+</td>
+<td>
+`flow.yml`:
+```yaml
+jtype: Flow
+with:
+  port: 12345
+executors:
+  - uses: FrenchToEnglishTranslator
+    timeout_ready: -1
+    py_modules:
+      - translate_executor.py
+  - uses: jinaai://alaeddineabdessalem/TextToImage
+    install_requirements: true
+    timeout_ready: -1
+```
+
+And run the YAML Flow with the CLI: jina flow --uses flow.yml
+</td>
+</tr>
+</table>
+
+```text
+─────────────────────────────────────────── 🎉 Flow is ready to serve! ────────────────────────────────────────────
+╭────────────── 🔗 Endpoint ───────────────╮
+│  ⛓      Protocol                   GRPC  │
+│  🏠        Local          0.0.0.0:12345  │
+│  🔒      Private      172.28.0.12:12345  │
+│  🌍       Public    35.240.201.66:12345  │
+╰──────────────────────────────────────────╯
+```
+
+Then, use the [Jina Client](https://docs.jina.ai/concepts/client/) to make requests to the Flow:
+
+```python
+from jina import Client, Document
+
+client = Client(port=12345)
+
+docs = client.post(
+    on='/',
+    inputs=[
+        Document(text='un astronaut est en train de faire une promenade dans un parc')
+    ],
+)
+docs[0].display()
+```
+
+![stable-diffusion-output.png](.github%2Fstable-diffusion-output.png)
+
+
 
 ---
 
