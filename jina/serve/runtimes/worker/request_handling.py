@@ -403,6 +403,8 @@ class WorkerRequestHandler:
         except AttributeError:
             pass
 
+        requests[0].field_map_document_array = self.args.field_map
+
         if exec_endpoint in self._batchqueue_config:
             assert len(requests) == 1, 'dynamic batching does not support no_reduce'
 

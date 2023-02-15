@@ -101,17 +101,17 @@ def test_different_output_input():
             self, docs: DocumentArray[InputDoc], **kwargs
         ) -> DocumentArray[OutputDoc]:
             docs_return = DocumentArray[OutputDoc](
-                [OutputDoc(embedding=np.zeros((100, 1))) for _ in range(len(docs))]
+                [OutputDoc(embedding=np.zeros(5)) for _ in range(len(docs))]
             )
             return docs_return
 
     with Flow().add(uses=MyExec) as f:
         docs = f.post(
             on='/bar',
-            inputs=InputDoc(img=Image(tensor=np.zeros((3, 224, 224)))),
+            inputs=InputDoc(img=Image(tensor=np.zeros(3))),
             return_type=DocumentArray[OutputDoc],
         )
-        assert docs[0].embedding.shape == (100, 1)
+        assert docs[0].embedding.shape == 5
         assert docs.__class__.document_type == OutputDoc
 
 
@@ -158,10 +158,10 @@ def test_interoperability():
 
             for doc in docs:
                 assert doc.link == 'hello.png'
-                assert (doc.url == np.zeros((3, 224, 224))).all()
+                assert (doc.array == np.zeros(3)).all()
 
             docs_return = DocumentArray[OutputDoc](
-                [OutputDoc(embedding=np.zeros((100, 1))) for _ in range(len(docs))]
+                [OutputDoc(embedding=np.zeros(5)) for _ in range(len(docs))]
             )
             return docs_return
 
@@ -169,11 +169,11 @@ def test_interoperability():
         url: AnyUrl
         tensor: NdArray
 
-    with Deployment(uses=MyExec) as dep:
+    with Deployment(uses=MyExec, field_map={'url': 'link', 'tensor': 'array'}) as dep:
         docs = dep.post(
             on='/bar',
-            inputs=A(url='hello.png', tensor=np.zeros((3, 224, 224))),
+            inputs=A(url='hello.png', tensor=np.zeros(3)),
             return_type=DocumentArray[OutputDoc],
         )
-        assert docs[0].embedding.shape == (100, 1)
+        assert docs[0].embedding.shape == (5,)
         assert docs.__class__.document_type == OutputDoc

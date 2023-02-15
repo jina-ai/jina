@@ -68,3 +68,7 @@ def mixin_base_deployment_parser(parser):
         default=False,
         help='If set, connect to deployment using tls encryption',
     )
+
+    gp.add_argument(
+        '--field-map', action=KVAppendAction, metavar='KEY: VALUE', nargs='*', help=''
+    )

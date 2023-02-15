@@ -1,5 +1,5 @@
 import copy
-from typing import Dict, Optional, Type, TypeVar, Union
+from typing import Dict, Mapping, Optional, Type, TypeVar, Union
 
 from google.protobuf import json_format
 
@@ -28,10 +28,12 @@ class DataRequest(Request):
             self,
             content: 'jina_pb2.DataRequestProto.DataContentProto',
             document_array_cls: Type[DocumentArray],
+            field_map_document_array: Mapping[str, str],
         ):
             self._content = content
             self._loaded_doc_array = None
             self.document_array_cls = document_array_cls
+            self.field_map_document_array = field_map_document_array
 
         @property
         def docs(self) -> 'DocumentArray':
@@ -46,8 +48,8 @@ class DataRequest(Request):
                 else:
                     if docarray_v2:
                         self._loaded_doc_array = (
-                            self.document_array_cls.from_protobuf_smart(
-                                self._content.docs
+                            self.document_array_cls.from_protobuf_field_map(
+                                self._content.docs, self.field_map_document_array
                             )
                         )
                     else:
@@ -121,6 +123,7 @@ class DataRequest(Request):
         self.buffer = None
         self._pb_body = None
         self._document_array_cls = DocumentArray
+        self._field_map_document_array = {}
         self._data = None
 
         try:
@@ -160,6 +163,21 @@ class DataRequest(Request):
 
         if self._data is not None:
             self.data.document_array_cls = item_type
+
+    @property
+    def field_map_document_array(self) -> Mapping[str, str]:
+        """Get the DocumentArray field map to be used for deserialization.
+        .. # noqa: DAR201"""
+        return self._field_map_document_array
+
+    @field_map_document_array.setter
+    def field_map_document_array(self, item_type: Mapping[str, str]):
+        """Get the DocumentArray class to be used for deserialization.
+        .. # noqa: DAR101"""
+        self._field_map_document_array = item_type
+
+        if self._data is not None:
+            self.data.field_map_document_array = item_type
 
     @property
     def is_decompressed(self) -> bool:
@@ -290,7 +308,9 @@ class DataRequest(Request):
         """
         if self._data is None:
             self._data = DataRequest._DataContent(
-                self.proto_with_data.data, document_array_cls=self.document_array_cls
+                self.proto_with_data.data,
+                document_array_cls=self.document_array_cls,
+                field_map_document_array=self.field_map_document_array,
             )
 
         return self._data
