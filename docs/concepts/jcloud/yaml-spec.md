@@ -173,7 +173,7 @@ JCloud also supports retaining the data a Flow was using while active. You can s
 
 ```{code-block} yaml
 ---
-emphasize-lines: 5-10,12,15
+emphasize-lines: 7-10,15-16
 ---
 jtype: Flow
 executors:
@@ -182,7 +182,7 @@ executors:
     jcloud:
       resources:
         storage:
-          type: ebs
+          kind: ebs
           size: 10G
           retain: true
   - name: executor2
@@ -190,7 +190,7 @@ executors:
     jcloud:
       resources:
         storage:
-          type: efs
+          kind: efs
 ```
 
 ## Scale out Executors
@@ -422,4 +422,55 @@ Keys in `labels` have the following restrictions:
   - The following keys are skipped if passed in the Flow YAML.
     - `user`
     - `jina`-version
+```
+
+### Monitoring
+
+To enable [tracing support](https://docs.jina.ai/cloud-nativeness/opentelemetry/) in Flows, you can pass `enable: true` argument in the Flow YAML. (Tracing support is not enabled by default in JCloud)
+
+```{code-block} yaml
+---
+emphasize-lines: 2-5
+---
+jtype: Flow
+jcloud:
+  monitor:
+    traces:
+      enable: true
+executors:
+  - name: executor1
+    uses: jinaai+docker://<username>/Executor1
+```
+
+You can pass the `enable: true` argument to `gateway`, so as to only enable the tracing support in gateway:
+
+```{code-block} yaml
+---
+emphasize-lines: 2-5
+---
+jtype: Flow
+gateway:
+  jcloud:
+      monitor:
+        traces:
+          enable: true
+executors:
+  - name: executor1
+    uses: jinaai+docker://<username>/Executor1
+```
+
+You can also only enable tracing support in `executor1`.
+
+```{code-block} yaml
+---
+emphasize-lines: 5-8
+---
+jtype: Flow
+executors:
+  - name: executor1
+    uses: jinaai+docker://<username>/Executor1
+    jcloud:
+      monitor:
+        traces:
+          enable: true
 ```

@@ -488,10 +488,10 @@ class GrpcConnectionPool:
         deployment: str,
         stop_event: 'threading.Event',
     ):
-        '''Executes JinaInfoRPC against the provided deployment. A single task is created for each replica connection.
+        """Executes JinaInfoRPC against the provided deployment. A single task is created for each replica connection.
         :param deployment: deployment name and the replicas that needs to be warmed up.
         :param stop_event: signal to indicate if an early termination of the task is required for graceful teardown.
-        '''
+        """
         self._logger.debug(f'starting warmup task for deployment {deployment}')
 
         async def task_wrapper(target_warmup_responses, stub):
@@ -511,27 +511,32 @@ class GrpcConnectionPool:
             while not stop_event.is_set():
                 replica_warmup_responses = {}
                 tasks = []
-
-                for replica in replicas:
-                    for stub in replica.warmup_stubs:
-                        if stub.address not in warmed_up_targets:
-                            tasks.append(
-                                asyncio.create_task(
-                                    task_wrapper(replica_warmup_responses, stub)
+                try:
+                    for replica in replicas:
+                        for stub in replica.warmup_stubs:
+                            if stub.address not in warmed_up_targets:
+                                tasks.append(
+                                    asyncio.create_task(
+                                        task_wrapper(replica_warmup_responses, stub)
+                                    )
                                 )
-                            )
 
-                await asyncio.gather(*tasks, return_exceptions=True)
-                for target, response in replica_warmup_responses.items():
-                    if response:
-                        warmed_up_targets.add(target)
+                    await asyncio.gather(*tasks, return_exceptions=True)
+                    for target, response in replica_warmup_responses.items():
+                        if response:
+                            warmed_up_targets.add(target)
 
-                now = time.time()
-                if now > timeout or all(list(replica_warmup_responses.values())):
-                    self._logger.debug(f'completed warmup task in {now - start_time}s.')
-                    return
+                    now = time.time()
+                    if now > timeout or all(list(replica_warmup_responses.values())):
+                        self._logger.debug(f'completed warmup task in {now - start_time}s.')
+                        return
+                    await asyncio.sleep(0.2)
+                except asyncio.CancelledError:
+                    if tasks:
+                        for task in tasks:
+                            task.cancel()
+                    raise
 
-                await asyncio.sleep(0.2)
         except Exception as ex:
             self._logger.error(f'error with warmup up task: {ex}')
             return

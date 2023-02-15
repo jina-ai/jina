@@ -176,6 +176,47 @@ WorkerRuntime@ 1[L]: Executor CLIPTextEncoder started
 Just like that, our Executor is up and running.
 
 (kubernetes-executor)=
+## Serve from Deployment YAML
+If you want a clear separation between deployment configuration and Executor logic, you can define the 
+configuration in a `Deployment` YAML configuration.
+This is an example `deployment.yml` config file:
+```yaml
+jtype: Deployment
+with:
+  replicas: 2
+  shards: 3
+  uses: MyExecutor
+  py_modules:
+    - my_executor.py
+```
+
+Then, you can run the Deployment through the CLI or Python API:
+````{tab} Python API
+```python
+from jina import Deployment
+
+with Deployment.load_config('deployment.yml') as dep:
+    dep.block()
+```
+````
+
+````{tab} CLI
+```shell
+jina deployment --uses deployment.yml
+```
+Unlike the `jina executor` CLI, this command supports replication and sharding. 
+````
+```text
+─────────────────────── 🎉 Deployment is ready to serve! ───────────────────────
+╭────────────── 🔗 Endpoint ────────────────╮
+│  ⛓     Protocol                    GRPC  │
+│  🏠       Local           0.0.0.0:12345   │
+│  🔒     Private     192.168.3.147:12345   │
+│  🌍      Public    87.191.159.105:12345   │
+╰───────────────────────────────────────────╯
+```
+
+Read more about the {ref}`YAML specifications of Deployments <deployment-yaml-spec>`.
 ## Serve via Kubernetes
 You can generate Kubernetes configuration files for your containerized Executor by using the {meth}`~jina.Deployment.to_kubernetes_yaml()` method:
 
@@ -235,6 +276,12 @@ print(client.post(on='/', inputs=Document(), stream=False).texts)
 ```text
 ['hello']
 ```
+
+````{admonition} Hint
+:class: hint
+You can also export an Executor deployment to kubernetes YAML files using the CLI command, in case you define a Deployment YAML config:
+`jina export kubernetes deployment.yml output_path`
+````
 
 (external-shared-executor)=
 ### External and shared Executors

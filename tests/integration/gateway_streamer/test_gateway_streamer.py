@@ -42,12 +42,12 @@ def _setup(pod0_port, pod1_port):
     )
     pod1_process.start()
 
-    AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+    assert AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
         timeout=5.0,
         ctrl_address=f'0.0.0.0:{pod0_port}',
         ready_or_shutdown_event=multiprocessing.Event(),
     )
-    AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+    assert AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
         timeout=5.0,
         ctrl_address=f'0.0.0.0:{pod1_port}',
         ready_or_shutdown_event=multiprocessing.Event(),
@@ -141,7 +141,11 @@ async def test_gateway_stream_executor_error(port_generator, return_results):
         target=_create_worker_runtime, args=(pod_port, 'TestExecutor')
     )
     pod_process.start()
-    time.sleep(0.1)
+    assert AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+        timeout=5.0,
+        ctrl_address=f'0.0.0.0:{pod_port}',
+        ready_or_shutdown_event=multiprocessing.Event(),
+    )
 
     graph_description = {
         "start-gateway": ["pod0"],

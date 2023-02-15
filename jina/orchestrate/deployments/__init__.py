@@ -108,8 +108,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
 
         def __enter__(self):
             for _args in self.args:
-                if getattr(self.deployment_args, 'noblock_on_start', False):
-                    _args.noblock_on_start = True
+                _args.noblock_on_start = True
                 self._pods.append(PodFactory.build_pod(_args).start())
             return self
 
@@ -845,6 +844,33 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
         )
         return worker_host
 
+    def _wait_until_all_ready(self):
+        wait_for_ready_coro = self.async_wait_start_success()
+
+        try:
+            _ = asyncio.get_event_loop()
+        except:
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+
+        async def _f():
+            pass
+
+        running_in_event_loop = False
+        try:
+            asyncio.get_event_loop().run_until_complete(_f())
+        except:
+            running_in_event_loop = True
+
+        if not running_in_event_loop:
+            asyncio.get_event_loop().run_until_complete(wait_for_ready_coro)
+        else:
+            wait_ready_thread = threading.Thread(
+                target=self.wait_start_success, daemon=True
+            )
+            wait_ready_thread.start()
+            wait_ready_thread.join()
+
     def start(self) -> 'Deployment':
         """
         Start to run all :class:`Pod` in this Deployment.
@@ -864,26 +890,22 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
 
         if self.pod_args['uses_before'] is not None:
             _args = self.pod_args['uses_before']
-            if getattr(self.args, 'noblock_on_start', False):
-                _args.noblock_on_start = True
+            _args.noblock_on_start = True
             self.uses_before_pod = PodFactory.build_pod(_args)
             self.enter_context(self.uses_before_pod)
         if self.pod_args['uses_after'] is not None:
             _args = self.pod_args['uses_after']
-            if getattr(self.args, 'noblock_on_start', False):
-                _args.noblock_on_start = True
+            _args.noblock_on_start = True
             self.uses_after_pod = PodFactory.build_pod(_args)
             self.enter_context(self.uses_after_pod)
         if self.pod_args['head'] is not None:
             _args = self.pod_args['head']
-            if getattr(self.args, 'noblock_on_start', False):
-                _args.noblock_on_start = True
+            _args.noblock_on_start = True
             self.head_pod = PodFactory.build_pod(_args)
             self.enter_context(self.head_pod)
         if self._include_gateway:
             _args = self.pod_args['gateway']
-            if getattr(self.args, 'noblock_on_start', False):
-                _args.noblock_on_start = True
+            _args.noblock_on_start = True
             self.gateway_pod = PodFactory.build_pod(_args)
             self.enter_context(self.gateway_pod)
         for shard_id in self.pod_args['pods']:
@@ -894,6 +916,8 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             )
             self.enter_context(self.shards[shard_id])
 
+        if not self.args.noblock_on_start:
+            self._wait_until_all_ready()
         if self._include_gateway:
             all_panels = []
             self._get_summary_table(all_panels)
@@ -911,10 +935,6 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
 
         If not successful, it will raise an error hoping the outer function to catch it
         """
-        if not self.args.noblock_on_start:
-            raise ValueError(
-                f'{self.wait_start_success!r} should only be called when `noblock_on_start` is set to True'
-            )
         try:
             if self.uses_before_pod is not None:
                 self.uses_before_pod.wait_start_success()
@@ -935,10 +955,6 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
 
         If not successful, it will raise an error hoping the outer function to catch it
         """
-        if not self.args.noblock_on_start:
-            raise ValueError(
-                f'{self.async_wait_start_success!r} should only be called when `noblock_on_start` is set to True'
-            )
         try:
             coros = []
             if self.uses_before_pod is not None:
@@ -1086,11 +1102,11 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
 
         cuda_device_map = None
         if self.args.env or os.environ.get('CUDA_VISIBLE_DEVICES', '').startswith('RR'):
-            cuda_visible_devices = (
-                self.args.env.get('CUDA_VISIBLE_DEVICES')
-                if self.args.env and 'CUDA_VISIBLE_DEVICES' in self.args.env
-                else os.environ.get('CUDA_VISIBLE_DEVICES', None)
-            )
+            args_env = self.args.env or {}
+            cuda_visible_devices = args_env.get(
+                'CUDA_VISIBLE_DEVICES'
+            ) or os.environ.get('CUDA_VISIBLE_DEVICES', None)
+
             cuda_device_map = Deployment._roundrobin_cuda_device(
                 cuda_visible_devices, replicas
             )

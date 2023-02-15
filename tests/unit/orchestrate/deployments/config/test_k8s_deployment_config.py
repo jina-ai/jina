@@ -440,13 +440,8 @@ def test_k8s_yaml_regular_deployment(
 ):
     def _mock_fetch(
         name,
-        tag,
-        image_required=True,
-        rebuild_image=True,
-        *,
-        prefer_platform=None,
-        secret=None,
-        force=False,
+        *args,
+        **kwargs,
     ):
         return (
             HubExecutor(

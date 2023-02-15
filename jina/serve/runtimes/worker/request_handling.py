@@ -310,20 +310,26 @@ class WorkerRequestHandler:
                 )
                 self._request_size_histogram.record(req.nbytes, attributes=attributes)
 
-    def _record_docs_processed_monitoring(self, requests, docs):
+    def _record_docs_processed_monitoring(self, requests):
         if self._document_processed_metrics:
             self._document_processed_metrics.labels(
                 requests[0].header.exec_endpoint,
                 self._executor.__class__.__name__,
                 self.args.name,
-            ).inc(len(docs))
+            ).inc(
+                len(requests[0].docs)
+            )  # TODO we can optimize here and access the
+            # lenght of the da without loading the da in memory
+
         if self._document_processed_counter:
             attributes = WorkerRequestHandler._metric_attributes(
                 requests[0].header.exec_endpoint,
                 self._executor.__class__.__name__,
                 self.args.name,
             )
-            self._document_processed_counter.add(len(docs), attributes=attributes)
+            self._document_processed_counter.add(
+                len(requests[0].docs), attributes=attributes
+            )  # TODO same as above
 
     def _record_response_size_monitoring(self, requests):
         if self._sent_response_size_metrics:
@@ -441,7 +447,7 @@ class WorkerRequestHandler:
         for req in requests:
             req.add_executor(self.deployment_name)
 
-        self._record_docs_processed_monitoring(requests, requests[0].docs)
+        self._record_docs_processed_monitoring(requests)
         self._record_response_size_monitoring(requests)
 
         return requests[0]
