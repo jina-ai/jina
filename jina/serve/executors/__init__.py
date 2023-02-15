@@ -617,6 +617,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         env_from_secret: Optional[dict] = None,
         exit_on_exceptions: Optional[List[str]] = [],
         external: Optional[bool] = False,
+        field_map: Optional[dict] = {},
         floating: Optional[bool] = False,
         force_update: Optional[bool] = False,
         gpus: Optional[str] = None,
@@ -680,6 +681,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         :param env_from_secret: The map of environment variables that are read from kubernetes cluster secrets
         :param exit_on_exceptions: List of exceptions that will cause the Executor to shut down.
         :param external: The Deployment will be considered an external Deployment that has been started independently from the Flow.This Deployment will not be context managed by the Flow.
+        :param field_map:
         :param floating: If set, the current Pod/Deployment can not be further chained, and the next `.add()` will chain after the last Pod/Deployment not this current one.
         :param force_update: If set, always pull the latest Hub Executor bundle even it exists on local
         :param gpus: This argument allows dockerized Jina Executors to discover local gpu devices.

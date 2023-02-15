@@ -56,3 +56,4 @@
 | `external` | The Deployment will be considered an external Deployment that has been started independently from the Flow.This Deployment will not be context managed by the Flow. | `boolean` | `False` |
 | `grpc_metadata` | The metadata to be passed to the gRPC request. | `object` | `None` |
 | `tls` | If set, connect to deployment using tls encryption | `boolean` | `False` |
+| `field_map` |  | `object` | `{}` |

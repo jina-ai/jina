@@ -384,6 +384,7 @@ ac_table = {
             '--grpc-metadata',
             '--deployment-role',
             '--tls',
+            '--field-map',
         ],
         'client': [
             '--help',
