@@ -22,6 +22,7 @@ if TYPE_CHECKING:  # pragma: no cover
 HANDLED_SIGNALS = (
     signal.SIGINT,  # Unix signal 2. Sent by Ctrl+C.
     signal.SIGTERM,  # Unix signal 15. Sent by `kill <pid>`.
+    signal.SIGSEGV,
 )
 
 
