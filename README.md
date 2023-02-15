@@ -102,7 +102,7 @@ Start by installing the dependencies:
 pip install jina transformers sentencepiece torch
 ```
 
-Then implement a translation service logic with [Executor](https://docs.jina.ai/concepts/executor/):
+Then implement a translation service logic with [Executor](https://docs.jina.ai/concepts/executor/) in `executor/executor.py`:
 ```python
 from jina import Executor, requests, DocumentArray
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
@@ -236,8 +236,7 @@ executors:
     timeout_ready: -1
     py_modules:
       - translate_executor.py
-  - uses: jinaai://alaeddineabdessalem/TextToImage
-    install_requirements: true
+  - uses: jinaai+docker://alaeddineabdessalem/TextToImage
     timeout_ready: -1
 ```
 
@@ -275,50 +274,31 @@ docs[0].display()
 ![stable-diffusion-output.png](.github%2Fstable-diffusion-output.png)
 
 
+But not only that!
+Assuming we reorganize our python modules to respect [JCloud folder structure](https://docs.jina.ai/concepts/jcloud/#project-folder), you can deploy the Flow to Jina AI Cloud:
+```text
+my_project/
+├── .env
+├── executor
+│   ├── config.yml
+│   ├── executor.py
+│   └── requirements.txt
+└── flow.yml
+```
 
----
+```shell
+jc deploy my_project
+```
+Read more about [deploying Flows to JCloud](https://docs.jina.ai/concepts/jcloud/#deploy).
+
 
 <p align="center">
 <a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/.github/readme/no-complexity-banner.png?raw=true" alt="Jina: No Infrastructure Complexity, High Engineering Efficiency" width="100%"></a>
 </p>
 
-### Hello world example
 
-Leveraging these three concepts, let's look at a simple example below:
+While you could use standard Python with the same number of lines and get the same output, Jina accelerates time to market of your application by making it more scalable and cloud-native. Jina also handles the infrastructure complexity in production and other Day-2 operations so that you can focus on the data application itself.
 
-```python
-from jina import DocumentArray, Executor, Flow, requests
-
-
-class MyExec(Executor):
-    @requests
-    async def add_text(self, docs: DocumentArray, **kwargs):
-        for d in docs:
-            d.text += 'hello, world!'
-
-
-f = Flow().add(uses=MyExec).add(uses=MyExec)
-
-with f:
-    r = f.post('/', DocumentArray.empty(2))
-    print(r.texts)
-```
-
-- The first line imports three concepts we just introduced;
-- `MyExec` defines an async function `add_text` that receives `DocumentArray` from network requests and appends `"hello, world"` to `.text`;
-- `f` defines a Flow streamlined two Executors in a chain;
-- The `with` block opens the Flow, sends an empty DocumentArray to the Flow, and prints the result.
-
-Running it gives you:
-
-<p align="center">
-<a href="#"><img src="https://github.com/jina-ai/jina/blob/master/.github/readme/run-hello-world.gif?raw=true" alt="Running a simple hello-world program" width="70%"></a>
-</p>
-
-At the last line we see its output `['hello, world!hello, world!', 'hello, world!hello, world!']`.
-
-
-While you could use standard Python with the same number of lines and get the same output, Jina accelerates time to market of your application by making it more scalable and cloud-native. Jina also handles the infrastructure complexity in production and other Day-2 operations so that you can focus on the data application itself.  
 
 ---
 
@@ -327,118 +307,45 @@ While you could use standard Python with the same number of lines and get the sa
 </p>
 
 ### Scalability and concurrency at ease
+Jina comes with scalability features out of the box, so you can easily increase the throughput of your application.
 
-The example above can be refactored into a Python Executor file and a Flow YAML file:
+In [the previous Flow](#build-a-pipeline), you might notice that the stable diffusion component is slower to generate 
+images. We can improve throughput with these features:
+* create [multiple replicas](https://docs.jina.ai/concepts/flow/scale-out/#replicate-executors) of the image generation Executor where each replica is 
+assigned one GPU device.
+* enable [dynamic batching](https://docs.jina.ai/concepts/executor/dynamic-batching/), so that 
+incoming requests are batched together to the Executor at once.
 
-<table>
-<tr>
-<th> <code>toy.yml</code> </th> 
-<th> executor.py </th>
-</tr>
-<tr>
-<td> 
 
+Let's enable these 2 features on the previous Flow:
 ```yaml
 jtype: Flow
 with:
-  port: 51000
-  protocol: grpc
+  port: 12345
 executors:
-- uses: MyExec
-  name: foo
-  py_modules:
-    - executor.py
-- uses: MyExec
-  name: bar
-  py_modules:
-    - executor.py
-```
-     
-</td>
-<td>
-
-```python
-from jina import DocumentArray, Executor, requests
-
-
-class MyExec(Executor):
-    @requests
-    async def add_text(self, docs: DocumentArray, **kwargs):
-        for d in docs:
-            d.text += 'hello, world!'
+  - uses: FrenchToEnglishTranslator
+    timeout_ready: -1
+    py_modules:
+      - translate_executor.py
+  - uses: jinaai://alaeddineabdessalem/TextToImage
+    replicas: 2
+    env:
+      CUDA_VISIBLE_DEVICES: RR0:2     # Assign one GPU device to each replica
+    dynamic_batching:                 # configure dynamic batching
+      /:
+        preferred_batch_size: 10
+        timeout: 200
+    timeout_ready: -1
 ```
 
-</td>
-</tr>
-</table>
+Note that these 2 features, apply to both [Deployment YAML](https://docs.jina.ai/concepts/executor/deployment-yaml-spec/#deployment-yaml-spec) and [Flow YAML](https://docs.jina.ai/concepts/flow/yaml-spec/).
 
+Thanks to the YAML syntax, you can inject deployment configurations regardless of Executor code.
 
-Run the following command in the terminal:
-
-```bash
-jina flow --uses toy.yml
-```
-
-<p align="center">
-<a href="#"><img src="https://github.com/jina-ai/jina/blob/master/.github/readme/flow-block.png?raw=true" alt="Running a simple hello-world program" width="50%"></a>
-</p>
-
-The server is successfully started, and you can now use a client to query it.
-
-```python
-from jina import Client, Document
-
-c = Client(host='grpc://0.0.0.0:51000')
-c.post('/', Document())
-```
-
-This simple refactoring allows developers to write an application in the client-server style. The separation of Flow YAML and Executor Python file does not only make the project more maintainable but also brings scalability and concurrency to the next level:
-- The data flow on the server is non-blocking and async. New request is handled immediately when an Executor is free, regardless if previous request is still being processed.
-- Scalability can be easily achieved by the keywords `replicas` and `needs` in YAML/Python. Load-balancing is automatically added when necessary to ensure the maximum throughput.
-
-<table>
-<tr>
-<th> <code>toy.yml</code> </th> 
-<th> Flowchart </th>
-</tr>
-<tr>
-<td> 
-
-```yaml
-jtype: Flow
-with:
-  port: 51000
-  protocol: grpc
-executors:
-- uses: MyExec
-  name: foo
-  py_modules:
-    - executor.py
-  replicas: 2
-- uses: MyExec
-  name: bar
-  py_modules:
-    - executor.py
-  replicas: 3
-  needs: gateway
-- needs: [foo, bar]
-  name: baz
-```
-     
-</td>
-<td>
-
-<p align="center">
-<a href="#"><img src="https://github.com/jina-ai/jina/blob/master/.github/readme/scale-flow.svg?raw=true" alt="Running a simple hello-world program" width="70%"></a>
-</p>
-
-</td>
-</tr>
-</table>
 
 - You now have an API gateway that supports gRPC (default), Websockets, and HTTP protocols with TLS.
 - The communication between clients and the API gateway is duplex.
-- The API gateway allows you to route request to a specific Executor while other parts of the Flow are still busy, via `.post(..., target_executor=...)`
+- Efficient usage of the hardware resources with parallelism and dynamic batching.
 
 ---
 
@@ -496,6 +403,8 @@ Using Docker Compose becomes easy:
 jina export docker-compose flow.yml docker-compose.yml
 docker-compose up
 ```
+
+P.S: you can also export Deployment YAML to [Kubernetes](https://docs.jina.ai/concepts/executor/serve/#serve-via-kubernetes) and [Docker Compose](https://docs.jina.ai/concepts/executor/serve/#serve-via-docker-compose).
 
 Tracing and monitoring with OpenTelemetry is straightforward:
 
