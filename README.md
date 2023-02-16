@@ -136,7 +136,12 @@ class Translator(Executor):
 ```
 
 Then serve it either with the Python API or YAML:
+<div class="table-wrapper">
 <table>
+<tr>
+<th> Python API: <code>deployment.py</code> </th> 
+<th> YAML: <code>deployment.yml</code> </th>
+</tr>
 <tr>
 <td>
 
@@ -149,8 +154,6 @@ with Deployment(uses=Translator, port=12345, timeout_ready=-1) as dep:
 
 </td>
 <td>
-
-`deployment.yml`:
 
 ```yaml
 jtype: Deployment
@@ -165,6 +168,7 @@ And run the YAML Deployemt with the CLI: `jina deployment --uses deployment.yml`
 </td>
 </tr>
 </table>
+</div>
 
 
 ```text
@@ -213,6 +217,10 @@ Use the Flow either with the Python API or YAML:
 
 <div class="table-wrapper">
 <table>
+<tr>
+<th> Python API: <code>flow.py</code> </th> 
+<th> YAML: <code>flow.yml</code> </th>
+</tr>
 <tr>
 <td>
 
