@@ -60,7 +60,7 @@ DocArray is the foundational data structure of Jina. Before starting Jina, first
 :link: concepts/executor/index
 :link-type: doc
 
-{term}`Executor` is a self-contained logic unit that performs a group of tasks on a `DocumentArray`.
+{term}`Executor` is a Python class that can serve logic using `Documents`.
 
 ::::
 

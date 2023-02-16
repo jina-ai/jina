@@ -213,7 +213,7 @@ In case your solution can be modeled as a [DAG](https://de.wikipedia.org/wiki/DA
 use Jina [Flow](https://docs.jina.ai/concepts/flow/).
 It orchestrates a set of [Executors](https://docs.jina.ai/concepts/executor/) and a [Gateway](https://docs.jina.ai/concepts/gateway/) to offer an end-to-end service.
 
-For instance, let's combine our implemented French translation service with a Stable Diffusion image generation service from [Jina Hub](https://cloud.jina.ai/executors).
+For instance, let's combine the French translation service with a Stable Diffusion image generation service from [Jina Hub](https://cloud.jina.ai/executors).
 Chaining such services with [Flow](https://docs.jina.ai/concepts/flow/) will give us a multilingual image generation service.
 
 Use the Flow either with the Python API or YAML:
@@ -299,21 +299,12 @@ docs[0].display()
 ![stable-diffusion-output.png](https://raw.githubusercontent.com/jina-ai/jina/docs-readme-changes/.github/stable-diffusion-output.png)
 
 
-But not only that!
+You can also deploy such a pipeline to JCloud.
+First, turn the `flow.yml` file into a [jcloud-compatible YAML](https://docs.jina.ai/concepts/jcloud/yaml-spec/) by specifying resource requirements and using containerized Hub Executors.
 
-Assuming we reorganize our python modules to respect [JCloud folder structure](https://docs.jina.ai/concepts/jcloud/#project-folder), you can deploy the Flow to Jina AI Cloud:
-```text
-my_project/
-├── .env
-├── executor
-│   ├── config.yml
-│   ├── translate_executor.py
-│   └── requirements.txt
-└── flow.yml
-```
-
+Then, use `jina cloud deploy` command to deploy to the cloud:
 ```shell
-jc deploy my_project
+wget 
 ```
 Read more about [deploying Flows to JCloud](https://docs.jina.ai/concepts/jcloud/#deploy).
 
