@@ -210,12 +210,17 @@ For instance, let's combine our implemented French translation service with a St
 Chaining such services with [Flow](https://docs.jina.ai/concepts/flow/) will give us a multilingual image generation service.
 
 Use the Flow either with the Python API or YAML:
+
+| Name | Signature Code                 |
+|------|--------------------------------|
+| Minhas Kamal | <pre>main(m,k){<br>  for(<br>    ;<br>    m%k--?:(k=m++);<br>    k^1?:printf("%i\|",m)<br>  );<br>}</pre> |
+
 <table>
 <tr>
 <td>
 
 ```python
-from jina import Flow, Document
+from jina import Flow
 
 flow = (
     Flow(port=12345)
