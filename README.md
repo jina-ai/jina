@@ -335,118 +335,45 @@ While you could use standard Python with the same number of lines and get the sa
 </p>
 
 ### Scalability and concurrency at ease
-
+Jina comes with scalability features out of the box, so you can easily increase the throughput of your application.
+In [the previous Flow](#build-a-pipeline), you might notice that the stable diffusion component is slower to generate images. 
+We can improve throughput with these features:
 Let's take the following example:
 
-<table>
-<tr>
-<th> <code>toy.yml</code> </th> 
-<th> executor.py </th>
-</tr>
-<tr>
-<td> 
+* create [multiple replicas](https://docs.jina.ai/concepts/flow/scale-out/#replicate-executors) of the image generation Executor where each replica is 
+assigned one GPU device.
+* enable [dynamic batching](https://docs.jina.ai/concepts/executor/dynamic-batching/), so that 
+incoming requests are batched together to the Executor at once.
+
+  
+Let's enable these 2 features on the previous Flow:
 
 ```yaml
 jtype: Flow
 with:
-  port: 51000
-  protocol: grpc
+  port: 12345
 executors:
-- uses: MyExec
-  name: foo
-  py_modules:
-    - executor.py
-- uses: MyExec
-  name: bar
-  py_modules:
-    - executor.py
-```
-     
-</td>
-<td>
-
-```python
-from jina import DocumentArray, Executor, requests
-
-
-class MyExec(Executor):
-    @requests
-    async def add_text(self, docs: DocumentArray, **kwargs):
-        for d in docs:
-            d.text += 'hello, world!'
+  - uses: Translator
+    timeout_ready: -1
+    py_modules:
+      - translate_executor.py
+    replicas: 3
+  - uses: jinaai://alaeddineabdessalem/TextToImage
+    timeout_ready: -1
+    install_requirements: true
+    replicas: 2
+    env:
+      CUDA_VISIBLE_DEVICES: RR1:3     # Assign one GPU device to each replica
+    uses_dynamic_batching:                 # configure dynamic batching
+      /default:
+        preferred_batch_size: 10
+        timeout: 200
 ```
 
-</td>
-</tr>
-</table>
+Running the scaled flow YAML, will give up to x% speed compared on 30 concurrent requests compared to the previous Flow YAML.
 
-
-Run the following command in the terminal:
-
-```bash
-jina flow --uses toy.yml
-```
-
-<p align="center">
-<a href="#"><img src="https://github.com/jina-ai/jina/blob/master/.github/readme/flow-block.png?raw=true" alt="Running a simple hello-world program" width="50%"></a>
-</p>
-
-The server is successfully started, and you can now use a client to query it.
-
-```python
-from jina import Client, Document
-
-c = Client(host='grpc://0.0.0.0:51000')
-c.post('/', Document())
-```
-
-The separation of Flow YAML and Executor Python file does not only make the project more maintainable but also brings scalability and concurrency to the next level:
-- The data flow on the server is non-blocking and async. New request is handled immediately when an Executor is free, regardless if previous request is still being processed.
-- Scalability can be easily achieved by the keywords `replicas` and `needs` in YAML/Python. Load-balancing is automatically added when necessary to ensure the maximum throughput.
-
-<table>
-<tr>
-<th> <code>toy.yml</code> </th> 
-<th> Flowchart </th>
-</tr>
-<tr>
-<td> 
-
-```yaml
-jtype: Flow
-with:
-  port: 51000
-  protocol: grpc
-executors:
-- uses: MyExec
-  name: foo
-  py_modules:
-    - executor.py
-  replicas: 2
-- uses: MyExec
-  name: bar
-  py_modules:
-    - executor.py
-  replicas: 3
-  needs: gateway
-- needs: [foo, bar]
-  name: baz
-```
-     
-</td>
-<td>
-
-<p align="center">
-<a href="#"><img src="https://github.com/jina-ai/jina/blob/master/.github/readme/scale-flow.svg?raw=true" alt="Running a simple hello-world program" width="70%"></a>
-</p>
-
-</td>
-</tr>
-</table>
-
-- You now have an API gateway that supports gRPC (default), Websockets, and HTTP protocols with TLS.
-- The communication between clients and the API gateway is duplex.
-- The API gateway allows you to route request to a specific Executor while other parts of the Flow are still busy, via `.post(..., target_executor=...)`
+Note that these 2 features, apply to both [Deployment YAML](https://docs.jina.ai/concepts/executor/deployment-yaml-spec/#deployment-yaml-spec) and [Flow YAML](https://docs.jina.ai/concepts/flow/yaml-spec/).
+Thanks to the YAML syntax, you can inject deployment configurations regardless of Executor code.
 
 ---
 
