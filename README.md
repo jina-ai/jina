@@ -211,11 +211,6 @@ Chaining such services with [Flow](https://docs.jina.ai/concepts/flow/) will giv
 
 Use the Flow either with the Python API or YAML:
 
-| Python API: `flow.py`                                                                                                                                                                                                                                                                                                                                               | YAML: `flow.yml`                                                                                                                                                                                                                                                       |
-|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| <pre><code>from jina import Flow<br>flow = (<br>    Flow(port=12345)<br>    .add(uses=Translator, timeout_ready=-1)<br>    .add(<br>        uses='jinaai://alaeddineabdessalem/TextToImage',<br>        timeout_ready=-1,<br>        install_requirements=True,<br>    )<br>)  # use the Executor from jina hub<br><br>with flow:<br>    flow.block()}</code></pre> | <pre><code>jtype: Flow<br>with:<br>  port: 12345<br>executors:<br>  - uses: Translator<br>    timeout_ready: -1<br>    py_modules:<br>      - translate_executor.py<br>  - uses: jinaai+docker://alaeddineabdessalem/TextToImage<br>    timeout_ready: -1</code></pre> |
-
-
 <div class="table-wrapper">
 <table>
 <tr>
@@ -288,7 +283,7 @@ docs = client.post(
 docs[0].display()
 ```
 
-![stable-diffusion-output.png](.github/stable-diffusion-output.png)
+![stable-diffusion-output.png](https://github.com/jina-ai/jina/blob/docs-readme-changes/.github/stable-diffusion-output.png)
 
 
 But not only that!
