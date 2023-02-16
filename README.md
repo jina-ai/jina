@@ -363,7 +363,7 @@ executors:
     install_requirements: true
     replicas: 2
     env:
-      CUDA_VISIBLE_DEVICES: RR1:3     # Assign one GPU device to each replica
+      CUDA_VISIBLE_DEVICES: RR             # Assign one GPU device to each replica
     uses_dynamic_batching:                 # configure dynamic batching
       /default:
         preferred_batch_size: 10
