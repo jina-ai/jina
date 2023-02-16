@@ -1,0 +1,10 @@
+jtype: Flow
+executors:
+  - uses: jinaai+docker://alaeddineabdessalem/Translator
+    timeout_ready: -1
+  - uses: jinaai+docker://alaeddineabdessalem/TextToImage
+    timeout_ready: -1
+    jcloud:
+      resources:
+        gpu: 1
+        memory: 16G

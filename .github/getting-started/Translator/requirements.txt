@@ -1,0 +1,4 @@
+transformers
+sentencepiece
+torch
+protobuf==3.19.6
