@@ -211,9 +211,9 @@ Chaining such services with [Flow](https://docs.jina.ai/concepts/flow/) will giv
 
 Use the Flow either with the Python API or YAML:
 
-| Name | Signature Code                 |
-|------|--------------------------------|
-| Minhas Kamal | <pre>main(m,k){<br>  for(<br>    ;<br>    m%k--?:(k=m++);<br>    k^1?:printf("%i\|",m)<br>  );<br>}</pre> |
+| Python API: `flow.py`                                                                                                                                                                                                                                                                                                                                  | YAML: `flow.yml`                                                                                                                                                                                                                                          |
+|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| <pre>from jina import Flow<br>flow = (<br>    Flow(port=12345)<br>    .add(uses=Translator, timeout_ready=-1)<br>    .add(<br>        uses='jinaai://alaeddineabdessalem/TextToImage',<br>        timeout_ready=-1,<br>        install_requirements=True,<br>    )<br>)  # use the Executor from jina hub<br><br>with flow:<br>    flow.block()}</pre> | <pre>jtype: Flow<br>with:<br>  port: 12345<br>executors:<br>  - uses: Translator<br>    timeout_ready: -1<br>    py_modules:<br>      - translate_executor.py<br>  - uses: jinaai+docker://alaeddineabdessalem/TextToImage<br>    timeout_ready: -1</pre> |
 
 <table>
 <tr>
@@ -285,7 +285,7 @@ docs = client.post(
 docs[0].display()
 ```
 
-![stable-diffusion-output.png](.github%2Fstable-diffusion-output.png)
+![stable-diffusion-output.png](.github/stable-diffusion-output.png)
 
 
 But not only that!
