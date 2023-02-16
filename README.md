@@ -94,8 +94,9 @@ Document, Executor and Flow are three fundamental concepts in Jina.
 </p>
 
 ### Build AI & ML Services
-
 <!-- start build-ai-services -->
+<!-- TODO: change to master before merging -->
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/jina-ai/jina/blob/docs-readme-changes/.github/notebook.ipynb)
 
 Build fast, reliable and scalable gRPC-based AI services with Jina.
 
@@ -206,7 +207,7 @@ an astronaut is walking in a park
 
 
 <!-- start build-pipelines -->
-
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/jina-ai/jina/blob/docs-readme-changes/.github/notebook.ipynb)
 In case your solution can be modeled as a [DAG](https://de.wikipedia.org/wiki/DAG) pipeline, composed of a set of tasks, 
 use Jina [Flow](https://docs.jina.ai/concepts/flow/).
 It orchestrates a set of [Executors](https://docs.jina.ai/concepts/executor/) and a [Gateway](https://docs.jina.ai/concepts/gateway/) to offer an end-to-end service.
