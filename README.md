@@ -102,7 +102,7 @@ Build fast, reliable and scalable gRPC-based AI services with Jina.
 
 Start by installing the dependencies:
 ```shell
-pip install jina transformers sentencepiece torch protobuf==3.19.6
+pip install jina transformers==4.26.1 sentencepiece==0.1.97 torch==1.13.1 protobuf==3.19.6
 ```
 
 Then implement a translation service logic with [Executor](https://docs.jina.ai/concepts/executor/) in `translate_executor.py`:
