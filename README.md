@@ -244,8 +244,6 @@ with flow:
 </td>
 <td>
 
-`flow.yml` :
-
 ```yaml
 jtype: Flow
 with:
@@ -259,7 +257,7 @@ executors:
     timeout_ready: -1
 ```
 
-And run the YAML Flow with the CLI: jina flow --uses flow.yml
+And run the YAML Flow with the CLI: `jina flow --uses flow.yml`
 </td>
 </tr>
 </table>
@@ -291,10 +289,13 @@ docs = client.post(
 docs[0].display()
 ```
 
-![stable-diffusion-output.png](https://github.com/jina-ai/jina/blob/docs-readme-changes/.github/stable-diffusion-output.png)
+<!-- TODO: replace with master later -->
+
+![stable-diffusion-output.png](https://raw.githubusercontent.com/jina-ai/jina/docs-readme-changes/.github/stable-diffusion-output.png)
 
 
 But not only that!
+
 Assuming we reorganize our python modules to respect [JCloud folder structure](https://docs.jina.ai/concepts/jcloud/#project-folder), you can deploy the Flow to Jina AI Cloud:
 ```text
 my_project/
