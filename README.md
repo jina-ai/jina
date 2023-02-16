@@ -104,7 +104,7 @@ Start by installing the dependencies:
 pip install jina transformers sentencepiece torch protobuf==3.19.6
 ```
 
-Then implement a translation service logic with [Executor](https://docs.jina.ai/concepts/executor/) in `executor.py`:
+Then implement a translation service logic with [Executor](https://docs.jina.ai/concepts/executor/) in `translate_executor.py`:
 ```python
 from jina import Executor, requests, DocumentArray
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
@@ -161,7 +161,7 @@ with:
   port: 12345
   uses: Translator
   py_modules:
-    - executor.py # name of the module containing Translator
+    - translate_executor.py # name of the module containing Translator
   timeout_ready: -1
 ```
 And run the YAML Deployemt with the CLI: `jina deployment --uses deployment.yml`
@@ -253,9 +253,11 @@ executors:
   - uses: Translator
     timeout_ready: -1
     py_modules:
-      - executor.py
-  - uses: jinaai+docker://alaeddineabdessalem/TextToImage
+      - translate_executor.py
+  - uses: jinaai://alaeddineabdessalem/TextToImage
     timeout_ready: -1
+    install_requirements: true
+
 ```
 
 And run the YAML Flow with the CLI: `jina flow --uses flow.yml`
@@ -303,7 +305,7 @@ my_project/
 ├── .env
 ├── executor
 │   ├── config.yml
-│   ├── executor.py
+│   ├── translate_executor.py
 │   └── requirements.txt
 └── flow.yml
 ```
@@ -350,7 +352,7 @@ executors:
   - uses: Translator
     timeout_ready: -1
     py_modules:
-      - executor.py
+      - translate_executor.py
   - uses: jinaai://alaeddineabdessalem/TextToImage
     replicas: 2
     env:
