@@ -158,6 +158,7 @@ with Deployment(uses=Translator, port=12345, timeout_ready=-1) as dep:
 ```yaml
 jtype: Deployment
 with:
+  port: 12345
   uses: Translator
   py_modules:
     - executor.py # name of the module containing Translator
@@ -175,9 +176,9 @@ And run the YAML Deployemt with the CLI: `jina deployment --uses deployment.yml`
 ──────────────────────────────────────── 🎉 Deployment is ready to serve! ─────────────────────────────────────────
 ╭────────────── 🔗 Endpoint ───────────────╮
 │  ⛓      Protocol                   GRPC │
-│  🏠        Local          0.0.0.0:65048  │
-│  🔒      Private      172.28.0.12:65048  │
-│  🌍       Public    35.230.97.208:65048  │
+│  🏠        Local          0.0.0.0:12345  │
+│  🔒      Private      172.28.0.12:12345  │
+│  🌍       Public    35.230.97.208:12345  │
 ╰──────────────────────────────────────────╯
 ```
 
@@ -252,7 +253,7 @@ executors:
   - uses: Translator
     timeout_ready: -1
     py_modules:
-      - translate_executor.py
+      - executor.py
   - uses: jinaai+docker://alaeddineabdessalem/TextToImage
     timeout_ready: -1
 ```
@@ -349,7 +350,7 @@ executors:
   - uses: Translator
     timeout_ready: -1
     py_modules:
-      - translate_executor.py
+      - executor.py
   - uses: jinaai://alaeddineabdessalem/TextToImage
     replicas: 2
     env:
