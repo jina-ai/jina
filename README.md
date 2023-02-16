@@ -216,16 +216,7 @@ Use the Flow either with the Python API or YAML:
 | <pre><code>from jina import Flow<br>flow = (<br>    Flow(port=12345)<br>    .add(uses=Translator, timeout_ready=-1)<br>    .add(<br>        uses='jinaai://alaeddineabdessalem/TextToImage',<br>        timeout_ready=-1,<br>        install_requirements=True,<br>    )<br>)  # use the Executor from jina hub<br><br>with flow:<br>    flow.block()}</code></pre> | <pre><code>jtype: Flow<br>with:<br>  port: 12345<br>executors:<br>  - uses: Translator<br>    timeout_ready: -1<br>    py_modules:<br>      - translate_executor.py<br>  - uses: jinaai+docker://alaeddineabdessalem/TextToImage<br>    timeout_ready: -1</code></pre> |
 
 
-| Status | Response                        |
-|--------|---------------------------------|
-| 200    | `json`                          |
-|        | `   {`                          |
-|        | ` "id": 10,`                    |
-|        | ` "username": "alanpartridge",` |
-|        | ` more code...`                 |
-|        | `}`                             |
-| 400    |                                 |
-
+<div class="table-wrapper">
 <table>
 <tr>
 <td>
@@ -269,7 +260,7 @@ And run the YAML Flow with the CLI: jina flow --uses flow.yml
 </td>
 </tr>
 </table>
-
+</div>
 ```text
 ─────────────────────────────────────────── 🎉 Flow is ready to serve! ────────────────────────────────────────────
 ╭────────────── 🔗 Endpoint ───────────────╮
