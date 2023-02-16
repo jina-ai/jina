@@ -80,8 +80,8 @@ Find more install options on [Apple Silicon](https://docs.jina.ai/get-started/in
 
 Document, Executor and Flow are three fundamental concepts in Jina.
 
-- [**Document**](https://docarray.jina.ai/) from [DocArray](https://github.com/docarray/docarray) is the fundamental data structure behind data validation and serialization.
-- [**Executor**](https://docs.jina.ai/concepts/executor/) is a Python class that can serve logic using Documents.
+- [**Document**](https://docarray.jina.ai/) from [DocArray](https://github.com/docarray/docarray) is the basic computational unit in Jina.
+- [**Executor**](https://docs.jina.ai/concepts/executor/) is a Python class that transforms and processes Documents.
 - [**Flow**](https://docs.jina.ai/concepts/flow/) and [**Deployment**](https://docs.jina.ai/concepts/executor/serve/#serve-directly) orchestrates Executors into standalone services or pipelines.
 
 [The full glossary is explained here.](https://docs.jina.ai/concepts/preliminaries/#)
@@ -209,7 +209,7 @@ an astronaut is walking in a park
 <!-- start build-pipelines -->
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/jina-ai/jina/blob/docs-readme-changes/.github/getting-started/notebook.ipynb)
 
-In case your solution can be modeled as a [DAG](https://de.wikipedia.org/wiki/DAG) pipeline, composed of a set of tasks, 
+In case your solution can be modeled as a [DAG](https://de.wikipedia.org/wiki/DAG) pipeline, composed of a set of steps, 
 use Jina [Flow](https://docs.jina.ai/concepts/flow/).
 It orchestrates a set of [Executors](https://docs.jina.ai/concepts/executor/) and a [Gateway](https://docs.jina.ai/concepts/gateway/) to offer an end-to-end service.
 
