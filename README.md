@@ -25,7 +25,7 @@
 
 <!-- start jina-description -->
 
-Jina is an MLOps framework that empowers anyone to build multimodal AI services via cloud native technologies. It uplifts a local PoC into a production-ready service. Jina handles the infrastructure complexity, making advanced solution engineering and cloud-native technologies accessible to every developer. 
+Jina is an MLOps framework to build multimodal AI **services** and **pipelines**. Use Jina to **serve** and **scale** AI services and **deploy** them to a production-ready environment like Kubernetes or Jina AI Cloud. Jina handles the infrastructure complexity, making advanced solution engineering and cloud-native technologies accessible to every developer.
 
 Use cases:
 * [Build and deploy a gRPC microservice](#build-ai--ml-services)
@@ -298,22 +298,27 @@ docs[0].display()
 
 ![stable-diffusion-output.png](https://raw.githubusercontent.com/jina-ai/jina/docs-readme-changes/.github/stable-diffusion-output.png)
 
+<!-- TODO: uncomment later -->
 
+<!-- 
 You can also deploy such a pipeline to JCloud.
 First, turn the `flow.yml` file into a [jcloud-compatible YAML](https://docs.jina.ai/concepts/jcloud/yaml-spec/) by specifying resource requirements and using containerized Hub Executors.
 
 Then, use `jina cloud deploy` command to deploy to the cloud:
-<!-- TODO: replace with master later -->
-
+(TODO: replace wit master later)
 ```shell
 wget https://raw.githubusercontent.com/jina-ai/jina/docs-readme-changes/.github/getting-started/jcloud-flow.yml
 jina cloud deploy jcloud-flow.yml
 ```
 
 Read more about [deploying Flows to JCloud](https://docs.jina.ai/concepts/jcloud/#deploy).
-
+ -->
 
 <!-- end build-pipelines -->
+
+Check [the getting-started project source code](https://github.com/jina-ai/jina/tree/master/.github/getting-started).
+
+---
 
 <p align="center">
 <a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/.github/readme/no-complexity-banner.png?raw=true" alt="Jina: No Infrastructure Complexity, High Engineering Efficiency" width="100%"></a>
