@@ -337,30 +337,56 @@ While you could use standard Python with the same number of lines and get the sa
 ### Scalability and concurrency at ease
 Jina comes with scalability features out of the box like [Replicas](https://docs.jina.ai/concepts/flow/scale-out/#replicate-executors), [Shards](https://docs.jina.ai/concepts/flow/scale-out/#customize-polling-behaviors) and [Dynamic Batching](https://docs.jina.ai/concepts/executor/dynamic-batching/).
 This allows you to easily increase the throughput of your application.
-In [the previous Flow](#build-a-pipeline), you might notice that the stable diffusion component is slower to generate images. 
 
-Let's enable Replication on the Stable Diffusion Image generation Executor, where [each replica is assigned 1 GPU device](https://docs.jina.ai/concepts/flow/scale-out/#replicate-on-multiple-gpus):
+Let's try to scale a Stable Diffusion Executor deployment by enabling replicas and dynamic batching:
+* Create 2 replicas, where [each replica is assigned 1 GPU device](https://docs.jina.ai/concepts/flow/scale-out/#replicate-on-multiple-gpus).
+* Enable Dynamic Batching so that incoming parallel requests are processed together with the same model inference.
 
+
+<div class="table-wrapper">
+<table>
+<tr>
+<th> normal deployment </th> 
+<th> scaled deployment </th>
+</tr>
+<tr>
+<td>
 
 ```yaml
-jtype: Flow
+jtype: Deployment
 with:
   port: 12345
-executors:
-  - uses: Translator
-    timeout_ready: -1
-    py_modules:
-      - translate_executor.py
-    replicas: 1
-  - uses: jinaai://alaeddineabdessalem/TextToImage
-    replicas: 2
-    timeout_ready: -1
-    install_requirements: true
-    env:
-      CUDA_VISIBLE_DEVICES: RR
+  timeout_ready: -1
+  uses: jinaai://alaeddineabdessalem/TextToImage
+  install_requirements: true
 ```
 
-Assuming your machine has 2 GPU device, using the scaled flow YAML, can give 50% higher throughput.
+</td>
+<td>
+
+```yaml
+jtype: Deployment
+with:
+  port: 12345
+  timeout_ready: -1
+  uses: jinaai://alaeddineabdessalem/TextToImage
+  install_requirements: true
+  env:
+   CUDA_VISIBLE_DEVICES: RR
+  replicas: 2
+  uses_dynamic_batching: # configure dynamic batching
+    /default:
+      preferred_batch_size: 10
+      timeout: 200
+```
+
+</td>
+</tr>
+</table>
+</div>
+
+
+Assuming your machine has 2 GPU device, using the scaled deployment YAML, will give better throughput compared to the normal deployment.
 
 Note that these features, apply to both [Deployment YAML](https://docs.jina.ai/concepts/executor/deployment-yaml-spec/#deployment-yaml-spec) and [Flow YAML](https://docs.jina.ai/concepts/flow/yaml-spec/).
 Thanks to the YAML syntax, you can inject deployment configurations regardless of Executor code.
