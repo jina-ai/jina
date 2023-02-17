@@ -1,9 +1,9 @@
 jtype: Flow
 executors:
   - uses: jinaai+docker://alaeddineabdessalem/Translator
-    timeout_ready: -1
+    timeout_ready: 1000000
   - uses: jinaai+docker://alaeddineabdessalem/TextToImage
-    timeout_ready: -1
+    timeout_ready: 1000000
     jcloud:
       resources:
         gpu: 1
