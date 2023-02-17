@@ -28,8 +28,8 @@
 Jina is an MLOps framework to build multimodal AI **services** and **pipelines** then **serve**, **scale** and **deploy** them to a production-ready environment like Kubernetes or Jina AI Cloud. Jina handles the infrastructure complexity, making advanced solution engineering and cloud-native technologies accessible to every developer.
 
 Use cases:
-* [Build and deploy a gRPC microservice](#build-ai--ml-services)
-* [Deploy and deploy a pipeline](#build-a-pipeline)
+* **[Build and deploy a gRPC microservice](#build-ai--ml-services)**
+* **[Build and deploy a pipeline](#build-a-pipeline)**
 
 Applications built with Jina enjoy the following features out of the box:
 
@@ -75,9 +75,9 @@ Find more install options on [Apple Silicon](https://docs.jina.ai/get-started/in
 
 Jina has three fundamental concepts: Document, Executor and Flow:
 
-- [**Document**](https://docarray.jina.ai/) from [DocArray](https://github.com/docarray/docarray) is the input/output format in Jina.
-- [**Executor**](https://docs.jina.ai/concepts/executor/) is a Python class that transforms and processes Documents.
-- [**Flow**](https://docs.jina.ai/concepts/flow/) and [**Deployment**](https://docs.jina.ai/concepts/executor/serve/#serve-directly) orchestrate Executors into standalone services or pipelines.
+- A [**Document**](https://docarray.jina.ai/) (from [DocArray](https://github.com/docarray/docarray)) is the input/output format in Jina.
+- An [**Executor**](https://docs.jina.ai/concepts/executor/) is a Python class that transforms and processes Documents.
+- A [**Flow**](https://docs.jina.ai/concepts/flow/) and [**Deployment**](https://docs.jina.ai/concepts/executor/serve/#serve-directly) orchestrate Executors into standalone services or pipelines.
 
 [The full glossary is explained here](https://docs.jina.ai/concepts/preliminaries/#).
 
