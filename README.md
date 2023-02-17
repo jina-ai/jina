@@ -195,14 +195,12 @@ Use [Jina Client](https://docs.jina.ai/concepts/client/) to make requests to the
 from docarray import Document
 from jina import Client
 
+french_text = Document(text='un astronaut est en train de faire une promenade dans un parc')
+
 client = Client(port=12345)
-docs = client.post(
-    on='/',
-    inputs=[
-        Document(text='un astronaut est en train de faire une promenade dans un parc')
-    ],
-)
-print(docs[0].text)
+response = client.post(on='/', inputs=[french_text])
+
+print(response[0].text)
 ```
 
 ```text
@@ -284,21 +282,18 @@ Then run the YAML Flow with the CLI: `jina flow --uses flow.yml`
 ╰──────────────────────────────────────────╯
 ```
 
-Then, use the [Jina Client](https://docs.jina.ai/concepts/client/) to make requests to the Flow:
+Then, use [Jina Client](https://docs.jina.ai/concepts/client/) to make requests to the Flow:
 
 ```python
 from jina import Client, Document
 
 client = Client(port=12345)
 
-docs = client.post(
-    on='/',
-    inputs=[
-        Document(text='un astronaut est en train de faire une promenade dans un parc')
-    ],
-)
+french_text = Document(text='un astronaut est en train de faire une promenade dans un parc')
 
-docs[0].display()
+response = client.post(on='/', inputs=[french_text])
+
+response[0].display()
 ```
 
 <!-- TODO: replace with master later -->
@@ -463,7 +458,7 @@ from docarray import DocumentArray
 from jina import Executor, requests
 
 
-class MyExec(Executor):
+class Encoder(Executor):
     @requests
     def encode(self, docs: DocumentArray, **kwargs):
         with self.tracer.start_as_current_span(
