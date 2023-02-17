@@ -92,14 +92,9 @@ Jina has three fundamental concepts: Document, Executor and Flow:
 <!-- TODO: change to master before merging -->
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/jina-ai/jina/blob/docs-readme-changes/.github/getting-started/notebook.ipynb)
 
-Let's build a fast, reliable and scalable gRPC-based AI service. In Jina we call this an [Executor](https://docs.jina.ai/concepts/executor/).
+Let's build a fast, reliable and scalable gRPC-based AI service. In Jina we call this an [Executor](https://docs.jina.ai/concepts/executor/). Our simple Executor will use Facebook's mBART-50 model to translate French to English. 
 
-Start by installing the dependencies:
-```shell
-pip install jina transformers==4.26.1 sentencepiece==0.1.97 torch==1.13.1 protobuf==3.19.6
-```
-
-Our simple Executor will use Facebook's mBART-50 model to translate French to English. Let's implement the service's logic:
+Let's implement the service's logic:
 
 <table>
 <tr>
