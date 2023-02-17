@@ -95,8 +95,8 @@ Document, Executor and Flow are three fundamental concepts in Jina.
 
 ### Build AI & ML Services
 <!-- start build-ai-services -->
-<!-- TODO: change to master before merging -->
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/jina-ai/jina/blob/docs-readme-changes/.github/getting-started/notebook.ipynb)
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/jina-ai/jina/blob/master/.github/getting-started/notebook.ipynb)
 
 Build fast, reliable and scalable gRPC-based AI services with Jina.
 
@@ -294,9 +294,8 @@ docs = client.post(
 docs[0].display()
 ```
 
-<!-- TODO: replace with master later -->
 
-![stable-diffusion-output.png](https://raw.githubusercontent.com/jina-ai/jina/docs-readme-changes/.github/stable-diffusion-output.png)
+![stable-diffusion-output.png](https://raw.githubusercontent.com/jina-ai/jina/master/.github/stable-diffusion-output.png)
 
 
 You can also deploy such a pipeline to JCloud.
@@ -304,10 +303,9 @@ First, turn the `flow.yml` file into a [jcloud-compatible YAML](https://docs.jin
 
 Then, use `jina cloud deploy` command to deploy to the cloud:
 
-<!-- TODO: replace wit master later -->
 
 ```shell
-wget https://raw.githubusercontent.com/jina-ai/jina/docs-readme-changes/.github/getting-started/jcloud-flow.yml
+wget https://raw.githubusercontent.com/jina-ai/jina/master/.github/getting-started/jcloud-flow.yml
 jina cloud deploy jcloud-flow.yml
 ```
 
