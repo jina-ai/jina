@@ -234,7 +234,7 @@ flow = (
     Flow(port=12345)
     .add(uses=Translator, timeout_ready=-1)
     .add(
-        uses='jinaai://alaeddineabdessalem/TextToImage',
+        uses='jinaai://jina-ai/TextToImage',
         timeout_ready=-1,
         install_requirements=True,
     )
@@ -256,7 +256,7 @@ executors:
     timeout_ready: -1
     py_modules:
       - translate_executor.py
-  - uses: jinaai://alaeddineabdessalem/TextToImage
+  - uses: jinaai://jina-ai/TextToImage
     timeout_ready: -1
     install_requirements: true
 
@@ -354,7 +354,7 @@ jtype: Deployment
 with:
   port: 12345
   timeout_ready: -1
-  uses: jinaai://alaeddineabdessalem/TextToImage
+  uses: jinaai://jina-ai/TextToImage
   install_requirements: true
 ```
 
@@ -366,7 +366,7 @@ jtype: Deployment
 with:
   port: 12345
   timeout_ready: -1
-  uses: jinaai://alaeddineabdessalem/TextToImage
+  uses: jinaai://jina-ai/TextToImage
   install_requirements: true
   env:
    CUDA_VISIBLE_DEVICES: RR
