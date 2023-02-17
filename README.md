@@ -27,8 +27,9 @@
 
 Jina is an MLOps framework to build multimodal AI **services** and **pipelines** then **serve**, **scale** and **deploy** them to a production-ready environment like Kubernetes or Jina AI Cloud. Jina handles the infrastructure complexity, making advanced solution engineering and cloud-native technologies accessible to every developer.
 
-* **[Build and deploy a gRPC microservice](#build-ai--ml-services)**
-* **[Build and deploy a pipeline](#build-a-pipeline)**
+<p align="center">
+<strong><a href="#build-ai--ml-services">Build and deploy a gRPC microservice</a> • <a href="#build-a-pipeline">Build and deploy a pipeline</a></strong>
+</p>
 
 Applications built with Jina enjoy the following features out of the box:
 
@@ -39,7 +40,7 @@ Applications built with Jina enjoy the following features out of the box:
 
 ⚡ **Performance**
   - Intuitive design pattern for high-performance microservices.
-  - Scale with ease: set replicas, sharding in one line. 
+  - Easy scaling: set replicas, sharding in one line. 
   - Duplex streaming between client and server.
   - Async and non-blocking data processing over dynamic flows.
 
@@ -425,9 +426,9 @@ Executor Hub manages everything on the backend:
 <a href="https://docs.jina.ai"><img src=".github/readme/cloud-native-banner.png?raw=true" alt="Jina: Seamless Container Integration" width="100%"></a>
 </p>
 
-### Fast-lane to cloud-native
+### Get on the fast lane to cloud-native
 
-Using Kubernetes is easy:
+Using Kubernetes with Jina is easy:
 
 ```bash
 jina export kubernetes flow.yml ./my-k8s
