@@ -155,7 +155,7 @@ Then we deploy it with either the Python API or YAML:
 ```python
 from jina import Deployment
 
-with Deployment(uses=Translator, port=12345, timeout_ready=-1) as dep:
+with Deployment(uses=Translator, timeout_ready=-1) as dep:
     dep.block()
 ```
 
@@ -165,7 +165,6 @@ with Deployment(uses=Translator, port=12345, timeout_ready=-1) as dep:
 ```yaml
 jtype: Deployment
 with:
-  port: 12345
   uses: Translator
   py_modules:
     - translate_executor.py # name of the module containing Translator
@@ -197,7 +196,7 @@ from jina import Client
 
 french_text = Document(text='un astronaut est en train de faire une promenade dans un parc')
 
-client = Client(port=12345)
+client = Client(port=12345)  # use port from output above
 response = client.post(on='/', inputs=[french_text])
 
 print(response[0].text)
@@ -235,7 +234,7 @@ Build the Flow with either Python or YAML:
 from jina import Flow
 
 flow = (
-    Flow(port=12345)
+    Flow()
     .add(uses=Translator, timeout_ready=-1)
     .add(
         uses='jinaai://alaeddineabdessalem/TextToImage',
@@ -253,8 +252,6 @@ with flow:
 
 ```yaml
 jtype: Flow
-with:
-  port: 12345
 executors:
   - uses: Translator
     timeout_ready: -1
@@ -287,7 +284,7 @@ Then, use [Jina Client](https://docs.jina.ai/concepts/client/) to make requests 
 ```python
 from jina import Client, Document
 
-client = Client(port=12345)
+client = Client(port=12345)  # use port from output above
 
 french_text = Document(text='un astronaut est en train de faire une promenade dans un parc')
 
@@ -356,7 +353,6 @@ Let's scale a Stable Diffusion Executor deployment with replicas and dynamic bat
 ```yaml
 jtype: Deployment
 with:
-  port: 12345
   timeout_ready: -1
   uses: jinaai://alaeddineabdessalem/TextToImage
   install_requirements: true
@@ -368,7 +364,6 @@ with:
 ```yaml
 jtype: Deployment
 with:
-  port: 12345
   timeout_ready: -1
   uses: jinaai://alaeddineabdessalem/TextToImage
   install_requirements: true
