@@ -298,21 +298,20 @@ docs[0].display()
 
 ![stable-diffusion-output.png](https://raw.githubusercontent.com/jina-ai/jina/docs-readme-changes/.github/stable-diffusion-output.png)
 
-<!-- TODO: uncomment later -->
 
-<!-- 
 You can also deploy such a pipeline to JCloud.
 First, turn the `flow.yml` file into a [jcloud-compatible YAML](https://docs.jina.ai/concepts/jcloud/yaml-spec/) by specifying resource requirements and using containerized Hub Executors.
 
 Then, use `jina cloud deploy` command to deploy to the cloud:
-(TODO: replace wit master later)
+
+<!-- TODO: replace wit master later -->
+
 ```shell
 wget https://raw.githubusercontent.com/jina-ai/jina/docs-readme-changes/.github/getting-started/jcloud-flow.yml
 jina cloud deploy jcloud-flow.yml
 ```
 
 Read more about [deploying Flows to JCloud](https://docs.jina.ai/concepts/jcloud/#deploy).
- -->
 
 <!-- end build-pipelines -->
 
