@@ -108,7 +108,8 @@ Our simple Executor will use Facebook's mBART-50 model to translate French to En
 <td>
 
 ```python
-from jina import Executor, requests, DocumentArray
+from docarray import DocumentArray
+from jina import Executor, requests
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 
 
@@ -171,7 +172,7 @@ with:
   timeout_ready: -1
 ```
 
-And run the YAML Deployemt with the CLI: `jina deployment --uses deployment.yml`
+And run the YAML Deployment with the CLI: `jina deployment --uses deployment.yml`
 
 </td>
 </tr>
@@ -191,7 +192,8 @@ And run the YAML Deployemt with the CLI: `jina deployment --uses deployment.yml`
 Use [Jina Client](https://docs.jina.ai/concepts/client/) to make requests to the service:
 
 ```python
-from jina import Client, Document
+from docarray import Document
+from jina import Client
 
 client = Client(port=12345)
 docs = client.post(
@@ -457,7 +459,8 @@ Note: you can also export Deployment YAML to [Kubernetes](https://docs.jina.ai/c
 Likewise, tracing and monitoring with OpenTelemetry is straightforward:
 
 ```python
-from jina import Executor, requests, DocumentArray
+from docarray import DocumentArray
+from jina import Executor, requests
 
 
 class MyExec(Executor):
