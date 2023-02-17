@@ -75,7 +75,7 @@ Find more install options on [Apple Silicon](https://docs.jina.ai/get-started/in
 
 Jina has three fundamental concepts: Document, Executor and Flow:
 
-- [**Document**](https://docarray.jina.ai/) from [DocArray](https://github.com/docarray/docarray) is the basic computational unit in Jina.
+- [**Document**](https://docarray.jina.ai/) from [DocArray](https://github.com/docarray/docarray) is the input/output format in Jina.
 - [**Executor**](https://docs.jina.ai/concepts/executor/) is a Python class that transforms and processes Documents.
 - [**Flow**](https://docs.jina.ai/concepts/flow/) and [**Deployment**](https://docs.jina.ai/concepts/executor/serve/#serve-directly) orchestrate Executors into standalone services or pipelines.
 
