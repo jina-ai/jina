@@ -27,7 +27,6 @@
 
 Jina is an MLOps framework to build multimodal AI **services** and **pipelines** then **serve**, **scale** and **deploy** them to a production-ready environment like Kubernetes or Jina AI Cloud. Jina handles the infrastructure complexity, making advanced solution engineering and cloud-native technologies accessible to every developer.
 
-Use cases:
 * **[Build and deploy a gRPC microservice](#build-ai--ml-services)**
 * **[Build and deploy a pipeline](#build-a-pipeline)**
 
