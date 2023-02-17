@@ -335,18 +335,12 @@ While you could use standard Python with the same number of lines and get the sa
 </p>
 
 ### Scalability and concurrency at ease
-Jina comes with scalability features out of the box, so you can easily increase the throughput of your application.
+Jina comes with scalability features out of the box like [Replicas](https://docs.jina.ai/concepts/flow/scale-out/#replicate-executors), [Shards](https://docs.jina.ai/concepts/flow/scale-out/#customize-polling-behaviors) and [Dynamic Batching](https://docs.jina.ai/concepts/executor/dynamic-batching/).
+This allows you to easily increase the throughput of your application.
 In [the previous Flow](#build-a-pipeline), you might notice that the stable diffusion component is slower to generate images. 
-We can improve throughput with these features:
-Let's take the following example:
 
-* create [multiple replicas](https://docs.jina.ai/concepts/flow/scale-out/#replicate-executors) of the image generation Executor where each replica is 
-assigned one GPU device.
-* enable [dynamic batching](https://docs.jina.ai/concepts/executor/dynamic-batching/), so that 
-incoming requests are batched together to the Executor at once.
+Let's enable Replication on the Stable Diffusion Image generation Executor, where [each replica is assigned 1 GPU device](https://docs.jina.ai/concepts/flow/scale-out/#replicate-on-multiple-gpus):
 
-  
-Let's enable these 2 features on the previous Flow:
 
 ```yaml
 jtype: Flow
@@ -357,22 +351,18 @@ executors:
     timeout_ready: -1
     py_modules:
       - translate_executor.py
-    replicas: 3
+    replicas: 1
   - uses: jinaai://alaeddineabdessalem/TextToImage
+    replicas: 2
     timeout_ready: -1
     install_requirements: true
-    replicas: 2
     env:
-      CUDA_VISIBLE_DEVICES: RR             # Assign one GPU device to each replica
-    uses_dynamic_batching:                 # configure dynamic batching
-      /default:
-        preferred_batch_size: 10
-        timeout: 200
+      CUDA_VISIBLE_DEVICES: RR
 ```
 
-Running the scaled flow YAML, will give up to x% speed compared on 30 concurrent requests compared to the previous Flow YAML.
+Assuming your machine has 2 GPU device, using the scaled flow YAML, can give 50% higher throughput.
 
-Note that these 2 features, apply to both [Deployment YAML](https://docs.jina.ai/concepts/executor/deployment-yaml-spec/#deployment-yaml-spec) and [Flow YAML](https://docs.jina.ai/concepts/flow/yaml-spec/).
+Note that these features, apply to both [Deployment YAML](https://docs.jina.ai/concepts/executor/deployment-yaml-spec/#deployment-yaml-spec) and [Flow YAML](https://docs.jina.ai/concepts/flow/yaml-spec/).
 Thanks to the YAML syntax, you can inject deployment configurations regardless of Executor code.
 
 ---
