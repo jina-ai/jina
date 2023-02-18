@@ -73,7 +73,7 @@ Find more install options on [Apple Silicon](https://docs.jina.ai/get-started/in
 
 ### Basic Concepts
 
-Jina has three fundamental concepts: Document, Executor and Flow:
+Jina has three fundamental concepts:
 
 - A [**Document**](https://docarray.jina.ai/) (from [DocArray](https://github.com/docarray/docarray)) is the input/output format in Jina.
 - An [**Executor**](https://docs.jina.ai/concepts/executor/) is a Python class that transforms and processes Documents.
