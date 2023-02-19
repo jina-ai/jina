@@ -3,7 +3,7 @@
 
 A {class}`~jina.Flow` exposes configuration parameters for leveraging [OpenTelemetry](https://opentelemetry.io) Tracing and Metrics observability features. These tools let you instrument and collect various signals which help to analyze your application's real-time behavior.
 
-A {class}`~jina.Flow` is composed of several Pods, namely the {class}`~jina.serve.runtimes.gateway.GatewayRuntime`, {class}`~jina.Executor`s, and potentially a {class}`~jina.serve.runtimes.head.HeadRuntime` (see the {ref}`architecture overview <architecture-overview>`). Each Pod is its own microservice. These services expose their own metrics using the Python [OpenTelemetry API and SDK](https://opentelemetry-python.readthedocs.io/en/stable/api/trace.html). 
+A {class}`~jina.Flow` is composed of several microservices, namely the {class}`~jina.serve.runtimes.gateway.GatewayRuntime`, {class}`~jina.Executor`s, and potentially a {class}`~jina.serve.runtimes.head.HeadRuntime` (see the {ref}`architecture overview <architecture-overview>`). Each microservice is its own microservice. These services expose their own metrics using the Python [OpenTelemetry API and SDK](https://opentelemetry-python.readthedocs.io/en/stable/api/trace.html). 
 
 Tracing and Metrics can be enabled and configured independently to allow more flexibility in the data collection and visualization setup.
 
@@ -50,7 +50,7 @@ jina flow --uses flow.yaml
 ```
 ````
 
-This Flow creates two Pods: one for the Gateway, and one for the SimpleIndexer Executor. The Flow propagates the Tracing configuration to each Pod so you don't need to duplicate the arguments on each Executor. 
+This Flow creates two microservices: one for the Gateway, and one for the SimpleIndexer Executor. The Flow propagates the Tracing configuration to each microservice so you don't need to duplicate the arguments on each Executor. 
 
 The `traces_exporter_host` and `traces_exporter_port` arguments configure the traces [exporter](https://opentelemetry.io/docs/instrumentation/python/exporters/#trace-1) which are responsible for pushing collected data to the [collector](https://opentelemetry.io/docs/collector/) backend.
 
@@ -62,24 +62,24 @@ Refer to {ref}`OpenTelemetry Setup <opentelemetry>` for more details on exporter
 
 ### Available Traces
 
-Each Pod supports different default traces out of the box, and also lets you define your own custom traces in the Executor. The `Runtime` name is used to create the OpenTelemetry [Service](https://opentelemetry.io/docs/reference/specification/resource/semantic_conventions/#service) [Resource](https://opentelemetry.io/docs/reference/specification/resource/) attribute. The default value for the `name` argument is the `Runtime` or `Executor` class name.
+Each microservice supports different default traces out of the box, and also lets you define your own custom traces in the Executor. The `Runtime` name is used to create the OpenTelemetry [Service](https://opentelemetry.io/docs/reference/specification/resource/semantic_conventions/#service) [Resource](https://opentelemetry.io/docs/reference/specification/resource/) attribute. The default value for the `name` argument is the `Runtime` or `Executor` class name.
 
-Because not all Pods have the same role, they expose different kinds of traces:
+Because not all microservices have the same role, they expose different kinds of traces:
 
-#### Gateway Pods
+#### Gateway microservices
 
 | Operation name    | Description  |
 |-------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------|
 | `/jina.JinaRPC/Call` | Traces the request from the client to the Gateway server. |
 | `/jina.JinaSingleDataRequestRPC/process_single_data` | Internal operation for the request originating from the Gateway to the target Head or Executor. |
 
-#### Head Pods
+#### Head microservices
 
 | Operation name    | Description  |
 |-------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------|
 | `/jina.JinaSingleDataRequestRPC/process_single_data` | Internal operation for the request originating from the Gateway to the target Head. Another child span is created for the request originating from the Head to the Executor.|
 
-#### Executor Pods
+#### Executor microservices
 
 | Operation name    | Description  |
 |-------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------|
@@ -128,7 +128,7 @@ jina flow --uses flow.yaml
 ```
 ````
 
-The Flow propagates the Metrics configuration to each Pod. The `metrics_exporter_host` and `metrics_exporter_port` arguments configure the metrics [exporter](https://opentelemetry.io/docs/instrumentation/python/exporters/#metrics-1) responsible for pushing collected data to the [collector](https://opentelemetry.io/docs/collector/) backend.
+The Flow propagates the Metrics configuration to each microservice. The `metrics_exporter_host` and `metrics_exporter_port` arguments configure the metrics [exporter](https://opentelemetry.io/docs/instrumentation/python/exporters/#metrics-1) responsible for pushing collected data to the [collector](https://opentelemetry.io/docs/collector/) backend.
 
 
 ```{hint}
@@ -138,11 +138,11 @@ Refer to {ref}`OpenTelemetry Setup <opentelemetry>` for more details on the expo
 
 ### Available metrics
 
-Each Pod supports different default metrics out of the box, also letting you define your own custom metrics in the Executor. All metrics add the `Runtime` name to the [metric attributes](https://opentelemetry.io/docs/reference/specification/metrics/semantic_conventions/) which can be used to filter data from different Pods. 
+Each microservice supports different default metrics out of the box, also letting you define your own custom metrics in the Executor. All metrics add the `Runtime` name to the [metric attributes](https://opentelemetry.io/docs/reference/specification/metrics/semantic_conventions/) which can be used to filter data from different microservices. 
 
-Because not all Pods have the same role, they expose different kinds of metrics:
+Because not all microservices have the same role, they expose different kinds of metrics:
 
-#### Gateway Pods
+#### Gateway services
 
 | Metrics name                        | Metrics type                                                           | Description                                                                                                     |
 |-------------------------------------|------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------|
@@ -160,7 +160,7 @@ Because not all Pods have the same role, they expose different kinds of metrics:
 You can find more information on the different type of metrics in Prometheus [here](https://prometheus.io/docs/concepts/metric_types/#metric-types)
 ```
 
-#### Head Pods
+#### Head services
 
 | Metric name                            | Metric type                                                            | Description                                                                                                   |
 |-----------------------------------------|-------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------|
@@ -174,7 +174,7 @@ You can find more information on the different type of metrics in Prometheus [he
 | `jina_received_request_bytes`           | [Histogram](https://opentelemetry.io/docs/reference/specification/metrics/api/#histogram)   | Measures the size of the request in bytes received at the Head level.                                        |
 | `jina_sent_response_bytes`              | [Histogram](https://opentelemetry.io/docs/reference/specification/metrics/api/#histogram)   | Measures the size in bytes of the response returned from the Head to the Gateway.                             |
 
-#### Executor Pods
+#### Executor services
 
 The Executor also adds the Executor class name and the request endpoint for the `@requests` or `@monitor` decorated method level metrics:
 
@@ -196,7 +196,7 @@ Beyond the default metrics outlined above, you can also define {ref}`custom metr
 ```{hint} 
 `jina_process_request_seconds` and `jina_receiving_request_seconds` are different:
  
- -  `jina_process_request_seconds` only tracks time spent calling the function.
+ - `jina_process_request_seconds` only tracks time spent calling the function.
  - `jina_receiving_request_seconds` tracks time spent calling the function **and** the gRPC communication overhead.
 ```
 
