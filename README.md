@@ -89,8 +89,8 @@ Jina has three fundamental concepts:
 
 ### Build AI & ML Services
 <!-- start build-ai-services -->
-<!-- TODO: change to master before merging -->
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/jina-ai/jina/blob/docs-readme-changes/.github/getting-started/notebook.ipynb)
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/jina-ai/jina/blob/master/.github/getting-started/notebook.ipynb)
 
 Let's build a fast, reliable and scalable gRPC-based AI service. In Jina we call this an [Executor](https://docs.jina.ai/concepts/executor/). Our simple Executor will use Facebook's mBART-50 model to translate French to English. 
 
@@ -291,26 +291,23 @@ response = client.post(on='/', inputs=[french_text])
 response[0].display()
 ```
 
-<!-- TODO: replace with master later -->
 
-![stable-diffusion-output.png](https://raw.githubusercontent.com/jina-ai/jina/docs-readme-changes/.github/stable-diffusion-output.png)
+![stable-diffusion-output.png](https://raw.githubusercontent.com/jina-ai/jina/master/.github/stable-diffusion-output.png)
 
-<!-- TODO: uncomment later -->
 
-<!-- 
 You can also deploy a Flow to JCloud.
 
 First, turn the `flow.yml` file into a [JCloud-compatible YAML](https://docs.jina.ai/concepts/jcloud/yaml-spec/) by specifying resource requirements and using containerized Hub Executors.
 
 Then, use `jina cloud deploy` command to deploy to the cloud:
-(TODO: replace with master later)
+
+
 ```shell
-wget https://raw.githubusercontent.com/jina-ai/jina/docs-readme-changes/.github/getting-started/jcloud-flow.yml
+wget https://raw.githubusercontent.com/jina-ai/jina/master/.github/getting-started/jcloud-flow.yml
 jina cloud deploy jcloud-flow.yml
 ```
 
 Read more about [deploying Flows to JCloud](https://docs.jina.ai/concepts/jcloud/#deploy).
- -->
 
 <!-- end build-pipelines -->
 

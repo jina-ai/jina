@@ -6,6 +6,6 @@ executors:
     timeout_ready: -1
     py_modules:
       - Translator/executor.py
-  - uses: jinaai://alaeddineabdessalem/TextToImage
+  - uses: jinaai://jina-ai/TextToImage
     timeout_ready: -1
     install_requirements: true
